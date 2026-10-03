@@ -1,0 +1,87 @@
+summary = """
+Current multipurpose state byte. FUN 0003c3ac sets bit 7 to extension record \
+0x129 byte1.bit7, which is the OR of P0101/P0102/P0103 and P010B/P010C/P010D \
+runtime status; scheduler 00020dfe snapshots it to ffff2448."""
+note = ["Other bits belong to independent state machines."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 618
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tourmaline-jackal/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2449"
+name = "slick-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3ca"
+value = {named = ["00020dfe", "0003c3ac", "ffff2449", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3d6"
+value = {named = ["00020dfe", "0003c3ac", "ffff2449", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3d8"
+value = {named = ["00020dfe", "0003c3ac", "ffff2449", "ffff5a93"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "tourmaline-jackal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

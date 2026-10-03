@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff279c"
+name = "idealistic-chicken"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006ee70"
+
+[[link]]
+type = "reader"
+to = "space-puma/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

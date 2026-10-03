@@ -1,0 +1,249 @@
+summary = """
+Multipurpose state byte. FUN 00077892 recomputes bit 6 as a \
+transmission-transition inhibit aggregate. It clears bit 6 only when \
+ffff424c.bit3 is set, ffff415c is zero, ffff41a5.bit2 is set, ffff4200.bit0 \
+is set, ffff4201.bit7 is set, and signed ffff34ba is at least 0x2710; every \
+failed prerequisite sets bit 6."""
+note = [
+    """
+The aggregate is an exact operational inhibit for ffff4252.bit1. Its \
+individual physical prerequisite names remain unresolved. Other bits have \
+independent consumers.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 325
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amusing-jacamar/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bulky-pegasus/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "expert-lion/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "judicious-shrimp/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smart-donkey/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tricky-basilisk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "automatic_transmission_request_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shrewd-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4253"
+name = "ruddy-dragonfly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007795e"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077968"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007796e"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077976"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007797e"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007798a"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007798c"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077990"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007799a"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779a0"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779b2"
+value = {named = ["00077892", "ffff34ba", "ffff415c", "ffff41a5", "ffff4200", "ffff4201", "ffff424c", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "amusing-jacamar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "bulky-pegasus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "expert-lion/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "judicious-shrimp/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "smart-donkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tricky-basilisk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

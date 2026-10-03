@@ -1,0 +1,72 @@
+summary = """
+Multipurpose state byte. Bit 7 suppresses the direct high-octane minus \
+high-detonation Q8 map-difference branch in 000493e8 when set."""
+note = ["Other bits and consumers belong to separate calculations."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 724
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_timing_state/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glorious-spider/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2469"
+name = "masked-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002e2f0"
+
+[[link]]
+type = "depends"
+to = "knock_timing_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "glorious-spider/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

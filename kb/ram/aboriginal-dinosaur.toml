@@ -1,0 +1,150 @@
+summary = """
+Transmission-transition hold byte used by FUN 00077892. The function writes \
+stock ROM8[0x8b07]=0x1e only on the same branch that sets ffff4252.bit1 and \
+otherwise tests the retained byte while recomputing ffff41a6.bit3. The byte \
+lies in the 10.24 ms block ffff43c7..ffff4489 that FUN 0002040c decrements \
+while nonzero, so it keeps bit 3 set for 30 passes, 307.2 ms, after the last \
+bit-1 pass."""
+note = [
+    """
+A whole-program p-code census found only this writer and reader on the \
+selected implementation, plus their alternate-implementation counterparts; \
+the decrement of FUN 0002040c reaches the byte through its block pointer. \
+Startup clears the byte. The 2026-09-22 road captures show the hold as \
+passes up to 0.306 s after the last TCM status-3 frame in which ffff19c6 \
+stays below the pre-limiter request.""",
+]
+level = "code"
+unit = "raw state"
+
+[[ledger]]
+registry = "vars"
+order = 266
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shrewd-manul/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accomplished-cockle/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "automatic_transmission_request_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4413"
+name = "aboriginal-dinosaur"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b07"
+value = "0x1e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000205f2"
+value = {named = ["00008b07", "0002040c", "00077892", "ffff41a6", "ffff4252", "ffff4413"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779b8"
+value = {named = ["00008b07", "0002040c", "00077892", "ffff41a6", "ffff4252", "ffff4413"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779c0"
+value = {named = ["00008b07", "0002040c", "00077892", "ffff41a6", "ffff4252", "ffff4413"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779cc"
+value = {named = ["00008b07", "0002040c", "00077892", "ffff41a6", "ffff4252", "ffff4413"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779f8"
+value = {named = ["00008b07", "0002040c", "00077892", "ffff41a6", "ffff4252", "ffff4413"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "accomplished-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

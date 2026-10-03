@@ -1,0 +1,169 @@
+title = "Transform the final timing coordinate and schedule the APC set compare"
+summary = """
+Primary APC command builder and diagnostic publisher. Normal branches \
+calculate command=uint8(ROM8[0x83d5]-uint8(ffff11d4)), write it to ffff2022, \
+and call 0002a892. Gated branches add ROM8[0x8c95] with saturation, subtract \
+ROM8[0x83ea] and cap by ROM8[0x864a], or force ROM8[0x83d5]-20 before the \
+same publication and scheduling step."""
+note = [
+    """
+The call target literal at 0004e198 is after final stock arbitration and \
+before both APC command schedulers. A homologous DID 0x110a conversion is \
+110-raw, so normal commands 110..117 represent a commanded coordinate of \
+0..-7 deg BTDC. Scheduler 0002a892 applies the command as the delay in crank \
+degrees after tooth 7 of the crank signal plate, so the firmware coordinate \
+places compression TDC of event cylinder ffff11de 110 degrees after that \
+tooth, on tooth 6; the mechanical offset between the sensor and the plate \
+remains a hardware boundary.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 110
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 156
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_output/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004df82"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083d5"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083ea"
+value = "0x1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000864a"
+value = "0x50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c95"
+value = "0x0a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dfaa"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dfb4"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dfba"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e034"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e060"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e070"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e074"
+value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "final_timing/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

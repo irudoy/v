@@ -1,0 +1,124 @@
+summary = """
+Area-over-speed coordinate of the trustful requested-torque conversion: FUN \
+00073a44 writes uint32 floor(4*floor(ffff1ca8*65536/ROM8[0x15f82])/ffff1cca) \
+through unsigned divider 00021ce0, with ROM8[0x15f82] = 100."""
+level = "code"
+unit = "raw area/speed coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 962
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "famous-skink/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "paper-quoll/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyber-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ce0"
+name = "naughty-sheep"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00015f82=0x64"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a76"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a80"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a88"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a92"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a94"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a98"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aa2"
+value = {named = ["00015f82", "00021ce0", "00073a44", "ffff1ca8", "ffff1cca", "ffff1ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "famous-skink/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "paper-quoll/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

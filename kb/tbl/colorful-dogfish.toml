@@ -1,3 +1,33 @@
+summary = """
+Sixteen-point RPM-dependent Base Fuel Schedule normalization reference used \
+only by the J1979 Calculated Load producer. Lookup M by RPM/25 byte ffff11b3 \
+enters q=floor((uint16[ffff1024]<<8)/M); an optional second normalization \
+uses ffff329f, and the result is clamped to 255 and written to ffff413e for \
+Mode 01 PID 0x04."""
+note = [
+    """
+The exact image closes both wrapper branches: 000263f4 calls the complete \
+uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 \
+and returns cell 15 otherwise. ffff11b3 is min(255,uint16[ffff11f4]>>1); \
+because ffff11f4 is RPM/12.5, the implicit 0x1000 coordinate step gives \
+exact static points 0,400,...,6000 RPM. Exact DID 0x1208 identifies \
+numerator ffff1024 as current Base Fuel Schedule; the quotient therefore \
+compares it with a same-dimension RPM-dependent 100% reference. Stock \
+ROM8[0000870e]=0x28 leaves the optional second normalization inactive. FUN \
+00035856 returns ffff413e for PID 0x04 at standard conversion 100*A/255. \
+This map does not normalize internal Q7 map coordinate ffff102c; that path \
+uses fixed scalar 00009534 and 100*A/128. The operational role and RPM \
+points have code confidence. The raw/2048 ms conversion remains a \
+source-derived candidate.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/2048"
+to_raw = "x*2048"
+scale_level = "candidate"
+
 [editor]
 name = "Diagnostic Calculated-Load Reference"
 category = "Diagnostics / OBD"
@@ -26,10 +56,179 @@ static_axis = [
 ]
 static_axis_name = "Engine Speed [RPM]"
 
+[[ledger]]
+registry = "findings"
+order = 255
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+scale = [14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eminent-chamois/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "calculated_load/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001491a"
 name = "colorful-dogfish"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808ca"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808d4"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808de"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808e2"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808ec"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "00035856", "0008083c", "ffff1024", "ffff11b3", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Load Base Fuel Schedule Table|1D-16|uint16|BFS|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "14.580078125*2048=29860"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "29860/2048=14.580078125"
 
 [[symbol]]
 layout = "jk00c"
@@ -62,3 +261,33 @@ value = 5
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "eminent-chamois/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

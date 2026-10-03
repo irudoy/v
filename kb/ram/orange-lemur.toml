@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1348"
+name = "orange-lemur"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004be68"
+
+[[link]]
+type = "lookup"
+to = "fabulous-marmoset/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

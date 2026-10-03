@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8960"
+name = "arrogant-walrus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005cf72"
+
+[[link]]
+type = "writer"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

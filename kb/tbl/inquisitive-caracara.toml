@@ -1,0 +1,414 @@
+summary = "Confirmation delay: number of passes before latching ffff24d0 bit 7"
+note = [
+    """
+Confirmation delay: number of passes before latching ffff24d0 bit 7. Result \
+disposition: inline_comparison. Result target: Comparison 00056f4e: \
+zero-extended byte counter ffff54ee >= zero-extended interpolated output of \
+map 00012136; when the comparison is true and bit 0x40 in ffff4184 is set, \
+instruction 00056f5c sets bit 0x80 in ffff24d0. Machine trace: \
+00056f18-00056f2e reads ffff54ee, zero-extends the byte, increments it by 1, \
+saturates it to 0xff, and writes the byte back. 00056f32 loads base \
+00012136, 00056f34 reads the byte index from ffff106f, and delay slot \
+00056f3a zero-extends it before the call to 00026370 at 00056f38. Wrapper \
+00026370 returns the last map byte for index >= 0xe0; for a smaller index, \
+it passes processing to kernel 00026a80. In the kernel's byte branch, \
+00026aac and 00026aae read two adjacent cells and 00026ab0 and 00026ab2 \
+zero-extend them, after which 00026ab4-00026ab6 passes them to 00026740. \
+00026740-0002676c performs unsigned linear interpolation with truncation and \
+returns a value between adjacent cells; for map contents \
+20,20,20,20,20,10,0,0, output is bounded to 0..20, including boundary return \
+of the last cell. 00056f3c moves the result to r2, 00056f44 writes the low \
+byte to ffff14df, and 00056f46 zero-extends the same r2 again. \
+00056f4a-00056f4c reads and zero-extends counter ffff54ee. 00056f4e executes \
+cmp/ge r2,r5, testing r5 >= r2; both operands are nonnegative and fit in the \
+signed range. Branch 00056f50 ends the path when the threshold is not \
+reached. 00056f54-00056f58 requires bit 0x40 in ffff4184, after which \
+00056f5c sets bit 0x80 in ffff24d0.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "counts"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 117
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "inquisitive-caracara/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012136"
+name = "inquisitive-caracara"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00026382"
+value = "00e0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026742"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026744"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026746"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002674a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002674c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026750"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026754"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002675c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002675e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026760"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026762"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026766"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026768"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002676a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a98"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a9a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f18"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f20"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f22"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f24"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f26"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f28"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f2a"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f2e"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f32"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f34"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f38"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f3a"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f3c"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f44"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f46"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f48"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f4a"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f4c"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f4e"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f50"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f54"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f56"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f58"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f5c"
+value = {named = ["00012136", "00026382"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "inquisitive-caracara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"

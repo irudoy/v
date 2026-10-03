@@ -1,0 +1,95 @@
+summary = """
+Floor curves for a target quantity: byte-identical 1D-16 pair \
+0x12908/0x12918 with shared hash 786c40a671b09d6c, selected by bit 3 of \
+ffff4250 and written to ffff171a. Consumer 000474a4 establishes the floor \
+role by taking max(uVar4, ffff171a<<3). Under bit 5 of ffff2458, the same \
+component also contains a peak-hold and implicit map 0x12042."""
+note = [
+    """
+The map's own scale is not derived: the consumer multiplies by <<3, but that \
+does not establish the unit of the map itself. Section 6 conflict: the \
+catalog's 1D-16 and A2L concepts (load-100pct, overrun-fuel-cut) conflict \
+with the traced target-quantity floor role and cannot be resolved by \
+voting.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 135
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "manipulative-moose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "macho-weasel/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-ammonite/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00046938"
+name = "dramatic-roadrunner"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046938"
+
+[[link]]
+type = "depends"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "macho-weasel/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

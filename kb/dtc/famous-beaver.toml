@@ -1,0 +1,36 @@
+title = "Cylinder 3 misfire detected"
+level = "code"
+code = "P0303"
+group = "misfire"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 3
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000193fc"
+name = "famous-beaver"
+index = 13
+attribute = "0001610c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001610c"
+value = "0030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000193fc"
+value = "05020d000000030340000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a180"
+value = "0001610c"

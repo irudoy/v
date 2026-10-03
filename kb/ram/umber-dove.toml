@@ -1,0 +1,163 @@
+summary = """
+Saturating count of consecutive speed-qualified revolution services for the \
+P030 monitor. Once-per-revolution FUN 0007c4e0 increments it while \
+ffff24c4.bit7 is set and resets it when the hysteresis state is clear. FUN \
+0003cf24 and coordinator 00082c8a both require it to reach stock \
+ROM8[000083b8] = 1."""
+note = [
+    """
+The counter saturates at 255. A whole-program p-code pass over all 2315 \
+functions found four exact accesses, no unresolved candidates, and FUN \
+0007c4e0 as the only writer. Below the stock threshold, FUN 00082c8a clears \
+ffff4251.bits6/7.""",
+]
+level = "code"
+unit = "speed-qualified engine revolutions"
+
+[[ledger]]
+registry = "vars"
+order = 144
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fat-buzzard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tungsten-smilodon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "efficient-caribou/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4096"
+name = "umber-dove"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083b8"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cf58"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c50e"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c516"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c51a"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c522"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fce"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fd0"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fd2"
+value = {named = ["000083b8", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nebulous-toucanet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "tungsten-smilodon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "efficient-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

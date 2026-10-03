@@ -1,0 +1,147 @@
+summary = """
+Exhaust-VTC target byte after the standstill override stage of FUN 000bfe88, \
+stored at 000c01f4: ROM8[00008e36]+128=168 while ffff246c bit 1 is set and \
+cancel latch ffff2478 bit 4 is clear; 128 on the pass after the predicate \
+falls (prior-cycle copy ffff246f bit 1) or while the latch is being set; the \
+previous value while the latch holds; otherwise the coolant-selected map \
+byte from ffff137a. It feeds the 190-count limiter and the slew stage before \
+ffff1c90."""
+note = [
+    """
+On the 2026-09-17 captures of a Map 3 image with neutral surfaces the byte \
+reached 168 in eight standstill excursions, each starting as the engine \
+passed 1800 RPM at rest.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 9
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "242"
+offset = 0xf2
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fantastic-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "independent-chachalaca/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "observant-pillbug/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff137e"
+name = "lovely-hyrax"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e36=40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01e0"
+value = {named = ["00008e36", "000bfe88", "ffff128c", "ffff137e", "ffff246c", "ffff246f", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01f4"
+value = {named = ["00008e36", "000bfe88", "ffff128c", "ffff137e", "ffff246c", "ffff246f", "ffff2478"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0xf2
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "fantastic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "independent-chachalaca/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "observant-pillbug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "umber-bull/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

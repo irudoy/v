@@ -1,0 +1,108 @@
+summary = """
+Judged latch of the P0014/P0024 rest-position pair, bits 0 and 1 for \
+descriptor indices 0xd2 and 0xd3. FUN 00090256 sets the bank bit at 0009035c \
+once the ffff43b6+b timer has expired; FUN 0008f168 enables the helper only \
+while the bit is clear and ROM8[000186ff] bit 1 or 0 is set, and calls \
+dispatcher 0007d8b8 with the index while the bit is set. Reset helper FUN \
+0008fc6a clears it."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 787
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apricot-echidna/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3582"
+name = "feathered-axolotl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f738"
+value = {named = ["0007d8b8", "0008f168", "0008fc6a", "00090256", "ffff3582"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008faa8"
+value = {named = ["0007d8b8", "0008f168", "0008fc6a", "00090256", "ffff3582"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008fb12"
+value = {named = ["0007d8b8", "0008f168", "0008fc6a", "00090256", "ffff3582"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009035c"
+value = {named = ["0007d8b8", "0008f168", "0008fc6a", "00090256", "ffff3582"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apricot-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

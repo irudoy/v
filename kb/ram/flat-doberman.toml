@@ -1,0 +1,283 @@
+summary = """
+Multipurpose state byte. FUN 0004f050 maintains bit 5 as the 4500/5000 RPM \
+gate for vehicle-speed fuel cut; FUN 0004f19c uses bit 7 as its speed-entry \
+arming state. FUN 000bd20a writes bit 1 as the intake idle-source condition: \
+set only with intake electrical enable ffff248b bit 1, CLSD THL POS copy \
+ffff2458 bit 5, vehicle-speed byte ffff110e at most ROM8[0000871d]=2, engine \
+speed of 1500 RPM (1400 RPM to hold), the raw coolant, oil, intake-air, and \
+normalized BFS flags, and a set of inhibit bits and stored-fault records \
+clear, and held clear after the first activation while re-arm countdown \
+ffff2527 is nonzero; a set bit also sets intake operating bit ffff246b bit \
+6; while it is set, FUN 000bdc66 conditions idle source byte ffff1553 into \
+intake target ffff2326 in place of the coolant-selected map byte. FUN \
+000bfe88 maintains bit 3 as the exhaust-VTC demand flag: set while \
+coolant-selected target ffff1c90, plus hysteresis ROM8[000086f4] once set, \
+reaches ROM8[00008dcb]+128, and cleared otherwise. A set bit 3 ORs bits 0 \
+and 1 into bank-enable byte ffff1246. Coordinator 00090a84 maintains bit 4 \
+through comparator 000259d0 as engine-speed byte ffff11b2 at most \
+ROM8[00008dca]=0 with release offset 16, the stopped-engine condition of the \
+exhaust cam reference learning and of FUN 00090bd2."""
+note = [
+    """
+Bit 5 gates the ffff24a6.bit0 active state; bit 7 records speed-threshold \
+entry while the stock activation delay runs.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 200
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amphibian-sponge/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "logical-boar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tomato-trout/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vehicle_speed_cut_rpm_gate_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a7"
+name = "flat-doberman"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086f4"
+value = "2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008713=100"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008715=112"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008716"
+value = "8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000871d"
+value = "2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008dca"
+value = "0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dcb=14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f1d0"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f25e"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd994"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd9c0"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd9c6"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde0a"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c05a8"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c05c8"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c05ec"
+value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "amphibian-sponge/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "logical-boar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vehicle_speed_cut_rpm_gate_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

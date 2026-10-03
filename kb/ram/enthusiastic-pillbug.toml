@@ -1,0 +1,120 @@
+summary = """
+Ten-bit SH7058 AN4 sample written as ADDR4>>6 by FUN 00028098. It is the \
+sole input to the bank-1 diagnostic publisher FUN 0003c408 and is copied \
+separately to ffff1a3e."""
+note = [
+    """
+The SH7058 manual maps ADDR4 to AN4 at MCU pin 90/H18. Exact DID 0x1204 \
+establishes MAF bank 1 in firmware; physical continuity from the ECM \
+terminal to the MCU pin requires bench verification.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 468
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "active-snail/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "outstanding-penguin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "real-sawfish/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuzzy-parakeet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d62"
+name = "enthusiastic-pillbug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000280c0"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d62", "fffff808"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000280c4"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d62", "fffff808"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c420"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d62", "fffff808"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c466"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d62", "fffff808"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "real-sawfish/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "active-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuzzy-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

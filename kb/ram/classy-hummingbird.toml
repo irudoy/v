@@ -1,0 +1,128 @@
+summary = """
+First 32-bit weighted accumulator in the crankshaft rotational-irregularity \
+component. On the eligible path, which requires ffff4251 bit 7 and ffff41d2 \
+bits 0 and 1, condition ffff444d == 0 causes FUN 00085a70 to add \
+ROM8[0x11A28 + ffff2b4b]. Failing the entry or readiness gate clears the \
+accumulator."""
+note = [
+    """
+All five reachable table entries are 0xff in stock JK03A and JK08A, so every \
+eligible update adds 255. The downstream physical quantity remains \
+unresolved.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 277
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavenly-shrew/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-coucal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff36e8"
+name = "classy-hummingbird"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00011a28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008315e"
+value = {named = ["00011a28", "00082c8a", "00085a70", "ffff2b4b", "ffff36e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000861fa"
+value = {named = ["00011a28", "00082c8a", "00085a70", "ffff2b4b", "ffff36e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086222"
+value = {named = ["00011a28", "00082c8a", "00085a70", "ffff2b4b", "ffff36e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008622a"
+value = {named = ["00011a28", "00082c8a", "00085a70", "ffff2b4b", "ffff36e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086292"
+value = {named = ["00011a28", "00082c8a", "00085a70", "ffff2b4b", "ffff36e8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "heavenly-shrew/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

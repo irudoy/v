@@ -1,0 +1,260 @@
+summary = """
+Signed timing correction written by 0004d99c as \
+clamp_s8(ffff1ff8+ffff2356-ffff1ff6), where ffff1ff8=ffff2378+ffff11d6 on \
+the normal path, and combined by 0004dbe8 with the gated snapshot ffff564c \
+while forming ffff11da and ffff11d4. Its terms are the previous-pass timing \
+state ffff2378, the negated retard request ffff11d6, the bounded correction \
+ffff2356, and the scaled 0x147da subtraction ffff1ff6."""
+note = [
+    """
+All terms are crank degrees with coefficient 1 relative to the J1979 PID \
+0x0E coordinate. The operating qualifier of map 0x147da remains \
+unresolved.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 88
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nifty-clam/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sincere-dragonfly/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-capuchin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "athletic-coucal/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eccentric-badger/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "liberal-gorilla/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "lumpy-kudu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "steady-lionfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "event_timing_correction_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12d6"
+name = "viridian-koel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9e4"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9fa"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da00"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da4a"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da80"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da90"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dab8"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dabe"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004db56"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004db8c"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcd0"
+value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "nifty-clam/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "artichoke-capuchin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "athletic-coucal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "eccentric-badger/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "liberal-gorilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "lumpy-kudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "steady-lionfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "sincere-dragonfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

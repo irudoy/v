@@ -1,0 +1,162 @@
+summary = """
+Retard request written by 00062e10: 0 when (ffff4242&0x30)!=0, otherwise \
+min(max(hi(ffff2336),hi(ffff235e)),127) while ffff24cb.bit5 is clear and the \
+ffff2025-adjusted variant otherwise. FUN 0004d99c negates it into ffff11d6."""
+note = [
+    """
+ffff2336 and ffff235e are the scheduler snapshots of Q8 states ffff23c2 and \
+ffff23ea. Positive values retard the final coordinate by one crank degree \
+per count.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 839
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-auk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "onyx-dinosaur/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "muscular-malamute/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "spirited-malkoha/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uptight-degu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11f9"
+name = "hopeful-hedgehog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9ce"
+value = {named = ["0004d99c", "0004dbe8", "00062e10", "ffff11f9", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ed2"
+value = {named = ["0004d99c", "0004dbe8", "00062e10", "ffff11f9", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ee2"
+value = {named = ["0004d99c", "0004dbe8", "00062e10", "ffff11f9", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ee4"
+value = {named = ["0004d99c", "0004dbe8", "00062e10", "ffff11f9", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "ambitious-auk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "onyx-dinosaur/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "muscular-malamute/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "spirited-malkoha/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "uptight-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,246 @@
+title = "Cyclic ADC scan and PF13 through PF15 external mux sequencing"
+summary = """
+Cyclic on-chip A/D sampler and PF13..PF15 external-mux sequencer. For \
+ADDR0/AN0 it samples mux code 000 into ffff1d60 in phase 1, code 001 into \
+ffff1d6e in phase 2, advances through all codes, samples code 111 into \
+ffff100a in phase 8, and then clears the selector to 000. It also samples \
+phase-specific ADDR1/AN1 values into ffff1d58 and ffff1d5a."""
+note = [
+    """
+Direct reader 00028668 independently binds mux code 000 to the coolant path \
+and code 111 to the fuel-temperature path. Exact DID 0x1103 binds the \
+intervening phase-2 code-001 sample to battery voltage. Other AN0 mux \
+positions remain unnamed.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 3
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 431
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blue-condor/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dancing-porpoise/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-pig/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eager-alligator/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "smoky-puffin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultra-wrasse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultramarine-worm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000280d8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028140"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002814e"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002816c"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002817a"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281d8"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281dc"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281f0"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281fe"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028276"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002827a"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000282a0"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000282ac"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028562"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028570"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000285ce"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000285d4"
+value = {named = ["000209d8", "000280d8", "ffff100a", "ffff1d58", "ffff1d60", "ffff1d6e", "fffff74e", "fffff800", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr1"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-pfdr"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "black-kudu/fn/7mfk"
+relies = "structure"

@@ -1,0 +1,394 @@
+summary = """
+Scheduler snapshot of exact raw engine-coolant-temperature byte ffff1079. \
+FUN 0004afdc maintains timing-transition warm latch ffff41de.bit5; FUN \
+0007584e maintains its independent alternate-threshold latch ffff249e.bit0; \
+additional consumers implement misfire readiness, ignition correction \
+hysteresis, and diagnostic warm latches."""
+note = [
+    """
+Exact DID 0x1101 uses deg C = raw-50. The limiter latch sets at raw 255, \
+retains through raw 239, and clears at 238, corresponding to theoretical \
+205, 189, and 188 deg C boundaries rather than an ordinary warm-engine \
+transition. Other consumer thresholds remain independently documented.""",
+]
+level = "code"
+unit = "raw coolant byte"
+
+[[ledger]]
+registry = "vars"
+order = 52
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_readiness_latches_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "helpful-hoatzin/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1071"
+name = "raspberry-dragon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000086a4=0x6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a99"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9a"
+value = "0x10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cff"
+value = "0x96"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e03"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f36"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004aff8"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b00c"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758d0"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758de"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758e6"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008055c"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008056a"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080578"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008393e"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008394c"
+value = {named = ["000086a4", "00008a99", "00008a9a", "00008cff", "00008e03", "00012de2", "00020dfe", "0004afdc", "0004d2a6", "0007584e", "000804ce", "00082c8a", "ffff1071", "ffff1079"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "coolant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "helpful-hoatzin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "diagnostic_readiness_latches_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "famous-kingfisher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "logical-boar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

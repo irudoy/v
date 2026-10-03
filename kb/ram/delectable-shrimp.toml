@@ -1,0 +1,40 @@
+summary = "Mode and override selector in 00056ea6."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 195
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "agate-bull/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a0"
+name = "delectable-shrimp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00047204"
+
+[[link]]
+type = "reader"
+to = "agate-bull/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

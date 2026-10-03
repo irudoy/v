@@ -1,3 +1,24 @@
+summary = """
+Q10 blend gain between the filter value from function entry and dynamic \
+speed threshold ffff1796. FUN 0007584e stores clamp_u16(S_entry + \
+floor(raw*(D-S_entry)/1024)) in ffff1798; first-pass initialization uses the \
+newly initialized filter as S_entry."""
+note = [
+    """
+The stock raw value 76 is gain 0.07421875. Request-rate terms compare the \
+resulting blend with the newly stored speed filter, creating an exact \
+one-sample split during transients.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "Q10 blend gain"
+scale = "x/1024"
+to_raw = "x*1024"
+scale_level = "code"
+
 [editor]
 name = "Throttle Rev Limiter Threshold Blend Gain"
 category = "Limiters / Rev Limit / Internal State"
@@ -8,10 +29,108 @@ fine = 0.01
 coarse = 0.1
 static_axis = ["blend gain"]
 
+[[ledger]]
+registry = "findings"
+order = 25
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "porcelain-boobook/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_runtime/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "white-dove/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00009424"
 former = ["lumpy-capuchin/tbl/7mfk-00009424"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009424"
+value = "0x004c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759b4"
+value = {named = ["00009424", "00022508", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759be"
+value = {named = ["00009424", "00022508", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759c0"
+value = {named = ["00009424", "00022508", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759de"
+value = {named = ["00009424", "00022508", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00022508"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000759c2"
+value = {named = ["00009424", "00022508", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 2}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +153,29 @@ supports = "homology"
 at = "jk00d:00078104"
 to = "7mfk:00075964"
 value = "000094dc"
+
+[[link]]
+type = "index"
+to = "porcelain-boobook/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "throttle_runtime/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

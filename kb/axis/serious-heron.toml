@@ -1,3 +1,49 @@
+note = [
+    """
+Column axis for cold/fallback exhaust-CVTC target surface 0000b2fa. FUN \
+000bfdc0 passes Q7 normalized-BFS snapshot ffff102c directly to the \
+interpolator. One raw point is exactly 0.78125 percent of ROM16[00009534].""",
+]
+level = "code"
+quantity = "load"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 19
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012ea2"
@@ -7,6 +53,37 @@ name = "serious-heron"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bfe00"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfdfc"
+value = {named = ["00009534", "00012ea2", "00020dfe", "00026140", "0003b75c", "000bfdc0", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe00"
+value = {named = ["00009534", "00012ea2", "00020dfe", "00026140", "0003b75c", "000bfdc0", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "private-aardwolf/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "divergent-mongrel/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -29,3 +106,26 @@ kind = "l0"
 supports = "identity"
 at = "jk00d:000c5ace"
 note = "load axis operand at the cold exhaust-target interpolation callsite"
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

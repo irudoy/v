@@ -1,0 +1,83 @@
+summary = """
+Source of latch ffff1a78 (Q16 blend-weight input for 0x1488a in 00070e4c); \
+in 00074c82 the same byte selects one of two component maps."""
+note = [
+    """
+The axis claim for a physical quantity is refuted: the value comes from \
+callers outside the component, while the axis unit is based on shape and \
+catalog evidence (P6).""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 61
+fields = ["semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eminent-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vengeful-wildebeest/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff10d2"
+name = "tungsten-chowchow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006360c"
+
+[[link]]
+type = "reader"
+to = "devout-cougar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "urban-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

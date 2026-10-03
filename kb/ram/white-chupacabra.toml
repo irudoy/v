@@ -1,0 +1,52 @@
+summary = """
+Second blended operand for 4x4 weight 0x9eca in 0007a090: \
+bVar9*RAM(ffff2c80) + (0x100-bVar9)*RAM(ffff2c7e) >>8."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 236
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vagabond-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-capybara/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c7e"
+name = "white-chupacabra"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a28c"
+
+[[link]]
+type = "input"
+to = "intelligent-capybara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

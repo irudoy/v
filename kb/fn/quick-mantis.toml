@@ -1,0 +1,167 @@
+summary = """
+ATU-II channel 1A GR1F capture handler for the bank-1 intake cam. It stores \
+interval ffff22c8 = GR1F - ffff158a, forms running edge phase ffff22d2 = \
+20*ffff13b2 + floor(20*interval/ffff22bc) - 60 (selector below 8) or - 20 \
+(selector 8 and above) through signed divider 00021bbc, clamped at zero, and \
+copies it to ffff22cc while event state ffff13c8 is 2, 4, or 6, after \
+shifting ffff22cc into ffff22ce and ffff22d0. The pass requires ffff84ff bit \
+7 set and edge count ffff1391 equal to 1."""
+note = [
+    """
+The SH7059 hardware manual identifies 0xfffff44e as GR1F. One count of the \
+edge phase is 0.5 crank degrees (ffff22bc is 10 crank degrees and the \
+selector step is 20 counts), the same unit as the exhaust edge handlers \
+000c2d76 and 000c2c58.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 364
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-dugong/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "big-vicugna/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "evasive-degu/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "greedy-horse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "persimmon-carp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ubiquitous-serval/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002a5cc"
+name = "quick-mantis"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a646"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6c0"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6d0"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6f4"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a714"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a72c"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a746"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a75e"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22c8", "ffff22cc", "ffff22ce", "ffff22d0", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"

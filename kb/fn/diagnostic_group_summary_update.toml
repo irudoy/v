@@ -1,0 +1,137 @@
+summary = """
+Diagnostic group-summary updater. Its first group starts byte1 and byte2 \
+accumulators at zero, ORs those bytes across runtime indices 0xba, 0x07, \
+0xbb, 0x08, 0xbc, and 0x09, and writes the two accumulated status bytes to \
+extension record 0x129 at ffff5a94 and ffff5a95."""
+note = [
+    """
+Build extension runtime-record summaries including dual-bank MAF record \
+0x129""",
+    """
+The six exact descriptors are P0101/P0102/P0103 for bank 1 and \
+P010B/P010C/P010D for bank 2. The function builds additional diagnostic \
+group summaries outside this annotation; byte 0 of extension record 0x129 is \
+not consumed by the fuel path.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 64
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 547
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tourmaline-jackal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00097eb4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097ec8"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097ee2"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f00"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f22"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f40"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f68"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f86"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097f88"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00097faa"
+value = {named = ["00022558", "0003c3ac", "00097eb4", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

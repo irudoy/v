@@ -1,3 +1,15 @@
+summary = """
+Explicit-axis 16x16 wrapper over the byte core; its sole caller is accessor \
+00082c8a, making it a local wrapper. It is the only entry using finisher \
+0x268A4, which saturates the sample when element bit 7 is set."""
+note = [
+    """
+The shared interpolation functions are the primitives reachable through \
+PTR_FUN slots, not this wrapper.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
@@ -6,6 +18,31 @@ rows = 16
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 73
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fabulous-silkworm/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +65,11 @@ at = "1nd:0002876e"
 layout = "7mfk"
 address = "00026320"
 name = "black-cheetah"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +121,19 @@ key = "00026320"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00028152"
+
+[[link]]
+type = "depends"
+to = "fabulous-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

@@ -1,8 +1,302 @@
+summary = """
+Current engine-speed byte in RPM/25 representation. FUN 000384cc forms \
+current byte ffff11eb as min(255, ffff1196>>7), and scheduler 00020dfe \
+copies it to ffff11b3. FUN 0004fbe2 and FUN 00050018 compare it with the \
+Over Run Fuel Cut and Restore table outputs."""
+note = [
+    """
+The scale is code-derived relative to ffff11ae: both bytes originate at \
+ffff1196, with shifts of 7 and 8 respectively.""",
+]
+level = "code"
+unit = "rpm/25"
+
 [logparam]
 id = "X_VQ_Engine_Speed"
 static_axis_name = "Engine Speed [RPM]"
+
+[[ledger]]
+registry = "vars"
+order = 75
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "base"
+to = "offbeat-mantis/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x17"
+offset = 0x17
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sly-chowchow/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "liberal-falcon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff11b3"
 name = "daffodil-gibbon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6a"
+value = {named = ["00020dfe", "000384cc", "0004fbe2", "00050018", "0005185c", "ffff119c", "ffff11b3", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["00020dfe", "000384cc", "0004fbe2", "00050018", "0005185c", "ffff119c", "ffff11b3", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000384d2"
+value = {named = ["00020dfe", "000384cc", "0004fbe2", "00050018", "0005185c", "ffff119c", "ffff11b3", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000384e4"
+value = {named = ["00020dfe", "000384cc", "0004fbe2", "00050018", "0005185c", "ffff119c", "ffff11b3", "ffff11eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "perfect-agouti/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "base"
+to = "offbeat-mantis/ram"
+offset = 0x17
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "liberal-falcon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "curly-axolotl/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "eminent-chamois/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "etc_fault_staged_rpm_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "merry-dachshund/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pretty-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vehicle_speed_cut_rpm_gate_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff134c"
+name = "invaluable-sheep"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004be42"
+
+[[link]]
+type = "lookup"
+to = "charming-barracuda/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

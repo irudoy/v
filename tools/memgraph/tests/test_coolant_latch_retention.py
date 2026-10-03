@@ -318,7 +318,7 @@ class CoolantLatchRetentionTest(unittest.TestCase):
                       "rom_const:00022628=ffff5cf2", "site:00026f3e",
                       "site:000bd2c6", "site:000bd2d4"):
             with self.subTest(token=token):
-                self.assertIn(token, latch["evidence"].split(";"))
+                self.assertIn(token, [item.strip() for item in latch["evidence"].split(";")])
         self.assertIn(
             "zeroes ffff4514..ffff5cf3, including coolant latch byte ffff5b2c",
             self.funcs["00026f30"]["semantics"],

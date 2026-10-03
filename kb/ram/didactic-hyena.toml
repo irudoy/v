@@ -1,0 +1,101 @@
+summary = """
+Gated signed state derived from ffff2404 by 0004afdc and moved one count \
+toward zero by 0004e112."""
+note = [
+    """
+A whole-program reference check finds no connection from this byte to \
+ffff11d4 or an APC compare. Its adaptive-learning interpretation remains \
+unproven.""",
+]
+level = "code"
+unit = "signed state count"
+
+[[ledger]]
+registry = "vars"
+order = 93
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_decay/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "polite-rat/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_timing_state_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "timing_state_decay/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1513"
+name = "didactic-hyena"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b326"
+
+[[link]]
+type = "lookup"
+to = "idle_ignition_timing/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_decay/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "polite-rat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "timing_state_decay/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

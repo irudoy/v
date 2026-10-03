@@ -1,0 +1,212 @@
+summary = """
+First-channel published word from FUN 00070e4c. The configurable path can \
+select processed word ffff1330, but stock ROM8[000089fb]=0x20 has bit 3 \
+clear and therefore always copies source ffff1210."""
+note = [
+    """
+The zero-surface crossfade and local rate-processing result do not reach \
+this word in unmodified JK08A. Its physical interpretation remains \
+unresolved.""",
+]
+level = "code"
+unit = "scaled first-channel raw"
+
+[[ledger]]
+registry = "vars"
+order = 16
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "certain-finch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyber-ocelot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versed-reindeer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "big-locust/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-taipan/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eminent-moth/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1332"
+name = "conscious-caracal"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fb"
+value = "0x20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007100e"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071010"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071012"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071030"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071038"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007103a"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071042"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073956"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a52"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008d14a"
+value = {named = ["000089fb", "00070e4c", "00073948", "00073a44", "0008d10a", "ffff1210", "ffff1330", "ffff1332"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "big-locust/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "jasper-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "gray-chimpanzee/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "intrepid-raptor/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "certain-finch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

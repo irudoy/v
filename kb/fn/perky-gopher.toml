@@ -1,0 +1,259 @@
+summary = """
+ATU-II IMI4C input-capture handler for the bank-2 exhaust-cam sensor edge, \
+installed at interrupt pointer entry 0x2020c. It clears IMF4C in TSR3 \
+(fffff480) with mask 0x7f7f, reads capture GR4C (fffff4c6), forms the 16-bit \
+difference to crank reference count ffff158a, and stores it as the edge \
+interval word at window offset 0x7f6 (ffff1a82). It maps event selector \
+ffff13b2 to a segment index (values above 7 minus 5, value 7 to 0, lower \
+values plus 5) stored at ffff16f2 and copies normalized interval ffff22bc to \
+ffff224c. While cylinder index ffff11de is 2, 4, or 6 and driver status \
+ffff850c bit 6 is clear, it shifts ffff1203 into ffff1205 and ffff1201 into \
+ffff1203 and writes ffff1201 = 20*segment + floor(20*interval / ffff22bc) \
+through signed divider 00021bbc at 000c2d2c. It then increments saturating \
+byte ffff4073, the bank-2 edge count of the current window judged by \
+000c22dc, while arm copy ffff4120 bit 1 or ffff4121 bit 1 is set, and \
+returns with rte."""
+note = [
+    """
+The register identities follow the SH7058 hardware manual: TSR3 at fffff480 \
+holds IMF4C in bit 7 and IMF4D in bit 8, and GR4C and GR4D are the channel-4 \
+general registers at fffff4c6 and fffff4c8. The pointer table at 0x20000 \
+leads the manual vector offsets by one longword (IMI3A handler 0002040c sits \
+at 0x201e4). The bank identity follows the consumer chain ffff1201 -> \
+ffff11c9 -> monitor index 1 -> descriptor 0xd3 (P0024); one phase unit is \
+0.5 crank degrees (ffff22bc is 10 degrees at the 3.2 us capture clock).""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 598
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "homolog"
+to = "complex-mongrel/fn"
+type = "depends"
+end = "owner"
+link_role = "homolog"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enormous-limpet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rose-mastodon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "imperial-beagle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "daft-markhor/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "invaluable-taipan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nano-trout/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spotted-turaco/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c2c58"
+name = "perky-gopher"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c7c"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c80"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c9a"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cb8"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cbe"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cca"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ccc"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cde"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cfa"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d06"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d1c"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d2c"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d5a"
+value = {named = ["00021bbc", "000c2c58", "000c2d76", "ffff11de", "ffff1201", "ffff1203", "ffff1205", "ffff13b2", "ffff158a", "ffff22bc", "ffff4073", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hardware-manual"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "complex-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "homolog"
+
+[[link]]
+type = "selector"
+to = "imperial-beagle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

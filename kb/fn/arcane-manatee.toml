@@ -1,0 +1,28 @@
+role = "service"
+contract = """
+Arithmetic right shift by 10: r0 = (int32)r0 >> 10, signed division by 1024 \
+rounded down. The shlr8/swap.w/exts.b/xtrct sequence restores the sign \
+because SH-2 has shlr8 but no shar8. It does not write RAM; its only memory \
+access spills r1 to the stack. Side output is T = input bit 9."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 49
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022508"
+name = "arcane-manatee"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022508"

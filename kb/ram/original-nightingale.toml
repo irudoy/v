@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3219"
+name = "original-nightingale"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000beffe"
+
+[[link]]
+type = "lookup"
+to = "ancient-tuna/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

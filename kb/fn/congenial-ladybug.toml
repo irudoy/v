@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00025d02"
+name = "congenial-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00025d02"

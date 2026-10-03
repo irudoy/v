@@ -1,0 +1,78 @@
+title = "Replace aggregate inhibit bits with active Power Balance mask"
+summary = """
+Apply the Power Balance replacement. It returns the aggregate input while \
+ffff41fb.bit6 is clear and returns cached service value ffff2b2c while that \
+bit is set."""
+note = [
+    """
+The replacement occurs after the global, DFCO, and count masks have been \
+ORed.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 46
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 491
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cuddly-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fluffy-salamander/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050a34"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a38"
+value = {named = ["0004ed88", "00050a34", "ffff2b2c", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a46"
+value = {named = ["0004ed88", "00050a34", "ffff2b2c", "ffff41fb"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

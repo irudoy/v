@@ -1,0 +1,235 @@
+summary = """
+Unsigned table-derived multiplier in a composite correction: the result is \
+stored in ffff2fc0 and enters a product together with ffff2fc1 in consumers \
+000474a4 and 0005444c."""
+note = [
+    """
+On the calculation branch, the result moves r0->r2 and is written to \
+ffff2fc0; the bypass branch writes 128, and the fault branch takes the first \
+byte of 00008995, also 128. Consumers use ffff2fc0 together with ffff2fc1. \
+Normalizations >>14 and >>21 apply to joint products and do not assign Q \
+bits unambiguously to individual multipliers. The multiplier role therefore \
+has code confidence, while individual scale x/128 remains candidate. The \
+correction's physical purpose is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "1"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 130
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+scale = [11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mini-wren/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "neat-aardwark/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mini-wren/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rugged-turkey/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "solid-peccary/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001233a"
+name = "archetypal-herring"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047410"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047412"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047414"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004741c"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004741e"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047422"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047424"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047428"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004742e"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047430"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047438"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00047430"
+value = {named = ["0001223a", "0001233a", "00012352", "00012dd2", "000474a4", "0005444c"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "neat-aardwark/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "rugged-turkey/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "solid-peccary/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "evasive-ibis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "mini-wren/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

@@ -1,0 +1,144 @@
+summary = """
+Accessor for 1D-8 map 0001296c by uint8 ffff106f. The lookup is written to \
+ffff1766 directly or after conditional normalization. Function 0006e490 uses \
+it as a multiplier in calculation ffff1300, while 0006e442 uses it in a \
+division-based conversion for ffff1f86."""
+note = ["The physical subsystem and multiplier unit are unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 318
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cobalt-fossa/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "smoky-mantis/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "scrupulous-yak/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "daring-mosquito/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nickel-adder/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olivine-corgi/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006e3d8"
+name = "burgundy-hawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3e8"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3ec"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3f2"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e40a"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e41a"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e426"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e440"
+value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "cobalt-fossa/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "smoky-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

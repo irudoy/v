@@ -1,0 +1,90 @@
+summary = """
+Feature lifecycle word initialized to exactly 0x4000 by 000593ac and read by \
+timing-state selector 0004afdc. The selector can reach feature table \
+000121a6 only when this unsigned word is strictly below 0x4000."""
+note = [
+    """
+A whole-application p-code census found one writer and one reader with no \
+unresolved candidates. The stock lifecycle value fails the selector \
+comparison at equality.""",
+]
+level = "code"
+unit = "feature state word"
+
+[[ledger]]
+registry = "vars"
+order = 563
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sincere-millipede/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2318"
+name = "cordial-seagull"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b044"
+value = {named = ["000121a6", "0004afdc", "000593ac", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b04a"
+value = {named = ["000121a6", "0004afdc", "000593ac", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593da"
+value = {named = ["000121a6", "0004afdc", "000593ac", "ffff2318"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

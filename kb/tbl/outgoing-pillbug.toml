@@ -1,0 +1,168 @@
+summary = """
+Alternative 1D-16 uint8 table unreachable in JK08A. If hypothetically \
+executed, its interpolated raw byte 0..128 would be written to ffff2f8d, but \
+a fixed ROM selector routes execution to adjacent map 00012282."""
+note = [
+    """
+Engineering conversion is unestablished. Retained hypothesis: a Q0.7 \
+coefficient at x/128, with raw 128 proposed as unity and editor inverse \
+x*128. Origin: the stored 128/zero row and the downstream joint-product \
+shift by 14. The joint shift permits compensating individual scales and does \
+not fix 128 as unity for this lookup. The stock-disabled alternative at \
+000122b2 is distinct from the selected adjacent table; a trace of that table \
+does not execute this one. Alternative 1D-16 uint8 table unreachable in \
+JK08A. If hypothetically executed, its interpolated raw byte 0..128 would be \
+written to ffff2f8d, but a fixed ROM selector routes execution to adjacent \
+map 00012282. Result disposition: dead_control_flow. Result target: \
+JK08A:Map:000122b2. Machine trace: 000b20d0 loads pointer 0000893f; 000b20d2 \
+executes mov.b and obtains actual JK08A byte 0xc0. At 000b20d4, tst #0x10,r0 \
+calculates 0xc0 & 0x10 = 0 and sets T=1; with T=1, 000b20d6 bt always \
+branches to 000b2128 for this ROM. Thus 000b20d8..000b2126 is skipped, \
+including the RAM-bit check of ffff41e5 at 000b20dc..000b20e0, loading \
+r4=000122b2 at 000b20e6, raw axis input from ffff10fa at 000b20e8, wrapper \
+00026388 call at 000b20ec, and result write to ffff2f8d at 000b20f6. The \
+hypothetical skipped path would read 1D-16 uint8 raw row \
+[128,128,128,128,128,128,128,128,128,0,0,0,0,0,0,0]; kernel 00026a84 selects \
+adjacent uint8 elements and finisher 00026740 performs unsigned linear \
+interpolation with a Q0.16 fraction and returns 0..128. The actual path at \
+000b2128 loads adjacent map 00012282 at 000b212c, calls the same wrapper at \
+000b2132, and writes its result to ffff2f8d at 000b213c. ffff2f8d has no \
+external readers for this accessor set, so the target map has no executable \
+sink or consumer in JK08A. Scale confidence: candidate. Scale blocking \
+condition: In JK08A, ROM byte at 0000893f is 0xc0. Site 000b20d2 loads it \
+into r0; `tst 0x10,r0` at site 000b20d4 sets T=1 because 0xc0 & 0x10 = 0, so \
+`bt` at site 000b20d6 necessarily branches to 000b2128. The branch bypasses \
+loading base 000122b2 at 000b20e6, wrapper call at 000b20ec, and result \
+write to ffff2f8d at 000b20f6. Inside 000b2096, ffff2f8d is later read as a \
+multiplier together with ffff2f94 followed by `>> 0xe`; this arithmetic is \
+compatible with two Q0.7 coefficients, but on the executable path ffff2f8d \
+receives the result of adjacent map 00012282 through 000b2132/000b213c \
+rather than target 000122b2. The consumer therefore does not form an \
+executable target-map trace and does not support scale_conf=code for it.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 126
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[symbol]]
+layout = "7mfk"
+address = "000122b2"
+name = "outgoing-pillbug"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000893f"
+value = "0xc0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d0"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d2"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d4"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d6"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d8"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20de"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20e0"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20e6"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20e8"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20ec"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20f6"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2128"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b212c"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2132"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b213c"
+value = {named = ["0000893f", "000122b2"], span = 1}
+key = "linked"

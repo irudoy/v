@@ -1,0 +1,140 @@
+summary = """
+One-bit current-cylinder mask for the low byte of POPCR. On the enabled APC \
+path it selects the PULSxSOE set action associated with GR11A; engine \
+inhibit ffff4198 bit 1 clears it."""
+note = [
+    """
+The manual proves output-high action on compare. Tooth 7 forms the mask as 1 \
+<< (ffff11de - 1), so bit c - 1 addresses cylinder c, and the ignition \
+advance moves only this set edge, which makes it the spark edge. The \
+external driver stage and cylinder-to-pin continuity remain hardware \
+boundaries.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 590
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_set_compare_continuation/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13bd"
+name = "invaluable-weasel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297de"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297f0"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029816"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029fda"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a96c"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aa00"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ac70"
+value = {named = ["00028ea2", "0002a892", "0002ab24", "ffff11de", "ffff13bd"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_set_compare_continuation/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

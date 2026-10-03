@@ -1,0 +1,126 @@
+summary = """
+Pressure word of builder 00053698, saturated to uint16. The normal path \
+forms ROM16[0x93C6] + arithmetic_shift7(ROM8[0x89FE]*uint16(ffff4524)); a \
+nonzero result of 00025e20(-1) selects literal 51865 instead. The builder \
+also forms ratio clamp(floor(P*256/51865), ROM8[0x83C4], 256) from the \
+unsaturated value."""
+note = [
+    """
+Stock ROM16[0x93C6] = 51865 equals the literal divisor and stock slope \
+ROM8[0x89FE] = 0, so the word is the constant 51865 and the ratio is 256.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 903
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-jackrabbit/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff517c"
+name = "wondrous-bumblebee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c4"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fe"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000093c6"
+value = "0xca99"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000536ce"
+value = {named = ["000083c4", "000089fe", "000093c6", "00053698", "ffff4524", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000536d0"
+value = {named = ["000083c4", "000089fe", "000093c6", "00053698", "ffff4524", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000536da"
+value = {named = ["000083c4", "000089fe", "000093c6", "00053698", "ffff4524", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053706"
+value = {named = ["000083c4", "000089fe", "000093c6", "00053698", "ffff4524", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053724"
+value = {named = ["000083c4", "000089fe", "000093c6", "00053698", "ffff4524", "ffff517c"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "placid-jackrabbit/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

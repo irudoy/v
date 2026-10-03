@@ -1,0 +1,181 @@
+summary = """
+Nonzero P0128 normalization parameter from RPM/12.5 curve 00015bf0. FUN \
+000b784e writes the uint16 lookup when it is nonzero and writes one when it \
+is zero; FUN 000b6b5a is the sole reader and passes the word to FUN \
+000b78da."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one reader. Every \
+stock cell of 00015bf0 is zero, so the stock value is one in JK03A and \
+JK08A. The physical meaning of the parameter is unresolved.""",
+]
+level = "code"
+unit = "P0128 parameter raw"
+
+[[ledger]]
+registry = "vars"
+order = 534
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refined-goose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prehistoric-boa/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uptight-duck/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35a0"
+name = "curvy-mandrill"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ccc"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cda"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7860"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b786c"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7874"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ae"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78b4"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78b6"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78bc"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c0"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c2"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c4"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c6"
+value = {named = ["00015bf0", "000b6b5a", "000b784e", "000b78da", "ffff35a0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "prehistoric-boa/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

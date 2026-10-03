@@ -1,0 +1,35 @@
+summary = """
+One of three factors in the map-read condition in 00052be8 together with \
+ffff2458 and ffff249d."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 183
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dainty-beagle/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2481"
+name = "sincere-myna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00045ca2"
+
+[[link]]
+type = "reader"
+to = "dainty-beagle/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

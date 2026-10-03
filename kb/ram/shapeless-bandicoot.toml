@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3976"
+name = "shapeless-bandicoot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003aea0"
+
+[[link]]
+type = "writer"
+to = "enchanted-cricket/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

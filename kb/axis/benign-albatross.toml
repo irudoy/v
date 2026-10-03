@@ -1,3 +1,32 @@
+note = [
+    """
+Row axis for cold/fallback exhaust-CVTC target surface 0000b2fa. FUN \
+000bfdc0 passes current RPM/50 byte ffff11ae directly to the 8x8 \
+interpolator. Stored points represent 800, 1000, 1200, 1600, 2000, 2400, \
+2800, and 3200 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 18
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012ec2"
@@ -7,6 +36,43 @@ name = "benign-albatross"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bfe00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfdf8"
+value = {named = ["00012ec2", "00026140", "00026944", "000bfdc0", "ffff11ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe00"
+value = {named = ["00012ec2", "00026140", "00026944", "000bfdc0", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "private-aardwolf/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "divergent-mongrel/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -31,3 +97,10 @@ supports = "identity"
 at = "jk00d:000c5ace"
 note = """
 engine-speed axis operand at the cold exhaust-target interpolation callsite"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

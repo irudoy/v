@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff152b"
+name = "cordial-auk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00051946"
+
+[[link]]
+type = "lookup"
+to = "outrageous-lynx/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

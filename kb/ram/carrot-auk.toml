@@ -1,0 +1,53 @@
+summary = """
+Crankshaft speed irregularity monitor threshold-array channel; comparison \
+ffff3102 <= ffff3820 is one of two conjuncts that shift a low bit into event \
+window ffff36f4, with ffff314a != -0x80 as the other."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 244
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "base"
+to = "amazing-pegasus/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2"
+offset = 0x2
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3102"
+name = "carrot-auk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000833be"
+
+[[link]]
+type = "base"
+to = "amazing-pegasus/ram"
+offset = 0x2
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,139 @@
+summary = """
+Bits 0 and 1 are the per-bank judged flags of FUN 00090d54, the P1080/P1086 \
+path (descriptor records 0x88 and 0x89). With ffff4184 bit 7 and ffff24ab \
+bit 3 set, the function sets bit b once timer ffff25f0 + b has expired while \
+cam edge phase snapshot ffff11c8 + b is at or below ROM8[00008e32]=254, and \
+then reports the record through 0007d8b8 once timer ffff25f2 + b has \
+expired. FUN 00090e02 clears both bits. Either bit blocks exhaust-VTC \
+operating enable ffff248b bit 2 in 000bf630."""
+note = [
+    """
+Family entry 00090e5e calls 00090d54 only under ROM8[000186f2] bits 5 and 4; \
+stock JK08A holds 0x07, so the function never runs and both bits stay \
+clear.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 885
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "merciful-wildebeest/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiritual-muskox/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2f64"
+name = "rigorous-numbat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e32=254"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e34"
+value = "0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e35"
+value = "0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186f2"
+value = "0x07"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090d9e"
+value = {named = ["00008e32", "00008e34", "00008e35", "000186f2", "00090d54", "00090e02", "000bf630", "ffff11c8", "ffff2f64"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090e4c"
+value = {named = ["00008e32", "00008e34", "00008e35", "000186f2", "00090d54", "00090e02", "000bf630", "ffff11c8", "ffff2f64"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00090ec6"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00090ed6"
+
+[[link]]
+type = "input"
+to = "garnet-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "merciful-wildebeest/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spiritual-muskox/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

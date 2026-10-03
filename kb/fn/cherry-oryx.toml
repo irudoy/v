@@ -1,0 +1,113 @@
+summary = """
+Conditional accessor for map 0x123B2: the computational branch converts \
+interpolated uint8 x to uint16 x*256 and writes ffff15cc; the bypass branch \
+writes 0."""
+note = ["The physical purpose of threshold ffff15cc is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 181
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sticky-chameleon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-gerbil/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00055648"
+name = "cherry-oryx"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556cc"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556ce"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556d2"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556d6"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556da"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556dc"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556de"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556e0"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556e2"
+value = {named = ["000123b2", "00026388", "00055648", "ffff106f", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"

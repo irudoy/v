@@ -1,0 +1,77 @@
+summary = """
+Load threshold byte of 0005651c: output of implicit map 00011ede on \
+ffff11b3, flat 254 in stock, compared with ffff102c to form ffff2474 bit 7."""
+level = "code"
+unit = "normalized BFS Q7"
+
+[[ledger]]
+registry = "vars"
+order = 750
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "frisky-beluga/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cooperative-caracara/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "frisky-beluga/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12e7"
+name = "crouching-hedgehog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005653e"
+value = {named = ["00011ede", "0005651c", "ffff12e7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056558"
+value = {named = ["00011ede", "0005651c", "ffff12e7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cooperative-caracara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

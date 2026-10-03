@@ -1,10 +1,70 @@
-note = """
+summary = """
+Signed Q8 timing-state word written by knock/high-detonation coordinator \
+000493e8. In the direct branch it is \
+int16(ffff1380+((low7(0x9A1A)-low7(0x9B1A))<<8)); alternate branches \
+slew-limit a selected Q8 state, apply a lower bound, and clamp positive \
+output to zero."""
+note = [
+    """
 The direct branch shifts the difference of the cells of \
 [[high_octane_timing_state/tbl]] and [[high_detonation_timing_state/tbl]], \
-one degree per count, left by 8, so one count of the word is 1/256 degree."""
+one degree per count, left by 8, so one count of the word is 1/256 degree.""",
+    """
+The direct formula requires ffff2469.bit7 clear and ffff2467.bit6 set. It is \
+not a universal interpretation of this word.""",
+]
+level = "code"
 width = 16
 unit = "deg"
 scale = "x/256"
+
+[[ledger]]
+registry = "vars"
+order = 584
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "signed Q8 state"
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curious-mustang/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glorious-spider/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "masked-inchworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_function/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -45,6 +105,20 @@ reads ROM16[0x9078] = 0x500 on 7mfk"""
 layout = "7mfk"
 address = "ffff121a"
 former = ["vegan-zebra/ram/7mfk-ffff121a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00049656"
+value = {named = ["000493e8", "0004d99c", "ffff121a", "ffff1380", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000496d8"
+value = {named = ["000493e8", "0004d99c", "ffff121a", "ffff1380", "ffff2467", "ffff2469"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -144,3 +218,40 @@ supports = "identity"
 at = "1me3b:00008a7d"
 value = "0x1c"
 note = "Bit 3 set enables the state-code selection of 000797cc"
+
+[[link]]
+type = "input"
+to = "curious-mustang/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "glorious-spider/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "masked-inchworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

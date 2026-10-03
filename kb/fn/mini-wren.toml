@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0005444c"
+name = "mini-wren"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005444c"

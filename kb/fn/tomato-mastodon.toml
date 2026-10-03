@@ -1,0 +1,43 @@
+summary = """
+Component where ffff4214 selects the source of local_34 and carries the \
+result of comparison >= 800."""
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 250
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "selector"
+to = "amaranth-wildebeest/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amaranth-wildebeest/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007b0a0"
+name = "tomato-mastodon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b0a0"
+
+[[link]]
+type = "selector"
+to = "amaranth-wildebeest/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,146 @@
+summary = """
+Paired accessor for 1D-8 multipliers 000126a0 and 000126a8. Their unsigned \
+lookups are multiplied and combine with \
+max(uint16[ffff15fc]-signed16[ffff15fe],0)*100 to form capped byte ffff1657. \
+Function 0004bb6a subtracts ffff1657>>4 from ffff22f8+ffff22fe and writes \
+saturated byte ffff23c5."""
+note = [
+    """
+Both maps contain only zeros, but the lookups and downstream branch are \
+live. The physical subsystem is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 313
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clever-woodlouse/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fat-crayfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "witty-panther/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aboriginal-dog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "finicky-shellfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-pelican/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purple-chihuahua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004ba48"
+name = "charming-warthog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bade"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bae6"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb08"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb0c"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb14"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb1a"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb1e"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb24"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "clever-woodlouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

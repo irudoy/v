@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1cda"
+name = "versatile-pigeon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074420"
+
+[[link]]
+type = "writer"
+to = "nifty-partridge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

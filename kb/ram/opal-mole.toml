@@ -1,0 +1,117 @@
+summary = """
+Signed Q0.16 blend result written by FUN 00074c08 from ffff18e8, ffff18e6, \
+and weight ffff2422. When any of three gates blocks blending, ffff18e8 is \
+copied. FUN 000752e4 consumes the result."""
+note = ["The physical quantity and engineering unit are unresolved."]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 503
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "scarlet-starling/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amazing-labradoodle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "brainy-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-honeybee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brass-barnacle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18f4"
+name = "opal-mole"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074c7c"
+value = {named = ["00074c08", "000752e4", "ffff18e6", "ffff18e8", "ffff18f4", "ffff2422"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "amazing-labradoodle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "brainy-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "saffron-honeybee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "opal-camel/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "scarlet-starling/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "brass-barnacle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

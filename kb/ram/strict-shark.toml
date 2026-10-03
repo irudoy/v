@@ -1,0 +1,106 @@
+summary = """
+Bank-2 rest-edge deviation 128 + clamp(ROM8[0000831e]=88 - ffff11c9, \
+-ROM8[00008834]..+ROM8[00008834]) formed by FUN 000bfad4 at 000bfb98 while \
+ffff246b bit 4 is set, with the same bound flag as ffff1376. FUN 000bced0 \
+initializes it to 0x80 at 000bd04a."""
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 824
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fat-dogfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "crimson-crane/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "auspicious-mussel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elastic-locust/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1377"
+name = "strict-shark"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831e=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008834=40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd04a"
+value = {named = ["0000831e", "00008834", "000bced0", "000bfad4", "ffff11c9", "ffff1377", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfb98"
+value = {named = ["0000831e", "00008834", "000bced0", "000bfad4", "ffff11c9", "ffff1377", "ffff246b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fat-dogfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "crimson-crane/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "auspicious-mussel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "elastic-locust/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

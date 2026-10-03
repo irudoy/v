@@ -1,0 +1,54 @@
+summary = """
+Developer-immobilizer monitor: reads bit 0 of ROM 0x8725 and engine inhibit \
+bit 1 of 0xffff4198 for diagnostic state."""
+note = ["The diagnostic path is not the only inhibit consumer."]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 362
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a3f96"
+name = "sturdy-echidna"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008725"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3fa6"
+value = {named = ["00008725", "000a3f96", "ffff4198"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3fac"
+value = {named = ["00008725", "000a3f96", "ffff4198"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "knowing-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

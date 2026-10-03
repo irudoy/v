@@ -1,0 +1,94 @@
+summary = """
+Rate-limited working fuel-multiplier value written by FUN 000556ec before \
+final publication. It remains intact when full inhibit mask ffff22e0=0x3f \
+forces published ffff22e6 to zero."""
+note = [
+    """
+The internal rate and bound behavior is code-visible; physical units remain \
+unresolved.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 550
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-malkoha/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_multiplier_publisher/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18e4"
+name = "vigorous-chihuahua"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055930"
+value = {named = ["000556ec", "000659ae", "ffff18e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055932"
+value = {named = ["000556ec", "000659ae", "ffff18e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005593c"
+value = {named = ["000556ec", "000659ae", "ffff18e4"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

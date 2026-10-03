@@ -1,8 +1,19 @@
+summary = """
+Implicit-axis primitive: 8 points, step 8192, limit 0xE000, uint16 element."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "implicit"
 kernel = "precise-koala/fn"
 cols = 8
 step = 8192
+
+[[ledger]]
+registry = "funcs"
+order = 79
+fields = ["role", "semantics", "confidence"]
+identity = [0]
 
 [[symbol]]
 layout = "1nd"
@@ -25,6 +36,11 @@ at = "1nd:00028824"
 layout = "7mfk"
 address = "000263d8"
 name = "urban-potoo"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"

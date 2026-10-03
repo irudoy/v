@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000718d8"
+name = "splendid-beaver"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000718d8"

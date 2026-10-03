@@ -1,0 +1,164 @@
+summary = """
+Indexed minimum threshold for unsigned 16-bit RAM value ffff1814. \
+FUN_000b5c36 continues the branch through 000b5f54 only when RAM[ffff1814] \
+>= lookup(00015640); for a lower value, it branches through 000b5f50 to \
+000b627c. All 8 nodes equal 65535, so in the current calibration the \
+continuation condition is equivalent to RAM[ffff1814] == 65535."""
+note = [
+    """
+There is no separate ROM axis, so axes is empty. Write ffff344e is an \
+associated copy of the result, but the comparison uses the same r5 directly. \
+ffff344e has no external readers. The physical quantity of ffff1814 is \
+unknown; code does not prove that value 65535 is unreachable, so the branch \
+is not classified as dead. Index: 1D-8 with an implicit uniform axis and Q8 \
+coordinate q. For s=uint8(RAM[ffff2736]): q=0 when s<31; \
+q=floor((s-30)*32/10)*256 when 31<=s<100; q=65280 when s>=100. q is passed \
+in r5; wrapper 000263d8 selects the last node for q>=57344. Output trace: \
+00015640 -> 000b5f30:r4 -> 000b5f38:call 000263d8 -> 00026a60 -> 00026740 -> \
+r0 -> 000b5f3c:r5; r5 -> 000b5f42:RAM[ffff344e], with no external readers; \
+same r5 -> 000b5f44:extu.w -> 000b5f4c:cmp/ge with r6, loaded from ffff1814 \
+at 000b5f48 and extended at 000b5f4a -> 000b5f4e/000b5f50. Result \
+disposition: inline_comparison; Result target: site 000b5f4c.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 431
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "melodic-antelope/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015640"
+name = "jumping-kingfisher"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "65535"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f00"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f0e"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f1c"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f28"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f30"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f38"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f3c"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f42"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f44"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f48"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f4c"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f50"
+value = {named = ["00015640", "000263d8", "00026740", "00026a60", "000b5c36"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "melodic-antelope/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

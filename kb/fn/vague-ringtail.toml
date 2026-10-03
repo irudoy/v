@@ -1,0 +1,191 @@
+summary = """
+Selects Knock Sensor Circuit Monitor Surface B 0xABFA or Surface A 0xABBA \
+when byte[ffff3427] > byte[0x8796], with ROM threshold 0x5F=95; interpolates \
+shared axes 0x12BE2/0x12BEA and writes the monitor coefficient to ffff338a."""
+note = [
+    """
+The output enters chain ffff338a -> ffff3334 -> ffff4204.bit3 -> DTC \
+P0327/P0328/P0332/P0333. The physical meaning of selector ffff3427 and the \
+coefficient unit are unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[diagnostic]]
+id = "knock-monitor-accessor-p0327"
+kind = "monitor"
+label = "DtcCode"
+key = "P0327"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bc4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+The accessor supplies the coefficient consumed by the exact JK08A \
+P0327/P0328/P0332/P0333 diagnostic chain."""
+
+[[diagnostic.evidence]]
+kind = "unverified-site"
+at = "7mfk:000a45ec"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "vague-ringtail/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic]]
+id = "knock-monitor-accessor-p0328"
+kind = "monitor"
+label = "DtcCode"
+key = "P0328"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bd0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+The accessor supplies the coefficient consumed by the exact JK08A \
+P0327/P0328/P0332/P0333 diagnostic chain."""
+
+[[diagnostic.evidence]]
+kind = "unverified-site"
+at = "7mfk:000a45ec"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "vague-ringtail/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic]]
+id = "knock-monitor-accessor-p0332"
+kind = "monitor"
+label = "DtcCode"
+key = "P0332"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bdc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+The accessor supplies the coefficient consumed by the exact JK08A \
+P0327/P0328/P0332/P0333 diagnostic chain."""
+
+[[diagnostic.evidence]]
+kind = "unverified-site"
+at = "7mfk:000a45ec"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "vague-ringtail/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic]]
+id = "knock-monitor-accessor-p0333"
+kind = "monitor"
+label = "DtcCode"
+key = "P0333"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019be8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+The accessor supplies the coefficient consumed by the exact JK08A \
+P0327/P0328/P0332/P0333 diagnostic chain."""
+
+[[diagnostic.evidence]]
+kind = "unverified-site"
+at = "7mfk:000a45ec"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "vague-ringtail/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 54
+binding = "knock-monitor-accessor-p0327"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 55
+binding = "knock-monitor-accessor-p0328"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 56
+binding = "knock-monitor-accessor-p0332"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 57
+binding = "knock-monitor-accessor-p0333"
+
+[[ledger]]
+registry = "funcs"
+order = 275
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "soft-pronghorn/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tuscan-porcupine/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nano-kangaroo/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mega-sheep/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a52e4"
+name = "vague-ringtail"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008796"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a52f8"
+value = {named = ["00008796", "0000abba", "0000abfa", "000a52e4", "ffff338a", "ffff3427"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "nano-kangaroo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

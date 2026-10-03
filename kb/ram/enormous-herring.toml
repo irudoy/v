@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff39c4"
+name = "enormous-herring"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020d04"
+
+[[link]]
+type = "writer"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

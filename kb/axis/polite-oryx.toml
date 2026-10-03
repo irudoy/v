@@ -1,0 +1,28 @@
+note = [
+    """
+Shared axis for nonzero gate curve 000122d2. FUN 0004121c and FUN 00041750 \
+pass uint16[ffff11f0], while FUN 0004776c passes uint16[ffff11b8]. Stored \
+points span 0..576. Code proves both coordinate sources; their physical \
+quantities and engineering scales are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 58
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014d2a"
+name = "polite-oryx"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041296"

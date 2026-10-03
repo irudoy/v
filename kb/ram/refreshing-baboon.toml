@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff19f6"
+name = "refreshing-baboon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064aba"
+
+[[link]]
+type = "writer"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

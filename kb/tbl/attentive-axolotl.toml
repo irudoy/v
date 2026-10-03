@@ -1,3 +1,24 @@
+summary = """
+Conditional stage-1 DFCO entry-delay table. FUN 0004fe9c interpolates it \
+from clamp(max(vehicle-speed snapshot ffff110e - 6,0)*8,0,255), places the \
+result in the high byte of its returned delay word, and FUN 000503e0 loads \
+that byte into countdown timer ffff2571."""
+note = [
+    """
+All 16 cells equal 60. Stock ROM8[0000870c].bit7 is clear, so this table is \
+selected only by the non-stock bit7 branch with ffff2468.bit7 set, warm \
+coolant, and RPM below 3000. The timer decrements once per DFCO scheduler \
+event. Its exact period is 204800/Pphi seconds; passive target-CAN \
+timestamps establish 10.24 ms/count on JK08A. Result disposition: \
+state_timer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "DFCO scheduler counts"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "DFCO Conditional Entry Delay"
 category = "Fuelling / Deceleration Fuel Cut"
@@ -7,7 +28,118 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 115
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_entry_delay_select/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "competent-scorpion/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-snail/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000120f6"
 name = "attentive-axolotl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff3a"
+value = {named = ["000120f6", "00026388", "0004fe9c", "000503e0", "ffff110e", "ffff14bd", "ffff2571"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff3e"
+value = {named = ["000120f6", "00026388", "0004fe9c", "000503e0", "ffff110e", "ffff14bd", "ffff2571"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff42"
+value = {named = ["000120f6", "00026388", "0004fe9c", "000503e0", "ffff110e", "ffff14bd", "ffff2571"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff6c"
+value = {named = ["000120f6", "00026388", "0004fe9c", "000503e0", "ffff110e", "ffff14bd", "ffff2571"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff70"
+value = {named = ["000120f6", "00026388", "0004fe9c", "000503e0", "ffff110e", "ffff14bd", "ffff2571"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_entry_delay_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

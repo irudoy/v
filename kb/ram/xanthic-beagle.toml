@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff19a8"
+name = "xanthic-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046db4"
+
+[[link]]
+type = "lookup"
+to = "nimble-hornet/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

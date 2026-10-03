@@ -1,0 +1,104 @@
+summary = """
+Bank 2 word of the third fuel-trim array that starts at ffff2a24: Q8.8 \
+percent with neutral 0x6400, written by init routine 0002c648, stepper \
+0005b534, and reset function 0005b708, and consumed by FUN 0004ead4 for \
+parity base ffff191e."""
+note = ["Bounds and step constants are shared with ffff2a24."]
+level = "code"
+unit = "percent*256"
+
+[[ledger]]
+registry = "vars"
+order = 909
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dexterous-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "true-quokka/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a26"
+name = "illustrious-peccary"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c97c"
+value = {named = ["0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a26"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b6f4"
+value = {named = ["0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a26"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b792"
+value = {named = ["0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a26"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dexterous-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "true-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

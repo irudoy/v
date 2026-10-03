@@ -1,0 +1,77 @@
+summary = """
+CYLR7C, the ATU-II channel-7C cycle register. FUN 000cd75c programs it with \
+125*ROM8[00008dfd] as the exhaust-VTC PWM period; FUN 000c2152 reprograms it \
+on the alternate path."""
+note = [
+    """
+Register identity comes from the SH7058S hardware manual channel-7 register \
+list.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 740
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "precise-angelfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "striped-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff58c"
+name = "complex-hummingbird"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfd=20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c21bc"
+value = {named = ["00008dfd", "000c2152", "000cd75c", "fffff58c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd82a"
+value = {named = ["00008dfd", "000c2152", "000cd75c", "fffff58c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-cylr7"
+
+[[link]]
+type = "writer"
+to = "precise-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "striped-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

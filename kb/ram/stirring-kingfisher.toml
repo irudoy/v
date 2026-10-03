@@ -1,0 +1,105 @@
+summary = """
+Clean-release flags of the exhaust-VTC banks, bits 0 and 1. FUN 000bfe88 \
+sets bit b on the pass that clears bank-enable bit b of ffff1246 while \
+previous-pass bit ffff1284 bit b is set and engine-speed byte ffff11ae lies \
+inside ROM8[00008e15]=44..ROM8[00008e14]=80 (2200 to 4000 RPM), clears it on \
+a release outside that window, and clears both bits while demand flag \
+ffff24a7 bit 3 is set. The learning capture and both learning requests \
+require the flags."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 917
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eminent-cobra/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c7e"
+name = "stirring-kingfisher"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e14=80"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e15=44"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0880"
+value = {named = ["00008e14", "00008e15", "000bfe88", "ffff11ae", "ffff1284", "ffff1c7e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c08e8"
+value = {named = ["00008e14", "00008e15", "000bfe88", "ffff11ae", "ffff1284", "ffff1c7e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "eminent-cobra/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

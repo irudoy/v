@@ -1,6 +1,154 @@
+summary = """
+Bank 2 short-term fuel-trim word in Q8.8 percent representation. FUN \
+0005c910 normally copies working word ffff40ae here; UDS DID 0x1124 returns \
+the high byte and J1979 PID 0x08 converts the complete word by division by \
+200."""
+note = [
+    """
+Neutral is 0x6400 = 100 percent. The bank mapping is established \
+independently by standard PID 0x08 and exact UDS pointer data.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x/256-100"
+
+[[diagnostic]]
+id = "short-term-fuel-trim-bank-2-did-1124"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221124"
+claim = {label = "ParameterDefinition", id = "obd2tools-d27c9a2:pids-nissan-py:l0028-l0028:entry-0014:parameter:stft-b2-221124-9661ad52"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 table maps DID 0x1124 to the high byte of \
+Q8.8-percent word ffff22de. Exact Mode 01 code maps the same word to \
+standard PID 0x08 as min(255, floor(word/200)), proving short-term fuel trim \
+bank 2. The community display formula raw-100 and firmware initialization at \
+0x6400 agree on neutral raw 100."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0002273c"
+value = "ffff22de"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00035c88"
+value = {named = ["00021bbc", "0002273c", "0002f928", "0003235c", "00035856", "000593ac", "0005c910", "0005cbec", "9661ad52", "ffff22de"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0005ca4a"
+value = {named = ["00021bbc", "0002273c", "0002f928", "0003235c", "00035856", "000593ac", "0005c910", "0005cbec", "9661ad52", "ffff22de"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ultra-gecko/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_trim_init/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "strong-tarsier/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "divergent-grasshopper/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 40
+binding = "short-term-fuel-trim-bank-2-did-1124"
+
+[[ledger]]
+registry = "vars"
+order = 137
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*256"
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rousing-rhino/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "groovy-ape/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "divergent-grasshopper/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +180,33 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff22de"
 former = ["divergent-salamander/ram/7mfk-ffff22de"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002273c"
+value = "ffff22de"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035c88"
+value = {named = ["0002273c", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca3c"
+value = {named = ["0002273c", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca4a"
+value = {named = ["0002273c", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +244,52 @@ to = "7mfk:00035c64"
 count = 1
 value = 21
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "groovy-ape/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

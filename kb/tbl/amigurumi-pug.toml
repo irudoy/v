@@ -1,0 +1,123 @@
+summary = """
+Strict upper bound of the window lower <= high_byte(u16 ffff1024) < upper: \
+upper is the lookup byte in ffff357c; lower is ffff357d from paired map \
+00012e62."""
+note = [
+    """
+Identity confidence: candidate. Accessor 000a6838 binds the RPM byte \
+ffff11b3, map 00012e52, and implicit uint8 wrapper 00026388, then stores \
+ffff357c in the return delay slot at 000a6852. Local consumers \
+000a68f4..000a6922 and 000a6afa..000a6b28 reject values below ffff357d or \
+at/above ffff357c. All 16 stock upper-bound samples are 255, so high byte \
+255 fails the window. The regression gate covers the source lookup and both \
+interval checks, not their later diagnostic completion paths.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 228
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012e52"
+name = "amigurumi-pug"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+key = "test_12e52_strict_upper_load_bound"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a683e"
+value = {named = ["00012e52"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6840"
+value = {named = ["00012e52"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6844"
+value = {named = ["00012e52"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6852"
+value = {named = ["00012e52"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a68f8"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6902"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a690c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6916"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a691e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6afe"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6b08"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6b12"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6b1c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6b24"
+
+[[link]]
+type = "reader"
+to = "merry-dachshund/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

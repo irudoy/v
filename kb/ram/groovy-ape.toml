@@ -1,0 +1,91 @@
+summary = """
+Working bank 2 closed-loop fuel-correction word written by FUN 0005cbec and \
+copied by FUN 0005c910 to ffff22de on the normal path."""
+note = ["The bank mapping follows the downstream standard PID and UDS paths."]
+level = "code"
+unit = "percent*256"
+
+[[ledger]]
+registry = "vars"
+order = 149
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-grasshopper/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-tarsier/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff40ae"
+name = "groovy-ape"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca46"
+value = {named = ["0005c910", "0005cbec", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca4a"
+value = {named = ["0005c910", "0005cbec", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d64a"
+value = {named = ["0005c910", "0005cbec", "ffff22de", "ffff40ae"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "stft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "strong-tarsier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

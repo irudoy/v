@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11b8"
+name = "mauve-skua"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00045aca"
+
+[[link]]
+type = "reader"
+to = "solid-jaguarundi/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

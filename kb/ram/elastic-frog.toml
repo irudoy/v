@@ -1,0 +1,190 @@
+summary = """
+Bank-2 exhaust-VTC control-mode byte at window offset 0x891 of base \
+ffff128c. FUN 000c1dec moves it between 0, 1, and 2 under ffff248b bits 0/2 \
+and bit 1 of ffff1246; FUN 000c2040 selects the duty output by it."""
+note = [
+    """
+Same transition table as ffff1b1c with the bank-2 duty word ffff1aae and \
+enable bit 1.""",
+]
+level = "code"
+unit = "mode"
+
+[[ledger]]
+registry = "vars"
+order = 760
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 5, 6, 7, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2193"
+offset = 0x891
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_duty_b2_word/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "ambitious-condor/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orange-hamster/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "0x891"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1b1d"
+name = "elastic-frog"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000c1dfa"
+value = 2193
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_indexed_mode_byte_paths"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e06"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e32"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e66"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e92"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1eb4"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20e4"
+value = {named = ["000c1dec", "000c1dfa", "000c2040", "ffff1246", "ffff128c", "ffff1aae", "ffff1b1d", "ffff248b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x891
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_duty_b2_word/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "ambitious-condor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

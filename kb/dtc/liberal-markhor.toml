@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control performance bank 1"
+level = "code"
+code = "P0014"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 39
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d38"
+name = "liberal-markhor"
+index = 210
+attribute = "000162aa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162aa"
+value = "0020"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d38"
+value = "370100000000001400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a494"
+value = "000162aa"

@@ -1,0 +1,144 @@
+summary = """
+Bank 1 word of the two-word third fuel-trim array in Q8.8 percent \
+representation with neutral 0x6400. Init routine 0002c648 and reset function \
+0005b708 store 0x6400; FUN 0005b534 steps the word by ROM-defined \
+increments, bounds it to ROM8[0x82E4] << 8..ROM8[0x82E5] << 8, and otherwise \
+ramps accumulator ffff3310 toward 0x6400 by ROM8[0x86F5] per pass. FUN \
+0004ead4 adds the word to the short-term and long-term trims before scaling \
+precursor ffff18c0."""
+note = [
+    """
+Stock bounds are 90 and 110 percent. When ROM8[0x8B2A] bit 2 is set both \
+writers also copy the result to bank 2 word ffff2a26; stock value 0x09 keeps \
+the banks independent. The physical source of the correction is \
+unresolved.""",
+]
+level = "code"
+unit = "percent*256"
+
+[[ledger]]
+registry = "vars"
+order = 908
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dexterous-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "true-quokka/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a24"
+name = "astonishing-hoatzin"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000082e4"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000082e5"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086f5"
+value = "0x08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c976"
+value = {named = ["000082e4", "000082e5", "000086f5", "00008b2a", "0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b5ae"
+value = {named = ["000082e4", "000082e5", "000086f5", "00008b2a", "0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b6f0"
+value = {named = ["000082e4", "000082e5", "000086f5", "00008b2a", "0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b77c"
+value = {named = ["000082e4", "000082e5", "000086f5", "00008b2a", "0002c648", "0004ead4", "0005b534", "0005b708", "ffff2a24"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dexterous-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "true-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

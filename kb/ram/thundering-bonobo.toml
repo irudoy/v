@@ -1,0 +1,110 @@
+summary = """
+ICI0A byte-cell ratio action for independent unsigned interval operands: \
+while ffff8505.bit7 is set, write 255 for zero current interval or min(255, \
+floor(64 * previous / current)) through divider 00021bbc; otherwise retain \
+the cell. Handler 00028ea2 reads the unsigned byte at 0002927c and compares \
+it against ROM8[00008c89] = 118. The divider is an arithmetic dependency, \
+not a direct cell reader."""
+note = [
+    """
+Placement is ffff128c + 0x6e0; MOV.B writer 000290cc and reader 0002927c \
+belong to entry 00028ea2. The bounded proof excludes the interval measuring \
+producer, complete ISR execution, physical tooth/time units, and hardware \
+behavior; see defs/JK08A.ici0a-ratio.md.""",
+]
+level = "code"
+unit = "ratio*64"
+
+[[ledger]]
+registry = "vars"
+order = 894
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 5, 1, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "0x6e0"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff196c"
+name = "thundering-bonobo"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00028f06"
+value = 1760
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c89"
+value = "0x76"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000290b4"
+value = {named = ["00008c89", "00021bbc", "00028ea2", "00028f06", "ffff196c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000290cc"
+value = {named = ["00008c89", "00021bbc", "00028ea2", "00028f06", "ffff196c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002927c"
+value = {named = ["00008c89", "00021bbc", "00028ea2", "00028f06", "ffff196c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,35 @@
+summary = """
+Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. \
+Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation \
+threshold and row 1 is the exclusive release boundary. Stock delay zero \
+makes activation immediate. Active state bit 2 of ffff2497 reaches periodic \
+index-27 coordinator 0004ed88 and contributes full global mask 0x3f."""
+note = [
+    """
+The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 \
+RPM in column 1. Activation occurs at RPM >= threshold; equality to the \
+release value retains cut and release requires RPM below it. \
+ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the \
+stock path. The public HR A2L catalog supplies the candidate Normal/Reverse \
+column labels. A JK08A vehicle session on 2026-09-21 ran column 0 from the \
+Map 3 slot copy, whose release word is 604: eight activations and eight \
+releases of the full 0x3f mask bound the compared activation word to 612 = \
+7650 RPM and the release word to 604..606 = 7550..7575 RPM, and stock \
+release word 596 cannot produce a release whose lower captured RPM word is \
+599..603. Column 1 and injector-terminal shutoff remain outside that \
+measurement.""",
+]
+level = "code"
+role = "table"
+access = "direct-row-major"
+cols = 2
+rows = 2
+storage = "uint16"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "silicon"
+
 [editor]
 name = "Engine Speed Limit - Fuel Cut"
 category = "Limiters / Engine Speed / Driving"
@@ -11,10 +43,244 @@ static_axis_x_name = "State"
 static_axis_y = ["Cut", "Restore"]
 static_axis_y_name = "Fuel"
 
+[[ledger]]
+registry = "findings"
+order = 24
+fields = [
+    "family",
+    "width",
+    "height",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+scale = [19, 20, 21, 22, 23, 24, 25, 26, 27]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_inhibit/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000934e"
 former = ["stereotyped-nuthatch/tbl/7mfk-0000934e"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c69"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000934e"
+value = "0x0264"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009350"
+value = "0x0254"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009352"
+value = "0x0254"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009354=0x0170"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219dc"
+value = "0004ed88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f294"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2b0"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2b2"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2b8"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2c0"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2c2"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2c8"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ca"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2cc"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ce"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2e2"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ee"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f316"
+value = {named = ["00008c69", "0000934e", "00009350", "00009352", "00009354", "00020dfe", "000219dc", "000384fe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497"], span = 8}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "368*12.5=4600"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4600/12.5=368"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "596*12.5=7450"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "612*12.5=7650"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "7450/12.5=596"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "7650/12.5=612"
+
+[[symbol.evidence]]
+kind = "hardware"
+supports = "scale"
+key = "main_fuel_cut.vehicle_2026_09_21"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -73,3 +339,32 @@ of the source 2x2 table"""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006aeb8"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

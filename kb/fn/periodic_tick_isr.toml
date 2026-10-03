@@ -1,0 +1,218 @@
+title = "ATU-II channel 3 periodic tick and scheduler-divider ISR"
+summary = """
+ATU-II channel 3 periodic interrupt handler and scheduler-flag producer. \
+Every invocation advances GR3A by 0x140 timer counts and sets ffff84b9 bit \
+7; a modulo-4 phase sets bit 6 every second invocation and bit 5 every \
+fourth, while a modulo-10 phase sets bits 4 and 2 every tenth. On the tenth \
+phase it decrements every nonzero cell of the 10.24 ms blocks: bytes \
+ffff256a..ffff25f3, including DFCO timers ffff2571..ffff2573, \
+stationary-limiter timer ffff258a, and exhaust-VTC settle countdown \
+ffff25e7, 10 words at ffff2604, bytes ffff43c7..ffff4489, and 34 words at \
+ffff44c0. Two nested modulo-10 phases decrement the 102.4 ms blocks (bytes \
+ffff24f9..ffff2569 and ffff42d3..ffff43c6, 12 words at ffff44a8) and the \
+1.024 s blocks (bytes ffff24d4..ffff24f8 and ffff4258..ffff42d2, word \
+ffff2602, 7 words at ffff449a). It then calls FUN 000209d8 and returns with \
+RTE. It also ORs 0x80 into tick-flag byte ffff84c4 at 00020734, which \
+scheduler 00020dfe snapshots into ffff84c3 on every pass."""
+note = [
+    """
+Normal initialization sets PSCR1=1 and TCR3=5, giving timer input Pphi/64. \
+The base period is exactly 20480/Pphi seconds and the tenth-phase byte-timer \
+period is 204800/Pphi. Passive target-CAN timestamps establish Pphi=20 MHz \
+and 10.24 ms per count. The block bounds are the literals at \
+00020660..0002066c and 000208dc..000208f4. The 102.4 ms byte blocks carry \
+exhaust-VTC monitor timers ffff43be, ffff43c2, ffff43c3, ffff42e7, ffff42f6, \
+ffff430a, ffff2568, ffff2535, ffff2536, and ffff2539.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 0
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 6
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "affable-prawn/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "artichoke-quail/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "authentic-monkey/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "competent-scorpion/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "illustrious-narwhal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "kind-stallion/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magic-viper/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prehistoric-polecat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rousing-reindeer/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silent-elephant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002040c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00020420=0x0140"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020420"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002046e"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002047e"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002048e"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000204a0"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00020660"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020734"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000208aa"
+value = {named = ["0002040c", "000209d8", "0002718a", "000274ac", "ffff2571", "ffff2572", "ffff2573", "ffff258a", "ffff25e7", "ffff43be", "ffff84b9", "ffff84c4", "ffff9f1a", "ffff9f1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000208dc"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "just-pelican/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "atu2_prescaler_init/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

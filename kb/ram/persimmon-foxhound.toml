@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff27b5"
+name = "persimmon-foxhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00038ab0"

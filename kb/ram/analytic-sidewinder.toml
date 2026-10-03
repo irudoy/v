@@ -1,0 +1,141 @@
+summary = """
+Bits 0 and 1 are the per-bank flags of FUN 00090bd2, a third P0014/P0024 \
+path. With ffff24a7 bit 4 set, conditioned target ffff2327 at 0x80, the bank \
+bit of ffff48df set, and duty word ffff1aac + 2b zero, the function sets bit \
+b while cam edge phase snapshot ffff11c8 + b exceeds the high byte of \
+reference word ffff5578 + 2b by at least ROM8[0000895e]=254 and clears it \
+below that; once timer ffff2539 + b has expired it stores record 0xd2 or \
+0xd3 through 0008c2d2 and 0007d8b8. FUN 00090e02 clears both bits. Either \
+bit blocks exhaust-VTC operating enable ffff248b bit 2 in 000bf630."""
+note = [
+    """
+Family entry 00090e5e calls 00090bd2 only under ROM8[000186f1] bits 3 and 2; \
+stock JK08A holds 0xf0, so the function never runs and both bits stay clear. \
+The difference is stored in ffff16bd + b.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 886
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loose-frigatebird/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiritual-muskox/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14b8"
+name = "analytic-sidewinder"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088d2"
+value = "5"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000895e=254"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186f1"
+value = "0xf0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090c6c"
+value = {named = ["000088d2", "0000895e", "000186f1", "00090bd2", "00090e02", "000bf630", "ffff11c8", "ffff14b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090d3e"
+value = {named = ["000088d2", "0000895e", "000186f1", "00090bd2", "00090e02", "000bf630", "ffff11c8", "ffff14b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090e24"
+value = {named = ["000088d2", "0000895e", "000186f1", "00090bd2", "00090e02", "000bf630", "ffff11c8", "ffff14b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00090e80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00090e90"
+
+[[link]]
+type = "input"
+to = "garnet-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "loose-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spiritual-muskox/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

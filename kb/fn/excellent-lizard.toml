@@ -1,0 +1,40 @@
+role = "service"
+contract = """
+Unsigned 16/16 division: r0 = (r1 & 0xFFFF) / (r0 & 0xFFFF), with the result \
+zero-extended to 32 bits. Wide inputs are silently truncated: divisor \
+0x10003 acts as 3. It clobbers r1 and preserves r2-r15. On division by zero \
+it writes 0x0000044E to 0xFFFF9818 and returns 0."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 32
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00021dd0"
+name = "excellent-lizard"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00021e0c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000b769c"
+value = {named = ["00021dd0", "00021e0c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021dd0"

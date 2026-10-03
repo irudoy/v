@@ -1,3 +1,29 @@
+summary = """
+Unsigned 1D table of quantity m that limits reduction of state ffff17c0. \
+When t<p and bit 0x20 of register ffff2458 is clear, code writes 0 for p<m, \
+otherwise max(t,p-m); p is previous ffff17c0, and t is uint16-saturated \
+value uVar10<<3. On the other branches, m does not affect the write."""
+note = [
+    """
+The map is selected when the low byte of uVar8 lies within inclusive range \
+PTR_DAT_00074fb8[1]..PTR_DAT_00074fb8[0]; the other branch uses adjacent \
+00014314. The lookup result is copied r0->r6 at 00074f48 and compared with \
+previous ffff17c0 at 00074f70. ffff17c0 has no external readers, but the \
+write is reachable. The physical quantity and unit are unknown. Index: \
+implicit 1D-8 uint16; idx=(ffff1210<<7)&0xffff when ffff1210<0x0200, \
+otherwise idx=0xffff; 000263d8 returns element 7 for idx>=0xe000, otherwise \
+calls 00026a60 and linear finisher 00026740. Output trace: 00014304 -> \
+00074e4e -> 00074f36 -> 000263d8 -> (00026a60 -> 00026740 for idx < \
+0000e000; direct element 7 in 000263d8 otherwise) -> 00074f48 -> 00074f70 -> \
+ffff17c0. Result disposition: writes; Result target: ffff17c0.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "State Decrease Limit A - raw u16 (0x14304)"
 category = "Internal Calculations"
@@ -7,10 +33,108 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 422
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cocky-wildebeest/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-taipan/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-peacock/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014304"
 name = "enchanted-tuatara"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f36"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f48"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f58"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f5c"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f64"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f6c"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f70"
+value = {named = ["00014304", "000263d8", "00026740", "00026a60", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -41,3 +165,19 @@ value = "00016716"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "jasper-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cocky-wildebeest/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,143 @@
+summary = """
+Accelerator-pedal high-state comparator. It compares normalized dual-channel \
+sample ffff266e with ROM16[00008fdc]=610 when previous-cycle state ffff246d \
+bit 7 is clear and with ROM16[00008fde]=528 when that state is set. The \
+result is written to current state ffff246a bit 7."""
+note = [
+    """
+Scheduler 00020dfe copies ffff246a to ffff246d once per cycle, closing \
+activation/release hysteresis. The input producer traces to A/D channels \
+AN10 and AN17. Exact diagnostic bindings identify the paired analog \
+subsystem as accelerator-pedal sensors; no engine-speed path reaches this \
+comparison.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 141
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aloof-swine/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "merciful-lionfish/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mini-kiwi/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00047a56"
+name = "remarkable-lynx"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8a"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8e"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b94"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b96"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b9a"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba2"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba4"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba6"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bae"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bb2"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "selector"
+to = "merciful-lionfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

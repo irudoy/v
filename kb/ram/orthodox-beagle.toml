@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c0a"
+name = "orthodox-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b1e88"
+
+[[link]]
+type = "lookup"
+to = "impetuous-finch/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

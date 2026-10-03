@@ -1,0 +1,112 @@
+summary = """
+Working bank 1 MAF-curve output copied from ffff1054 by FUN 0003a982. It \
+feeds the per-bank filter pipeline and total-MAF producer 0003b27e."""
+level = "code"
+unit = "raw MAF quantity"
+
+[[ledger]]
+registry = "vars"
+order = 474
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sandy-chameleon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wondrous-camel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vague-pony/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brass-ammonite/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1058"
+name = "precious-adder"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a990"
+value = {named = ["0003a982", "0003a9aa", "0003b27e", "ffff1054", "ffff1058"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a998"
+value = {named = ["0003a982", "0003a9aa", "0003b27e", "ffff1054", "ffff1058"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b296"
+value = {named = ["0003a982", "0003a9aa", "0003b27e", "ffff1054", "ffff1058"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "vague-pony/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "wealthy-woodlouse/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sandy-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "wondrous-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "brass-ammonite/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

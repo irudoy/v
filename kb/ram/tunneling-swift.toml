@@ -1,0 +1,182 @@
+summary = """
+Multipurpose state byte written every pass by FUN 0007724c from TCM field \
+ffff3a2e: value 3 sets bits 3 and 4, value 5 sets bits 3 and 5, value 6 sets \
+bits 3 and 6, value 7 sets bits 3 and 7, and every other value clears bits \
+3..7. FUN 000c4460 recomputes bit 2 from an independent status bit. \
+Scheduler FUN 00020dfe latches the byte into ffff418f."""
+note = [
+    """
+FUN 0007724c is the first call of FUN 00079de4 (pointer 00079e18), entry 58 \
+of the 69-entry table at 00021834 that dispatcher 000209d8 drains on \
+ffff84b9 bit 4. Reader FUN 0002e0d4 is independent.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 801
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gleaming-bettong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amphibian-frigatebird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prehistoric-horse/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "psychedelic-lizard/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff419b"
+name = "tunneling-swift"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021096"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077272"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077278"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077288"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007728e"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077298"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007729e"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000772a8"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000772ae"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000772b2"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4476"
+value = {named = ["00020dfe", "0007724c", "000c4460", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "prehistoric-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "gleaming-bettong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amphibian-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "psychedelic-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

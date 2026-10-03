@@ -1,6 +1,168 @@
+summary = """
+Bank 1 long-term fuel-trim diagnostic word in Q8.8 percent representation. \
+FUN 00057b26 combines selected learned cell ffff2306 with adjustment \
+ffff5648 around neutral 0x6400, applies limits and fail-safe neutralization, \
+and writes this word. UDS DID 0x1125 returns its high byte; J1979 PID 0x07 \
+converts the complete word."""
+note = [
+    """
+The stock normal-path clamp is 90..110 percent from ROM bytes 0x8e5b and \
+0x8e5a. Other gates may bypass this clamp or force 100 percent.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x/256-100"
+
+[[diagnostic]]
+id = "long-term-fuel-trim-bank-1-did-1125"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221125"
+claim = {label = "ParameterDefinition", id = "obd2tools-d27c9a2:pids-nissan-py:l0029-l0029:entry-0015:parameter:ltft-b1-221125-b97152b7"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 table maps DID 0x1125 to the high byte of \
+Q8.8-percent word ffff2302. Exact Mode 01 code maps the same word to \
+standard PID 0x07, proving long-term fuel trim bank 1. The runtime producer \
+combines the selected cell of a learned 8x8 bank table with a bank \
+adjustment around neutral 0x6400, applies calibrated limits or fail-safe \
+neutralization, and writes this diagnostic word."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022740"
+value = "ffff2302"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00035c54"
+value = {named = ["00021bbc", "00022740", "0003235c", "00035856", "0005796c", "00057b26", "00057d1e", "00058168", "0005911c", "000593ac", "b97152b7", "ffff2302"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00057c2a"
+value = {named = ["00021bbc", "00022740", "0003235c", "00035856", "0005796c", "00057b26", "00057d1e", "00058168", "0005911c", "000593ac", "b97152b7", "ffff2302"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "successful-tarantula/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "rousing-rhino/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "pretty-mongrel/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "unique-aardwolf/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_trim_init/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "liberal-dormouse/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 41
+binding = "long-term-fuel-trim-bank-1-did-1125"
+
+[[ledger]]
+registry = "vars"
+order = 138
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*256"
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ltft_adjustment_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ltft_learned_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "liberal-dormouse/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +194,26 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2302"
 former = ["omniscient-kakapo/ram/7mfk-ffff2302"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022740"
+value = "ffff2302"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035c54"
+value = {named = ["00022740", "0003235c", "00035856", "00057b26", "000593ac", "ffff2302", "ffff2306", "ffff5648"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057c2a"
+value = {named = ["00022740", "0003235c", "00035856", "00057b26", "000593ac", "ffff2302", "ffff2306", "ffff5648"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -66,3 +248,72 @@ at = "jk78c:000ac8b8"
 to = "7mfk:0008a594"
 value = "ffff225a"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "ltft_adjustment_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ltft_learned_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pretty-mongrel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "liberal-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "unique-aardwolf/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2333"
+name = "nippy-caribou"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00054bcc"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

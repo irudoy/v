@@ -1,0 +1,156 @@
+summary = """
+Step counter of the engine-coolant fail-safe ramp. FUN 000395ae clears it \
+while ffff2451 bit 5 is clear. While the bit is set, every expiry of \
+countdown ffff24f7 increments it with saturation at 255 and reloads the \
+countdown with 6. The substitute coolant byte is min(90 + counter, 130)."""
+note = [
+    """
+Periodic handler 0002040c decrements countdown array ffff24d4..ffff24f8 \
+every 1000 base interrupts, or 1.024 s at the 10.24 ms scheduler pass. Forty \
+steps take 245.8 s and move the substitute from raw 90 to raw 130. The \
+factory fail-safe table gives 40 deg C at ignition ON or START and 80 deg C \
+after about four minutes, which is deg C = raw-50 at one deg C per count.""",
+]
+level = "code"
+unit = "6.144 s steps"
+
+[[ledger]]
+registry = "vars"
+order = 881
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bronze-wapiti/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "festive-lemming/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bronze-wapiti/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f8c"
+name = "topaz-lemur"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395b0"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395c0"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395c6"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395d2"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395ea"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395f0"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395f8"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395fe"
+value = {named = ["0002040c", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2007-g35-ec518-coolant-fail-safe-40-80-degc"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "periodic_tick_isr/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "festive-lemming/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bronze-wapiti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "bronze-wapiti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,7 +1,179 @@
+summary = """
+A disabled calibration branch performs a 1D-8 lookup of a uint8 map by \
+ffff106f, multiplies the result by a calculated Q13 coefficient, divides by \
+8192, limits it to 255, and writes an intermediate byte to ffff1530. \
+ROM[00008d92]=0x7a with bit 3 set bypasses the entire operation range."""
+note = [
+    """
+ROM[00008d92]=0x7a; bit 3=1; after mask 0x08, gate value is 0x08. 00051710 \
+loads a pointer to 00008d92 from pool 00051970 into r12. 00051712 executes \
+mov.b @r12,r0 and obtains current ROM byte 0x7a. 00051714 leaves r0 & 0x08 = \
+0x08. 00051716 tst r0,r0 sets T=0 because the result is nonzero. 00051718 \
+bf/s 000517a8 branches specifically when T=0, so the branch is taken; delay \
+slot 0005171a executes and stores 0x08 in r14. Control reaches 000517a8, \
+skipping the full range 0005171c..000517a6 inclusive. The skipped range \
+includes loading base 000121f6 at 0005172c and the lookup call at 0005172e. \
+Hypothesis B is confirmed; hypothesis A is refuted for the current ROM. \
+Index: 1D-8 implicit, uint8: byte ffff106f would be passed as the index in \
+r5, r4 would contain base 000121f6, wrapper 00026370 would route lookup to \
+kernel 00026a80, and finisher 00026740 would perform unsigned linear \
+interpolation of adjacent uint8 elements. This model exists only in the \
+skipped range. Output trace: Counterfactual trace of 000121f6 inside the \
+disabled block: 0005172a loads the index from ffff106f, 0005172c sets \
+r4=000121f6, 0005172e calls 00026370 with an unsigned byte in r5, 00051732 \
+would store result r0 in a stack byte, 0005175e would load it again, \
+00051760 would extend it into r6, 00051762 would multiply it by the \
+calculated coefficient, and the call to 00022544 from 00051776 would perform \
+an arithmetic right shift by 13. After limiting, the result would be written \
+as a byte to ffff1530 at 00051792. The shown consumer 0004e614 conditionally \
+reads ffff1530 and uses (value - 0x19) in a coefficient calculation, but \
+with current bit 3=1 both the producer and this consumer path are skipped. \
+No 000121f6 result is actually consumed in the current ROM. Result \
+disposition: dead_control_flow; Result target: ffff1530 only in the disabled \
+branch; no actual 000121f6 output exists in the current ROM.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 119
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000121f6"
 name = "porcelain-crane"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051710"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051712"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051714"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051716"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051718"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005171a"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005172a"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005172c"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005172e"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051732"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005175e"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051762"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051776"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051792"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517a8"
+value = {named = ["000121f6", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "stoic-dinosaur/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +206,17 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

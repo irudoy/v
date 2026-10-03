@@ -1,0 +1,57 @@
+summary = """
+Air/throttle target-calculation quantity (opening-area multipliers) in \
+000474a4, to which the lower bound max(uVar4, ffff171a<<3) is applied."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 84
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "threshold"
+to = "urban-ammonite/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "astonishing-macaw/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff122a"
+name = "maroon-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00047598"
+
+[[link]]
+type = "reader"
+to = "opening_area_upper_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "threshold"
+to = "urban-ammonite/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

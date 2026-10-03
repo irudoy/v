@@ -1,0 +1,59 @@
+summary = """
+Multipurpose state byte. Bit 4 gates the ffff1513 update in 0004afdc and its \
+one-count decay in 0004e112."""
+note = ["Code establishes the state gate, not an adaptive-learning meaning."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 187
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_decay/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff248d"
+name = "polite-rat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00042248"
+
+[[link]]
+type = "lookup"
+to = "olivine-bug/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_decay/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,151 @@
+summary = """
+Retained-region check run first by startup initializer FUN 00027ac0. While \
+PLDR fffff75e bit 4 is set, it accepts retained region ffff4514..ffff5cf3 \
+when marker ffff5cf6 equals 0xaa55 and either check word ffff5cf8 equals \
+0x6997 and checksum FUN 00026dc4 equals byte ffff5cf4, or ffff5cf8 differs \
+from 0x6997, range check FUN 00026ea0 passes, FUN 00067188 returns a value \
+other than 0xaa, and pair check FUN 00026fd0 returns zero. Acceptance clears \
+ffff5b2f bit 7, rejection calls reinitializer FUN 00026f08, and the function \
+then clears ffff5cf8."""
+note = [
+    """
+FUN 00026da8 writes the checksum byte and check word 0x6997. The physical \
+meaning of PLDR bit 4 is not assigned; startup entry FUN 00027e24 waits for \
+the bit before it runs the startup initializers.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 11
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "elite-shrimp/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "encouraging-scallop/reg"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "famous-agouti/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-stingray/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elite-shrimp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "infrared-wombat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026e1c"
+name = "indigo-spider"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00026e9c"
+value = "0x6997"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00026fa4=0xaa55"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026e34"
+value = {named = ["00026e1c", "00026e9c", "00026f08", "00026fa4", "ffff5b2f", "ffff5cf4", "ffff5cf6", "ffff5cf8", "fffff75e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026e3c"
+value = {named = ["00026e1c", "00026e9c", "00026f08", "00026fa4", "ffff5b2f", "ffff5cf4", "ffff5cf6", "ffff5cf8", "fffff75e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026e8a"
+value = {named = ["00026e1c", "00026e9c", "00026f08", "00026fa4", "ffff5b2f", "ffff5cf4", "ffff5cf6", "ffff5cf8", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "archetypal-spoonbill/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "elite-shrimp/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "encouraging-scallop/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "famous-agouti/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "silky-stingray/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

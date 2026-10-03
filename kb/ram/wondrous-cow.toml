@@ -1,0 +1,125 @@
+summary = """
+Bit 6 gates channel-specific Q15 trim application in both parallel \
+raw-output calculations: map 0001484a in FUN 0007a592 and map 00018d36 in \
+FUN 0007a804."""
+note = [
+    """
+Both trim maps are flat 0x8000, or unity, in stock JK08A. Both lookup \
+branches remain reachable at runtime.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 173
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gifted-mantis/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "swinging-frigatebird/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff245e"
+name = "wondrous-cow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6d8"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6e4"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6f0"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d8"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8dc"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e6"
+value = {named = ["0001484a", "00018d36", "0007a592", "0007a804", "ffff245e"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "gifted-mantis/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "swinging-frigatebird/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

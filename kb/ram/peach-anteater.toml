@@ -1,0 +1,174 @@
+summary = """
+Conditional P0128 parameter from RPM/12.5 curve 00015c80. FUN 000b784e \
+writes the uint16 lookup when trunc0(P0128_model_microdegC/1000000) >= \
+uint8(ROM[00008c8c])-50 and writes one otherwise. FUN 000b6b5a passes the \
+word as H to FUN 000b7a3c."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one direct \
+reader. Every stock cell of 00015c80 and every point of its axis are zero, \
+so stock H is either zero or one. The physical meaning of this parameter \
+remains unresolved.""",
+]
+level = "code"
+unit = "P0128 parameter raw"
+
+[[ledger]]
+registry = "vars"
+order = 536
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-armadillo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "blond-panther/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uptight-duck/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35b6"
+name = "peach-anteater"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008c8c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cb8"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cc6"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7882"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7888"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7890"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b789a"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78a2"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78aa"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7aca"
+value = {named = ["00008c8c", "00015c80", "000b6b5a", "000b784e", "000b7a3c", "ffff3348", "ffff35b6"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "blond-panther/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ruddy-anaconda/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00054074"
+name = "augmented-coyote"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00054074"

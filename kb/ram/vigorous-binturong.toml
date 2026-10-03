@@ -1,0 +1,113 @@
+summary = """
+APP-derived signed request candidate written by 00075540 after pedal \
+preprocessing and inverse conversion through 0xe98e. It enters the shared \
+request-limit subsystem, including 0007584e, and 00073432 also \
+inverse-searches it directly after adding numeric bias 0x8000."""
+note = [
+    """
+The direct inverse result ffff1984 is not the stock actuator path because \
+000730fc gates that branch with stock-disabled 0x870c.bit7. The shared path \
+continues through ffff19c6 and ffff198a.""",
+]
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 165
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pedal_request_inverse_lookup/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff243c"
+name = "vigorous-binturong"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735a0"
+value = {named = ["00073432", "00075540", "0007584e", "ffff243c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735a6"
+value = {named = ["00073432", "00075540", "0007584e", "ffff243c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075584"
+value = {named = ["00073432", "00075540", "0007584e", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759e8"
+value = {named = ["00073432", "00075540", "0007584e", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b38"
+value = {named = ["00073432", "00075540", "0007584e", "ffff243c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

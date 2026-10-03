@@ -1,0 +1,87 @@
+summary = """
+Crankshaft speed irregularity monitor enable: bit 6 is set by the upper \
+classifier boundary (map 0x1261A), and bit 5 by the lower boundary \
+(0x1263A). Condition & 0x60 != 0 enables feature accumulation in 00085a70; \
+when both bits are clear, that branch does not execute."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 303
+fields = ["semantics", "units", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cornflower-dog/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tall-agouti/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41c3"
+name = "alluring-skunk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839a4"
+value = {named = ["0001261a", "0001263a", "00082c8a", "00085a70", "ffff41c3"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "cornflower-dog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tall-agouti/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

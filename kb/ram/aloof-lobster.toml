@@ -1,0 +1,78 @@
+summary = """
+Base of a two-byte bank-indexed rear O2 heater monitor-state array. FUN \
+0008b93a tests the selected byte before fault dispatch and reloads it from \
+ROM8[0x8ab2]=5 on the in-range path."""
+note = [
+    """
+The decrement source, cadence, and physical time represented by one count \
+remain unresolved.""",
+]
+level = "code"
+unit = "countdown state"
+
+[[ledger]]
+registry = "vars"
+order = 411
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dynamic-moose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dynamic-moose/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4293"
+name = "aloof-lobster"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab2"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba74"
+value = {named = ["00008ab2", "0008b93a", "ffff4293"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba7a"
+value = {named = ["00008ab2", "0008b93a", "ffff4293"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dynamic-moose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dynamic-moose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,231 @@
+summary = """
+Engine-event capture and interval updater. It derives a wrap-corrected \
+interval from timer captures, publishes the interval to ffff22d4 and \
+ffff11fc, divides it by 12 through exact unsigned divider 00021ce0, and \
+writes the quotient to ffff22bc and ffff22ba. Later event branches use the \
+same normalized interval for APC compare scheduling. The reference capture \
+is GR1E (fffff44c) when called from 0002a51e with r7 = 0 and GR1F (fffff44e) \
+from 0002a5cc with r7 = -1; it stores the capture word in ffff158a at \
+0002b7cc, forms the event timestamp from TCNT0 and the TCNT1A-to-capture \
+difference, and divides the wrap-corrected difference to the previous event \
+by 32."""
+note = [
+    """
+Normalize the captured engine-event interval and publish its division by \
+twelve""",
+    """
+The captures count phi'/32 = 3.2 us (TCR1A = 5 in 0002718a, PSCR1 = 1 in \
+000274ac), and FUN 00038272 binds the interval to engine speed as ffff1196 = \
+32000000 / ffff11fc, so the interval is 120 crank degrees and ffff22bc is 10 \
+degrees.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 97
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 507
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "gentle-bat/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-mamba/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inescapable-bullfinch/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ingenious-kagu/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pompous-impala/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-woodlouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "imported-kudu/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-porcupine/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "soft-seagull/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-koel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002b768"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b7cc"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b7f0"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b800"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b806"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b80a"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b810"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b812"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b81a"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b81e"
+value = {named = ["000208f8", "00021ce0", "0002718a", "000274ac", "0002b768", "00038272", "ffff11fc", "ffff158a", "ffff22ba", "ffff22bc", "ffff22d4", "fffff430", "fffff440", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "just-pelican/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "atu2_prescaler_init/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "roaring-hippo/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "gentle-bat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"

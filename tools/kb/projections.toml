@@ -296,6 +296,33 @@ consumers = ["GitHub"]
 read = "open"
 
 [[projection]]
+path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
+generator = "kb.ledger_projection:registries"
+stage = 5
+inputs = [
+    "kb/fn/", "kb/ram/", "kb/reg/", "kb/tbl/", "kb/axis/", "kb/dtc/", "kb/const/",
+    "kb/names.csv", "l0/7mfk/", "rom-images/roms.csv", "rom-images/homology.toml",
+    "tools/kb/src/kb/ledger_projection.py", "tools/kb/src/kb/adapters/ledgers.py",
+    "tools/kb/src/kb/store.py", "tools/kb/src/kb/match.py",
+]
+consumers = [
+    "tools/mapkit/", "tools/maps/build_tracker.py", "tools/romviz/", "tools/memgraph/",
+    "tools/diagnostics/", "tools/kb/tests/",
+]
+read = "guarded"
+
+[[projection]]
+path = "tools/ghidra/symbols/7mfk.csv"
+generator = "kb.ledger_projection:curated_names"
+stage = 5
+inputs = [
+    "kb/fn/", "kb/names.csv", "tools/kb/src/kb/ledger_projection.py",
+    "tools/kb/src/kb/adapters/curated.py",
+]
+consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/memgraph/", "tools/romviz/"]
+read = "guarded"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [

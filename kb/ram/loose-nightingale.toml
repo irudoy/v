@@ -1,0 +1,162 @@
+summary = """
+Second-channel published word from FUN 000720c4. The configurable path can \
+select processed word ffff1cb4, but stock ROM8[000089fb]=0x20 has bit 3 \
+clear and therefore always copies source ffff1248."""
+note = [
+    """
+The zero-surface crossfade and local rate-processing result do not reach \
+this word in unmodified JK08A. Monitor 0008d10a compares it with ffff1332; \
+the physical interpretation remains unresolved.""",
+]
+level = "code"
+unit = "scaled second-channel raw"
+
+[[ledger]]
+registry = "vars"
+order = 17
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "certain-finch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "grumpy-quail/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "snobbish-bird/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tuscan-vulture/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1cb6"
+name = "loose-nightingale"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fb"
+value = "0x20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072288"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007228a"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007228c"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000722a8"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000722ae"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000722b0"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000722b6"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008d150"
+value = {named = ["000089fb", "000720c4", "0008d10a", "ffff1248", "ffff1cb4", "ffff1cb6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "grumpy-quail/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "snobbish-bird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "crazy-spider/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "granite-seagull/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "certain-finch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

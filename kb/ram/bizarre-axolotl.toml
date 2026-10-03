@@ -1,0 +1,86 @@
+summary = """
+Injection lead used by sequencer 00054a44 on the previous engine event. The \
+difference from the current lead selects the equal, shortened, or lengthened \
+branch."""
+note = ["Engine-event driver 00028ea2 seeds it with 3."]
+level = "code"
+unit = "engine events"
+
+[[ledger]]
+registry = "vars"
+order = 892
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-dormouse/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff221d"
+name = "bizarre-axolotl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002978e"
+value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b04"
+value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bca"
+value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bd0"
+value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d12"
+value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

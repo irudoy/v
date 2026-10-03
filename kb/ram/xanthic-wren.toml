@@ -1,0 +1,98 @@
+summary = """
+Nonnegative high-octane-reference difference max(ffff12e0-ffff12de,0) when \
+ROM8[0x8b3f].bit1 is set; zero otherwise."""
+level = "code"
+unit = "raw state difference"
+
+[[ledger]]
+registry = "vars"
+order = 586
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "devious-hyena/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ubiquitous-whale/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_timing_state_terms/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12df"
+name = "xanthic-wren"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b3f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af5c"
+value = {named = ["00008b3f", "0004af38", "ffff12de", "ffff12df", "ffff12e0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af6e"
+value = {named = ["00008b3f", "0004af38", "ffff12de", "ffff12df", "ffff12e0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "devious-hyena/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ubiquitous-whale/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vigorous-saluki/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

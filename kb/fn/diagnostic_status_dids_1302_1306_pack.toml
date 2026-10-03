@@ -1,0 +1,203 @@
+title = "Pack diagnostic status bytes for DIDs 0x1302 through 0x1306"
+summary = """
+Diagnostic status packer for response bytes ffff3342..ffff3346. For \
+ffff3342, it maps ffff2452.bit7 to bit7, ffff2451.bit3 to bit5, \
+ffff2459.bit7 to bit4, ffff417f.bit2 to bit3, inverse ffff4217.bit1 to bit2, \
+ffff24ae.bit7 to bit1, and ffff2459.bit5 to bit0. For ffff3345, it maps \
+ffff2488.bit3 to bit7, ffff5b2a.bit1 to bit6, ffff5b2c.bit7 to bit5, inverse \
+ffff4235.bit1 to bit3, and ffff2451.bit7 to bit2."""
+note = [
+    """
+The exact service-0x22 table publishes ffff3342 as DID 0x1302 with support \
+mask 0x3f. A structured Nissan profile identifies ffff3342.bit1 as START \
+SIGNAL, binding ffff24ae.bit7 to that diagnostic state. The same profile \
+names ffff3342.bit0 CLSD THL POS. The table publishes ffff3345 as DID 0x1305 \
+with support mask 0x44 (ROM32[0x22a08] = ffff3345, ROM8[0x11e44] = 0x44), \
+and the profile names ffff3345.bit2 BRAKE SW.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 5
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 560
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "emerald-mouflon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jolly-mule/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nice-silkworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nickel-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spectral-caracal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wisteria-sheep/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "organic-cow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002e0d4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011e41"
+value = "0x3f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f0"
+value = "ffff3342"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f4"
+value = "00011e41"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000229f0"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e102"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e110"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e11e"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e130"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e13a"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e146"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e14e"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e150"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e162"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

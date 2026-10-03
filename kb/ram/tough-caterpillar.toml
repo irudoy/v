@@ -1,0 +1,146 @@
+summary = """
+Start-latched fuel-temperature byte. FUN 00039788 writes current \
+fuel-temperature byte ffff1074 at 000397d8 while gate 00039902 returns 1 and \
+previous-pass image ffff107b while it returns 0, which holds the last \
+selection; scheduler 00020dfe snapshots it to ffff106b."""
+note = [
+    """
+Gate 00039902 repeats the state machine of coolant selector 0003967a with \
+latch ffff24bd.bit5: a computed START SIGNAL interval with battery-voltage \
+raw below 100 tracks the current byte, and the first pass outside it selects \
+the current byte once.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 876
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_temperature_did_source/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "granite-dalmatian/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "busy-bird/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1073"
+name = "tough-caterpillar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["000209d8", "00020dfe", "00039788", "ffff1073", "ffff1074", "ffff107b", "ffff24bd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397d2"
+value = {named = ["000209d8", "00020dfe", "00039788", "ffff1073", "ffff1074", "ffff107b", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397d4"
+value = {named = ["000209d8", "00020dfe", "00039788", "ffff1073", "ffff1074", "ffff107b", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397d8"
+value = {named = ["000209d8", "00020dfe", "00039788", "ffff1073", "ffff1074", "ffff107b", "ffff24bd"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fuel_temperature_did_source/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "granite-dalmatian/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "busy-bird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "venomous-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,80 @@
+summary = """
+Active-flag byte of service-0x30 Output Control IOLIDs 0x19..0x20 (array \
+ffff99c4, bit n-1 of IOLID n): bit 0 is IOLID 0x19, bit 1 IOLID 0x1a, and \
+bit 4 IOLID 0x1d. Handler 00030c4c maintains the array, FUN 0002e466 reads \
+the byte at 0002e50e for the VTC active tests, and startup 0002e76e zeroes \
+ffff99c4..ffff99d3."""
+note = [
+    """
+The value bytes of the same requests are ffff9923 + n (ffff993c, ffff993d, \
+ffff9940 for IOLIDs 0x19, 0x1a, 0x1d).""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 806
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "muscular-lizard/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cheerful-beluga/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nissan_service_30_output_control/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99c7"
+name = "chocolate-civet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e50e"
+value = {named = ["0002e466", "0002e76e", "00030c4c", "ffff99c7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cheerful-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nissan_service_30_output_control/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,93 @@
+summary = """
+Physically unidentified 1D calibration; the interpolated uint16 result is an \
+operand of local limiting by two ROM bounds."""
+note = [
+    """
+Code associates result 00014fe2 specifically with r2 and two local \
+comparisons. Matching values with adjacent 00014fd2 add no physical \
+semantics; the RAM sink and physical consumer are unknown. Result \
+disposition: inline_comparison. Blocking condition: At the visible-listing \
+level, the target-quantity trace stops at 0005e7aa with a write of the value \
+selected after comparisons to a temporary stack slot; the exact binding of \
+the subsequent RAM write and its reader are absent, so physical semantics \
+and scale cannot be established.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 285
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014fe2"
+name = "obedient-terrier"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e760"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e766"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e76a"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e790"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e7a4"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e7aa"
+value = {named = ["00014fe2", "000264cc", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "nebulous-griffin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

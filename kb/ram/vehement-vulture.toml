@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff152d"
+name = "vehement-vulture"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00051808"
+
+[[link]]
+type = "writer"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

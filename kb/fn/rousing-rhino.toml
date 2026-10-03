@@ -1,0 +1,162 @@
+summary = """
+Bank-indexed learned-fuel-trim updater. It derives a signed step from \
+Q8.8-percent input ffff134e/ffff1350 relative to neutral 0x6400, an \
+operating-region coefficient, and the current short-term fuel-trim word \
+ffff22dc/ffff22de. It applies the step to selected word ffff2306/ffff2308, \
+clamps the result to 90..110 percent from ROM bytes 0x8a9e/0x8a9f, and \
+writes the selected cell in RAM grid ffff4b90 or ffff4b10."""
+note = [
+    """
+The code establishes adaptive learned-grid maintenance and bank mapping. The \
+physical meaning of the operating-region coefficient and the exact learning \
+cadence remain unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 343
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-mouflon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inquisitive-dormouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "invaluable-barracuda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ltft_learned_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stft_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stft_b2/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "delectable-vole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diligent-bat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00057d1e"
+name = "rousing-rhino"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9e"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9f"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057d7a"
+value = {named = ["00008a9e", "00008a9f", "00057d1e", "00058092", "000580e8", "0005911c", "ffff134e", "ffff1350", "ffff22dc", "ffff22de", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057dec"
+value = {named = ["00008a9e", "00008a9f", "00057d1e", "00058092", "000580e8", "0005911c", "ffff134e", "ffff1350", "ffff22dc", "ffff22de", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057e0e"
+value = {named = ["00008a9e", "00008a9f", "00057d1e", "00058092", "000580e8", "0005911c", "ffff134e", "ffff1350", "ffff22dc", "ffff22de", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057eb8"
+value = {named = ["00008a9e", "00008a9f", "00057d1e", "00058092", "000580e8", "0005911c", "ffff134e", "ffff1350", "ffff22dc", "ffff22de", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057ec4"
+value = {named = ["00008a9e", "00008a9f", "00057d1e", "00058092", "000580e8", "0005911c", "ffff134e", "ffff1350", "ffff22dc", "ffff22de", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nice-toad/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "wisteria-tarantula/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unique-aardwolf/fn/7mfk"
+relies = "structure"

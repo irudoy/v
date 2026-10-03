@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11f0"
+name = "military-marmoset"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000382ae"
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "resilient-auk/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

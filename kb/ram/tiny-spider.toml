@@ -1,0 +1,63 @@
+summary = """
+Support mask paired with DID 0x130E value ffff2a84. FUN 000d093c initializes \
+it to 0x00, 0x3F, or 0x04 from ROM8[0x8B28]."""
+note = ["The physical option set behind ROM8[0x8B28] remains unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 393
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-parrot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a82"
+name = "tiny-spider"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a54"
+value = "ffff2a82"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d09a0"
+value = {named = ["00022a54", "0003235c", "000d093c", "ffff2a82"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dancing-parrot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

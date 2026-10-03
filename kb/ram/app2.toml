@@ -1,6 +1,87 @@
+summary = """
+Exact JK08A UDS DID 0x120E source and second accelerator-pedal sensor \
+diagnostic value, referred to the sensor-1 scale. FUN 000a70f0 accepts \
+ROM16[0x8ffc]=60..ROM16[0x8ffa]=1000 counts and dispatches P2128/P2127 \
+outside that window."""
+note = [
+    """
+The pedal sensor 2 terminal carries half the sensor 1 voltage while the \
+factory display band of both sensors is the same, so the published word \
+carries twice the ten-bit sample: its 1000-count limit is 5.00 V, exactly \
+twice the 2.5 V terminal maximum. Target recordings hold it within a few \
+counts of ffff269e over the whole stroke. The doubling site is an indexed \
+store that the whole-program reference scan does not resolve. The diagnostic \
+display unit is V at 5 mV per count; JK08A.diagnostics.md derives that \
+scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "accelerator-pedal-position-2"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:22120e"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0123-l0123:source-row-extended-pids:parameter:0x120e-2aeca559"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x120E to ffff26a2, which is \
+also the value monitored by the exact P2128/P2127 path. The homologous Z34 \
+definition supplies the Accelerator Pedal Position 2 name and raw/200 V \
+conversion. Near-adjacent target readings give stream raw 152 = 0.760 V and \
+diagnostic 0.76 V."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "paper-warthog/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228d4"
+value = {named = ["0003235c", "000a70f0", "2aeca559", "ffff26a2"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 63
+binding = "accelerator-pedal-position-2"
+
+[[ledger]]
+registry = "vars"
+order = 218
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-warthog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +113,52 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff26a2"
 former = ["romantic-chamois/ram/7mfk-ffff26a2"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ffa=1000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ffc=60"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228d4"
+value = {named = ["00008ffa", "00008ffc", "0003235c", "000a70f0", "ffff26a2"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a70fc"
+value = {named = ["00008ffa", "00008ffc", "0003235c", "000a70f0", "ffff26a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7172"
+value = {named = ["00008ffa", "00008ffc", "0003235c", "000a70f0", "ffff26a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "1000-counts-5.00v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec427-app2-depressed-2.0-2.5v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec427-app2-released-0.25-0.50v"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +196,20 @@ to = "7mfk:000a8c76"
 count = 1
 value = 47
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-warthog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

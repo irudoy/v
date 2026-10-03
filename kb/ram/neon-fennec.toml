@@ -1,0 +1,176 @@
+summary = """
+Bank-1 exhaust-VTC controller state longword at window offset 0x818 of base \
+ffff128c. FUN 000c1dec stores it at 000c1ff4 as zero in mode 0 or as the \
+gain-scaled, 0..0x04000000 clamped error product; FUN 000c2040 reads it at \
+000c205e and divides the upper bytes by battery byte ffff1108 to form duty \
+request ffff1c70."""
+note = [
+    """
+Stock branch: P = floor(floor(u16[ffff1b18]*0x22a2)*gain*2/625) with gain \
+from curve 0001205a.""",
+]
+level = "code"
+unit = "fixed-point raw"
+
+[[ledger]]
+registry = "vars"
+order = 769
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2072"
+offset = 0x818
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "outgoing-cuttlefish/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aquatic-guillemot/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curious-perch/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "godlike-markhor/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orange-hamster/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1aa4"
+name = "neon-fennec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008615"
+value = "0xab"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009212"
+value = "0x22a2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ff4"
+value = {named = ["00008615", "00009212", "0001205a", "000c1dec", "000c2040", "ffff1108", "ffff128c", "ffff143a", "ffff1aa4", "ffff1b18", "ffff1b1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c205e"
+value = {named = ["00008615", "00009212", "0001205a", "000c1dec", "000c2040", "ffff1108", "ffff128c", "ffff143a", "ffff1aa4", "ffff1b18", "ffff1b1c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x818
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "aquatic-guillemot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "curious-perch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "godlike-markhor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "outgoing-cuttlefish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

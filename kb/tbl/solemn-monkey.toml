@@ -1,7 +1,154 @@
+summary = """
+A conditional interpolated uint16 term is capped at 3768, written to \
+ffff240a, and then used as an addend in a saturating calculation before Q14 \
+scaling."""
+note = [
+    """
+On the active branch, all 8 cells equal 3768, so interpolation returns 3768; \
+the cap at 0005557e..00055584 by the same value preserves the result, and \
+0005558c writes it to ffff240a. When the guard conditions are not met, the \
+accessor writes 0 without reading the map. Physical identity and the BFS \
+scale follow only from the 1D-8/uint16 catalog match and remain candidate. \
+Map-value scale round trip: 3768 -> 1.838784 -> 3768. Result disposition: \
+consumer. No physical quantity is asserted beyond narrow operational \
+semantics.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "BFS"
+scale = "x*0.000488"
+to_raw = "x/0.000488"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 303
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prompt-hummingbird/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000154b0"
 name = "solemn-monkey"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000154b0=3768*8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055570"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055576"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557a"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557e"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055580"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055582"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558a"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +181,25 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "prompt-hummingbird/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "conditional_cranking_fuel_term/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

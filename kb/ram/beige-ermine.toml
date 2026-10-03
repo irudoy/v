@@ -1,0 +1,33 @@
+summary = "Bit 1 selects path 2 that bypasses maps in 00056bd0."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 210
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enthusiastic-salmon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24d0"
+name = "beige-ermine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004c5d4"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

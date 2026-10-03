@@ -1,0 +1,94 @@
+summary = """
+Scheduler copies of the exhaust magnet output status bytes: ffff109e and \
+ffff109f for bank 1, ffff10a0 and ffff10a1 for bank 2. Scheduler 00020dfe \
+copies block ffff1114..ffff1193 to ffff1094..ffff1113 at 00020f56, so they \
+follow decoder 0004110a outputs ffff111e..ffff1121. FUN 00090642 counts \
+passes on which a byte of the bank equals 1."""
+note = [
+    """
+Each byte is a two-bit field of the 16-bit diagnostic word of output driver \
+device 1 (ffff1eb2). The electrical condition behind code 1 is not \
+recoverable from ECU code.""",
+]
+level = "code"
+unit = "driver status code"
+
+[[ledger]]
+registry = "vars"
+order = 923
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cherubic-goose/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff109e"
+name = "mauve-guillemot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f56"
+value = {named = ["00020dfe", "00090642", "ffff109e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009069e"
+value = {named = ["00020dfe", "00090642", "ffff109e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000906a4"
+value = {named = ["00020dfe", "00090642", "ffff109e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009070c"
+value = {named = ["00020dfe", "00090642", "ffff109e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090712"
+value = {named = ["00020dfe", "00090642", "ffff109e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "cherubic-goose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

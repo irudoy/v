@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3406"
+name = "red-barracuda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b5da2"
+
+[[link]]
+type = "lookup"
+to = "rampant-groundhog/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

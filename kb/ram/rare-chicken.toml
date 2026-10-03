@@ -1,0 +1,97 @@
+summary = """
+Direct uint16 result of RPM-indexed engine-torque base curve 000154a0. FUN \
+00065c26 also retains the same value in r6 for the calculation of ffff2408."""
+note = [
+    """
+The candidate physical conversion is x*0.1 Nm. The persistent copy is \
+diagnostic scratch; the live register value forms the consumed path.""",
+]
+level = "code"
+unit = "unsigned torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 524
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nocturnal-mammoth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "pristine-deer/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nocturnal-mammoth/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18c4"
+name = "rare-chicken"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca2"
+value = {named = ["000154a0", "00065c26", "ffff18c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca6"
+value = {named = ["000154a0", "00065c26", "ffff18c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca8"
+value = {named = ["000154a0", "00065c26", "ffff18c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cb0"
+value = {named = ["000154a0", "00065c26", "ffff18c4"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "pristine-deer/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

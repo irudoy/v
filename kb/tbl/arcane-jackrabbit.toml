@@ -1,7 +1,145 @@
+summary = """
+Lower segment of an inverse piecewise-linear conversion: for input <= 45187, \
+interpolation of 00015690 over axis 00015500 forms a 16-bit coordinate; the \
+upper branch is formed by 000156d0 after dividing the input by 16. The \
+physical quantity is unknown."""
+note = [
+    """
+The result is stored in ffff1980 or ffff3494; ffff1980 is conditionally \
+copied to ffff1d10. Catalog names \"Target Throttle Valve Opening\" and \
+\"Acc. Throttle Request\" do not establish physical identity or scale.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 309
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "translucent-cormorant/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sepia-crocodile/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015690"
 name = "arcane-jackrabbit"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e04"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e0c"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e0e"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e1a"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e1e"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e22"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e2a"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739aa"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ae"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b0"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b2"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739c8"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739cc"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d2"
+value = {named = ["00015500", "00015690", "000156d0"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +172,47 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "sepia-crocodile/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "translucent-cormorant/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "pretty-centipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

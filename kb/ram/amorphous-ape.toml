@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff23bc"
+name = "amorphous-ape"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b3a2"

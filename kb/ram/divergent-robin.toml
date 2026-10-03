@@ -1,0 +1,74 @@
+summary = """
+Activation-delay timer for zero-speed high-BFS/high-RPM contributor \
+0004f14e. A failed condition reloads immediate value 110; the contributor \
+returns true only after expiry while all gates remain satisfied."""
+note = [
+    """
+Its exact wall-clock scale remains tied to the unresolved periodic task \
+timebase.""",
+]
+level = "code"
+unit = "periodic counts"
+
+[[ledger]]
+registry = "vars"
+order = 627
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff253b"
+name = "divergent-robin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f182"
+value = {named = ["0004f14e", "ffff253b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f18c"
+value = {named = ["0004f14e", "ffff253b"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

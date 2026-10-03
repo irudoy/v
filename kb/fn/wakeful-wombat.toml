@@ -1,0 +1,42 @@
+role = "handler"
+contract = """
+Not arithmetic: default exception and interrupt handler. It takes no \
+arguments, and every register touched by the body is written before it is \
+read. It sets SP = 0xFFFF7FFC and VBR = 0x00020004, then jumps to 00027e24 \
+for reinitialization; it does not return or produce a result. It is \
+addressed only through the vector table, in 222 of 256 slots. The body \
+extends through 0x21bb0 inclusive; Ghidra's declared size of 20 stops one \
+instruction early."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 29
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00021b98"
+name = "wakeful-wombat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00020004"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "devious-mastodon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021b98"

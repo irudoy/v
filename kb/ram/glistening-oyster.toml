@@ -1,0 +1,42 @@
+summary = "Lower bound of the override clamp for output ffff2c6c in 0007b2c8."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 291
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hulking-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff413a"
+name = "glistening-oyster"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002daba"
+
+[[link]]
+type = "reader"
+to = "hulking-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

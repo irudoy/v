@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff183a"
+name = "banana-narwhal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00081746"
+
+[[link]]
+type = "lookup"
+to = "persimmon-crow/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

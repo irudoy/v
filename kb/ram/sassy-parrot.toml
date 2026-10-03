@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10a8"
+name = "sassy-parrot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bb86e"
+
+[[link]]
+type = "reader"
+to = "daft-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

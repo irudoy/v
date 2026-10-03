@@ -1,0 +1,176 @@
+summary = """
+Conditional uint16 parameter: y=interp(00015c80,00013ca8,param_2); ffff35b6 \
+receives y if trunc0(param_1/1000000) >= uint8(ROM[00008c8c])-50, otherwise \
+1. The caller passes the value as the first argument to 000b7a3c."""
+note = [
+    """
+The condition and signed division are supported by code and the 00021bbc \
+contract. All map and axis points equal zero; this does not prove a dead \
+role. The physical contract of 000b7a3c is absent from the artifact.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 315
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "complex-firefly/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015c80"
+name = "blond-panther"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7882"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7888"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b788c"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7890"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7892"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7894"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7898"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b789a"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b789e"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78a2"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78a4"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78a8"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78aa"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ac"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ba"
+value = {named = ["00013ca8", "00015c80", "00021bbc"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "complex-firefly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

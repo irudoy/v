@@ -1,0 +1,159 @@
+summary = """
+Retained learned integrator of the exhaust magnet retarder per bank \
+(ffff4838, ffff483c) with base copies ffff4840 and ffff4844. Error stage \
+000c1152 preloads the integrator from it on the first enabled pass of a bank \
+and stores the first learning in both copies; FUN 000bfe88 refreshes it as \
+base * (256 - k) / 256 + capture * k / 256 with k = ROM8[00008e52]=77 at \
+000c0b64 and 000c0bd8. Default initializer 000bccf0 and service 0x31 routine \
+0x0c load ROM32[000096c0]=0x80000000."""
+note = ["The cells lie in the retained-memory area that 00026e1c validates."]
+level = "code"
+unit = "offset-binary int32"
+
+[[ledger]]
+registry = "vars"
+order = 916
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adamant-bullmastiff/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gorgeous-adder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nice-chihuahua/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4838"
+name = "grumpy-giraffe"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e52=77"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000096c0"
+value = "0x80000000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000340b6"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0b64"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0bd8"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c133a"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c13c6"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c13ca"
+value = {named = ["00008e52", "000096c0", "00033f78", "000bccf0", "000bfe88", "000c1152", "ffff4838"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "adamant-bullmastiff/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gorgeous-adder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

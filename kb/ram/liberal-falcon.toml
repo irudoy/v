@@ -1,0 +1,32 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11eb"
+name = "liberal-falcon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000383b4"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "steady-eagle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "perfect-agouti/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

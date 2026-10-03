@@ -1,0 +1,108 @@
+summary = """
+Second selected nonnegative word in the second-bank paired-sensor branch. \
+One selectable source is corrected word ffff2860 derived alongside exact TP \
+SEN 2-B2 diagnostic word ffff2864; FUN 0003b520 consumes the result through \
+inverse pair 0x13202/0x155a0."""
+note = [
+    """
+The paired-feedback role and source selection are exact. Mode flags can \
+select a different corrected source, so this word is not itself the fixed \
+DID 0x124c value.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 390
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "muscular-leech/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "weightless-piculet/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff284c"
+name = "happy-myna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b6e0"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e63c", "ffff284c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e694"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e63c", "ffff284c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e6b2"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e63c", "ffff284c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "monumental-snake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "muscular-leech/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "weightless-piculet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

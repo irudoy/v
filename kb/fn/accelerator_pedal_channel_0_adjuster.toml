@@ -1,0 +1,128 @@
+title = "Offset and range-check accelerator-pedal channel 0"
+summary = """
+First accelerator-pedal analog-channel adjustment and range monitor. It \
+copies AN10 sample ffff362c to ffff27a2, subtracts learned offset ffff55c0, \
+writes signed result ffff27a0, and applies calibrated range checks that \
+share thresholds with the first accelerator-pedal DTC monitor."""
+note = [
+    """
+The shared thresholds and exact diagnostic monitor connect AN10 to \
+accelerator-pedal sensor channel 1.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 136
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 218
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "auburn-finch/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "strict-dragonfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fiery-puma/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00072b68"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ff8"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ffc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b76"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b7e"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b84"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b88"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b8a"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b96"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072bd4"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072be8"
+value = {named = ["00008ff8", "00008ffc", "00072b68", "000a7040", "ffff27a0", "ffff362c", "ffff55c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "olivine-hawk/fn/7mfk"
+relies = "structure"

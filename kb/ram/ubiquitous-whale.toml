@@ -1,0 +1,62 @@
+summary = """
+Low seven bits of cold/high-octane reference sample ffff1610, published by \
+0004af38."""
+level = "code"
+unit = "raw map field"
+
+[[ledger]]
+registry = "vars"
+order = 587
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "esoteric-rat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_timing_state_terms/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12e0"
+name = "ubiquitous-whale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af4e"
+value = {named = ["0004af38", "ffff12e0", "ffff1610"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af54"
+value = {named = ["0004af38", "ffff12e0", "ffff1610"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "esoteric-rat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

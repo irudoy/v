@@ -1,8 +1,384 @@
+summary = """
+Previous-cycle normalized engine-coolant-temperature index. Scheduler \
+00020dfe copies ffff1077 to ffff106f. In the linear range it is \
+floor(1.6*(DID 0x1101 raw-10)), so lookup nodes 0,16,...240 represent \
+-40,-30,...110 deg C."""
+note = [
+    """
+DID 0x1101 returns ffff1079 and homologous diagnostic definitions identify \
+it as engine coolant temperature with deg C = raw-50. FUN 00039634 performs \
+the exact normalization and saturation.""",
+]
+level = "code"
+unit = "normalized coolant index"
+
 [logparam]
 id = "X_VQ_Coolant_Temperature"
 static_axis_name = "Coolant Temperature [deg C]"
+
+[[diagnostic]]
+id = "coolant-temperature-input"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221101"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0003-l0003:source-row-extended-pids:parameter:0x1101-ee57620e"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1101 to byte ffff1079. Homologous \
+measured diagnostic data identifies DID 0x1101 as engine coolant temperature \
+with deg C = raw-50. FUN 00039634 converts this byte to current normalized \
+index ffff1077, and scheduler 00020dfe copies it to previous-cycle \
+calibration index ffff106f."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "versatile-lobster/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coolant_index/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coolant/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000226b0"
+value = {named = ["00020dfe", "0003235c", "00039634", "ee57620e", "ffff106f", "ffff1077", "ffff1079"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002c532"
+value = {named = ["00020dfe", "0003235c", "00039634", "ee57620e", "ffff106f", "ffff1077", "ffff1079"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003963c"
+value = {named = ["00020dfe", "0003235c", "00039634", "ee57620e", "ffff106f", "ffff1077", "ffff1079"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00039670"
+value = {named = ["00020dfe", "0003235c", "00039634", "ee57620e", "ffff106f", "ffff1077", "ffff1079"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 2
+binding = "coolant-temperature-input"
+
+[[ledger]]
+registry = "vars"
+order = 50
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "base"
+to = "lurking-turaco/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "7"
+offset = 0x7
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sly-chowchow/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff106f"
 name = "hasty-eel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f2a"
+value = {named = ["00020dfe", "0004afdc", "0004fbe2", "00050018", "0005185c", "ffff1068", "ffff106f", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f32"
+value = {named = ["00020dfe", "0004afdc", "0004fbe2", "00050018", "0005185c", "ffff1068", "ffff106f", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f36"
+value = {named = ["00020dfe", "0004afdc", "0004fbe2", "00050018", "0005185c", "ffff1068", "ffff106f", "ffff1077"], span = 1}
+key = "body"
+
+[[link]]
+type = "base"
+to = "lurking-turaco/ram"
+offset = 0x7
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "coolant_index/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "almond-flamingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "amphibian-sponge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "burgundy-hawk/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "burrowing-peccary/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cherry-oryx/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "gabby-vole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "knowing-potoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "opalescent-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pretty-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tiny-hound/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tungsten-capuchin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vivacious-cheetah/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

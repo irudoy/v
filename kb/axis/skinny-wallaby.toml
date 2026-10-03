@@ -1,3 +1,23 @@
+note = [
+    """
+Offset-binary uint16 axis for map 00014cba in the negative branches of \
+0005fdb0. At both sites 0x8000 is added to the extracted 16-bit input; the \
+physical input quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 27
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4]
+
 [[symbol]]
 layout = "7mfk"
 address = "00015d70"
@@ -7,6 +27,34 @@ name = "skinny-wallaby"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0005fee2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005feca"
+value = {named = ["00015d70"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fede"
+value = {named = ["00015d70"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ffc4"
+value = {named = ["00015d70"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ffd4"
+value = {named = ["00015d70"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"

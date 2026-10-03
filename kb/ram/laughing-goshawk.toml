@@ -1,0 +1,98 @@
+summary = """
+Multipurpose initialization byte. FUN 0007584e uses bit 0 as the \
+speed-filter initialization latch: clear selects min(65535,4*N), then sets \
+the bit; set selects the recursive N+floor(3*S/4) update. Bit 1 \
+independently remains a one-time initialization latch in the second sum term \
+of FUN 00054ee0."""
+note = [
+    """
+The two bits belong to independent state machines and must be described \
+separately.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 185
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-snail/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2485"
+name = "laughing-goshawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007587e"
+value = {named = ["00054ee0", "0007584e", "ffff2485"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075882"
+value = {named = ["00054ee0", "0007584e", "ffff2485"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758a4"
+value = {named = ["00054ee0", "0007584e", "ffff2485"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758a6"
+value = {named = ["00054ee0", "0007584e", "ffff2485"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

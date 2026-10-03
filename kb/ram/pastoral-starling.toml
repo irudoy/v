@@ -1,0 +1,121 @@
+summary = """
+Common Q15 multiplier used by both raw-output channels after their \
+channel-specific trim stage. FUN 0007a4de writes max(0x8000, min(ffff31e6, \
+lookup(00014fa2))); both consumers multiply by this word and shift right by \
+15."""
+note = [
+    """
+Stock map 00014fa2 is flat 0x8000, so this coefficient is unity in the stock \
+image. Its physical purpose is unresolved.""",
+]
+level = "code"
+unit = "Q15 fraction"
+
+[[ledger]]
+registry = "vars"
+order = 36
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "petite-cobra/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prophetic-kagu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff31e2"
+name = "pastoral-starling"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a58a"
+value = {named = ["00014fa2", "0007a4de", "0007a592", "0007a804", "ffff31e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a716"
+value = {named = ["00014fa2", "0007a4de", "0007a592", "0007a804", "ffff31e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a71a"
+value = {named = ["00014fa2", "0007a4de", "0007a592", "0007a804", "ffff31e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a922"
+value = {named = ["00014fa2", "0007a4de", "0007a592", "0007a804", "ffff31e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a926"
+value = {named = ["00014fa2", "0007a4de", "0007a592", "0007a804", "ffff31e2"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "petite-cobra/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "prophetic-kagu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

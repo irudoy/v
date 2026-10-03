@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff33fc"
+name = "tacky-barnacle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b6d22"
+
+[[link]]
+type = "lookup"
+to = "origami-hare/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "adaptable-wolverine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

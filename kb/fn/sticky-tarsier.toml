@@ -1,0 +1,61 @@
+summary = """
+Sequential dispatcher for the developer-immobilizer state machine: BBC88 -> \
+BC00E -> BC220 -> BC388 -> BC82E -> BC9E4."""
+note = [
+    """
+Ordering BC82E before BC9E4 clears intermediate state before the inhibit is \
+calculated.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 359
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[symbol]]
+layout = "7mfk"
+address = "000bcb60"
+name = "sticky-tarsier"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcb62"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "000bcb60"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcb72"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "000bcb60"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcb76"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "000bcb60"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pink-buzzard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "spry-piculet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "cordial-silkworm/fn/7mfk"
+relies = "structure"

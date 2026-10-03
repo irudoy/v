@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff152a"
+name = "optimistic-elk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000518e8"
+
+[[link]]
+type = "lookup"
+to = "delicate-pogona/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

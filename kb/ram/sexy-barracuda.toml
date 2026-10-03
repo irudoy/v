@@ -1,0 +1,53 @@
+summary = """
+Base of a two-bank measured value for diagnostic monitor 00094f26: \
+*(ffff2bda+bank*2) is multiplied by the output of limit map 0x12262, and the \
+result is compared with ROM threshold *(0x9070); exceeding it raises \
+per-bank fault flags and event 0xf4/0xf6."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 234
+fields = ["semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loud-caribou/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "onyx-barnacle/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2bda"
+name = "sexy-barracuda"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009070"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00094682"
+
+[[link]]
+type = "reader"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

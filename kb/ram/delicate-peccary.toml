@@ -1,0 +1,80 @@
+summary = """
+Rear O2 heater command-state bitfield. Bit 0 supplies the bank-1 state and \
+bit 1 supplies the bank-2 state to FUN 000a25fa and the DID 0x130b \
+status-byte builder FUN 0002e2e8."""
+note = [
+    """
+A whole-program p-code scan found the two direct reads and no direct writer. \
+The MCU output driver and physical ECM terminal connection remain \
+unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 409
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "jovial-bird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nippy-wildcat/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2377"
+name = "delicate-peccary"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3ca"
+value = {named = ["00008b2a", "0002e2e8", "000a25fa", "ffff2377"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2600"
+value = {named = ["00008b2a", "0002e2e8", "000a25fa", "ffff2377"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "jovial-bird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "nippy-wildcat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,126 @@
+summary = """
+Multipurpose configuration byte. Bit 6 enables accumulation of qualified \
+misfire sample count ffff3834 in FUN 0003cf24 and gates four branches in \
+detection core 00085a70. An exact-byte whole-program p-code pass over all \
+2315 JK08A functions found 12 accesses in eight functions. The only resolved \
+write is FUN 000d093c preserving the byte and ORing bit 4. A broader \
+source-boundary pass over ffff4000..ffff42ff found no base-relative, \
+pointer-derived, or constant-address write capable of producing bit 6."""
+note = [
+    """
+The bit-6 physical feature name and its startup, retained-memory, or \
+external configuration source are not assigned.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 321
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fat-buzzard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-parrot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4247"
+name = "warping-goldfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cfb6"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041cae"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086018"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008619e"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008657c"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086666"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d0954"
+value = {named = ["0003cf24", "00085a70", "000d093c", "ffff4247"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dancing-parrot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

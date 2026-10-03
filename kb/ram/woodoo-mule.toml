@@ -1,0 +1,127 @@
+summary = """
+Load coordinate of builder 00053698: min(255, ((uint16(ffff1024)*R >> 8)*T) \
+>> 15), where R is the pressure ratio of ffff517c and T = floor(76288/(b + \
+223)) bounded to ROM8[0x83C5]+128..ROM8[0x83C6]+128. Byte b is \
+intake-temperature snapshot ffff2733, or ROM8[0x8B51] when 00025e20(0x125) \
+is nonzero. It indexes curve 000129e2."""
+note = [
+    """
+With the ECU-declared degC = raw - 50 temperature scale, b + 223 is kelvin \
+and T is 256*298/kelvin, 256 at 25 degC; stock bounds 179 and 343 correspond \
+to 426 K and 222 K. At R = 256 and T = 256 the coordinate is Base Fuel \
+Schedule over 128, 16 counts per millisecond.""",
+]
+level = "code"
+unit = "raw_u8"
+
+[[ledger]]
+registry = "vars"
+order = 904
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perky-agama/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13b1"
+name = "woodoo-mule"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c5"
+value = "0x33"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c6"
+value = "0xd7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b51"
+value = "0x4b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053718"
+value = {named = ["000083c5", "000083c6", "00008b51", "00053698", "ffff1024", "ffff13b1", "ffff2733"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053750"
+value = {named = ["000083c5", "000083c6", "00008b51", "00053698", "ffff1024", "ffff13b1", "ffff2733"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005375a"
+value = {named = ["000083c5", "000083c6", "00008b51", "00053698", "ffff1024", "ffff13b1", "ffff2733"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053768"
+value = {named = ["000083c5", "000083c6", "00008b51", "00053698", "ffff1024", "ffff13b1", "ffff2733"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537ae"
+value = {named = ["000083c5", "000083c6", "00008b51", "00053698", "ffff1024", "ffff13b1", "ffff2733"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "perky-agama/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

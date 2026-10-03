@@ -1,0 +1,123 @@
+summary = """
+Base of a six-element signed 16-bit subtractive correction array. \
+FUN_00052de8 accumulates a bounded correction into the selected element, \
+FUN_000571c0 can clear selected elements, and FUN_0004eba2 subtracts the \
+element when ROM8[00008d92] bit 3 is set."""
+note = [
+    """
+Stock value ROM8[00008d92]=0x7a enables the subtraction. The physical \
+decomposition of the correction remains unresolved.""",
+]
+level = "code"
+unit = "raw_s16"
+
+[[ledger]]
+registry = "vars"
+order = 362
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abiding-mink/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-rook/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1466"
+name = "apricot-raven"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec48"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec4e"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec58"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052e70"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052ea0"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005720e"
+value = {named = ["00008d92", "0004eba2", "00052de8", "000571c0", "ffff1466"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "abiding-mink/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "venomous-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

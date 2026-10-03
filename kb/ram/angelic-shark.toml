@@ -1,0 +1,123 @@
+summary = """
+Current pre-snapshot saturated engine-speed byte. FUN 000384fe writes \
+ffff11e8 = ffff1196>>3, and FUN 0003846e writes this byte as min(255, \
+ffff11e8>>3), equivalent to min(255, ffff1196>>6). Scheduler 00020dfe copies \
+it to ffff11b2."""
+note = [
+    """
+The unsaturated companion word ffff11f4 uses the same ffff1196>>6 \
+expression, which establishes the count scale.""",
+]
+level = "code"
+unit = "rpm/12.5"
+
+[[ledger]]
+registry = "vars"
+order = 80
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-horse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hypersonic-seagull/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11ea"
+name = "angelic-shark"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f60"
+value = {named = ["00020dfe", "0003846e", "000384fe", "ffff11e8", "ffff11ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6a"
+value = {named = ["00020dfe", "0003846e", "000384fe", "ffff11e8", "ffff11ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["00020dfe", "0003846e", "000384fe", "ffff11e8", "ffff11ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038474"
+value = {named = ["00020dfe", "0003846e", "000384fe", "ffff11e8", "ffff11ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000384b0"
+value = {named = ["00020dfe", "0003846e", "000384fe", "ffff11e8", "ffff11ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "vigorous-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tidy-tiger/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "hypersonic-seagull/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

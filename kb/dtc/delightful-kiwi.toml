@@ -1,0 +1,36 @@
+title = "High voltage path A bank 2 sensor 2"
+level = "code"
+code = "P0158"
+group = "rear_o2"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 25
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019b58"
+name = "delightful-kiwi"
+index = 170
+attribute = "0001614e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001614e"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019b58"
+value = "320404000000015810000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a3f4"
+value = "0001614e"

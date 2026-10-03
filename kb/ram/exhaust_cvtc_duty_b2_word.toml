@@ -1,6 +1,138 @@
+summary = """
+Bank-2 exhaust-VTC duty word. FUN 000c2040 writes it at window offset 0x820 \
+of base ffff128c with the bank index in r4, after copying the previous value \
+to ffff1ab4+2*b. FUN 000c2152 converts it into ATU-II channel-7 buffer \
+register fffff594. The exact service-0x22 pointer table publishes the same \
+word as DID 0x1230."""
+note = [
+    """
+Structured Nissan diagnostics name DID 0x1230 VTC DTY EX B2. The output \
+stage divides raw*ROM8[00008dfd]*125/1024 into a cycle register of \
+125*ROM8[00008dfd], so percent = raw*100/1024 is code-proven rather than \
+homologous.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x*100/1024"
+
+[[diagnostic]]
+id = "exhaust-vtc-duty-bank-2-did-1230"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1230h-vtc-dty-ex-b2"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1230h-vtc-dty-ex-b2-a95ea907"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1230 to big-endian word \
+ffff1aae. Structured Nissan diagnostics identify it as bank-2 exhaust-VTC \
+duty and define percent = raw*100/1024. The conversion remains homologous \
+pending target measurement."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "urban-galago/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "nice-chihuahua/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "orange-hamster/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "precise-angelfish/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0002295c"
+value = "ffff1aae"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000c2186"
+value = {named = ["0002295c", "0003235c", "000bf9b0", "000c1152", "000c1dec", "000c2152", "a95ea907", "ffff1aae"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 38
+binding = "exhaust-vtc-duty-bank-2-did-1230"
+
+[[ledger]]
+registry = "vars"
+order = 117
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "diagnostic raw"
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "precise-angelfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-galago/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-fulmar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +164,40 @@ note = "Aligned diagnostic pointer table preserves the adjacent word"
 layout = "7mfk"
 address = "ffff1aae"
 former = ["conscious-mayfly/ram/7mfk-ffff1aae"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002295c"
+value = "ffff1aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20d2"
+value = {named = ["0002295c", "0003235c", "000bf9b0", "000c1152", "000c1dec", "000c2040", "000c2152", "ffff1aae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2108"
+value = {named = ["0002295c", "0003235c", "000bf9b0", "000c1152", "000c1dec", "000c2040", "000c2152", "ffff1aae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c213e"
+value = {named = ["0002295c", "0003235c", "000bf9b0", "000c1152", "000c1dec", "000c2040", "000c2152", "ffff1aae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2186"
+value = {named = ["0002295c", "0003235c", "000bf9b0", "000c1152", "000c1dec", "000c2040", "000c2152", "ffff1aae"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +234,45 @@ at = "jk78c:ffff1a8a"
 to = "7mfk:ffff1aae"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the adjacent word"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "precise-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-galago/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

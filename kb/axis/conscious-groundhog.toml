@@ -1,8 +1,56 @@
+note = [
+    """
+Explicit 16-point axis for multiplier 00012ede. FUN 00055098 indexes it by \
+min(u8[ffff2442],u8[ffff2443]), the numerically lower centered intake-cam \
+timing byte of the two banks. Stored raw points are 48, 68, 88, 108, 128, \
+138, 148, 158, 168, 178, 188, 198, 208, 218, 228, and 248. Code proves the \
+raw minimum selector and the centered intake-cam source pair. The conversion \
+gives -40..60 degCA and remains a diagnostic/catalog candidate pending \
+hardware validation.""",
+]
+level = "code"
+quantity = "raw"
+unit = "Intake Cam Timing [degCA]"
+scale = "(x-128)*0.5"
+to_raw = "x*2+128"
+scale_level = "candidate"
+
 [editor]
 name = "Minimum Two-Bank Intake Cam Timing"
 format = "0.0"
 fine = 0.5
 coarse = 2.0
+
+[[ledger]]
+registry = "axes"
+order = 0
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adaptable-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
 
 [[symbol]]
 layout = "7mfk"
@@ -13,6 +61,21 @@ name = "conscious-groundhog"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00055202"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Intake Cam Timing|Degrees|(x-128)*0.5"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "248*0.5-64=60"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "48*0.5-64=-40"
 
 [[symbol]]
 layout = "jk00c"
@@ -45,3 +108,24 @@ value = 5
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "index"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

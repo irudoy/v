@@ -1,0 +1,154 @@
+title = "Update regulator state and publish effort magnitude and direction"
+summary = """
+Stateful per-channel throttle regulator. It consumes feedback-reference \
+magnitude and direction ffff36a0/ffff369c, scaled target magnitude and \
+direction ffff391c/ffff392b, and coefficient/state arrays selected by \
+000cb41c. It publishes effort magnitude ffff37b8+4*channel and direction \
+ffff369a+channel, and writes state ffff2628+4*channel capped by \
+ROM32[0x96bc]=0x000d0000 for the next-pass snapshot."""
+note = [
+    """
+The controller data flow and output/state distinction are exact. A simple \
+PID or physical torque interpretation is not assigned.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 162
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 582
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "classic-goose/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "esoteric-carp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "robust-swallow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "thistle-zebu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "important-chital/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nocturnal-millipede/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "omniscient-goat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb614"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000096bc"
+value = "0x000d0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb9c8"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cba6e"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cbf16"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cbf88"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc0ec"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc164"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc46e"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4e6"
+value = {named = ["000096bc", "000cb614", "ffff2628", "ffff369a", "ffff369c", "ffff36a0", "ffff37b8", "ffff391c", "ffff392b"], span = 1}
+key = "reference"

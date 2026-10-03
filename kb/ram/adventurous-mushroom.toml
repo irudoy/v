@@ -1,0 +1,147 @@
+summary = """
+Coolant-conversion input byte. FUN 0002c4f8 obtains a 16-bit analog result \
+through FUN 00028668(0), stores it at ffff1d60, shifts it right by two, and \
+writes the low byte here. Calibration 00012dea converts this value into \
+exact raw coolant response byte ffff1079; FUN 0008092e repeats the lookup \
+for coolant snapshot byte ffff3fa4."""
+note = [
+    """
+The coolant identity follows from the exact ffff1079 diagnostic response \
+path, not from table shape.""",
+]
+level = "code"
+unit = "raw sensor input"
+
+[[ledger]]
+registry = "vars"
+order = 66
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-hare/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "heavenly-jaguar/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-jaguar/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1186"
+name = "adventurous-mushroom"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c510"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c518"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c51c"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c524"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c52a"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080934"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080938"
+value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "cocky-elephant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fanatic-hare/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "feathered-asp/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

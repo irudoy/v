@@ -1,0 +1,180 @@
+summary = """
+Engine-coolant fail-safe ramp, the substitute that coordinator 000394b8 \
+publishes while range check 00039614 fails. While ffff2451 bit 5 is clear it \
+clears step counter ffff1f8c. While the bit is set, every expiry of \
+countdown ffff24f7 increments the counter with saturation at 255 and reloads \
+the countdown with 6. It returns min(90 + counter, 130)."""
+note = [
+    """
+Periodic handler 0002040c decrements countdown array ffff24d4..ffff24f8 \
+every 1000 base interrupts, or 1.024 s, so the ramp covers raw 90 through \
+130 in 245.8 s. The factory fail-safe table for P0117 and P0118 gives 40 deg \
+C at ignition ON or START, 80 deg C after about four minutes, and a \
+time-dependent value between them: deg C = raw-50 at one deg C per count.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 643
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_temperature_pair_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "festive-lemming/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "festive-lemming/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "topaz-lemur/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000395ae"
+name = "bronze-wapiti"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395b0"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395b2"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395c0"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395c6"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395d2"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395ea"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395ec"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395f0"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395f8"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395fa"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395fe"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039604"
+value = {named = ["0002040c", "000394b8", "000395ae", "ffff1f8c", "ffff2451", "ffff24f7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2007-g35-ec518-coolant-fail-safe-40-80-degc"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "periodic_tick_isr/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

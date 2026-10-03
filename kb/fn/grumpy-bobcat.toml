@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00027aa2"
+name = "grumpy-bobcat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00027aa2"

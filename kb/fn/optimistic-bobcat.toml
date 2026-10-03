@@ -1,0 +1,102 @@
+summary = """
+Unsigned Q1.15 scaler used for both MAF sensor channels and for the \
+battery-voltage byte. It calculates min(65535, \
+floor(uint16(input)*uint16[ffff4970]/32768)) and writes the uint16 result \
+through its output pointer."""
+note = [
+    """
+Stock ffff4970=0x8000 makes the transform an identity before the separate \
+full-scale correction in 0003c408.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 447
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_voltage_publish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "outstanding-penguin/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-oarfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000671d8"
+name = "optimistic-bobcat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671e0"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671e4"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671ec"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671f4"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671fc"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

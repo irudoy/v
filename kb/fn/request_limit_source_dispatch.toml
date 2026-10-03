@@ -1,0 +1,58 @@
+title = "Run periodic request-limit candidate producers"
+summary = """
+Periodic-table index-11 request-limit source coordinator. Its ordered calls \
+reach rotational-speed request limiter 0007584e through candidate dispatcher \
+00075e9e before the later index-18 signed-minimum arbitration."""
+note = [
+    """
+This establishes current-pass production of 0000942c-derived ffff19d8 before \
+FUN 00071508.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 122
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 517
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_limiter_candidate_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000769c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002199c"
+value = "000769c0"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "request_limiter_candidate_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

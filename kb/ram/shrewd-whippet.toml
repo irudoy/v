@@ -1,0 +1,112 @@
+summary = """
+START SIGNAL afterrun countdown. FUN 000683b6 loads ROM8[0x8283]=250 while \
+ffff4184.bit6 is set, and 0002040c decrements it in its 102.4 ms block, so \
+work-support status 0xa2 holds for 25.6 s after the signal clears."""
+level = "code"
+unit = "102.4 ms counts"
+
+[[ledger]]
+registry = "vars"
+order = 949
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-bumblebee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "victorious-oriole/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-octopus/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff42d4"
+name = "shrewd-whippet"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008283"
+value = "0xfa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000683c6"
+value = {named = ["00008283", "0002040c", "000683b6", "000683cc", "000685f2", "ffff42d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006849c"
+value = {named = ["00008283", "0002040c", "000683b6", "000683cc", "000685f2", "ffff42d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685fc"
+value = {named = ["00008283", "0002040c", "000683b6", "000683cc", "000685f2", "ffff42d4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "victorious-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pistachio-octopus/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

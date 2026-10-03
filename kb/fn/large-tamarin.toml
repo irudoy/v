@@ -1,0 +1,383 @@
+summary = """
+Commanded-mixture stage of coordinator 00057608 and sole stock runtime \
+writer of ffff22e8. It looks up target mixture map 0000a9aa on engine-speed \
+word ffff11bc and load ffff102c, with 0xff forced onto the load axis while \
+wide-open latch ffff2468 bit 3 holds (the latch compares throttle-opening \
+byte ffff3528 with the flat 200 of 0001214e on ffff11b3), scales the \
+deviation from 128 by 00012552 on ffff11ae when ffff2466 bit 6 selects the \
+high-detonation surface, applies enrichment latch ffff24a2 bit 7 \
+(ROM8[00008b9b] = 130 on, ROM8[00008b9f] = 129 hold), and writes target byte \
+ffff15eb. It derives request byte ffff1411 and state byte ffff1410 from warm \
+gate ffff24a4 bit 5, the engine-speed band flags of ffff2493, and ffff2485 \
+bit 6, ramps ffff123a from snapshot ffff1278 toward ffff15eb << 7 with steps \
+ROM8[0000849b] * 8 and ROM8[0000849c] * 8, takes max(ffff123a, ffff123c), \
+forces 0x4000 while ffff2700 < 32 or countdown ffff2531 (reload \
+ROM8[000087d6] = 2) is nonzero, caps the word at ROM16[000094ec] under \
+ffff4252 bit 1, and writes ffff22e8."""
+note = [
+    """
+Vehicle validation on three 2026-08-26 recordings: the streamed ffff22e8 \
+matches the 0000a9aa lookup in 98.3..100 percent of settled records, and \
+STFT holds neutral 0x6400 whenever the command exceeds 0x4000.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 182
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "truthful-nightingale/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "acrid-hound/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prudent-numbat/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "spry-quokka/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-stork/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "efficient-skylark/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ethereal-piculet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "whispering-wolf/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "big-junglefowl/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cerise-skink/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "glittering-salmon/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "laughing-goshawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shrewd-manul/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "af_state_factor/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cornflower-whippet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavy-poodle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "inquisitive-crow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lavender-scorpion/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rugged-chipmunk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005594a"
+name = "large-tamarin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000849b=38"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000849c=48"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087d6"
+value = "2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9b=130"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9f=129"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094ec"
+value = "0xffff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559b6"
+value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559c0"
+value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055a50"
+value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564a8"
+value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056508"
+value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "truthful-nightingale/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "big-junglefowl/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cerise-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "glittering-salmon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "laughing-goshawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

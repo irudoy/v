@@ -1,0 +1,102 @@
+summary = """
+Idle/opening-area base written by 000476d2 as \
+min(sat_u16(lookup(0x1465a)+lookup(0x1469a)),ffff133e) and added to ffff183e \
+by the normal 00072c3c target composition."""
+note = [
+    """
+The raw base contribution is code-proven. The catalog ISC name and \
+opening-area scale remain candidate.""",
+]
+level = "code"
+unit = "raw opening-area base"
+
+[[ledger]]
+registry = "vars"
+order = 686
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_area_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fierce-tamarin/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "neat-dalmatian/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "idle_opening_area_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1340"
+name = "analytic-mole"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047728"
+value = {named = ["0001465a", "0001469a", "000476d2", "00072c3c", "ffff1340"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c62"
+value = {named = ["0001465a", "0001469a", "000476d2", "00072c3c", "ffff1340"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fierce-tamarin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "neat-dalmatian/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "throttle_area_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

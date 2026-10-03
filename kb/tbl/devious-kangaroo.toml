@@ -1,3 +1,32 @@
+summary = """
+Eight-point unsigned interpolated table of an initial byte value during \
+internal state transition 0 -> 1; the result is written to RAM ffff1f81, and \
+the physical quantity is unknown."""
+note = [
+    """
+The map has eight uint8 cells 30,30,20,14,14,10,10,10. The lookup executes \
+on the branch for internal state transition 0 -> 1 and writes the result to \
+associated sink ffff1f81. Other registers in this accessor are not used to \
+infer semantics. There is no explicit ROM axis, so axes is empty. Catalog \
+shape 1D-8 is ambiguous and does not identify the physical quantity. Index: \
+x=u8[ffff1078]; for x<224: i=floor(x/32), Q0.16 fraction=(x%32)*2048, linear \
+interpolation of table[i]..table[i+1]; for x>=224: table[7]. Output trace: \
+0003bdc4 -> 0003bdc8 -> 00026370 -> 00026a80 -> 00026aac/00026aae -> \
+00026740 -> 0003bdcc -> 0003bdd4 -> RAM ffff1f81; stop: no read site for \
+ffff1f81. Result disposition: writes; Result target: RAM ffff1f81, 1 byte, \
+site 0003bdd4. Evidence boundary: After the byte write at site 0003bdd4 to \
+RAM ffff1f81, the artifact contains no machine read site or USES edge for \
+this sink. ffff1f81 is not read within 0003bd74, and there are no external \
+consumers, so the trace does not reach functional consumption of the \
+quantity.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "State Transition Initial Value - raw u8 (0x12AB2)"
 category = "Internal Calculations"
@@ -7,10 +36,103 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 408
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012ab2"
 name = "devious-kangaroo"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc0"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc2"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc4"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc8"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdcc"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdd4"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +165,10 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

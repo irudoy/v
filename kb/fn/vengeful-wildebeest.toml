@@ -1,0 +1,159 @@
+summary = """
+Accessor for two 1D-4 uint16 tables defining the step of a Q0.16 blending \
+coefficient. ffff10d2 selects map 0x153B0 or 0x153B8; the lookup is written \
+to ffff17f8, after which 00074b68 updates ffff2422 and 00074c08 blends \
+ffff18e8 with ffff18e6 into ffff18f4."""
+note = [
+    "The physical subsystem of the blended signed16 signals is unresolved.",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 230
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "authentic-eagle/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "brass-barnacle/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "opal-camel/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "origami-kangaroo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tungsten-chowchow/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "opal-mole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "righteous-aardwark/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00074c82"
+name = "vengeful-wildebeest"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cda"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074ce4"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf0"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf4"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf6"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cfe"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d00"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d04"
+value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "authentic-eagle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "brass-barnacle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "tungsten-chowchow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

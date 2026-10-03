@@ -1,0 +1,53 @@
+summary = """
+First blended operand for 4x4 weight 0x9eca in 0007a090; unity=256 is \
+established by the trace (0x100-bVar9 and >>8), not by the catalog scale \
+x*0.78125."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 237
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vagabond-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-capybara/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c80"
+name = "tangerine-rat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a1f2"
+
+[[link]]
+type = "input"
+to = "intelligent-capybara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

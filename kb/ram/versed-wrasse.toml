@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff42f5"
+name = "versed-wrasse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020906"
+
+[[link]]
+type = "reader"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

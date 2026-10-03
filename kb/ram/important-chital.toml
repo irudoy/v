@@ -1,0 +1,85 @@
+summary = """
+Base of the two-byte throttle-regulator effort-direction array written by \
+000cb614 and consumed by 000cc6a2."""
+note = [
+    """
+Elements are ffff369a and ffff369b; normal direction codes are -0x10 and \
+0x0f. Opening polarity remains unverified.""",
+]
+level = "code"
+unit = "direction code array"
+
+[[ledger]]
+registry = "vars"
+order = 708
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_direction_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_fixed_point_regulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff369a"
+name = "important-chital"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc478"
+value = {named = ["000cb614", "000cc6a2", "ffff369a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4bc"
+value = {named = ["000cb614", "000cc6a2", "ffff369a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4d6"
+value = {named = ["000cb614", "000cc6a2", "ffff369a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc6b8"
+value = {named = ["000cb614", "000cc6a2", "ffff369a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "throttle_direction_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

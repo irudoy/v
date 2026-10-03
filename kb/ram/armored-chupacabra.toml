@@ -1,0 +1,71 @@
+summary = """
+Saturating count of changes of ffff417e.bit6 kept by 000682a2; automatic \
+work-support selector 000682f6 requires at least 3."""
+note = [
+    """
+ffff2b72 lies at ffff28f8+0x27a. No static writer changes source bit \
+ffff417f.bit6, so the count stays below 3 in JK08A.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 948
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hypersonic-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "copper-swallow/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b72"
+name = "armored-chupacabra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682da"
+value = {named = ["000682a2", "000682f6", "ffff2b72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006830e"
+value = {named = ["000682a2", "000682f6", "ffff2b72"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "hypersonic-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "copper-swallow/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

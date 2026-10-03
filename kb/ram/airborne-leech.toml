@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8005"
+name = "airborne-leech"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002f056"
+
+[[link]]
+type = "reader"
+to = "lively-muskox/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

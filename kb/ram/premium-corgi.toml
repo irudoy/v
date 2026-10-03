@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2026"
+name = "premium-corgi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000419ec"
+
+[[link]]
+type = "lookup"
+to = "tomato-robin/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

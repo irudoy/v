@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41a0"
+name = "stirring-agama"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000210a0"

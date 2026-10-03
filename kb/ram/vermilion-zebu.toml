@@ -1,0 +1,97 @@
+summary = """
+Second Q0.8 contribution byte: wB=uint8(trunc0((B<<8)/(A+B))), where \
+A=ffff1054 and B=ffff1056. Initialized to 128 by FUN_00059298 and \
+recalculated by FUN_0003b520."""
+note = [
+    """
+Stock curve outputs are strictly positive, so the stored quotient is below \
+256.""",
+]
+level = "code"
+unit = "q0.8"
+
+[[ledger]]
+registry = "vars"
+order = 289
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cobalt-mayfly/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "helpful-swine/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3d45"
+name = "vermilion-zebu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b572"
+value = {named = ["00021bbc", "0003b520", "00059298", "ffff3d45"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b624"
+value = {named = ["00021bbc", "0003b520", "00059298", "ffff3d45"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00059302"
+value = {named = ["00021bbc", "0003b520", "00059298", "ffff3d45"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cobalt-mayfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

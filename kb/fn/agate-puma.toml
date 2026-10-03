@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000bdee4"
+name = "agate-puma"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdee4"

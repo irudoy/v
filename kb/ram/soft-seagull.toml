@@ -1,0 +1,257 @@
+summary = """
+Crank reference capture of the current tooth. On the normal path the ICI0A \
+handler prologue stores OSBR1 (fffff456) at 00028f22 on every crank tooth \
+and forms tooth interval ffff22ba from the difference to the previous value. \
+In P0335 fallback 0002b768 stores the GR1E or GR1F word (fffff44c from \
+caller 0002a51e, fffff44e from 0002a5cc) at 0002b7cc for the current engine \
+event. APC and injection-start compare scheduling uses it as its base, and \
+capture handlers 000c2c58 (000c2c86) and 000c2d76 (000c2da4) subtract it \
+from the channel-4 cam captures to form the exhaust-cam edge interval. \
+Channels 1A and 4 both count phi'/32 = 3.2 us (TCR1A and TCR4 = 5 in \
+0002718a, PSCR1 = 1 in 000274ac), so the difference is a time."""
+note = [
+    """
+The producers and consumers are exact. One count is 3.2 us. The prologue \
+bytes 85bb 6403 9075 0845 at 00028f1c read OSBR1 and store it at offset \
+0x2fe of window base ffff128c.""",
+]
+level = "code"
+unit = "timer count"
+
+[[ledger]]
+registry = "vars"
+order = 593
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_compare_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "complex-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perky-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-mamba/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inescapable-bullfinch/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff158a"
+name = "soft-seagull"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028f1c"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028f22"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aa36"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae92"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b7cc"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c86"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2da4"
+value = {named = ["0002718a", "000274ac", "00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2d76", "ffff158a", "fffff44c", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hardware-manual"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "just-pelican/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "atu2_prescaler_init/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "input"
+to = "capable-mamba/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "inescapable-bullfinch/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "complex-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pumpkin-peacock/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

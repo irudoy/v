@@ -1,3 +1,27 @@
+summary = """
+Multiplier, constant in the current calibration, for an intermediate \
+coefficient calculated from RAM ffff160a and ffff165e before a logical right \
+shift by 15; the resulting coefficient then scales adjacent lookup results."""
+note = [
+    """
+All 16 cells equal 128, so the current calibration yields 128 for any index. \
+Code proves the operational role: after zero extension, the byte multiplies \
+intermediate value ((RAM[ffff160a] * RAM[ffff165e]) >> 8); the product is \
+then passed to 0002227c with fixed shift 15, and the resulting coefficient \
+participates in scaling adjacent lookup results. The physical quantity and \
+distribution of fixed-point scales among multipliers are unknown, so the \
+scale remains raw. The write to ffff1840 has no external readers, but the \
+same SSA copy in r5 is consumed at 00056898; this is neither a comparison \
+nor a return nor dead control flow. There is no explicit ROM axis, so axes \
+are empty. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
 category = "Internal Calculations"
@@ -7,7 +31,134 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 102
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "solemn-coua/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011f2a"
 name = "fascinating-rooster"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056864"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056866"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005686e"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056870"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056874"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005687a"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056880"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056882"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056890"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056896"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056898"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005689a"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005689c"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000568a4"
+value = {named = ["00011f2a", "0002227c"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "black-cicada/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "solemn-coua/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

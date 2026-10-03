@@ -1,0 +1,83 @@
+summary = """
+Per-pass Power Balance mask cache. FUN 00050a06 copies diagnostic value \
+ffff992f here while service-0x30 IOLID-0x0c is active; FUN 00050a34 returns \
+it in place of the aggregate fuel mask."""
+note = ["The ETC auxiliary mask is ORed after this replacement."]
+level = "code"
+unit = "six-channel bit mask"
+
+[[ledger]]
+registry = "vars"
+order = 632
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_apply/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-ostrich/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "power_balance_mask_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b2c"
+name = "cuddly-dragon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a1a"
+value = {named = ["00050a06", "00050a34", "ffff2b2c", "ffff992f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a46"
+value = {named = ["00050a06", "00050a34", "ffff2b2c", "ffff992f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "precious-ostrich/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "power_balance_mask_apply/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

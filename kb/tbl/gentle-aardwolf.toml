@@ -1,0 +1,147 @@
+summary = """
+Interpolated 8-bit threshold for an internal counter in FUN_000786da. In \
+active mode, the lookup byte forms the current minimum with ffff34a2; value \
+0xff prevents a conditional increment of counter ffff34a3, while condition \
+ffff34a3 <= threshold controls bit 0x40 in ffff41db and output 0xff/0 in \
+ffff259c."""
+note = [
+    """
+Associated sink ffff312c has no external readers. The value is not dead: \
+after the write, the same SSA result remains in bVar9 inside 000786da, where \
+0xff prevents a conditional counter increment, the result is combined by \
+minimum with ffff34a2, and it is then used as a comparison boundary. The \
+artifact does not establish the physical subsystem or the time value of a \
+counter step. Index: Implicit 1D-8 index: \
+q=clamp(trunc((uVar12-1000)/32),0,255). For q<224: i=q>>5, Q0.16 fraction \
+(q&31)*2048, interpolation of uint8 map[i] and map[i+1] through 00026740; \
+for q>=224, map[7] is returned. Result disposition: inline_comparison \
+(000786da).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 346
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amiable-porcupine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011c6d"
+name = "gentle-aardwolf"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787a2"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787ac"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787ae"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787b0"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787b2"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787b6"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787cc"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787d2"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787d6"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787dc"
+value = {named = ["00011c6d", "00026740", "000786da"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "amiable-porcupine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

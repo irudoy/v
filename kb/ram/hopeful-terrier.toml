@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff54f0"
+name = "hopeful-terrier"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009a102"
+
+[[link]]
+type = "writer"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

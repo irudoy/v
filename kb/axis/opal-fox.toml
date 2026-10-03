@@ -1,0 +1,28 @@
+note = [
+    """
+Explicit uint16 axis for Q1.7 coefficient map 00014e22. FUN 00069374 passes \
+uint16[ffff31dc] directly to wrapper 000264f8. All 16 stock axis points \
+equal zero, and all map cells equal 16, so the stock lookup result is \
+independent of the input. The physical coordinate quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 53
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013798"
+name = "opal-fox"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00069590"

@@ -1,0 +1,29 @@
+note = [
+    """
+Axis for two-bank Q1.7 diagnostic coefficient 00012272. FUN 00094f26 passes \
+the bank word at ffff323c+2*bank directly to wrapper 00026550. That word \
+retains the maximum of its prior value and \
+min(65535,floor(uint8[ffff11b3]*uint16[ffff1024]/16)). The physical \
+composite quantity and engineering scale are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 56
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013b08"
+name = "radical-labradoodle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000955de"

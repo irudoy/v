@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff426c"
+name = "platinum-cat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d33c"
+
+[[link]]
+type = "writer"
+to = "violet-sparrow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

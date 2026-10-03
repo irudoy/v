@@ -1,0 +1,74 @@
+summary = """
+Raw bank 2 MAF ADC snapshot copied from ffff1d64 by FUN 0003c45c after DID \
+0x1205 publication."""
+note = ["The downstream physical use remains unresolved."]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 489
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hairy-dalmatian/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-snail/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "2"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a40"
+name = "camouflaged-cockle"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0003c46e"
+value = 2
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_indexed_word_copy_path"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c466"
+value = {named = ["0003c45c", "0003c46e", "ffff1a40", "ffff1d64"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "hairy-dalmatian/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "active-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

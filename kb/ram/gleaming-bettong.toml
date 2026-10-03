@@ -1,0 +1,119 @@
+summary = """
+TCM status field from CAN 0x174: payload byte 4 shifted right by five (bits \
+5..7), published by decoder FUN 000c47ea. Invalid-message fallback FUN \
+000c5cb2 writes zero. Sole consumer FUN 0007724c maps values 3, 5, 6 and 7 \
+to bits of ffff419b."""
+note = [
+    """
+The 2026-09-22 road captures carry only values 0 and 3; value 3 appears in 5 \
+episodes, all in 4-3 and 3-2 downshifts at 2200..3987.5 RPM, and \
+JK08A.can.md gives its path to shared request ffff19c6. The TCM-side meaning \
+of the field is not established.""",
+]
+level = "code"
+unit = "raw code"
+
+[[ledger]]
+registry = "vars"
+order = 802
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "psychedelic-lizard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_174_invalid_fallback/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_174_transmission_payload_decoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tunneling-swift/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3a2e"
+name = "gleaming-bettong"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007725c"
+value = {named = ["0007724c", "000c47ea", "000c5cb2", "ffff3a2e", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007727c"
+value = {named = ["0007724c", "000c47ea", "000c5cb2", "ffff3a2e", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4a04"
+value = {named = ["0007724c", "000c47ea", "000c5cb2", "ffff3a2e", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c5ccc"
+value = {named = ["0007724c", "000c47ea", "000c5cb2", "ffff3a2e", "ffff419b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "tunneling-swift/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "psychedelic-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "can_174_invalid_fallback/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_174_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

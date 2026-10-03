@@ -1,0 +1,57 @@
+summary = "Component where bit 7 of ffff2464 bypasses interpolation."
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 148
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "selector"
+to = "whimsical-skylark/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004b790"
+name = "crimson-toad"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b79a"
+value = {named = ["0004b790", "ffff2464"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b79c"
+value = {named = ["0004b790", "ffff2464"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b79e"
+value = {named = ["0004b790", "ffff2464"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b7b6"
+value = {named = ["0004b790", "ffff2464"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "whimsical-skylark/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

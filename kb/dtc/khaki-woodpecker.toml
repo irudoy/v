@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control magnet retarder circuit bank 2"
+level = "code"
+code = "P0084"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 17
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019690"
+name = "khaki-woodpecker"
+index = 68
+attribute = "000162d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162d0"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019690"
+value = "160000000000008400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a25c"
+value = "000162d0"

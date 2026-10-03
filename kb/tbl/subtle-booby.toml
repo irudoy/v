@@ -1,0 +1,101 @@
+summary = """
+Table of coefficient x/256 for linearly blending two uint8 quantities \
+represented relative to 0x80 inside FUN_000bfc2e. Coefficient x weights the \
+quantity calculated inside the function, while 256-x weights the byte from \
+ffff2324+6+param_1."""
+note = [
+    """
+ffff160e has no external readers, but the write is not dead: FUN_000bfc2e \
+reads the same byte through ffff128c+0x382 and uses x together with 0x100-x \
+in blend arithmetic. The second input comes from ffff2324+6+param_1; after \
+rounding, shifting, and saturation, the result is written to \
+ffff2324+param_1. The function returns param_1 rather than the map value. \
+There is no direct inline comparison of the map value and no proven \
+unreachability of the conditional block. The physical meaning of the blended \
+channels is unknown. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "fraction"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 232
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-meerkat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012f7e"
+name = "subtle-booby"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc5c"
+value = {named = ["00012f7e", "000bfc2e", "ffff160e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc66"
+value = {named = ["00012f7e", "000bfc2e", "ffff160e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc70"
+value = {named = ["00012f7e", "000bfc2e", "ffff160e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "0x100"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "black-vulture/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

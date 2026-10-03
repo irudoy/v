@@ -1,0 +1,96 @@
+summary = """
+Closed DFCO state-machine state written and consumed by 000503e0. States 0 \
+through 4 mean idle, first entry delay, second entry delay, full cut, and \
+exit delay. Table 0002371c maps them to masks 00, 00, 15, 3f, and 15."""
+note = [
+    """
+Zero stock stage-2 and exit delays normally make states 2 and 4 transient \
+within one invocation.""",
+]
+level = "code"
+unit = "enum_u8"
+
+[[ledger]]
+registry = "vars"
+order = 569
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14c1"
+name = "fortunate-sunfish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002371c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050402"
+value = {named = ["0002371c", "0004ed88", "000503e0", "ffff14c1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005062c"
+value = {named = ["0002371c", "0004ed88", "000503e0", "ffff14c1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050652"
+value = {named = ["0002371c", "0004ed88", "000503e0", "ffff14c1"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,93 @@
+summary = """
+Scheduler snapshot of normalized dual-channel accelerator-pedal quantity \
+ffff2672. FUN 00047a56 compares this sample with activation/release \
+thresholds 00008fdc/00008fde."""
+note = [
+    """
+The producer traces to A/D channels AN10 and AN17 through signed channel \
+adjustment and minimum selection. It is not an engine-speed signal.""",
+]
+level = "code"
+unit = "normalized ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 215
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "remarkable-lynx/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff266e"
+name = "capable-cassowary"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fc0"
+value = {named = ["00020dfe", "00047a56", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fc4"
+value = {named = ["00020dfe", "00047a56", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b94"
+value = {named = ["00020dfe", "00047a56", "ffff266e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "accelerator_pedal_request_preprocessor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pedal_request_compensator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

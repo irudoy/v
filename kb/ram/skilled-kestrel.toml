@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3674"
+name = "skilled-kestrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003812e"
+
+[[link]]
+type = "writer"
+to = "battery_adc_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

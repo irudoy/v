@@ -1,9 +1,39 @@
+summary = """
+Explicit-axis 1D-16 wrapper over the byte core; geometry is in the entry \
+registry."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
 cols = 16
 storage = "uint8"
 x_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 84
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "didactic-civet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-ammonite/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -26,6 +56,11 @@ at = "1nd:000288ec"
 layout = "7mfk"
 address = "000264a0"
 name = "fortunate-adder"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -77,3 +112,19 @@ key = "000264a0"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000282d0"
+
+[[link]]
+type = "depends"
+to = "didactic-civet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "successful-ammonite/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

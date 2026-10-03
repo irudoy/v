@@ -1,0 +1,43 @@
+summary = """
+Base of the sensor structure populated through a pointer argument: no \
+resolved write exists anywhere in ffff119c..ffff11b7, while adjacent \
+absolutely addressed sensors are written normally."""
+note = [
+    """
+56,224 peripheral references versus 0 writes into the structure \
+(ExportXrefs) explain why reference analysis cannot find the engine-speed \
+writer.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 72
+fields = ["semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff119c"
+name = "offbeat-mantis"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "sensor-struct"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

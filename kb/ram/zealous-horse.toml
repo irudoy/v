@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8f56"
+name = "zealous-horse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006bfd8"
+
+[[link]]
+type = "lookup"
+to = "rapid-jackal/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

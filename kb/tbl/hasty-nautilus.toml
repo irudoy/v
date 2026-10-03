@@ -1,0 +1,185 @@
+summary = """
+When unsigned uint8[ffff10f9] >= ROM byte[000085c1], the branch selects base \
+000125a2, indexes the map by the high byte of uint16[ffff272a], and writes \
+the interpolated byte to ffff2f94."""
+note = [
+    """
+Branch uint8[ffff10f9] >= ROM[000085c1]=0x55 loads base 000125a2 without \
+adding 8. The map is indexed by the high byte of uint16[ffff272a], and the \
+result is written to ffff2f94. Identical contents do not merge this \
+calibration with 0001259a.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 154
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cerise-monkey/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "uptight-tiger/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flying-quoll/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000125a2"
+name = "hasty-nautilus"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085c1"
+value = "0x55"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20fa"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2104"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2106"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2108"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b210a"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b210c"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b210e"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2122"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2124"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b214c"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2150"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2152"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2154"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2158"
+value = {named = ["000085c1", "000125a2", "00026474", "00026740", "00026944", "ffff272a", "ffff2f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "uptight-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "cerise-monkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

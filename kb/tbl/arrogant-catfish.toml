@@ -1,7 +1,218 @@
+summary = """
+Calibrated lower normalized-BFS threshold of a linear ramp for RAM ffff1048 \
+relative to the 100-percent terminal point of axis 00011ebe"""
+note = [
+    """
+All 16 cells are zero, so this image uses lower threshold 0 for any index. \
+Code binds the call to 0001244a: r0 moves to r6 at 0004bca4, is written to \
+ffff15ed at 0004bcaa, and is read back into r13 at 0004bcce. At 0004bcd6, \
+0004bcde, and 0004bce8, r13 serves as the lower point of the range between \
+the map output and terminal cell ROM8[00011ecd]=128 of ignition load axis \
+00011ebe. The threshold and terminal cell use the same Q7 normalized-BFS \
+representation as ffff1048, making C exactly the 100-percent fixed-reference \
+point. The physical process controlled by the ramp remains unknown. There is \
+no separate explicit ROM axis for this threshold table. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 141
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+scale = [16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-bloodhound/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "benign-cassowary/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-bloodhound/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "benign-cassowary/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001244a"
 name = "arrogant-catfish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc98"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca0"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca4"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcaa"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcce"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcd0"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcd6"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcde"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce0"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce8"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcea"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcec"
+value = {named = ["00009534", "00011ebe", "00011ecd", "0001244a", "00021bbc", "0004bbee", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128*0.78125=100"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +245,34 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "cryptic-bloodhound/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "benign-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

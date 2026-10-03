@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff374e"
+name = "married-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00040936"
+
+[[link]]
+type = "reader"
+to = "atu2_throttle_pwm_publisher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

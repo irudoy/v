@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff19c0"
+name = "complex-ara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070d5c"
+
+[[link]]
+type = "writer"
+to = "xanthic-wildcat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

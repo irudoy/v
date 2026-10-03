@@ -1,0 +1,95 @@
+title = "Encode feedback-reference magnitude and direction"
+summary = """
+Per-channel feedback-error encoder. With ffff41a5.bit2 enabled, it compares \
+selected feedback ffff3888/ffff388a with sat_u16(ROM8[0x8cb6]*64+0x2000), \
+writes absolute magnitude ffff36a0/ffff36a4, and writes direction \
+ffff369c/ffff369d."""
+note = [
+    """
+The reference-relative magnitude and direction are exact internal regulator \
+inputs.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 156
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 576
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "discerning-fox/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classic-goose/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thistle-zebu/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb140"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008cb6=0x27"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb154"
+value = {named = ["00008cb6", "000cb140", "ffff369c", "ffff36a0", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb168"
+value = {named = ["00008cb6", "000cb140", "ffff369c", "ffff36a0", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb180"
+value = {named = ["00008cb6", "000cb140", "ffff369c", "ffff36a0", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb194"
+value = {named = ["00008cb6", "000cb140", "ffff369c", "ffff36a0", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb1c0"
+value = {named = ["00008cb6", "000cb140", "ffff369c", "ffff36a0", "ffff3888"], span = 1}
+key = "body"

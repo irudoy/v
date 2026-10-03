@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2450"
+name = "real-buffalo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003bdc8"

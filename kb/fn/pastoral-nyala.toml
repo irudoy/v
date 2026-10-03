@@ -1,0 +1,106 @@
+summary = """
+Meter CAN payload decoder used by the fuel-level monitor. It assembles \
+ffff3e24 from payload byte 1 and the top two bits of byte 2, assembles a \
+second ten-bit field at ffff3e2e from payload byte 6 and the top two bits of \
+byte 7, and sets validity bit 7 at ffff4225."""
+note = [
+    """
+Dispatcher FUN 000c3b14 invokes this handler for encoded identifier 0x5000. \
+The homologous factory M&A-to-ECM CAN path and P0460/P0461-gated consumer \
+establish the fuel-level context for ffff3e24.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 482
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-parakeet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "burrowing-caracara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c456c"
+name = "pastoral-nyala"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45b8"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45c8"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45d0"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45d4"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45d8"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45e6"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45ec"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45f0"
+value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "tall-parakeet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

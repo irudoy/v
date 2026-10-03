@@ -1,0 +1,149 @@
+summary = """
+Component with master gate ffff2458 and six threshold flags in \
+ffff2492/ffff2493. Lookup 00012422 is written to ffff15dd, multiplied by \
+selected ROM8[0000990a], rate-limited relative to ffff15da and capped by an \
+upper bound, then used to update uint16 ffff15da."""
+note = [
+    """
+Direct destination ffff15dd has no external readers, but a register copy of \
+the lookup is consumed by the product. The physical quantity of ffff15da is \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 179
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clay-capuchin/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fair-horse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cerise-skink/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "competent-pillbug/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "honest-seagull/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precise-chamois/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005525a"
+name = "knowing-potoo"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009090"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000929a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000990a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055384"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "0005525a", "ffff106f", "ffff15da", "ffff15dd", "ffff2458", "ffff2492", "ffff2493"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055392"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "0005525a", "ffff106f", "ffff15da", "ffff15dd", "ffff2458", "ffff2492", "ffff2493"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055396"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "0005525a", "ffff106f", "ffff15da", "ffff15dd", "ffff2458", "ffff2492", "ffff2493"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005539e"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "0005525a", "ffff106f", "ffff15da", "ffff15dd", "ffff2458", "ffff2492", "ffff2493"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "clay-capuchin/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

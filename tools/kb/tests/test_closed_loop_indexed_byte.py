@@ -4,7 +4,7 @@ from itertools import product
 
 import pytest
 
-from kb import checks, compile, levels, match, repo, sh2, sites
+from kb import checks, compile, levels, match, repo, sh2, sites, store
 from kb.model import SymbolKey
 
 
@@ -26,11 +26,12 @@ SPANS = (
 )
 EVIDENCE = [
     {"kind": "rom-bytes", "supports": "identity", "at": "7mfk:00088d24",
-     "value": "ffff128c", "legacy": "rom_const:00088d24=ffff128c"},
+     "value": "ffff128c"},
     {"kind": "rom-bytes", "supports": "identity", "at": "7mfk:00088ce0",
-     "value": "02f3", "legacy": "rom_const:00088ce0=02f3"},
-    {"kind": "l0", "supports": "identity", "at": "7mfk:00088c40",
-     "legacy": "site:00088c40"},
+     "value": "02f3"},
+    {"kind": "l0-context", "supports": "identity", "at": "7mfk:00088c40",
+     "key": "reference", "value": {"span": 1, "named": [
+         "00088bba", "00088ce0", "00088d24", "ffff128c", "ffff157f"]}},
     {"kind": "test", "supports": "identity", "path": PATH, "key": KEY},
 ]
 
@@ -199,9 +200,10 @@ def verify_closed_loop_byte(data, symbol):
 def compiled_placement():
     model = compile.cached(repo.ROOT)
     symbol = model.symbols[SymbolKey("7mfk", "ram", ADDRESS)]
-    assert "defs/JK08A.vars.csv" in symbol.sources
+    assert symbol.sources == {store.path_of("ram", symbol.meaning.name).as_posix()}
     assert symbol.value("unit") == "raw" and symbol.value("level") == "code"
-    assert symbol.evidence == EVIDENCE and not checks._owned(model, symbol)
+    assert len(symbol.evidence) == len(EVIDENCE) and all(item in symbol.evidence for item in EVIDENCE)
+    assert checks._owned(model, symbol)
     assert levels.held(model, symbol)
     references = sites.references("7mfk", model.root)
     assert 0xFFFF128C in references[0x88C36]

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff351b"
+name = "translucent-wasp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079400"
+
+[[link]]
+type = "writer"
+to = "tungsten-capuchin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

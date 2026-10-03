@@ -1,0 +1,130 @@
+summary = """
+Auxiliary duration word written by rotational-speed request limiter \
+0007584e. When final output is below APP request and ffff1083 > ffff1082, it \
+receives ROM16[0x943e]=182 while ffff2400 receives a table request; \
+otherwise both auxiliary outputs receive their neutral values and this word \
+is zero."""
+note = [
+    """
+The exact consumer and physical time represented by 182 remain unresolved.""",
+]
+level = "code"
+unit = "raw duration word"
+
+[[ledger]]
+registry = "vars"
+order = 292
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tunneling-woodpecker/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-rottweiler/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff413c"
+name = "cherry-chupacabra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bf0"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c00"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c22"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c2c"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c30"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "charming-rottweiler/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "tunneling-woodpecker/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

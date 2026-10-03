@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011a49"
+name = "beige-tapir"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a36e"

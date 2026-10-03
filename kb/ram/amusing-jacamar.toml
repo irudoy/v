@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff415c"
+name = "amusing-jacamar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00077690"

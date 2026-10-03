@@ -1,0 +1,62 @@
+summary = """
+Accessory-load subtraction stage. It writes \
+ffff240c=sat_i16(s16[ffff18d2]-u16[ffff2410]), the net engine torque that \
+CAN frame 0x180 carries."""
+note = [
+    """
+FUN 00065e54, entry 96 of the periodic table at 0002196c, calls 00065b08, \
+00065cd8, 00065de4, 00065f9c, and this function.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 631
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cobalt-groundhog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fascinating-crow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fervent-bittern/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00065e2c"
+name = "terrestrial-nuthatch"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021aec"
+value = "00065e54"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065e2c"
+value = {named = ["00021aec", "00065e54", "ffff18d2", "ffff240c", "ffff2410"], span = 1}
+key = "body"

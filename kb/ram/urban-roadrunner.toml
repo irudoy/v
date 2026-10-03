@@ -1,0 +1,50 @@
+summary = """
+Bit 7 is the master enable for the entire map-read path in 0003c4a0 and \
+0002c59c."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 354
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fabulous-leech/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radical-chimpanzee/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84c0"
+name = "urban-roadrunner"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000206fe"
+
+[[link]]
+type = "reader"
+to = "fabulous-leech/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radical-chimpanzee/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,105 @@
+summary = """
+Invariantly true uint8 enable predicate: the map output is compared with \
+sentinel 0x80; over the full output range 33..63, condition != 0x80 is \
+always true."""
+note = [
+    """
+Invariantly true uint8 enable predicate: the map output is compared with \
+sentinel 0x80; over the full output range 33..63, condition != 0x80 is \
+always true. Result disposition: dead_control_flow. Result target: 00085a70: \
+predicate ffff314a != 0x80 in the condition that sets bit 0 of uVar25. \
+Machine trace: 000832a0[0000b81a] -> 000832b6[00026320] -> 00026944/00026c78 \
+-> 000268a4/00026740 -> 000832ba -> 000832be[ffff314a] -> 00085a70[ffff314a \
+!= 0x80, set bit 0 of uVar25].""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 78
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "vermilion-panda/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cryptic-kudu/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b81a"
+name = "vermilion-panda"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000268a4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832a0"
+value = {named = ["0000b81a", "ffff314a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832b6"
+value = {named = ["0000b81a", "ffff314a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832be"
+value = {named = ["0000b81a", "ffff314a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00085a70"
+
+[[link]]
+type = "depends"
+to = "vermilion-panda/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

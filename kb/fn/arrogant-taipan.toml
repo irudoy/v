@@ -1,0 +1,47 @@
+role = "monitor"
+contract = """
+Not arithmetic: incremental ROM self-test scanner. It takes no arguments. \
+Each call scans the next group of longwords from cursor 0xFFFF2FF4, \
+accumulates XOR in 0xFFFF3000 and a sum in 0xFFFF3008, and advances the \
+cursor. It returns no result: r0 contains garbage at both rts instructions, \
+while r12-r14 and PR are preserved. Execution is gated by bit 7 of \
+0xFFFF4184."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 26
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2, 3]
+
+[[symbol]]
+layout = "7mfk"
+address = "0002167a"
+name = "arrogant-taipan"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00022648"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "graceful-python/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "cute-turaco/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002167a"

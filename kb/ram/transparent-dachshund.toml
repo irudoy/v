@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff336b"
+name = "transparent-dachshund"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000793c4"
+
+[[link]]
+type = "reader"
+to = "tungsten-capuchin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

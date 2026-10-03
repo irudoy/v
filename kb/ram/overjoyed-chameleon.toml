@@ -1,6 +1,89 @@
+summary = """
+Exact service-0x22 DID 0x1116 response byte. Homologous measured diagnostics \
+identify the DID as manifold absolute pressure."""
+note = [
+    """
+The physical source, engineering conversion, and distinction from DID 0x112a \
+remain unresolved.""",
+]
+level = "code"
 width = 8
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "manifold-absolute-pressure-did-1116"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221116"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0023-l0023:source-row-extended-pids:parameter:0x1116-7ee53c14"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1116 to response byte \
+ffff118a. Homologous measured diagnostics identify the DID as manifold \
+absolute pressure. The exact code establishes publication but not the \
+pressure conversion or the physical distinction from DID 0x112A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022704"
+value = "ffff118a"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022704"
+value = {named = ["0003235c", "7ee53c14", "ffff118a"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 4
+binding = "manifold-absolute-pressure-did-1116"
+
+[[ledger]]
+registry = "vars"
+order = 552
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff118a"
 name = "overjoyed-chameleon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022704"
+value = "ffff118a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022704"
+value = {named = ["0003235c", "ffff118a"], span = 1}
+key = "pointer"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

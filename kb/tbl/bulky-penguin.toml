@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013bc8"
+name = "bulky-penguin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005e756"

@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a66"
+name = "urban-degu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e6a4"
+
+[[link]]
+type = "reader"
+to = "transient_fuel_additive/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

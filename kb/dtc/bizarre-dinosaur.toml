@@ -1,0 +1,36 @@
+title = "Slow response bank 1 sensor 2"
+level = "code"
+code = "P0139"
+group = "rear_o2"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 22
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019b34"
+name = "bizarre-dinosaur"
+index = 167
+attribute = "00016144"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016144"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019b34"
+value = "320703000000013910000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a3e8"
+value = "00016144"

@@ -1,0 +1,155 @@
+summary = """
+Engine-oil-temperature thermistor transfer curve: interpolated uint8 code \
+deg C+50 of input byte ffff117b, byte-identical to shared table 00012dea \
+over all 32 points. FUN 0003eb84 stores the code in ffff1f94 at 0003ec18 and \
+publishes DID 0x111f byte ffff2876 from it: the code directly while ffff4183 \
+bit 7 is set, otherwise a higher code at once, the previous byte while code \
++ 2 exceeds it, and min(code + 2, 255) after a larger drop."""
+note = [
+    """
+The curve and table 00012dea hold the same 32 bytes and are read through the \
+same implicit-axis primitive, so the deg C+50 code that the ECU declares for \
+00012dea through J1979 Mode 01 PIDs 0x05 and 0x0F applies to this output. At \
+20 mV per input count the curve gives -8.5, 20.5, 52, 94, and 113.5 deg C at \
+the factory engine oil temperature sensor reference voltages of 4.4, 3.5, \
+2.2, 0.9, and 0.6 V, listed for -10, 20, 50, 90, and 110 deg C. The +2 \
+offset and the clamp belong to the published state rather than to the curve. \
+The implicit map has no explicit axis. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 208
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "denim-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coral-lynx/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prophetic-fox/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "match"
+to = "cautious-iguana/tbl"
+type = "depends"
+end = "owner"
+link_role = "match"
+relies = "scale"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c6e"
+name = "subtle-turaco"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec06"
+value = {named = ["00012c6e", "00012dea", "000263a0", "00026740", "0003eb84", "ffff117b", "ffff1f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec0c"
+value = {named = ["00012c6e", "00012dea", "000263a0", "00026740", "0003eb84", "ffff117b", "ffff1f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec18"
+value = {named = ["00012c6e", "00012dea", "000263a0", "00026740", "0003eb84", "ffff117b", "ffff1f94"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "prudent-loon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = """
+00012c6e=[255,241,200,174,160,149,141,134,128,122,118,113,109,105,101,97,93,90,86,82,78,74,70,66,61,57,51,45,38,27,8,0]"""
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = """
+00012dea=[255,241,200,174,160,149,141,134,128,122,118,113,109,105,101,97,93,90,86,82,78,74,70,66,61,57,51,45,38,27,8,0]"""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "prudent-loon/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "scale"
+supports = "scale"
+role = "match"
+
+[[link]]
+type = "index"
+to = "coral-lynx/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "denim-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

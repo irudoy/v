@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2ea2"
+name = "grinning-horse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039a10"
+
+[[link]]
+type = "lookup"
+to = "jovial-capuchin/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1818"
+name = "accelerated-quetzal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00065ef8"
+
+[[link]]
+type = "reader"
+to = "uppish-armadillo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

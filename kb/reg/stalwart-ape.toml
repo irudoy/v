@@ -1,0 +1,117 @@
+summary = """
+BFR7B, the ATU-II channel-7B buffer register for the second intake-VTC \
+output. FUN 000beace writes the converted value of ffff23b4, or fixed 825 \
+counts on the hardware-control path."""
+note = [
+    """
+Fixed 825 counts is 20 percent of cycle register fffff58a. The fixed values \
+apply only while saturated engine-speed byte ffff11ea is positive; otherwise \
+both channels are driven to zero.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 743
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_duty_command_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "warping-goldfish/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "smart-chicken/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "striped-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff592"
+name = "stalwart-ape"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beaf8"
+value = {named = ["000beace", "000cd75c", "ffff23b4", "ffff4247", "fffff592"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb02"
+value = {named = ["000beace", "000cd75c", "ffff23b4", "ffff4247", "fffff592"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb38"
+value = {named = ["000beace", "000cd75c", "ffff23b4", "ffff4247", "fffff592"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd81e"
+value = {named = ["000beace", "000cd75c", "ffff23b4", "ffff4247", "fffff592"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr7"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_duty_command_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "warping-goldfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "smart-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "striped-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

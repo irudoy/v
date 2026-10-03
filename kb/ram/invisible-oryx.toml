@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1720"
+name = "invisible-oryx"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046a12"
+
+[[link]]
+type = "lookup"
+to = "burrowing-dormouse/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,255 @@
+summary = """
+Time of 10 crank degrees, one tooth of the crank signal plate. On the normal \
+path the ICI0A handler prologue copies tooth interval ffff22ba into it and, \
+with sync set, stores one third of the three-pitch interval on tooth 8. In \
+P0335 fallback 0002b768 writes the quotient floor(event_interval/12) of the \
+120-degree event interval ffff11fc. Compare schedulers multiply it by the \
+command remainder over ten to form compare offsets; capture handlers \
+000c2de0 and 000c2c58 read it at 000c2dfa and 000c2cc6 and divide 20 times \
+the cam edge interval by it to form the 0.5-degree phase bytes ffff1200 and \
+ffff1201."""
+note = [
+    """
+The 10-degree scale follows the 3.2 us clock of the ATU-II captures (TCR1A = \
+5 in 0002718a, PSCR1 = 1 in 000274ac), the RPM identity ffff1196 = 32000000 \
+/ ffff11fc of 00038272, and the tooth-8 multiplier 0x5555 >> 16.""",
+]
+level = "code"
+unit = "timer count per 10 degCA"
+
+[[ledger]]
+registry = "vars"
+order = 600
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_compare_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clay-wasp/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perky-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "imported-kudu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22bc"
+name = "spry-koel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029126"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029148"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029166"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a930"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae52"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b81a"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cc6"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2dfa"
+value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "imported-kudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "apc_set_compare_continuation/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "natural-roadrunner/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pumpkin-peacock/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tidy-tiger/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

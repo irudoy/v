@@ -1,7 +1,178 @@
+summary = """
+Flat raw uint16 threshold 0xffff for RAM ffff2716: the map result is \
+compared with zero-extended ffff2716 and selects an increment for \
+accumulator ffff2b80, 0x100 when ffff2716 >= threshold and zero-extended ROM \
+byte 00008d2a otherwise."""
+note = [
+    """
+All 16 cells equal 0xffff. ffff321e has no external readers; write 000a658e \
+is not the final semantic boundary because the same value remains in r2 and \
+is used inline at 000a659a. Neither branch is proven unreachable: when \
+ffff2716 == 0xffff, the comparison is true. The artifact establishes no \
+physical quantity or unit, so raw identity is used; no explicit ROM axis \
+exists. Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 296
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "almond-flamingo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "origami-kagu/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "airborne-echidna/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000151d2"
 name = "camouflaged-stallion"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0xffff"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6578"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6582"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6586"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a658e"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6594"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6596"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a659a"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a659c"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a659e"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a65a4"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a65aa"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a65ac"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a65b0"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a65c0"
+value = {named = ["000151d2", "000263f4", "000a6516", "ffff2716", "ffff321e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +205,19 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "almond-flamingo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "origami-kagu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff36f0"
+name = "idealistic-wallaby"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00082d7a"
+
+[[link]]
+type = "writer"
+to = "steady-eagle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

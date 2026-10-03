@@ -1,0 +1,168 @@
+summary = """
+Interpolated upper uint8 threshold for integer quotient uint16[ffff8c90]/10: \
+ffff8cb4 is set when floor(uint16[ffff8c90]/10) <= \
+interp(00012362,00012fde,uint8[ffff2773])."""
+note = [
+    """
+The map output is stored in r14. The numerator is zero-extended and the \
+divisor is 10, so signed helper 00021bbc calculates an ordinary nonnegative \
+integer quotient on this domain. 0006162a tests r14 >= quotient, and \
+0006162c converts the condition to bool. All map cells are zero, but lookup \
+and comparison remain live.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 131
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "lilac-ocelot/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sage-chamois/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012362"
+name = "radical-capuchin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061612"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061614"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061616"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006161a"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006161c"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006161e"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061620"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061624"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061626"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061628"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006162a"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006162c"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006162e"
+value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "lilac-ocelot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "banana-marten/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

@@ -1,8 +1,29 @@
+summary = """
+Implicit-axis primitive: 4 points, step 16384, limit 0xC000, uint16 \
+element."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "implicit"
 kernel = "intrepid-millipede/fn"
 cols = 4
 step = 16384
+
+[[ledger]]
+registry = "funcs"
+order = 78
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -25,6 +46,11 @@ at = "1nd:00028808"
 layout = "7mfk"
 address = "000263bc"
 name = "placid-shrew"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -76,3 +102,11 @@ key = "000263bc"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000281ec"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

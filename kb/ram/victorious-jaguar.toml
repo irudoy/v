@@ -1,0 +1,126 @@
+summary = """
+First-channel Q15 crossfade weight scratch. FUN 0007a592 writes \
+interpolation result w from map 0000d78e here when ROM8[000083c1].bit7 is \
+clear, or substitutes ROM16[00009394]=0x8000 otherwise. It then uses w in \
+floor((A*(32768-w)+B*w)/32768)."""
+note = [
+    """
+This word is the weight source-selection result, not the blended endpoint \
+output.""",
+]
+level = "code"
+unit = "Q15 fraction"
+
+[[ledger]]
+registry = "vars"
+order = 248
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "secret-spider/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff31c8"
+name = "victorious-jaguar"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000083c1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009394"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5aa"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5ac"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5b2"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5d4"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5e0"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6a2"
+value = {named = ["000083c1", "00009394", "0000d78e", "0007a592", "ffff31c8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "secret-spider/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2f94"
+name = "flying-quoll"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b2120"
+
+[[link]]
+type = "lookup"
+to = "glittering-raven/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "hasty-nautilus/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "wondrous-muskrat/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

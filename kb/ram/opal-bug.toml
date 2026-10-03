@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3832"
+name = "opal-bug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003cf8a"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

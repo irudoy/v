@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff351a"
+name = "dynamic-collie"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a648a"
+
+[[link]]
+type = "lookup"
+to = "cryptic-ara/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

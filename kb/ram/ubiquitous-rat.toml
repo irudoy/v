@@ -1,0 +1,143 @@
+summary = """
+Base of a six-element 16-bit working array maintained by FUN_00052de8, \
+FUN_000571c0, and per-channel difference producer FUN_0005727a."""
+note = [
+    """
+The code establishes the shared six-channel state; its physical quantity \
+remains unresolved.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 379
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "abiding-mink/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "imperial-lobster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abiding-mink/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "imperial-lobster/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-rook/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff195e"
+name = "ubiquitous-rat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052eb2"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057226"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005724a"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005725a"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057306"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057312"
+value = {named = ["00052de8", "000571c0", "0005727a", "ffff195e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "abiding-mink/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "imperial-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "abiding-mink/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "imperial-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "venomous-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

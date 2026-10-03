@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000b566c"
+name = "tasteful-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b566c"

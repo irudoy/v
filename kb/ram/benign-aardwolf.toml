@@ -1,0 +1,112 @@
+summary = """
+Per-bank exhaust-VTC position error byte (ffff1240 + b): FUN 000c0d32 stores \
+clamp_u8(target ffff2327 - actual ffff2324 + b + 128) at 000c0d62. It \
+reloads settle countdown ffff25e7 in FUN 000bfe88 and is the integrator \
+input of error stage 000c1152."""
+note = ["FUN 000bced0 only initializes the bytes."]
+level = "code"
+unit = "centered_u8, 0.5 degCA per count"
+
+[[ledger]]
+registry = "vars"
+order = 913
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "neon-beaver/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1240"
+name = "benign-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0d62"
+value = {named = ["000bfe88", "000c0d32", "000c1152", "ffff1240", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1370"
+value = {named = ["000bfe88", "000c0d32", "000c1152", "ffff1240", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "neon-beaver/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

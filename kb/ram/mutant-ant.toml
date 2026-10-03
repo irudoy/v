@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff277c"
+name = "mutant-ant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079bd4"
+
+[[link]]
+type = "reader"
+to = "brown-inchworm/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

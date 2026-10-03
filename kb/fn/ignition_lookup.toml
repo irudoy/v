@@ -1,3 +1,12 @@
+summary = """
+Explicit-axis 16x16 wrapper over the byte core and the only entry using \
+finisher 0x267CC. The finisher performs both interpolation stages on bits \
+0..6 and then copies bit 7 from the lower-left cell selected by the row and \
+column searches. Maps are 0x991A/0x9A1A/0x9B1A."""
+note = ["Bit 7 is not numerically interpolated."]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
@@ -6,6 +15,22 @@ rows = 16
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 69
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lime-clam/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -53,6 +78,11 @@ at = "1nd:0002864e"
 layout = "7mfk"
 address = "00026230"
 former = ["capable-badger/fn/7mfk-00026230"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -102,3 +132,11 @@ note = "Reviewed interpolation contract binds the common ignition lookup"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00028032"
+
+[[link]]
+type = "depends"
+to = "lime-clam/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

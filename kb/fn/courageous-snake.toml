@@ -1,0 +1,71 @@
+summary = "Component where ffff248b selects a map path versus constant 0x8000."
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 215
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007173c"
+name = "courageous-snake"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071806"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071808"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007180a"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071830"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071840"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071842"
+value = {named = ["0007173c", "ffff248b"], span = 1}
+key = "body"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

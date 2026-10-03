@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff31dc"
+name = "amiable-swift"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006958a"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

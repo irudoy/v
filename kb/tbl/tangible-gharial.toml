@@ -1,3 +1,35 @@
+summary = """
+Base end-of-injection angle, indexed by engine-speed byte ffff11b3 in \
+RPM/25: uint16[ffff192e] = 2*min(lookup_u8(00012302, uint8[ffff11b3]) + \
+uint8[ffff340c], 209) is the delay in 2 crank degrees per count from the \
+reference tooth of the scheduled channel to the end of the pulse. The \
+reference tooth is 130 degrees after intake TDC of the injected cylinder, so \
+a cell of x counts ends the pulse 4*x - 590 degrees after the following \
+intake TDC; all 8 cells equal 133, 58 degrees before intake TDC."""
+note = [
+    """
+The normal branch forms ffff192e=2*min(lookup+uint8[ffff340c],209) in 2 \
+crank degrees per count, so one cell count is 4 crank degrees; the stock \
+delay is 532 degrees and saturation is 836. FUN 000521a8 subtracts the pulse \
+angle from that delay and splits the result by 120 into the injection lead \
+and the start angle. Sequencer 00054a44 schedules channel bit (ffff11de - \
+lead) mod 6 against tooth 7 of that event index, 110 degrees before \
+compression TDC of the cylinder with that number; channel bit k drives the \
+injector of cylinder k + 1, so the reference tooth is 130 degrees after \
+intake TDC of the injected cylinder. The channel order rests on the Power \
+Balance bit assignment of the Nissan-family diagnostic profile applied to \
+the same six-channel mask and is not measured electrically; the mechanical \
+offset between the crank sensor and the signal plate remains a hardware \
+boundary.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "deg after intake TDC"
+scale = "x*4-590"
+to_raw = "(x+590)/4"
+scale_level = "code"
+
 [editor]
 name = "End of Injection Angle - Base"
 category = "Fuelling / Injection"
@@ -9,10 +41,242 @@ static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
 static_axis_name = "Engine Speed [RPM]"
 static_axis_operand = "daffodil-gibbon/ram"
 
+[[ledger]]
+registry = "findings"
+order = 378
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amigurumi-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transformed_pulse_maximum/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_end_angle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012302"
 name = "tangible-gharial"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00012302"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e30"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e32"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e36"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e3a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e40"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e44"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e4c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e52"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:000083d5"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00022695=[2,4,8,16,32,1]"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:000522a8"
+value = "0000c49b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052212"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052216"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052222"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052226"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052244"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052252"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056e5a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056e5c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "130-720=-590"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "133*4-590=-58"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16*50331*100000/(12.5*2^32)=1.49998"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "209*4-590=246"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "360-(110+120)=130"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "6/1.49998=4.00005"
 
 [[status]]
 layout = "1me3b"
@@ -103,3 +367,31 @@ at = "jk78c:0007335e"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000733a2"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

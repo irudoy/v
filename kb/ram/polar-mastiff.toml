@@ -1,0 +1,67 @@
+summary = """
+Base of the two-word scaled channel-target array written by 000cb1ca as \
+sat_u16(ffff28bc[channel]*16+0x2000)."""
+note = ["Elements are ffff387a and ffff387c."]
+level = "code"
+unit = "centered target array"
+
+[[ledger]]
+registry = "vars"
+order = 701
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_fault_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_scaler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff387a"
+name = "polar-mastiff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb1f4"
+value = {named = ["000cb1ca", "000cb224", "ffff387a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb24c"
+value = {named = ["000cb1ca", "000cb224", "ffff387a"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_target_fault_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

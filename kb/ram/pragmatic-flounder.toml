@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15ca"
+name = "pragmatic-flounder"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004d07c"
+
+[[link]]
+type = "writer"
+to = "savvy-elephant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

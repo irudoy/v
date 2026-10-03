@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff273a"
+name = "exuberant-bulldog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064276"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

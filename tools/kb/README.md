@@ -56,9 +56,10 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
 - `kb check` runs the active checks, which `make check` includes: `l0`;
   `sites` over the function ledgers ([L0](#l0)); the
   model checks `schema`, `canonical`, `names`, `references`, `symbols`,
-  `links`, `widths`, and `fields` over the entity files and the compiled
+  `links`, `widths`, `fields`, and `ledgers` over the entity files and the compiled
   registries; the matcher
-  checks `homology`, `image-bytes`, `statuses`, and `writers`
+  checks `homology`, `image-bytes`, `statuses`, and `writers`, and the
+  claim check `levels`
   ([Matchers](#matchers)); and `projections` and `guard`
   ([Projections and the access guard](#projections-and-the-access-guard)).
   A check may print notes, lines marked `note:` that do not fail it.
@@ -67,6 +68,9 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   `.kb/cache/checks.json` records the digest of the inputs of each check at
   its last pass and the files beyond its stated inputs that it read, the
   Python files of `test` evidence.
+  The `ledgers` check also runs before a write: an evidence replacement cannot
+  leave an invalid view index, and `kb unlink` withdraws the removed relation's
+  selected dependency tokens at both claiming ends.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -86,7 +90,7 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   state different values of one fact; `names`, the registry names of a meaning
   that lose to a name of higher precedence; `untyped`, legacy evidence tokens
   that lack the keys of their evidence kind, under the registry that states
-  each; and `levels`,
+  each; and `levels`, also a mandatory model gate from stage 5,
   the claims above their effective level with the dependency that bounds
   each and the end of its chain, the `candidate` claims without evidence,
   the `code` and `silicon` claims without grounding, the `hardware` keys
@@ -337,8 +341,7 @@ a reference that names nothing fails the `references` check.
 | Adapter | Registry | Symbols |
 |---|---|---|
 | `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the features with their targets; the telemetry fields with the `7mfk` symbols of their source meanings, which `can_telemetry` requires, and the source symbols whose unit their files state; the signals with the `7mfk` symbols of the meanings and the allocations that they observe |
-| `curated` | `tools/ghidra/symbols/<layout>.csv` | `fn` symbols with curated names |
-| `ledgers` | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv` | `7mfk` symbols with their keys, links, and evidence |
+| `curated` | `tools/ghidra/symbols/1nd.csv` | `fn` symbols with curated names; the `7mfk` view belongs to the converted ledgers |
 | `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch`; the RAM that each feature allocates on `7mfk`, whose addresses name no meaning |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 | `architecture` | `defs/JK08A.architecture.toml` | `stage`, `block`, `endpoint`, and `chain` entities with the chain steps; the `block` key of the `7mfk` functions and signals of each block |
@@ -354,9 +357,10 @@ checks the index and geometry against `refs/diagnostics/rom-dtc/layouts.toml`
 and binds the row's code, addresses, and stock attribute to those spans before
 emitting typed `rom-bytes` identity evidence without `legacy`. `image-bytes`
 verifies them on every applicable image; the compiler does not refresh the
-expected bytes. Outside the DTC contract, only the explicit terminal tokens
-`indirect_base:<8hex-site>+<offset>` and `test:<path>#<function>` emit typed
-items without `legacy`; neighboring tokens retain their legacy treatment.
+expected bytes. The converted ledgers contain typed evidence without
+`legacy`. A reproduced site holds a checked `l0-context` footprint; an
+unreproduced one is `unverified-site`. A constant without a verified address
+and byte binding is `unbound-constant`. The unverified items ground no level.
 
 `indirect_base` uses eight lowercase hexadecimal site digits and a nonnegative
 ASCII decimal or lowercase `0x` offset. It maps to `indirect` evidence on the
@@ -382,6 +386,7 @@ a projection of the files.
 | `patches/can-telemetry-profile.toml` | 4 | `field` entities with their keys, `signal`, and `source`; the unit, scale, scale level, values, and named bits of the source meanings of the `ecu_ram` fields; the wire constants, `profiles`, and `contexts` of `kb/feature/can_telemetry.toml`, the addresses of its `7mfk` target, and the allocations of the `7mfk` targets of `can_telemetry`, `map_switching`, and `rolling_launch` | `kb.adapters.telemetry:profile` |
 | `defs/JK08A.tuning-signals.toml` | 4 | `signal` entities with their keys and the meanings and allocations that they observe; the widths of the observed meanings and the identity item of an observed symbol that no evidence grounds; the catalog keys of `kb/feature/can_telemetry.toml` | `kb.adapters.signals:catalog` |
 | `defs/JK08A.overrides.toml` | 4 | `[editor]` of the `7mfk` tables and axes with their masked views and `[logparam]` of the `7mfk` RAM; `default_emit` and the switches of `kb/feature/definitions.toml` and the JK08A entry of its `7mfk` target | `kb.adapters.overrides:presentation` |
+| `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv`, `tools/ghidra/symbols/7mfk.csv` | 5 | Symbol properties, typed evidence, canonical links with both claiming ends, diagnostic tables, and curated names in the meaning files; `[[ledger]]` selectors retain the legacy views | `kb.ledger_projection:registries`, `kb.ledger_projection:curated_names` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -395,8 +400,20 @@ file; otherwise it writes the files and `kb/names.csv` and loads the result
 into the graph. On a converted tree it writes nothing. Before the stage 5
 conversion, `uv run python -m kb.ledger_projection --normalize [--dry-run]`
 orders complete evidence token texts lexically, retains every token, and
-compares all model facts before writing the CSV files. The rules of the
-interpolation registries:
+compares all model facts before writing the CSV files.
+
+The ledger converter preserves all cells and row order except for removed
+`wave` and `arg` process tokens. It records the classification of each site
+and reproduces its structured context on L0. Every adopted symbol receives a
+verified identity anchor; a verified base item states placement only.
+`[[ledger]]` tables select the columns, owner notes, typed evidence, and
+canonical links of each view. A dependency selector must match the link's
+type, direction, layout, offset, role, and supported claim. Offset spellings
+retain decimal or hexadecimal presentation and must equal the numeric fact.
+A curated alias selects a current or former name. A legacy storage label is
+separate from a numeric telemetry source's absent semantic unit.
+
+The rules of the interpolation registries:
 
 - The meaning of every symbol that the registries state takes `[interp]`,
   and each symbol an entry with the override of its layout and the typed
@@ -631,6 +648,7 @@ of a census call.
 | `image-bytes` | Hook `target` words, the sources of DID entries, and each typed `rom-bytes` and `did-table` item, on every image the symbol applies to |
 | `statuses` | The statuses of the entity files: `absent` carries evidence, and `unresolved` states its search; a search older than the L0 of its layout prints a note |
 | `writers` | Every `ram` and `reg` meaning: a store of one symbol that aligns on the layout of another symbol aligns with a store of that symbol |
+| `levels` | Every declared level stays within its effective level and evidence grounding; hardware records pass and arithmetic equations hold. Hardware results are inputs of the cached gate |
 
 A base item verifies that L0 references `symbol.address - value` at `at` on
 the symbol's layout. This is base placement, not verification of the complete

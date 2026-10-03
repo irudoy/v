@@ -1,0 +1,103 @@
+summary = """
+Six-channel correction-state maintenance path. For selected channels it \
+clears ffff1466+2*i, then either copies a fallback word into ffff195e+2*i or \
+scales the current ffff195e element by ROM8[000085f7]/256."""
+note = [
+    """
+The selected-channel masks are code-traced; the physical decomposition of \
+the correction state remains unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 371
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ubiquitous-rat/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apricot-raven/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ubiquitous-rat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000571c0"
+name = "abiding-mink"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000085f7"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005720e"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057226"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057228"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005724a"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057256"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005725a"
+value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "ubiquitous-rat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

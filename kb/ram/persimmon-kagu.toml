@@ -1,0 +1,101 @@
+summary = """
+CAN requested-torque word for frame 0x180 byte 3 bits 3..0 and byte 4. FUN \
+00079e70 writes clamp(trunc0(s16[ffff4108]/5)+800, 0, 4094), where ffff4108 \
+is the scheduler latch of ffff4160."""
+note = ["A moving-load vehicle capture spans 773..1293."]
+level = "code"
+unit = "CAN torque count"
+
+[[ledger]]
+registry = "vars"
+order = 872
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "space-puma/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "congenial-wren/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-pronghorn/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f90"
+name = "persimmon-kagu"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa4"
+value = "0x0320"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa6"
+value = "0x0ffe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ed0"
+value = {named = ["00021bbc", "00079e70", "00079fa4", "00079fa6", "000c577a", "ffff3f90", "ffff4108"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079eee"
+value = {named = ["00021bbc", "00079e70", "00079fa4", "00079fa6", "000c577a", "ffff3f90", "ffff4108"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "congenial-wren/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "space-puma/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "lyrical-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

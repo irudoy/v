@@ -1,0 +1,160 @@
+summary = """
+Bit 5 is the timing-transition warm hysteresis latch maintained by 0004afdc \
+from raw coolant snapshot ffff1071. It sets at raw 110 or above; when \
+already set, adding four before the same comparison retains it through raw \
+106 and clears it below 106. The bit must be set for warm transition table \
+0001219e."""
+note = [
+    """
+The exact DID 0x1101 conversion raw-50 gives a 60 deg C set boundary and a \
+56 deg C retention boundary.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 309
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "idle_ignition_timing/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_timing_state_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41de"
+name = "vagabond-labradoodle"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000086a4=0x6e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004affe"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b002"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b006"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b00c"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b010"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b016"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b01e"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b070"
+value = {named = ["000086a4", "0001219e", "0004afdc", "ffff1071", "ffff41de"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "idle_ignition_timing/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "jovial-manul/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "striped-tiger/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

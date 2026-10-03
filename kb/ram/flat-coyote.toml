@@ -1,0 +1,147 @@
+summary = """
+Injection lead in 120-degree engine events: the quotient of the FUN 000521a8 \
+start delay in crank degrees by 120, forced to 3 while ffff4251.bit0 is set. \
+Scheduler copier 00020dfe snapshots the byte to ffff2364, which sequencer \
+00054a44 uses as the lead while ffff8513.bit5 is set and replaces with 3 \
+otherwise."""
+note = ["One engine event spans 120 crank degrees."]
+level = "code"
+unit = "engine events"
+
+[[ledger]]
+registry = "vars"
+order = 567
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amigurumi-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "handsome-spaniel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "injection_end_angle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transformed_pulse_maximum/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23f0"
+name = "flat-coyote"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052244"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005224a"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052254"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052264"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005227e"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052284"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ab0"
+value = {named = ["000521a8", "00054a44", "ffff192e", "ffff23d4", "ffff23f0", "ffff4251"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "handsome-spaniel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "injection_end_angle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

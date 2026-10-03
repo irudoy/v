@@ -1,0 +1,292 @@
+summary = """
+Live producer byte sampled by scheduler 00020dfe into current snapshot \
+ffff2458. FUN 0006efbc is the only whole-program writer found for bit 5 and \
+derives that upstream DFCO mode/eligibility bit from two Boolean gate \
+groups. FUN 0002e0d4 publishes bit 5 as bit 0 of DID 0x1302 response byte \
+ffff3342."""
+note = [
+    """
+Other functions read or modify other bits of this shared byte. A structured \
+Nissan profile names DID 0x1302 bit 0 CLSD THL POS, and the VQ35HR factory \
+manual defines CLSD THL POS as the idle position computed by the ECM from \
+the accelerator pedal position sensor signal.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "closed-throttle-position-did-1302-bit0"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1302h-bit0-clsd-thl-pos"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1302h-bit0-clsd-thl-pos-d848fad4"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+FUN 0006efbc is the only whole-program writer of ffff2459.bit5. FUN 0002e0d4 \
+packs that bit into ffff3342.bit0, and the exact JK08A service-0x22 table \
+publishes ffff3342 as DID 0x1302 with support mask 0x3f. A structured Nissan \
+profile names bit 0 CLSD THL POS. The VQ35HR factory manual defines CLSD THL \
+POS as the idle position computed by the ECM from the accelerator pedal \
+position sensor signal."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_status_dids_1302_1306_pack/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00011e41"
+value = "0x3f"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229f0"
+value = "ffff3342"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229f4"
+value = "00011e41"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000229f0"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e11e"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e154"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e15a"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e162"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0006f07a"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0006f0bc"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "0006efbc", "d848fad4", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dfco_upstream_mode_update/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "organic-cow/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 8
+binding = "closed-throttle-position-did-1302-bit0"
+
+[[ledger]]
+registry = "vars"
+order = 578
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "asparagus-cockle/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_upstream_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "organic-cow/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2459"
+name = "wisteria-sheep"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011e41"
+value = "0x3f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f0"
+value = "ffff3342"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f4"
+value = "00011e41"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021044"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021046"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e11e"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e154"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e15a"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e162"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f07a"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f0bc"
+value = {named = ["00011e41", "00020dfe", "000229f0", "000229f4", "0002e0d4", "0006efbc", "ffff2458", "ffff2459", "ffff3342"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "organic-cow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dfco_upstream_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

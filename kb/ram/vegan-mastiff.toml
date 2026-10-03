@@ -1,0 +1,61 @@
+summary = """
+Software-indexed byte written at 00088c40 by FUN 00088bba from the lookup \
+return value also copied to ffff24dc[index]. Its address is window ffff128c \
++ 0x2f3 + index; caller indices 0 and 1 select ffff157f and ffff1580."""
+note = ["The physical interpretation of this byte is unresolved."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 4
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [1, 2, 3, 0]
+
+[[ledger.dependency]]
+role = "writes"
+to = "true-gecko/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff157f"
+name = "vegan-mastiff"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_closed_loop_indexed_byte.py"
+key = "test_closed_loop_indexed_byte_placement"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00088ce0"
+value = "02f3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00088d24"
+value = "ffff128c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00088c40"
+value = {named = ["00088bba", "00088ce0", "00088d24", "ffff128c", "ffff157f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "true-gecko/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

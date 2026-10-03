@@ -1,0 +1,69 @@
+summary = """
+Per-channel signed additive-correction producer for the compensated \
+injection-pulse calculation. The function writes one element of the six-word \
+array at ffff1396+2*i."""
+note = [
+    """
+Several upstream calibrated calculations feed this correction; their \
+individual physical decomposition remains unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 365
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-ocelot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e614"
+name = "lime-ape"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e862"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e916"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e924"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

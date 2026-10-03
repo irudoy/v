@@ -1,0 +1,36 @@
+title = "Very small leak"
+level = "code"
+code = "P0456"
+group = "evap"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 45
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d80"
+name = "colossal-axolotl"
+index = 216
+attribute = "000160ae"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000160ae"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d80"
+value = "390709000000045610000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a4ac"
+value = "000160ae"

@@ -1,0 +1,85 @@
+summary = """
+Pressure-ratio byte written by builder 00053698 as min(255, floor((K << \
+18)/((K << 10) + V))) with K = ROM8[0x8AE7] = 175 and V = uint16(ffff31d8); \
+it is 256*C/(C+V) for C = K << 10 = 179200, and zero when the denominator is \
+zero."""
+note = [
+    """
+With V bounded by stock pressure word 51865 the byte spans 198..255. If one \
+count of C and V is 1/512 kPa, C is 350.0 kPa, the factory fuel-pressure \
+specification of the homologous VQ35HR service manual, and 51865 is 101.30 \
+kPa; this unit reading is a candidate.""",
+]
+level = "code"
+unit = "ratio_q8"
+
+[[ledger]]
+registry = "vars"
+order = 901
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "provocative-panda/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff17ee"
+name = "famous-potoo"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ae7"
+value = "0xaf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005381a"
+value = {named = ["00008ae7", "00053698", "ffff17ee", "ffff31d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005382e"
+value = {named = ["00008ae7", "00053698", "ffff17ee", "ffff31d8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053844"
+value = {named = ["00008ae7", "00053698", "ffff17ee", "ffff31d8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "provocative-panda/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,23 @@
+summary = """
+Unsigned lower floor for the gear-indexed value stored in ffff32ec after FUN \
+00077892 applies upper cap 0x942c. The bounded value participates in \
+calculating signed transmission request candidate ffff4162."""
+note = [
+    """
+The stock value is 0x0500. The physical quantity is unresolved. The \
+resulting candidate bounds the shared request only while ffff41a6.bit3 is \
+set, during a gear change with TCM status 3 and the 307.2 ms hold after \
+it.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Transmission Request Scalar Floor"
 category = "Limiters / Rev Limit / Internal State"
@@ -8,7 +28,100 @@ fine = 1
 coarse = 16
 static_axis = ["secondary request floor"]
 
+[[ledger]]
+registry = "findings"
+order = 37
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "humongous-bumblebee/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "manipulative-coati/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000094b2"
 name = "wonderful-coua"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094b2"
+value = "0x0500"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ace"
+value = {named = ["000094b2", "00077892", "ffff32ec", "ffff4162"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ad2"
+value = {named = ["000094b2", "00077892", "ffff32ec", "ffff4162"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ad6"
+value = {named = ["000094b2", "00077892", "ffff32ec", "ffff4162"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ada"
+value = {named = ["000094b2", "00077892", "ffff32ec", "ffff4162"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077aee"
+value = {named = ["000094b2", "00077892", "ffff32ec", "ffff4162"], span = 2}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

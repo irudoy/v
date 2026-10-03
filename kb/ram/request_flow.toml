@@ -1,3 +1,9 @@
+summary = """
+Forward column coordinate of primary requested-torque surface 0xe98e: FUN \
+00073948 interpolates 00015690 over 00015500 at ffff1824 while ffff1824 <= \
+ROM16[0x1553e] = 45187, otherwise 000156d0 over 00015540 at min(0xffff, \
+ffff1824>>4), and passes the result as the column input with row ffff1702. \
+000730fc arbitrates it with inverse coordinate ffff198a."""
 note = """
 A uint16 forward-conversion column coordinate formed from raw \
 opening-area-domain counts divided by engine speed. Engineering conversion \
@@ -12,6 +18,7 @@ automatically from their mapped table axes. All homologous target \
 coordinates have a measured common physical scale. Source references: \
 defs/JK08A.throttle-control.md:334-398, \
 defs/JK08A.tuning-telemetry.md:107-113, patches/can-telemetry.md:331-366."""
+level = "code"
 width = 16
 
 [logparam]
@@ -19,10 +26,179 @@ id = "X_VQ_QH0_Flow_Potential"
 unit = "QH0 Flow Potential [count]"
 scale = "x"
 
+[[ledger]]
+registry = "vars"
+order = 959
+fields = ["semantics", "units", "confidence"]
+storage_description = "raw 0x14114 coordinate"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nano-rook/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sexy-agouti/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-jackrabbit/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-goldfish/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "snobbish-swan/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "translucent-cormorant/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "caped-hornet/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versed-reindeer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff1980"
 former = ["voracious-goat/ram/7mfk-ffff1980"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001553e"
+value = "0xb083"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007322a"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073284"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073316"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739aa"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ae"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b0"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b8"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739bc"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739c8"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d2"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d6"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739e2"
+value = {named = ["00015500", "0001553e", "00015540", "00015690", "000156d0", "000730fc", "000737f0", "00073948", "00091278", "ffff1824", "ffff1980"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -84,3 +260,68 @@ l0 = "cb701875f15725a4"
 note = """
 No homolog is established for the requested-torque column coordinate: the \
 target conversion chain is not traced to a stored forward coordinate"""
+
+[[link]]
+type = "input"
+to = "arcane-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "caped-hornet/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "cunning-goldfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "snobbish-swan/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "translucent-cormorant/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nano-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sexy-agouti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

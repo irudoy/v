@@ -1,0 +1,54 @@
+summary = """
+Work-support status class written by 000683cc: 0 when status ffff4124 is \
+accepted, 2 when 0xa1 is the only failing check, and 1 otherwise."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 940
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4125"
+name = "cordial-squirrel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000684d0"
+value = {named = ["000683cc", "ffff4125"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006850e"
+value = {named = ["000683cc", "ffff4125"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068532"
+value = {named = ["000683cc", "ffff4125"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,72 @@
+summary = """
+Output of floor curves 0x12908/0x12918 (00046938); consumer 000474a4 uses \
+max(uVar4, ffff171a<<3) as the lower bound for ffff122a. The floor role is \
+established by code, but the curve's own scale has not been derived."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 105
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "manipulative-moose/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dramatic-roadrunner/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff171a"
+name = "urban-ammonite"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046c26"
+
+[[link]]
+type = "lookup"
+to = "manipulative-moose/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dramatic-roadrunner/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

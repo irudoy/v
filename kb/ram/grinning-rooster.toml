@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2ac0"
+name = "grinning-rooster"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bb884"
+
+[[link]]
+type = "reader"
+to = "daft-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "daft-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

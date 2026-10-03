@@ -1,0 +1,238 @@
+summary = """
+Inter-cycle latch for P030 counting-readiness bit ffff41d2.bit1. Let F = \
+ffff244f.bit5. In stock JK08A, ROM8[00008afc].bit3 is set: while F is clear, \
+FUN 00082c8a refreshes the latch with ROM8[00008499] = 0xb4 when \
+ffff422d.bit4 is set or with the all-zero map 0x12026 result when it is \
+clear, and clears bit 1. While F is set, the latch is retained and bit 1 is \
+set exactly when the retained value is zero. Normal startup clears both this \
+latch and ffff422d.bit4; all seven direct runtime writers of ffff422d \
+preserve bit 4, so the latch remains zero throughout the stock \
+application-code lifecycle."""
+note = [
+    """
+The descriptor-driven startup and recovery clears establish a zero value \
+before normal service. An exhaustive exact-address scan found only the two \
+writes and one read in FUN 00082c8a. The 0xb4 branch remains structurally \
+present but is not reached under the proven stock application-code \
+lifecycle.""",
+]
+level = "code"
+unit = "raw latch"
+
+[[ledger]]
+registry = "vars"
+order = 326
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "jovial-axolotl/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "burgundy-hoatzin/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff42a8"
+name = "prophetic-junglefowl"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008499"
+value = "0xb4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008afc"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083874"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838d8"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838e4"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838e8"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838ee"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838f4"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008391a"
+value = {named = ["00008499", "00008afc", "00012026", "00027ac0", "0002fc24", "00034b70", "00082c8a", "ffff244f", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "jovial-axolotl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "burgundy-hoatzin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

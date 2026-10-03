@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000c0d32"
+name = "neon-beaver"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c0d32"

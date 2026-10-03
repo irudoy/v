@@ -1,0 +1,172 @@
+summary = """
+The 4x4 interpolation result is written as a byte to ffff2fe4, then the same \
+register result is zero-extended and tested by cmp/pl at 00078318."""
+note = [
+    """
+Code confidence applies to the narrow operational semantics; the physical \
+quantity is unknown. Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 73
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alternate_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-pogona/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quartz-beetle/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stirring-urchin/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b5da"
+name = "orthodox-emu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782de"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782e2"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782e4"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782e8"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782ec"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000782f2"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00078312"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00078316"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00078318"
+value = {named = ["0000b5da", "00011e11", "00011e15", "00026084", "00026770", "00026944", "00026c78", "00077dec", "ffff2fe4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "chestnut-pogona/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "quartz-beetle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "alternate_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

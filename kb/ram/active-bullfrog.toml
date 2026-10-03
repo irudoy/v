@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e74"
+name = "active-bullfrog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000476f0"
+
+[[link]]
+type = "lookup"
+to = "neat-dalmatian/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff35b4"
+name = "mauve-myna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b7886"
+
+[[link]]
+type = "writer"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,92 @@
+summary = """
+P1217 engine-overtemperature diagnostic and fuel-inhibit state byte in FUN \
+0004f494. Bit 3 is the qualified diagnostic phase, bit 4 requests the \
+diagnostic dispatch, and bit 5 is the final RPM-gated fuel-inhibit state."""
+note = ["Exact descriptor 00019378 is P1217 ENG OVER TEMP."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 637
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "engine_overtemperature_fuel_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "engine_overtemperature_fuel_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41f2"
+name = "heavenly-whippet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019378"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f516"
+value = {named = ["00019378", "0004ed88", "0004f494", "ffff41f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f5e4"
+value = {named = ["00019378", "0004ed88", "0004f494", "ffff41f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f644"
+value = {named = ["00019378", "0004ed88", "0004f494", "ffff41f2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

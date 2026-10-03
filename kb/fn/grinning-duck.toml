@@ -1,0 +1,76 @@
+summary = """
+Two-bank intake CVTC control-loop dispatcher. It calls FUN 000bd9f0 for \
+channel indices 0 and 1, updates reference state through FUN 000bdf5c, and \
+invokes paired downstream control calculations."""
+note = [
+    """
+The exact runtime writer and two-bank topology are established independently \
+of diagnostic naming.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 373
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "000bd170"
+name = "grinning-duck"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd17a"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd180"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd18a"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd1c0"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd1ca"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "hallowed-chameleon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gray-cougar/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "exotic-beaver/fn/7mfk"
+relies = "structure"

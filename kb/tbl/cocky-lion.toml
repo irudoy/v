@@ -1,0 +1,187 @@
+summary = """
+Normalized Q6 multiplier 0..1: in 00054ee0 it scales the result of map \
+00012562, after which map 00012582 scales the product again and the value \
+enters composite 16-bit RAM ffff230c."""
+note = [
+    """
+Code proves the functional role of the Q6 multiplier and its contribution to \
+composite value ffff230c. The physical purpose of ffff230c is unknown: \
+0004ab94 and 000554ae show only further arithmetic processing.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/64"
+to_raw = "x*64"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 151
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_base_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tuscan-jerboa/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beneficial-ringtail/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012572"
+name = "cocky-lion"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f32"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f38"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f3e"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f54"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f58"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fanatic-snail/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f38"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f3e"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f54"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f56"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f58"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f5e"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f60"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f62"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00054f64"
+value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_base_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tuscan-jerboa/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,216 @@
+title = "Process both MAF channels and publish the combined airflow aggregate"
+summary = """
+Dual-bank MAF processing coordinator. It preprocesses exact DID \
+0x1204/0x1205 channels through 0003ae8a, looks up bank-1 curve 0x14274 and \
+bank-2 curve 0x141f4, copies their outputs into the filtering pipeline, and \
+calls 0003b252 to produce combined MAF aggregate ffff1e38. In the \
+every-fourth-interrupt task table it immediately precedes Base Fuel Schedule \
+producer 0003b75c."""
+note = [
+    """
+The continuous AN4/AN15 -> DID 0x1204/0x1205 -> transfer curves -> DID \
+0x1209 trace establishes MAF identity and bank mapping at code confidence. \
+Engineering conversions remain pending hardware validation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 73
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 298
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ivory-gecko/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "wealthy-woodlouse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maf_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maf_b2/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "opalescent-pronghorn/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-pony/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a904"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a924"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a930"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a936"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a938"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a946"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a94e"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a960"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a964"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a970"
+value = {named = ["000141f4", "00014274", "0003a904", "0003a982", "0003a9aa", "0003ae8a", "0003af42", "0003b252", "0003b27e", "0003b520", "0003b75c", "ffff101c", "ffff101e", "ffff1054", "ffff1056"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brass-ammonite/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sandy-chameleon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "enchanted-cricket/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mustard-squid/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "combined_maf_aggregate/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "wondrous-camel/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

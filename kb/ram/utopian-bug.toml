@@ -1,0 +1,111 @@
+summary = """
+Captured EVAP pressure-sample baseline. FUN 000af72e and FUN 000b0362 copy \
+the exact uint16 value from shared EVAP sample word ffff10c4 into this word \
+for subsequent baseline-relative calculations."""
+note = [
+    """
+Additional EVAP state-machine paths update the same word. The physical \
+pressure conversion, polarity, and engineering units of ffff10c4 remain \
+unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 23
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavy-leopard/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flat-boar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "remarkable-uakari/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2abc"
+name = "utopian-bug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000af7da"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000af7e2"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b03ee"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b03f4"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b047e"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b0484"
+value = {named = ["000af72e", "000b0362", "ffff10c4", "ffff2abc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "heavy-leopard/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "flat-boar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "remarkable-uakari/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

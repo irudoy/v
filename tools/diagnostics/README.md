@@ -102,9 +102,11 @@ those bindings afterward. Commands and transaction behavior are documented in
 
 ## Reviewed firmware bindings
 
-`defs/<source>.diagnostic-bindings.csv` is the canonical bridge from one
-firmware `Func`, `Reg`, `Map`, or `Axis` to a diagnostic parameter, DTC code, or
-CAN signal and its exact source claim.
+`defs/<source>.diagnostic-bindings.csv` joins one firmware `Func`, `Reg`, `Map`,
+or `Axis` to a diagnostic parameter, DTC code, or CAN signal and its exact
+source claim. The JK08A view is generated from the `diagnostic` tables of the
+owned `kb` meanings; other layouts retain their registry as the owner until
+their conversion stage.
 
 Each row keeps these decisions independent:
 

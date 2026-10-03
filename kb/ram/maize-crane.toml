@@ -1,0 +1,44 @@
+summary = """
+Signed load slope: the condition short[ffff10b8] < -byte[0x86AE] in 0005185c \
+detects throttle release. With byte[0x86AE]=0, the threshold is zero, so any \
+negative slope triggers detection."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 60
+fields = ["semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sly-chowchow/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff10b8"
+name = "maize-crane"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000086ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00051950"
+
+[[link]]
+type = "reader"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

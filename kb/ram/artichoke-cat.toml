@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff491d"
+name = "artichoke-cat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c316"
+
+[[link]]
+type = "writer"
+to = "spry-serval/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

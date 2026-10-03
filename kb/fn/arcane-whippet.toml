@@ -1,0 +1,64 @@
+summary = """
+Retained-memory default initializer of the diagnostic sample block, reached \
+through pointer slot 0002c4ac of 0002c254. It loads exhaust cam reference \
+words ffff5578 and ffff557a with ROM8[0000831d] << 8 and ROM8[0000831e] << 8 \
+and initializes the cold-start control capture block ffff5628 (words 0 and 3 \
+0xffff, longword +0x14 0xffffffff, bytes +0x18 and +0x19 0x32)."""
+note = [
+    """
+00026f08 runs 0002c254 before it writes marker 0xaa55 to ffff5cf6; 00026e1c \
+calls it when the retained-memory validation fails.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 663
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "fragrant-bloodhound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "perfect-beaver/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007f5b0"
+name = "arcane-whippet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831e=88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002c4ac"
+value = "0007f5b0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f5b0"
+value = {named = ["0000831d", "0000831e", "0002c4ac", "ffff5578", "ffff5628"], span = 1}
+key = "body"

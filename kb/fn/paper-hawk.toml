@@ -1,0 +1,69 @@
+summary = """
+Configuration-gated caller for table-driven monitor FUN 000a6dc4. \
+ROM8[0x186dc].bit7 selects entry 0 and ROM8[0x18700].bit0 selects entry 6."""
+note = [
+    """
+Both selected bits are clear in stock JK08A. A whole-program call scan found \
+no other caller of FUN 000a6dc4, so the path-B P0447 entry is statically \
+unreachable in the stock image.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 403
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[symbol]]
+layout = "7mfk"
+address = "000a6fee"
+name = "paper-hawk"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186dc"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ff4"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ffa"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7002"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a700a"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "festive-gopher/fn/7mfk"
+relies = "level"

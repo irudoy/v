@@ -1,0 +1,207 @@
+summary = """
+Multipurpose state byte and per-pass latch of ffff419b. Scheduler FUN \
+00020dfe copies the twelve bytes ffff4194..ffff419f to ffff4188..ffff4193 \
+through block copier 00022558 at 00021096, so bit 4 is the previous-pass \
+value of ffff419b.bit4, which FUN 0007724c sets exactly when TCM field \
+ffff3a2e (CAN 0x174 byte 4 bits 5..7) equals 3. FUN 00077892 reads bit 4 as \
+the first prerequisite for setting transmission-transition neutralizer \
+ffff4252.bit1. Primary startup clears this byte, and the direct writers FUN \
+00027530 and FUN 00027838 change bits 0 and 1 while preserving bit 4."""
+note = [
+    """
+Exact-address censuses see only the direct writers because the block copy \
+addresses the byte through the copier's registers. Bit 4 follows the TCM \
+field one scheduler pass later; the 2026-09-22 road captures carry value 3 \
+in 4-3 and 3-2 downshifts, so the transition-neutralizer path acts during \
+those gear changes.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 297
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gleaming-bettong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-swift/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "miniature-carp/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zealous-oriole/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff418f"
+name = "prehistoric-horse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021066"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021094"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021096"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002767a"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027954"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002795e"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779a2"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779a4"
+value = {named = ["00020dfe", "00027530", "00027838", "00027ac0", "0007724c", "00077892", "000c47ea", "ffff3a2e", "ffff418f", "ffff419b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "psychedelic-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "can_174_transmission_payload_decoder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "gleaming-bettong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-swift/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "miniature-carp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

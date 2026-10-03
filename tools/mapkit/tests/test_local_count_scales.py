@@ -360,7 +360,7 @@ def test_fractional_explicit_axis_entries_remain_outside_the_gate(image: bytes, 
 
 
 def test_compiled_table_owners_bind_candidate_scale_tests_and_ast() -> None:
-    from kb import checks, compile, match, repo
+    from kb import checks, compile, match, repo, store
     from kb.model import SymbolKey
 
     model = compile.cached(repo.ROOT)
@@ -379,7 +379,8 @@ def test_compiled_table_owners_bind_candidate_scale_tests_and_ast() -> None:
             "candidate", "candidate", unit, scale, inverse)
         assert row["scale_evidence"] == f"test:{THIS_TEST}#{key}"
         symbol = model.symbols[SymbolKey("7mfk", "tbl", address)]
-        assert OWNER in symbol.sources
+        assert symbol.sources == {store.path_of("tbl", symbol.meaning.name).as_posix()}
+        assert checks._owned(model, symbol)
         assert {name: symbol.value(name) for name in ("unit", "scale", "to_raw", "scale_level")} == {
             "unit": unit, "scale": scale, "to_raw": inverse, "scale_level": "candidate"}
         [item] = [item for item in symbol.evidence if item.get("kind") == "test"

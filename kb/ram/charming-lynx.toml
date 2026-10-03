@@ -1,0 +1,330 @@
+summary = """
+Multipurpose diagnostic state byte. Within reporter 00084cd0, bits 0..4 \
+select exact descriptor indices 0x0b..0x0f for P0305..P0301, respectively. \
+Coordinator 00082c8a builds and clears these cylinder-selection bits."""
+note = [
+    """
+The claim is limited to bits 0..4 in the misfire component. Uses of the \
+remaining bits and uses by other diagnostic functions are not assigned \
+semantics here.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0301"
+kind = "monitor"
+label = "DtcCode"
+key = "P0301"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019414"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 4 is the exact cylinder-1 selector consumed before descriptor index 0x0F \
+is dispatched for P0301."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fe4"
+value = {named = ["00019414", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["00019414", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0302"
+kind = "monitor"
+label = "DtcCode"
+key = "P0302"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019408"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 3 is the exact cylinder-2 selector consumed before descriptor index 0x0E \
+is dispatched for P0302."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fda"
+value = {named = ["00019408", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["00019408", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0303"
+kind = "monitor"
+label = "DtcCode"
+key = "P0303"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193fc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 2 is the exact cylinder-3 selector consumed before descriptor index 0x0D \
+is dispatched for P0303."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fd0"
+value = {named = ["000193fc", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193fc", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0304"
+kind = "monitor"
+label = "DtcCode"
+key = "P0304"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193f0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 1 is the exact cylinder-4 selector consumed before descriptor index 0x0C \
+is dispatched for P0304."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fc6"
+value = {named = ["000193f0", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193f0", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0305"
+kind = "monitor"
+label = "DtcCode"
+key = "P0305"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193e4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 0 is the exact cylinder-5 selector consumed before descriptor index 0x0B \
+is dispatched for P0305."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fbc"
+value = {named = ["000193e4", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193e4", "00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 167
+binding = "misfire-cylinder-select-p0305"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 168
+binding = "misfire-cylinder-select-p0304"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 169
+binding = "misfire-cylinder-select-p0303"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 170
+binding = "misfire-cylinder-select-p0302"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 171
+binding = "misfire-cylinder-select-p0301"
+
+[[ledger]]
+registry = "vars"
+order = 427
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ff"
+name = "charming-lynx"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082f78"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082f90"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fbc"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fc6"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fd0"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fda"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fe4"
+value = {named = ["00082c8a", "00084cd0", "ffff41ff"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cornflower-wolverine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

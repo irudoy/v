@@ -1,6 +1,63 @@
+summary = """
+First cell of the live two-cell intake-VTC solenoid duty pair. FUN 000be814 \
+writes it for channel 0 at offset 0x84 of base ffff23bc. FUN 000bdee4 reads \
+it at offset 0x84 of base ffff23bc and requires both cells to be zero while \
+intake target ffff2326 is neutral 0x80 before it lets delay counter ffff2534 \
+expire and set bit 5 of ffff246b."""
+note = [
+    """
+CAN telemetry schema 2 streams the pair as CVTC duty B1 and B2. The block \
+copy of FUN 00020dfe at 00021318 latches the pair into command cells \
+ffff23b4/ffff23b5, so the ATU-II conversion raw*39/100 percent applies to \
+both pairs. The eleven 2026-09-21 profile-5 captures hold both pairs equal \
+in all 279,130 records that carry them, 112,598 of them nonzero.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*39/100"
+
+[[ledger]]
+registry = "vars"
+order = 736
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*100/39"
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "amorphous-ape/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "132"
+offset = 0x84
+
+[[ledger.dependency]]
+role = "consumer"
+to = "agate-puma/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "intake_cvtc_target/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ludicrous-albatross/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -73,6 +130,20 @@ layout = "7mfk"
 address = "ffff2440"
 former = ["outgoing-orca/ram/7mfk-ffff2440"]
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdf2a"
+value = {named = ["000bdee4", "000be814", "ffff2326", "ffff23bc", "ffff2440"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be8dc"
+value = {named = ["000bdee4", "000be814", "ffff2326", "ffff23bc", "ffff2440"], span = 1}
+key = "reference"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff24c4"
@@ -129,3 +200,32 @@ note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
 programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
 the output stage of every VQ37 image"""
+
+[[link]]
+type = "base"
+to = "amorphous-ape/ram"
+offset = 0x84
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "agate-puma/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "intake_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "ludicrous-albatross/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

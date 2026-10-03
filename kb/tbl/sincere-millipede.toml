@@ -1,3 +1,30 @@
+summary = """
+Stock-inert feature timing-state addend. FUN 0004afdc can select it only \
+when ROM8[0000870b].bit0 is set and uint16[ffff2318] is strictly below \
+0x4000; stock ROM has the bit clear and the application lifecycle fixes the \
+word at exactly 0x4000."""
+note = [
+    """
+Initialization function 000593ac writes 0x4000 to ffff2318 at 000593da, and \
+a whole-application p-code census found no other writer. Either stock \
+condition independently prevents selection. The eight stock bytes are \
+identical to default map 00012196, but reachability does not depend on that \
+identity. The map remains hidden from working definitions. A2L Idle Timing \
+(Lean) vocabulary is provenance only. The alternate compositor branch of \
+0004bdc2 forms ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 \
+and shares the ffff2404 -> ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 \
+chain of coefficient 1 with the low-seven surfaces, and J1979 PID 0x0E \
+publishes ffff11d4 as A/2-64 degBTDC, so one count of this map is one crank \
+degree of the declared coordinate.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "deg"
+scale = "x-128"
+to_raw = "x+128"
+scale_level = "code"
+
 [editor]
 name = "Stock-Inert Feature Timing-State Addend (x-128) (0x121A6)"
 category = "Internal Calculations"
@@ -6,6 +33,74 @@ emit = false
 format = "0"
 fine = 1
 coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 368
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+scale = [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cordial-seagull/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "truthful-agama/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
 
 [[symbol]]
 layout = "1me3b"
@@ -41,6 +136,219 @@ layout = "7mfk"
 address = "000121a6"
 name = "sincere-millipede"
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000870b=0x46"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b038"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b03a"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b03c"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b044"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b04a"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b04c"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b058"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b0c6"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b0cc"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b0d0"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "signed_timing_state_accumulator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "0000870b=0x46"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035d6c"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004b0c6"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004b0cc"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004b0d0"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004be82"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004db8c"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcf6"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004df64"
+value = {named = ["0000870b", "000121a6", "00026370", "00026740", "00035856", "0004afdc", "0004bdc2", "0004d99c", "0004dbe8", "ffff11b2", "ffff1511", "ffff2318"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0+128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128-128=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "145-128=17"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "17+128=145"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "J1979 PID 0x0E A/2-64 degBTDC"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "timing_state_compositor/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "event_timing_correction_builder/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "final_timing_coordinate_builder/fn/7mfk"
+relies = "level"
+
 [[symbol]]
 layout = "jk78c"
 address = "000137f8"
@@ -54,3 +362,33 @@ to = "7mfk:000121a6"
 note = """
 homologous early branch guarded by the same 0x4000 comparison preserves the \
 stock-inert table role"""
+
+[[link]]
+type = "index"
+to = "cordial-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "succinct-pudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

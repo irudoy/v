@@ -1,0 +1,156 @@
+summary = """
+State byte in FUN 0004d2a6. Bit 3 is coolant hysteresis: it sets at raw \
+ffff1071>=107 from ROM8[00008e03]=106 and clears at ffff1071<=103 using \
+offset 3. Bit 6 is inverse coolant hysteresis through FUN 000259d0: it sets \
+at ffff1071<=170 from ROM8[00008e00]=170 and clears at ffff1071>=174 using \
+the same offset. Coordinator 00090a84 maintains bit 2 as raw coolant \
+ffff1071, plus 3 while set, above ROM8[00008e03]=106 and bit 5 through \
+comparator 000259d0 as raw coolant at most ROM8[00008e00]=170 with release \
+offset 3; both gate the exhaust cam reference learning."""
+note = [
+    """
+The raw coolant thresholds are exact. Conversion of ffff1071 to an \
+engineering temperature remains outside this claim.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 201
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "logical-boar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a9"
+name = "aloof-lyrebird"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e00"
+value = "0xaa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e03"
+value = "0x6a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2be"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2ce"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2d4"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2e4"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2e8"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2fc"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d308"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d318"
+value = {named = ["00008e00", "00008e03", "000259d0", "0004d2a6", "00090a84", "ffff1071", "ffff24a9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "knowing-labradoodle/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "logical-boar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

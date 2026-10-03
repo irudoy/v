@@ -1,0 +1,178 @@
+summary = """
+Work-support idle byte. Bit 3 marks LID 2 active with accepted status and \
+selects ffff3168 in 000420b8; bit 4 is the routed automatic idle request \
+that selects the automatic step in 000420b8; bit 5 is the idle record latch \
+of 00068040; bit 6 is the automatic idle request of 000682f6; and bit 7 is \
+the previous level of LID-2 store bit ffff99f4.bit3."""
+note = ["Other bits are not characterized."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 946
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curvy-barracuda/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hypersonic-chicken/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-jacamar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "victorious-oriole/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ef"
+name = "quaint-magpie"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680ec"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006835c"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068396"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068564"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068590"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685c8"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006865a"
+value = {named = ["000420b8", "00068040", "000682f6", "0006836e", "000683cc", "000685f2", "ffff41ef"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "victorious-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "curvy-barracuda/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "hypersonic-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "victorious-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

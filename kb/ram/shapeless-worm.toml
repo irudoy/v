@@ -1,0 +1,133 @@
+summary = """
+Common injection-pulse precursor written by FUN 0004e974 as \
+max(170,clamp_u16(trunc_toward_zero((H+int16(ffff2300))*ffff165e/16384))), \
+where H is the selected BFS-derived term scaled by ffff22e6 over 131072."""
+note = [
+    """
+One count is 10 us, so the ROM16[000094e8] floor of 170 is 1.70 ms. \
+ffff24a1.bit0 records whether this result was raised to the minimum.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 547
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "six_channel_pulse_dispatch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dazzling-sawfly/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enigmatic-mouse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versatile-bobcat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_pulse_precursor_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1876"
+name = "shapeless-worm"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea6c"
+value = {named = ["000094e8", "0004e974", "0004ecac", "ffff165e", "ffff1876", "ffff22e6", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea74"
+value = {named = ["000094e8", "0004e974", "0004ecac", "ffff165e", "ffff1876", "ffff22e6", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea78"
+value = {named = ["000094e8", "0004e974", "0004ecac", "ffff165e", "ffff1876", "ffff22e6", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eab0"
+value = {named = ["000094e8", "0004e974", "0004ecac", "ffff165e", "ffff1876", "ffff22e6", "ffff2300"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "dazzling-sawfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "enigmatic-mouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "versatile-bobcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "six_channel_pulse_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

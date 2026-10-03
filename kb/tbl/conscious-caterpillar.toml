@@ -1,3 +1,25 @@
+summary = """
+Subtractive correction in internal calculation 000a5a06: interpolated uint16 \
+M is written to ffff307e and, on a reachable path, subtracts M-32768 from a \
+signed intermediate value with lower saturation and subsequent limiting."""
+note = [
+    """
+Result disposition: consumer. No physical quantity is asserted beyond narrow \
+operational semantics. For raw result M in range 32768..34688, code 000a5a06 \
+calculates a difference with internal sVar17. On the path reachable for this \
+map, this is equivalent to subtracting M-32768 with int16 lower saturation; \
+an additional conditional clamp relative to ffff2733 follows. This \
+conditional conversion defines no invertible physical map scale, so only raw \
+identity is claimed. Coefficient surface 0000c78e participates earlier in \
+the same state calculation and has an independent operational finding.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Internal Subtractive Correction (0x13CE8)"
 category = "Internal Calculations"
@@ -7,7 +29,139 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 241
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cherry-junglefowl/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "turquoise-jaybird/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00013ce8"
 name = "conscious-caterpillar"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a5eac"
+value = "ffff0000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a60d8"
+value = "00008000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a22"
+value = {named = ["00008000", "00013ce8", "00015c30", "00022530", "00022544", "000264cc", "00026740", "00026984", "00026c78", "000a5a06", "000a5eac", "000a60d8", "ffff0000", "ffff307e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a26"
+value = {named = ["00008000", "00013ce8", "00015c30", "00022530", "00022544", "000264cc", "00026740", "00026984", "00026c78", "000a5a06", "000a5eac", "000a60d8", "ffff0000", "ffff307e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a32"
+value = {named = ["00008000", "00013ce8", "00015c30", "00022530", "00022544", "000264cc", "00026740", "00026984", "00026c78", "000a5a06", "000a5eac", "000a60d8", "ffff0000", "ffff307e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a36"
+value = {named = ["00008000", "00013ce8", "00015c30", "00022530", "00022544", "000264cc", "00026740", "00026984", "00026c78", "000a5a06", "000a5eac", "000a60d8", "ffff0000", "ffff307e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a3c"
+value = {named = ["00008000", "00013ce8", "00015c30", "00022530", "00022544", "000264cc", "00026740", "00026984", "00026c78", "000a5a06", "000a5eac", "000a60d8", "ffff0000", "ffff307e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-woodlouse/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diligent-goose/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "cherry-junglefowl/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

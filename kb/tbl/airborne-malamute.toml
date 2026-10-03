@@ -1,3 +1,22 @@
+summary = """
+Candidate Q0.8 window coefficient. The table byte is written to ffff1297 and \
+enters as one of four factors in a composite value whose high byte is \
+written to ffff22f8."""
+note = [
+    """
+The interpolation path through 00026740 is incomplete, and shifting the \
+composite product by 24 does not distribute normalization unambiguously \
+among the four factors; semantics and scale remain candidate. Result \
+disposition: writes.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "candidate"
+
 [editor]
 name = "Composite Product Window Coefficient (0x11E5E)"
 category = "Internal Calculations"
@@ -7,10 +26,299 @@ format = "0.0000"
 fine = 0.00390625
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 96
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+scale = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dfco_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "colorful-giraffe/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hungry-sidewinder/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011e5e"
 name = "airborne-malamute"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9dc"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9e6"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9fa"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba02"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba06"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba08"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba0a"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba0c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba10"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba12"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba14"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba16"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba18"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba1c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba1e"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba24"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2a"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2e"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba02"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba0c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba10"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba14"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba18"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba1c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba1e"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba24"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba2a"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba2c"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ba2e"
+value = {named = ["00011e5e", "00026388", "ffff1297", "ffff22f8"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +351,18 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "dfco_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "mysterious-nightingale/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

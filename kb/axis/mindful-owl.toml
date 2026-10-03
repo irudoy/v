@@ -1,3 +1,32 @@
+note = [
+    """
+Row axis for target mixture map 0xA9AA. Stage 0005594a passes the raw points \
+through wrapper 00026178, whose word core compares each point after \
+multiplication by four against RPM/12.5 word ffff11bc, so one stored count \
+represents 50 RPM. The points span 2400..6800 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 76
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011cc0"
@@ -7,6 +36,42 @@ name = "mindful-owl"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000559b6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559b0"
+value = {named = ["00011cc0", "00020dfe", "00026178", "000269c4", "000384fe", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4*12.5=50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "rousing-kingfisher/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "literate-hornet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -50,3 +115,10 @@ value = "0001340f"
 note = """
 target mixture stage 00071dfa passes this RPM axis with RPM word ffff11ac at \
 the homologous lookup of map 0000a3ca"""
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

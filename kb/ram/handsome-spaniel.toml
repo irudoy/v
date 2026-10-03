@@ -1,0 +1,128 @@
+summary = """
+Base of the six-element transformed injection-pulse array. FUN_0004eba2 \
+passes each raw ffff23c8 element through FUN_0005b7ec and writes the result \
+at index 2*i. With stock coefficients the transform is \
+max(x,sat_u16(floor((13656*x+425000)/16384))). Scheduler copier 00020dfe \
+snapshots the array to ffff2348, from which FUN_00054d3e fills \
+scheduled-duration array ffff224e. FUN_000521a8 takes the maximum across all \
+six elements."""
+note = [
+    """
+The numeric transform is exact and is the final minimum-pulse floor before \
+the hardware. One count is 10 us, the same unit as ffff23c8.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 375
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transformed_pulse_maximum/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injector_channel_pulse_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23d4"
+name = "handsome-spaniel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021316"
+value = {named = ["00020dfe", "0004eba2", "000521a8", "0005b7ec", "ffff23d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ebda"
+value = {named = ["00020dfe", "0004eba2", "000521a8", "0005b7ec", "ffff23d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec84"
+value = {named = ["00020dfe", "0004eba2", "000521a8", "0005b7ec", "ffff23d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec94"
+value = {named = ["00020dfe", "0004eba2", "000521a8", "0005b7ec", "ffff23d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000521e2"
+value = {named = ["00020dfe", "0004eba2", "000521a8", "0005b7ec", "ffff23d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pulse_affine_floor_transform/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "lookup"
+to = "over_run_channel_multiplier/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

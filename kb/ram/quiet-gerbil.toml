@@ -1,0 +1,87 @@
+summary = """
+Scheduler snapshot of minimum-pulse word ffff241c, produced by the same \
+140-byte ffff23bc -> ffff2330 copy. FUN_00054d3e substitutes it for any \
+channel whose snapshot duration is below it."""
+note = [
+    """
+One count is 10 us. FUN_000521a8 applies the unsnapshotted word ffff241c as \
+the same lower bound when it derives scalar bytes ffff23bf and ffff23f0.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 856
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bulky-hound/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "devout-swift/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2390"
+name = "quiet-gerbil"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d90"
+value = {named = ["00020dfe", "00054d3e", "ffff2390", "ffff241c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054dac"
+value = {named = ["00020dfe", "00054d3e", "ffff2390", "ffff241c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "devout-swift/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bulky-hound/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

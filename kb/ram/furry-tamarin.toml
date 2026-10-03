@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1cbe"
+name = "furry-tamarin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000723d6"
+
+[[link]]
+type = "reader"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

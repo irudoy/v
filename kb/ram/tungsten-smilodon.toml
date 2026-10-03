@@ -1,0 +1,152 @@
+summary = """
+Multipurpose bitfield. Bit 7 is the hysteretic engine-speed readiness state \
+for P030 qualification. FUN 0007c4e0 sets it when saturated RPM/12.5 byte \
+ffff11b2 is at least stock ROM8[00008bda] = 32 and, once set, retains it \
+while the byte is at least 28. FUN 000593ac writes the same byte only to OR \
+bit 6."""
+note = [
+    """
+The thresholds correspond to setting at 400 RPM and clearing below 350 RPM. \
+A whole-program p-code pass over all 2315 functions found four exact \
+accesses, no unresolved candidates, and no other bit-7 writer.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 142
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "efficient-caribou/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "efficient-caribou/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24c4"
+name = "tungsten-smilodon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008bda=0x20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005947e"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4e8"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4ee"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4f4"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4fa"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c500"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c504"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c506"
+value = {named = ["00008bda", "000593ac", "0007c4e0", "ffff11b2", "ffff24c4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "succinct-pudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "efficient-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "efficient-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

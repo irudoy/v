@@ -1,0 +1,168 @@
+summary = """
+Bit 6 is the stored-fault summary of DTC attribute bit 8: FUN 0008c24e sets \
+it at 0008c266 while FUN 0008c396(0x0100) finds a descriptor record whose \
+attribute word has bit 8 set and whose runtime record ffff5718 + 3*index has \
+byte 1 bit 7 set, and clears it at 0008c268 otherwise. A set bit blocks \
+exhaust-VTC operating enable ffff248b bit 2 in 000bf630, rest-edge learning \
+gate ffff24a8 bit 7 in 000bf9b0, and the enable argument of 00090a84. Bit 7 \
+is written by 00079a98, bit 0 by 0009a348, and bit 4 by 000cc94e."""
+note = [
+    """
+Attribute bit 8 is carried by 36 stock descriptor records: twenty P0605 \
+records and P0120, P0643, P1123, P1127, P1129, P1233 (two), P1236, P1238, \
+P1290, P2100, P2101 (two), P2103, P2118, and P2119.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 882
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "logical-boar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-galago/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-hoatzin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "copper-kakapo/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hypnotic-hummingbird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "invaluable-tanuki/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41be"
+name = "charming-skunk"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0008c460"
+value = "0001a14c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c258"
+value = {named = ["0001a14c", "00079a98", "0008c24e", "0008c396", "0008c460", "00090a84", "0009a348", "000bf630", "000bf9b0", "000cc94e", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c266"
+value = {named = ["0001a14c", "00079a98", "0008c24e", "0008c396", "0008c460", "00090a84", "0009a348", "000bf630", "000bf9b0", "000cc94e", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c268"
+value = {named = ["0001a14c", "00079a98", "0008c24e", "0008c396", "0008c460", "00090a84", "0009a348", "000bf630", "000bf9b0", "000cc94e", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-mule/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "logical-boar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-galago/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "active-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "copper-kakapo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "hypnotic-hummingbird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "invaluable-tanuki/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

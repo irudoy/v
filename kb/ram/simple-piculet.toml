@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11c2"
+name = "simple-piculet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00065618"
+
+[[link]]
+type = "reader"
+to = "vigorous-saluki/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

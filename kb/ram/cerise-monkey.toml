@@ -1,0 +1,150 @@
+summary = """
+Previous-cycle snapshot of EVAP fuel-level coordinate/sentinel result \
+ffff282e. Scheduler FUN 00020dfe copies it through the 0x104-byte runtime \
+block. Four EVAP functions read it at seven sites: signed high-byte checks \
+use 0xffff as -1 sentinel, while FUN 000b2096 uses unsigned high byte 255 as \
+the coordinate of coefficient maps 0001259a/000125a2/000125aa."""
+note = [
+    """
+Whole-program p-code analysis completed all 2315 functions with zero \
+failures and found exactly these seven reads. In stock JK03A and JK08A the \
+value is always 0xffff.""",
+]
+level = "code"
+unit = "EVAP fuel-level sentinel raw"
+
+[[ledger]]
+registry = "vars"
+order = 542
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "classic-pelican/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rigorous-parakeet/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "married-dodo/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff272a"
+name = "cerise-monkey"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fca"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae96c"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000af09e"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20b8"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2106"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2142"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b3d5a"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b3e4c"
+value = {named = ["00014bca", "00020dfe", "00022558", "000b2096", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "married-dodo/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rigorous-parakeet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

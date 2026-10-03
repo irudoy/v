@@ -1,0 +1,198 @@
+summary = """
+Unsigned 8x8 multiplier. Interpolated uint16 M is written to ffff9010; \
+00069374 then uses it in a product, shifts the result right by 20, saturates \
+to 0xff, and writes the derived byte to ffff359d."""
+note = [
+    """
+Code confidence applies to the narrow operational semantics; the physical \
+quantity is unknown. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 90
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "base"
+to = "maize-cockatoo/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stoic-dogfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eggplant-toucanet/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "micro-gorilla/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "humongous-warthog/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "radical-duck/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000fc8e"
+name = "keen-wildcat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1ce"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1d0"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1d2"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1d4"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1d6"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c1da"
+value = {named = ["0000fc8e", "000137b8", "000137f8", "00021ce0", "00026270", "00026848", "00026984", "00026c78", "00069374", "ffff28f8", "ffff359d", "ffff8e34", "ffff9010"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nondescript-seagull/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "amiable-bloodhound/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "bipedal-tortoise/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "eggplant-toucanet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "maize-cockatoo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "micro-gorilla/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

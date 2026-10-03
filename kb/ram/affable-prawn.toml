@@ -1,0 +1,99 @@
+summary = """
+Stationary-limiter readiness countdown. FUN 0004f324 loads 100 on first \
+eligible entry and after every readiness-accumulator update. Interrupt \
+handler 0002040c decrements it as part of byte range ffff256a..ffff25f3 \
+every tenth base interrupt."""
+note = [
+    """
+One count is exactly 204800/Pphi seconds. Passive target-CAN timestamps \
+establish Pphi=20 MHz, so 100 counts are 1.024 seconds and the three \
+high-RPM expiries needed for readiness total 3.072 seconds.""",
+]
+level = "code"
+unit = "tenth-phase counts"
+
+[[ledger]]
+registry = "vars"
+order = 382
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "meaty-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff258a"
+name = "affable-prawn"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "100"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004f356"
+
+[[link]]
+type = "input"
+to = "meaty-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

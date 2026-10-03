@@ -1,0 +1,210 @@
+summary = """
+Engine-speed fuel-cut state machine. Stock ROM8[00008b38] bit 7 is clear, so \
+ffff2468 bit 4 selects one activation/release pair from the 2x2 uint16 table \
+at 0000934e. With state ffff2497 bit 2 clear, RPM/12.5 word ffff11bc at or \
+above the activation threshold inclusively arms bit 1 and loads optional \
+delay ffff24f1; stock delay zero sets bit 2 in the same invocation. With bit \
+2 set, equality to the release threshold retains cut and only speed below it \
+clears bits 1 and 2. The function returns bit 2 as a Boolean."""
+note = [
+    """
+Apply calibrated activation and release thresholds to the main full fuel-cut \
+state""",
+    """
+The returned state reaches the global 0x3f mask in 0004ed88 and therefore \
+inhibits all six injection outputs through ffff22e0. Exact code proves the \
+RPM x*12.5 scale; the public HR A2L catalog supplies the candidate \
+Normal/Reverse column labels.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 119
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 159
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_fuel_cut/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_inhibit/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sparkling-echidna/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f282"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b38=0x63"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c69"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f288"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f28e"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f294"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2c0"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ca"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2e2"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ee"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2fa"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2fc"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f302"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f304"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f30e"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f316"
+value = {named = ["00008b38", "00008c69", "0000934e", "00020dfe", "0004ed88", "0004f282", "ffff11bc", "ffff2468", "ffff2497", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

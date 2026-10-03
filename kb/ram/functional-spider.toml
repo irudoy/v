@@ -1,0 +1,44 @@
+summary = """
+One of three RAM inputs of reciprocal-transfer-pair component 0x72f1e (pairs \
+{0x18e86,0x18fd6} and {0x18e46,0x18f96}); the write source is unidentified."""
+note = [
+    """
+The missing source is why the pair members are downgraded to candidate: \
+their reciprocal role is confirmed by the trace, but the physical quantity \
+is not.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 131
+fields = ["semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vigorous-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d08"
+name = "functional-spider"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00072f1c"
+
+[[link]]
+type = "reader"
+to = "vigorous-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,139 @@
+summary = """
+Signed retard term written by 0004d99c: -ffff11f9 when ffff24c5.bit5 and \
+ffff24cb.bit2 are clear, otherwise min(ffff22fa-hi(ffff23c2), -ffff11fa) on \
+the knock branch enabled by ROM8[0x8710].bit5. It is added to snapshot \
+ffff2378 while forming ffff12d6."""
+note = ["One count is one crank degree of the final coordinate."]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 840
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aquamarine-leopard/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "athletic-coucal/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hopeful-hedgehog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "steady-lionfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "event_timing_correction_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11d6"
+name = "eccentric-badger"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9ce"
+value = {named = ["00008710", "0004d99c", "ffff11d6", "ffff11f9", "ffff11fa", "ffff22fa", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9f4"
+value = {named = ["00008710", "0004d99c", "ffff11d6", "ffff11f9", "ffff11fa", "ffff22fa", "ffff23c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da4a"
+value = {named = ["00008710", "0004d99c", "ffff11d6", "ffff11f9", "ffff11fa", "ffff22fa", "ffff23c2"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "aquamarine-leopard/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "athletic-coucal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "hopeful-hedgehog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "steady-lionfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

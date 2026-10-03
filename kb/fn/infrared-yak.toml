@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000bb728"
+name = "infrared-yak"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bb728"

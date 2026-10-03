@@ -1,0 +1,33 @@
+role = "service"
+contract = """
+Not a function: data forming the tail of jump table 0x2231c..0x2235b, \
+entries for counts 24..31, belonging to arithmetic right-shift dispatcher \
+0002235c. Ghidra declared the table tail as a separate function."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 44
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "0002234c"
+name = "gorgeous-fox"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "exuberant-stallion/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002234c"

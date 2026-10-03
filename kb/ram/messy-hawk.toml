@@ -1,0 +1,199 @@
+summary = """
+Base of the six-element mask-gated injection-pulse array written by \
+FUN_00051a98. For channel i the stock branch forms base = \
+arithmetic_shift6(uint8(ffff152c)*uint8(ffff1527)), adds or subtracts \
+uint8(ffff15d8) by ffff2484.bit0, adds 0x32 when bit i of uint8(ffff1574) is \
+set, scales the sum by int16(ffff142e+2*i) over 1024 and by uint16(ffff165e) \
+over 8192 with uint16 saturation, and adds uint16(ffff2436)."""
+note = [
+    """
+One count is 10 us, the same unit as ffff23c8; the additive ffff2436 term is \
+the injector opening time.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 857
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-gibbon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amphibian-vicugna/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coral-wolverine/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-kingfisher/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "refreshing-peccary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versatile-bobcat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brilliant-dugong/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "discerning-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff155c"
+name = "messy-hawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051e3a"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051e40"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051e62"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051e82"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051eb4"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ece"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ee8"
+value = {named = ["00051a98", "ffff142e", "ffff1527", "ffff152c", "ffff155c", "ffff1568", "ffff1574", "ffff165e", "ffff2436"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "brilliant-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "adventurous-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "amphibian-vicugna/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "coral-wolverine/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "portable-kingfisher/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "refreshing-peccary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "versatile-bobcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,97 @@
+title = "Scale offset and publish accelerator-pedal channel 1"
+summary = """
+Second accelerator-pedal analog-channel adjustment. It doubles unsigned AN17 \
+sample ffff362e, stores the doubled sample in ffff27a6, subtracts learned \
+offset ffff55c2, and writes signed result ffff27a4."""
+note = [
+    """
+The factor of two aligns the second sensor channel with the first channel \
+before paired minimum selection.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 137
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 202
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "merry-shrimp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "secret-porcupine/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nifty-earthworm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006e826"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e830"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e834"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e838"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e83a"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e83c"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e840"
+value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
+key = "reference"

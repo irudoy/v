@@ -1,0 +1,178 @@
+summary = """
+Base of the six-element scheduled injection-duration array read by ATU-II \
+one-shot scheduler 0002c13c. FUN_00054d3e fills all six words before each \
+call site in 00028ea2, 0002be40, and 00054a44: from snapshot ffff2348 \
+lower-bounded at ffff2390 while running, from ffff23aa while stopped or \
+inhibited, from ffff238a on the zero-mode path, and from the \
+ffff2386..ffff2392 start words on modes 1, 2, and 4."""
+note = [
+    """
+One count is 10 us. This is the main of the two duration arrays reaching \
+DCNT8A..DCNT8F; the other is ffff1568.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 854
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "berserk-terrier/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flashy-jerboa/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quiet-gerbil/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bulky-hound/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff224e"
+name = "portable-gecko"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029724"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bef8"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bae"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054cf2"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d76"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054db2"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e50"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e68"
+value = {named = ["0002c13c", "00054d3e", "ffff224e", "ffff2348", "ffff2390", "ffff23aa"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "berserk-terrier/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "flashy-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "quiet-gerbil/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "injector_event_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "bulky-hound/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

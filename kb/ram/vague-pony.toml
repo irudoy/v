@@ -1,0 +1,111 @@
+summary = """
+Bank 1 MAF transfer output A from 1D-64 curve 0x14274. FUN 0003a982 copies \
+it to working value ffff1058; FUN 0003b520 combines it with B=ffff1056 to \
+calculate byte contribution wA=uint8(trunc0((A<<8)/(A+B)))."""
+note = [
+    """
+Exact DID 0x1204 and the continuous AN4-to-DID-to-map-to-DID 0x1209 trace \
+establish the MAF and bank-1 identity.""",
+]
+level = "code"
+unit = "raw MAF quantity"
+
+[[ledger]]
+registry = "vars"
+order = 46
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "brass-ammonite/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "wealthy-woodlouse/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dual_bank_maf_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1054"
+name = "vague-pony"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a938"
+value = {named = ["00014274", "0003a904", "0003a982", "0003b520", "ffff1054"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a990"
+value = {named = ["00014274", "0003a904", "0003a982", "0003b520", "ffff1054"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b53c"
+value = {named = ["00014274", "0003a904", "0003a982", "0003b520", "ffff1054"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "wealthy-woodlouse/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "brass-ammonite/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,105 @@
+summary = """
+Per-bank exhaust cam reference word (ffff5578 + 2b). Default initializer \
+0007f5b0 loads ROM8[0000831d + b] << 8; FUN 00090884 stores the first \
+learned reference and afterwards filters it as min(0xffff, phase * 8 + \
+((word * 31) >> 5)) toward 256 times cam edge phase snapshot ffff11c8 + b. \
+FUN 00090bd2 compares the phase with its high byte."""
+note = ["Stock JK08A never runs 00090bd2, so the reference has no effect."]
+level = "code"
+unit = "phase counts * 256"
+
+[[ledger]]
+registry = "vars"
+order = 925
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loose-frigatebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "arcane-whippet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "whimsical-quokka/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5578"
+name = "perfect-beaver"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831e=88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f5b0"
+value = {named = ["0000831d", "0000831e", "00090884", "00090bd2", "ffff11c8", "ffff5578"], span = 1}
+key = "linked"
+
+[[link]]
+type = "input"
+to = "garnet-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "loose-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "arcane-whippet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "whimsical-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

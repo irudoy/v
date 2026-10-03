@@ -1,0 +1,86 @@
+summary = """
+Live decoded byte for internal dispatch key 0x2ee0. FUN 000c4ace writes the \
+selected payload field; invalid handler 000c5d2e writes 0xfe; the periodic \
+copier publishes snapshot ffff2714."""
+note = [
+    """
+The internal dispatch key is not asserted to equal a raw physical CAN \
+identifier.""",
+]
+level = "code"
+unit = "RPM/50 request"
+
+[[ledger]]
+registry = "vars"
+order = 631
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_177_invalid_fallback/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_177_transmission_payload_decoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2818"
+name = "debonair-locust"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4ace"
+value = {named = ["00020dfe", "ffff2818"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c5d2e"
+value = {named = ["00020dfe", "ffff2818"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_177_invalid_fallback/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_177_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

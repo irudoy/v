@@ -1,0 +1,152 @@
+summary = """
+The interpolated target-map output defines the upper threshold in a \
+three-zone classification of the high byte of the 16-bit value from RAM \
+ffff1024. Together with a separate lower threshold from map 0001263a, \
+branching controls bits 0x40 and 0x20 of byte ffff41c3."""
+note = [
+    """
+The interpolated target-map output defines the upper threshold in a \
+three-zone classification of the high byte of the 16-bit value from RAM \
+ffff1024. Together with a separate lower threshold from map 0001263a, \
+branching controls bits 0x40 and 0x20 of byte ffff41c3. Result disposition: \
+inline_comparison. Result target: JK08A:Map:0001261a. Machine trace: \
+0008397e: raw axis sample from ffff11ae -> r2; 00083980: r4=0001261a; \
+00083982/0008398a: r5=0001264a; 00083984: zero-extend raw sample -> r6; \
+00083988: call wrapper 000264a0; 00026944: interval search on increasing \
+uint8 axis with boundary selection; 00026c78: calculate Q16 interval \
+fraction; 00026740: linear interpolation of adjacent uint8 values without \
+physical conversion -> r0; 0008398c: zero-extend low byte of r0 -> r12, \
+separating the target-map result from the following 0001263a result -> r11; \
+0008399a: uint16@ffff1024 -> r2; 000839a0/000839a2: zero-extend and shift \
+right by 8 -> r6; 000839a4: r6 >= r12; true path 000839ac/000839ae sets 0x40 \
+in ffff41c3 and 000839b4 clears 0x20; false path 000839b6 confirms r12 > r6, \
+after which 000839ba compares r6 with separate lower threshold r11; middle \
+path 000839c0/000839c2 clears 0x40 and 000839c8 sets 0x20, while lower path \
+000839cc/000839ce clears both bits.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 157
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cornflower-dog/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dashing-whippet/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001261a"
+name = "cornflower-dog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083980"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083984"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083988"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008398c"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008399a"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839a4"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839ae"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839b6"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839c2"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839c8"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839ce"
+value = {named = ["0001261a", "0001264a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "cornflower-dog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "dashing-whippet/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

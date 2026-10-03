@@ -1,0 +1,114 @@
+summary = """
+DCNT8A, the first of the sixteen ATU-II channel-8 one-shot down-counters. \
+Channel initialization 0002718a clears DCNT8A through DCNT8P. Scheduler \
+0002c13c adds sat_u16(800*duration/256) to DCNT8A+2*i for injector channel i \
+with interrupts masked around the read-modify-write."""
+note = [
+    """
+With PSCR1 = 1 and TCR8 = 0x55 the counters run at Pphi/64 = 312.5 kHz, so \
+one step is 3.2 us and one duration count of 10 us is 3.125 steps.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 860
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "brilliant-dugong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-gecko/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "just-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff640"
+name = "glossy-tarantula"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027382"
+value = {named = ["0002718a", "0002c13c", "ffff1568", "ffff224e", "fffff640"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c1ee"
+value = {named = ["0002718a", "0002c13c", "ffff1568", "ffff224e", "fffff640"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c1f6"
+value = {named = ["0002718a", "0002c13c", "ffff1568", "ffff224e", "fffff640"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-dcnt8"
+
+[[link]]
+type = "input"
+to = "brilliant-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "portable-gecko/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "just-pelican/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,63 @@
+summary = """
+Newest of the three interval-derived engine-speed samples ffff3e34..ffff3e36 \
+shifted by FUN 0003df2c before each new quotient; the median of the three is \
+published as ffff2804."""
+level = "code"
+unit = "rpm/12.5"
+
+[[ledger]]
+registry = "vars"
+order = 758
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tidy-tiger/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tidy-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3e34"
+name = "meek-iguana"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df58"
+value = {named = ["0003df2c", "ffff3e34"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df7a"
+value = {named = ["0003df2c", "ffff3e34"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "tidy-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tidy-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

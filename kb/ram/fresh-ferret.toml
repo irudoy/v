@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff993d"
+name = "fresh-ferret"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002e57a"
+
+[[link]]
+type = "reader"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

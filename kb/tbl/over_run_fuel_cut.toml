@@ -1,3 +1,25 @@
+summary = """
+Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The \
+stock path selects it when current upstream mode ffff2458.bit5 is set and \
+previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must \
+be at least ROM8[000085fa]=4."""
+note = [
+    """
+The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates \
+both cut tables on every evaluation and selects this one for the rising mode \
+edge. Target-vehicle A/B evidence in patches/hardware-results.toml shows \
+that retaining this stock entry threshold does not force DFCO entry when the \
+restore classifier returns a nonzero class. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "RPM"
+scale = "x*25"
+to_raw = "x/25"
+scale_level = "code"
+
 [editor]
 name = "DFCO Entry RPM Threshold"
 category = "Fuelling / Deceleration Fuel Cut"
@@ -26,6 +48,78 @@ static_axis = [
 ]
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis_operand = "hasty-eel/ram"
+
+[[ledger]]
+registry = "findings"
+order = 165
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "gregarious-turkey/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
 
 [[symbol]]
 layout = "1me3b"
@@ -58,6 +152,93 @@ layout = "7mfk"
 address = "00012718"
 former = ["sandy-swift/tbl/7mfk-00012718"]
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc10"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc16"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc1c"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc4e"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc50"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc54"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fce2"
+value = {named = ["00012718", "00026388", "00026740", "000384cc", "0004fbe2", "000503e0", "ffff106f", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1050/25=42"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "120*25=3000"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "3000/25=120"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "42*25=1050"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "perfect-agouti/fn/7mfk"
+relies = "structure"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014a85"
@@ -88,3 +269,47 @@ supports = "homology"
 at = "jk78c:0006bb60"
 to = "7mfk:00012718"
 note = "homologous coordinator preserves lookup order and exact map bytes"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "gregarious-turkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

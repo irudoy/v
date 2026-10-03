@@ -1,0 +1,185 @@
+summary = """
+Signed request-bound word published by common transmission completion FUN \
+000777fa. When ffff41a6.bit3 is set under stock ROM8[0x89c5].bit0, it \
+receives ffff4162; otherwise it receives the ordinary preselected word \
+ffff3488. FUN 00079030 applies it as an upper signed bound before publishing \
+ffff19c6."""
+note = [
+    """
+ffff41a6.bit3 is set during a gear change with TCM status 3 and for the \
+307.2 ms hold after it; the 2026-09-22 road captures show the resulting \
+bound in 4-3 and 3-2 downshifts.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 262
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_boundary/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "accomplished-cockle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blue-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "manipulative-coati/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_request_bounded/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transmission_request_bound_publisher/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3480"
+name = "spicy-smilodon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089c5"
+value = "0x19"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007781c"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077830"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077834"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077866"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007915c"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007915e"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079162"
+value = {named = ["000089c5", "000777fa", "00079030", "ffff19c6", "ffff3480", "ffff3488", "ffff4162", "ffff41a6"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "throttle_request_bounded/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "accomplished-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "blue-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "manipulative-coati/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transmission_request_bound_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

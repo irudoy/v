@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15b2"
+name = "abstract-scorpion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000467bc"
+
+[[link]]
+type = "lookup"
+to = "quaint-lion/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

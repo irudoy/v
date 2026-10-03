@@ -1,0 +1,280 @@
+summary = """
+Stationary rev-limiter state machine in the aggregate fuel-output inhibit \
+path. Entry requires coarse vehicle speed ffff110e == 0, ffff244f bit 2 set, \
+and ffff2458 bit 5 clear. It loads ffff258a with 100; each expiry looks up \
+000124d2 at q=clamp((signed16(ffff11bc)-160)/2,0,255), adds lookup-128 to \
+readiness accumulator ffff16a6 with saturation, and reloads the timer. \
+Readiness bit 4 is set at accumulator >= ROM16[0000911c]. With readiness \
+set, RPM/50 byte ffff11ae at or above ROM8[000085d9] sets fuel-cut bit 5; \
+equality to ROM8[000085da] retains it and only a lower value clears it."""
+note = [
+    """
+Accumulate stationary readiness and apply the low-speed full fuel-cut \
+hysteresis""",
+    """
+At or below 2000 RPM the stock step is zero. In the high-RPM limiter region \
+it is 127, so three timer expiries reach the inclusive threshold 381. This \
+is 300 tenth-phase counts, or 3.072 seconds at the target-measured 10.24 ms \
+period. Returned bit 5 becomes global mask 0x3f.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 120
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 160
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "wooden-moose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "auspicious-jacamar/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "affable-prawn/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blue-oyster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "meaty-dragon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f324"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085d9"
+value = "0x24"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085da"
+value = "0x1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d0e"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000911c=0x017d"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f330"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f338"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f394"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3c8"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3d2"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e0"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f40a"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f422"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f42c"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f43a"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f442"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f444"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "auspicious-jacamar/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

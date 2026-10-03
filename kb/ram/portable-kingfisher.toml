@@ -1,0 +1,184 @@
+summary = """
+Unsigned common additive and masked-channel override word. FUN_00056fc0 \
+writes clamp_u16(max(0, arithmetic_shift7((175-uint8(ffff1108))*92)+70)). \
+FUN_0004ead4 adds it to both normal bank bases, FUN_0004eba2 selects it \
+directly when the current channel bit is set in ffff22e0, and FUN_00051a98 \
+adds it to every mask-gated channel word."""
+note = [
+    """
+The word is the injector opening time in 10 us counts: 70 counts, 0.70 ms, \
+at battery snapshot ffff1108 = 175, moving 92/128 counts per byte, and \
+spanning 0.66..0.82 ms over the recorded byte range 157..180 under the \
+source-bound 0.08 V/count conversion. Scheduler 0002c13c substitutes its \
+snapshot ffff23aa for an inhibited channel and subtracts it when a pulse is \
+already in flight.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 376
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "discerning-snake/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_output_override_word/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2436"
+name = "portable-kingfisher"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084f6"
+value = "0x5c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008c9e=0x46"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eb60"
+value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ebc8"
+value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ebd2"
+value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ece"
+value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057002"
+value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fuel_inhibit_mask/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_output_override_word/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

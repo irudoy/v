@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3396"
+name = "precise-avocet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d9f8"
+
+[[link]]
+type = "reader"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

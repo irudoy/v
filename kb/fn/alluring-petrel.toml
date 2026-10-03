@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000789d6"
+name = "alluring-petrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000789d6"

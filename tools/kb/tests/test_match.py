@@ -314,6 +314,39 @@ class IndirectBaseTest(unittest.TestCase):
                                                    "at": "7mfk:00000000", "mode": "gbr"}))
 
 
+class LedgerContextTest(unittest.TestCase):
+    ITEM = {"kind": "l0-context", "at": "7mfk:0004e070", "key": "reference", "value": {"span": 1}}
+
+    def model(self, item):
+        def declare(b):
+            b.symbol("7mfk", "ram", APC_7MFK, "kb/ram/probe.toml", evidence=[
+                {"kind": "l0", "at": "7mfk:0004e070"}, item])
+        return model_of(declare)
+
+    def test_a_fixed_stock_reference_reproduces_the_recorded_context(self):
+        m = self.model(self.ITEM)
+        self.assertIsNone(match.verify(m, m.symbols[SymbolKey("7mfk", "ram", APC_7MFK)], self.ITEM))
+        self.assertEqual(checks.homology(m), [])
+
+    def test_stale_classification_or_an_expanded_footprint_does_not_verify(self):
+        for changes in ({"key": "body"}, {"at": "7mfk:00000000"}, {"at": "jk78c:0004e070"},
+                        {"value": {"span": 2}}, {"value": {"span": True}},
+                        {"value": {"span": 1, "named": ["FFFFFFFF"]}},
+                        {"value": {"span": 1, "extra": 2}}):
+            item = {**self.ITEM, **changes}
+            m = self.model(item)
+            with self.subTest(changes=changes):
+                self.assertIsNotNone(match.verify(m, m.symbols[SymbolKey("7mfk", "ram", APC_7MFK)], item))
+                self.assertTrue(any("l0-context" in issue.message for issue in checks.homology(m)))
+
+    def test_context_verification_covers_contract_and_scale_claims(self):
+        for supports in ("contract", "scale"):
+            item = {**self.ITEM, "supports": supports, "key": "pointer"}
+            with self.subTest(supports=supports):
+                self.assertTrue(any("l0-context" in issue.message
+                                    for issue in checks.homology(self.model(item))))
+
+
 class ExplicitTerminalChecksTest(unittest.TestCase):
     """Typed base and test items are checked without converting ledger ownership."""
 
@@ -513,7 +546,10 @@ class ImageBytesTest(unittest.TestCase):
         self.assertEqual({rom for rom, _ in images}, {"JK00A", "JK03A", "JK03B", "JK08A"})
         self.assertEqual(checks.image_bytes(m), [])
         self.assertEqual(len(symbol.evidence), 3)
-        for item, offset in zip(symbol.evidence, (8, 3, 1)):
+        offsets = {"7mfk:0001942c": 8, "7mfk:0001a190": 3, "7mfk:0001603a": 1}
+        self.assertEqual({item["at"] for item in symbol.evidence}, set(offsets))
+        for item in symbol.evidence:
+            offset = offsets[item["at"]]
             address = match.location(item["at"])[1]
             for changed_rom, data in images:
                 with self.subTest(span=item["at"], image=changed_rom):
@@ -530,9 +566,10 @@ class ImageBytesTest(unittest.TestCase):
     def test_a_changed_dtc_expectation_is_not_replaced_with_live_descriptor_bytes(self):
         symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "dtc", 0x1942C)]
         items = [dict(item) for item in symbol.evidence]
-        changed = bytearray.fromhex(items[0]["value"])
+        descriptor = next(item for item in items if item["at"] == "7mfk:0001942c")
+        changed = bytearray.fromhex(descriptor["value"])
         changed[8] ^= 1
-        items[0]["value"] = changed.hex()
+        descriptor["value"] = changed.hex()
         m = model_of(lambda b: b.symbol("7mfk", "dtc", symbol.address, "test", evidence=items))
         [issue] = checks.image_bytes(m)
         self.assertIn("at 0001942c", issue.message)

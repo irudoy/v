@@ -1,0 +1,36 @@
+title = "Incorrect purge flow"
+level = "code"
+code = "P0441"
+group = "evap"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 43
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d68"
+name = "malachite-pony"
+index = 214
+attribute = "000160a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000160a0"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d68"
+value = "380107000000044100000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a4a4"
+value = "000160a0"

@@ -1,0 +1,64 @@
+summary = """
+Base of the two-byte target-reference direction array written by 000cb2b6 \
+and copied to ffff392b/ffff392c by 000cb354."""
+note = ["Elements are ffff3900 and ffff3901."]
+level = "code"
+unit = "direction code array"
+
+[[ledger]]
+registry = "vars"
+order = 703
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_error_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_error_encoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3900"
+name = "keen-chihuahua"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb34c"
+value = {named = ["000cb2b6", "000cb354", "ffff3900"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb3ec"
+value = {named = ["000cb2b6", "000cb354", "ffff3900"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_target_error_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "throttle_target_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,115 @@
+summary = """
+Current unblended Base Fuel Schedule working word produced in 0003b75c from \
+the common schedule value, multiplier ffff115c, product \
+uint16[ffff1f30]*uint16[ffff1e06], and ROM8[0x8d92].bit4-selected sum or \
+nonnegative-difference branch."""
+level = "code"
+unit = "ms*2048"
+
+[[ledger]]
+registry = "vars"
+order = 259
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flashy-elk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1dee"
+name = "elite-dormouse"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd26"
+value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b924"
+value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b928"
+value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b9de"
+value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "flashy-elk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

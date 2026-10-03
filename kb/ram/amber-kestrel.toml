@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1878"
+name = "amber-kestrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004cf6a"
+
+[[link]]
+type = "writer"
+to = "malachite-fossa/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

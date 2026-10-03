@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1cfe"
+name = "exotic-wapiti"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074098"
+
+[[link]]
+type = "lookup"
+to = "rigorous-shrimp/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dark-earthworm/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "devout-cougar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

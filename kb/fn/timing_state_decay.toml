@@ -1,0 +1,65 @@
+title = "Move the gated signed timing state one count toward zero"
+summary = """
+Gated signed-state decay. When ffff248d bit 4 and its countdown gate admit \
+the update, it moves ffff1513 one count toward zero."""
+note = [
+    """
+No consumer other than 0004afdc and this decay routine is present for \
+ffff1513; code does not connect it directly to ffff11d4 or the APC \
+command.""",
+]
+level = "code"
+role = "consumer"
+
+[[ledger]]
+registry = "curated"
+order = 112
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 157
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "didactic-hyena/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "polite-rat/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "didactic-hyena/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e112"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e112"
+
+[[link]]
+type = "selector"
+to = "polite-rat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,114 @@
+summary = """
+Unidentified 1D calibration with signed offset 0x8000, stored in RAM \
+ffff2026"""
+note = [
+    """
+All eight uint16 cells equal 32812. After proven conversion x-32768, the \
+current result is raw 44 for any index. Flat contents and catalogs do not \
+establish physical meaning; absence of readers does not make the branch \
+unreachable, so disposition remains writes and role remains table. Result \
+disposition: writes. Blocking condition: The last exactly addressed step \
+carrying the map value is write 000419ec to ffff2026. Only a conditional \
+internal copy to ffff202a without an exact instruction address or found \
+reader follows; ffff2026 has no external readers, so physical semantics end \
+at 000419ec.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 269
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "writes"
+to = "premium-corgi/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014c2a"
+name = "tomato-robin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000419d2"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000419e0"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000419ec"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d4"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d8"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419e4"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419e6"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419e8"
+value = {named = ["00014c2a", "ffff2026"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

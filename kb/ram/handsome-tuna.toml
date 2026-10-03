@@ -1,0 +1,116 @@
+summary = """
+Judged latch of exhaust-VTC position sensor path A, bits 0 and 1 for \
+descriptor indices 0x84 and 0x85 (P1078, P1084). FUN 00090086 sets the bank \
+bit after its debounce of driver status ffff850c; FUN 0008f168 enables the \
+helper only while the bit is clear and enable mask ROM8[000186f1] bit 7 or 6 \
+is set, and calls dispatcher 0007d8b8 with the index while the bit is set. \
+Reset helper FUN 0008fc6a clears it."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 785
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quartz-trogon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3580"
+name = "handsome-tuna"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186f1"
+value = "0xf0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f628"
+value = {named = ["000186f1", "0007d8b8", "0008f168", "0008fc6a", "00090086", "ffff3580"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f63a"
+value = {named = ["000186f1", "0007d8b8", "0008f168", "0008fc6a", "00090086", "ffff3580"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f980"
+value = {named = ["000186f1", "0007d8b8", "0008f168", "0008fc6a", "00090086", "ffff3580"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f9b8"
+value = {named = ["000186f1", "0007d8b8", "0008f168", "0008fc6a", "00090086", "ffff3580"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quartz-trogon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

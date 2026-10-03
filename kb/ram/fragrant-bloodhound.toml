@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff5628"
+name = "fragrant-bloodhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c276"
+
+[[link]]
+type = "writer"
+to = "alluring-rottweiler/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "arcane-whippet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cute-prawn/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,144 @@
+summary = """
+Lower unsigned 8-bit threshold for RAM value ffff2a9d: execution continues \
+after 000b61e6 only when ffff2a9d >= lookup(000128e0, u); otherwise control \
+transfers to 000b628c."""
+note = [
+    """
+The physical name of the quantity is unknown. All eight cells equal 255, so \
+this calibration permits execution to continue after the comparison only \
+when ffff2a9d = 255; this is a consequence of the content rather than a \
+basis for the semantic claim. Index: Implicit coordinate u = uint8([sp+4]) \
+is loaded at 000b61ae. For u < 224: i = floor(u/32), q = (u - i*32)*2048 in \
+Q0.16, map[i] and map[i+1] are read, and unsigned linear interpolation is \
+performed. For u >= 224, map[7] is returned. Output trace: 000b61aa loads \
+base 000128e0 -> 000b61b2 calls 00026370 -> for u < 224, kernel 00026a80 \
+forms the index and fraction, 00026aac/00026aae read adjacent uint8 cells, \
+and 00026740 interpolates the result into r0; for u >= 224, wrapper 00026370 \
+returns map[7] -> 000b61b6 copies the result to r6 -> 000b61bc writes the \
+byte to ffff3405 -> 000b61de loads tested value ffff2a9d into r6 -> 000b61e2 \
+loads threshold ffff3405 into r2 -> 000b61e4 performs unsigned comparison r6 \
+>= r2 -> 000b61e6 branches to 000b628c when r6 < r2. Result disposition: \
+inline_comparison; Result target: site 000b61e4.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 399
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "melodic-antelope/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "fat-chameleon/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerated-bumblebee/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000128e0"
+name = "futuristic-shark"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61aa"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61b2"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61bc"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61de"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e2"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e4"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e6"
+value = {named = ["000128e0", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "melodic-antelope/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "fat-chameleon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,105 @@
+summary = """
+Selected uint16 multiplier used by Base Fuel Schedule producer 0003b75c \
+after Q7 Fuel Compensation Main byte ffff1160. FUN 0003bd74 selects this \
+word from calculated working values or stock ROM16[0x90ee]=0x020c according \
+to runtime state; it is not the 0xA29A result."""
+note = [
+    """
+FUN 0003b75c forms T=sat_u32(4*ffff1062*ffff115c) before the stock P-T \
+schedule branch. Physical quantity and engineering scale remain \
+unresolved.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 545
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_compensation_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff115c"
+name = "fanatic-marten"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000090ee=0x020c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b90a"
+value = {named = ["000090ee", "0002c648", "0003b75c", "0003bd74", "ffff115c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c156"
+value = {named = ["000090ee", "0002c648", "0003b75c", "0003bd74", "ffff115c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c170"
+value = {named = ["000090ee", "0002c648", "0003b75c", "0003bd74", "ffff115c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c176"
+value = {named = ["000090ee", "0002c648", "0003b75c", "0003bd74", "ffff115c"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

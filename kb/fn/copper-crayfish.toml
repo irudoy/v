@@ -1,0 +1,49 @@
+role = "service"
+contract = """
+Logical left shift: r0 = r0 << r1, with a signed count. For r1 < 0 it \
+returns the input unchanged; for r1 >= 32 it returns 0. The shifted value is \
+necessarily r0 because paths 28..31 use the encoding and #imm,r0 and cannot \
+target another register. It clobbers r1; r2 is preserved on the stack. It \
+does not write global RAM; memory accesses are the stack and a byte read \
+from table 0x2219c. T is not a contractual output."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 40
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2, 3]
+
+[[symbol]]
+layout = "7mfk"
+address = "000221bc"
+name = "copper-crayfish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "0002219c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00086fb4"
+value = {named = ["0002219c", "000221bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000cbc56"
+value = {named = ["0002219c", "000221bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000221bc"

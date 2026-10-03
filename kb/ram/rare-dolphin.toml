@@ -1,0 +1,85 @@
+summary = """
+Fraction byte of builder 00053698: min(255, uint8(ffff17ba) + \
+uint8(ffff17bb)). The builder multiplies the pressure word by its complement \
+256 - x over 256."""
+note = [
+    """
+In the differential-pressure reading of ffff17ee the byte is the modelled \
+ratio of manifold pressure to the pressure word; this physical reading is a \
+candidate.""",
+]
+level = "code"
+unit = "ratio_q8"
+
+[[ledger]]
+registry = "vars"
+order = 907
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "magic-pony/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shapeless-wildcat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff17b9"
+name = "rare-dolphin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537f8"
+value = {named = ["00053698", "ffff17b9", "ffff17ba", "ffff17bb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537fe"
+value = {named = ["00053698", "ffff17b9", "ffff17ba", "ffff17bb"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "magic-pony/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "shapeless-wildcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

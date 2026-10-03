@@ -1,0 +1,117 @@
+summary = """
+Fractional APC compare offset min(65535,floor(ffff22bc*remainder/10)) used \
+by GR11A and GR11B schedulers."""
+note = ["The arithmetic is exact; physical angular units are unresolved."]
+level = "code"
+unit = "timer count"
+
+[[ledger]]
+registry = "vars"
+order = 596
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "peridot-pony/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_compare_scheduler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stock_ignition_consumer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff16c2"
+name = "amphibian-panda"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a952"
+value = {named = ["0002a892", "0002acba", "ffff155a", "ffff16c2", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aa40"
+value = {named = ["0002a892", "0002acba", "ffff155a", "ffff16c2", "ffff22bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae76"
+value = {named = ["0002a892", "0002acba", "ffff155a", "ffff16c2", "ffff22bc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "peridot-pony/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_set_compare_continuation/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pumpkin-peacock/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

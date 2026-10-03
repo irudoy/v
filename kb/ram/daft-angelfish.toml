@@ -1,0 +1,206 @@
+summary = """
+Diagnostic state byte for knock-sensor circuits: bits 3/2/1/0 correspond to \
+P0327/P0328/P0332/P0333. Bit 3 is set in 000a5530 by comparing accumulator \
+ffff3334 with threshold ffff32ee; 000a45ec converts the state into DTC \
+indices 0xB3..0xB6."""
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "knock-state-p0327"
+kind = "monitor"
+label = "DtcCode"
+key = "P0327"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bc4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bits 3, 2, 1, and 0 of this state byte feed exact JK08A descriptor indices \
+for P0327, P0328, P0332, and P0333."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "daft-angelfish/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a45ec"
+value = {named = ["00019bc4", "ffff4204"], span = 1}
+key = "linked"
+
+[[diagnostic]]
+id = "knock-state-p0328"
+kind = "monitor"
+label = "DtcCode"
+key = "P0328"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bd0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bits 3, 2, 1, and 0 of this state byte feed exact JK08A descriptor indices \
+for P0327, P0328, P0332, and P0333."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "daft-angelfish/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a45ec"
+value = {named = ["00019bd0", "ffff4204"], span = 1}
+key = "linked"
+
+[[diagnostic]]
+id = "knock-state-p0332"
+kind = "monitor"
+label = "DtcCode"
+key = "P0332"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bdc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bits 3, 2, 1, and 0 of this state byte feed exact JK08A descriptor indices \
+for P0327, P0328, P0332, and P0333."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "daft-angelfish/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a45ec"
+value = {named = ["00019bdc", "ffff4204"], span = 1}
+key = "linked"
+
+[[diagnostic]]
+id = "knock-state-p0333"
+kind = "monitor"
+label = "DtcCode"
+key = "P0333"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019be8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bits 3, 2, 1, and 0 of this state byte feed exact JK08A descriptor indices \
+for P0327, P0328, P0332, and P0333."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "daft-angelfish/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a45ec"
+value = {named = ["00019be8", "ffff4204"], span = 1}
+key = "linked"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 58
+binding = "knock-state-p0327"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 59
+binding = "knock-state-p0328"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 60
+binding = "knock-state-p0332"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 61
+binding = "knock-state-p0333"
+
+[[ledger]]
+registry = "vars"
+order = 314
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "garnet-wombat/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nebulous-porpoise/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "victorious-chihuahua/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "defiant-galago/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4204"
+name = "daft-angelfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079754"
+
+[[link]]
+type = "input"
+to = "nebulous-porpoise/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "garnet-wombat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "victorious-chihuahua/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "defiant-galago/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,53 @@
+summary = """
+Seven-element crankshaft speed irregularity monitor event-counter array: [0] \
+is total and [1..6] are per-cylinder for the V6. The total is compared with \
+threshold ffff2b90 from map 0x1497A, constant 33."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 283
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "threshold"
+to = "finicky-gazelle/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-coucal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3806"
+name = "clay-lizard"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00082df2"
+
+[[link]]
+type = "threshold"
+to = "finicky-gazelle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

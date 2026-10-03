@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1600"
+name = "vermilion-grouse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005348e"
+
+[[link]]
+type = "lookup"
+to = "efficient-mastodon/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

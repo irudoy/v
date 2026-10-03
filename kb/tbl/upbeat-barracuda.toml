@@ -1,3 +1,35 @@
+summary = """
+Eight-point uint8 table of a centered signed value. The lookup result is \
+decoded as x-128, constrained to range -16..15 when bit 0x40 of RAM ffff249f \
+is set, or replaced with zero otherwise, then written as a byte to RAM \
+ffff15c8. The physical quantity is unknown."""
+note = [
+    """
+All 8 cells equal 128, so the lookup yields 128, decoding yields 0, the \
+clamp does not change the result, and with the enable bit clear the same 0 \
+is written. The artifact has no external readers of ffff15c8; this remains a \
+write rather than a proven dead branch. The physical quantity is unknown. \
+The scale applies to the value before the clamp. Numeric round trip: 0 -> \
+-128 -> 0; 128 -> 0 -> 128; 255 -> 127 -> 255. Index: Implicit uniform \
+eight-point axis. q=min((u16 RAM[ffff1152] / 8),255). For q<224, the kernel \
+obtains the adjacent uint8-cell index with five right shifts of q and passes \
+the cells to unsigned linear interpolation with a Q0.16 fraction; for \
+q>=224, the wrapper returns cell 7. Bit 0x40 of RAM[ffff249f] enables the \
+lookup. Output trace: q<224: 00013016 -> 00076404 -> 00076408 -> 00026370 -> \
+00026a80 -> 00026aac/00026aae -> 00026740 -> 0007640c -> 00076410 -> \
+00076412 -> 00076416/00076422 -> 00076434 -> ffff15c8; q>=224: 00013016+7 -> \
+00026370 -> 0007640c -> 00076410 -> 00076412 -> 00076416/00076422 -> \
+00076434 -> ffff15c8. Result disposition: writes; Result target: RAM \
+ffff15c8, byte store site 00076434.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "signed_raw_offset"
+scale = "x-128"
+to_raw = "x+128"
+scale_level = "code"
+
 [editor]
 name = "Conditional Signed State Value (x-128) (0x13016)"
 category = "Internal Calculations"
@@ -7,7 +39,276 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 421
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+scale = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "primitive-cassowary/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "resolute-bullfinch/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fascinating-tuatara/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00013016"
 name = "upbeat-barracuda"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "128"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000763e8"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000763ea"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000763f2"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000763fa"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000763fc"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076402"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076404"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076408"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076416"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007641c"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076422"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076428"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007642a"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076434"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007640c"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007640e"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00076410"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00076412"
+value = {named = ["00013016", "00026740", "ffff1152", "ffff15c8", "ffff249f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "-128+128=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0+128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0-128=-128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "127+128=255"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128-128=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "255-128=127"
+
+[[link]]
+type = "index"
+to = "primitive-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "authentic-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "resolute-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

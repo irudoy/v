@@ -1,6 +1,115 @@
+summary = """
+AN1-derived diagnostic temperature byte. FUN 0003d832 copies the first \
+output of shared transfer table 00012dea here, and the exact UDS DID 0x1106 \
+pointer entry returns this byte. J1979 Mode 01 PID 0x0F returns ffff3f41, \
+the same 00012dea transfer code of the unfiltered lane-0 sample minus 10."""
+note = [
+    """
+Homologous measured Nissan diagnostics identify DID 0x1106 as Intake Air \
+Temperature with deg C=raw-50, and J1979 defines PID 0x0F as A-40 deg C, so \
+the ECU itself declares the transfer code as deg C+50 and AN1 lane 0 as \
+intake air temperature. The SH7058 AN1 channel is exact, while the ECM \
+terminal and hardware conversion require validation.""",
+]
+level = "code"
 width = 8
 unit = "degC"
 scale = "x-50"
+
+[[diagnostic]]
+id = "intake-air-temperature-did-1106"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221106"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0008-l0008:source-row-extended-pids:parameter:0x1106-384713df"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1106 to byte ffff2837. Homologous \
+measured Nissan diagnostics identify the DID as Intake Air Temperature with \
+deg C = raw-50. The producer uses the first AN1-derived lane and shared \
+transfer table 00012dea; the ECM terminal and physical conversion require \
+hardware validation."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "cautious-iguana/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000226c4"
+value = "ffff2837"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000226c4"
+value = {named = ["00012dea", "0003235c", "0003d832", "384713df", "ffff2837"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003d85a"
+value = {named = ["00012dea", "0003235c", "0003d832", "384713df", "ffff2837"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003d85e"
+value = {named = ["00012dea", "0003235c", "0003d832", "384713df", "ffff2837"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "romantic-caiman/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 10
+binding = "intake-air-temperature-did-1106"
+
+[[ledger]]
+registry = "vars"
+order = 530
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "degC+50"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-caiman/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +141,66 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2837"
 former = ["boisterous-gaur/ram/7mfk-ffff2837"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226c4"
+value = "ffff2837"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226c4"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035daa"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4c0"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4da"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d85a"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d85e"
+value = {named = ["00012dea", "0003235c", "00035856", "0003d4a8", "0003d832", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "foamy-pony/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +238,32 @@ to = "7mfk:0003d536"
 count = 1
 value = 18
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vehement-sawfly/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "romantic-caiman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

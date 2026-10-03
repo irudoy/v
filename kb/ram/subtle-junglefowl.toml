@@ -1,0 +1,77 @@
+summary = """
+Software-indexed byte written at 0003acb0 and read at 0003acb8 by FUN \
+0003aa12. Its address is GBR ffff3968 + 0x11 + uint8(index); indices 0 and 1 \
+select ffff3979 and ffff397a."""
+note = ["The physical interpretation of this byte is unresolved."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 5
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [1, 2, 3, 0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "kind-millipede/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "kind-millipede/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3979"
+name = "subtle-junglefowl"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_maf_indexed_output_byte.py"
+key = "test_maf_indexed_output_byte_placement"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0003ab7c"
+value = "ffff3968"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acb0"
+value = {named = ["0003aa12", "0003ab7c", "ffff3968", "ffff3979"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acb8"
+value = {named = ["0003aa12", "0003ab7c", "ffff3968", "ffff3979"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

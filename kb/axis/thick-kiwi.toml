@@ -1,0 +1,90 @@
+note = [
+    """
+Column axis for coefficient map 00009f1a. FUN 0004d2a6 shifts Q7 \
+normalized-BFS byte ffff102c right by three before interpolation, so stored \
+points 1..16 represent source-byte values 8..128 and exact normalized values \
+6.25..100 percent of ROM16[00009534]. The HR catalog's Cylinder Filling \
+physical name remains a candidate.""",
+]
+level = "code"
+quantity = "load"
+unit = "Normalized BFS [%]"
+scale = "x*6.25"
+to_raw = "x/6.25"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 42
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012492"
+name = "thick-kiwi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004d48e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d462"
+value = {named = ["00009534", "00012492", "000261b8", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d46a"
+value = {named = ["00009534", "00012492", "000261b8", "ffff102c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d46e"
+value = {named = ["00009534", "00012492", "000261b8", "ffff102c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d48c"
+value = {named = ["00009534", "00012492", "000261b8", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "8*100/128=6.25"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "exhaust_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

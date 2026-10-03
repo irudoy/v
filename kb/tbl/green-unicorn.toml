@@ -1,0 +1,166 @@
+summary = """
+One lookup result is written to ffff193c and ffff25d7; later, copy ffff25d7 \
+is tested for zero while controlling clearing bit 0x10 in ffff248a and \
+zeroing ffff19a8."""
+note = [
+    """
+One lookup result is written to ffff193c and ffff25d7. Copy ffff25d7 is \
+later tested for zero and controls clearing bit 0x10 in ffff248a and zeroing \
+ffff19a8. This confirms disposition=consumer without physically identifying \
+the quantity.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 204
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unyielding-duck/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "subtle-pelican/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c1a"
+name = "green-unicorn"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ffc"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047008"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004700c"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047012"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047016"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004701c"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047020"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047028"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047030"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047034"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047064"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047066"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047068"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047070"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047072"
+value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "subtle-pelican/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "unyielding-duck/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

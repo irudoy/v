@@ -1,0 +1,36 @@
+note = [
+    """
+Shared column axis for Knock Sensor Circuit Monitor Surface A/B. At sites \
+000a532a/000a535a, code forms its pointer as 0x12BE2+8 and supplies the high \
+byte of current Base Fuel Schedule word ffff1024. The x/8 ms high-byte scale \
+is inherited from the homologous x/2048 ms DID profile and requires hardware \
+validation.""",
+]
+level = "code"
+quantity = "load"
+unit = "Base Fuel Schedule (ms)"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 10
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012bea"
+name = "arcane-lion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a532c"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"

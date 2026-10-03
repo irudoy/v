@@ -1,0 +1,28 @@
+note = [
+    """
+Axis for response curve 000125ca. The runtime coordinate is \
+max(clamp_u8(centered cam byte + reference byte - 64)-64,0) in each of three \
+calls from FUN 0004d2a6. Code proves the raw coordinate and axis role; the \
+physical reference and engineering scale are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 45
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000125ba"
+name = "unselfish-vulture"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004d3e6"

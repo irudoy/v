@@ -1,0 +1,122 @@
+summary = """
+First 000152d6 lookup result in the EVAP leak calculation. FUN 000b2096 \
+indexes the curve by baseline-relative coordinate ffff2c92 and stores the \
+returned uint16 here before comparing it with the corrected-coordinate \
+result."""
+note = [
+    """
+The transformed quantity is code-proven, but its physical pressure or \
+leak-area conversion is unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 27
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "large-spoonbill/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classic-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3240"
+name = "enchanted-ocelot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b215e"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2160"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2162"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2166"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b216a"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b216e"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2172"
+value = {named = ["000152d6", "000b2096", "ffff2c92", "ffff3240"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "large-spoonbill/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "ancient-terrier/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

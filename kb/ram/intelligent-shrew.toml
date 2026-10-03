@@ -1,0 +1,177 @@
+summary = """
+Base of the second two-byte bank-indexed working array in the alternate \
+P0138/P0158 monitor. FUN 0008a258 reloads each bank byte from ROM8[0x8bce]=5 \
+under reset conditions and sets the path-B fault condition when this or \
+ffff42b0 is zero."""
+note = [
+    """
+The decrement cadence and physical timing represented by one count remain \
+unresolved.""",
+]
+level = "code"
+unit = "countdown state"
+
+[[diagnostic]]
+id = "rear-o2-high-b-working-b-p0138"
+kind = "monitor"
+label = "DtcCode"
+key = "P0138"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b7c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 0 of the parallel working array participates in the zero \
+condition for exact path-B P0138."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "jovial-poodle/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008bce"
+value = "0x05"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a392"
+value = {named = ["00008bce", "00019b7c", "0008a258", "ffff42b2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a408"
+value = {named = ["00008bce", "00019b7c", "0008a258", "ffff42b2"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-high-b-working-b-p0158"
+kind = "monitor"
+label = "DtcCode"
+key = "P0158"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b88"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 1 of the parallel working array participates in the zero \
+condition for exact path-B P0158."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "jovial-poodle/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008bce"
+value = "0x05"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a392"
+value = {named = ["00008bce", "00019b88", "0008a258", "ffff42b2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a408"
+value = {named = ["00008bce", "00019b88", "0008a258", "ffff42b2"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 95
+binding = "rear-o2-high-b-working-b-p0138"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 96
+binding = "rear-o2-high-b-working-b-p0158"
+
+[[ledger]]
+registry = "vars"
+order = 405
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "jovial-poodle/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-poodle/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff42b2"
+name = "intelligent-shrew"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bce"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a392"
+value = {named = ["00008bce", "0008a258", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a3a4"
+value = {named = ["00008bce", "0008a258", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a3ba"
+value = {named = ["00008bce", "0008a258", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a408"
+value = {named = ["00008bce", "0008a258", "ffff42b2"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "jovial-poodle/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "jovial-poodle/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

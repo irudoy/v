@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012880"
+name = "wine-pelican"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000ab6b8"

@@ -1,0 +1,189 @@
+summary = """
+Scheduler snapshot of selected raw-temperature byte ffff1076, the engine \
+coolant temperature latched at engine start. It equals raw coolant ffff1079 \
+during a computed START SIGNAL interval with battery-voltage raw below 100 \
+and holds the value of the last selection afterwards. P030 readiness \
+requires at least 40, while FUN 000804ce latches ffff422f.bit4 when raw \
+coolant snapshot ffff1071 exceeds this byte by at least 20."""
+note = [
+    """
+The byte has the raw-coolant scale deg C = raw-50. The P030 threshold of 40 \
+is a start temperature of -10 deg C, and the rise of 20 counts is the \
+coolant rise of 20 deg C after engine start in factory driving pattern A.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 448
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_readiness_latches_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "myrtle-coot/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff106e"
+name = "fuzzy-mouse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d01"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f2a"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080560"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008056a"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083956"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008395a"
+value = {named = ["00008d01", "000209d8", "00020dfe", "000394b8", "000804ce", "00082c8a", "ffff106e", "ffff1076"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec150-driving-pattern-a"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "black-kudu/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "selected_temperature_pair_update/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "myrtle-coot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "diagnostic_readiness_latches_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "foamy-stallion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-gecko/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

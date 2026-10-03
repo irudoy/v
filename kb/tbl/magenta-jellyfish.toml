@@ -1,0 +1,451 @@
+summary = """
+The interpolated byte is centered as x-128 and scales working \
+uint16[ffff1754], derived from map 00012808, as trunc0(ffff1754*(x-128)/64) \
+before correction ffff17dc is formed."""
+note = [
+    """
+The byte is centered by subtracting 128 and scales ffff1754 as \
+trunc0(ffff1754*(x-128)/64). The derived correction enters ffff17de and \
+combined ffff17dc. The pair (x-128)/64 and x*64+128 is confirmed by code; \
+the physical domain is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "(x-128)/64"
+to_raw = "x*64+128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 188
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+]
+scale = [
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gentle-moth/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wealthy-roadrunner/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a42"
+name = "magenta-jellyfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ec6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ecc"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed4"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f80"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f88"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f8e"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f92"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f96"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f9c"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f9e"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fa0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fa2"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fa8"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fae"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb2"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb8"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fba"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fbe"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fc0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fda"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f80"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f8e"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f92"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f96"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f9c"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046f9e"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fa0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fa2"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fa8"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fae"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fb0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fb2"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fb6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fb8"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fba"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fbe"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046fc0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026474", "00026944", "00026c78", "000474a4", "ffff17dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "gentle-moth/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unyielding-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

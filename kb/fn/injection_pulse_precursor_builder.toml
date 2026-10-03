@@ -1,0 +1,287 @@
+title = "Build common and two-bank injection pulse precursors"
+summary = """
+Current-pass common and two-bank injection-precursor producer. It selects \
+BFS ffff1024 or alternate ffff123e, optionally bounds it by RPM-derived \
+limit and ffff34f6, scales it by ffff22e6 over 131072, applies bank \
+multipliers ffff40b6/ffff40b8 over 0x6400, adds signed transient word \
+ffff2300, scales through 0002657c by common Q14 gain ffff165e, clamps to \
+uint16, and lower-bounds all results at ROM16[0x94e8]=170. It writes bank \
+words ffff18c0/ffff18c2 and common word ffff1876."""
+note = [
+    """
+Scheduler index 43 follows multiplier publication, common-gain calculation, \
+and transient coordinator in the same periodic pass. Unity multiplier 0x4000 \
+over 131072 divides the schedule by 8; with the 100/256 of FUN 0004ead4 the \
+chain factor from BFS counts to 10 us counts is 100/2048. The physical \
+meaning of the bank multiplier remains unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 77
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 495
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dazzling-sawfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "diligent-flamingo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enigmatic-mouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "giga-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "optimistic-quail/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versatile-bobcat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dainty-oriole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "famous-grouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-worm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e974"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000096e0"
+value = "0x0012c000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e98e"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9a0"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9a8"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9ba"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9d0"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9e8"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9f2"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea10"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea1c"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea2a"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea30"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea32"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea62"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea6c"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea74"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea78"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eab0"
+value = {named = ["000094e8", "000096e0", "00021ce0", "0002657c", "0004e974", "ffff1024", "ffff123e", "ffff165e", "ffff1876", "ffff18c0", "ffff18c2", "ffff22e6", "ffff2300", "ffff40b6", "ffff40b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "signed_fixed_point_multiply/fn/7mfk"
+relies = "contract"

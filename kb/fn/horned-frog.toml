@@ -1,0 +1,117 @@
+summary = """
+Guard for shared Q1.15 trim coefficient ffff4970 of the MAF diagnostic words \
+and the battery-voltage byte. Unless ffff4252 bit 3 bypasses the check, \
+values outside inclusive range 0x7900..0x8700 are replaced with stock \
+ROM16[0x92be]=0x8000."""
+note = [
+    """
+In-range non-stock values come from calibration stage 0006635c and from \
+import step 00068724, which reads configuration key 0x7f. The guard range is \
+a trim of plus or minus 5.5 percent around unity.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 446
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_voltage_publish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "outstanding-penguin/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-oarfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shrewd-manul/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-oarfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00067188"
+name = "horned-frog"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f8"
+value = "0x87"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f9"
+value = "0x79"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092be"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006719a"
+value = {named = ["000087f8", "000087f9", "000092be", "00039a9e", "0003c408", "00067188", "ffff4252", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671bc"
+value = {named = ["000087f8", "000087f9", "000092be", "00039a9e", "0003c408", "00067188", "ffff4252", "ffff4970"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

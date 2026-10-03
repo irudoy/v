@@ -1,3 +1,23 @@
+summary = """
+Unsigned interpolated eight-point table whose result is a byte addend: it is \
+written to ffff15b0, represented in parallel as x<<8, added with uint16 \
+saturation to the result of 0001234a in the same representation, and the \
+high byte of the sum is written to ffff15b1."""
+note = [
+    """
+The lookup by uint8 ffff1070 is written to ffff15b0, represented as x<<8, \
+and added with saturation to the result of 0001234a; the high byte of the \
+sum is written to ffff15b1. Direct sink ffff15b0 has no external readers, \
+but the value continues through registers. The physical quantity is \
+unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Saturating Sum Addend A - raw u8 (0x12342)"
 category = "Internal Calculations"
@@ -7,7 +27,261 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 381
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "quaint-lion/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-galago/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resolute-dragon/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012342"
 name = "maize-cuttlefish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00026382"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a84"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a88"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a8c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a90"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab4"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046834"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046838"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004683c"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046840"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046844"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046848"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004684a"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004684e"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046850"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046858"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004685c"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046860"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046864"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046866"
+value = {named = ["00012342", "0001234a", "00026382", "00026740", "ffff1070", "ffff15b0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "quaint-lion/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "ambitious-galago/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sceptical-dingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

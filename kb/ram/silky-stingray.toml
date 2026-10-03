@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff5cf4"
+name = "silky-stingray"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026dac"

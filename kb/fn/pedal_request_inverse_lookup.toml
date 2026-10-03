@@ -1,0 +1,141 @@
+summary = """
+APP request inverse-coordinate publisher. It normalizes signed ffff19d2 with \
+00075230, inverse-searches current-RPM row of 0xe98e using axis 0x11d0c and \
+coordinate table 0x14114, caps the signed result, and writes APP-derived \
+candidate ffff243c."""
+note = [
+    """
+Convert the compensated pedal request to the shared-request candidate \
+domain""",
+    """
+The inverse-coordinate operation is exact. The QH0/torque names and \
+engineering scales remain candidate semantics.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 143
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 565
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "able-bison/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maize-firefly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "slim-gharial/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vigorous-binturong/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075540"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007554e"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075554"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075562"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075566"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075572"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075584"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "slim-gharial/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

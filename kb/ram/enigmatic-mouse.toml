@@ -1,0 +1,145 @@
+summary = """
+Signed transient additive pulse term. FUN 00052902 writes \
+clamp_s16(trunc_toward_zero(uint8(ffff150a)*int16(ffff1a66)/256)) or zero \
+under a runtime gate. FUN 0004e974 adds it before common Q14 scaling for \
+both bank precursors and the common precursor."""
+note = [
+    """
+Scheduler ordering makes it a current-pass input. Physical transient \
+qualifier and units remain unresolved.""",
+]
+level = "code"
+unit = "signed_raw"
+
+[[ledger]]
+registry = "vars"
+order = 559
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_pulse_precursor_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "attractive-donkey/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "urban-degu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transient_fuel_additive/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2300"
+name = "enigmatic-mouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea1c"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea2a"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea6c"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052908"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005290e"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052958"
+value = {named = ["0004e974", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "attractive-donkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "urban-degu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "vegan-bittern/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transient_fuel_additive/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

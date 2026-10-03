@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1955"
+name = "rare-manul"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000551dc"
+
+[[link]]
+type = "lookup"
+to = "nimble-mouflon/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

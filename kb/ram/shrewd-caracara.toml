@@ -1,0 +1,69 @@
+summary = """
+Pending DFCO rotating-release event count selected by state machine 000503e0 \
+from byte table 0001269a."""
+note = ["The first three stock class values are 0, 2, and 2."]
+level = "code"
+unit = "injector events"
+
+[[ledger]]
+registry = "vars"
+order = 575
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1938"
+name = "shrewd-caracara"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0001269a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005058a"
+value = {named = ["0001269a", "000503e0", "ffff1938"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000505ec"
+value = {named = ["0001269a", "000503e0", "ffff1938"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,7 +1,146 @@
+summary = """
+Lower segment of a piecewise-linear conversion: for input < 64512, \
+interpolation of 00015500 over axis 00015690 forms a composite output \
+without an additional shift; the upper branch is formed by 00015540 with \
+x16. The physical quantity is unknown."""
+note = [
+    """
+Three sites select 00015500 below the 64512 boundary and merge the result \
+with the 00015540 branch. After the merge, map-specific dependence is lost; \
+ffff3a76 and the downstream path cannot be attributed solely to 00015500. \
+Catalog ETC names and scales are not selected.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 304
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-goldfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gifted-turtle/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015500"
 name = "snobbish-swan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b580"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b586"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b588"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b58a"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b58e"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b594"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b5ae"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073298"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007329e"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000732a0"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000732a2"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000732a8"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000732ae"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000732c0"
+value = {named = ["00015500", "00015540", "00015690"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +173,40 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "cunning-goldfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "gifted-turtle/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

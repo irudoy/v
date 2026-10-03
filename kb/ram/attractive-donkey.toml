@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff150a"
+name = "attractive-donkey"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000528f4"
+
+[[link]]
+type = "lookup"
+to = "vegan-bittern/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_fuel_additive/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

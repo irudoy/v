@@ -1,0 +1,73 @@
+summary = """
+Crank tooth interval. On the normal path the ICI0A handler prologue writes \
+the difference between consecutive OSBR1 captures ffff158a on every tooth, \
+0xffff on the first capture; the previous value is the numerator of gap \
+ratio ffff196c. In P0335 fallback 0002b768 writes the quotient \
+floor(event_interval/12)."""
+note = [
+    """
+One count is 3.2 us. The interval spans 10 crank degrees, and 30 degrees on \
+tooth 8.""",
+]
+level = "code"
+unit = "timer count per tooth interval"
+
+[[ledger]]
+registry = "vars"
+order = 599
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ba"
+name = "pistachio-porcupine"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028f4c"
+value = {named = ["00028ea2", "0002b768", "ffff22ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b81e"
+value = {named = ["00028ea2", "0002b768", "ffff22ba"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

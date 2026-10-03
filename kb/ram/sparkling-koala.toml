@@ -1,0 +1,73 @@
+summary = """
+Bank-2 A/F sensor working word written by FUN 00059e7c. FUN 00035856 divides \
+it by 5 for J1979 Mode 01 PID 0x18 at 00035e7c, and helper 000357dc doubles \
+the quotient with saturation before sending it with the bank-2 trim byte."""
+note = [
+    """
+The doubled path would declare raw/500 V against raw/1000 V for bank 1; the \
+path is inactive while ROM8[0x8936] is zero.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 438
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cobalt-turtle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d46"
+name = "sparkling-koala"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035e76"
+value = {named = ["000357dc", "00035856", "00059e7c", "ffff1d46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035e7c"
+value = {named = ["000357dc", "00035856", "00059e7c", "ffff1d46"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "marigold-mink/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cobalt-turtle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

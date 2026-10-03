@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000c4460"
+name = "amphibian-frigatebird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c4460"

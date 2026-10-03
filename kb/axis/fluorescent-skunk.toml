@@ -1,0 +1,30 @@
+note = [
+    """
+Axis for P0128 temperature-difference coefficient curve 00014b0a. FUN \
+000b784e looks up curve 00015c40 by current RPM/12.5 and returns its uint16 \
+result through the caller's output word; FUN 000b6b5a passes that word \
+directly to FUN 000b7768 as the coordinate paired with this axis. All 32 \
+stock axis points and all cells of upstream curve 00015c40 are zero. The \
+code proves the raw coordinate chain but not its physical quantity.""",
+]
+level = "code"
+quantity = "raw"
+unit = "P0128 upstream raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 72
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013ff4"
+name = "fluorescent-skunk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b777e"

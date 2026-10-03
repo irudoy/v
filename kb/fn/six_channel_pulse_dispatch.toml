@@ -1,0 +1,83 @@
+title = "Build two parity bases then calculate six compensated pulse channels"
+summary = """
+Driver for the compensated injection outputs. It calculates the two base \
+terms through FUN 0004ead4, then calls FUN 0004eba2 for channel indices \
+0..5."""
+note = [
+    """
+The call topology establishes exactly two parity bases and six output \
+channels.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 79
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 368
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "0004ecac"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed3e"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed42"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed46"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed4e"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed52"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ed54"
+value = {named = ["0004ead4", "0004eba2", "0004ecac"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "bank_base_pulse_builder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "injector_channel_pulse_builder/fn/7mfk"
+relies = "structure"

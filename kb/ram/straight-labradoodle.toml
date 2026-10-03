@@ -1,0 +1,123 @@
+summary = """
+Six-channel pulse/update eligibility mask, addressed as ffff120e+0x12. In \
+stock ROM8[00008d92].bit3=1 mode, 00052034 sets or clears each channel from \
+ffff22e0, signed difference ffff142e, calibration 000087fe, and ffff16ff. \
+FUN 00051a98 reads the prepared bit for a per-channel calculation, and \
+00051f1e passes the mask to one-shot scheduler 0002c13c."""
+note = [
+    """
+This mask is not a standalone global fuel-enable state. Its exact physical \
+pulse or update event remains unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 83
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "red-sidewinder/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x12"
+offset = 0x12
+
+[[ledger.dependency]]
+role = "consumer"
+to = "discerning-snake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "energetic-hoatzin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "burrowing-muskox/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1220"
+name = "straight-labradoodle"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087fe"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e87a"
+
+[[link]]
+type = "base"
+to = "red-sidewinder/ram"
+offset = 0x12
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "energetic-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "venomous-rook/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "burrowing-muskox/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

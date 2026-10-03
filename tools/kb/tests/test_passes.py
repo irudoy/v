@@ -48,6 +48,15 @@ class PassesTest(PassesCase):
     def test_the_inputs_of_a_check_include_the_source_of_kb_without_its_tests(self):
         self.assertEqual(passes.Passes(self.root).inputs("fake"), {"a.txt", "tools/kb/k.py"})
 
+    def test_hardware_results_are_inputs_of_the_levels_gate(self):
+        self.write("patches/hardware-results.toml", 'hardware_status = "pass"\n')
+        with mock.patch.object(passes, "model", return_value={"a.txt"}):
+            record = passes.Passes(self.root)
+            self.assertIn("patches/hardware-results.toml", record.inputs("levels"))
+            before = record.digest("levels", [])
+            self.write("patches/hardware-results.toml", 'hardware_status = "pending"\n')
+            self.assertNotEqual(record.digest("levels", []), before)
+
     def test_a_pass_is_skipped_until_an_input_changes(self):
         self.assertEqual(self.run_check(), [])
         self.assertIsNone(self.run_check())

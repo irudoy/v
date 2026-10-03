@@ -1,0 +1,246 @@
+summary = """
+First-channel scaled publication from FUN 0007a592. The function calculates \
+floor(S*727/800) with signed division and writes the uint16 result here; S \
+is the locally bounded value or override source ffff3026. Under stock \
+ROM8[000083c1].bit0=0, the selected source also reaches final channel word \
+ffff2a7a. Direct surface evaluators 00074028 and 0007604c use this word on \
+byte-identical 0..727 axes; inverse evaluator 00076ad0 restores the \
+corresponding 0..800 domain."""
+note = [
+    """
+The exact 727/800 relationship is code-proven. The physical interpretation \
+of the common first-channel raw quantity is not assigned.""",
+]
+level = "code"
+unit = "scaled first-channel raw"
+
+[[ledger]]
+registry = "vars"
+order = 29
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-cougar/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pistachio-vole/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-sidewinder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "married-jaguarundi/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "phenomenal-aardwolf/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1210"
+name = "jasper-taipan"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00076ff6"
+value = "0x0320"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0007a7d6"
+value = "0x02d7"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074052"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076076"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077038"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007705c"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a776"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a77a"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a77e"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a780"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a784"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a794"
+value = {named = ["00021bbc", "00074028", "0007604c", "00076ad0", "00076ff6", "0007a592", "0007a7d6", "ffff1210", "ffff2a7a", "ffff3026"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "married-jaguarundi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "phenomenal-aardwolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cocky-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "devout-cougar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pistachio-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-sidewinder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

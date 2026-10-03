@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff25d6"
+name = "bizarre-flamingo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000705a2"

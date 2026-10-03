@@ -1,0 +1,140 @@
+summary = """
+Compensation component with disable/fault latch bit 3 of ffff41d0: when set \
+it writes neutral value 0x80 instead of lookup 0001233a. A separate lookup \
+of 00012352 by uint8 ffff10f4 is written to ffff2fc1 and combines with \
+ffff2fc0 in two subsequent products with fixed shifts and saturation."""
+note = [
+    """
+Physical names for 0001233a, 00012352, and 00012dd2 are unresolved. The \
+range of 00012352 and catalog matches are not used for physical \
+identification.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 138
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mini-wren/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "archetypal-herring/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rugged-turkey/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "innocent-mayfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "thick-orangutan/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abstract-jerboa/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000473ac"
+name = "evasive-ibis"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008bbe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004745c"
+value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0005444c", "ffff10f4", "ffff2fc1", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004745e"
+value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0005444c", "ffff10f4", "ffff2fc1", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047462"
+value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0005444c", "ffff10f4", "ffff2fc1", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004746e"
+value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0005444c", "ffff10f4", "ffff2fc1", "ffff41d0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "mini-wren/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "thick-orangutan/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

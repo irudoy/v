@@ -1,0 +1,95 @@
+summary = """
+Multipurpose state byte. FUN 0004f958 uses bit 7 for sustained low-speed RPM \
+inhibit after ffff1932 reaches 24000; it sets at 1800 RPM, retains through \
+1500 RPM, and feeds the global fuel mask."""
+note = ["Other bits belong to unrelated state machines."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 619
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_sustained_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sepia-mongrel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "low_speed_sustained_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff247c"
+name = "ochre-jacamar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f988"
+value = {named = ["0004ed88", "0004f958", "ffff1932", "ffff247c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f9b8"
+value = {named = ["0004ed88", "0004f958", "ffff1932", "ffff247c"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "sepia-mongrel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "low_speed_sustained_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "low_speed_sustained_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

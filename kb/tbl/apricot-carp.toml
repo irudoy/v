@@ -1,3 +1,23 @@
+summary = """
+Engine-speed ceiling of the standstill exhaust-VTC override. Hysteresis \
+comparator 000259d0 sets ffff24ab bit 1 while engine-speed byte ffff11ae is \
+at or below this value and clears it above the value plus ROM8[0x86e1]=4; \
+FUN 000bfe88 stores the flag at 000bff14."""
+note = [
+    """
+Stock value 80 is 4000 RPM with release above 4200 RPM. The flag is one \
+input of override predicate ffff246c bit 1.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+storage = "uint8"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
 [editor]
 name = "Exhaust CVTC Standstill Override - RPM Ceiling"
 category = "Variable Valve Timing / Exhaust Cam"
@@ -8,10 +28,115 @@ fine = 50
 coarse = 200
 static_axis = ["RPM"]
 
+[[ledger]]
+registry = "findings"
+order = 466
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-labradoodle/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-coucal/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e3a"
 name = "apricot-carp"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086e1"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e3a"
+value = "0x50"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfee6"
+value = {named = ["000086e1", "00008e3a", "000259d0", "000bfe88", "ffff11ae", "ffff24ab"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfefa"
+value = {named = ["000086e1", "00008e3a", "000259d0", "000bfe88", "ffff11ae", "ffff24ab"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff14"
+value = {named = ["000086e1", "00008e3a", "000259d0", "000bfe88", "ffff11ae", "ffff24ab"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfeb4"
+value = {named = ["000086e1", "00008e3a", "000259d0", "000bfe88", "ffff11ae", "ffff24ab"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
 
 [[symbol]]
 layout = "jk00c"
@@ -98,3 +223,25 @@ value = "370200000000002100000000380306000000045200000000"
 note = """
 the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
 P0014 and P0024 have no record"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "knowing-labradoodle/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "accessor"

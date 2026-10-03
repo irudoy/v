@@ -1,0 +1,123 @@
+summary = """
+Corrected and uint16-saturated companion coordinate assembled by FUN \
+000b29b8 immediately before the second 000152d6 lookup. The stored word and \
+the lookup argument are the same value."""
+note = [
+    """
+The upstream correction combines several leak-monitor state words and \
+saturating branches. The complete physical formula and engineering units \
+remain unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 25
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "caped-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "caped-barracuda/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c98"
+name = "umber-bandicoot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c60"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c62"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c64"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c66"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c68"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c6a"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c74"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c76"
+value = {named = ["000152d6", "000b29b8", "ffff2c98"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

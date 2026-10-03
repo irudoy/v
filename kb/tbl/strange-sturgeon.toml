@@ -1,0 +1,177 @@
+summary = """
+Power-of-two divisor table: at index 1..8 the map yields M=2^index, code \
+calculates floor(256/M), writes the low byte to ffff9129, and later uses it \
+as a byte weight for linear blending."""
+note = [
+    """
+The code claim is limited to the computational role. Value ffff9129 is used \
+as a linear-blend weight; the physical purpose of the blended quantities is \
+unknown. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 333
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stoic-dogfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "psychedelic-ostrich/const"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-seriema/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00023804"
+name = "strange-sturgeon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000237f4=[1,2,3,4,5,6,7,8]"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00023804=[2,4,8,16,32,64,128,256]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069612"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069616"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696bc"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696c0"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696c2"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696c6"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696c8"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696ca"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696cc"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000696d0"
+value = {named = ["00021bbc", "000237f4", "00023804", "000264cc", "00026984", "00069374", "ffff9129"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "psychedelic-ostrich/const"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,86 @@
+summary = """
+First retained output of shared gate curve 000122d2, indexed by ffff11f0 in \
+FUN 0004121c. Later code consumes only zero versus nonzero."""
+level = "code"
+unit = "nonzero gate"
+
+[[ledger]]
+registry = "vars"
+order = 516
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "resilient-auk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "notorious-lyrebird/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resilient-auk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2522"
+name = "wine-puma"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000412ac"
+value = {named = ["000122d2", "0004121c", "ffff2522"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041354"
+value = {named = ["000122d2", "0004121c", "ffff2522"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004135c"
+value = {named = ["000122d2", "0004121c", "ffff2522"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "notorious-lyrebird/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "resilient-auk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "resilient-auk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,36 @@
+title = "Catalyst efficiency bank 2"
+level = "code"
+code = "P0430"
+group = "catalyst"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 8
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019438"
+name = "turquoise-elk"
+index = 18
+attribute = "0001603c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001603c"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019438"
+value = "06050c000000043010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a194"
+value = "0001603c"

@@ -1,0 +1,120 @@
+summary = """
+Ten-bit SH7058 AN15 sample written as ADDR15>>6 by FUN 00028098. It is the \
+sole input to the bank-2 diagnostic publisher FUN 0003c408 and is copied \
+separately to ffff1a40."""
+note = [
+    """
+The SH7058 manual maps ADDR15 to AN15 at MCU pin 104/L20. Exact DID 0x1205 \
+establishes MAF bank 2 in firmware; physical continuity from the ECM \
+terminal to the MCU pin requires bench verification.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 469
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "active-snail/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "outstanding-penguin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "zircon-stallion/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuzzy-parakeet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d64"
+name = "hairy-dalmatian"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000280d2"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d64", "fffff826"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000280d6"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d64", "fffff826"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c420"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d64", "fffff826"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c466"
+value = {named = ["00028098", "0003c408", "0003c45c", "ffff1d64", "fffff826"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "zircon-stallion/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "active-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuzzy-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

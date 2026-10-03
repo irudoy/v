@@ -1,3 +1,27 @@
+summary = """
+Normalized Q0.7 blend coefficient for the result of map 000122ea: \
+interpolated output 000122f2 multiplies the deviation of output 000122ea \
+from 128; after division by 128, the deviation is added back to 128. The \
+derived value is intake idle source byte ffff1553; while ffff24a7 bit 1 is \
+set, FUN 000bdc66 conditions it into intake target ffff2326 in place of the \
+coolant-selected map byte."""
+note = [
+    """
+The claim is limited to functional semantics proven by code. Index ffff106f \
+is the scheduler copy of coolant index ffff1077, and ffff2326 is the common \
+intake-cam target reference (JK08A.cvtc.md). For raw x=0, the centered \
+result is 128; for x=128, it equals the output of 000122ea. The numeric \
+scale round trip over raw range 0..128 is exact: (x/128)*128=x. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Centered Blend Coefficient Q0.7 (0x122F2)"
 category = "Internal Calculations"
@@ -7,10 +31,109 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 128
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gainful-tarsier/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "truthful-nightingale/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "000122f2"
 name = "stoic-ladybug"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb8a"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb94"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb98"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbac"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdb9e"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdbac"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdbb8"
+value = {named = ["000122f2", "000224f8", "000bdc66", "ffff1553"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +166,24 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "amphibian-sponge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "truthful-nightingale/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "scale"

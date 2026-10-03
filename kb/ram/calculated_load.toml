@@ -1,6 +1,131 @@
+summary = """
+Calculated-load response byte written by FUN_0008083c. FUN_00035856 returns \
+it for J1979 Mode 01 PID 0x04. Misfire reporter 00084cd0 retains it in three \
+operating-point snapshot bytes, and matcher 000847dc accepts current load \
+from floor(0.8*snapshot) inclusive to floor(1.2*snapshot) exclusive."""
+note = [
+    """
+Physical percent is 100*A/255. Entry gates in the producer can force code 0 \
+or 255.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*100/255"
+
+[[diagnostic]]
+id = "calculated-load-value"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cal-ld-value"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0118:data_monitor:cal-ld-value-eff1cc8c"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 90
+level = "code"
+note = """
+Exact code routes ffff413e through the Mode 01 handler for PID 0x04. The \
+stock normal path divides current Base Fuel Schedule ffff1024 by the \
+RPM-dependent reference map 0001491a and publishes 100*A/255 percent. It is \
+distinct from internal Q7 map coordinate ffff102c, which divides Base Fuel \
+Schedule by fixed reference 00009534 and uses 100*A/128 percent. The factory \
+CAL/LD VALUE name and behavior come from the homologous VQ35HR manual; the \
+exact JK08A path establishes the runtime quantity and byte representation."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "astute-dachshund/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "colorful-dogfish/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00035676"
+value = {named = ["0001491a", "00035634", "00035856", "0008083c", "eff1cc8c", "ffff413e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00035be6"
+value = {named = ["0001491a", "00035634", "00035856", "0008083c", "eff1cc8c", "ffff413e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080926"
+value = {named = ["0001491a", "00035634", "00035856", "0008083c", "eff1cc8c", "ffff413e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "eminent-chamois/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 24
+binding = "calculated-load-value"
+
+[[ledger]]
+registry = "vars"
+order = 260
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "%"
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "colorful-dogfish/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eminent-chamois/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +157,41 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff413e"
 former = ["dark-porcupine/ram/7mfk-ffff413e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084830"
+value = {named = ["0001491a", "00035856", "0008083c", "000847dc", "00084cd0", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008484a"
+value = {named = ["0001491a", "00035856", "0008083c", "000847dc", "00084cd0", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d16"
+value = {named = ["0001491a", "00035856", "0008083c", "000847dc", "00084cd0", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d5c"
+value = {named = ["0001491a", "00035856", "0008083c", "000847dc", "00084cd0", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d88"
+value = {named = ["0001491a", "00035856", "0008083c", "000847dc", "00084cd0", "ffff413e"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +229,56 @@ to = "7mfk:00084804"
 count = 1
 value = 54
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "lookup"
+to = "colorful-dogfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "devout-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "steady-eagle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "eminent-chamois/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,3 +1,23 @@
+summary = """
+Trustful throttle-valve angle coordinate table. It is the static axis of \
+opening-area table 00018766 and the returned-value table when the same pair \
+is used in reverse for area-to-angle conversion."""
+note = [
+    """
+The inverse paths interpolate half of ffff1d18 or an adjusted value over \
+00018766. One path writes the raw angle coordinate to ffff1cea; another \
+divides it by four before writing ffff35c8. Neither word has a reader, so \
+the percent gradient is inherited from byte-identical primary coordinate \
+table 000155a0 rather than established here.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Throttle Valve Opening [%]"
+scale = "x*34285/1114112"
+to_raw = "x*1114112/34285"
+scale_level = "candidate"
+
 [editor]
 name = "Throttle Valve Opening Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
@@ -7,10 +27,121 @@ format = "0.00"
 fine = 0.1
 coarse = 1
 
+[[ledger]]
+registry = "findings"
+order = 328
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-tiger/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-chital/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "discreet-mayfly/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-quetzal/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "discreet-mayfly/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "000190d0"
 name = "organic-inchworm"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Target Throttle Valve Opening Table (Trustful)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072412"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072418"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000724e8"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000724f4"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007253e"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007254e"
+value = {named = ["00018766", "000190d0", "0007240c", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table (Trustful)|Degrees (x*0.0275)"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +174,44 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "discreet-mayfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "evasive-quetzal/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "competent-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-chital/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,59 @@
+summary = """
+Value byte of service-0x30 Output Control IOLID 0x1d (ffff9923 + n), written \
+by handler 00030c4c. FUN 0002e466 reads it at 0002e5f0 as the requested \
+exhaust-cam offset and stores its clamp in ffff1706."""
+note = ["Startup 0002e76e zeroes ffff9924..ffff99a3."]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 807
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "muscular-lizard/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nissan_service_30_output_control/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9940"
+name = "wine-swallow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e5f0"
+value = {named = ["0002e466", "00030c4c", "ffff9940"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nissan_service_30_output_control/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

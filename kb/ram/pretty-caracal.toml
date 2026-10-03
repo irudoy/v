@@ -1,0 +1,276 @@
+summary = """
+Exact UDS DID 0x130b runtime status byte. FUN 0002e2e8 maps ffff2377 bit 0 \
+to output bit 1 and maps ffff2377 bit 1 to output bit 0 when ROM8[0x8b2a] \
+bit 2 is clear. The exact DID record supplies support mask 0x03."""
+note = [
+    """
+A homologous structured Nissan profile identifies output bits 1 and 0 as \
+HO2S2 heater states for banks 1 and 2. The exact code proves the packed \
+states but not physical output pins.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "ho2s2-heater-bank-1-did-130b"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-130bh-bit1-ho2s2-htr-b1"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-130bh-bit1-ho2s2-htr-b1-aee8c2d7"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A table maps DID 0x130B to ffff2c57, and exact code maps \
+ffff2377 bit 0 to supported response bit 1. The HO2S2 heater bank-1 name \
+comes from a homologous structured Nissan profile."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "delicate-peccary/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00011a3a"
+value = "0x03"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a38"
+value = "ffff2c57"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a3c"
+value = "00011a3a"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3ca"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "aee8c2d7", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3d2"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "aee8c2d7", "ffff2377", "ffff2c57"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3ea"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "aee8c2d7", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "jovial-bird/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic]]
+id = "ho2s2-heater-bank-2-did-130b"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-130bh-bit0-ho2s2-htr-b2"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-130bh-bit0-ho2s2-htr-b2-6435fe15"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A table maps DID 0x130B to ffff2c57, and exact code maps \
+ffff2377 bit 1 to supported response bit 0 because ROM8[0x8B2A] bit 2 is \
+clear. The HO2S2 heater bank-2 name comes from a homologous structured \
+Nissan profile."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "delicate-peccary/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00011a3a"
+value = "0x03"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a38"
+value = "ffff2c57"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a3c"
+value = "00011a3a"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3ca"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "6435fe15", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3e4"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "6435fe15", "ffff2377", "ffff2c57"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e3ea"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "6435fe15", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "jovial-bird/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 117
+binding = "ho2s2-heater-bank-1-did-130b"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 118
+binding = "ho2s2-heater-bank-2-did-130b"
+
+[[ledger]]
+registry = "vars"
+order = 410
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delicate-peccary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-bird/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c57"
+name = "pretty-caracal"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a3a"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a38"
+value = "ffff2c57"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a3c"
+value = "00011a3a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3ca"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3d2"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "ffff2377", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3e4"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "ffff2377", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3ea"
+value = {named = ["00008b2a", "00011a3a", "00022a38", "00022a3c", "0002e2e8", "0003235c", "ffff2377", "ffff2c57"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "delicate-peccary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "jovial-bird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

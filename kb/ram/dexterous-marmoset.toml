@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11c1"
+name = "dexterous-marmoset"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00065b70"
+
+[[link]]
+type = "reader"
+to = "silky-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

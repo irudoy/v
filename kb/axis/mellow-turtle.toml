@@ -1,3 +1,42 @@
+note = [
+    """
+Column axis for Fuel Compensation Map 0xA29A. FUN 0002c648 and FUN 0003bd74 \
+pass byte ffff1170 as the column input of wrapper 000261f0, and its byte \
+core 00026944 compares each stored point with that byte directly, so one \
+stored count is one coordinate count. FUN 0003b498 writes ffff1170 as the \
+high byte of curve 00015042/00015022 at coordinate \
+min(65535,(ffff1e60*ffff114e>>9)+(ffff120e*ffff114e>>11)), where FUN \
+0003b40a forms ffff1f46=min(65535,ROM8[00008d8f]*ffff11f4) and FUN 0003b436 \
+forms ffff114e=min(65535,0xdc1d00/ffff1f46), or 0 while ffff1f46 is 0, in \
+inverse proportion to engine speed. Throttle area ffff1e60 and inflow area \
+ffff120e/4 are both opening areas in the value domain of 00013202, so the \
+coordinate is an alpha-N flow estimate: opening area over engine speed \
+through a saturating curve. The raw range 16..255 corresponds to \
+6.25..99.609375% QH0 flow; the physical name and scale have candidate \
+confidence based on A2L.""",
+]
+level = "code"
+quantity = "load"
+unit = "QH0 Flow Quantity [%]"
+scale = "x*0.390625"
+to_raw = "x/0.390625"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 6
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "alpha_n_flow/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013d26"
@@ -35,6 +74,56 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0002cc9c"
 
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Axis Percentage (x*0.390625)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Fuel Compensation Map (16x16)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc8a"
+value = {named = ["00011d4c", "000261f0", "00026944", "ffff1170"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc8e"
+value = {named = ["00011d4c", "000261f0", "00026944", "ffff1170"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c288"
+value = {named = ["00011d4c", "000261f0", "00026944", "ffff1170"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c294"
+value = {named = ["00011d4c", "000261f0", "00026944", "ffff1170"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "fuel_compensation_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014019"
@@ -68,3 +157,10 @@ supports = "homology"
 at = "jk78c:0002fcf8"
 to = "7mfk:00011d4c"
 note = "both target compensation accessors share the reviewed 16-point Y axis"
+
+[[link]]
+type = "index"
+to = "alpha_n_flow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

@@ -1,3 +1,76 @@
+summary = """
+Previous-cycle coarse vehicle-speed byte. Scheduler 00020dfe copies ffff118e \
+here. FUN 00050018 uses stock boundary 4 to separate the low-speed \
+three-class DFCO restore classifier from moving branches; FUN 0004f324 \
+requires zero before the stationary rev-limiter state can advance. P0128 \
+model functions also use boundaries 2 and shifted coordinates."""
+note = [
+    """
+Exact firmware decodes CAN 0x280 bytes 4 and 5, filters the value through \
+ffff113c/ffff115e, and FUN 0003a254 divides it by 20 into ffff118e. \
+Homologous Z34 CAN data identifies this field as vehicle speed; the \
+resulting byte uses approximately 2 km/h per count. The DFCO boundary is \
+therefore approximately 8 km/h, while the physical scale remains a \
+hardware-validation item.""",
+]
+level = "code"
+unit = "coarse vehicle-speed counts"
+
+[[ledger]]
+registry = "vars"
+order = 64
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refined-goose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-armadillo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hulking-caribou/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe80f8"
@@ -26,6 +99,103 @@ Homologous DFCO consumers compare this byte against the same raw threshold"""
 layout = "7mfk"
 address = "ffff110e"
 former = ["sociable-groundhog/ram/7mfk-ffff110e"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085fa"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f48"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f50"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f56"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501c8"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501d0"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cb0"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cb4"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cd0"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7928"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b792c"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7930"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7936"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a9c"
+value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -64,3 +234,179 @@ count = 1
 value = 12
 note = """
 Homologous DFCO consumers compare this byte against the same raw threshold"""
+
+[[link]]
+type = "input"
+to = "hulking-caribou/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_entry_delay_select/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "etc_fault_low_speed_full_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "low_speed_rpm_exposure_accumulator_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "xanthic-wolf/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

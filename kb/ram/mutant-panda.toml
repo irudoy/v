@@ -1,0 +1,98 @@
+summary = """
+State byte of the cold-start control monitor, records 0x126 (P1421) and \
+0x125 (P1422). Worker 0009b1b4 writes the byte, with bit 5 completed, bit 6 \
+fail, and bit 7 pass; routing stage 0009bdd0 clears bits 2, 3, 6, and 7 \
+under ffff424f bit 2. Scheduler 00020dfe copies the byte to ffff41a0 at \
+0002109e..000210a2, and the routing stage reads the copy."""
+note = ["Stock ROM8[0001870e] is 0xf0, so neither record is routed on JK08A."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 927
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alluring-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "alluring-rottweiler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cute-prawn/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41a1"
+name = "mutant-panda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001870e"
+value = "0xf0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002109e"
+value = {named = ["0001870e", "00020dfe", "0009b1b4", "0009bdd0", "ffff41a1"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "alluring-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "alluring-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cute-prawn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

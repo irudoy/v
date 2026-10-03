@@ -1,0 +1,58 @@
+summary = """
+TCR8, the ATU-II channel-8 timer control register. Channel initialization \
+0002718a writes 0x55, so CKSELA in bits 2:0 selects phi'/32 for \
+DCNT8A..DCNT8H and CKSELB in bits 6:4 selects the same rate for \
+DCNT8I..DCNT8P."""
+note = [
+    """
+With PSCR1 = 1 the injector down-counters run at Pphi/64. The value is a \
+single exact byte write on the initialization path.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 862
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "just-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff668"
+name = "sparkling-rat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002736c=0x55"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000273b4"
+value = {named = ["0002718a", "0002736c", "fffff668"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-tcr8"
+
+[[link]]
+type = "writer"
+to = "just-pelican/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

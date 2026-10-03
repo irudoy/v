@@ -1,0 +1,189 @@
+summary = """
+Base table (u16) for a component product: output = base * factor(00012bda) / \
+64, saturated to u16. The trace does not resolve a physical unit."""
+note = [
+    """
+Base table (u16) for a component product: output = base * factor(00012bda) / \
+64, saturated to u16. The trace does not resolve a physical unit. Result \
+disposition: consumer. Result target: 000b1ecc (mul.l r5,r2). Machine trace: \
+00014a7a -> 000b1e92/000b1e9c -> 000264cc -> 00026984/00026c78 -> 00026740 \
+-> 000b1ea0/000b1ea8 -> ffff353a -> 00012bda -> 000b1eb4 -> \
+000b1eb8/000b1ec2 -> 000b1ec6/000b1eca -> 000b1ecc -> 000b1ed2 -> \
+000b1ed4/000b1ed6/000b1ed8 -> 000b1eda/000b1edc -> 000b1ee0 or 000b1ee2 -> \
+000b1ee6:ffff2c0a -> 000b1eec:ffff44b2.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 265
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-finch/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "magic-teal/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014a7a"
+name = "magic-teal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1e9c"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ea8"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eb4"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ec2"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ec6"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eca"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ecc"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed0"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed2"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed4"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed6"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed8"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eda"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1edc"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ee0"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ee2"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ee6"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eec"
+value = {named = ["00012bda", "00014a7a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "impetuous-finch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "magic-teal/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"

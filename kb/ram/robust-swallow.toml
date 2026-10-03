@@ -1,0 +1,67 @@
+summary = """
+Base of the two-byte scaled target-reference direction array written by \
+000cb354 and consumed by 000cb614."""
+note = ["Elements are ffff392b and ffff392c."]
+level = "code"
+unit = "direction code array"
+
+[[ledger]]
+registry = "vars"
+order = 706
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_error_scaler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff392b"
+name = "robust-swallow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb3ec"
+value = {named = ["000cb354", "000cb614", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc164"
+value = {named = ["000cb354", "000cb614", "ffff392b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_target_error_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

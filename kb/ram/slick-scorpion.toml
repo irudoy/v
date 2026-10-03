@@ -1,0 +1,41 @@
+summary = """
+Bits 0 and 1 select the source for interpolation of inverse pair \
+0x13202/0x155a0 in wrapper 0003e548."""
+note = [
+    """
+The selector role is established by code; the physical meaning of the \
+selection is candidate.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 158
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "glistening-gecko/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23a6"
+name = "slick-scorpion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003e55e"
+
+[[link]]
+type = "reader"
+to = "glistening-gecko/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,3 +1,24 @@
+summary = """
+Unsigned 16-point coordinate table used both as the column axis of 0000e98e \
+and as the returned values of the inverse lookup that converts a centered \
+signed request through an RPM-interpolated row of 0000e98e."""
+note = [
+    """
+FUN 00073432 writes the inverse results to ffff1984 and ffff198a; FUN \
+000730fc compares those coordinates with another uint16 value. Code proves \
+the reciprocal-coordinate role and raw domain. The QH0 name, percent unit, \
+and scale are catalog candidates. The stored values are byte-identical to \
+trustful coordinate table 00018ac6. Result disposition: writes and \
+downstream comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+to_raw = "x/0.00152588"
+scale_level = "candidate"
+
 [editor]
 name = "QH0 Flow Potential Coordinate"
 category = "Electronic Throttle Control / Internal Coordinates"
@@ -7,10 +28,112 @@ format = "0.00"
 fine = 0.1
 coarse = 1
 
+[[ledger]]
+registry = "findings"
+order = 242
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+scale = [8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014114"
 name = "able-bison"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734ca"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734d4"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734e4"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734ea"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735a4"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735ac"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735bc"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735c0"
+value = {named = ["0000e98e", "00014114", "000730fc", "00073432", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map|Axis Percentage (x*0.00152588)"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +166,34 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "arcane-griffin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

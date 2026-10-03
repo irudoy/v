@@ -1,3 +1,33 @@
+summary = """
+1D table of a decrement step for RAM state ffff17c0. During a descending \
+update, the lookup is compared with current ffff17c0: if current >= lookup \
+and the calculated target <= current - lookup, current - lookup is written; \
+if current < lookup, the state is zeroed. Otherwise the higher calculated \
+target is retained."""
+note = [
+    """
+The physical subsystem is unknown. The map is selected by the branch that \
+adds 0x10 to base 00014304 when a calculated 8-bit selector lies outside the \
+range of two bytes at 00008ace. The lookup result is not written as an \
+independent quantity: it is consumed inside 00074e4e while limiting a \
+descending update of ffff17c0; external readers of derived ffff23fc are not \
+used as evidence for target-map semantics. The map has no explicit ROM axis, \
+so axes is empty. Index: 1D-8 with an implicit axis. Coordinate r5 is formed \
+as saturating uint16(RAM_ffff1210 << 7): for RAM_ffff1210 >= 0x0200, 0xffff \
+is used. For coordinate < 0xe000, wrapper 000263d8 interpolates adjacent \
+uint16 values through 00026a60/00026740; otherwise it returns element 7 at \
+offset +0x0e. Output trace: 00014314 -> site 00074f30 -> site 00074f36 -> \
+000263d8 -> [00026a60 -> 00026740 | direct +0x0e return] -> site 00074f48 -> \
+site 00074f6c -> site 00074f70 -> 00074e4e -> ffff17c0 -> ffff23fc. Result \
+disposition: inline_comparison; Result target: site 00074f70.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "State Decrease Step B - raw u16 (0x14314)"
 category = "Internal Calculations"
@@ -7,10 +37,78 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 423
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cocky-wildebeest/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014314"
 name = "fractal-mussel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f30"
+value = {named = ["00014314", "000263d8", "00026740", "00026a60", "00074e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f36"
+value = {named = ["00014314", "000263d8", "00026740", "00026a60", "00074e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f48"
+value = {named = ["00014314", "000263d8", "00026740", "00026a60", "00074e4e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f6c"
+value = {named = ["00014314", "000263d8", "00026740", "00026a60", "00074e4e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f70"
+value = {named = ["00014314", "000263d8", "00026740", "00026a60", "00074e4e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +141,12 @@ value = 102
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "cocky-wildebeest/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

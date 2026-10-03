@@ -1,0 +1,86 @@
+summary = """
+Physical semantics are unknown. In code, this is an interpolated unsigned 1D \
+table of a raw divisor: the value from ffff4034 enters r0 of function \
+00021ce0 and divides a previously calculated quantity."""
+note = [
+    """
+The map contains 8 uint16 values 71..919. Code proves the result write to \
+ffff4034 at site 00060668, subsequent read within the same accessor at site \
+00060700, and passing it as the r0 divisor into 00021ce0. This is neither an \
+inline comparison nor a return; unreachability is unproven, and the root \
+function having no callers is insufficient for role=dead. Matching catalog \
+shape does not determine physical meaning or scale. Result disposition: \
+consumer. Blocking condition: The physical-semantics trace stops in 00021ce0 \
+after ffff4034 is read at site 00060700; the contract confirms only the r0 \
+role as an unsigned divisor. The quotient is later stored in ffff4050, but \
+the artifact lacks a physically semantic consumer. The source of the axis \
+value after reading ffff11f4 at site 0006065a is also unknown.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 280
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014f42"
+name = "rare-groundhog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006065c"
+value = {named = ["00014f42", "00021ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060664"
+value = {named = ["00014f42", "00021ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060668"
+value = {named = ["00014f42", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060700"
+value = {named = ["00014f42", "00021ce0"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "fine-gopher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

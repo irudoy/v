@@ -1,0 +1,143 @@
+summary = """
+Periodic stock HCAN1 transmit scanner. When the CAN runtime gate is active \
+it clears the TX request aggregate, scans all 30 mailbox records, invokes \
+000c3746 only for firmware type 3, and publishes the resulting bits to HCAN1 \
+TXPR0/TXPR1 while interrupts are masked."""
+note = [
+    """
+Entry 61 at word 00021928 of the 69-entry table 00021834, which dispatcher \
+000209d8 drains, calls this function before serializer coordinator 000c3de4 \
+at entry 63. Type 4 is intentionally excluded.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 556
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-ape/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "unyielding-bullfinch/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c38de"
+name = "bright-octopus"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000975a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c38ea"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c38f0"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c38f8"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3906"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3908"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c390c"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c391a"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c392c"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c392e"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3934"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3936"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3938"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c394a"
+value = {named = ["0000975a", "000c3746", "000c38de", "ffff9814", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "free-coot/fn/7mfk"
+relies = "structure"

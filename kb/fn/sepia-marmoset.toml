@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00068d58"
+name = "sepia-marmoset"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00068d58"

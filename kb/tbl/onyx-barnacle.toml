@@ -1,0 +1,253 @@
+summary = """
+Q1.7 multiplier for the first two-bank diagnostic path in FUN 00094f26. The \
+interpolated unsigned byte K is stored at ffff2f89+bank, multiplied by \
+signed word ffff2bda+2*bank, and divided by 128 with truncation toward zero \
+before comparison with ROM16[00009070]."""
+note = [
+    """
+The branch adds 127 only for a negative product before arithmetic shift by \
+seven, proving truncation toward zero. The physical monitored quantity \
+remains unresolved. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 123
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+scale = [14, 15, 16, 17, 18, 19, 20, 21]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loud-caribou/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "onyx-barnacle/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "qualified-starfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sexy-barracuda/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012262"
+name = "onyx-barnacle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950a4"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950aa"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950ae"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950b2"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950b8"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950bc"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950c2"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950ca"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950ce"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950d2"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950d4"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950d8"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000950dc"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000950ce"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000950d4"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000950d8"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000950dc"
+value = {named = ["00012262", "00013ae8", "000224f8", "00094f26", "ffff2bda"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128/128=1"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "onyx-barnacle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "qualified-starfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "sexy-barracuda/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

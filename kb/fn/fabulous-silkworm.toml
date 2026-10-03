@@ -1,0 +1,30 @@
+summary = """
+2D interpolation over bytes with saturation: each cell is checked against \
+128 with CMP/HS, and when element bit 7 is set the entire sample output \
+becomes 128 through MOV R6,R0. Values are therefore 0..127. Its only entry \
+is 0x26320."""
+note = [
+    """
+This explains the shape of 0xB61A: 136 of its 256 cells equal 128 in one \
+contiguous high-RPM, low-load region. They represent saturation, not values. \
+The same arithmetic disproves the x-64 degrees scale.""",
+]
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 102
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000268a4"
+name = "fabulous-silkworm"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"

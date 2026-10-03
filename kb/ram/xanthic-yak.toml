@@ -1,0 +1,106 @@
+summary = """
+Vehicle-speed fuel-cut state byte. FUN 0004f19c uses bit 0 as the active \
+93/91 coarse-speed hysteresis state and returns it to the global \
+fuel-inhibit coordinator."""
+note = [
+    """
+Candidate conversion places the entry/release thresholds near 186/182 km/h; \
+hardware validation remains required.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 626
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a6"
+name = "xanthic-yak"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f1d6"
+value = {named = ["0004ed88", "0004f19c", "ffff24a6", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f272"
+value = {named = ["0004ed88", "0004f19c", "ffff24a6", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f27a"
+value = {named = ["0004ed88", "0004f19c", "ffff24a6", "ffff24a7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

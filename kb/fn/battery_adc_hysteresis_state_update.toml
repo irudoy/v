@@ -1,0 +1,138 @@
+title = "Update battery ADC threshold state with raw hysteresis"
+summary = """
+Raw battery-ADC hysteresis state updater. It reads phase-2 AN0 mux sample \
+ffff1d6e, enters the upper state at raw 0x33c, returns through the lower \
+threshold 0x308, stores its four-state result at ffff3674, and sets \
+ffff24ad.bit7 for states 2 or 3."""
+note = [
+    """
+The shared source is diagnostic-bound to battery voltage through 00039a9e \
+and DID 0x1103. No engineering conversion is assigned directly to the \
+pre-conversion word thresholds.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 6
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 561
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eager-alligator/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-kestrel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wealthy-caracal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00038128"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000381c6"
+value = "0x033c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000381c8"
+value = "0x0308"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003813e"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038140"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038156"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038158"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003816e"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038170"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003818e"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038190"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000381aa"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000381c0"
+value = {named = ["00038128", "000381c6", "000381c8", "ffff1d6e", "ffff24ad", "ffff3674"], span = 1}
+key = "reference"

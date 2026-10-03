@@ -1,0 +1,153 @@
+summary = """
+First-channel Q16 zero-surface crossfade scratch written by FUN 00070e4c as \
+floor((ffff133a*(65536-ffff190e)+ffff133c*ffff190e)/65536)."""
+note = [
+    """
+Both endpoint surfaces are all zero, so the stock value is always zero. Its \
+only reader is inside FUN 00070e4c; ROM8[000089fb].bit3 clear prevents the \
+processed branch from reaching ffff1332.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 14
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eminent-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gray-chimpanzee/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intrepid-raptor/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-cuttlefish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eminent-moth/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1212"
+name = "military-jaguar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ec8"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ed2"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ed6"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070edc"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ee2"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ee8"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070f48"
+value = {named = ["0001050e", "0001070e", "00070e4c", "ffff1212", "ffff190e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "papaya-cuttlefish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "gray-chimpanzee/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "intrepid-raptor/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

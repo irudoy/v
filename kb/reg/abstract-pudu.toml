@@ -1,0 +1,60 @@
+summary = """
+Root of the 32-bit ATU-II channel 0A input-capture register pair ICR0A. FUN \
+00028ea2 uses a longword read as the current capture for the tooth-9 \
+interval sample and previous-reference refresh."""
+note = [
+    """
+The hardware register identity is exact. The handler runs on every crank \
+tooth and the tooth-9 sample recurs every 120 crank degrees.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 340
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff434"
+name = "abstract-pudu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a20c"
+value = {named = ["00028ea2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a240"
+value = {named = ["00028ea2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-icr0a"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,116 @@
+summary = """
+Q1.7 calculated-load secondary divisor from map 000129d2. When \
+ROM8[0000870e].bit4 is set, FUN 0008083c applies floor((q<<7)/ffff329f); \
+zero forces the result to 255."""
+note = [
+    """
+Stock ROM8[0000870e]=0x28 has bit4 clear, so this optional normalization is \
+inactive in stock JK08A.""",
+]
+level = "code"
+unit = "Q1.7 divisor"
+
+[[ledger]]
+registry = "vars"
+order = 249
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eminent-chamois/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "mini-starfish/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "successful-ammonite/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff329f"
+name = "adaptable-hamster"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "000129d2", "0008083c", "000b997c", "ffff329f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "000129d2", "0008083c", "000b997c", "ffff329f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "000129d2", "0008083c", "000b997c", "ffff329f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "000129d2", "0008083c", "000b997c", "ffff329f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b998c"
+value = {named = ["0000870e", "000129d2", "0008083c", "000b997c", "ffff329f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "mini-starfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "eminent-chamois/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "successful-ammonite/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

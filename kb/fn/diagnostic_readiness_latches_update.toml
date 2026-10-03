@@ -1,0 +1,156 @@
+summary = """
+Diagnostic readiness-latch updater. It sets ffff422e.bit7 after RPM reaches \
+400, sets ffff422f.bit4 after raw coolant exceeds start-latched raw coolant \
+ffff106e by at least 20, and sets ffff422f.bit5 at raw coolant 0x78 or \
+above."""
+note = [
+    """
+Update engine-running temperature-difference and coolant-warm diagnostic \
+latches""",
+    """
+The three target bits are set-only in this updater and are cleared by \
+diagnostic reset service 00080b54. Under deg C = raw-50 the latches are \
+engine speed of 400 rpm, a coolant rise of 20 deg C above the temperature \
+latched at engine start, and a coolant temperature of 70 deg C. Factory \
+driving pattern A lists the same three conditions.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 57
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 545
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuzzy-mouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cream-nautilus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mega-warthog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000804ce"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000804e6"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000804fe"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008055c"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080560"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008056a"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080574"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080578"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080580"
+value = {named = ["0007d856", "000804ce", "ffff106e", "ffff1071", "ffff11b2", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec150-driving-pattern-a"
+
+[[link]]
+type = "depends"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

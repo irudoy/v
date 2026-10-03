@@ -1,7 +1,112 @@
+summary = """
+Second-channel upper threshold for signed 32-bit RAM value ffff35c4: on the \
+map branch, predicate ffff9651 = (ffff35c4 > interpolate_u16(00015182, \
+00013c88, param_5)) is calculated."""
+note = [
+    """
+Only operational semantics are proven by code. The physical quantity of RAM \
+ffff35c4 and map dimension are unknown. The branch uses the map when the \
+second control byte is zero; the alternate branch forces 1 into ffff9651. \
+Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 295
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
 [[symbol]]
 layout = "7mfk"
 address = "00015182"
 name = "poised-dormouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d59c"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5a0"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5a4"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5a8"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5ae"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5b0"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5b2"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5bc"
+value = {named = ["00015182", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +139,10 @@ value = 5
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "funny-toucan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

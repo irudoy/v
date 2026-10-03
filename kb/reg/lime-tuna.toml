@@ -1,0 +1,54 @@
+summary = """
+CYLR7B, the ATU-II channel-7B cycle register, programmed with the same \
+intake-VTC PWM period as CYLR7A."""
+note = [
+    """
+Register identity comes from the SH7058S hardware manual channel-7 register \
+list.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 739
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "striped-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff58a"
+name = "lime-tuna"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfc=33"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd81a"
+value = {named = ["00008dfc", "000cd75c", "fffff58a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-cylr7"
+
+[[link]]
+type = "writer"
+to = "striped-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

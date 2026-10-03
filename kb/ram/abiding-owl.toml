@@ -1,0 +1,126 @@
+summary = """
+Pre-limiter signed request clamped for CAN. FUN 00079030 writes \
+clamp(s16[ffff2438], s16[ffff413a], s16[ffff4138]); the scheduler latch \
+ffff4108 feeds word ffff3f90 of frame 0x180."""
+note = [
+    """
+In a vehicle capture this word equals the limited request of frame 0x160 \
+except during five request-limiter intervals, where the limited word is \
+lower.""",
+]
+level = "code"
+unit = "signed torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 870
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-skink/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elegant-marmoset/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_request_boundary/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4160"
+name = "abiding-owl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "00079030", "00079e70", "ffff2438", "ffff4138", "ffff413a", "ffff4160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791f8"
+value = {named = ["00020dfe", "00079030", "00079e70", "ffff2438", "ffff4138", "ffff413a", "ffff4160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ece"
+value = {named = ["00020dfe", "00079030", "00079e70", "ffff2438", "ffff4138", "ffff413a", "ffff4160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lyrical-pronghorn/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "artichoke-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "elegant-marmoset/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "glistening-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

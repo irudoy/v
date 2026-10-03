@@ -329,14 +329,14 @@ def _bits(model):
 
 
 def _explicit_terminal(item):
-    """The typed base and test items that also apply to ledger-owned symbols."""
-    return item.get("kind") == "test" or (
+    """Typed ledger terminals whose verification covers every supported claim."""
+    return item.get("kind") in ("test", "l0-context") or (
         item.get("kind") == "indirect" and item.get("mode") == "base")
 
 
 def homology(model):
     """File-owned symbols reach an anchor through verified identity or homology
-    evidence (section 7.3). Every typed base and test item of a symbol holds,
+    evidence (section 7.3). Every typed base, test, and context item of a symbol holds,
     including ledger-owned symbols; other ledger items retain their scope.
     Typed evidence of a named bit holds for the symbol of its layout."""
     issues = _bits(model)
@@ -709,6 +709,24 @@ def widths(model):
     return issues
 
 
+def levels_check(model):
+    """The mandatory claim-level gate from stage 5."""
+    from kb import levels
+    return levels.check(model)
+
+
+def ledgers_check(model):
+    """Every owned ledger view selects facts that the compiled model holds."""
+    if not model.stash.get("ledger_rows"):
+        return []
+    from kb import ledger_projection
+    try:
+        ledger_projection.render(model)
+    except (repo.KbError, KeyError, TypeError, ValueError) as error:
+        return [Issue("ledgers", "kb/", "ledger views", str(error))]
+    return []
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -722,6 +740,8 @@ CHECKS = {
     "statuses": statuses,
     "writers": writers,
     "fields": fields,
+    "levels": levels_check,
+    "ledgers": ledgers_check,
 }
 
 # Reports of a check that do not fail it.

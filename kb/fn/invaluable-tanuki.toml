@@ -1,0 +1,54 @@
+summary = """
+Attribute-bit-8 stored-fault summary. It calls FUN 0008c396 with mask 0x0100 \
+at 0008c258 and sets ffff41be bit 6 at 0008c266 on a nonzero result or \
+clears it at 0008c268."""
+note = ["The only caller is 0008bff0."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 645
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "charming-skunk/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008c24e"
+name = "invaluable-tanuki"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c258"
+value = {named = ["0008c24e", "0008c396", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c266"
+value = {named = ["0008c24e", "0008c396", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c268"
+value = {named = ["0008c24e", "0008c396", "ffff41be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-mule/fn/7mfk"
+relies = "level"

@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1748"
+name = "fluffy-peacock"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000465a6"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

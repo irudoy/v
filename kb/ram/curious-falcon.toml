@@ -1,0 +1,64 @@
+summary = """
+Mode-selected signed pedal-request word written by 00075396 from ffff19d4 or \
+ffff19ba and consumed by 000753d4."""
+note = ["The selected alternate source remains an internal request quantity."]
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 676
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_compensator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pedal_request_mode_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19d0"
+name = "curious-falcon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753d2"
+value = {named = ["00075396", "000753d4", "ffff19d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000754b8"
+value = {named = ["00075396", "000753d4", "ffff19d0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "pedal_request_compensator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pedal_request_mode_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,52 @@
+summary = """
+Learned or initialized offset subtracted from first accelerator-pedal A/D \
+sample ffff362c by FUN 00072b68."""
+note = [
+    "The writer and adaptation semantics of this offset are not resolved.",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 223
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff55c0"
+name = "strict-dragonfly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b7e"
+value = {named = ["00072b68", "ffff55c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b84"
+value = {named = ["00072b68", "ffff55c0"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

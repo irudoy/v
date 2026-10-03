@@ -1,0 +1,70 @@
+summary = """
+Nissan diagnostic service 0x30 Output Control handler. IOLID 0x0c stores its \
+value byte in ffff992f and controls active flag ffff99c5.bit3."""
+note = [
+    """
+Nissan service 0x30 Output Control handler including IOLID 0x0c Power \
+Balance""",
+    """
+The factory ESM identifies this operation as Power Balance, which cuts one \
+injector signal at a time.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 16
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 523
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "charming-starling/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precious-ostrich/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00030c4c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00030c4c"
+value = {named = ["00050a06", "ffff992f", "ffff99c5"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

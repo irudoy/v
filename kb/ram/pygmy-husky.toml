@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3220"
+name = "pygmy-husky"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b6ca4"
+
+[[link]]
+type = "lookup"
+to = "authentic-octopus/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

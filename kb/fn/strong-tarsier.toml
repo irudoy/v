@@ -1,0 +1,72 @@
+summary = """
+Two-bank closed-loop correction calculation called immediately before STFT \
+publication. Its final working Q8.8-percent results are written to ffff40ac \
+and ffff40ae; FUN 0005c910 copies them to the bank 1 and bank 2 STFT \
+diagnostic words on the normal path."""
+note = [
+    """
+The function contains the full feedback-control state calculation. This \
+annotation establishes the output role and bank routing without assigning \
+unresolved physical names to its internal terms.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 348
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-grasshopper/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "benevolent-bird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "groovy-ape/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005cbec"
+name = "strong-tarsier"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d648"
+value = {named = ["0005c910", "0005cbec", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d64a"
+value = {named = ["0005c910", "0005cbec", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

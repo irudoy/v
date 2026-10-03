@@ -1,0 +1,134 @@
+summary = """
+Accessor for threshold 0x09C5A: 4x4 interpolation result M is converted to \
+4*M; condition uint16(ffff2c3c) >= 4*M controls setting bit 0x20 in \
+ffff41af."""
+note = [
+    """
+The map has code-level x*4 scaling. Axis 0x119B2 is not increasing and does \
+not meet the core's axis requirement; the current map is flat 0xFF. The \
+physical purpose of the threshold is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 243
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "crimson-chinchilla/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delectable-echidna/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gifted-millipede/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007a43e"
+name = "whimsical-boar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a48e"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a498"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a49c"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a4a2"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a4c2"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a4c4"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a4c6"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a4cc"
+value = {named = ["00009c5a", "000119ae", "000119b2", "00026084", "00026770", "0007a43e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "delectable-echidna/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "gifted-millipede/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff48e2"
+name = "spiked-gecko"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008c0de"
+
+[[link]]
+type = "writer"
+to = "prehistoric-skua/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

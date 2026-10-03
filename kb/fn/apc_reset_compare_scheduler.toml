@@ -1,0 +1,199 @@
+title = "Convert the offset timing command into an APC GR11B compare event"
+summary = """
+Secondary APC compare scheduler. On the normal ffff24c9.bit6-clear path it \
+splits the full primary-plus-offset command through 00028e7c, carries \
+complete decades, calculates \
+ffff16c2=min(65535,floor(ffff22bc*remainder/10)), and writes GR11B fffff5c4 \
+as ffff158a+ffff16c2 or the TCNT11+2 fallback."""
+note = [
+    """
+The bit6-set position-diagnostic fallback uses a separate threshold-120 \
+path. The SH7058 manual proves the GR11B output-low action. Builder 0004e080 \
+places this edge 120 - ffff237a degrees after the primary command, which is \
+ffff237a degrees before the set edge of the next cylinder, and dwell mask \
+ffff13d1 addresses that next cylinder, so the low state is the dwell; the \
+external driver stage remains a hardware boundary.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 96
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 506
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "split_u8_by_ten/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pink-mustang/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amphibian-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diligent-manatee/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-uakari/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "steadfast-yak/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002acba"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002acf6"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ad02"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ad0a"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002adac"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae24"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae52"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ae76"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aeb6"
+value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "split_u8_by_ten/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

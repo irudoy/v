@@ -1,0 +1,125 @@
+summary = """
+Result bits of the P0014/P0024 rest-position pair. FUN 00090256 sets the \
+bank bit at 00090340 when rest-position byte ffff16ba+b is outside \
+128-ROM8[00008952]..128+ROM8[00008951] and the ffff43c0+b timer has expired; \
+FUN 0008f168 sets the stored fault of index 0xd2 or 0xd3 through 0008c2d2 \
+while the bit is set and clears it through 0008c348 otherwise."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 788
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "prehistoric-skua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tough-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apricot-echidna/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff358b"
+name = "gigantic-lizard"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008951=34"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008952=34"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008fa34"
+value = {named = ["00008951", "00008952", "0008c2d2", "0008c348", "0008f168", "0008fc6a", "00090256", "ffff358b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008fad4"
+value = {named = ["00008951", "00008952", "0008c2d2", "0008c348", "0008f168", "0008fc6a", "00090256", "ffff358b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090340"
+value = {named = ["00008951", "00008952", "0008c2d2", "0008c348", "0008f168", "0008fc6a", "00090256", "ffff358b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "prehistoric-skua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tough-avocet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apricot-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,6 +1,118 @@
+summary = """
+Exact one-byte response source for UDS DID 0x1104 and published \
+fuel-temperature transfer code. Initialization path 0002c4f8 stores \
+lookup(00012dea, uint8(ffff100a >> 2)) at 0002c56e, where ffff100a is the \
+AN0 external-mux sample of selector code 111. Periodic publisher 00039788 \
+stores at 000397c4 either service-0x30 value byte ffff992d while active bit \
+ffff99c5 bit 1 is set or the output of limiter 00039874 over transfer code \
+ffff1f89, which FUN 000397e8 forms from filtered sample ffff1fa8 through the \
+same table. FUN 000398b0 reads the byte to form normalized index ffff117a, \
+and the service 0x22 pointer table publishes it directly."""
+note = [
+    """
+The byte is the output of shared thermistor table 00012dea, whose code the \
+ECU declares as deg C+50 through J1979 Mode 01 PIDs 0x05 and 0x0F, so deg C \
+= raw-50 is established by code. The factory fuel tank temperature sensor \
+reference of 3.5 V at 20 deg C and 2.2 V at 50 deg C gives 20.5 and 52 deg C \
+through the table at 20 mV per input count. The limiter keeps the published \
+byte between the converted sample and the sample plus two counts while the \
+temperature falls. The identification of DID 0x1104 as fuel temperature is a \
+diagnostic-binding claim in JK08A.diagnostic-bindings.csv.""",
+]
+level = "code"
 width = 8
 unit = "degC"
 scale = "x-50"
+
+[[diagnostic]]
+id = "fuel-temperature-did-1104"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1104h-fuel-temp-sen"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1104h-fuel-temp-sen-448bd122"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 pointer table maps DID 0x1104 to response byte \
+ffff1074. A structured homologous Nissan profile identifies the DID as fuel \
+temperature and defines deg C = raw-50. The source profile embeds CID 0x1104 \
+in the semantic name but does not expose a request field, so its canonical \
+corpus identity remains semantic. The byte is the output of thermistor table \
+00012dea, whose code the ECU declares as deg C+50 through J1979 Mode 01 PIDs \
+0x05 and 0x0F, so the conversion is established by code; the sensor identity \
+rests on the profile and on the AN0 mux code 111 acquisition path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000226bc"
+value = "ffff1074"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000226bc"
+value = {named = ["0003235c", "448bd122", "ffff1074"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 11
+binding = "fuel-temperature-did-1104"
+
+[[ledger]]
+registry = "vars"
+order = 53
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "degC+50"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impressive-wrasse/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-jaguar/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +144,72 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1074"
 former = ["sensible-coyote/ram/7mfk-ffff1074"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226bc"
+value = "ffff1074"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226bc"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c55c"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c56e"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397c4"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039832"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003983a"
+value = {named = ["00012dea", "0002c4f8", "0003235c", "00035856", "00039788", "000397e8", "000398b0", "0008092e", "ffff1074"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "hilarious-whippet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fanatic-hare/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +247,45 @@ to = "7mfk:000398b0"
 count = 1
 value = "mnemonic"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "impressive-wrasse/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "venomous-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

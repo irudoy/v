@@ -1,0 +1,97 @@
+summary = """
+Slow filtered fuel-level monitor coordinate. FUN 0003dac6 seeds it directly \
+from the scaled CAN field on initialization and otherwise applies FUN \
+0003da98 to held word ffff3e26 with coefficient ROM8[00008315]=1, or 1/256 \
+of the new sample. The value is the live coordinate for map 00014bca when \
+the P0460/P0461-related result-state gates are clear."""
+note = [
+    """
+The reset path writes zero. The engineering conversion remains unresolved.""",
+]
+level = "code"
+unit = "fuel-level monitor raw"
+
+[[ledger]]
+registry = "vars"
+order = 540
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-parakeet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-parakeet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff27fc"
+name = "wonderful-uakari"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008315"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dbb0"
+value = {named = ["00008315", "0003dac6", "ffff27fc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dbb2"
+value = {named = ["00008315", "0003dac6", "ffff27fc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dbb4"
+value = {named = ["00008315", "0003dac6", "ffff27fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dc0a"
+value = {named = ["00008315", "0003dac6", "ffff27fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dc18"
+value = {named = ["00008315", "0003dac6", "ffff27fc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "tall-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tall-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

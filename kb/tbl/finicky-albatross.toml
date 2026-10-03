@@ -1,0 +1,121 @@
+summary = """
+Flat 1D table of an unknown physical quantity; the table branch yields raw \
+uint16 120."""
+note = [
+    """
+0006d38c loads the target-map base, 0006d38e loads its axis, 0006d392 calls \
+the wrapper, and result r0 is written without conversion to ffff13f4 at \
+0006d39e. Alternate branch 0006d3a4-0006d3ae writes the saved value from \
+ffff8de6 to the same RAM. Catalog match of 120 with FTST maximum is not \
+accepted as semantics because it is only a numeric pattern with different \
+applicability. Result disposition: writes. Blocking condition: The \
+target-quantity trace ends at instruction 0006d39e with a write to RAM \
+ffff13f4. The artifact has no reader specific to this write, so physical \
+semantics cannot be established.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 238
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "funny-kingfisher/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00013468"
+name = "finicky-albatross"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "120"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d38c"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d38e"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d392"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d394"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d396"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006d39e"
+value = {named = ["00013468", "000137d8", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "funny-kingfisher/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

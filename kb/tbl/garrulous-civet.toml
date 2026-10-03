@@ -1,3 +1,21 @@
+summary = """
+Stock-active explicit curve A. When ROM8[00008710].bit3 is set and \
+ffff244f.bit1 is clear, FUN 0004569c interpolates this map by \
+uint8[ffff22e4] over axis 00012778 and writes 4*lookup to uint16 ffff1752."""
+note = [
+    """
+ffff1752 contributes to the denominator in FUN 00041db6 and to saturating \
+aggregate ffff173a in FUN 000468b0. The x4 conversion belongs to the \
+consumer representation and is not a map scale. The physical curve quantity \
+and engineering unit are unresolved. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Selected Aggregate Curve A - raw u8 (0x127A8)"
 category = "Internal Calculations"
@@ -7,10 +25,161 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 449
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cooperative-tench/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "thick-lionfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vivid-peacock/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hopeful-turtle/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-parakeet/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000127a8"
 name = "garrulous-civet"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456ac"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456b0"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456c4"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456da"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045714"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045718"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004571a"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045724"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045726"
+value = {named = ["00008710", "00012778", "000127a8", "000264a0", "00026740", "00026944", "00041db6", "0004569c", "000468b0", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +212,48 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "hopeful-turtle/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "saffron-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cooperative-tench/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vivid-peacock/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

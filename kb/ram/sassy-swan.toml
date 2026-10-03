@@ -1,0 +1,33 @@
+summary = "Gate enabling one term of the sum in 00054ee0."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 85
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-snail/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1239"
+name = "sassy-swan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b2f8"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

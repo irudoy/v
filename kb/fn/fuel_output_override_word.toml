@@ -1,0 +1,119 @@
+title = "Produce masked-channel override word ffff2436"
+summary = """
+Producer of common additive and masked-channel override word ffff2436. It \
+writes clamp_u16(max(0, arithmetic_shift7((175-uint8(ffff1108))*92)+70))."""
+note = [
+    """
+FUN 0004ead4 adds this word to both normal bank bases; FUN 0004eba2 selects \
+it directly when the channel bit is present in ffff22e0. Its physical unit \
+remains unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 50
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 370
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-groundhog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "portable-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00056fc0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084f6"
+value = "0x5c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008c9e=0x46"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fcc"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fd4"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fd6"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fe4"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fe8"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056fea"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ff6"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057002"
+value = {named = ["000084f6", "00008c9e", "000224f8", "00056fc0", "ffff1108", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"

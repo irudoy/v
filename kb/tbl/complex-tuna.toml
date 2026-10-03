@@ -1,0 +1,136 @@
+summary = """
+Interpolated Base Fuel Schedule threshold for clearing ffff249f bit 0: when \
+the bit is set, high byte ffff1024 is compared with the uint8 map output; \
+input >= threshold clears the bit, while input < threshold preserves it."""
+note = [
+    """
+Exact DID 0x1208 establishes the input identity; x/8 ms is profile-derived \
+and requires hardware validation. The purpose of ffff249f remains \
+unresolved. With current zero map values, unsigned input is always >= 0, so \
+a set bit is cleared on this branch. Zero fill is not used as independent \
+semantic evidence.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 181
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012984"
+name = "complex-tuna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f686"
+value = {named = ["00012984"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f690"
+value = {named = ["00012984"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f696"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f69a"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f69c"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6a2"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6a8"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6aa"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6ac"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6ae"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6b0"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6b8"
+value = {named = ["00012984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[link]]
+type = "reader"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

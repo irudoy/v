@@ -1,0 +1,131 @@
+summary = """
+CAN limited-request word for frame 0x160 byte 0 and byte 1 bits 7..4. FUN \
+00079e70 writes clamp(trunc0(x/5)+800, 0, 4094) with x=s16[ffff4106], the \
+scheduler latch of ffff415e. While ROM8[0000870c].bit7 and ffff4248.bit1 are \
+both set, x is max(s16[ffff4106], s16[ffff410a]), where ffff410a latches \
+transmission request candidate ffff4162."""
+note = [
+    """
+Stock ROM8[0000870c]=0x44 has bit 7 clear, so the transmission candidate \
+does not enter this word.""",
+]
+level = "code"
+unit = "CAN torque count"
+
+[[ledger]]
+registry = "vars"
+order = 873
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shapeless-eagle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "encouraging-nautilus/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nippy-skink/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "inquisitive-spaniel/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-pronghorn/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3fa0"
+name = "mauve-koel"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870c"
+value = "0x44"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079eaa"
+value = {named = ["0000870c", "00021bbc", "00079e70", "000c590e", "ffff3fa0", "ffff4106", "ffff410a", "ffff4248"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079eca"
+value = {named = ["0000870c", "00021bbc", "00079e70", "000c590e", "ffff3fa0", "ffff4106", "ffff410a", "ffff4248"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "encouraging-nautilus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "nippy-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "shapeless-eagle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "inquisitive-spaniel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lyrical-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

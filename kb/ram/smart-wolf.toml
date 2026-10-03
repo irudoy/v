@@ -1,0 +1,33 @@
+summary = "Selector between a bypass constant and interpolation in 000b1e48."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 311
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lyrical-pig/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41e5"
+name = "smart-wolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00069bd2"
+
+[[link]]
+type = "reader"
+to = "lyrical-pig/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

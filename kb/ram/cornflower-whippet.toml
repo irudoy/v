@@ -1,0 +1,79 @@
+summary = """
+Commanded-mixture ramp state byte 1..6 of stage 0005594a, derived from \
+request byte ffff1411 through per-state pass counters, and the branch \
+selector for ramped word ffff123a: 1 holds 0x4000, 4 and 5 write the target \
+directly, 2, 3, and 6 ramp."""
+level = "code"
+unit = "state"
+
+[[ledger]]
+registry = "vars"
+order = 752
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "passionate-malkoha/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1410"
+name = "cornflower-whippet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000562e0"
+value = {named = ["0005594a", "ffff1410", "ffff1411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056374"
+value = {named = ["0005594a", "ffff1410", "ffff1411"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "passionate-malkoha/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

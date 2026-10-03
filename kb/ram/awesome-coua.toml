@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff479e"
+name = "awesome-coua"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c440"
+
+[[link]]
+type = "reader"
+to = "transient_threshold_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

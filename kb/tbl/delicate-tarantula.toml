@@ -1,0 +1,169 @@
+summary = """
+Interpolated upper threshold for the disjunction of two absolute differences \
+between 16-bit fields: the threshold portion of the branch passes when at \
+least one difference is strictly greater than the map output."""
+note = [
+    """
+Interpolated upper threshold for the disjunction of two absolute differences \
+between 16-bit fields: the threshold portion of the branch passes when at \
+least one difference is strictly greater than the map output. Result \
+disposition: inline_comparison. Result target: 000a77d6,000a77de. Machine \
+trace: 000a77ba loads an indexed uint8 input; 000a77c0 doubles it, and \
+000a77c4/000a77c8 cap the result at 255. 000a77ca loads 00023ddc into r4, \
+and 000a77ce calls 00026370 with this base and the input in r5. For input \
+<224, wrapper 00026370 transfers execution to kernel 00026a80, where \
+00026aac/00026aae read adjacent cells as uint8 and 00026740 performs \
+unsigned linear interpolation; for input >=224, the wrapper returns the last \
+map cell. Therefore, the result remains within cell range 22..80 up to the \
+consumption site. 000a77d2 performs extu.b of the result into r2. In the \
+same function, two pairs of indexed 16-bit fields are loaded from \
+DAT_000a7838 at offsets 0xd8/0xe0 and 0xcc/0xd0, after which the absolute \
+difference is calculated for each pair; they reach the comparison as r14 and \
+stack-saved r7. 000a77d6 tests r14 > r2, and 000a77d8 immediately skips the \
+downstream checks when true; otherwise 000a77de tests r7 > r2, while \
+000a77e0 branches to the exit when false. The map output has no RAM sink: it \
+is consumed in place by these two comparisons. Subsequent checks mean this \
+disjunction is a threshold prerequisite rather than the sole condition for \
+the final action.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 335
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "delicate-tarantula/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00023ddc"
+name = "delicate-tarantula"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77ba"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77c0"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77c4"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77c8"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77ca"
+value = {named = ["00023ddc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77ce"
+value = {named = ["00023ddc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77d2"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77d6"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77d8"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77de"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77e0"
+value = {named = ["00023ddc"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "delicate-tarantula/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "frisky-swine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

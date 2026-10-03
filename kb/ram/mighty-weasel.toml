@@ -1,0 +1,43 @@
+summary = """
+Crankshaft speed irregularity monitor threshold-array channel disabled by \
+calibration byte[0x87c2] = 0xff."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 243
+fields = ["semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "amazing-pegasus/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1"
+offset = 0x1
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3101"
+name = "mighty-weasel"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087c2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000833a2"
+
+[[link]]
+type = "base"
+to = "amazing-pegasus/ram"
+offset = 0x1
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

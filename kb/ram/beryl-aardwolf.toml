@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41f1"
+name = "beryl-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00099f6e"
+
+[[link]]
+type = "writer"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

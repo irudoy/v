@@ -1,7 +1,145 @@
+summary = """
+Interpolated 1D-8 uint8 curve with all cells=5; not executed in this image \
+because ROM configuration byte 00008616 bit 0=1 routes both accessors \
+000bcd44 and 000bec52 to counterpart 00012e32/00011bcb, leaving branch \
+00012e3a/00011bd3 dead as proven by the gate trace"""
+note = [
+    """
+Interpolated 1D-8 uint8 curve with all cells=5; not executed in this image \
+because ROM configuration byte 00008616 bit 0=1 routes both accessors \
+000bcd44 and 000bec52 to counterpart 00012e32/00011bcb, leaving branch \
+00012e3a/00011bd3 dead as proven by the gate trace. Result disposition: \
+dead_control_flow. Result target: Map:00012e3a. Machine trace: \
+rom_const:00008616=0x01 -> site:000bcda4 `mov.b @r6,r0` -> site:000bcda6 \
+`tst #1,r0`: 0x01 & 0x01 != 0, so T=0 -> site:000bcda8 `bt` is not taken -> \
+site:000bcdb2 loads Map:00012e32 -> site:000bcdba branches unconditionally \
+to site:000bcdca, bypassing the load of Map:00012e3a at site:000bcdc0; \
+rom_const:00008616=0x01 -> site:000bed90 `mov.b @r6,r0` -> site:000bed92 \
+`tst #1,r0`: T=0 -> site:000bed94 `bt` is not taken -> site:000bed9c loads \
+Map:00012e32 -> site:000beda4 branches unconditionally to site:000bedbe, \
+bypassing the load of Map:00012e3a at site:000bedb2. The complete artifact \
+contains exactly two accessors for the target map, so no executable read of \
+Map:00012e3a exists in unmodified JK08A.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 227
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012e3a"
 name = "foamy-rhino"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcda4"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcda6"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcda8"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdb2"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdba"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdc0"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdca"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed90"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed92"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed94"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed9c"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beda4"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bedb2"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bedbe"
+value = {named = ["00008616", "00012e3a"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +170,10 @@ value = "000151e7"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "white-doberman/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,73 @@
+summary = """
+Multipurpose state byte. Bit 6 enables the direct high-octane minus \
+high-detonation Q8 map-difference branch in 000493e8 when ffff2469.bit7 is \
+clear."""
+note = ["Other bits and consumers belong to separate calculations."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 723
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_timing_state/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "masked-inchworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2467"
+name = "glorious-spider"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021064"
+
+[[link]]
+type = "depends"
+to = "knock_timing_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "masked-inchworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

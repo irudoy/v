@@ -1,0 +1,127 @@
+summary = """
+Common exhaust-VTC release counter. FUN 000bfe88 increments it with \
+saturation while any bit of ffff1246 is set and demand flag ffff24a7 bit 3 \
+is clear, clears the bank-enable bits once it exceeds ROM8[00008cc1], and \
+zeroes it at 000c0920 after both bank counters reach ROM8[00008cbc]."""
+level = "code"
+unit = "samples"
+
+[[ledger]]
+registry = "vars"
+order = 766
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1735"
+offset = 0x6c7
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-condor/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1953"
+name = "pearl-falcon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cbc"
+value = "1"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008cc1=30"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c071c"
+value = {named = ["00008cbc", "00008cc1", "000bfe88", "ffff1246", "ffff128c", "ffff1953"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0734"
+value = {named = ["00008cbc", "00008cc1", "000bfe88", "ffff1246", "ffff128c", "ffff1953"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c07de"
+value = {named = ["00008cbc", "00008cc1", "000bfe88", "ffff1246", "ffff128c", "ffff1953"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0848"
+value = {named = ["00008cbc", "00008cc1", "000bfe88", "ffff1246", "ffff128c", "ffff1953"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0920"
+value = {named = ["00008cbc", "00008cc1", "000bfe88", "ffff1246", "ffff128c", "ffff1953"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x6c7
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ambitious-condor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

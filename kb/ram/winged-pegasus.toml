@@ -1,0 +1,76 @@
+summary = """
+Scheduler copy of LIDs-4..20 status ffff416a from the previous pass. Handler \
+00034194 requires 0xff for control 0x00 of LIDs 4..20 and otherwise answers \
+with this byte as the negative response code."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 942
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "passionate-penguin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hypnotic-toad/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4112"
+name = "winged-pegasus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "00034194", "ffff4112", "ffff416a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003433e"
+value = {named = ["00020dfe", "00034194", "ffff4112", "ffff416a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "hypnotic-toad/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,105 @@
+summary = """
+Implicitly indexed threshold for saturating subtraction: the uint8 lookup \
+interpolated by ffff106f is the minuend for uint8 ffff1841. Code tests the \
+sign of the difference; when lookup < ffff1841, it selects 0, otherwise it \
+preserves lookup - ffff1841."""
+note = [
+    """
+The artifact does not establish the physical subsystem or physical unit. \
+After the local comparison, the difference is lower-saturated at zero, and \
+the converted byte is written to ffff12db; this is not a direct sink for the \
+original lookup. Index: Implicit 1D-8 grid by uint8 ffff106f: nodes 0, 32, \
+64, 96, 128, 160, 192, 224; unsigned linear interpolation is performed \
+between adjacent uint8 cells, while input >=224 returns cell 7. Result \
+disposition: inline_comparison (site 0004b2c4).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 348
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[symbol]]
+layout = "7mfk"
+address = "00011f0a"
+name = "lilac-python"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2ae"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2b0"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2b2"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2b6"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2ba"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2be"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2c4"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2ca"
+value = {named = ["00011f0a", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"

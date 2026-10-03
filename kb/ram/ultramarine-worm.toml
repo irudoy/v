@@ -1,0 +1,121 @@
+summary = """
+Ten-bit AN0 external-mux sample for selector code 000. Cyclic sampler \
+000280d8 writes the phase-1 ADDR0 result here; direct acquisition 0002c4f8 \
+also writes the result of 00028668(0,0) before coolant conversion."""
+note = [
+    """
+The exact DID 0x1101 response path binds selector code 000 to engine coolant \
+temperature.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 669
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "heavenly-jaguar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blue-condor/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-jaguar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d60"
+name = "ultramarine-worm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028140"
+value = {named = ["000280d8", "0002c4f8", "ffff1d60", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002814e"
+value = {named = ["000280d8", "0002c4f8", "ffff1d60", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c510"
+value = {named = ["000280d8", "0002c4f8", "ffff1d60", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c518"
+value = {named = ["000280d8", "0002c4f8", "ffff1d60", "fffff800"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "blue-condor/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "feathered-asp/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

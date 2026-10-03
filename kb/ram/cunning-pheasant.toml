@@ -1,0 +1,65 @@
+summary = """
+Previous bank-2 intake-cam edge phase byte. Capture handler 0002a36a copies \
+ffff22cd here at 0002a43a on every processed capture, after moving the \
+earlier value to ffff22d1 at 0002a432."""
+note = ["Same 0.5-crank-degree unit as ffff22cd."]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 370
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-dachshund/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lovely-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22cf"
+name = "cunning-pheasant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a436"
+value = {named = ["0002a36a", "ffff22cd", "ffff22cf"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a43a"
+value = {named = ["0002a36a", "ffff22cd", "ffff22cf"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "portable-dachshund/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

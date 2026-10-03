@@ -1,0 +1,21 @@
+summary = """
+Writes a RAM structure and reads no tables. One of four non-table entries in \
+the region, with 3 slots."""
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 116
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00026da8"
+name = "abiding-gaur"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "region-entries"

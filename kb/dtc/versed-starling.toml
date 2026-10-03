@@ -1,0 +1,36 @@
+title = "Pressure sensor low"
+level = "code"
+code = "P0452"
+group = "evap"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 41
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d50"
+name = "versed-starling"
+index = 212
+attribute = "00016092"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016092"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d50"
+value = "380306000000045200000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a49c"
+value = "00016092"

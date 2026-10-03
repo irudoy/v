@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control position sensor path B bank 2"
+level = "code"
+code = "P1084"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 21
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000199b4"
+name = "vermilion-pony"
+index = 135
+attribute = "000162cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162cc"
+value = "02a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000199b4"
+value = "290400000000108400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a368"
+value = "000162cc"

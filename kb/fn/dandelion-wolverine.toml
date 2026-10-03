@@ -1,0 +1,35 @@
+role = "service"
+contract = """
+Not a standalone function: count-7 leaf of unsigned right-shift ladder \
+0002227c. It computes r0 = r0 >> 7 with zero fill. The leaf does not read \
+count r1 because the dispatcher has already consumed it. Entry is only \
+through the dispatcher's jmp: rts restores r2 placed on the stack by its \
+prologue."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 43
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "000222a6"
+name = "dandelion-wolverine"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "solemn-coua/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000222a6"

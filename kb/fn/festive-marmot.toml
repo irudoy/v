@@ -1,0 +1,28 @@
+role = "service"
+contract = """
+Arithmetic right shift by 11: r0 = (int32)r0 >> 11, signed division by 2048 \
+rounded down. It is pure; its only memory access spills r1 to the stack. \
+Ghidra renders the return as CONCAT44(in_r1, ...), which is a decompiler \
+artifact: r1 is not computed and is restored from the stack."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 50
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "0002251c"
+name = "festive-marmot"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002251c"

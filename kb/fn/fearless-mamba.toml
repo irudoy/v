@@ -1,0 +1,214 @@
+summary = """
+Auxiliary P030 state service called only by coordinator 00082c8a. Its main \
+path requires ffff4251.bit7, ffff41d2.bits0/1, zero ffff444c/ffff444d \
+inhibits, and clear local event/inhibit states. A failed entry gate clears \
+ffff41a6.bit4 and conditionally invokes local cleanup helpers; an admitted \
+local condition sets the bit and calls FUN 000857a2."""
+note = [
+    """
+The state transitions and sole caller are exact. The physical diagnostic \
+phase and meanings of its additional local causes remain unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 262
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flying-impala/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "important-potoo/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "private-parrot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-manatee/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "piquant-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vermilion-tuna/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "loutish-puma/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accomplished-cockle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00085020"
+name = "fearless-mamba"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085128"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085130"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008513e"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085148"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008514e"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085158"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008515e"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008523e"
+value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "flying-impala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "important-potoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "private-parrot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "loutish-puma/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

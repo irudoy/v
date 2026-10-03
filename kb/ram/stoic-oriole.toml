@@ -1,0 +1,73 @@
+summary = """
+Mode byte used by table-driven monitor entry 6. FUN 000a6dc4 requires its \
+low two bits to equal the entry constant 1 before the path-B P0447 state can \
+advance."""
+note = ["The physical mode represented by value 1 remains unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 425
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "festive-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "4"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1098"
+name = "stoic-oriole"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00020f48"
+value = 4
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_snapshot_destination_path"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c44"
+value = "ffff1098"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c48"
+value = "01000000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ed4"
+value = {named = ["00020f48", "00023c44", "00023c48", "000a6dc4", "01000000", "ffff1098"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "festive-gopher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

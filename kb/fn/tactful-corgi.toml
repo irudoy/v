@@ -1,0 +1,208 @@
+summary = """
+Component with three computational roles: 0x14FC2 defines the threshold for \
+an incremented counter in structure ffff9a28; 0x15580 and 0x15590 are Q12 \
+multipliers for two signed channels and form ffff33b2/ffff33b4. Map 0x14E82 \
+remains a separate offset-binary calibration in the component."""
+note = [
+    """
+Maps 0x15580 and 0x15590 have code-level x/4096 scaling. The physical \
+purpose of the counter and channels is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 194
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "optimistic-woodlouse/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "apricot-lynx/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "denim-quokka/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lurking-owl/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speedy-sheep/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pragmatic-hare/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spirited-kestrel/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "valiant-okapi/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000617ea"
+name = "tactful-corgi"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061944"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006194a"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061950"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061986"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061a6c"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061a72"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061a7a"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061aa2"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061ed2"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061ee6"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061eec"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061ef6"
+value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "optimistic-woodlouse/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pragmatic-hare/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "spirited-kestrel/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "valiant-okapi/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

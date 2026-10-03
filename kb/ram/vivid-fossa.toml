@@ -1,0 +1,91 @@
+summary = """
+Service-0x3b LID 2 value slot, the requested work-support idle adjustment. \
+While LID 2 is active and the status is accepted, 000683cc writes unsigned \
+min(ffff99dd, ROM8[0x8909]=20) to ffff3168."""
+note = [
+    """
+The homologous P32M request 3b 02 declares the value as NSET4 at 12.5 rpm \
+per count.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 931
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-bumblebee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-wildcat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-penguin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99dd"
+name = "vivid-fossa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008909"
+value = "0x14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068566"
+value = {named = ["00008909", "0002e81a", "00034194", "000683cc", "ffff99dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068586"
+value = {named = ["00008909", "0002e81a", "00034194", "000683cc", "ffff99dd"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amber-wildcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

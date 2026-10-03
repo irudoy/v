@@ -1,3 +1,24 @@
+summary = """
+Trustful throttle-valve angle-to-opening-area table. Forward lookups convert \
+two channel coordinates into additive opening-area values, while inverse \
+consumers use 00018766 as the search axis and return the angle coordinate \
+through 000190d0."""
+note = [
+    """
+A one-time call at zero stores the baseline in ffff1caa. The two forward \
+results are added with uint16 saturation into ffff1d18; inverse paths divide \
+by two before converting through 000190d0. The stored table is \
+byte-identical to primary 00013202, matching the catalog's primary/trustful \
+pair. Physical units and scale require hardware validation.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Throttle Opening Area [cm^2]"
+scale = "x*0.0008"
+to_raw = "x/0.0008"
+scale_level = "candidate"
+
 [editor]
 name = "Throttle Angle-to-Area Conversion - Validation Copy"
 category = "Electronic Throttle Control / Throttle Geometry"
@@ -5,6 +26,56 @@ order = 123
 format = "0.000"
 fine = 0.01
 coarse = 0.1
+
+[[ledger]]
+registry = "findings"
+order = 317
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "giga-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impressive-scorpion/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "organic-inchworm/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "neat-galago/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -37,6 +108,58 @@ note = "unique structural pair preserves interpolation-call order"
 layout = "7mfk"
 address = "00018766"
 name = "discreet-mayfly"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Target Throttle Valve Opening Table (Trustful)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073092"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007309e"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000730a4"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000730c0"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073834"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007383c"
+value = {named = ["00018766", "000190d0", "00073040", "00073824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table (Trustful)|Opening Area (x*0.0008)"
 
 [[symbol]]
 layout = "jk00c"
@@ -83,3 +206,44 @@ to = "7mfk:0007241e"
 count = 1
 value = 0
 note = "unique structural pair preserves interpolation-call order"
+
+[[link]]
+type = "depends"
+to = "neat-galago/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "organic-inchworm/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "impressive-scorpion/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,82 @@
+summary = """
+Engine-coolant input range check. It returns 1 while shifted sample ffff1186 \
+is from 3 through 241 and 0 otherwise; coordinator 000394b8 selects \
+fall-rate limiter 00039588 on 1 and fail-safe ramp 000395ae on 0."""
+note = [
+    "At 20 mV per count the accepted input span is 0.06 V through 4.82 V.",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "funcs"
+order = 641
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_temperature_pair_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-mushroom/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00039614"
+name = "cocky-elephant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039618"
+value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003961a"
+value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003961e"
+value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039622"
+value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039626"
+value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

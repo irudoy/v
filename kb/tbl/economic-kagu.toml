@@ -1,0 +1,149 @@
+summary = """
+Misfire-monitor event-counter threshold: the uint16 lookup is stored in \
+ffff2b92 and compared with unsigned counter ffff37da. A window number is \
+unresolved."""
+note = [
+    """
+Identity confidence: candidate. Map load 000836d2 and call 000836d6 bind \
+00014982 to implicit four-point uint16 wrapper 000263bc; store 000836e0 \
+binds its result to ffff2b92. The kernel path 00026a5c..00026ab8 reaches \
+finisher 00026740; all four stock samples are 60 and the implicit \
+interpolation preserves 60. Comparisons at \
+00084436/000844ba/0008458e/0008463c use the zero-extended word counter. Unit \
+increments of ffff37da occur at 00086680/00086768 with stores \
+00086682/0008676a. The regression gate covers these lookup, compare, and \
+increment regions; counter reset/completion grouping and any numbered window \
+are outside it.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "counts"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 262
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014982"
+name = "economic-kagu"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+key = "test_14982_event_counter_threshold"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836d2"
+value = {named = ["00014982"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836d6"
+value = {named = ["00014982"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836e0"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084426"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084432"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084436"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000844ba"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008458e"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008463c"
+value = {named = ["00014982"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0008667e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00086680"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00086682"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00086764"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00086768"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0008676a"

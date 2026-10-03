@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000a45ec"
+name = "garnet-wombat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a45ec"

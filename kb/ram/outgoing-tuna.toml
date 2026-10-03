@@ -1,0 +1,116 @@
+summary = """
+Multipurpose diagnostic status byte. FUN 0004f494 uses bit 3 as the \
+1900/1700 RPM hysteresis state for the P1217 engine-overtemperature fuel \
+inhibit. FUN 000683cc writes bit 0 as the one-pass rising edge of \
+service-0x3b LID-2 store bit ffff99f4.bit3 against previous level \
+ffff41ef.bit7."""
+note = [
+    """
+Other bits and consumers belong to independent diagnostic state machines.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 636
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "engine_overtemperature_fuel_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-jacamar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "engine_overtemperature_fuel_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ee"
+name = "outgoing-tuna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f620"
+value = {named = ["0004f494", "00068040", "000683cc", "ffff41ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f624"
+value = {named = ["0004f494", "00068040", "000683cc", "ffff41ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680e6"
+value = {named = ["0004f494", "00068040", "000683cc", "ffff41ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006843a"
+value = {named = ["0004f494", "00068040", "000683cc", "ffff41ee"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

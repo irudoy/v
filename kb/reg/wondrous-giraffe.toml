@@ -1,0 +1,58 @@
+summary = """
+SH7058S ATU-II channel 6 PWM buffer register BFR6D. 000407c0 uses it as the \
+second member of code-channel-1 complementary output pair."""
+note = [
+    """
+The hardware manual maps BFR6D to TO6D/PB3, package pin 149. ECM-board \
+continuity and polarity remain unverified.""",
+]
+level = "code"
+unit = "timer counts 0..320"
+
+[[ledger]]
+registry = "vars"
+order = 717
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "atu2_throttle_pwm_publisher/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff516"
+name = "wondrous-giraffe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000409de"
+value = {named = ["000407c0", "fffff516"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "atu2_throttle_pwm_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

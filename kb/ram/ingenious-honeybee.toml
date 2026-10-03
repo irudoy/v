@@ -1,0 +1,136 @@
+summary = """
+Second-channel override source written by FUN 00079ba4 from ffff277c, zero, \
+or ROM16[000162fe]=43. ffff4214.bit6 selects it as final ffff35cc in FUN \
+0007a804 and as the local source instead of ffff2a7a in FUN 0007b0a0."""
+note = ["The physical quantity is unresolved."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 274
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tomato-mastodon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "amaranth-wildebeest/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brown-inchworm/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35ea"
+name = "ingenious-honeybee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162fe"
+value = "0x002b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bd0"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079be4"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bec"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a95c"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a964"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0be"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0c8"
+value = {named = ["000162fe", "00079ba4", "0007a804", "0007b0a0", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tomato-mastodon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "amaranth-wildebeest/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "brown-inchworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

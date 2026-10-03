@@ -1,0 +1,40 @@
+summary = """
+Six-channel inhibit mask read by stock-mode ffff1220 writer 00052034. A set \
+channel bit prevents the corresponding ffff1220 bit from being set."""
+note = ["The writer and physical origin of this mask are unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 104
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "burrowing-muskox/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff16ff"
+name = "pygmy-caracara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00051c20"
+
+[[link]]
+type = "reader"
+to = "burrowing-muskox/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

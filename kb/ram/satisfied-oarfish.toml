@@ -1,0 +1,149 @@
+summary = """
+Shared Q1.15 coefficient used by FUN 000671d8 when converting both ten-bit \
+MAF ADC samples to DID 0x1204/0x1205 words and the shifted battery sample to \
+DID 0x1103 byte ffff1188. FUN 00067188 accepts values 0x7900..0x8700 and \
+restores ROM16[0x92be]=0x8000 outside that range."""
+note = [
+    """
+At stock 0x8000, conversion is identity for samples 0..1022; FUN 0003c408 \
+increments the full-scale sample 1023 to 1024. The lifecycle of non-stock \
+in-range values remains unresolved.""",
+]
+level = "code"
+unit = "Q1.15 coefficient"
+
+[[ledger]]
+registry = "vars"
+order = 487
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_voltage_publish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "optimistic-bobcat/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "outstanding-penguin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "horned-frog/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4970"
+name = "satisfied-oarfish"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092be"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006719a"
+value = {named = ["000092be", "00039a9e", "0003c408", "00067188", "000671d8", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671bc"
+value = {named = ["000092be", "00039a9e", "0003c408", "00067188", "000671d8", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671e0"
+value = {named = ["000092be", "00039a9e", "0003c408", "00067188", "000671d8", "ffff4970"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "horned-frog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "optimistic-bobcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amber-hound/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "faithful-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "horned-frog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "olive-sponge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

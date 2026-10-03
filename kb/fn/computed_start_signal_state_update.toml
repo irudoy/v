@@ -1,0 +1,210 @@
+summary = """
+Computed START SIGNAL state coordinator. It evaluates retained start-state \
+predicates using engine-speed state, battery voltage ffff1188, and related \
+status; writes the resulting Boolean to ffff4185.bit6; and mirrors it to \
+ffff24ae.bit7 and ffff1164.bit1. The function also looks up lower raw \
+threshold 000123aa by ffff1077, writes it to ffff1f44, and compares it with \
+ffff11ea."""
+note = [
+    """
+Compute START SIGNAL and mirror it into runtime and diagnostic status bits""",
+    """
+The exact DID 0x1302 response path packs ffff24ae.bit7 as bit 1. A \
+structured Nissan profile names that bit START SIGNAL, and the VQ35HR \
+factory manual independently defines START SIGNAL as an ECM-computed state \
+based on engine speed and battery voltage that is OFF after the engine \
+starts. The physical quantity of map 000123aa and state ffff25a4 remains \
+unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 7
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 311
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gleaming-lori/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "magenta-booby/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "angelic-shark/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "emerald-mouflon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fortunate-walrus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rugged-uakari/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silver-turaco/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "small-sheep/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00038d44"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038df0"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e86"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e8c"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e98"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ea0"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038eac"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038eb6"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000390fc"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039126"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039134"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039146"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039152"
+value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "threshold"
+to = "angelic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

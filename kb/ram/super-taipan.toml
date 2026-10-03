@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff17ef"
+name = "super-taipan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00052f64"
+
+[[link]]
+type = "lookup"
+to = "warping-quetzal/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

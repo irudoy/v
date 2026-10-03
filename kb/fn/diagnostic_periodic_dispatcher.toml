@@ -1,0 +1,116 @@
+title = "Periodic diagnostic coordinator and group-summary dispatch"
+summary = """
+Periodic diagnostic dispatcher invoked as entry 101 of the 124-function \
+table in scheduler 00020dfe. In one pass it invokes diagnostic group-summary \
+builder 00097eb4, misfire coordinator 00082c8a, and cleanup helper 00085a1c; \
+its recovered tail at 0007c166 recomputes the critical ECM/ETC aggregate in \
+ffff41ea.bit5."""
+note = [
+    """
+This establishes the coordinator service path; the base scheduler frequency \
+remains unnamed.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 51
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 19
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_group_summary_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "subtle-angelfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007bfc4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c000"
+value = {named = ["00020dfe", "0007bfc4", "00082c8a", "00085a1c", "00097eb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c002"
+value = {named = ["00020dfe", "0007bfc4", "00082c8a", "00085a1c", "00097eb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c006"
+value = {named = ["00020dfe", "0007bfc4", "00082c8a", "00085a1c", "00097eb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c008"
+value = {named = ["00020dfe", "0007bfc4", "00082c8a", "00085a1c", "00097eb4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "diagnostic_group_summary_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "subtle-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

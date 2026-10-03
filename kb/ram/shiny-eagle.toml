@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff18ee"
+name = "shiny-eagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000760bc"
+
+[[link]]
+type = "lookup"
+to = "flat-cat/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "slick-chowchow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "urban-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

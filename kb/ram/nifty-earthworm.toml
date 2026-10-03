@@ -1,0 +1,80 @@
+summary = """
+Signed second-channel accelerator-pedal quantity produced as twice AN17 \
+sample ffff362e minus learned offset ffff55c2. FUN 0006ec68 clamps negative \
+values to zero before dual-channel selection."""
+level = "code"
+unit = "signed ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 220
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "accelerator_pedal_pair_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_channel_1_adjuster/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff27a4"
+name = "nifty-earthworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e834"
+value = {named = ["0006e826", "0006ec68", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e83c"
+value = {named = ["0006e826", "0006ec68", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e840"
+value = {named = ["0006e826", "0006ec68", "ffff27a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ec72"
+value = {named = ["0006e826", "0006ec68", "ffff27a4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "accelerator_pedal_pair_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_channel_1_adjuster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

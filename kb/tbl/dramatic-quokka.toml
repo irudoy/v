@@ -1,0 +1,126 @@
+summary = """
+Alternate internal floor: 00046938 selects the uint8 curve 00012918 with \
+axis 000140d4 while ffff4250.bit3 is clear and writes ffff171a; 000474a4 \
+stores max(intermediate, 8*u8(ffff171a)) in ffff23fa. Physical units are \
+unresolved."""
+note = [
+    """
+Identity confidence: candidate. The alternate branch has its own map load at \
+00046c2a, input word ffff11b8 at 00046c2c, wrapper call at 00046c32, and \
+byte store at 00046c3a. Wrapper 00026550 reads adjacent bytes at \
+00026564/0002656a and zero-extends them before finisher 00026740. Consumer \
+000474f6..00047516 multiplies the byte by 8 and applies the local floor. The \
+regression gate distinguishes selector branches with unequal calibration \
+samples and executes exact/end-point lookup and the local floor; fractional \
+explicit-axis division and subsequent transforms to ffff122a are outside the \
+gate.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 176
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012918"
+name = "dramatic-quokka"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+key = "test_12918_selected_internal_floor"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026564"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002656a"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c0c"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c10"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c2a"
+value = {named = ["00012918"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c2c"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c2e"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c32"
+value = {named = ["00012918"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c3a"
+value = {named = ["00012918"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000474f6"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000474fc"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000474fe"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00047500"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00047516"

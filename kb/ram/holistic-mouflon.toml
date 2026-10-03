@@ -1,0 +1,128 @@
+summary = """
+Clamped timing sum written by 0004dbe8 as clamp(ffff12d6+gated ffff564c, \
+ROM8[0x8221]=-7, ROM8[0x821e]=50), where the ffff564c term is included only \
+while ffff5b31 bits 1..5 are clear. The rate limiter and mode bounds of the \
+same function derive ffff11d4 from this sum."""
+note = ["One count is one crank degree of the J1979 PID 0x0E coordinate."]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 842
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-honeybee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "viridian-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "arrogant-robin/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "final_timing_coordinate_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11da"
+name = "holistic-mouflon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000821e=0x32"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008221"
+value = "0xf9"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcc8"
+value = {named = ["0000821e", "00008221", "0004dbe8", "ffff11da", "ffff12d6", "ffff564c", "ffff5b31"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcca"
+value = {named = ["0000821e", "00008221", "0004dbe8", "ffff11da", "ffff12d6", "ffff564c", "ffff5b31"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcd0"
+value = {named = ["0000821e", "00008221", "0004dbe8", "ffff11da", "ffff12d6", "ffff564c", "ffff5b31"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcd4"
+value = {named = ["0000821e", "00008221", "0004dbe8", "ffff11da", "ffff12d6", "ffff564c", "ffff5b31"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcf6"
+value = {named = ["0000821e", "00008221", "0004dbe8", "ffff11da", "ffff12d6", "ffff564c", "ffff5b31"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cryptic-honeybee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "viridian-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "arrogant-robin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

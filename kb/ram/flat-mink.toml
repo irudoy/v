@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8007"
+name = "flat-mink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00002a54"

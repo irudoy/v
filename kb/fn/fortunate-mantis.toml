@@ -1,0 +1,88 @@
+summary = """
+Gate of the exhaust cam reference learning, called as (enable, bank) from \
+00090a84. It sets bit b of gate byte ffff14f0 while the enable is set, \
+conditioned target ffff2327 is 0x80, duty word ffff1aac + 2b is zero, timer \
+ffff2568 + b has expired, and bit b of ffff14b8 is clear; every other state \
+clears the gate bit and zeroes sample counter ffff1930 + b, and a clear \
+enable also reloads the timer with ROM8[00008e1a]=0."""
+note = [
+    """
+Timer ffff2568 + b lies in the 102.4 ms block of base-tick handler 0002040c; \
+with the stock reload of 0 it is always expired.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 661
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_duty_b1_word/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "analytic-sidewinder/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "holistic-silkworm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "witty-doberman/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000907e8"
+name = "fortunate-mantis"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e1a"
+value = "0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000907e8"
+value = {named = ["00008e1a", "ffff14b8", "ffff14f0", "ffff1aac", "ffff2327", "ffff2568"], span = 1}
+key = "body"
+
+[[link]]
+type = "selector"
+to = "analytic-sidewinder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

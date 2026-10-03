@@ -1,0 +1,156 @@
+summary = """
+Scheduled positive RPM-drop class. Scheduler FUN 00020dfe copies current \
+publication byte ffff1072 here; DFCO and other consumers classify it at \
+breakpoints 4, 8, and 12."""
+note = [
+    """
+The fourth adjacent ROM byte 32 is not compared by the four-class loops. FUN \
+00050018 uses class indices 0..3 to select RPM/25 floors 36, 48, 54, and \
+62.""",
+]
+level = "code"
+unit = "RPM/12.5 drop counts"
+
+[[ledger]]
+registry = "vars"
+order = 6
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_exit_delay_select/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivid-meerkat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff106a"
+name = "teal-giraffe"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00011cb5=0x04080c20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cb8"
+value = {named = ["00011cb5", "00020dfe", "00050018", "0005038a", "000503e0", "ffff106a", "ffff1072"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050110"
+value = {named = ["00011cb5", "00020dfe", "00050018", "0005038a", "000503e0", "ffff106a", "ffff1072"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000503a0"
+value = {named = ["00011cb5", "00020dfe", "00050018", "0005038a", "000503e0", "ffff106a", "ffff1072"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005042a"
+value = {named = ["00011cb5", "00020dfe", "00050018", "0005038a", "000503e0", "ffff106a", "ffff1072"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "vivid-meerkat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "turquoise-mushroom/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_exit_delay_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

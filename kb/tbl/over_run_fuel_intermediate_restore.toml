@@ -1,3 +1,27 @@
+summary = """
+Coolant-indexed low-speed upper/intermediate-restore RPM threshold in FUN \
+00050018. At speed count below 4, RPM above lower table 00012818 and at or \
+below this adjusted threshold returns class 2; RPM strictly above it returns \
+class 0."""
+note = [
+    """
+The adjusted result is stored in ffff1778 after the same coolant floors and \
+runtime offsets as the lower table. The table is always interpolated, but \
+every speed-count-4-or-above branch reachable with stock \
+ROM8[00008b3f].bit7=0 and ROM8[0000870c].bit7=0 ignores it. It remains a \
+live stock calibration for the low-speed class-2 band rather than a moving \
+DFCO veto. The moving target-vehicle capture cannot validate this table \
+because its selected samples are all above the stock speed boundary. Result \
+disposition: inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "RPM"
+scale = "x*25"
+to_raw = "x/25"
+scale_level = "code"
+
 [editor]
 name = "DFCO Low-Speed Intermediate Restore RPM Threshold"
 category = "Fuelling / Deceleration Fuel Cut"
@@ -26,6 +50,70 @@ static_axis = [
 ]
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis_operand = "hasty-eel/ram"
+
+[[ledger]]
+registry = "findings"
+order = 182
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+scale = [18, 19, 20, 21, 22]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nocturnal-adder/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
 
 [[symbol]]
 layout = "1me3b"
@@ -59,6 +147,152 @@ layout = "7mfk"
 address = "0001298c"
 former = ["cooperative-spider/tbl/7mfk-0001298c"]
 
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085fa"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870c"
+value = "0x44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a3f"
+value = "0x30"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b3f"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500a6"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500ac"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500b2"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500bc"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500be"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500c6"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500cc"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000500e2"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501e0"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501e2"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000502fe"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005030c"
+value = {named = ["000085fa", "0000870c", "00008a3f", "00008b3f", "0001298c", "00026388", "00026740", "000384cc", "00050018", "000503e0", "ffff106f", "ffff11b3", "ffff1778"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "108*25=2700"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "2700/25=108"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "36*25=900"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "900/25=36"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "perfect-agouti/fn/7mfk"
+relies = "structure"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014d11"
@@ -89,3 +323,33 @@ supports = "homology"
 at = "jk78c:0006c13c"
 to = "7mfk:0001298c"
 note = "unique accessor and coordinator preserve lookup role and order"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

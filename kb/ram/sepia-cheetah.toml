@@ -1,0 +1,93 @@
+summary = """
+Direct APP inverse coordinate written by 00073432 from ffff243c+0x8000 \
+through the current-RPM row of 0xe98e."""
+note = [
+    """
+Its branch in 000730fc requires 0x870c.bit7. Stock value 0x44 leaves that \
+branch disabled, so this is not the stock-active actuator coordinate.""",
+]
+level = "code"
+unit = "unsigned request coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 680
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-binturong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "primary_request_inverse_lookup/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1984"
+name = "sepia-cheetah"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007324e"
+value = {named = ["000730fc", "00073432", "ffff1984", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734de"
+value = {named = ["000730fc", "00073432", "ffff1984", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735b6"
+value = {named = ["000730fc", "00073432", "ffff1984", "ffff243c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "vigorous-binturong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

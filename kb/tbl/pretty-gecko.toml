@@ -1,0 +1,116 @@
+summary = """
+Interpolated inclusive normalized-BFS threshold for RAM byte ffff102c: the \
+calculation branch is selected when uint8[ffff102c] <= map output."""
+note = [
+    """
+The output uses the same Q7 normalized-BFS representation as ffff102c. \
+Result disposition: inline_comparison. Result target: uint8[ffff102c] <= \
+uint8[ffff15f0] in FUN_0004d2a6@0004d2a6 when (uint8[ffff2458] & 0x20) == 0. \
+Machine trace: Map 000124b2 has 16 uint8 elements in range 67..77 and axis \
+000124c2. 0004d440: u16[ffff11bc] -> extu.w -> >>2 -> upper limit 0xff -> \
+extu.b; 0004d44e and 0004d452 set r4=000124b2 and r5=000124c2; 0004d456: \
+FUN_000264a0 performs 1D interpolation through FUN_00026944, FUN_00026c78, \
+and FUN_00026740; 0004d45a: result r0 -> r2; 0004d460 writes the low result \
+byte without additional arithmetic to u8[ffff15f0]. 0004d462 loads raw \
+u8[ffff102c]; subsequent shifts apply to adjacent maps 0000a4aa and \
+00009f1a, while the saved ffff102c pointer is later read directly. On the \
+branch with bit 0x20 clear in u8[ffff2458], FUN 0004d2a6 tests u8[ffff102c] \
+<= u8[ffff15f0]; equality enters the calculation branch.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 145
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "normalized_load/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "normalized_load/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "000124b2"
+name = "pretty-gecko"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d456"
+value = {named = ["00009534", "000124b2", "0004d2a6", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d460"
+value = {named = ["00009534", "000124b2", "0004d2a6", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128*0.78125=100"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

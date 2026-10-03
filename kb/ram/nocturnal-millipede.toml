@@ -1,0 +1,81 @@
+summary = """
+Base of two uint32 bounded throttle-regulator state words written by \
+000cb614 at stride four and capped by ROM32[0x96bc]=0x000d0000."""
+note = [
+    """
+Elements are ffff2628 and ffff262c. They are state, not direct motor duty or \
+a simple instantaneous error.""",
+]
+level = "code"
+unit = "fixed-point state array"
+
+[[ledger]]
+registry = "vars"
+order = 709
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_fixed_point_regulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2628"
+name = "nocturnal-millipede"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000096bc"
+value = "0x000d0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020ae2"
+value = {named = ["000096bc", "000209d8", "000cb614", "ffff2628"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4e6"
+value = {named = ["000096bc", "000209d8", "000cb614", "ffff2628"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc568"
+value = {named = ["000096bc", "000209d8", "000cb614", "ffff2628"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

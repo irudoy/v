@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff26a0"
+name = "overjoyed-sidewinder"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a71bc"
+
+[[link]]
+type = "reader"
+to = "boisterous-meerkat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,126 @@
+summary = """
+Scheduler snapshot of interval-derived engine-speed byte ffff2804 \
+(rpm/12.5): the 0x104-byte FUN 00022558 call in 00020dfe copies \
+ffff277e..ffff2881 to ffff267a..ffff277d. Stage 0005594a forces commanded \
+mixture ffff22e8 to 0x4000 and reloads countdown ffff2531 while the byte is \
+below 32 (400 rpm); 0008152a, 00081d74, 00098e48, and 000990c4 also read \
+it."""
+level = "code"
+unit = "rpm/12.5"
+
+[[ledger]]
+registry = "vars"
+order = 757
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "carrot-dragon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "indigo-stallion/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "statuesque-husky/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2700"
+name = "whispering-wolf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564c4"
+value = {named = ["00020dfe", "0005594a", "0008152a", "00081d74", "00098e48", "000990c4", "ffff2700", "ffff2804"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "statuesque-husky/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "carrot-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "indigo-stallion/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

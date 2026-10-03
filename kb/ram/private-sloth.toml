@@ -1,8 +1,219 @@
+summary = """
+Current rotational-speed coordinate in RPM/3.125 representation. FUN \
+000384fe writes source word ffff11ee = ffff1196>>4, and scheduler 00020dfe \
+copies it here through the 56-byte snapshot block. FUN 00065928 passes it as \
+the row input of Engine Torque Map 00010b8e, and the throttle-rev limiter \
+FUN 0007584e multiplies it by four and compares/rate-limits the result in \
+the same raw domain as ROM16[0x942c]."""
+note = [
+    """
+With ffff1196 = RPM*5.12, the shift by four makes one count 16/5.12 = 3.125 \
+RPM. The limiter multiplies the coordinate by four before comparison with \
+the 0.78125 RPM/count scalar 0x942c, which gives the same count. The \
+2026-09-21 vehicle comparison of limiter slot values 0x1900 and 0x2580, \
+which engage at 5000 and 7466..7488 RPM, confirms that conversion.""",
+]
+level = "code"
+unit = "rpm/3.125"
+
 [logparam]
 id = "X_VQ_Engine_Speed"
 unit = "RPM"
+
+[[ledger]]
+registry = "vars"
+order = 76
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "base"
+to = "offbeat-mantis/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x1a"
+offset = 0x1a
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primitive-lizard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_throttle_cut/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hungry-sawfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff11b6"
 name = "private-sloth"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6a"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003854c"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065986"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007588c"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075890"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758b0"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758be"
+value = {named = ["0000942c", "00020dfe", "000384fe", "00065928", "0007584e", "ffff119c", "ffff11b6", "ffff11ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "base"
+to = "offbeat-mantis/ram"
+offset = 0x1a
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "hungry-sawfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuzzy-pogona/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "primitive-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,36 @@
+title = "Slow response bank 2 sensor 2"
+level = "code"
+code = "P0159"
+group = "rear_o2"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 23
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019b40"
+name = "primitive-chihuahua"
+index = 168
+attribute = "00016154"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016154"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019b40"
+value = "320604000000015910000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a3ec"
+value = "00016154"

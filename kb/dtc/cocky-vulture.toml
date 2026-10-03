@@ -1,0 +1,36 @@
+title = "Cylinder 4 misfire detected"
+level = "code"
+code = "P0304"
+group = "misfire"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 2
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000193f0"
+name = "cocky-vulture"
+index = 12
+attribute = "0001610e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001610e"
+value = "0030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000193f0"
+value = "05030d000000030440000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a17c"
+value = "0001610e"

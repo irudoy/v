@@ -1,0 +1,75 @@
+title = "Sustained low-speed RPM full fuel-inhibit state"
+summary = """
+Low-speed sustained-RPM fuel-inhibit contributor. Accumulator ffff1932 \
+reaching 24000 arms ffff247c.bit7 at or above 1800 RPM; the state remains \
+active through 1500 RPM and clears below it."""
+note = ["FUN 0004f7e0 is the exact accumulator producer."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 28
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 530
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sepia-mongrel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ochre-jacamar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f958"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f958"
+value = {named = ["0004ed88", "ffff11ae", "ffff1932", "ffff247c"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

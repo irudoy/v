@@ -1,0 +1,191 @@
+summary = """
+Base of a two-byte bank-indexed rear O2 low-condition metric. FUN 00089d92 \
+dispatches P0137/P0157 when the selected bank byte is below calibrated limit \
+0x24."""
+note = [
+    """
+A whole-program p-code scan found reset/initialization stores but no direct \
+runtime producer; the producer is pointer-mediated or unresolved. The \
+physical scale is not established.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "rear-o2-low-metric-p0137"
+kind = "monitor"
+label = "DtcCode"
+key = "P0137"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b64"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = "Bank element 0 is compared with 0x24 in the exact P0137 dispatch path."
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008abe"
+value = "0x24"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089f76"
+value = {named = ["00008abe", "00019b64", "00089d92", "ffff2726"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089fca"
+value = {named = ["00008abe", "00019b64", "00089d92", "ffff2726"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-low-metric-p0157"
+kind = "monitor"
+label = "DtcCode"
+key = "P0157"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b70"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = "Bank element 1 is compared with 0x24 in the exact P0157 dispatch path."
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008abe"
+value = "0x24"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089f76"
+value = {named = ["00008abe", "00019b70", "00089d92", "ffff2726"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089fe0"
+value = {named = ["00008abe", "00019b70", "00089d92", "ffff2726"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 89
+binding = "rear-o2-low-metric-p0137"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 90
+binding = "rear-o2-low-metric-p0157"
+
+[[ledger]]
+registry = "vars"
+order = 402
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "aspiring-harrier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thundering-giraffe/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-flamingo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2726"
+name = "berserk-heron"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008abe"
+value = "0x24"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00089452"
+value = {named = ["00008abe", "00089310", "00089d92", "0008aa46", "ffff2726"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00089f76"
+value = {named = ["00008abe", "00089310", "00089d92", "0008aa46", "ffff2726"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac88"
+value = {named = ["00008abe", "00089310", "00089d92", "0008aa46", "ffff2726"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "aspiring-harrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "grumpy-dolphin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "thundering-giraffe/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-flamingo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

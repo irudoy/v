@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10aa"
+name = "spry-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bba6c"
+
+[[link]]
+type = "reader"
+to = "daft-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

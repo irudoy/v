@@ -1,0 +1,101 @@
+summary = """
+Source byte of work-support timing adjustment ffff564c. FUN 0004aad0 is its \
+sole direct writer: zero with ffff41b9.bit0 set, the clamped LID-1 slot \
+ffff99dc with ffff424c.bit4 set, the clamped automatic step of ffff10da with \
+ffff424c.bit5 set, and otherwise stored adjustment ffff29c6 when it lies \
+within -5..0."""
+note = [
+    """
+Bounded to ROM8[0x821d]=-5..ROM8[0x821c]=0 crank degrees; the snapshot \
+ffff564c enters the final coordinate ffff11d4 with coefficient 1 inside the \
+ffff5b31 window. The timing latch of 00068040 copies it to ffff29c6 and into \
+the high byte of record 0x74.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 609
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-jacamar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bounded_mode_state_source/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff56b2"
+name = "papaya-adder"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021332"
+value = {named = ["00020dfe", "0004aad0", "00068040", "ffff56b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ab6e"
+value = {named = ["00020dfe", "0004aad0", "00068040", "ffff56b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680a2"
+value = {named = ["00020dfe", "0004aad0", "00068040", "ffff56b2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "bounded_mode_state_source/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

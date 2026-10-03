@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4183"
+name = "industrious-jaguarundi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020d0c"

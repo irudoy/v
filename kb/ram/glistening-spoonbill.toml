@@ -1,0 +1,55 @@
+summary = """
+Learned closed-position offset of the second paired throttle channel. FUN \
+0003e4cc subtracts it from complement word ffff2864 before writing corrected \
+value ffff2860."""
+note = [
+    """
+The offset is in the same count domain as the channel it corrects. The \
+writer of the learned value is outside the reviewed set.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 852
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-chipmunk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff561c"
+name = "glistening-spoonbill"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e516"
+value = {named = ["0003e4cc", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e530"
+value = {named = ["0003e4cc", "ffff561c"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "tall-chipmunk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

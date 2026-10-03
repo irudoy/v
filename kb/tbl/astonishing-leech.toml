@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015d10"
+name = "astonishing-leech"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a1648"

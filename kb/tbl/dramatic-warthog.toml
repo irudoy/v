@@ -1,3 +1,27 @@
+summary = """
+1D step coefficient for saturating reduction of 16-bit state ffff1866: \
+interpolated uint8 is multiplied by uint8 from ffff3373, the product reaches \
+ffff13dc, and on the corresponding branch it is subtracted from nonzero \
+ffff1866 with lower saturation at 0."""
+note = [
+    """
+The physical quantity of ffff3373 and the purpose of state ffff1866 are \
+unknown. All eight cells equal 0, so the current calibration contributes \
+zero for every input. The lookup result has no direct RAM sink: it is first \
+consumed by multiplication, and ffff13dc receives the derived 16-bit \
+product. This multiplication is runtime consumption, not a map scale. Index: \
+implicit_1d_8_u8; input=clamp(((uint16(ffff40c6)*0x2d0e)>>15)-0x20,0,255); \
+for input<0xe0, the kernel linearly interpolates adjacent uint8 points of \
+the implicit grid; for input>=0xe0, element[7] is returned. Result \
+disposition: consumer (ffff13dc).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
 category = "Internal Calculations"
@@ -7,7 +31,150 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 353
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stalwart-polecat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011fe6"
 name = "dramatic-warthog"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649c8"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649ce"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649dc"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649e2"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649ec"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f0"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f4"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f8"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fa"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fc"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fe"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064a04"
+value = {named = ["00011fe6", "00026370", "00026740", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "spotted-zebra/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

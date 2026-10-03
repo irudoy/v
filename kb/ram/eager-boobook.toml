@@ -1,6 +1,89 @@
+summary = """
+Exact service-0x22 DID 0x1129 response byte. Homologous measured diagnostics \
+identify the DID as atmospheric pressure."""
+note = [
+    """
+The physical source and engineering conversion remain target-validation \
+candidates.""",
+]
+level = "code"
 width = 8
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "atmospheric-pressure-did-1129"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221129"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0042-l0042:source-row-extended-pids:parameter:0x1129-d7379265"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1129 to response byte \
+ffff4544. Homologous measured diagnostics identify the DID as atmospheric \
+pressure. The engineering conversion and physical source remain \
+target-validation candidates."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022750"
+value = "ffff4544"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022750"
+value = {named = ["0003235c", "d7379265", "ffff4544"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 5
+binding = "atmospheric-pressure-did-1129"
+
+[[ledger]]
+registry = "vars"
+order = 553
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff4544"
 name = "eager-boobook"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022750"
+value = "ffff4544"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022750"
+value = {named = ["0003235c", "ffff4544"], span = 1}
+key = "pointer"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

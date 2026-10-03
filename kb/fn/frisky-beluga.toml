@@ -1,0 +1,137 @@
+summary = """
+Second commanded-mixture word producer, stage of coordinator 00057608 after \
+0005594a in the 00055648 group. It looks up 00011ede on ffff11b3 into \
+ffff12e7, latches ffff2474 bit 7 on load ffff102c >= ffff12e7 with \
+ROM8[000086ea] hysteresis, latches ffff2493 bit 2 on vehicle speed ffff110e \
+<= ROM8[000087d9] = 0, and ramps ffff123c from snapshot ffff127a toward \
+ROM16[00008f86] = 0x4000 with the ROM8[0000849b]/ROM8[0000849c] steps. Stock \
+constants keep ffff123c at 0x4000, so the max() in 0005594a always returns \
+ffff123a."""
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 183
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cooperative-caracara/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dandelion-bear/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cerise-skink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crouching-hedgehog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "efficient-skylark/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiked-bear/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005651c"
+name = "frisky-beluga"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086ea"
+value = "0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087d9"
+value = "0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f86"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564b0"
+value = {named = ["000086ea", "000087d9", "00008f86", "00011ede", "0005651c", "ffff102c", "ffff110e", "ffff11b3", "ffff123c", "ffff127a", "ffff12e7", "ffff2474", "ffff2493"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005653e"
+value = {named = ["000086ea", "000087d9", "00008f86", "00011ede", "0005651c", "ffff102c", "ffff110e", "ffff11b3", "ffff123c", "ffff127a", "ffff12e7", "ffff2474", "ffff2493"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056566"
+value = {named = ["000086ea", "000087d9", "00008f86", "00011ede", "0005651c", "ffff102c", "ffff110e", "ffff11b3", "ffff123c", "ffff127a", "ffff12e7", "ffff2474", "ffff2493"], span = 1}
+key = "reference"

@@ -1,0 +1,92 @@
+summary = """
+Conditional accessor for 1D-8 multiplier 000123e2. The lookup is written to \
+ffff2ff2; the bypass path writes raw 128 instead. 000a5284 includes ffff2ff2 \
+in a product with uint8 ffff338a and uint16 param_2, after which the derived \
+value participates in saturated 16-bit blending with param_1."""
+note = [
+    "The physical subsystem and individual multiplier scale are unresolved.",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 312
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cherubic-narwhal/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "organic-markhor/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "evasive-hummingbird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a5560"
+name = "xanthic-wolf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55a4"
+value = {named = ["000123e2", "000a5284", "000a5560", "ffff110e", "ffff2ff2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55a8"
+value = {named = ["000123e2", "000a5284", "000a5560", "ffff110e", "ffff2ff2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55ac"
+value = {named = ["000123e2", "000a5284", "000a5560", "ffff110e", "ffff2ff2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55b2"
+value = {named = ["000123e2", "000a5284", "000a5560", "ffff110e", "ffff2ff2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "cherubic-narwhal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

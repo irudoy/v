@@ -1,0 +1,122 @@
+summary = """
+Intake-air-temperature PID byte. FUN 0003d832 copies lane 0 of the pair \
+ffff3f42 here at 0003d8c4, where FUN 0003d4a8 writes max(lookup(00012dea, \
+uint8(ffff1d58 >> 2)) - 10, 0); FUN 00035856 returns the byte unchanged for \
+J1979 Mode 01 PID 0x0F at 00035daa."""
+note = [
+    """
+J1979 defines PID 0x0F as A-40 deg C, so the ECU declares the 00012dea \
+transfer code as deg C+50 and AN1 lane 0 as the intake-air-temperature \
+channel. DID 0x1106 byte ffff2837 is the same transfer code of the filtered \
+lane-0 sample.""",
+]
+level = "code"
+unit = "degC+40"
+
+[[ledger]]
+registry = "vars"
+order = 435
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elated-bullfrog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-caiman/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f41"
+name = "dandelion-unicorn"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035da2"
+value = {named = ["00012dea", "00035856", "0003d4a8", "0003d832", "ffff3f41", "ffff3f42"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035daa"
+value = {named = ["00012dea", "00035856", "0003d4a8", "0003d832", "ffff3f41", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d8c0"
+value = {named = ["00012dea", "00035856", "0003d4a8", "0003d832", "ffff3f41", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d8c4"
+value = {named = ["00012dea", "00035856", "0003d4a8", "0003d832", "ffff3f41", "ffff3f42"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "foamy-pony/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "elated-bullfrog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "romantic-caiman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

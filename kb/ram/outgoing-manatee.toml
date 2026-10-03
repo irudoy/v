@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ad"
+name = "outgoing-manatee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000210d6"
+
+[[link]]
+type = "reader"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

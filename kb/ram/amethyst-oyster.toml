@@ -1,0 +1,49 @@
+summary = """
+Peripheral word to which flat 0x4c map 0x12d8a provides an additive \
+correction."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 346
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "heavenly-jaguar/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "green-hog/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5620"
+name = "amethyst-oyster"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c38c"
+
+[[link]]
+type = "input"
+to = "green-hog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

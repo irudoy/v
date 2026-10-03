@@ -1,0 +1,83 @@
+summary = """
+Rear O2 monitor reset path. For the selected bank it clears ffff26e9, \
+ffff26eb, and ffff2726, restores ffff2724 to 0xff, and resets adjacent \
+diagnostic state."""
+note = [
+    """
+This reset path confirms the array widths and bank indexing but not their \
+physical units.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 392
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-heron/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "peculiar-mayfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "platinum-mole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "polar-guillemot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008aa46"
+name = "thundering-giraffe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac78"
+value = {named = ["0008aa46", "ffff26e9", "ffff26eb", "ffff2724", "ffff2726"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac82"
+value = {named = ["0008aa46", "ffff26e9", "ffff26eb", "ffff2724", "ffff2726"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac88"
+value = {named = ["0008aa46", "ffff26e9", "ffff26eb", "ffff2724", "ffff2726"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac8c"
+value = {named = ["0008aa46", "ffff26e9", "ffff26eb", "ffff2724", "ffff2726"], span = 1}
+key = "reference"

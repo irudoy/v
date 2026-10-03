@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff134e"
+name = "chestnut-mouflon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057d06"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

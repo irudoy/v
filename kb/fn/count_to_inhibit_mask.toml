@@ -1,0 +1,72 @@
+title = "Map clamped channel count to six-channel inhibit mask"
+summary = """
+Count-to-six-channel inhibit-mask accessor. It takes max(ffff22fd,ffff2ece), \
+clamps the unsigned count to 0..6, and for nonzero counts selects table \
+00011a6b values 01, 05, 15, 17, 1f, or 3f."""
+note = ["The physical producer meanings of both counts remain unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 39
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 488
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "notorious-adder/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prudent-centipede/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005079c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00011a6b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005079c"
+value = {named = ["00011a6b", "0004ed88", "ffff22fd", "ffff2ece"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

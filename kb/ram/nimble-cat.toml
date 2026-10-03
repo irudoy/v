@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff25f2"
+name = "nimble-cat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007f508"
+
+[[link]]
+type = "writer"
+to = "merciful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013c68"
+name = "outrageous-ape"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009ea5a"

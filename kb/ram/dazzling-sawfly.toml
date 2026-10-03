@@ -1,0 +1,163 @@
+summary = """
+Published main-fuel control multiplier. FUN 000556ec writes working value \
+ffff18e4 here unless aggregate six-channel inhibit mask ffff22e0 equals \
+0x3f, in which case it writes zero. FUN 0004e974 scales current BFS or \
+alternate schedule by this word over 131072 before forming common and \
+bank-specific pulse precursors; FUN 0005727a independently uses it with a \
+right shift of 15."""
+note = [
+    """
+Its exact arithmetic roles and full-inhibit zero publication are \
+established. A single universal engineering scale and physical control name \
+are not assigned.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 156
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "imperial-lobster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_pulse_precursor_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-chihuahua/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_multiplier_publisher/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22e6"
+name = "dazzling-sawfly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9f2"
+value = {named = ["0004e974", "0004ead4", "000556ec", "0005727a", "ffff18e4", "ffff22e0", "ffff22e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e9fa"
+value = {named = ["0004e974", "0004ead4", "000556ec", "0005727a", "ffff18e4", "ffff22e0", "ffff22e6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eb22"
+value = {named = ["0004e974", "0004ead4", "000556ec", "0005727a", "ffff18e4", "ffff22e0", "ffff22e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055932"
+value = {named = ["0004e974", "0004ead4", "000556ec", "0005727a", "ffff18e4", "ffff22e0", "ffff22e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005593c"
+value = {named = ["0004e974", "0004ead4", "000556ec", "0005727a", "ffff18e4", "ffff22e0", "ffff22e6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fuel_inhibit_mask/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vigorous-chihuahua/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "imperial-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

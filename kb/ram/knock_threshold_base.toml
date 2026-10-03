@@ -1,3 +1,48 @@
+summary = """
+Base of six one-based per-channel uint16 knock thresholds at \
+ffff2144..ffff214f. FUN 00049ffc interpolates one of six rows of Knock Slice \
+Map 0001108e by engine speed and writes ffff2144 + 2*(channel-1); FUN \
+0004a238 compares the selected threshold with its calculated metric."""
+note = [
+    """
+The physical channel-to-cylinder order and engineering threshold unit remain \
+unverified. ffff2142 is a separate event counter, not the first threshold \
+word.""",
+]
+level = "code"
+unit = "raw threshold array"
+
+[[ledger]]
+registry = "vars"
+order = 657
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_evaluator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "amorphous-bird/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_slice_threshold_lookup/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe9100"
@@ -28,6 +73,48 @@ Target threshold lookup stores the threshold of channel n at base plus 2 * \
 layout = "7mfk"
 address = "ffff2144"
 former = ["thoughtful-civet/ram/7mfk-ffff2144"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a030"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a032"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a038"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a03a"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a31a"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a326"
+value = {named = ["0001108e", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -64,3 +151,29 @@ value = "ffff2098"
 note = """
 Target threshold lookup stores the threshold of channel n at base plus 2 * \
 (n - 1)"""
+
+[[link]]
+type = "input"
+to = "amorphous-bird/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "knock_slice_threshold_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,65 @@
+summary = """
+Previous bank-1 intake-cam edge phase byte. Capture handler 0002a5cc copies \
+ffff22cc here at 0002a6ec on every processed capture, after moving the \
+earlier value to ffff22d0 at 0002a6e4."""
+note = ["Same 0.5-crank-degree unit as ffff22cc."]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 369
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-degu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-mantis/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ce"
+name = "ubiquitous-serval"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6e8"
+value = {named = ["0002a5cc", "ffff22cc", "ffff22ce"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6ec"
+value = {named = ["0002a5cc", "ffff22cc", "ffff22ce"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "evasive-degu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

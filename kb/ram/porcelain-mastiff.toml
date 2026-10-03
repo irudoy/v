@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ee0"
+name = "porcelain-mastiff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003e2da"
+
+[[link]]
+type = "lookup"
+to = "turquoise-mushroom/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

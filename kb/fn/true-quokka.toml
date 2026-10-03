@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0005b534"
+name = "true-quokka"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005b534"

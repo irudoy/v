@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4086"
+name = "nano-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00068b34"
+
+[[link]]
+type = "reader"
+to = "screeching-gaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

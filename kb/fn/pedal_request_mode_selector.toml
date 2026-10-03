@@ -1,0 +1,104 @@
+title = "Select the mode and fault pedal-request source"
+summary = """
+Mode and fault selector for the pedal-request path. It selects ffff19d4 or \
+ffff19ba according to ffff2488.bit7, ROM8[0x8b28], ffff418a.bit2, and \
+ffff24d2.bit7, then writes ffff19d0."""
+note = [
+    """
+The branch contract is exact; the alternate source remains an internal \
+signed request.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "curated"
+order = 141
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 564
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-chameleon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "scrupulous-shark/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curious-falcon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075396"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007539c"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753a6"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753ae"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753bc"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753c6"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753cc"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753d2"
+value = {named = ["00075396", "ffff19ba", "ffff19d0", "ffff19d4"], span = 1}
+key = "reference"

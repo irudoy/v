@@ -1,0 +1,113 @@
+summary = """
+Previous ATU-II channel 0A input-capture value of crank tooth 9. FUN \
+00028ea2 subtracts it from current ICR0A, takes the absolute value, then \
+refreshes it from fffff434 on the same selector mode because ROM8[00008bdc] \
+and ROM8[00008bdd] both equal 9."""
+note = [
+    """
+The first tooth-9 capture initializes the reference. Every later tooth-9 \
+invocation produces an interval over 120 crank degrees between consecutive \
+ICR0A captures before refreshing it.""",
+]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 350
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "abstract-pudu/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84d4"
+name = "stirring-panda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdc"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdd"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a20e"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "ffff13b2", "ffff84d4", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a244"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "ffff13b2", "ffff84d4", "fffff434"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "abstract-pudu/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

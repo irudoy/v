@@ -1,0 +1,102 @@
+summary = """
+DFCO stage-1 entry countdown loaded by state machine 000503e0 and \
+decremented by periodic handler 0002040c on every tenth base interrupt."""
+note = [
+    """
+One count is exactly 204800/Pphi seconds; passive target-CAN timestamps \
+establish 10.24 ms on JK08A.""",
+]
+level = "code"
+unit = "DFCO scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 580
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "attentive-axolotl/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2571"
+name = "competent-scorpion"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050496"
+value = {named = ["000120f6", "0002040c", "000503e0", "ffff2571"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000504a2"
+value = {named = ["000120f6", "0002040c", "000503e0", "ffff2571"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "attentive-axolotl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,186 @@
+summary = """
+Request byte of memory task 000cd85c. Handler 000306f8 of manufacturer \
+diagnostic service 0xa0 (dispatched by 0002f928 at 0002fa78) copies an \
+accepted request code from ffff8005 into it (000309ca for codes 1, 2, and 3) \
+and sets pending flag ffff41de bit 0 at 000309d6; scheduler task 0002e8d2 \
+passes the byte to 000cd85c at 0002e8f4 while the flag is set, the task \
+resets it to zero after a pass (000cdb1e, 000cdb7e, 000cdbca, 000cdd16), and \
+initialization path 0002e81a zeroes it at 0002e890. Request 1 runs the ROM \
+sum, request 2 the compare, and request 3 sets ffff4251 bit 0 at 000cdd4e."""
+note = [
+    """
+The immediate codes 0x82, 0x84, 0x88, 0x92, 0x93, 0x94, and 0x98 are stored \
+at their own sites and answered inside the handler. The tester-side meaning \
+of the codes is not established.""",
+]
+level = "code"
+unit = "request code"
+
+[[ledger]]
+registry = "vars"
+order = 825
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cuddly-seriema/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "airborne-leech/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "vagabond-labradoodle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-wildcat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "foamy-chowchow/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-manul/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff40be"
+name = "graceful-armadillo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e890"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8f4"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fa78"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000309ca"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000309d6"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cdb1e"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cdd40"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cdd4e"
+value = {named = ["0002e81a", "0002e8d2", "0002f928", "000306f8", "000cd85c", "ffff40be", "ffff41de", "ffff8005"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ultra-gecko/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "input"
+to = "airborne-leech/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cuddly-seriema/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "vagabond-labradoodle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amber-wildcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "foamy-chowchow/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "jovial-manul/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

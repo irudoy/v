@@ -1,0 +1,99 @@
+summary = """
+Interpolated uint16 parameter written both to ffff35b4 and to output \
+parameter 000b784e; the caller passes it as the first argument to 000b7768. \
+The physical purpose of the parameter is unknown."""
+note = [
+    """
+The output-parameter write occurs at site 000b788a in the delay slot of the \
+00015c80 call and refers to the still-live 00015c40 result. The map and axis \
+consist of zeros. The catalog accel-throttle family does not establish \
+identity.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 314
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "complex-firefly/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015c40"
+name = "magic-kingfisher"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7870"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7876"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b787a"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b787e"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7886"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b788a"
+value = {named = ["00013ca8", "00015c40"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "complex-firefly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "curly-flounder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

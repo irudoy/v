@@ -1,0 +1,170 @@
+summary = """
+Branch-local upper clamp: 00044910 stores the eight-point uint8 lookup in \
+ffff172e and uses twice that byte as an upper bound on two local paths. \
+Normal completion adds a further term before writing ffff1230, so the map is \
+not a global final-output bound. Physical quantity and units are \
+unresolved."""
+note = [
+    """
+Identity confidence: candidate. Map load 00044a48, input ffff106f, wrapper \
+00026370, and store 00044a5a bind 0001295c to ffff172e. Unsigned reads at \
+000453b2/000455c6 and shifts at 000453b8/000455cc establish two local upper \
+clamps. Normal completion adds 2*u8(ffff15b4) and caps at 0x7fff before \
+store 0004561e; alternate completion calls 0002c626. The regression gate \
+covers the lookup, local clamps, and normal completion, and stops at the \
+alternate call; surrounding mode reachability and adaptive purpose are \
+unresolved. Scale confidence: candidate. The separate named scale gate \
+independently SHA-locks and executes JK00A/JK03A/JK03B/JK08A against fixed \
+spans. raw*2 describes a branch-local count bound in 0..510, not established \
+physical units or a universal final-output clamp. With raw=128, incoming \
+value=300, and ffff15b4=255, the local value is 256 and the normal final \
+value is 766. Saturation tests supply independent incoming completion \
+operands, not lookup-reachable values. Sample domains, retained even-grid \
+inverse x/2, and separate byte-binding and execution mutants are specified \
+in defs/JK08A.local-count-scales.md. No hardware validation is asserted.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x*2"
+to_raw = "x/2"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 179
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "0001295c"
+name = "sparkling-grebe"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+key = "test_1295c_branch_local_upper_clamp"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_local_count_scales.py"
+key = "test_1295c_local_bound_scale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a48"
+value = {named = ["0001295c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a4c"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a50"
+value = {named = ["0001295c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a5a"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000453b2"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000453b8"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000453ba"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000453c2"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045444"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000455c6"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000455cc"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000455ce"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000455dc"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045606"
+value = {named = ["0001295c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004561e"
+value = {named = ["0001295c"], span = 1}
+key = "linked"

@@ -1,0 +1,170 @@
+title = "Scale the transient calibration lookup into the runtime threshold byte"
+summary = """
+Transient threshold builder. It uses x=clamp_u8(16*u8(ffff1a58)-2704) to \
+look up 0x11f6a into ffff1394. With c=clamp(u8(ffff479e),55,85)-50 it writes \
+ffff1393=min(255,floor(2*(ffff1394*c+25)/25)), then updates a separate mode \
+bit."""
+note = [
+    """
+Code establishes a scaled state threshold. Catalog matches place 0x11f6a in \
+the Initial Retard Quantity family but do not identify which transient mode \
+or prove that ffff1393 is an applied retard amount.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 116
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 515
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_hysteresis_state_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "myrtle-cougar/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-groundhog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "awesome-coua/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-dodo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "green-pheasant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007b650"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b664"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b686"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b68a"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b694"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b69c"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6c2"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6cc"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6da"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6ee"
+value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"

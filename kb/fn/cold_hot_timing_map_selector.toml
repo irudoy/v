@@ -1,0 +1,195 @@
+title = "Select and blend cold and hot timing maps into two runtime samples"
+summary = """
+Cold/hot timing-map selector. It writes active sample ffff160f and \
+cold/high-octane reference sample ffff1610. Through coolant raw 106 both use \
+0x991A; from 107 through 131 the active sample blends 0x991A with the hot \
+surface selected by ffff2466.bit6 while the reference blends 0x991A with \
+0x9A1A; above 131 the active sample uses selected 0x9A1A or 0x9B1A and the \
+reference uses 0x9A1A. Wrapper 00026230 interpolates bits 0..6 and preserves \
+bit 7 independently. A ffff2468.bit3 and ROM8[0x8b3d].bit1 gate substitutes \
+column key 0xff for the relevant normalized-BFS lookup."""
+note = [
+    """
+The outputs feed timing state, limits, and knock control before the \
+engine-event command. Code does not establish any of the three tables as a \
+direct final angle relative to TDC. The map coordinate is exact at \
+raw*100/128 percent of the fixed BFS reference.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 114
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 145
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_detonation_timing_state/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_octane_timing_state/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ignition_gated_surface_1/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maroon-unicorn/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "esoteric-rat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rare-weasel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e1c0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b3d=0x82"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d2d"
+value = "0x83"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d2e"
+value = "0x6a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e1de"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e1e0"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e23e"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e294"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e2ac"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e3ca"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e514"
+value = {named = ["00008b3d", "00008d2d", "00008d2e", "00009534", "0000991a", "00009a1a", "00009b1a", "00026230", "0004e1c0", "ffff102c", "ffff1071", "ffff160f", "ffff1610", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

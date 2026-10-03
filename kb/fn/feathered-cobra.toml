@@ -1,0 +1,112 @@
+summary = """
+Saturating Q0.16 blend-weight updater for ffff2420. It subtracts \
+ROM16[000090a0]=300 toward zero when ffff245c.bit2 is clear and adds 300 \
+toward 65535 when the bit is set."""
+note = [
+    """
+The update direction and saturation are exact. The condition that controls \
+ffff245c.bit2 is unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 463
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "slick-chowchow/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "topaz-eagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wonderful-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "topaz-eagle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000760d2"
+name = "feathered-cobra"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000090a0=0x012c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760d8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760e0"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760e8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760f8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076102"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "slick-chowchow/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "wonderful-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

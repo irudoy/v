@@ -1,0 +1,131 @@
+summary = """
+Second-channel scaled publication from FUN 0007a804. The function calculates \
+floor(ffff35cc*727/800) with unsigned division and writes the uint16 result \
+here."""
+note = [
+    """
+FUN 000720c4 reads this word as the parallel counterpart of ffff1210. The \
+physical interpretation is unresolved.""",
+]
+level = "code"
+unit = "scaled raw"
+
+[[ledger]]
+registry = "vars"
+order = 30
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "grumpy-squirrel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crazy-toucan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1248"
+name = "snobbish-bird"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0007a9a0"
+value = "0x02d7"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "800"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a968"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a96c"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a970"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a972"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a976"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a980"
+value = {named = ["00021ce0", "0007a804", "0007a9a0", "ffff1248", "ffff35cc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "grumpy-squirrel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff18e8"
+name = "saffron-honeybee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074b5a"
+
+[[link]]
+type = "reader"
+to = "brass-barnacle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

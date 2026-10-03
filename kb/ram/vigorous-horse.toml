@@ -1,0 +1,117 @@
+summary = """
+Current high-resolution engine-speed count written by FUN 000384fe as \
+ffff1196>>3. Runtime Base Fuel Schedule producer 0003b75c selects this word \
+or ffff11dc in its normal mode, clamps the selected value to at least 64, \
+and uses it as denominator N in the primary MAF calculation."""
+note = [
+    """
+The scale follows exactly from companion word ffff11f4=ffff1196>>6 at \
+RPM/12.5: ffff11e8 has eight times as many counts, so one count is 1.5625 \
+RPM. The stock normal-path minimum of 64 counts is 100 RPM.""",
+]
+level = "code"
+unit = "rpm/1.5625"
+
+[[ledger]]
+registry = "vars"
+order = 79
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hypersonic-seagull/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perfect-agouti/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-waxbill/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11e8"
+name = "vigorous-horse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003850c"
+value = {named = ["0003846e", "000384cc", "000384fe", "0003b75c", "ffff11e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b7e2"
+value = {named = ["0003846e", "000384cc", "000384fe", "0003b75c", "ffff11e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b7e4"
+value = {named = ["0003846e", "000384cc", "000384fe", "0003b75c", "ffff11e8"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "hypersonic-seagull/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "perfect-agouti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pearl-waxbill/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

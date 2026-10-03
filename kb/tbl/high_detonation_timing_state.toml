@@ -1,4 +1,35 @@
+summary = """
+High-detonation hot timing-state surface. It supplies active sample ffff160f \
+only when ffff2466.bit6 is set; the reference remains high-octane surface \
+0x9A1A. Coordinator 000493e8 also looks it up independently for the \
+conditional signed Q8 difference from 0x9A1A."""
+note = [
+    """
+Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that \
+updates the selector for a later pass. The physical name matches homolog \
+EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the \
+computed base angle ffff23f1, not a direct absolute spark angle. The unit \
+closure is the arithmetic chain to the J1979 PID 0x0E coordinate: \
+ffff23bd=max(low7-ffff11af,0) at 0004af84; \
+ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) \
+at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as \
+low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler \
+00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; \
+ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; \
+ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited \
+and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as \
+A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree \
+while the field stays above threshold ffff11af, and raw 64 is the zero \
+adjustment. The physical spark angle remains a hardware item.""",
+]
+level = "code"
+role = "table"
 former = ["ignition_gated_surface_3"]
+access = "explicit"
+unit = "deg"
+scale = "x-64"
+to_raw = "x+64"
+scale_level = "code"
 
 [editor]
 name = "Ignition Timing Surface - High-Detonation State"
@@ -21,6 +52,110 @@ format = "0"
 fine = 1
 coarse = 1
 
+[[ledger]]
+registry = "findings"
+order = 41
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+scale = [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "able-butterfly/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-bloodhound/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rare-weasel/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "steady-lionfish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1nd"
 address = "00009a80"
@@ -41,6 +176,292 @@ tables"""
 layout = "7mfk"
 address = "00009b1a"
 former = ["bizarre-harrier/tbl/7mfk-00009b1a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000495e2"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000495f2"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00049656"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000496d8"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e1de"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e1e6"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e230"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Degrees Adjustment (x-64)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "High Detonation Ignition Timing Map (16x16)"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "-128"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "0000821e=0x32"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00008221"
+value = "0xf9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "000083d5=110"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00008b3f"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "64"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00021314"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00021316"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00021318"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035d6c"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004af84"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bddc"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bde8"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bdfe"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bee2"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004c17a"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004da4a"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004db56"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004db8c"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcc8"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcca"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcd0"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcd4"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004dcf6"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004df64"
+value = {named = ["0000821e", "00008221", "000083d5", "00008b3f", "00009b1a", "00011ebe", "00011ece", "00020dfe", "00026230", "00035856", "0004af38", "0004bdc2", "0004c136", "0004d99c", "0004dbe8", "ffff160f", "ffff22fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0+64=64"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "20+64=84"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "64-64=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "84-64=20"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "selected_timing_state_terms/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "timing_state_compositor/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "timing_state_latch/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "event_timing_correction_builder/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "final_timing_coordinate_builder/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -100,3 +521,47 @@ target image"""
 kind = "l0"
 supports = "identity"
 at = "1me3b:000797cc"
+
+[[link]]
+type = "depends"
+to = "able-butterfly/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "cryptic-bloodhound/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff339e"
+name = "aromatic-nautilus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007aad2"
+
+[[link]]
+type = "writer"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

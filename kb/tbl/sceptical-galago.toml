@@ -1,0 +1,88 @@
+summary = """
+The interpolated output is an enabling sentinel threshold: code 0x80 blocks \
+the corresponding conjunct of a conditional branch, while any other byte \
+value does not block that conjunct. Activation of the entire branch \
+additionally depends on adjacent ffff314a and the remaining conditions."""
+note = [
+    """
+The interpolated output is an enabling sentinel threshold: code 0x80 blocks \
+the corresponding conjunct of a conditional branch, while any other byte \
+value does not block that conjunct. Activation of the entire branch \
+additionally depends on adjacent ffff314a and the remaining conditions. \
+Result disposition: inline_comparison. Result target: 00085a70: \
+(int8_t)*(uint8_t *)0xffff314b != -128, one conjunct of a compound \
+condition. Machine trace: 0008329e-000832aa obtains the first raw input as \
+the high byte of word ffff1024; 000832ea/000832f4 obtains the second raw \
+input as uint8 from ffff11ae. 000832c4 tests bit 0 of ffff4217: when set, \
+control passes to 000832e2, where 000832e8 loads base 0000b71a specifically, \
+000832ec and 000832ee load axes 00011b6b and 00011b8b, and 000832f2 calls \
+00026320. Wrapper 00026320 calls 00026944 twice to locate intervals on \
+increasing 16-point uint8 axes and calculate Q0.16 fractions through \
+00026c78, then calls 000268a4 with the map base and size 16. 000268a4 \
+addresses adjacent 16x16 cells as uint8; value 0x80 from ROM 00026940 is a \
+sentinel. For valid neighbors below 0x80, finisher 00026740 performs \
+unsigned linear interpolation and keeps the result between the endpoints; \
+with an invalid configuration, 000268a4 returns 0x80. 000832f6 moves r0 to \
+r6, and 000832fa writes the low byte without further conversion to ffff314b. \
+The register's only reader, 00085a70, uses ffff314b solely as a signed byte \
+compared with -0x80 together with a check of adjacent ffff314a and other \
+conditions. Therefore 0x80 unambiguously fails this conjunct while any other \
+byte value passes it; consumption does not imply a physical scale.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 77
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b71a"
+name = "sceptical-galago"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00026940"
+value = "0x0080"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832c4"
+value = {named = ["0000b71a", "00026940", "00085a70"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832f2"
+value = {named = ["0000b71a", "00026940", "00085a70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832fa"
+value = {named = ["0000b71a", "00026940", "00085a70"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

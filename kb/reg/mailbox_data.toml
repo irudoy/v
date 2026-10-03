@@ -1,3 +1,20 @@
+summary = """
+HCAN1 physical mailbox 26 eight-byte message-data base at control base +8."""
+note = [
+    """
+The custom telemetry design assigns this otherwise stock-inactive payload \
+field only after changing mailbox record 25.""",
+]
+level = "code"
+unit = "CAN payload bytes"
+
+[[ledger]]
+registry = "vars"
+order = 666
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
 [[symbol]]
 layout = "1me3b"
 address = "ffffdc48"
@@ -44,6 +61,11 @@ layout."""
 layout = "7mfk"
 address = "ffffdc48"
 former = ["auburn-mussel/reg/7mfk-ffffdc48"]
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
 
 [[symbol]]
 layout = "jk00c"

@@ -1,9 +1,54 @@
-note = """
+summary = """
+Code-channel-1 uint16 throttle target written by 0006f48c after normal, \
+mode, lower, upper, and DTC caps. It is the second element of the array \
+based at ffff28bc."""
+note = [
+    """
 The percentage is the throttle opening above the learned closed position of \
-the throttle position sensor."""
+the throttle position sensor.""",
+    """
+The words carry the coordinate scale of axis 000155a0, 34285/1114112 percent \
+of throttle opening per count. Code channel-to-bank identity remains \
+unverified.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x*34285/1114112"
+
+[[ledger]]
+registry = "vars"
+order = 718
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "raw target coordinate"
+identity = [1, 2]
+
+[[ledger.dependency]]
+role = "base"
+to = "throttle_target_channel_0/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2"
+offset = 0x2
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "channel_throttle_target_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -41,6 +86,20 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0006fd5a"
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f668"
+value = {named = ["0006f48c", "000cb1ca", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb1d4"
+value = {named = ["0006f48c", "000cb1ca", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff422c"
@@ -74,3 +133,48 @@ at = "jk78c:ffff43da"
 to = "7mfk:ffff28be"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Homologous channel limiter writes channel one with a two-byte stride"
+
+[[link]]
+type = "base"
+to = "throttle_target_channel_0/ram"
+offset = 0x2
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_area_compositor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

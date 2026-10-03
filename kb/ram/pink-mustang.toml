@@ -1,0 +1,162 @@
+summary = """
+One-bit current-cylinder mask for the high byte of POPCR. On the enabled APC \
+path it selects the PULSxROE reset action associated with GR11B; engine \
+inhibit ffff4198 bit 1 clears it."""
+note = [
+    """
+The manual proves output-low action on compare. Bit c - 1 addresses cylinder \
+c, the cylinder that fires next, and builder 0004e080 places the reset edge \
+ffff237a crank degrees before its set edge, so the low state is the dwell. \
+The external driver stage and cylinder-to-pin continuity remain hardware \
+boundaries.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 332
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_compare_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-stoat/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "organic-coati/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-stoat/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13d1"
+name = "pink-mustang"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022687=[0,2,4,8,16,32,1]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029fc2"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029fc8"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aeea"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002af9e"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afc6"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aff0"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b34e"
+value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "organic-coati/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

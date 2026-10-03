@@ -1,0 +1,68 @@
+summary = """
+Previous stable ASCD steering-switch code. FUN 000cf020 copies ffff2a85 here \
+before accepting a new five-sample state."""
+note = [
+    """
+The current/previous pair exposes switch transitions without requiring \
+simultaneous decoded bits.""",
+]
+level = "code"
+unit = "one-hot switch code"
+
+[[ledger]]
+registry = "vars"
+order = 397
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flying-booby/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flying-booby/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a86"
+name = "ludicrous-buzzard"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf074"
+value = {named = ["000cf020", "ffff2a86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf078"
+value = {named = ["000cf020", "ffff2a86"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

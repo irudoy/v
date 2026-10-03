@@ -1,0 +1,88 @@
+summary = """
+P0011/P0021 fuel-inhibit qualification byte in FUN 00050b3c. Bit 5 is the \
+software operating-condition result; bit 6 sets after counter ffff1946 \
+reaches ten and either exact runtime record 208 or 209 has byte1.bit5 set."""
+note = ["Bit 6 gates the final 3000/2800 RPM state in ffff2497.bit0."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 621
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unselfish-tanuki/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2486"
+name = "efficient-toad"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050b8c"
+value = {named = ["00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050c10"
+value = {named = ["00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050c3a"
+value = {named = ["00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "unselfish-tanuki/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

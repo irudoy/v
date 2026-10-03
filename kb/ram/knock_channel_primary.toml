@@ -1,3 +1,78 @@
+summary = """
+Engine-event cylinder number 1..6 written by 00028ea2, 0002b768, and \
+00099a48. Tooth 7 of the crank signal plate copies identified cylinder \
+ffff13c8 into it; that tooth is 110 degrees before compression TDC of the \
+cylinder in the firmware coordinate of ignition command 110 - advance. IMI4D \
+handler 000c2d76 updates the bank-1 exhaust-cam edge phase ffff1200 only for \
+values 1, 3, and 5, and IMI4C handler 000c2c58 updates the bank-2 phase \
+ffff1201 only for values 2, 4, and 6."""
+note = [
+    """
+Misfire attribution fixes the identity: the interval tested by detection \
+core 00085a70 lies on the expansion stroke of index c - 3 and is charged to \
+cylinder number ROM8[0002265c + c] = c + 3 modulo six, which reports \
+P0301..P0306 by that number. The index advances 1-2-3-4-5-6, the firing \
+order, and odd values are bank 1. The mechanical offset between the sensor \
+and the plate remains a hardware boundary.""",
+]
+level = "code"
+unit = "cylinder number 1..6"
+
+[[ledger]]
+registry = "vars"
+order = 797
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clay-wasp/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perky-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-dugong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe81bc"
@@ -24,6 +99,45 @@ note = "Target evaluator reads this channel byte while selector bit 3 is clear"
 layout = "7mfk"
 address = "ffff11de"
 former = ["nifty-marmoset/ram/7mfk-ffff11de"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083d5"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002265c=[0,4,5,6,1,2,3]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297de"
+value = {named = ["000083d5", "0002265c", "00028ea2", "0002b768", "00099a48", "000c2c58", "000c2de0", "ffff11de", "ffff13c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029f94"
+value = {named = ["000083d5", "0002265c", "00028ea2", "0002b768", "00099a48", "000c2c58", "000c2de0", "ffff11de", "ffff13c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ccc"
+value = {named = ["000083d5", "0002265c", "00028ea2", "0002b768", "00099a48", "000c2c58", "000c2de0", "ffff11de", "ffff13c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e00"
+value = {named = ["000083d5", "0002265c", "00028ea2", "0002b768", "00099a48", "000c2c58", "000c2de0", "ffff11de", "ffff13c8"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -61,3 +175,69 @@ to = "7mfk:00049d88"
 count = 1
 value = "mnemonic"
 note = "Target evaluator reads this channel byte while selector bit 3 is clear"
+
+[[link]]
+type = "input"
+to = "silky-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fat-mongrel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,101 @@
+summary = """
+Accessor for 0x15276: interpolated uint16 M is converted as M-32768 and \
+written to ffff1792."""
+note = [
+    """
+The map has code-level x-32768 scaling. The physical quantity of ffff1792 is \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 236
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "apricot-angelfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "resilient-mongoose/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007654c"
+name = "spiritual-alligator"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765b8"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765c2"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765c6"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765ca"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765ce"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765d0"
+value = {named = ["00015276", "00015286", "000264cc", "00026740", "0007654c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "resilient-mongoose/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

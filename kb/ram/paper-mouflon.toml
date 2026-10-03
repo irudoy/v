@@ -1,0 +1,70 @@
+summary = """
+Unsigned input to the alternative piecewise common-MAF-correction mode in \
+FUN 0003b320. Values 5..122 produce floor(C*(U-123)/32), values 133..250 \
+produce floor(C*(U-133)/32), and other values produce zero, where \
+C=ROM8[0x8782]."""
+note = [
+    """
+A complete 2315-function p-code pass found this single resolved \
+application-code read and no direct or computed-address writer. The branch \
+is disabled by stock ROM flags before the read; the input's physical source \
+and lifecycle remain unresolved.""",
+]
+level = "code"
+unit = "raw correction input"
+
+[[ledger]]
+registry = "vars"
+order = 481
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "therapeutic-elk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e73"
+name = "paper-mouflon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008782=0x0a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b33c"
+value = {named = ["00008782", "0003b320", "ffff1e73"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b350"
+value = {named = ["00008782", "0003b320", "ffff1e73"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b36c"
+value = {named = ["00008782", "0003b320", "ffff1e73"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "therapeutic-elk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

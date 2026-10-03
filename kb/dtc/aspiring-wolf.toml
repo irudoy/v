@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control position sensor path A bank 2"
+level = "code"
+code = "P1084"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 19
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "0001999c"
+name = "aspiring-wolf"
+index = 133
+attribute = "000162c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162c8"
+value = "02a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001999c"
+value = "290600000000108400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a360"
+value = "000162c8"

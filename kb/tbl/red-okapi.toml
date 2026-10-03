@@ -1,7 +1,296 @@
+summary = """
+On branch ffff2466 & 0x40 != 0, the interpolated uint8 output is the upper \
+point and upper clamp H of a ramp: when L < C, clamp(H * (X-L) / (C-L), 0, \
+H) is calculated, where L=out(0001244a), X=uint8(ffff1048), and \
+C=uint8(00011ecd)."""
+note = [
+    """
+The physical quantity and purpose are unknown. Code confirms a 1D-16 uint8 \
+lookup by a raw byte input and result write at site 0004bcbc. Uniform value \
+0xff does not prove semantics; the catalog contains several incompatible \
+maps of the same shape, with no match to a documented default. A formal \
+output binding is absent, while the shown consumers belong to ffff15ea \
+collected across all accessor writes. Blocking condition: At 0004bcbc, the \
+map result is written through calculated operand @(r0,r9), but the artifact \
+does not associate this sink with an exact RAM claim. The trace therefore \
+cannot be proven to connect with consumers of ffff15ea or reach physical \
+semantics. Promotion rejected: Attribution to 00012472 specifically is \
+confirmed: on the set-bit branch, base 00012472 is loaded into r4 at \
+0004bcb0, the call executes at 0004bcb2, and result r0 moves to r5 at \
+0004bcb6 and then participates in arithmetic as H. Adjacent 0001244a is \
+similarly traced to L. The shown instructions confirm test L < C, \
+calculation of C-L and X-L, multiplication by H, and a call to signed \
+divider 00021bbc with a known contract. However, \
+/private/tmp/claude-501/-Users-isrudoy-src-docs-vq/d31db600-b7d4-488a-b83b-86388fed907c/scratchpad/sweep-p230-259/map-00012472.md \
+lacks a complete machine trace: unannotated kernel 00026a84 at 00026ab6 \
+transfers control to finisher 00026740, absent from the artifact, and the \
+consumer listing ends at 0004bcf0 before the machine instructions for the \
+upper and lower clamps. C pseudocode states the clamp but does not close \
+these gaps under the complete-machine-trace requirement. Code-level \
+semantics, role=threshold, and sufficiency of primary evidence are therefore \
+refuted. disposition=consumer is confirmed by local use of H, including \
+multiplication at 0004bcea. No separate scale or scale evidence is claimed. \
+Result disposition: consumer.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 144
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012472"
 name = "red-okapi"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc02"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc04"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc06"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc98"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca0"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca4"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcaa"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcb0"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcb2"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcb6"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcbc"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcce"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcd0"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcd6"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcd8"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcda"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcdc"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcde"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce0"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce6"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce8"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcea"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcec"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcee"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcf0"
+value = {named = ["00012472", "00021bbc", "00026388", "0004bbee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +323,12 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

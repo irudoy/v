@@ -1,0 +1,33 @@
+summary = "Bit 7 gates bypassing interpolation in 0004b790."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 174
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crimson-toad/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2464"
+name = "whimsical-skylark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000559d0"
+
+[[link]]
+type = "reader"
+to = "crimson-toad/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

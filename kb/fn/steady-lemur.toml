@@ -1,0 +1,42 @@
+role = "service"
+contract = """
+Not a standalone function: internal point in the unrolled copy ladder, at \
+the 16-longword step. Public entries are 000220f8 and 00022104; this address \
+is statically unreachable because its only reference is the 0x40 entry in \
+table 0x22158. Invalid length fails in hardware rather than silently: r0 not \
+divisible by 4 or r0 > 0x40 sends the dispatcher beyond the table and causes \
+an address error. At r0 = 0 no copy occurs, but a stray read from [r2-4] \
+still happens."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 39
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022116"
+name = "steady-lemur"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00022158"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "acoustic-waxbill/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022116"

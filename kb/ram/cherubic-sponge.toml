@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff14e4"
+name = "cherubic-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000658c2"
+
+[[link]]
+type = "writer"
+to = "augmented-limpet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

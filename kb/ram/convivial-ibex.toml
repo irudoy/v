@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff16b1"
+name = "convivial-ibex"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000426ee"
+
+[[link]]
+type = "lookup"
+to = "victorious-capybara/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

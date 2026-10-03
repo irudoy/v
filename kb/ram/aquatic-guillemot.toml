@@ -1,0 +1,131 @@
+summary = """
+Bank-1 exhaust-VTC error word at window offset 0x88c of base ffff128c. FUN \
+000c1152 writes it at 000c1dac as the 0..65535 clamp of saturating sum \
+000265c4, only while bit 0 of ffff1246 is set. FUN 000c1dec multiplies it by \
+ROM16[00009212] on the stock ROM8[00008615] bit-3 branch."""
+note = [
+    """
+The bank-2 word ffff1b1a shares the writer and the reader with coefficient \
+ROM16[00009214].""",
+]
+level = "code"
+unit = "unsigned raw"
+
+[[ledger]]
+registry = "vars"
+order = 767
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2188"
+offset = 0x88c
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rough-porpoise/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-condor/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nice-chihuahua/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1b18"
+name = "aquatic-guillemot"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008615"
+value = "0xab"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009212"
+value = "0x22a2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1dac"
+value = {named = ["00008615", "00009212", "000265c4", "000c1152", "000c1dec", "ffff1246", "ffff128c", "ffff1b18"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f0c"
+value = {named = ["00008615", "00009212", "000265c4", "000c1152", "000c1dec", "ffff1246", "ffff128c", "ffff1b18"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x88c
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ambitious-condor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rough-porpoise/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

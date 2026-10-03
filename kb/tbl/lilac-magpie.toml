@@ -1,0 +1,183 @@
+summary = """
+Interpolated Base Fuel Schedule upper-limit curve. FUN 0003b75c indexes it \
+by RPM/25 byte ffff11eb, shifts the returned byte left by eight, and caps \
+the corrected schedule candidate before writing ffff1026."""
+note = [
+    """
+Code proves the RPM lookup, upper-bound operation, high-byte representation, \
+and path to the exact DID 0x1208 source word. The x/8 ms cell conversion \
+follows from the homologous diagnostic profile's full-word raw/2048 ms \
+formula and requires hardware validation. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 209
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "liberal-falcon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bfs/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c9e"
+name = "lilac-magpie"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bbf8"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bbfa"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bbfe"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc02"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc06"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc08"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc0a"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc0e"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc7e"
+value = {named = ["00012c9e", "0003b75c", "ffff1026", "ffff11eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "101/8=12.625"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "12.625*8=101"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "255/8=31.875"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "31.875*8=255"
+
+[[link]]
+type = "index"
+to = "liberal-falcon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

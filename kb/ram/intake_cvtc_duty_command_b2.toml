@@ -1,6 +1,51 @@
+summary = """
+Second cell of the two-cell intake-VTC solenoid duty command and scheduler \
+latch of live duty cell ffff2441. FUN 000beace reads it at offset 0x85 of \
+base ffff2330 and programs ATU-II channel-7 buffer register fffff590 with \
+the same conversion."""
+note = [
+    """
+Bank order follows the adjacent-pair convention of ffff2442/ffff2443; it is \
+not established by a diagnostic identity.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*39/100"
+
+[[ledger]]
+registry = "vars"
+order = 735
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*100/39"
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "intake_cvtc_duty_command_b1/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1"
+offset = 0x1
+
+[[ledger.dependency]]
+role = "consumer"
+to = "smart-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -83,6 +128,32 @@ layout = "7mfk"
 address = "ffff23b5"
 former = ["magic-gerbil/ram/7mfk-ffff23b5"]
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfc=33"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff23b4", "ffff23b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb4e"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff23b4", "ffff23b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb6a"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff23b4", "ffff23b5"], span = 1}
+key = "body"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff2431"
@@ -141,3 +212,25 @@ note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
 programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
 the output stage of every VQ37 image"""
+
+[[link]]
+type = "base"
+to = "intake_cvtc_duty_command_b1/ram"
+offset = 0x1
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "smart-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

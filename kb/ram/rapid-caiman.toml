@@ -1,0 +1,152 @@
+summary = """
+Two-channel offset-binary additive-term array ffff1a98/ffff1a9a. FUN \
+000c0d90 writes a selected interpolation result from 00015ad0 or 00015b10; \
+FUN 000c1dec combines each word with ffff1a86/ffff1a88 as \
+u16(A)+u16(B)-65536."""
+note = [
+    """
+Initializer FUN 000bced0 writes neutral 0x8000 to both elements. The \
+physical quantity and engineering unit are unresolved.""",
+]
+level = "code"
+unit = "signed raw addition"
+
+[[ledger]]
+registry = "vars"
+order = 504
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "refreshing-ibex/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangerine-beetle/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "auspicious-mussel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sexy-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a98"
+name = "rapid-caiman"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcf8c"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd028"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1056"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f7e"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f88"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f8c"
+value = {named = ["00015ad0", "00015b10", "000bced0", "000c0d90", "000c1dec", "ffff1a98"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "refreshing-ibex/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "tangerine-beetle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "auspicious-mussel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

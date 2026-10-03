@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000aee06"
+name = "fierce-sidewinder"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000aee06"

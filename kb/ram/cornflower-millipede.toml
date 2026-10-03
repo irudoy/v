@@ -1,0 +1,129 @@
+summary = """
+Cold/fallback exhaust-CVTC target byte written from 8x8 surface 0000b2fa. \
+FUN 000bfe88 selects it below the cold coolant threshold and blends it with \
+warm/main target ffff1c5d through the transition band before downstream \
+conditioning into ffff2327."""
+note = [
+    """
+The centered representation and exhaust-target path are exact. Stock \
+0000b2fa is neutral 128 throughout. The candidate engineering conversion is \
+raw*0.5-64 degCA.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 126
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meaty-guillemot/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "divergent-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "exhaust_cvtc_target/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c5f"
+name = "cornflower-millipede"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe00"
+value = {named = ["0000b2fa", "000bfdc0", "000bfe88", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe0e"
+value = {named = ["0000b2fa", "000bfdc0", "000bfe88", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00ca"
+value = {named = ["0000b2fa", "000bfdc0", "000bfe88", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00e0"
+value = {named = ["0000b2fa", "000bfdc0", "000bfe88", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c013e"
+value = {named = ["0000b2fa", "000bfdc0", "000bfe88", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "lookup"
+to = "meaty-guillemot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

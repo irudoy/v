@@ -1,0 +1,74 @@
+summary = """
+Bank-1 A/F sensor working word written by FUN 00059d9a. FUN 00035856 divides \
+it by 5 for J1979 Mode 01 PID 0x14 at 00035e08 and sends the quotient with \
+the bank-1 trim byte through helper 000357dc."""
+note = [
+    """
+J1979 defines PID 0x14 as A*0.005 V, which would make one count one \
+millivolt; helper 000357dc refuses every oxygen PID while sensor-present \
+byte ROM8[0x8936] is zero, as in stock JK08A, so the path is inactive.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 437
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wonderful-mamba/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d44"
+name = "fanatic-eagle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035e02"
+value = {named = ["000357dc", "00035856", "00059d9a", "ffff1d44"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035e08"
+value = {named = ["000357dc", "00035856", "00059d9a", "ffff1d44"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "marigold-mink/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wonderful-mamba/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,171 @@
+summary = """
+Table of a saturating decrement step: max(uint8[ffff1510] - \
+interp_u8(0001200e), 0) is calculated."""
+note = [
+    """
+All eight cells equal 1, so the current calibration provides a unit step for \
+any index. A copy of the result is written to ffff13fe, while the same live \
+value is subtracted from ffff1510 and participates in a sign check. The \
+physical quantity of state ffff1510 is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 109
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "base"
+to = "married-octopus/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "careful-mastodon/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brilliant-scorpion/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001200e"
+name = "precious-weasel"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "1"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000421fc"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042200"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042204"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042208"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004220c"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042212"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042216"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004221a"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004221e"
+value = {named = ["0001200e", "00012186", "00026474", "00026740", "00026944", "000420b8", "ffff13fe", "ffff1510"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "careful-mastodon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "married-octopus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

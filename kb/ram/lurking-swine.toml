@@ -1,0 +1,99 @@
+summary = """
+Last injection slot accepted by sequencer 00054a44. With an unchanged lead \
+the target slot is accepted only as its modulo-6 successor; with a smaller \
+lead the sequencer advances it through the skipped slots and fires their \
+masks at once."""
+level = "code"
+unit = "slot index 0..5"
+
+[[ledger]]
+registry = "vars"
+order = 891
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-dormouse/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff221e"
+name = "lurking-swine"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029760"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054afe"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054be6"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c04"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c84"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c90"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d02"
+value = {named = ["00028ea2", "00054a44", "ffff221e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

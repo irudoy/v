@@ -1,0 +1,96 @@
+title = "Update the 4500 and 5000 RPM hysteresis gate for vehicle-speed fuel cut"
+summary = """
+Vehicle-speed fuel-cut RPM gate updater. It sets ffff24a7.bit5 below 4500 \
+RPM and clears it at or above 5000 RPM after the state has set."""
+note = [
+    "The gate is evaluated before the 93/91 speed hysteresis in 0004f19c.",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 20
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 524
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "u8_hysteresis_below/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flat-doberman/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f050"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fd"
+value = "0xb4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fe"
+value = "0x14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f050"
+value = {named = ["000088fd", "000088fe", "000259aa", "0004f19c", "ffff11b3", "ffff24a7"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "u8_hysteresis_below/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

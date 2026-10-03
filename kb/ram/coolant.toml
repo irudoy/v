@@ -1,6 +1,60 @@
+summary = """
+Exact one-byte response source for UDS DID 0x1101. FUN 0002c4f8 writes the \
+converted sensor byte and then calls FUN 00039634 to form the normalized \
+coolant lookup index. J1979 Mode 01 PID 0x05 in FUN 00035856 returns \
+snapshot ffff3fa4, the same 00012dea lookup minus 10."""
+note = [
+    """
+Homologous diagnostic definitions identify DID 0x1101 as engine coolant \
+temperature and define deg C = raw-50; J1979 defines PID 0x05 as A-40 deg C \
+and the PID byte is this lookup result minus 10, so raw-50 is the conversion \
+the ECU declares. The exact JK08A response pointer is ROM32[0x226b0] = \
+ffff1079. The ECM terminal and sensor hardware remain hardware items.""",
+]
+level = "code"
 width = 8
 unit = "degC"
 scale = "x-50"
+
+[[ledger]]
+registry = "vars"
+order = 55
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "degC+50"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versatile-lobster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-jaguar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +86,47 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1079"
 former = ["pompous-prawn/ram/7mfk-ffff1079"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226b0"
+value = {named = ["0002c4f8", "0003235c", "00035856", "00039634", "0008092e", "ffff1079"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c532"
+value = {named = ["0002c4f8", "0003235c", "00035856", "00039634", "0008092e", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035bf8"
+value = {named = ["0002c4f8", "0003235c", "00035856", "00039634", "0008092e", "ffff1079"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003963c"
+value = {named = ["0002c4f8", "0003235c", "00035856", "00039634", "0008092e", "ffff1079"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080952"
+value = {named = ["0002c4f8", "0003235c", "00035856", "00039634", "0008092e", "ffff1079"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fanatic-hare/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +164,66 @@ to = "7mfk:0003d664"
 count = 1
 value = "mnemonic"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "lookup"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versatile-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

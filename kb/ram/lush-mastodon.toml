@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff22f1"
+name = "lush-mastodon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00088cbc"

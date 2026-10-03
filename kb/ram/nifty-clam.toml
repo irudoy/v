@@ -1,0 +1,92 @@
+summary = """
+Raw uint16 interpolation result of map 0x147da, written by FUN 0004d99c \
+before coefficient multiplication and division by 100."""
+note = [
+    """
+This transient value is an intermediate in the conditional correction that \
+ends at ffff12d6; it is not the diagnostic response.""",
+]
+level = "code"
+unit = "raw map output"
+
+[[ledger]]
+registry = "vars"
+order = 134
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sincere-dragonfly/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "event_timing_correction_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2000"
+name = "nifty-clam"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da80"
+value = {named = ["000147da", "0004d99c", "ffff2000"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da88"
+value = {named = ["000147da", "0004d99c", "ffff2000"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da90"
+value = {named = ["000147da", "0004d99c", "ffff2000"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "sincere-dragonfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

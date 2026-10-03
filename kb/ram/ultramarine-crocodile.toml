@@ -1,0 +1,33 @@
+summary = "Init-once flag for transient-correction filter 000befb0."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 302
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dangerous-goat/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41bc"
+name = "ultramarine-crocodile"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00068196"
+
+[[link]]
+type = "reader"
+to = "dangerous-goat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

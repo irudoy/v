@@ -1,0 +1,116 @@
+summary = """
+Unsigned bounded ramp written by 0004bbee from ffff1048 and ffff22e8 with \
+ROM8[0x87ca..0x87d2] steps, using intermediates ffff15eb..ffff15ee. The \
+normal compositor branch of 0004bdc2 subtracts it."""
+note = [
+    """
+Zero is neutral; one count is one crank degree of retard in the final \
+coordinate.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 834
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "af_state_factor/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-cassowary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "competent-rottweiler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15ea"
+name = "unique-loon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bda2"
+value = {named = ["0004bbee", "0004bdc2", "ffff1048", "ffff15ea", "ffff22e8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bdf4"
+value = {named = ["0004bbee", "0004bdc2", "ffff1048", "ffff15ea", "ffff22e8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "af_state_factor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "benign-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vigorous-saluki/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

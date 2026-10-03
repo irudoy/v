@@ -1,0 +1,71 @@
+summary = """
+Base of the two-word plausibility-selected throttle-feedback array written \
+by 000cafbc. Elements are ffff3884 and ffff3886."""
+note = [
+    """
+DTC record 0x57 governs code channel 0 and record 0x120 governs code channel \
+1.""",
+]
+level = "code"
+unit = "centered feedback array"
+
+[[ledger]]
+registry = "vars"
+order = 697
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_fault_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_plausibility_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3884"
+name = "garrulous-chicken"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb068"
+value = {named = ["000cafbc", "000cb078", "ffff3884"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb09a"
+value = {named = ["000cafbc", "000cb078", "ffff3884"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_fault_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_plausibility_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,36 @@
+title = "Intake valve timing control solenoid valve circuit bank 1"
+level = "code"
+code = "P0075"
+group = "intake_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 14
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000195b8"
+name = "dexterous-hornet"
+index = 50
+attribute = "000162b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162b6"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000195b8"
+value = "130400000000007500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a214"
+value = "000162b6"

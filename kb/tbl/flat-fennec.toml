@@ -1,0 +1,315 @@
+summary = """
+Conditional source of an internal upper value: interpolated uint8 x is \
+converted to clamp(x*13, 908, 2908) and written to ffff3508 when ffff417e \
+bit 0x20 is clear; the physical quantity is unknown."""
+note = [
+    """
+Result disposition: consumer. No physical quantity is asserted beyond narrow \
+operational semantics. The candidate matches two indistinguishable catalog \
+variants of TVO Upper Limit Table. When register ffff417e bit 0x20 is clear, \
+branch 0006f596 interpolates the map; 0006f5ba multiplies the raw result by \
+13, 0006f5c6 and 0006f5d8 implement clamp(raw*13, 908, 2908), and 0006f5e6 \
+writes uint16 to ffff3508. When the bit is set, the map branch is bypassed. \
+The noninvertible clamp is described only here and is excluded from the \
+scale pair.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Degrees"
+scale = "x*0.3575"
+to_raw = "x/0.3575"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 220
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+scale = [24, 25]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "channel_throttle_target_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elated-frog/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fantastic-armadillo/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012daa"
+name = "flat-fennec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009576"
+value = "0x00e3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009578"
+value = "0x02d7"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f4bc"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f590"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f592"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f594"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f596"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5a8"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5ac"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5b0"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5b4"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5b6"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5b8"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5ba"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5c6"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5c8"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5ce"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5d8"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5da"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5e2"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5e6"
+value = {named = ["00009576", "00009578", "00012d9a", "00012daa", "00026474", "00026740", "00026944", "0006f48c", "ffff28f8", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "TVO Upper Limit Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "TVO Upper Limit Table 2"
+
+[[link]]
+type = "depends"
+to = "bipedal-tortoise/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "elated-frog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "flat-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

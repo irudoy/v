@@ -1,0 +1,87 @@
+summary = """
+Interpolated unsigned 8-bit threshold compared with independently calculated \
+iVar9 after representing the map output as `output << 8`."""
+note = [
+    """
+Interpolated unsigned 8-bit threshold compared with independently calculated \
+iVar9 after representing the map output as `output << 8`. Result \
+disposition: inline_comparison. Result target: FUN_000bb844@000bb844 \
+condition `iVar9 <= (int)((uint)bVar8 << 8)`. Machine trace: In \
+FUN_000bb844, the map input is calculated from RAM byte ffff11b2 as `2*x - \
+0x50` and then limited to 0..255. At 000bba58, target-map base 00011f4a is \
+loaded into r4, and wrapper 00026370 is called at site 000bba5c. For the \
+table portion, kernel 00026a80 reads adjacent elements with mov.b and \
+zero-extends them with extu.b; finisher 00026740 performs unsigned linear \
+interpolation whose result remains between elements 30..138. In the boundary \
+branch, the wrapper reads the last element at offset 7; the subsequent \
+extu.b at 000bba66 preserves it as uint8. At 000bba68, the same r2 is \
+written as a byte to RAM ffff2b47, and its unsigned copy r11 is shifted left \
+by 8 at 000bba6a. Independently calculated iVar9 is then compared with this \
+value in FUN_000bb844 condition `iVar9 <= (int)((uint)bVar8 << 8)`; the \
+condition selects between writing a value to ffff42a3 and calling a \
+function. The target-map output is not mixed with bytes 00008329 and \
+00008327, which are used only in the separate calculation of iVar9.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 104
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "elite-markhor/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011f4a"
+name = "elite-markhor"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bb844"
+value = {named = ["00011f4a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bba5c"
+value = {named = ["00011f4a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bba6a"
+value = {named = ["00011f4a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "elite-markhor/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "daft-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

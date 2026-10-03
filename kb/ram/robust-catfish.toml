@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff992d"
+name = "robust-catfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000397a0"
+
+[[link]]
+type = "reader"
+to = "venomous-sturgeon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

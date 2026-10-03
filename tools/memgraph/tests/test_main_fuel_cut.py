@@ -38,7 +38,7 @@ class MainFuelCutVehicleSessionTest(unittest.TestCase):
         self.assertEqual(self.row["scale_conf"], "silicon")
         self.assertIn(
             "spec:hardware-results:main_fuel_cut.vehicle_2026_09_21",
-            self.row["scale_evidence"].split(";"),
+            [token.strip() for token in self.row["scale_evidence"].split(";")],
         )
         self.assertEqual(self.result["hardware_status"], "pass")
         self.assertEqual(self.result["scale_expr"], self.row["scale_expr"])

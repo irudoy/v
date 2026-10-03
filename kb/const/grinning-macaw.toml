@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000237d4"
+name = "grinning-macaw"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006964a"

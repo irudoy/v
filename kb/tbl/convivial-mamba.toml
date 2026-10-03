@@ -1,3 +1,35 @@
+summary = """
+Dimensionless 1D table of a Q0.6 coefficient. Lookup by RAM byte ffff106f \
+returns M; the same r6 scales signed difference \
+4*u16[ffff1046]-u16[ffff1024], forming \
+trunc0((4*u16[ffff1046]-u16[ffff1024])*M/64), whose sign selects the \
+downstream processing branch."""
+note = [
+    """
+There is no separate axis array. The lookup result is mirrored to RAM \
+ffff1ca6 through site 00052328, but this RAM sink has no external readers; \
+the actual code consumer of the same r6 is at site 00052338. For a negative \
+product, site 00052342 adds 63 before the arithmetic shift, so the integer \
+result is rounded toward zero. Downstream limiting and combination are \
+visible in pseudocode but are not part of the invertible cell scale. Numeric \
+round trip: 6 -> 0.09375 -> 6; 32 -> 0.5 -> 32. The artifact does not \
+identify the physical subsystem. Index: implicit 1D-8 by u=uint8[ffff106f]: \
+for u<224, i=floor(u/32), fraction=(u%32)/32, and map[i]..map[i+1] are \
+linearly interpolated; for u>=224, map[7] is selected. Output trace: map \
+0001300e -> site 0005231a -> site 0005231e -> function 00026370 -> (site \
+00026a80 -> function 00026740 | saturation return in function 00026370) -> \
+site 00052322 (r0->r6) -> [site 00052328 -> RAM ffff1ca6; site 00052338 -> \
+site 00052346 -> function 000224fa -> site 0005234a -> site 0005234c]. \
+Result disposition: consumer; Result target: site 00052338 (FUN_000522c4).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/64"
+to_raw = "x*64"
+scale_level = "code"
+
 [editor]
 name = "Signed Difference Multiplier Q0.6 (0x1300E)"
 category = "Internal Calculations"
@@ -7,7 +39,201 @@ format = "0.0000"
 fine = 0.015625
 coarse = 0.125
 
+[[ledger]]
+registry = "findings"
+order = 420
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+scale = [16, 17, 18, 19, 20, 21, 22, 23, 24]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "illustrious-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001300e"
 name = "convivial-mamba"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052318"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005231a"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005231e"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052322"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052328"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005232c"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052330"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052332"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052336"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005233c"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005234a"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005234c"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "32"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052338"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052344"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052346"
+value = {named = ["0001300e", "000224fa", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.09375*64=6"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.5*64=32"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "32/64=0.5"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "6/64=0.09375"
+
+[[link]]
+type = "reader"
+to = "illustrious-vulture/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "tiny-hound/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

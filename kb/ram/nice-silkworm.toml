@@ -1,0 +1,88 @@
+summary = """
+Multipurpose state byte. Within the AN1-derived running-min component, bit 5 \
+inhibits FUN 0003d45c when set; a clear bit permits evaluation after the \
+remaining gates pass."""
+note = [
+    """
+The physical operating mode represented by bit 5 and its lifecycle remain \
+unresolved. No static writer changes bit 6: the writers change bit 2 \
+(00038618), bit 3 (0006efbc), bit 4 (00078a86), bit 5 (00027530), and bit 7 \
+(0002f66e, 00032dc8).""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 467
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff417f"
+name = "nice-silkworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d468"
+value = {named = ["0003d45c", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d46a"
+value = {named = ["0003d45c", "ffff417f"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "piquant-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tentacled-prawn/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "dfco_upstream_mode_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

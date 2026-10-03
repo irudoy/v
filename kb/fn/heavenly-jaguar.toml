@@ -1,0 +1,216 @@
+summary = """
+Analog acquisition and coolant conversion path. It stores the 16-bit result \
+of FUN 00028668(0) at ffff1d60, writes uint8(result >> 2) to ffff1186, \
+converts that byte through calibration 00012dea into ffff1079, and calls FUN \
+00039634 to form normalized coolant index ffff1077. It acquires the \
+fuel-temperature sample through FUN 00028668(0, 0xe000) into ffff100a at \
+0002c554, writes uint8(sample >> 2) to ffff1178, converts it through the \
+same table into transfer code ffff1f89 and DID 0x1104 byte ffff1074 at \
+0002c56e, and calls FUN 000398b0. The function also acquires additional \
+analog channels and applies flat correction map 00012d8a to peripheral word \
+ffff5620."""
+note = [
+    """
+Exact UDS DID 0x1101 returns ffff1079 and DID 0x1104 returns ffff1074. Both \
+bytes are deg C+50, the code that the ECU declares for table 00012dea \
+through J1979 Mode 01 PIDs 0x05 and 0x0F; the physical identity does not \
+rely on the shape of the calibration.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 119
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versatile-lobster/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "green-hog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adventurous-mushroom/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coolant/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fluffy-binturong/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_temperature_did_source/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultra-wrasse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002c4f8"
+name = "heavenly-jaguar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c510"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c518"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c51c"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c524"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c52a"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c532"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c542"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c544"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c54a"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c554"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c55a"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c55c"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c566"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c56e"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c578"
+value = {named = ["00012d8a", "00012dea", "0002c4f8", "00039634", "000398b0", "ffff100a", "ffff1074", "ffff1079", "ffff1186", "ffff1f89"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "impressive-wrasse/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "versatile-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

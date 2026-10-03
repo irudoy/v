@@ -1,0 +1,55 @@
+summary = """
+Third speed-irregularity metric byte group ffff381c..381f, offset-binary \
+with neutral 0x80; read in 00085a70."""
+note = [
+    """
+Initializer 00082bd8 establishes the '0x80 = neutral' encoding by writing \
+-128 to every metric byte.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 285
+fields = ["semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "copper-swan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff381c"
+name = "hysterical-bobcat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00085b34"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "copper-swan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

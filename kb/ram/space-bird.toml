@@ -1,0 +1,162 @@
+summary = """
+Signed timing-state byte written by 0004afdc as \
+clamp_s8(s8(ffff1514)+u8(ffff12db)+s8(ffff1511)+u8(ffff1512)+u8(ffff1349)-128). \
+The alternate branch of 0004bdc2 consumes it while forming ffff1830."""
+note = [
+    """
+The value reaches the actuator through ffff1830 -> ffff2404 -> ffff2378 -> \
+ffff12d6 -> ffff11da -> ffff11d4 with coefficient 1, so one count is one \
+crank degree of the J1979 PID 0x0E coordinate. Exact source-selection \
+predicates for ffff1511 are recorded in 0004afdc. A matched target-vehicle \
+A/B capture shows that default map 00012196 propagates one-for-one into the \
+final software timing coordinate during warm deceleration.""",
+]
+level = "code"
+unit = "deg"
+
+[[diagnostic]]
+id = "ignition-angle-sum"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:ign-timing"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0118:data_monitor:ign-timing-f47b3a37"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 85
+level = "candidate"
+note = """
+Code establishes a signed ignition-angle sum. The link to the final CONSULT \
+ignition-timing value and its physical unit remains a homologous candidate."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "signed_timing_state_accumulator/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "space-bird/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004b446"
+value = {named = ["0004afdc", "f47b3a37", "ffff23ee"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 27
+binding = "ignition-angle-sum"
+
+[[ledger]]
+registry = "vars"
+order = 162
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hypersonic-kudu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "truthful-agama/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ultra-tarantula/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_timing_state_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23ee"
+name = "space-bird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b546"
+
+[[link]]
+type = "input"
+to = "hypersonic-kudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "truthful-agama/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ultra-tarantula/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "idle_ignition_timing/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "pearl-caiman/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

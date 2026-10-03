@@ -1,3 +1,25 @@
+summary = """
+Transient state-threshold base. FUN 0007b650 looks it up by \
+x=clamp_u8(16*u8(ffff1a58)-2704), scales the raw result into ffff1393, and \
+FUN 0007b7c0 compares a runtime word against 32*ffff1393 with calibrated \
+hysteresis while maintaining ffff2478 bit 6."""
+note = [
+    """
+The exact scale is \
+ffff1393=min(255,floor(2*(raw*(clamp(u8(ffff479e),55,85)-50)+25)/25)). This \
+arithmetic and the downstream comparison prove a transient threshold role. \
+The five catalog matches do not distinguish Fuel Cut, Lock-Up, combined, or \
+Stepping on from Idle variants. No direct path from ffff2478.bit6 to \
+ffff11d4 or APC compares is established, so an applied retard quantity and \
+degree scale are not claimed. Result disposition: hysteresis threshold.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Transient State Threshold Base - catalog initial-retard family (0x11F6A)"
 category = "Internal Calculations"
@@ -7,7 +29,220 @@ format = "0"
 fine = 1
 coarse = 4
 
+[[ledger]]
+registry = "findings"
+order = 105
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_hysteresis_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-groundhog/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-dodo/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "green-pheasant/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "independent-chachalaca/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011f6a"
 name = "myrtle-cougar"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Initial Retard Quantity Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Initial Retard Quantity Table (Fuel Cut Lock-Up)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Initial Retard Quantity Table (Fuel Cut)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Initial Retard Quantity Table (Lock-Up)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Initial Retard Quantity Table (Stepping on from Idle)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008383"
+value = "0x08"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "21,39,56,73"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b686"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b68a"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b694"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6c2"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6cc"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6da"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6ee"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7e0"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b818"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b834"
+value = {named = ["00008383", "00011f6a", "00021ce0", "00026358", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "hypnotic-dugong/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "transient_threshold_builder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "artichoke-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_threshold_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

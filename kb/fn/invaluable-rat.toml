@@ -1,0 +1,41 @@
+summary = """
+Component where interpolation index = saturate(byte@ffff3510 << 1, 255): \
+shll at 000a6464 doubles it, and 000a6468-000a646c saturates it to 0xFF. \
+Prescale x*2 comes from an actual instruction rather than the catalog."""
+note = [
+    """
+The axis is implicit and the catalog X Axis is absent. The physical quantity \
+of input ffff3510 is not recovered, so scale_expr describes RAM-to-index \
+conversion rather than physics; there is no ROM axis object. Flags from the \
+same component failed refutation and remain candidate.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 277
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quizzical-agama/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a643c"
+name = "invaluable-rat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6464"
+value = {named = ["000a643c", "ffff3510"], span = 1}
+key = "body"

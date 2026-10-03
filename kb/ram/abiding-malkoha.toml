@@ -1,0 +1,102 @@
+summary = """
+Diagnostic transport state maintained by 0002ea0a. On the reviewed \
+continuous-response path, completion advances the state through 3 and 6; \
+state 6 sets state 4 and calls service dispatcher 0002f928 to rebuild the \
+response."""
+note = [
+    """
+Other numeric states serve receive, timeout, and session paths and are \
+outside this narrow claim.""",
+]
+level = "code"
+unit = "transport state"
+
+[[ledger]]
+registry = "vars"
+order = 652
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refreshing-dinosaur/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "refreshing-dinosaur/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff821c"
+name = "abiding-malkoha"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ebc8"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ebdc"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ebe0"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ec12"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ec7a"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ec7e"
+value = {named = ["0002ea0a", "0002f928", "ffff821c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ultra-gecko/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "refreshing-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "refreshing-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

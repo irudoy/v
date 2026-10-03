@@ -1,0 +1,189 @@
+summary = """
+ASCD control task and steering-switch decoder. It copies prior stable code \
+ffff2a85 to ffff2a86, accepts a new stable code only when samples \
+ffff2701..ffff2705 all match, and packs diagnostic bytes ffff2a83 for DID \
+0x130D and ffff2a84 for DID 0x130E."""
+note = [
+    """
+The five-sample buffer producer remains unresolved. The homologous VQ35HR \
+factory manual establishes an analog resistor ladder at ECM terminal \
+M107-101, but the exact JK08A ADC channel and MCU pin are not traced.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 383
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alluring-unicorn/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mature-waxbill/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "notorious-earthworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rapid-perch/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "refreshing-hamster/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silver-waxbill/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abstract-newt/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "button_state/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_state/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ludicrous-buzzard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cf020"
+name = "flying-booby"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf074"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf078"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf16c"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf172"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf186"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf198"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf1a6"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf1b2"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d0254"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d02a2"
+value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "alluring-unicorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

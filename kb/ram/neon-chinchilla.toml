@@ -1,0 +1,168 @@
+summary = """
+Second-channel raw endpoint-crossfade result before trim 00018d36 and common \
+coefficient ffff31e2. FUN 0007a804 writes floor((A*(32768-w)+B*w)/32768), \
+saturated to uint16."""
+note = ["The physical quantity is unresolved."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 38
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "expert-ammonite/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "malachite-avocet/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ochre-horse/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "topaz-gharial/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "truthful-pronghorn/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crazy-toucan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35ca"
+name = "neon-chinchilla"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a890"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a892"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a898"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8aa"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8c8"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e2"
+value = {named = ["00016f48", "00018cf6", "00018d16", "00019090", "000190b0", "0007a804", "ffff35ca"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "expert-ammonite/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "malachite-avocet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ochre-horse/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "topaz-gharial/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "truthful-pronghorn/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

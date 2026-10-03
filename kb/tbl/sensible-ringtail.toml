@@ -1,3 +1,24 @@
+summary = """
+Interpolated raw reference-term table for a signed difference: the uint8 \
+result is written to ffff22ae, while the same register result forms \
+clamp(interp(00012a02)-u8[ffff221c], -128, 127) for subsequent selection of \
+an output correction inside 00062c68."""
+note = [
+    """
+Code confidence applies only to observed operational semantics. The physical \
+quantity and unit are unknown. Comparisons at 00062d38 and 00062d46 \
+implement saturation of the derived difference and do not make the map a \
+threshold. The write to ffff22ae does not end the trace: the same result \
+from r6 is copied to r2 at 00062d2a. The clamp is not treated as a scale. \
+Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Signed Difference Reference Term - raw u8 (0x12A02)"
 category = "Internal Calculations"
@@ -7,10 +28,112 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 185
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-tiger/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "encouraging-zebu/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a02"
 name = "sensible-ringtail"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d1e"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d22"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d26"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d2a"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d2e"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d32"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d36"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d38"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d46"
+value = {named = ["00012a02", "00026740", "00062c68", "ffff22ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +166,10 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "tall-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

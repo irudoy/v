@@ -1,0 +1,200 @@
+summary = """
+Bank-1 intake-cam edge phase byte. Capture handler 0002a5cc copies running \
+phase ffff22d2 here at 0002a75e while event state ffff13c8 is 2, 4, or 6. \
+The running phase is 20*ffff13b2 + floor(20*interval / ffff22bc) - 60 \
+(selector below 8) or - 20 (selector 8 and above) through signed divider \
+00021bbc, clamped at zero, where interval is the 16-bit difference between \
+GR1F capture fffff44e and crank reference count ffff158a stored at ffff22c8. \
+The pass requires ffff84ff bit 7 set and edge count ffff1391 equal to 1 and \
+first shifts the previous values into ffff22ce and ffff22d0. FUN_000bd9f0 \
+subtracts the byte from rest reference ffff4799 to form actual position \
+ffff2442."""
+note = [
+    """
+One count is 0.5 crank degrees: ffff22bc is 10 crank degrees and the \
+selector step is 20 counts, the same arithmetic as exhaust edge phase \
+ffff1200. The selector offsets differ from the exhaust segment mapping, so \
+the intake phase axis has its own origin; the stock rest value \
+ROM8[0000831c]=140 is the phase of selector 8 at zero interval. The SH7059 \
+hardware manual identifies 0xFFFFF44E as ATU-II channel 1A GR1F.""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 365
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hallowed-chameleon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-mamba/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-dugong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-mantis/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22cc"
+name = "evasive-degu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6c0"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6d0"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6f4"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a746"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a75e"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda34"
+value = {named = ["00021bbc", "0002a5cc", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cc", "fffff44e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "capable-mamba/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "silky-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "gray-cougar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "hallowed-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

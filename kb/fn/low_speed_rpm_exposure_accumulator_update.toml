@@ -1,0 +1,78 @@
+summary = """
+Side-effect-only low-speed RPM exposure accumulator. Eligible operation at \
+coarse speed <=4 and 2300..2900 RPM adds 12 toward cap 24000; the principal \
+decay path subtracts one."""
+note = [
+    """
+Update sustained low-speed RPM exposure accumulator with discarded return""",
+    "Its return is discarded. The accumulated state is consumed by 0004f958.",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 27
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 529
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sepia-mongrel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f7e0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7e0"
+value = {named = ["0004ed88", "ffff110e", "ffff11ae", "ffff1932"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

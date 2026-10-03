@@ -1,0 +1,36 @@
+title = "Purge control valve circuit open"
+level = "code"
+code = "P0444"
+group = "evap"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 35
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019ccc"
+name = "daft-malkoha"
+index = 201
+attribute = "00016098"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016098"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019ccc"
+value = "360206000000044400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a470"
+value = "00016098"

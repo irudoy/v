@@ -1,0 +1,81 @@
+summary = """
+Modulo-3 engine-event phase counter. FUN 000208f8 increments it on every \
+admitted current-cylinder event, resets it at three, and sets ffff84ba bit 6 \
+at the reset point."""
+note = [
+    "Three current-cylinder events equal one crankshaft revolution on the V6.",
+]
+level = "code"
+unit = "event phase"
+
+[[ledger]]
+registry = "vars"
+order = 353
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "gentle-bat/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gentle-bat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9f24"
+name = "ultraviolet-teal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002091c"
+value = {named = ["000208f8", "ffff9f24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020922"
+value = {named = ["000208f8", "ffff9f24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020930"
+value = {named = ["000208f8", "ffff9f24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020938"
+value = {named = ["000208f8", "ffff9f24"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "gentle-bat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gentle-bat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

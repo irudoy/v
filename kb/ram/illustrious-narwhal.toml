@@ -1,0 +1,110 @@
+summary = """
+Periodic scheduler pending flags. Interrupt handler 0002040c sets bit 7 \
+every invocation, bit 6 every second invocation, bit 5 every fourth, and \
+bits 4 and 2 every tenth. Dispatcher 000209d8 drains the corresponding task \
+tables; main loop 00027e24 waits for bit 2 before running scheduler \
+00020dfe."""
+note = [
+    """
+The relative divisors are exact. The hardware interrupt source and base \
+frequency remain unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 348
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devious-mastodon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84b9"
+name = "illustrious-narwhal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002046e"
+value = {named = ["0002040c", "000209d8", "00027e24", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002047e"
+value = {named = ["0002040c", "000209d8", "00027e24", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002048e"
+value = {named = ["0002040c", "000209d8", "00027e24", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000204a0"
+value = {named = ["0002040c", "000209d8", "00027e24", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ef4"
+value = {named = ["0002040c", "000209d8", "00027e24", "ffff84b9"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "devious-mastodon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

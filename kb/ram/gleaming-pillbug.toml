@@ -1,0 +1,87 @@
+summary = """
+Multipurpose status byte. FUN 00050a60 uses bit 5 to mark the \
+internal-key-0x2ee0 requested-RPM source valid after rejecting values 0 and \
+0xff and associated fault states."""
+note = ["Other bits belong to independent state machines."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 620
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "miniature-dove/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2488"
+name = "gleaming-pillbug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a7c"
+value = {named = ["00050a60", "ffff2488", "ffff2714"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050aa6"
+value = {named = ["00050a60", "ffff2488", "ffff2714"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050ac2"
+value = {named = ["00050a60", "ffff2488", "ffff2714"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "miniature-dove/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

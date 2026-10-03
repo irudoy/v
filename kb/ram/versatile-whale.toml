@@ -1,0 +1,69 @@
+summary = """
+Selected DFCO stage-2 entry-delay byte. Coordinator 0004ed88 copies the low \
+byte returned by 0004fe9c here before passing the complete word to state \
+machine 000503e0."""
+note = [
+    """
+Normal stock branches select zero. A configuration override branch can \
+select 10 or 20 counts.""",
+]
+level = "code"
+unit = "DFCO scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 544
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14be"
+name = "versatile-whale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee42"
+value = {named = ["0004ed88", "000503e0", "ffff14be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000504b0"
+value = {named = ["0004ed88", "000503e0", "ffff14be"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

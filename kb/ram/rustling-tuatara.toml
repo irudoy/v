@@ -1,0 +1,34 @@
+summary = """
+Input gate for 000b1e48 using multiplier 0x12bda paired with base 0x14a7a."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 301
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lyrical-pig/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41b8"
+name = "rustling-tuatara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000831dc"
+
+[[link]]
+type = "reader"
+to = "lyrical-pig/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

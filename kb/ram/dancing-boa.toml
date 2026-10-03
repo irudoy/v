@@ -1,0 +1,124 @@
+summary = """
+Stored copy of the second 000152d6 lookup result in the EVAP leak \
+calculation. FUN 000b29b8 indexes the curve by corrected coordinate \
+ffff2c98, stores the returned uint16 here, and passes the same register \
+value to FUN 000b2096 for comparison with ffff3240."""
+note = ["The physical pressure or leak-area conversion is unresolved."]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 28
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "umber-bandicoot/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "caped-barracuda/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3242"
+name = "dancing-boa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c6e"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c70"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c74"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c76"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c7a"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c80"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c88"
+value = {named = ["000152d6", "000b2096", "000b29b8", "ffff2c98", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "classic-pelican/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "input"
+to = "umber-bandicoot/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "ancient-terrier/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

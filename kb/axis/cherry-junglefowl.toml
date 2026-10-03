@@ -1,0 +1,57 @@
+note = [
+    """
+uint16 axis for map 00013ce8. The indexing byte from ffff1071 is \
+zero-extended and shifted left by 8, so axis values decode by division by \
+256. The physical meaning of RAM ffff1071 is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "uint8 value from RAM ffff1071"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 25
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4]
+
+[[symbol]]
+layout = "7mfk"
+address = "00015c30"
+name = "cherry-junglefowl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a5a32"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a24"
+value = {named = ["00015c30", "ffff1071"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a28"
+value = {named = ["00015c30", "ffff1071"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a2c"
+value = {named = ["00015c30", "ffff1071"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a34"
+value = {named = ["00015c30", "ffff1071"], span = 1}
+key = "linked"

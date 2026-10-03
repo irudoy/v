@@ -1,0 +1,110 @@
+note = [
+    """
+Column axis for coefficient surface 0000c78e. FUN 000a5a06 passes current \
+engine-speed word ffff11bc directly to the explicit-axis wrapper. Stored \
+points are 0, 64, 96, 112..288 in steps of 16, and 800. The code-proven \
+source representation gives 0, 800, 1200, 1400..3600, and 10000 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 60
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00013ea4"
+name = "thundering-wolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a5a4e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000262bc"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000262c0"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000262c2"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a40"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a4a"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a4e"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a5a50"
+value = {named = ["00013ea4", "000262a8", "ffff11bc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "64*12.5=800"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "800*12.5=10000"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "elegant-dragon/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

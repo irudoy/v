@@ -1,0 +1,113 @@
+summary = """
+Longword state maintained by FUN 00027530 in the closed set 0..4. States \
+2..4 project to ffff2451.bit5 and ffff244f.bit5 set; states 0/1 project to \
+both bits clear."""
+note = [
+    """
+The state machine is exact. Its physical operating-mode name remains \
+unresolved.""",
+]
+level = "code"
+unit = "state 0..4"
+
+[[ledger]]
+registry = "vars"
+order = 458
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-oriole/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "friendly-hawk/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nickel-magpie/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zealous-oriole/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff39d8"
+name = "enlightened-raccoon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002756c"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027626"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002767e"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,79 @@
+summary = """
+Internal developer-immobilizer state-machine word. Bit 2 is a direct input \
+to FUN_000bc9e4; when ROM 0x8725 bit 0 = 0, FUN_000bc82e clears bit 2."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 339
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cordial-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-buzzard/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-piculet/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff55e4"
+name = "magnificent-sponge"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bc9ce"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "ffff55e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bca04"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "ffff55e4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "cordial-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pink-buzzard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spry-piculet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

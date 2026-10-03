@@ -1,3 +1,24 @@
+summary = """
+Vehicle-speed threshold of the standstill exhaust-VTC override. Hysteresis \
+comparator 000259d0 sets ffff24ac bit 7 while coarse vehicle-speed byte \
+ffff110e is at or below this value and clears it above the value plus \
+ROM8[0x86e8]=1; FUN 000bfe88 stores the flag at 000bff4e."""
+note = [
+    """
+Stock value 2 with release above 3 counts of coarse vehicle-speed byte \
+ffff110e, whose km/h value per count is not established; the 2026-09-17 \
+captures release the override between 8 and 9 km/h of the dashboard speed \
+channel. The flag is one input of override predicate ffff246c bit 1.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+storage = "uint8"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Exhaust CVTC Standstill Override - Speed Threshold"
 category = "Variable Valve Timing / Exhaust Cam"
@@ -8,10 +29,100 @@ fine = 1
 coarse = 1
 static_axis = ["Counts"]
 
+[[ledger]]
+registry = "findings"
+order = 467
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-labradoodle/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "industrious-guillemot/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e3c"
 name = "imported-civet"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086e8"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e3c"
+value = "0x02"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff1c"
+value = {named = ["000086e8", "00008e3c", "000259d0", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff1e"
+value = {named = ["000086e8", "00008e3c", "000259d0", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff34"
+value = {named = ["000086e8", "00008e3c", "000259d0", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff4e"
+value = {named = ["000086e8", "00008e3c", "000259d0", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -98,3 +209,25 @@ value = "370200000000002100000000380306000000045200000000"
 note = """
 the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
 P0014 and P0024 have no record"""
+
+[[link]]
+type = "index"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knowing-labradoodle/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "accessor"

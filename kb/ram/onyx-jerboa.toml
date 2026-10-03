@@ -1,0 +1,279 @@
+summary = """
+Selector between a map path and constant 0x8000 in 0007173c. Bits 0 and 2 \
+gate the exhaust-VTC control-mode state machine in FUN 000c1dec: both set \
+permit mode 0->1 and 2->1 together with the bank bit of ffff1246, and a \
+clear bit 0 forces mode 1->0 and 2->0. Enable coordinator 000bf630 writes \
+bit 0 at 000bf852 as the electrical enable (battery snapshot ffff1108 in \
+126..200, edge-count anomaly flags ffff850c bits 5 and 6 clear, sensor-fault \
+predicate 00025e4e zero, ffff244f bit 5 set, and record predicate 00025e20 \
+clear for the P0014/P0024 extension slots 0x14f..0x152, the P0078/P0084 \
+records 0x43 and 0x44, and, with ROM8[00008616] bit 0 set as in stock JK08A, \
+the P0197/P0198/P0196 records 0xdd, 0xde, and 0xe4) and bit 2 at 000bf99a as \
+the operating enable (bit 0 set, ffff2458 bit 5 clear, coolant window \
+ffff246c bit 2 without latch ffff248c bit 6 or active-test request ffff249c \
+bit 6 set, oil-temperature flag ffff246c bit 3 set with latch ffff248c bit 7 \
+clear under the stock ROM8[00008616] bit 0, engine speed at least 900 RPM \
+with release at 700 RPM, and ffff41be bit 6, ffff41d1 bit 7, ffff41d0 bit 0, \
+ffff2f64 bits 0 and 1, and ffff14b8 bits 0 and 1 all clear). Bit 1 is the \
+intake electrical enable that 000bd20a writes at 000bd432 (start counter \
+ffff19aa above ffff17f0, sensor-fault predicate 00025e4e zero, records 0x14b \
+and 0x14c clear, battery snapshot ffff1108 in 126..200, ffff244f bit 5 set, \
+and ffff3622 bits 0 and 1 clear); 000bd20a requires it for intake \
+idle-source bit ffff24a7 bit 1, and 000bdc66 reads it at 000bdce8. bit 4 by \
+0004efe0 and 0006378e, bit 5 by 0008c9fe, and bit 7 by 0007173c."""
+note = [
+    """
+The tests of ROM8[00008616] bit 0 at 000bf80e and 000bf974 pass both extra \
+terms while the bit is clear; stock JK08A holds 0x01, so both terms apply. \
+ffff850c bits 5 and 6 are written by edge-count monitor 000c22dc and \
+ffff249c bit 6 by active-test driver 0002e466. ffff2458 bit 5 is the \
+scheduled CLSD THL POS status of DID 0x1302 bit 0. Of the inhibit terms, \
+ffff41be bit 6 (0008c24e) and ffff41d1 bit 7 (0008c272) are stored-fault \
+summaries of DTC attribute bits 8 and 10, ffff41d0 bit 0 has no setter, and \
+ffff2f64 (00090d54) and ffff14b8 (00090bd2) stay clear under the stock masks \
+ROM8[000186f2]=0x07 and ROM8[000186f1]=0xf0.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 186
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "courageous-snake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "courageous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "inquisitive-rhino/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nifty-bittern/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tomato-trout/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versed-marmot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff248b"
+name = "onyx-jerboa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e07=200"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e0a=125"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd432"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdce8"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf80e"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf852"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf974"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf99a"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e12"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e40"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e82"
+value = {named = ["00008616", "00008e07", "00008e0a", "0002e466", "0004efe0", "0006378e", "0007173c", "0008c9fe", "000bd20a", "000bdc66", "000bf630", "000c1dec", "000c22dc", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "muscular-lizard/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fat-mongrel/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "courageous-snake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "courageous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "inquisitive-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nifty-bittern/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "versed-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

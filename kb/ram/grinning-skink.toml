@@ -1,0 +1,120 @@
+summary = """
+Q1.7 dual-channel deviation divisor C from map 00012292. FUN 0003ef74 uses \
+it in trunc0(128*d/C) when the range gates pass; C=0 selects the unadjusted \
+coordinate path."""
+note = [
+    """
+The fixed-point role is exact. The physical sensor quantity is unresolved.""",
+]
+level = "code"
+unit = "Q1.7 divisor"
+
+[[ledger]]
+registry = "vars"
+order = 509
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-panther/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "elite-turaco/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-panther/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2f8e"
+name = "grinning-skink"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efb0"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f074"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f07a"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f08e"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0c2"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0da"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f13c"
+value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "elite-turaco/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "screeching-panther/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "screeching-panther/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

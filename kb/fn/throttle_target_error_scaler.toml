@@ -1,0 +1,103 @@
+title = "Mask and scale the target-reference term"
+summary = """
+Per-channel target-error scaling stage. It masks the lower four or six \
+magnitude bits according to feedback and status, multiplies the remaining \
+target-reference magnitude by ROM16 literal 0x070a, writes fixed-point \
+magnitude ffff391c/ffff3920, and copies direction to ffff392b/ffff392c."""
+note = [
+    "This is the scaled target term consumed by the fixed-point regulator.",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 160
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 580
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "black-gazelle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quirky-gopher/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "esoteric-carp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "robust-swallow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb354"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000cb3f8"
+value = "0x070a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb37a"
+value = {named = ["000cb354", "000cb3f8", "ffff2660", "ffff3902", "ffff391c", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb394"
+value = {named = ["000cb354", "000cb3f8", "ffff2660", "ffff3902", "ffff391c", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb3b2"
+value = {named = ["000cb354", "000cb3f8", "ffff2660", "ffff3902", "ffff391c", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb3dc"
+value = {named = ["000cb354", "000cb3f8", "ffff2660", "ffff3902", "ffff391c", "ffff392b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb3ec"
+value = {named = ["000cb354", "000cb3f8", "ffff2660", "ffff3902", "ffff391c", "ffff392b"], span = 1}
+key = "body"

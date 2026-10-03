@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000d16c2"
+name = "successful-teal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000d16c2"

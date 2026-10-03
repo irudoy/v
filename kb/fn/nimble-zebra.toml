@@ -1,0 +1,90 @@
+summary = """
+CAN 0x280 vehicle-speed receive path. It assembles bytes 4 and 5 as \
+big-endian uint16, treats 0xffff as invalid, otherwise divides by 10, and \
+writes ffff113c."""
+note = [
+    """
+Homologous observed Z34 CAN data identifies frame 0x280 bytes 4 and 5 as \
+vehicle speed with approximate raw/100 km/h scaling. The exact firmware \
+division produces 0.1 km/h units at ffff113c before filtering.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 387
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "illegal-rook/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vivid-macaque/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c4506"
+name = "nimble-zebra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c452a"
+value = {named = ["00021bbc", "0003a174", "000c4506", "ffff113c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4530"
+value = {named = ["00021bbc", "0003a174", "000c4506", "ffff113c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4532"
+value = {named = ["00021bbc", "0003a174", "000c4506", "ffff113c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c454e"
+value = {named = ["00021bbc", "0003a174", "000c4506", "ffff113c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4558"
+value = {named = ["00021bbc", "0003a174", "000c4506", "ffff113c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "illegal-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

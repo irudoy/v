@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1451"
+name = "olivine-tiger"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004c33c"
+
+[[link]]
+type = "lookup"
+to = "huge-pelican/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

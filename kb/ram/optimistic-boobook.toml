@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff192a"
+name = "optimistic-boobook"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00056a08"
+
+[[link]]
+type = "lookup"
+to = "vermilion-boar/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

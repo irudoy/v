@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff44b2"
+name = "independent-shellfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000afd52"
+
+[[link]]
+type = "lookup"
+to = "impetuous-finch/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

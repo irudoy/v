@@ -1,0 +1,101 @@
+summary = """
+Multiplier * base pair in one component: base table 0x14a7a, u16 through \
+wrapper 0x264cc, supplies the multiplicand; multiplier map 0x12bda through \
+wrapper 0x26474 multiplies it and divides by 64. The instruction stream \
+contains product and >>6: mul.l at 0xb1ecc, followed by shlr2 x3 at \
+0xb1ed4/d6/d8. Pivot 64 and the shift establish x/64 scaling in code."""
+note = [
+    """
+Flat value 64 gives output = base, or multiplier 1.0. Base 0x14a7a has no \
+established scale; bypass default 100 suggests percent but remains \
+candidate. ffff41e5 selects the bypass constant versus interpolation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 281
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-finch/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "bald-bullmastiff/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cream-sparrow/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "rustling-tuatara/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "smart-wolf/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b1e48"
+name = "lyrical-pig"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ecc"
+value = {named = ["00012bda", "000b1e48", "ffff41b0", "ffff41b8", "ffff41c6", "ffff41e5"], span = 1}
+key = "body"
+
+[[link]]
+type = "selector"
+to = "bald-bullmastiff/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cream-sparrow/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "rustling-tuatara/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "smart-wolf/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

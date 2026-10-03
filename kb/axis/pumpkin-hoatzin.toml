@@ -1,0 +1,31 @@
+note = [
+    """
+Axis for P0128 inverse-weight curve 00014cca. Caller-constrained parameter P \
+is the uint16 result of curve 00015bf0 with zero replaced by one. FUN \
+000b78da derives q=max(0,65535-floor(20*ROM16[00009292]*ROM8[00008819]/P)) \
+and passes q directly as the coordinate paired with this axis. Stock \
+ROM16[00009292] and ROM8[00008819] are zero, so q=65535; all 16 stock axis \
+points are zero. The code proves the raw coordinate formula but not its \
+physical quantity.""",
+]
+level = "code"
+quantity = "raw"
+unit = "P0128 parameter-derived raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 73
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013b38"
+name = "pumpkin-hoatzin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b79f2"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff256e"
+name = "illustrious-python"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c89c"
+
+[[link]]
+type = "writer"
+to = "boisterous-meerkat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

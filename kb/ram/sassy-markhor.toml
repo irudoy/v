@@ -1,0 +1,94 @@
+summary = """
+Adjusted lower/full-restore RPM threshold written by 00050018 from \
+coolant-indexed table 00012818 after runtime floors and offsets."""
+note = [
+    """
+At speed below 4 it is the lower class-3 boundary. At speed 4 or above, \
+every stock-flag branch returns full-restore class 3 at or below its \
+effective lower boundary and class 0 only strictly above it.""",
+]
+level = "code"
+unit = "RPM/25"
+
+[[ledger]]
+registry = "vars"
+order = 571
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_fuel_restore/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_restore_classify/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff16aa"
+name = "sassy-markhor"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501ae"
+value = {named = ["00012818", "00050018", "ffff110e", "ffff16aa"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "over_run_fuel_restore/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

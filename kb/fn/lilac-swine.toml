@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00039be2"
+name = "lilac-swine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039be2"

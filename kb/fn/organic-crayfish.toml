@@ -1,0 +1,33 @@
+summary = """
+Evaluator for two NATS registration channels: processes counters and \
+input-state quality thresholds for FUN_000937dc."""
+note = [
+    "This function does not perform bytewise cryptographic ID verification.",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 355
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00093b60"
+name = "organic-crayfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00093b60"
+value = {named = ["000937dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sincere-asp/fn/7mfk"
+relies = "structure"

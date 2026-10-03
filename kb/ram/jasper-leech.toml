@@ -1,0 +1,154 @@
+summary = """
+Flag byte of the exhaust-VTC coordinators. FUN 000bf630 maintains bits 4 and \
+2 as the 900 RPM engine-speed flags with 700 RPM release. FUN 000bf9b0 \
+writes bit 7 as the rest-edge learning gate: set at 000bfa3c while \
+electrical enable ffff248b bit 0, coolant flags ffff24a9 bits 3 and 6, and \
+engine-speed flag ffff24aa bit 0 (ffff11b2 at most ROM8[00008e1b]=80, 1000 \
+RPM with release above 1200 RPM) are set and driver status ffff850c bits 5 \
+and 6, predicate 00025e4e, and inhibit ffff41be bit 6 are clear, and cleared \
+at 000bfa8a otherwise. Learner 000bfad4 requires bits 7 and 4 to store the \
+learned edges."""
+note = [
+    "Bits 5 and 3 are inputs of the target-tracking pair of monitor 0008f168.",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 887
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "elastic-locust/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-puma/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tomato-trout/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-galago/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a8"
+name = "jasper-leech"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e1b=80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf6b8"
+value = {named = ["00008e1b", "0008f168", "000bd20a", "000bdee4", "000bf630", "000bf9b0", "000bfad4", "ffff24a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf70c"
+value = {named = ["00008e1b", "0008f168", "000bd20a", "000bdee4", "000bf630", "000bf9b0", "000bfad4", "ffff24a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa3c"
+value = {named = ["00008e1b", "0008f168", "000bd20a", "000bdee4", "000bf630", "000bf9b0", "000bfad4", "ffff24a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa8a"
+value = {named = ["00008e1b", "0008f168", "000bd20a", "000bdee4", "000bf630", "000bf9b0", "000bfad4", "ffff24a8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "elastic-locust/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "agate-puma/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-galago/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

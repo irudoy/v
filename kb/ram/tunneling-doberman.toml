@@ -1,0 +1,282 @@
+summary = """
+Crank tooth counter 0..9 of the crank signal plate. The ICI0A handler \
+prologue at 00028ea2 increments it with saturation on every tooth and \
+restarts it at zero on the tooth after gap detection, so tooth 7 is the last \
+tooth before the two-missing-teeth gap and teeth 8, 9, and 0 follow it at \
+30, 40, and 50 crank degrees. FUN 00028ea2 dispatches values 0, 4, 6, 7, 8, \
+and 9; tooth 9 carries the misfire ICR0A interval path. FUN 00028dc8, FUN \
+0002a36a, FUN 0002a5cc, FUN 0003e04e, FUN 000c2c58, and FUN 000c2d76 read \
+the same counter in timer scheduling, capture arithmetic, or phase \
+conversion."""
+note = [
+    """
+The writer addresses the byte as offset 0x126 from window base ffff128c held \
+in a register, inside prologue 00028ea2..00029587 that lies outside the \
+function boundaries of the structure export. Gap detection compares 64 * \
+previous interval / current interval with ROM8[00008c89] = 118 once the \
+count reaches ROM8[00008c81] = 8, or ROM8[00008c82] = 8 after sync; the \
+ratio is 192 on tooth 9.""",
+]
+level = "code"
+unit = "crank tooth 0..9"
+
+[[ledger]]
+registry = "vars"
+order = 331
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_command_phase_normalizer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "complex-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "delightful-inchworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lovely-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perky-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quick-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13b2"
+name = "tunneling-doberman"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c81"
+value = "0x08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c82"
+value = "0x08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c89"
+value = "0x76"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00029020"
+value = "ffff128c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028dce"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028ff6"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002905e"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029126"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002964c"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a1f4"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a44e"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a700"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e06c"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c9e"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2dbc"
+value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "apc_command_phase_normalizer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "complex-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "delightful-inchworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,147 @@
+summary = """
+Multipurpose diagnostic state byte. FUN 000ab844 is the recovered producer \
+of bit 0 for P0444, and FUN 000abca2 consumes and clears that bit around \
+exact descriptor index 0xc9. Other functions control separate bits of the \
+same byte."""
+note = [
+    """
+A whole-program direct-writer scan distinguishes the P0444 bit from \
+unrelated bits in this shared byte. ROM8[0x186FE] is zero, so the P0444 \
+producer and exact dispatch branch are skipped in stock JK08A.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "evap-purge-open-state-p0444"
+kind = "monitor"
+label = "DtcCode"
+key = "P0444"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019ccc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 0 is the debounced state consumed in the exact P0444 path, which is \
+configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000084fc"
+value = "0x32"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186fe"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ab8e2"
+value = {named = ["000084fc", "000186fe", "00019ccc", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000abe56"
+value = {named = ["000084fc", "000186fe", "00019ccc", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "screeching-gaur/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 137
+binding = "evap-purge-open-state-p0444"
+
+[[ledger]]
+registry = "vars"
+order = 421
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mindful-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-gaur/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff423e"
+name = "peach-clam"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186fe"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab8e2"
+value = {named = ["000186fe", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab8e6"
+value = {named = ["000186fe", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000abe48"
+value = {named = ["000186fe", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000abe62"
+value = {named = ["000186fe", "000ab844", "000abca2", "ffff423e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "mindful-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "screeching-gaur/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

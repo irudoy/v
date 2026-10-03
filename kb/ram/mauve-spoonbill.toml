@@ -1,0 +1,64 @@
+summary = """
+Multipurpose state byte. Bit 1 is produced by FUN 0003ece8 and is one of \
+three enable conditions for the status-gated engine-running fuel-inhibit \
+contributor 0004faac."""
+note = ["The physical meaning of bit 1 remains unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 624
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "status_gated_engine_running_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "saffron-squirrel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2499"
+name = "mauve-spoonbill"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0003ed92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fac0"
+value = {named = ["0003ece8", "0004faac", "ffff2499"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "status_gated_engine_running_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "saffron-squirrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

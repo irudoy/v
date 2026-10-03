@@ -1,0 +1,105 @@
+summary = """
+BFR7A, the ATU-II channel-7A buffer register that carries the intake-VTC \
+duty into DTR7A at the cycle boundary. FUN 000beace writes the converted \
+value of ffff23b5, or fixed 1238 counts on the hardware-control path."""
+note = ["Fixed 1238 counts is 30 percent of cycle register fffff588."]
+level = "code"
+unit = "timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 742
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_duty_command_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "warping-goldfish/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "smart-chicken/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "striped-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff590"
+name = "outrageous-pug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb06"
+value = {named = ["000beace", "000cd75c", "ffff23b5", "ffff4247", "fffff590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb6a"
+value = {named = ["000beace", "000cd75c", "ffff23b5", "ffff4247", "fffff590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd816"
+value = {named = ["000beace", "000cd75c", "ffff23b5", "ffff4247", "fffff590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr7"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_duty_command_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "warping-goldfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "smart-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "striped-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,3 +1,32 @@
+summary = """
+Eight-point table of an unsigned multiplier for the negative branch of \
+signed16 ffff1a66: the interpolated map byte is divided by 2, written to \
+ffff150a, and multiplied by ffff1a66 at 00052902; the product is divided by \
+256 with truncation toward zero, saturated to signed16, zeroed for a \
+specified flag combination, and written to ffff2300. When ffff1a66 >= 0, the \
+map value is replaced with constant 64 before the write."""
+note = [
+    """
+The physical quantity is unknown. The map value affects the write to \
+ffff150a only on path int16[ffff1a66] < 0; when ffff1a66 >= 0, the result \
+register is replaced with constant 64. For map values 70..102, the \
+map-derived byte after shar is 35..51. Conversion floor(x/2), subsequent \
+multiplication, and division by 256 are conditional and do not form an exact \
+invertible scale pair; in particular, x/512 does not correctly describe odd \
+cells 77 and 93. Index: Implicit index: b=uint8[ffff102c]; \
+q=(b<128)?2*b:255. For q>=224, equivalent to b>=112, element 7 is selected; \
+for q<224, kernel 00026a80 reads adjacent uint8 values and passes them to \
+Q0.16 interpolator 00026740. There is no explicit ROM axis; preparation of \
+the exact index/fraction before the shown 00026a80 slice is not included in \
+the artifact. Result disposition: writes (ffff150a).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
 category = "Internal Calculations"
@@ -7,10 +36,158 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 364
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_fuel_additive/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "attractive-donkey/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enigmatic-mouse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012176"
 name = "vegan-bittern"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528da"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528de"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528e2"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528e6"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528e8"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528ec"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000528f4"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052908"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005290e"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052910"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052914"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052916"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052918"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005291c"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052920"
+value = {named = ["00012176", "00026740", "000528be", "00052902", "ffff150a", "ffff2300"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "transient_fuel_term_coordinator/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +220,17 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "transient_fuel_additive/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

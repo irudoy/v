@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4565"
+name = "asparagus-koel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00080e7c"
+
+[[link]]
+type = "writer"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

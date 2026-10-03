@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff412a"
+name = "righteous-elk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a256"
+
+[[link]]
+type = "writer"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,281 @@
+summary = """
+ASCD display state written by FUN 000ceabc at 000cee1a. The function selects \
+6 when ffff41ad bit 1 is set or when ffff424c bit 0 and ffff4251 bit 1 are \
+both set, otherwise 4 when ffff424e bit 1 is set, otherwise 5 when ffff4251 \
+bit 1 is set, and otherwise 0. State 4 sets SET-lamp flag ffff4252 bit 0 and \
+states 0 and 5 clear it. State 6 inverts the flag each time countdown \
+ffff4411 is zero, tracks the phase in ffff4253 bit 7, and reloads the \
+countdown with 20. FUN 000cf020 sets the CRUISE LAMP bit of DID 0x130E for \
+states 4, 5, and 6."""
+note = [
+    """
+This writer produces only 0, 4, 5, and 6. By the lamp flags, state 4 is the \
+engaged state with CRUISE and SET steadily lit, state 5 is the standby state \
+with CRUISE alone, and state 6 is the fault state with a blinking SET lamp. \
+The write executes only while ROM8[0x8B28] has bit 0 set and bit 1 clear. \
+Stock 0x2B has bit 1 set, and a search of every decompiled function finds no \
+other store through base literal ffff4124 at offset 4, so the stock image is \
+expected to keep the state at 0.""",
+]
+level = "code"
+unit = "enumerated state"
+
+[[ledger]]
+registry = "vars"
+order = 398
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flying-booby/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "expert-lion/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "masked-buffalo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "outgoing-manatee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shaggy-nyala/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "burrowing-pegasus/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "proficient-sunfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ruddy-dragonfly/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shrewd-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4128"
+name = "adventurous-falcon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cedea"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cedf0"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cedf6"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cedfc"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee04"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee06"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee10"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee12"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee1a"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee26"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee3c"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee48"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee50"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee5c"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cee5e"
+value = {named = ["000ceabc", "000cf020", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff4411"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "burrowing-pegasus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "ruddy-dragonfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "expert-lion/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "masked-buffalo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "outgoing-manatee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

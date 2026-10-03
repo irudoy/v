@@ -1,0 +1,124 @@
+summary = """
+Latched inhibit byte for the P030 common readiness gate. Coordinator \
+00082c8a writes stock value 0x32 when ffff84c3.bit6 is set and unsigned \
+ffff2b73 is at least 5; any nonzero value routes to clearing \
+ffff4251.bits6/7."""
+note = [
+    """
+A whole-program p-code pass over all 2315 functions found exactly this write \
+and read, with no unresolved candidates and no statically resolved clear. It \
+is therefore documented as a latch rather than a countdown; reset-time or \
+pointer-mediated initialization remains outside the resolved lifecycle.""",
+]
+level = "code"
+unit = "inhibit byte"
+
+[[ledger]]
+registry = "vars"
+order = 424
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dainty-cheetah/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tasteful-caiman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff436f"
+name = "nostalgic-ant"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008500"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c2e"
+value = "0x32"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fc8"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff436f", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fe0"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff436f", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fe2"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff436f", "ffff84c3"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tasteful-caiman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

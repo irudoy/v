@@ -1,8 +1,447 @@
+summary = """
+Primary requested-torque conversion row coordinate. FUN 0003de4c writes \
+max(32, ffff11b6) each pass, and startup initializer 0002d120 seeds 32. \
+Wrapper 000262e0 passes it to byte core 00026a0c, which multiplies each \
+stored 0x11d0c point by 16 before comparison, so one row-axis count is 50 \
+RPM. Every forward lookup of 0xe98e except 0007584e passes it as the row \
+input; 000730fc passes it to inverse lookup 00073432 and scales the selected \
+inverse coordinate by it, and 00073948 divides the doubled opening area by \
+it."""
+note = [
+    """
+The clamp at 32 counts (100 RPM) lies below the first row point, 16*16 = 256 \
+counts (800 RPM).""",
+]
+level = "code"
+unit = "rpm/3.125"
+
 [logparam]
 id = "X_VQ_Engine_Speed"
 unit = "RPM"
+
+[[ledger]]
+registry = "vars"
+order = 952
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impossible-eel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-fossa/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "peach-bullfrog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_compensator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "saffron-moose/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "striped-kakapo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versed-reindeer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "voracious-rhino/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuzzy-pogona/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magic-rat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff1702"
 name = "khaki-antelope"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026a12"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026a14"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002d754"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002d75e"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de52"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de58"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de5e"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de64"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070320"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007032a"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073114"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739dc"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739e4"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000754a4"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000754ae"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075560"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075568"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d32"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d3a"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aaf4"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aafe"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab56"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab62"
+value = {named = ["000262e0", "00026a0c", "0002d120", "0003de4c", "000702c6", "000730fc", "00073432", "00073948", "00075174", "000753d4", "00075540", "00075c48", "0007a9fc", "0007ab18", "00093424", "ffff11b6", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "bald-dachshund/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "azure-skink/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "primary_request_inverse_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "private-sloth/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "impossible-eel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-fossa/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pedal_request_compensator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "saffron-moose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "striped-kakapo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuzzy-pogona/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "magic-rat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

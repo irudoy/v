@@ -1,6 +1,17 @@
-note = """
+summary = """
+Base of two uint16 per-channel throttle targets: channel 0 at ffff28bc and \
+channel 1 at ffff28be. 0006f48c applies normal, mode, lower, upper, and DTC \
+caps before publication."""
+note = [
+    """
 The percentage is the throttle opening above the learned closed position of \
-the throttle position sensor."""
+the throttle position sensor.""",
+    """
+The words carry the coordinate scale of axis 000155a0, 34285/1114112 percent \
+of throttle opening per count. Code channel-to-bank identity remains \
+unverified.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x*34285/1114112"
@@ -8,6 +19,30 @@ scale = "x*34285/1114112"
 [logparam]
 id = "X_VQ_Throttle_Target"
 unit = "Throttle Valve Opening [%]"
+
+[[ledger]]
+registry = "vars"
+order = 692
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "raw target coordinate array"
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "channel_throttle_target_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -39,6 +74,20 @@ note = "Homologous channel limiter writes channel zero with a two-byte stride"
 layout = "7mfk"
 address = "ffff28bc"
 former = ["smiling-bat/ram/7mfk-ffff28bc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f668"
+value = {named = ["0006f48c", "000cb1ca", "ffff28bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb1d4"
+value = {named = ["0006f48c", "000cb1ca", "ffff28bc"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -75,3 +124,45 @@ at = "jk78c:ffff43d8"
 to = "7mfk:ffff28bc"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Homologous channel limiter writes channel zero with a two-byte stride"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_area_compositor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2219"
+name = "steady-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000384c6"
+
+[[link]]
+type = "writer"
+to = "hypersonic-seagull/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

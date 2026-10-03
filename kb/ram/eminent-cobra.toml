@@ -1,0 +1,139 @@
+summary = """
+Previous-pass snapshot of exhaust-VTC bank-enable byte ffff1246. Scheduler \
+00020dfe copies it through the 0x3e-byte block ffff120e..ffff124b -> \
+ffff124c..ffff1289 at 00020f7c, so bits 0 and 1 hold the enable state of the \
+previous scheduler pass. FUN 000bfe88 reads them as the ffff1c7e arming \
+condition, FUN 000c1152 at 000c1320, and FUN 000c2040 at 000c20b2 as the \
+condition for copying ffff1aac+2b to ffff1ab4+2b while the bank is disabled, \
+which selects the pass on which the enable bit falls."""
+note = [
+    """
+The copy length 0x3e is the delay-slot immediate of the 00022558 call at \
+00020f7c and the destination base ffff124c is the pool word at 00021164.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 762
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-condor/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1284"
+name = "eminent-cobra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f7c"
+value = {named = ["00020dfe", "000bfe88", "000c1152", "000c2040", "ffff1246", "ffff1284"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c056c"
+value = {named = ["00020dfe", "000bfe88", "000c1152", "000c2040", "ffff1246", "ffff1284"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c08b8"
+value = {named = ["00020dfe", "000bfe88", "000c1152", "000c2040", "ffff1246", "ffff1284"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1320"
+value = {named = ["00020dfe", "000bfe88", "000c1152", "000c2040", "ffff1246", "ffff1284"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20b2"
+value = {named = ["00020dfe", "000bfe88", "000c1152", "000c2040", "ffff1246", "ffff1284"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "ambitious-condor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

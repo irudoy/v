@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8fde"
+name = "quaint-beluga"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006aeba"
+
+[[link]]
+type = "lookup"
+to = "messy-roadrunner/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

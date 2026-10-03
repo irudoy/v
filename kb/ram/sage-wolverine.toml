@@ -1,0 +1,133 @@
+summary = """
+Base of a two-bank running-maximum coordinate used by map 00012272. FUN \
+00094f26 forms q=min(65535,floor(uint8[ffff11b3]*uint16[ffff1024]/16)) and \
+raises ffff323c+2*bank to q when q is larger."""
+note = [
+    """
+The physical unit of the speed and Base Fuel Schedule composite is \
+unresolved.""",
+]
+level = "code"
+unit = "raw composite coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 515
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "nano-ape/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loud-caribou/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff323c"
+name = "sage-wolverine"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009558c"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00095592"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00095596"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009559e"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955b4"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955c0"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955d8"
+value = {named = ["00012272", "00094f26", "ffff1024", "ffff11b3", "ffff323c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

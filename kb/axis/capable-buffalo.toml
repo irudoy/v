@@ -1,3 +1,35 @@
+note = [
+    """
+Column axis for Engine Torque Map 00010b8e. FUN 00065928 copies its 16 words \
+to the stack, forms q=min(65535,floor(u16[ffff1024]*40960/ROM16[00009534])), \
+stores q at ffff15c4, and indexes the copy by the same value. Multiplying q \
+by 100/40960 gives the exact normalized ratio 100*BFS/scaler. Stored points \
+0,4096,...,61440 therefore represent 0,10,...,150 percent of the fixed BFS \
+reference. The HR catalog calls this ratio Cylinder Filling Up Efficiency; \
+that physical name remains a candidate.""",
+]
+level = "code"
+quantity = "load"
+unit = "Normalized BFS [%]"
+scale = "x*0.00244140625"
+to_raw = "x/0.00244140625"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 62
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adept-seriema/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00024da8"
@@ -36,6 +68,86 @@ name = "capable-buffalo"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006598e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Engine Torque Map|Static X Axis Cylinder Filling Up Efficiency"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006592e"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00065938"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00065960"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00065980"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00065984"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006598e"
+value = {named = ["00009534", "00021bbc", "00022558", "0002378c", "000262a8", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4096*0.00244140625=10"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "61440*0.00244140625=150"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "elegant-dragon/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -81,3 +193,10 @@ at = "jk78c:00083ca4"
 to = "7mfk:00065ac8"
 value = "00024674"
 note = "unique structural axis pair preserves normalized geometry"
+
+[[link]]
+type = "index"
+to = "adept-seriema/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

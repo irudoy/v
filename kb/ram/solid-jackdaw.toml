@@ -1,0 +1,264 @@
+summary = """
+Final corrected EVAP leak-monitor result word. FUN 000b2096 writes \
+sat_u16(uint8[ffff2f8d] * uint16[ffff3018] * uint8[ffff2f94] >> 14). FUN \
+000b2838 and FUN 000b29b8 consume its high byte. The exact P0442 branch \
+dispatches when that byte is at or above ROM8[0x880c]=0xff under its \
+operating gates; P0456-associated branches call the complementary state \
+updater with descriptor index 0xd8."""
+note = [
+    """
+The producer arithmetic and P0442/P0456 monitor use are exact. No direct \
+P0456 fault-dispatch call was found. Factory Service 06 publishes homologous \
+leak-area results in 1/128 mm2, but no conversion trace binds that unit to \
+this internal word.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "evap-small-leak-metric-p0442"
+kind = "monitor"
+label = "DtcCode"
+key = "P0442"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d98"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+The high byte is compared with 0xFF in the exact P0442 fault branch. Its \
+physical leak-area conversion remains unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "imposing-jaybird/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0000880c"
+value = "0xff"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2848"
+value = {named = ["0000880c", "00019d98", "000b2838", "ffff301c"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b290c"
+value = {named = ["0000880c", "00019d98", "000b2838", "ffff301c"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "evap-very-small-leak-metric-p0456"
+kind = "monitor"
+label = "DtcCode"
+key = "P0456"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d80"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 93
+level = "code"
+note = """
+The high byte controls P0456-associated descriptor-aware result branches. \
+The direct P0456 fault assertion and physical leak-area conversion remain \
+unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "caped-barracuda/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "attractive-grasshopper/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2d1e"
+value = {named = ["00019d80", "000b29b8", "000b4ef8", "ffff301c"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2d40"
+value = {named = ["00019d80", "000b29b8", "000b4ef8", "ffff301c"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2ffa"
+value = {named = ["00019d80", "000b29b8", "000b4ef8", "ffff301c"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 143
+binding = "evap-very-small-leak-metric-p0456"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 144
+binding = "evap-small-leak-metric-p0442"
+
+[[ledger]]
+registry = "vars"
+order = 420
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "caped-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "imposing-jaybird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classic-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff301c"
+name = "solid-jackdaw"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000880c"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2282"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2288"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2290"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2298"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b229e"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b22a0"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b22a6"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2848"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2d1e"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2f00"
+value = {named = ["0000880c", "000152d6", "000b2096", "000b2838", "000b29b8", "ffff301c"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "ancient-terrier/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "imposing-jaybird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

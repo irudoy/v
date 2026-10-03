@@ -1,0 +1,146 @@
+summary = """
+Composite accessor: 8x8 map 0000a8ea is read through 00026040 using implicit \
+inputs ffff106f/ffff10f0, while uint16 map 00014ed2 is read through 000263d8 \
+using saturated index 32*u16[ffff1222]. The output of 00014ed2 is multiplied \
+by the uint8 output of 0000a8ea, normalized by >>7, saturated at 0xffff, and \
+written to ffff1652."""
+note = [
+    """
+The physical quantity of the composite product is unresolved; no independent \
+scale is claimed for 00014ed2.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 172
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "artichoke-wapiti/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "serious-warthog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "watchful-penguin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "victorious-koel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00052576"
+name = "vivacious-cheetah"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052584"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005258c"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052598"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525a6"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525aa"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525ae"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525b0"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525b6"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525c4"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525cc"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"

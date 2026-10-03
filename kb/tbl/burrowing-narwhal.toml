@@ -1,0 +1,184 @@
+summary = """
+Conditionally selected raw threshold 30 for saturating byte counter \
+ffff19aa: the interpolated byte is written to ffff17f0, and condition \
+ffff19aa > ffff17f0 is tested at site:000bd3c8."""
+note = [
+    """
+The map is flat: every byte equals 30, so interpolation returns raw 30 for \
+any index. The map branch is selected by testing bit 0 at address 00008616 \
+at site:000bd2ec/site:000bd2f0; the alternate branch uses an adjacent map. \
+ffff19aa is reset at site:000bd2e6, incremented with saturation at \
+site:000bd3b6/site:000bd3b8, and compared with ffff17f0. ffff17f0 has no \
+external readers; the counter period and physical unit are unknown.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 191
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tomato-trout/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "magic-kudu/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vengeful-falcon/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a8a"
+name = "burrowing-narwhal"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "30"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd2e6"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd2ec"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd2f0"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd2f8"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd300"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd304"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd30a"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3b6"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3b8"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3be"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3c4"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3c8"
+value = {named = ["00012a8a", "00026474", "00026740", "00026944", "00026c78", "000bd20a", "ffff17f0", "ffff19aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "magic-kudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

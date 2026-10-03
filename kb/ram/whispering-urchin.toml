@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff420b"
+name = "whispering-urchin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003d0c4"
+
+[[link]]
+type = "writer"
+to = "tungsten-capuchin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

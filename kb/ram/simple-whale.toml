@@ -1,0 +1,65 @@
+summary = """
+Raw bank 1 MAF ADC snapshot copied from ffff1d62 by FUN 0003c45c after DID \
+0x1204 publication."""
+note = ["The downstream physical use remains unresolved."]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 488
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enthusiastic-pillbug/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-snail/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a3e"
+name = "simple-whale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c466"
+value = {named = ["0003c45c", "ffff1a3e", "ffff1d62"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enthusiastic-pillbug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "faithful-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "active-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,9 +1,19 @@
+summary = "Implicit-axis primitive: 32 points, step 8, limit 248, uint8 element."
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "implicit"
 kernel = "precise-koala/fn"
 offset = 0x28
 cols = 32
 step = 8
+
+[[ledger]]
+registry = "funcs"
+order = 77
+fields = ["role", "semantics", "confidence"]
+identity = [0]
 
 [[symbol]]
 layout = "1nd"
@@ -26,6 +36,11 @@ at = "1nd:000287ec"
 layout = "7mfk"
 address = "000263a0"
 name = "prudent-loon"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"

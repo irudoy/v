@@ -1,0 +1,36 @@
+title = "Heater control low bank 1 sensor 2"
+level = "code"
+code = "P0037"
+group = "rear_o2_heater"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 32
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019bac"
+name = "sexy-skua"
+index = 177
+attribute = "0001618a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001618a"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019bac"
+value = "330503000000003700000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a410"
+value = "0001618a"

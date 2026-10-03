@@ -1,0 +1,102 @@
+summary = """
+Component where ffff2465 and ffff24c2 select the source of a calibrated \
+limit."""
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 196
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "selector"
+to = "eggplant-curassow/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "military-flamingo/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00062c68"
+name = "tall-tiger"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062cca"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d22"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062d9e"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062da0"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062da2"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062dae"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062db0"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062db2"
+value = {named = ["00062c68", "ffff2465", "ffff24c2"], span = 1}
+key = "body"
+
+[[link]]
+type = "selector"
+to = "eggplant-curassow/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "military-flamingo/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

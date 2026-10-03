@@ -1,6 +1,177 @@
+summary = """
+First byte of the centered two-bank intake-cam timing pair. FUN_000bd9f0 \
+writes clamp_u8(0x80 + ffff4799 - ffff22cc), or neutral 0x80 under the \
+hardware-control mask. UDS DID 0x1135 returns this byte directly."""
+note = [
+    """
+Homologous VQ35HR sources identify DID 0x1135 as intake valve timing bank 1. \
+One count is 0.5 crank degrees: edge phase ffff22cc carries the intake \
+edge-phase unit of capture handler 0002a5cc, and the difference is signed so \
+that an edge earlier than the rest edge reads above 0x80 (advance positive). \
+The conversion raw*0.5-64 degCA is exact in the code unit; the crank-wheel \
+origin of the absolute angle remains open.""",
+]
+level = "code"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"
+
+[[diagnostic]]
+id = "intake-valve-timing-bank-1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:int-v-tim-b1"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0118:data_monitor:int-v-tim-b1-f9d4ea4d"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+Exact code maps UDS DID 0x1135 to ffff2442. FUN 000bd9f0 writes the centered \
+runtime value as clamp_u8(0x80 + reference - capture), with a control path \
+that forces neutral 0x80. Homologous VQ35HR sources identify intake camshaft \
+advance bank 1. Community diagnostic definitions support candidate \
+conversion raw*0.5-64 degCA; exact code does not establish the physical \
+scale."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "signed_timing_state_accumulator/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "evasive-degu/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "invisible-monkey/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000323a4"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000323aa"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000323d8"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000bda28"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000bda34"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000bda5c"
+value = {named = ["0002f928", "0003235c", "0004afdc", "000bcd44", "000bd9f0", "f9d4ea4d", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ultra-gecko/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "white-doberman/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-chameleon/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 45
+binding = "intake-valve-timing-bank-1"
+
+[[ledger]]
+registry = "vars"
+order = 166
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "centered_u8"
+identity = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-degu/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "invisible-monkey/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "white-doberman/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -38,6 +209,48 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0004b392"
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323a4"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323aa"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323d8"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda28"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda34"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda5c"
+value = {named = ["0003235c", "0004afdc", "000bcd44", "000bd9f0", "ffff22cc", "ffff2442", "ffff4799"], span = 1}
+key = "body"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff24c6"
@@ -73,3 +286,65 @@ at = "jk78c:ffff239c"
 to = "7mfk:ffff2442"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the channel byte"
+
+[[link]]
+type = "input"
+to = "evasive-degu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "invisible-monkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "hallowed-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "white-doberman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

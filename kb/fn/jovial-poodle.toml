@@ -1,0 +1,214 @@
+summary = """
+Alternate bank-indexed rear O2 high-voltage monitor. It maintains two \
+calibrated working bytes at ffff42b0[bank] and ffff42b2[bank], sets a fault \
+condition when either working byte is zero under its gates, and dispatches \
+indices 0xad/0xae for the path-B P0138/P0158 descriptors."""
+note = [
+    """
+The stock reload value is 5. The cadence and physical interpretation of the \
+two working bytes are not established.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "rear-o2-alt-high-b-p0138"
+kind = "monitor"
+label = "DtcCode"
+key = "P0138"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b7c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 0008a258 dispatches exact JK08A path-B descriptor index 0xAD for bank 1 \
+when either alternate high-condition working byte is zero. Descriptor record \
+0x19B7C contains P0138."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ochre-marmot/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "intelligent-shrew/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a408"
+value = {named = ["00019b7c", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "rear-o2-alt-high-b-p0158"
+kind = "monitor"
+label = "DtcCode"
+key = "P0158"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b88"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 0008a258 dispatches exact JK08A path-B descriptor index 0xAE for bank 2 \
+when either alternate high-condition working byte is zero. Descriptor record \
+0x19B88 contains P0158."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ochre-marmot/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "intelligent-shrew/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a408"
+value = {named = ["00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 83
+binding = "rear-o2-alt-high-b-p0138"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 84
+binding = "rear-o2-alt-high-b-p0158"
+
+[[ledger]]
+registry = "funcs"
+order = 391
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intelligent-shrew/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ochre-marmot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intelligent-shrew/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ochre-marmot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008a258"
+name = "jovial-poodle"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bce"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019b7c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019b88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a36c"
+value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a37e"
+value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a392"
+value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a3a4"
+value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a408"
+value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

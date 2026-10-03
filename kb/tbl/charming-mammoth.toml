@@ -1,0 +1,66 @@
+summary = "Cranking Base Fuel Schedule Table"
+note = [
+    """
+Code proves the role of an adjustable 1D table and traces its value into \
+arithmetic and writes, but not to a physically named consumer. Among 1D-8 \
+catalog entries, only Cranking Base Fuel Schedule Table has uint16 elements; \
+concept cranking-initial adds catalog context. The name, BFS unit, and scale \
+therefore remain catalog candidates. Multiplier ffff92f0/1020 on path \
+0009b1b4 is consumer arithmetic and does not prove the map's storage scale. \
+Result disposition: writes. Blocking condition: The physical-semantics trace \
+stops at the write to ffff404e by instruction 0009b284 and at the raw-result \
+write through a pointer by instruction 0009b948 followed by a copy to \
+ffff4032. The artifact contains no reader of ffff404e or ffff4032 proven to \
+carry this value. Call 00021ce0 at 0009b26a confirms only unsigned division, \
+not the map's physical meaning.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "BFS"
+scale = "x*0.000488"
+to_raw = "x/0.000488"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 279
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1]
+scale = [2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014f32"
+name = "charming-mammoth"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Cranking Base Fuel Schedule Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "cranking-initial"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table x*0.000488 BFS"
+
+[[link]]
+type = "reader"
+to = "sceptical-aardwark/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

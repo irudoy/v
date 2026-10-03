@@ -1,0 +1,89 @@
+summary = """
+Angle-sum term from 2D surface 0x9dba: two-bank read (ffff2442/ffff2443) \
+through wrapper 0x26140, folded as (r1+r2-256)/2-128."""
+note = [
+    """
+The double -128 offset (one -128 per bank) is the code evidence for an x-128 \
+element.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 94
+fields = ["semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "pearl-caiman/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_timing_state_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1514"
+name = "ultra-tarantula"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d068"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "pearl-caiman/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "writer"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

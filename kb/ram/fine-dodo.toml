@@ -1,0 +1,91 @@
+summary = """
+Captured byte and timer state maintained by EVAP pressure-sensor circuit \
+coordinator FUN 000ac994. FUN 000ac934 compares it below 0x16 for P0452 and \
+at or above 0xfe for P0453 under common operating gates."""
+note = [
+    """
+The exact comparisons are known; the timer or captured-sample interpretation \
+and cadence remain unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 418
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "peculiar-bear/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stereotyped-binturong/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2fd6"
+name = "fine-dodo"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008552"
+value = "0xfe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008553"
+value = "0x16"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac95c"
+value = {named = ["00008552", "00008553", "000ac934", "000ac994", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac980"
+value = {named = ["00008552", "00008553", "000ac934", "000ac994", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000acb48"
+value = {named = ["00008552", "00008553", "000ac934", "000ac994", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "peculiar-bear/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "stereotyped-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

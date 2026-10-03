@@ -1,0 +1,415 @@
+summary = """
+Bank-indexed rear O2 heater circuit monitor. Under its exact enable gates it \
+compares ffff2722[bank] with ROM8[0x8aaf]=0x0c and ROM8[0x8ab0]=0xec. A \
+value below 0x0c dispatches descriptor 0xb1 or 0xb2 for P0037/P0057; a value \
+at or above 0xec dispatches descriptor 0xaf or 0xb0 for P0038/P0058. \
+In-range state reloads the monitor byte at ffff4293[bank] from \
+ROM8[0x8ab2]=5."""
+note = [
+    """
+Code establishes the threshold and descriptor selection. A whole-program \
+p-code scan found no direct writer for ffff2722, so its producer and \
+physical current or voltage scale remain unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "rear-o2-heater-monitor-high-p0038"
+kind = "monitor"
+label = "DtcCode"
+key = "P0038"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b94"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Bank 1 dispatches exact descriptor index 0xAF for P0038 when ffff2722[0] is \
+at or above 0xEC under the monitor gates."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "esoteric-gecko/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019b94"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9fa"
+value = {named = ["00008ab0", "00019b94", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa0"
+value = {named = ["00008ab0", "00019b94", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa2"
+value = {named = ["00008ab0", "00019b94", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "rear-o2-heater-monitor-high-p0058"
+kind = "monitor"
+label = "DtcCode"
+key = "P0058"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019ba0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Bank 2 dispatches exact descriptor index 0xB0 for P0058 when ffff2722[1] is \
+at or above 0xEC under the monitor gates."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "esoteric-gecko/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019ba0"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9fa"
+value = {named = ["00008ab0", "00019ba0", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba9e"
+value = {named = ["00008ab0", "00019ba0", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa2"
+value = {named = ["00008ab0", "00019ba0", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "rear-o2-heater-monitor-low-p0037"
+kind = "monitor"
+label = "DtcCode"
+key = "P0037"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bac"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Bank 1 dispatches exact descriptor index 0xB1 for P0037 when ffff2722[0] is \
+below 0x0C under the monitor gates."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "esoteric-gecko/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019bac"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d8"
+value = {named = ["00008aaf", "00019bac", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba8e"
+value = {named = ["00008aaf", "00019bac", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa2"
+value = {named = ["00008aaf", "00019bac", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "rear-o2-heater-monitor-low-p0057"
+kind = "monitor"
+label = "DtcCode"
+key = "P0057"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bb8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Bank 2 dispatches exact descriptor index 0xB2 for P0057 when ffff2722[1] is \
+below 0x0C under the monitor gates."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "esoteric-gecko/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019bb8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d8"
+value = {named = ["00008aaf", "00019bb8", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba8a"
+value = {named = ["00008aaf", "00019bb8", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa2"
+value = {named = ["00008aaf", "00019bb8", "0007d8b8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 109
+binding = "rear-o2-heater-monitor-high-p0038"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 110
+binding = "rear-o2-heater-monitor-high-p0058"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 111
+binding = "rear-o2-heater-monitor-low-p0037"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 112
+binding = "rear-o2-heater-monitor-low-p0057"
+
+[[ledger]]
+registry = "funcs"
+order = 399
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-lobster/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "esoteric-gecko/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aloof-lobster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008b93a"
+name = "dynamic-moose"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a38"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab2"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab4"
+value = "0x83"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019b94"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019ba0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019bac"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019bb8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b9d6"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b9d8"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b9fa"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba74"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba8a"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba8e"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ba9e"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008baa0"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008baa2"
+value = {named = ["00008a38", "00008aaf", "00008ab0", "00008ab2", "00008ab4", "00019b94", "00019ba0", "00019bac", "00019bb8", "0007d8b8", "0008b93a", "ffff2722", "ffff4293"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

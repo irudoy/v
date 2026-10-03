@@ -1,0 +1,154 @@
+summary = """
+Two-table calculation: 2D 8x8 uint16 map 0xD80E produces signed ffff1750, \
+while coefficient 0x12964 supplies g and computes \
+sat_s16(trunc0(ffff1750*g/100)) in ffff1712. The same quantity reaches \
+ffff170a only under a triple enable condition."""
+note = [
+    """
+Interpolated g is written to ffff1767 and multiplies signed ffff1750 without \
+a reload; 00021bbc divides the product by 100 with truncation toward zero. \
+Saturation applies to the derived int16. Every cell of 0x12964 equals 100, \
+so the current multiplier is 1. The physical quantity is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 133
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dazzling-pelican/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "huge-flounder/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prehistoric-harrier/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stimulating-turaco/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00044500"
+name = "chirpy-emu"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000093e0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044540"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044544"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044548"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044552"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044556"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044572"
+value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "outstanding-marmot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

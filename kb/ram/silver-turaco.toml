@@ -1,0 +1,146 @@
+summary = """
+Packed hardware and computed-input state. FUN 00038618 writes bit 2 from \
+SH7058 PHDR bit 4 with active-low polarity; the port bit is the park/neutral \
+position input, so bit 2 set means P/N position switch OFF. FUN 00038d44 \
+mirrors computed START SIGNAL ffff4185.bit6 into bit 1."""
+note = [
+    """
+The bit-1 identity follows from the exact DID 0x1302 START SIGNAL chain. \
+PHDR bit 4 is MCU pin 67/B19. The switch identity follows from the DID \
+0x1302 bit 2 P/N POSI SW chain through ffff4217 bit 1; the ECM terminal \
+remains unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 65
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-sheep/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "computed_start_signal_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1164"
+name = "silver-turaco"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038636"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003863e"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000388a8"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038970"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039138"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003913a"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003914a"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039152"
+value = {named = ["00038618", "00038d44", "ffff1164", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "small-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

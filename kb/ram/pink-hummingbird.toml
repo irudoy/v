@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15b1"
+name = "pink-hummingbird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000467ae"
+
+[[link]]
+type = "lookup"
+to = "quaint-lion/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sceptical-dingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

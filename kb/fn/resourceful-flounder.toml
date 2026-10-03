@@ -1,3 +1,9 @@
+summary = """
+Explicit-axis 8x8 wrapper over third word core 0x26B84; geometry is in the \
+entry registry."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "garnet-caracara/fn"
@@ -6,6 +12,30 @@ rows = 8
 storage = "uint16"
 x_storage = "uint16"
 y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 91
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "banana-koala/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +58,11 @@ at = "1nd:00028a3e"
 layout = "7mfk"
 address = "000265f0"
 name = "resourceful-flounder"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +114,19 @@ key = "000265f0"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00028422"
+
+[[link]]
+type = "depends"
+to = "banana-koala/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

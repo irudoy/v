@@ -1,0 +1,134 @@
+summary = """
+Saturated fuel-base accumulator written by FUN 000554ae as \
+clamp_u16(int32(ffff15f8)+0x4000+uint16(ffff230c)+uint16(ffff15da)). FUN \
+000556ec adds conditional term ffff240a before Q14 scaling."""
+note = ["Physical units remain unresolved."]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 564
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adept-bumblebee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "beneficial-ringtail/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "competent-pillbug/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_base_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff231a"
+name = "happy-curassow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554bc"
+value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554be"
+value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554ca"
+value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554ea"
+value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556fa"
+value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "adept-bumblebee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "beneficial-ringtail/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "competent-pillbug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_base_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

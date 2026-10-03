@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff5508"
+name = "jumping-viper"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00099ef0"
+
+[[link]]
+type = "reader"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

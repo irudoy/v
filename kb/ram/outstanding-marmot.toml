@@ -1,0 +1,50 @@
+summary = """
+One of the RAM sensor inputs of dual-channel interpolation accessor \
+0004bbee, alongside ffff119c/ffff2466; in 00051a98, byte[ffff128c+off] is a \
+per-cylinder mask in the fuel-cut AND condition."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 87
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "discerning-snake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff128c"
+name = "outstanding-marmot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039a06"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

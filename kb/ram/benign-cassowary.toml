@@ -1,0 +1,201 @@
+summary = """
+Live Q7 normalized Base Fuel Schedule byte produced by FUN 0003b75c as \
+min(255,floor(uint16[ffff1026]*128/ROM16[00009534])). Stock \
+ROM16[00009534]=0x6a5a. FUN 00020dfe snapshots this byte to ffff102c before \
+the next periodic task pass; FUN 0004bbee and FUN 0004dbe8 also read the \
+live value directly."""
+note = [
+    """
+A whole-program p-code census found site 0003bd5a as the only direct writer. \
+Raw 128 means Base Fuel Schedule equals the 0x9534 reference, and \
+raw*100/128 is the exact normalized percentage. The physical Cylinder \
+Filling name remains a catalog candidate.""",
+]
+level = "code"
+unit = "normalized BFS Q7"
+
+[[ledger]]
+registry = "vars"
+order = 45
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "precise-nuthatch/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bfs/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1048"
+name = "benign-cassowary"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f16"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f18"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd1c"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd2a"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd3a"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd4c"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd5a"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce0"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dc4a"
+value = {named = ["00009534", "00020dfe", "00021ce0", "0003b75c", "0004bbee", "0004dbe8", "ffff1026", "ffff1048"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "bfs/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "precise-nuthatch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,7 +1,90 @@
-note = "The scaled value is the voltage of A/F sensor 1."
+summary = """
+Bank-2 filtered diagnostic word written by FUN 00059e7c and published by \
+exact service-0x22 DID 0x1226."""
+note = [
+    "The scaled value is the voltage of A/F sensor 1.",
+    """
+Structured Nissan diagnostics identify the DID as A/F sensor 1 bank 2. \
+Public source conversions conflict, so no physical scale is assigned.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "air-fuel-sensor-1-bank-2-did-1226"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1226h-a-f-sen1-b2"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1226h-a-f-sen1-b2-05b72585"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1226 to big-endian word \
+ffff2782. FUN 00059e7c writes the symmetric bank-2 diagnostic word. \
+Structured Nissan diagnostics identify the DID as A/F sensor 1 bank 2. \
+Public conversions conflict, so no physical scale is promoted."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022934"
+value = "ffff2782"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022934"
+value = {named = ["0003235c", "00059e7c", "05b72585", "ffff2782"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00059f66"
+value = {named = ["0003235c", "00059e7c", "05b72585", "ffff2782"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "cobalt-turtle/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 21
+binding = "air-fuel-sensor-1-bank-2-did-1226"
+
+[[ledger]]
+registry = "vars"
+order = 558
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "diagnostic raw"
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cobalt-turtle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -35,6 +118,26 @@ note = "Aligned diagnostic pointer table preserves the adjacent word"
 layout = "7mfk"
 address = "ffff2782"
 former = ["tomato-mussel/ram/7mfk-ffff2782"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022934"
+value = "ffff2782"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022934"
+value = {named = ["0003235c", "00059e7c", "ffff2782"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00059f66"
+value = {named = ["0003235c", "00059e7c", "ffff2782"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -72,3 +175,19 @@ to = "7mfk:00059f34"
 count = 1
 value = 26
 note = "Aligned diagnostic pointer table preserves the adjacent word"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cobalt-turtle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

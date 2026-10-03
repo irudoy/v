@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff31e6"
+name = "discreet-potoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d9b0"
+
+[[link]]
+type = "writer"
+to = "prophetic-kagu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

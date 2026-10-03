@@ -1,0 +1,63 @@
+summary = """
+Component where ROM bytes 0x8616 and 0x8615 select sources and additive \
+branches, while param_1/r13 selects coefficient 0x123ea or 0x12412."""
+note = [
+    """
+At r13=0 r4 retains 0x123ea; at r13!=0 site 0xbe3f6 replaces it with \
+0x12412. Both coefficients are consumed as x/100. The physical meaning of \
+the corrected difference is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 289
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "belligerent-potoo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "red-bullmastiff/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000be32a"
+name = "quiet-cat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008615"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008616"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be3ea"
+value = {named = ["00008615", "00008616", "000123ea", "00012412", "000be32a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be3f6"
+value = {named = ["00008615", "00008616", "000123ea", "00012412", "000be32a"], span = 1}
+key = "reference"

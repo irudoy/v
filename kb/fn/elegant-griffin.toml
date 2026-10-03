@@ -1,0 +1,53 @@
+summary = """
+Thunk at scheduler pointer 0x21a84 that branches to LIDs-4..20 status and \
+slot copier 00034fe4."""
+level = "code"
+role = "wrapper"
+
+[[ledger]]
+registry = "funcs"
+order = 680
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00035318"
+name = "elegant-griffin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021a84"
+value = {named = ["00020dfe", "00034fe4"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035318"
+value = {named = ["00020dfe", "00034fe4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "khaki-guppy/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

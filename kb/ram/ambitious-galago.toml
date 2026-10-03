@@ -1,0 +1,135 @@
+summary = """
+Scheduler snapshot of selected normalized-temperature byte ffff1078, the \
+normalized coolant index latched at engine start together with raw byte \
+ffff1076. It indexes map 0x12026 directly and map 0x12DE2 through \
+q=min(2*A,255)."""
+note = [
+    """
+The scale is the normalized coolant scale of FUN 00039634: 1.6 counts per \
+deg C from -40 deg C, saturated to 255 from 120 deg C.""",
+]
+level = "code"
+unit = "normalized coolant index"
+
+[[ledger]]
+registry = "vars"
+order = 51
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "helpful-hoatzin/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "jovial-axolotl/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quantum-fennec/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1070"
+name = "ambitious-galago"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["00012026", "00012de2", "000209d8", "00020dfe", "000394b8", "00082c8a", "ffff1070", "ffff1078"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f32"
+value = {named = ["00012026", "00012de2", "000209d8", "00020dfe", "000394b8", "00082c8a", "ffff1070", "ffff1078"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008391e"
+value = {named = ["00012026", "00012de2", "000209d8", "00020dfe", "000394b8", "00082c8a", "ffff1070", "ffff1078"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083934"
+value = {named = ["00012026", "00012de2", "000209d8", "00020dfe", "000394b8", "00082c8a", "ffff1070", "ffff1078"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "black-kudu/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "selected_temperature_pair_update/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "quantum-fennec/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sceptical-dingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,27 @@
+summary = """
+Stock-selected 1D-16 uint8 lookup whose returned raw byte is stored in \
+ffff2f8d and used as one multiplier in sat_u16(uint8[ffff2f8d] * \
+uint16[ffff3018] * uint8[ffff2f94] >> 14)."""
+note = [
+    """
+ROM8[0000893f]=0xc0 makes the test at 000b20d4 select the 00012282 path. \
+Wrapper 00026388 returns cell 15 directly for an input at or above 240; \
+below that boundary, kernel 00026a84 selects adjacent uint8 cells and \
+finisher 00026740 performs unsigned linear interpolation. Site 000b213c \
+writes the result to ffff2f8d. Sites 000b2282 through 000b22a6 read it, form \
+the two-multiplier product with ffff3018 and ffff2f94, shift right by 14, \
+saturate to uint16, and write the caller-provided result at ffff301c. The \
+shared shift does not assign a separate fixed-point scale to either byte \
+multiplier, so the map remains raw. Its physical quantity is unresolved. \
+Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Conditional Triple-Product Multiplier - raw u8 (0x12282)"
 category = "Internal Calculations"
@@ -7,7 +31,211 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 124
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "classic-pelican/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012282"
 name = "visionary-camel"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000893f"
+value = "0xc0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a84"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d0"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d2"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d4"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b20d6"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2128"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b212c"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b212e"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2132"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b213c"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2282"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2288"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2290"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2298"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b229e"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b22a0"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b22a6"
+value = {named = ["0000893f", "00012282", "00026388", "00026740", "000b2096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff17f0"
+name = "vengeful-falcon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd30a"
+
+[[link]]
+type = "lookup"
+to = "burrowing-narwhal/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,150 @@
+summary = """
+Diagnostic status state-machine updater. Its ffff41ea writes modify only \
+bits 1 through 4; read-modify-write operations and whole-byte stores \
+preserve bits 5 through 7."""
+note = [
+    """
+Update diagnostic status state while preserving ffff41ea bits 5 through 7""",
+    """
+The physical identities of the managed status phases remain unresolved. \
+Preservation of ffff41ea.bit7 is code-proven.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 53
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 542
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007f870"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f89e"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f8a2"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f8f6"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f930"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f944"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f988"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f996"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f99a"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f9b8"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa02"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa2c"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa40"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa4e"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa60"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa94"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007faa0"
+value = {named = ["0007f870", "ffff41ea"], span = 1}
+key = "reference"

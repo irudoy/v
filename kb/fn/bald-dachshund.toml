@@ -1,3 +1,15 @@
+summary = """
+Mixed 16x16 wrapper: r5 axis is byte-based through core 0x26A0C (clamp 15), \
+while r6 axis is word-based through 0x26984 (clamp 30); shll doubles the \
+byte-axis index to a word stride. One of two mixed wrappers in the catalog."""
+note = [
+    """
+Element type belongs to the (wrapper, axis) pair rather than the core: the \
+clamp establishes both axis length and element type.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "versatile-junglefowl/fn"
@@ -6,6 +18,31 @@ rows = 16
 storage = "uint16"
 x_storage = "uint8"
 y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 72
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amiable-bloodhound/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "azure-skink/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +65,11 @@ at = "1nd:000286fe"
 layout = "7mfk"
 address = "000262e0"
 name = "bald-dachshund"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +121,19 @@ key = "000262e0"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000280e2"
+
+[[link]]
+type = "depends"
+to = "amiable-bloodhound/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "azure-skink/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

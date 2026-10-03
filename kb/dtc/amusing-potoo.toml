@@ -1,0 +1,36 @@
+title = "Local physical monitor name unresolved"
+level = "code"
+code = "P1422"
+group = "manufacturer_specific"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 47
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "0001a11c"
+name = "amusing-potoo"
+index = 293
+attribute = "00015faa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00015faa"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a11c"
+value = "460100000000142210000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a5e0"
+value = "00015faa"

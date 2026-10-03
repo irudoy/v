@@ -1,3 +1,9 @@
+summary = """
+Explicit-axis 8x8 wrapper over the word core; geometry is in the entry \
+registry."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "versatile-junglefowl/fn"
@@ -6,6 +12,30 @@ rows = 8
 storage = "uint16"
 x_storage = "uint16"
 y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 70
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amiable-bloodhound/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +58,11 @@ at = "1nd:0002867e"
 layout = "7mfk"
 address = "00026270"
 name = "nondescript-seagull"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +114,19 @@ key = "00026270"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00028062"
+
+[[link]]
+type = "depends"
+to = "amiable-bloodhound/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

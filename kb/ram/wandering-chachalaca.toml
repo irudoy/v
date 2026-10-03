@@ -1,0 +1,71 @@
+summary = """
+Base of the two-word selected regulator-target array written by 000cb224 and \
+compared with the closed reference by 000cb2b6."""
+note = [
+    """
+Elements are ffff3926 and ffff3928; fault modes can substitute alternate \
+references.""",
+]
+level = "code"
+unit = "centered target array"
+
+[[ledger]]
+registry = "vars"
+order = 702
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_error_encoder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_fault_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3926"
+name = "wandering-chachalaca"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb2a8"
+value = {named = ["000cb224", "000cb2b6", "ffff3926"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb2e0"
+value = {named = ["000cb224", "000cb2b6", "ffff3926"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_target_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_target_fault_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

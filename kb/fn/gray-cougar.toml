@@ -1,0 +1,92 @@
+summary = """
+Two-bank intake-cam reference updater. It conditionally adjusts or restores \
+ffff4799 and ffff479a from centered differences involving capture-derived \
+channel bytes and ROM-backed reference values."""
+note = [
+    """
+The function maintains the reference side of the centered runtime value; \
+exact physical adaptation semantics remain unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 375
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-degu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-dachshund/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intrepid-shellfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "invisible-monkey/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bdf5c"
+name = "gray-cougar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdf80"
+value = {named = ["000bdf5c", "ffff22cc", "ffff22cd", "ffff4799", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be0b6"
+value = {named = ["000bdf5c", "ffff22cc", "ffff22cd", "ffff4799", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be0da"
+value = {named = ["000bdf5c", "ffff22cc", "ffff22cd", "ffff4799", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be0f4"
+value = {named = ["000bdf5c", "ffff22cc", "ffff22cd", "ffff4799", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be10c"
+value = {named = ["000bdf5c", "ffff22cc", "ffff22cd", "ffff4799", "ffff479a"], span = 1}
+key = "reference"

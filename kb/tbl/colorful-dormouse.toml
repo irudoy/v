@@ -1,0 +1,233 @@
+summary = """
+Implicitly indexed eight-point threshold for RAM value ffff10c0. At \
+00044448, the interpolated lookup is multiplied by 10: if ffff10c0 <= \
+10*lookup, bit 3 is set and bit 4 is cleared in RAM ffff24d1; if ffff10c0 > \
+10*lookup, both bits are set, when the branch's outer conditions are \
+satisfied."""
+note = [
+    """
+The physical quantity and subsystem are unknown. The scale describes only \
+conversion of the map byte into the RAM ffff10c0 comparison domain. Numeric \
+round trip: 1*10=10, 10/10=1; 50*10=500, 500/10=50. The map comparison acts \
+only on the branch enabled by outer conditions involving ffff1071 and \
+ffff183c. Index: implicit 1D-8 by v=RAM8[ffff1070]: for v < 224, \
+i=floor(v/32), a Q0.16 fraction is defined by the low 5 bits of v, and \
+cell[i] and cell[i+1] are interpolated; for v >= 224, cell[7] is returned. \
+Output trace: 00012c66 -> site 000420e6 -> call site 000420ec -> wrapper \
+00026370 -> for v < 224: kernel 00026a80, cell reads 00026aac/00026aae, and \
+finisher 00026740; for v >= 224: cell 7 returned from 00026370 -> site \
+000420f0 -> write site 000420f6 -> RAM ffff1958 -> consumer 00044448 -> \
+comparison of RAM ffff10c0 with 10*RAM8[ffff1958] -> bits 3/4 of RAM \
+ffff24d1. Result disposition: consumer; Result target: site 000420f6 -> RAM \
+ffff1958 -> function 00044448 -> bits 3/4 of RAM ffff24d1.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "RAM_ffff10c0_raw"
+scale = "x*10"
+to_raw = "x/10"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 413
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "khaki-dodo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-galago/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fresh-crow/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hopeful-ostrich/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "khaki-dodo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "uppish-slug/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hopeful-ostrich/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c66"
+name = "colorful-dormouse"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000420e4"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000420e6"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000420ec"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000420f0"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000420f6"
+value = {named = ["00012c66", "00026370", "00026740", "000420b8", "00044448", "ffff1070", "ffff10c0", "ffff1958", "ffff24d1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "quirky-silkworm/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "10"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*10=10"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "10/10=1"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "50*10=500"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "500/10=50"
+
+[[link]]
+type = "index"
+to = "ambitious-galago/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "khaki-dodo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "threshold"
+to = "uppish-slug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

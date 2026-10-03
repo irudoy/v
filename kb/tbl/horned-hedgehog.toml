@@ -1,3 +1,25 @@
+summary = """
+Trustful QH0/torque conversion surface. Forward lookups convert RPM and a \
+QH0 coordinate into offset-binary requested torque; FUN 00073628 \
+interpolates a complete row at current RPM and reverses the relation to \
+recover the QH0 coordinate from centered request ffff19c6."""
+note = [
+    """
+Forward consumers subtract 0x8000 from the uint16 result before signed \
+arithmetic. The stock contents and both axes are byte-identical to primary \
+family 0000e98e/00011d0c/00014114, matching the A2L requirement that primary \
+and trustful maps remain identical. The physical units and multiplier \
+require hardware validation. Result disposition: consumer and inverse \
+coordinate source.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Requested Torque [Nm]"
+scale = "x*0.1-3276.8"
+to_raw = "x/0.1+32768"
+scale_level = "candidate"
+
 [editor]
 name = "Requested Torque Conversion by QH0 - Validation Copy"
 category = "Electronic Throttle Control / Requested Torque"
@@ -5,6 +27,56 @@ order = 121
 format = "0.0"
 fine = 1
 coarse = 10
+
+[[ledger]]
+registry = "findings"
+order = 437
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyber-ocelot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-angelfish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavenly-binturong/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pretty-numbat/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -36,6 +108,44 @@ note = "unique structural pair preserves interpolation-call order"
 layout = "7mfk"
 address = "000175c8"
 name = "horned-hedgehog"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "QH0/ Torque Conversion Map Trustful"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000736aa"
+value = {named = ["000175c8", "00018716", "00018ac6", "00073628", "00073a44"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007375c"
+value = {named = ["000175c8", "00018716", "00018ac6", "00073628", "00073a44"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073acc"
+value = {named = ["000175c8", "00018716", "00018ac6", "00073628", "00073a44"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007476e"
+value = {named = ["000175c8", "00018716", "00018ac6", "00073628", "00073a44"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map Trustful|Requested Torque (x*0.1)-3276.8"
 
 [[symbol]]
 layout = "jk00c"
@@ -82,3 +192,44 @@ to = "7mfk:00074778"
 count = 1
 value = 3
 note = "unique structural pair preserves interpolation-call order"
+
+[[link]]
+type = "depends"
+to = "heavenly-binturong/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "pretty-numbat/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-angelfish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vigorous-silkworm/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

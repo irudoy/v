@@ -1,6 +1,166 @@
+summary = """
+Exact one-byte response source for UDS DID 0x111f. FUN 0003eb84 maintains \
+the runtime byte, FUN 000bcd44 reads it during initialization, and the \
+service 0x22 pointer table publishes it directly. Scheduler 00020dfe copies \
+it to previous-pass snapshot ffff2772, the coordinate of the exhaust-VTC \
+gain curve. With ROM8[00008616] bit 0 set, as in stock JK08A, FUN 0003eb84 \
+filters ADC sample ffff1d5c through 0003a5e0 into ffff1f92 and raw byte \
+ffff117b, converts the byte through curve 00012c6e into ffff1f94, and \
+publishes it here at 0003ecae: directly while ffff4183 bit 7 is set, \
+otherwise rising at once and falling only after a drop of two or more \
+counts; a raw byte outside 3..241 or a stored P0197, P0198, or P0196 record \
+sets ffff4182 bit 7 and publishes 0xff. With the bit clear the function \
+publishes zero."""
+note = [
+    """
+Curve 00012c6e is byte-identical to shared thermistor table 00012dea and is \
+read through the same implicit-axis primitive, and the ECU declares the \
+00012dea code as deg C+50 through J1979 Mode 01 PIDs 0x05 and 0x0F, so deg C \
+= raw-50 is established by code. The factory engine oil temperature sensor \
+reference of 4.4, 3.5, 2.2, 0.9, and 0.6 V at -10, 20, 50, 90, and 110 deg C \
+gives -8.5, 20.5, 52, 94, and 113.5 deg C through the curve at 20 mV per \
+input count. Target recordings hold raw 141 beside a diagnostic reading of \
+90 deg C. The identification of DID 0x111f as engine oil temperature is a \
+diagnostic-binding claim in JK08A.diagnostic-bindings.csv. The sensor path \
+is selected by the set configuration bit (tst #1 at 0003eb96 branches to the \
+zero store while the bit is clear).""",
+]
+level = "code"
 width = 8
 unit = "degC"
 scale = "x-50"
+
+[[diagnostic]]
+id = "engine-oil-temperature-did-111f"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-111fh-eng-oil-temp"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-111fh-eng-oil-temp-7a1b296b"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 pointer table maps DID 0x111F to response byte \
+ffff2876. A structured homologous Nissan profile identifies the DID as \
+engine oil temperature and defines deg C = raw-50. The source profile embeds \
+CID 0x111F in the semantic name but does not expose a request field, so its \
+canonical corpus identity remains semantic. The byte is the output of curve \
+00012c6e, byte-identical to thermistor table 00012dea, whose code the ECU \
+declares as deg C+50 through J1979 Mode 01 PIDs 0x05 and 0x0F, so the \
+conversion is established by code. The P0197, P0198, and P0196 monitors read \
+the same path, and target readings give stream raw 141 = 91 deg C beside a \
+diagnostic reading of 90 deg C."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022728"
+value = "ffff2876"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022728"
+value = {named = ["0003235c", "7a1b296b", "ffff2876"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 12
+binding = "engine-oil-temperature-did-111f"
+
+[[ledger]]
+registry = "vars"
+order = 387
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "degC+50"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "denim-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-doberman/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "subtle-turaco/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coral-lynx/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exuberant-sidewinder/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prophetic-fox/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "industrious-jaguarundi/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "denim-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +192,93 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2876"
 former = ["little-harrier/ram/7mfk-ffff2876"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022728"
+value = "ffff2876"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022728"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eb96"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ebb4"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ebd6"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec18"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec58"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ec98"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eca4"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ecae"
+value = {named = ["00008616", "00012c6e", "00020dfe", "000263a0", "0003235c", "0003a5e0", "0003eb84", "000bcd44", "ffff117b", "ffff1d5c", "ffff1f94", "ffff2876", "ffff4183"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "prudent-loon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "auburn-sambar/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +315,78 @@ at = "jk78c:ffff1171"
 to = "7mfk:ffff2876"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "coral-lynx/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exuberant-sidewinder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "prophetic-fox/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "subtle-turaco/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "denim-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "white-doberman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "industrious-jaguarundi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "denim-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

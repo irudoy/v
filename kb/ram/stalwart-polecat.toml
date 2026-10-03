@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff13dc"
+name = "stalwart-polecat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064fa2"
+
+[[link]]
+type = "lookup"
+to = "dramatic-warthog/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "sturdy-baboon/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spotted-zebra/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,174 @@
+title = "Select DFCO exit delay"
+summary = """
+DFCO exit-delay selector. It returns zero under master/runtime gates, \
+including ffff2458.bit5 set with scheduled RPM-drop class ffff106a at least \
+4; otherwise restore classes 1, 2, and 3 select calibrated bytes at \
+00008c4b, 00008c41 or 00008c40, and 00008c4d or 00008c4c according to stock \
+selector ROM8[0000870c].bit7."""
+note = [
+    """
+All relevant stock delay bytes are zero, so normal state-4 exit delay is \
+zero.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 36
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 486
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "teal-giraffe/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005038a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a40"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c40"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c41"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c4b"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c4c"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c4d"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005038a"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050394"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050398"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000503a0"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000503a2"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000503a4"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000503a6"
+value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

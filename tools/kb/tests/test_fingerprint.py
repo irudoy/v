@@ -3,7 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from kb import fingerprint, repo
+from kb import compile, fingerprint, repo
+from kb.adapters import ledgers
 
 
 class BlobTest(unittest.TestCase):
@@ -20,6 +21,12 @@ class BlobTest(unittest.TestCase):
         self.assertIn("l0/jk78c/function_tokens.csv", paths)
         self.assertIn("rom-images/23710-JK08A/1JK08A-20260726-stock.bin", paths)
         self.assertEqual(paths, sorted(set(paths)))
+
+    def test_converted_ledgers_and_curated_names_are_outputs_not_compiler_inputs(self):
+        paths = set(compile.inputs())
+        self.assertFalse(paths & {path.as_posix() for path in ledgers.PATHS.values()})
+        self.assertNotIn("tools/ghidra/symbols/7mfk.csv", paths)
+        self.assertIn("tools/ghidra/symbols/1nd.csv", paths)
 
 
 class CacheTest(unittest.TestCase):

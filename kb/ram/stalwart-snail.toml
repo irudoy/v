@@ -1,0 +1,125 @@
+summary = """
+Scheduler snapshot of engine-speed word ffff1208 in RPM/3.125 counts. \
+Scheduler 00020dfe copies the 56-byte block ffff11d4..ffff120b to ffff119c, \
+which places ffff1208 at offset 0x34. FUN 0003de4c reads it as the source of \
+trustful row coordinate ffff1cca."""
+note = [
+    """
+The same copy places ffff11ee, the RPM/3.125 word of the primary path, at \
+ffff11b6.""",
+]
+level = "code"
+unit = "rpm/3.125"
+
+[[ledger]]
+registry = "vars"
+order = 954
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "base"
+to = "offbeat-mantis/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x34"
+offset = 0x34
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuzzy-pogona/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-taipan/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11d0"
+name = "stalwart-snail"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f60"
+value = {named = ["00020dfe", "0003de4c", "ffff119c", "ffff11d0", "ffff1208"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6a"
+value = {named = ["00020dfe", "0003de4c", "ffff119c", "ffff11d0", "ffff1208"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["00020dfe", "0003de4c", "ffff119c", "ffff11d0", "ffff1208"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6e"
+value = {named = ["00020dfe", "0003de4c", "ffff119c", "ffff11d0", "ffff1208"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de66"
+value = {named = ["00020dfe", "0003de4c", "ffff119c", "ffff11d0", "ffff1208"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "offbeat-mantis/ram"
+offset = 0x34
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "evasive-taipan/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuzzy-pogona/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

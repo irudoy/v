@@ -1,0 +1,152 @@
+summary = """
+Unsigned Q12 accumulator maintained by 0006205c. The normal path initializes \
+it from map 0x131a2, adds or subtracts step 0x133d2 toward target 0x13182, \
+and clamps on target crossing; an alternate path directly assigns map \
+0x131c2 shifted left by 12."""
+note = [
+    """
+Stock maps 0x13182 and 0x131a2 are byte-identical, and every cell of step \
+map 0x133d2 is zero. The physical quantity and update-period unit are \
+unresolved.""",
+]
+level = "code"
+unit = "Q12 raw"
+
+[[ledger]]
+registry = "vars"
+order = 271
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "enigmatic-silkworm/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "hopeful-caracara/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lavender-butterfly/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ochre-coua/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spirited-lion/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff33a8"
+name = "skilled-mole"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062718"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062738"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062740"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062752"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062768"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062796"
+value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0006205c", "ffff33a8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "enigmatic-silkworm/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "hopeful-caracara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "lavender-butterfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "ochre-coua/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

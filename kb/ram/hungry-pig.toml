@@ -1,0 +1,102 @@
+summary = """
+Optional additive term of the normal compositor branch of 0004bdc2, \
+calculated by its embedded 8x8 lookup as \
+min(255,floor(min(255,interp2d)*u16(ffff1900)*u8(ffff134c)/500000)) and \
+nonzero only when ffff41ab.bit6 is set and \
+min(ffff28b8,ffff28ba)>=ROM16[0x9012]=7350."""
+note = ["One count is one crank degree of advance in the final coordinate."]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 835
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fabulous-marmoset/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tricky-marmoset/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "timing_state_compositor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff134a"
+name = "hungry-pig"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009012=7350"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be92"
+value = {named = ["00009012", "0000c50e", "0004bdc2", "ffff134a", "ffff41ab"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fabulous-marmoset/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "charming-barracuda/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "tricky-marmoset/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

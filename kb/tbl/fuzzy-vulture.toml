@@ -1,0 +1,164 @@
+summary = """
+Conditional lower bound for a signed raw value: in FUN_00041750, the map \
+result after offset -32768 is the first operand of max with the minimum of \
+RAM ffff202e and RAM ffff226a."""
+note = [
+    """
+The physical quantity is unidentified: 1D-8 catalogs are ambiguous, and code \
+does not reveal the physical meaning of RAM ffff114a and ffff2260. Code \
+confidence applies to the proven function of the map as a conditional lower \
+bound. Converting cell range 32548..32733 yields -220..-35; x+32768 is the \
+exact inverse. Branch 00041c00 has not been proven unreachable. Result \
+disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 277
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-gazelle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-boa/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "congenial-skink/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "congenial-skink/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014e92"
+name = "fuzzy-vulture"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b6a"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b72"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b82"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d4"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d8"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00041b7e"
+value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "evasive-boa/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "congenial-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

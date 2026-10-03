@@ -1,0 +1,50 @@
+summary = """
+Crankshaft speed irregularity monitor counter compared with threshold \
+ffff2b92 from map 0x14982, constant 60."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 281
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "threshold"
+to = "ambrosial-bonobo/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-coucal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff37da"
+name = "taupe-pelican"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00082dbc"
+
+[[link]]
+type = "threshold"
+to = "ambrosial-bonobo/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,3 +1,33 @@
+summary = """
+Coolant-indexed rise reload table of the intake idle target, selected while \
+ROM8[00008616] bit 0 is clear. FUN 000bdc66 looks it up by coolant index \
+ffff106f and writes the result to ffff1a1e and countdown ffff25ee; with \
+ffff247b bit 1 set and ffff1a1e nonzero, it raises intake target ffff2326 \
+toward idle source byte ffff1553 by one count each time the countdown reads \
+zero and reloads the pair (JK08A.cvtc.md)."""
+note = [
+    """
+On the update branch in 000bdc66, previous values ffff1a1e != 0 and ffff25ee \
+== 0 enter the gate before the lookup. The selector chooses 00012f06 instead \
+of 00012efe; all eight cells in 00012f06 equal 5, so the current calibration \
+returns 5 regardless of index. Stock ROM8[00008616] is 0x01, so the stock \
+image never reads this table. The routine that counts ffff25ee down is not \
+identified, so the time base of the rise is not established. Index: implicit \
+1D-8 by uint8 ffff106f: linear interpolation of adjacent bytes for x<224, \
+element[7] for x>=224. Output trace: 00012f06 -> 000bde7a/000bde82 -> \
+00026370 -> 00026a80 -> 00026aac/00026aae -> 00026740 -> 000bde86 -> \
+000bde8c/000bde94 -> ffff1a1e/ffff25ee; before the next write, previous \
+values ffff1a1e and ffff25ee are tested in the 000bdc66 gate. Result \
+disposition: consumer; Result target: RAM ffff1a1e and ffff25ee; consumer \
+function 000bdc66.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Conditional Paired State Value B - raw u8 (0x12F06)"
 category = "Internal Calculations"
@@ -7,10 +37,132 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 418
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "arboreal-wrasse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wooden-quetzal/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012f06"
 name = "daffy-skua"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "5"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde7a"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde7c"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde80"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde82"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde86"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde8c"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde94"
+value = {named = ["00012f06", "00026370", "00026740", "000bdc66", "ffff106f", "ffff1a1e", "ffff25ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +195,26 @@ value = "mnemonic"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amphibian-sponge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

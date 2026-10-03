@@ -1,0 +1,147 @@
+summary = """
+First-channel override source coordinated by FUN 00079a98. The admitted path \
+copies ffff2698 here; fallback paths select ffff2a6a, zero, or \
+ROM16[000092ec]=43. ffff41f3.bit0 selects this word in FUN 0007a592 and FUN \
+0007ae80."""
+note = ["The physical quantity is unresolved."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 35
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-ferret/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-koala/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-hoatzin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3026"
+name = "married-jaguarundi"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092ec"
+value = "0x002b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ad4"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079adc"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b28"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b3a"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b42"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a76a"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a772"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aee4"
+value = {named = ["000092ec", "00079a98", "0007a592", "0007ae80", "ffff2698", "ffff3026"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "ruddy-koala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "active-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

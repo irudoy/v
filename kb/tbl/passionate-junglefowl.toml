@@ -1,7 +1,123 @@
+summary = """
+Lower segment of a piecewise-linear conversion of ffff1d10: for input < \
+64512, 00018e86 is interpolated over axis 00018fd6 and written to ffff1ce4 \
+without an additional shift. The physical quantity is unknown."""
+note = [
+    """
+The join with the upper branch is consistent in code: the lower maximum is \
+45187, and the upper start 2824*16 is 45184. Catalog identity \"Throttle \
+Flow Potential\" and x*0.001525879 are not confirmed.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 325
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dashing-mongrel/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "xanthic-dogfish/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018e86"
 name = "passionate-junglefowl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073858"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007385a"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007385e"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073864"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073868"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007386a"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007386c"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073870"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073872"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073882"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073886"
+value = {named = ["00018e46", "00018e86", "00018fd6"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +150,33 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "dashing-mongrel/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "xanthic-dogfish/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vigorous-silkworm/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

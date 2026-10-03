@@ -1,0 +1,191 @@
+summary = """
+Five-state selector in the crankshaft rotational-irregularity component. \
+Four boundaries from maps 0x1265A..0x1268A classify the high byte of current \
+Base Fuel Schedule word ffff1024 into state 0..4. FUN 00085a70 uses the \
+state as the only index into ROM byte table 0x11A28 and adds the selected \
+byte to accumulators ffff36e8 and ffff36ec."""
+note = [
+    """
+Stock JK03A and JK08A have byte-identical thresholds 255, 254, 253, and 252 \
+and byte-identical active table entries ROM[0x11A28..0x11A2C] = ff ff ff ff \
+ff. The state therefore varies structurally, but its downstream increment is \
+invariant at 255 in both stock ROMs.""",
+]
+level = "code"
+unit = "state"
+
+[[ledger]]
+registry = "vars"
+order = 229
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "colorful-snake/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "eggplant-skylark/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "friendly-raven/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "hypersonic-lorikeet/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b4b"
+name = "heavenly-shrew"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00011a28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083668"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083678"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083688"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083698"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836a4"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008621c"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086242"
+value = {named = ["00011a28", "0001265a", "0001266a", "0001267a", "0001268a", "00082c8a", "00085a70", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "colorful-snake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "eggplant-skylark/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "friendly-raven/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "hypersonic-lorikeet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

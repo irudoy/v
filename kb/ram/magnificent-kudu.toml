@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff14da"
+name = "magnificent-kudu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004ad50"
+
+[[link]]
+type = "lookup"
+to = "merry-viper/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

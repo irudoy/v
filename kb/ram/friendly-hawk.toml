@@ -1,0 +1,247 @@
+summary = """
+Bit 5 is the projected phase of five-state machine ffff39d8: FUN 00027530 \
+sets it for states 2..4 and clears it for states 0/1; scheduler 00020dfe \
+also refreshes the byte from ffff2451. In the P030 count-readiness path, bit \
+5 controls whether ffff42a8 is refreshed or retained and is mandatory for \
+setting ffff41d2.bit1. Bit 2 must be clear for 0004afdc to select warm \
+transition timing table 0001219e; the same bit selects the 00011f0a versus \
+00011f12 correction and must be set for fuel-output inhibit state machine \
+0004f324. Bit 1 selects curve A or B in FUN 0004569c. Bit 2 is P/N position \
+switch ON, the scheduler copy of ffff2451 bit 2, and is a term of the \
+standstill exhaust-override predicate ffff246c bit 1."""
+note = [
+    """
+The bit-5 state relation, timing-table gate, P030 latch role, and bit-1 \
+curve selection are exact. The bit-2 identity follows from FUN 00038618 and \
+the DID 0x1302 P/N POSI SW chain. On the 2026-09-17 captures the override \
+fires with the selector in D as well as in P, so the ECM input of the \
+recorded car reads ON in D. The physical mode represented by ffff39d8 and \
+curve selection remains unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 168
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vivid-peacock/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "idle_ignition_timing/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enlightened-raccoon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zealous-oriole/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff244f"
+name = "friendly-hawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021030"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000276a0"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456c4"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456da"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b064"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b066"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008387a"
+value = {named = ["0001219e", "00020dfe", "00027530", "0004569c", "0004afdc", "0004f324", "00082c8a", "ffff244f", "ffff39d8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enlightened-raccoon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "idle_ignition_timing/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "adventurous-octopus/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_upstream_aux_gate/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "status_gated_engine_running_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vivid-peacock/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

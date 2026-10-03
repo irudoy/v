@@ -1,0 +1,165 @@
+summary = """
+Software-indexed input word read by FUN 000c1dec at 000c1f0c from ffff128c + \
+0x88c + 2*extu.b(input index). Index 1 selects ffff1b1a; index 0 selects the \
+other word at ffff1b18. MOV.W sign extension is removed by EXTU.W at \
+000c1f10."""
+note = [
+    """
+Reader-only placement evidence. The earlier state machine and called \
+routines are outside the tested slice. Controlled branch inputs do not \
+establish stock reachability; writer behavior and physical interpretation \
+are not established.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 768
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2190"
+offset = 0x88e
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "0x88e"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1b1a"
+name = "maize-chinchilla"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000c1dfa"
+value = 2190
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_indexed_input_word.py"
+key = "test_indexed_input_word_path"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c2004"
+value = "0x088c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c2010"
+value = "0xffff128c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1df8"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1dfa"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ede"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ee0"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ee8"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1eea"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ef0"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ef4"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ef6"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f0c"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1f10"
+value = {named = ["000c1dec", "000c2004", "000c2010", "ffff128c", "ffff1b1a"], span = 1}
+key = "body"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x88e
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

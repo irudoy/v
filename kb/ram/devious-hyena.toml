@@ -1,0 +1,62 @@
+summary = """
+Low seven bits of active cold/hot timing-map sample ffff160f, published by \
+0004af38."""
+level = "code"
+unit = "raw map field"
+
+[[ledger]]
+registry = "vars"
+order = 585
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-weasel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_timing_state_terms/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12de"
+name = "devious-hyena"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af44"
+value = {named = ["0004af38", "ffff12de", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af4a"
+value = {named = ["0004af38", "ffff12de", "ffff160f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "rare-weasel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

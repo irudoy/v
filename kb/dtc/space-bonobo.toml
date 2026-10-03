@@ -1,0 +1,36 @@
+title = "Cylinder 6 misfire detected"
+level = "code"
+code = "P0306"
+group = "misfire"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 0
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000193d8"
+name = "space-bonobo"
+index = 10
+attribute = "00016112"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016112"
+value = "0030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000193d8"
+value = "05050d000000030640000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a174"
+value = "00016112"

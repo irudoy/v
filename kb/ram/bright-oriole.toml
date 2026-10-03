@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a7c"
+name = "bright-oriole"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000be7e8"
+
+[[link]]
+type = "lookup"
+to = "cobalt-poodle/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "misty-gerbil/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

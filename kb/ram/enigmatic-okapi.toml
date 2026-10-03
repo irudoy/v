@@ -1,0 +1,103 @@
+summary = """
+Current uint16 coefficient result from map 0000c78e. FUN 000a5a06 uses the \
+live lookup value in signed-product arithmetic, stores it here, and copies \
+it to retained state ffff9ab0 at the end of the invocation."""
+note = ["A whole-program p-code scan finds no access outside FUN 000a5a06."]
+level = "code"
+unit = "raw coefficient"
+
+[[ledger]]
+registry = "vars"
+order = 519
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-giraffe/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-marmot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3080"
+name = "enigmatic-okapi"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a4e"
+value = {named = ["0000c78e", "000a5a06", "ffff3080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5a56"
+value = {named = ["0000c78e", "000a5a06", "ffff3080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5de2"
+value = {named = ["0000c78e", "000a5a06", "ffff3080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6328"
+value = {named = ["0000c78e", "000a5a06", "ffff3080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a632a"
+value = {named = ["0000c78e", "000a5a06", "ffff3080"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "impetuous-giraffe/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

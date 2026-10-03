@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4108"
+name = "congenial-wren"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079ece"
+
+[[link]]
+type = "reader"
+to = "lyrical-pronghorn/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

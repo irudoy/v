@@ -1,0 +1,85 @@
+summary = """
+Accessor for threshold map 0x11C6D: the lookup forms a minimum with \
+ffff34a2, limits counter ffff34a3, and through a comparison controls bit \
+0x40 of ffff41db and byte ffff259c."""
+note = ["The physical purpose of the internal counter is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 302
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gentle-aardwolf/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "foamy-ape/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "military-dogfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000786da"
+name = "amiable-porcupine"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787a2"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787ac"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787cc"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787d2"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787d6"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000787dc"
+value = {named = ["00011c6d", "000786da", "ffff259c", "ffff41db"], span = 1}
+key = "body"

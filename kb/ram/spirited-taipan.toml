@@ -1,0 +1,171 @@
+summary = """
+Fast-ramp mode byte of rotational-speed request limiter 0007584e. \
+Initializer 0002c648 and the limiter inactive/reset branch both load \
+ROM8[0x8a9b]=100. A nonzero value selects rate 0x9428 while ffff24a3.bit2 \
+remains clear; the set latch selects rate 0x9426."""
+note = [
+    """
+A whole-program p-code census of all 2315 functions found only these two \
+writes and the limiter read, with no computed-address candidates. No \
+countdown exists: the stock byte remains 100, and ffff24a3.bit2 alone \
+changes the fast-versus-normal rate after initialization.""",
+]
+level = "code"
+unit = "mode byte"
+
+[[ledger]]
+registry = "vars"
+order = 213
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "khaki-aardwolf/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "poetic-stallion/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "adorable-rhino/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff25b0"
+name = "spirited-taipan"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9b"
+value = "0x64"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ce5c"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ce62"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ce66"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a30"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a32"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075ae4"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075ae8"
+value = {named = ["00008a9b", "00009426", "00009428", "0002c648", "0007584e", "ffff24a3", "ffff25b0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "khaki-aardwolf/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "poetic-stallion/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "adorable-rhino/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

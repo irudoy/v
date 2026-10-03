@@ -1,0 +1,106 @@
+summary = """
+State-monitor path that uses ffff1062 as an unsigned tolerance. Under its \
+entry gates, it tests abs((ffff1062<<2)-ffff1fa4) < 128 before updating \
+monitor state; ffff1fa4 is then refreshed from ffff1026."""
+note = [
+    """
+The exact tolerance role is proven, but the monitored physical quantity \
+remains unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 349
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-quoll/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bfs/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "weightless-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00039316"
+name = "nostalgic-sturgeon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003937a"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039386"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003938a"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039392"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000393ec"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000393ee"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "clay-capuchin/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "tall-quoll/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

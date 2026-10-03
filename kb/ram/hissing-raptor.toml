@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffffa56f"
+name = "hissing-raptor"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c7850"
+
+[[link]]
+type = "writer"
+to = "stock_sle1_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

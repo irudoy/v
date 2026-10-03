@@ -1,3 +1,87 @@
+summary = """
+Exact UDS DID 0x130E ASCD lamp-status byte. FUN 000cf020 packs output bit 5 \
+from ffff4252 bit 0 and sets output bit 2 when state ffff4128 is 4, 5, or \
+6."""
+note = [
+    """
+Homologous factory and measured diagnostics identify output bits 5 and 2 as \
+SET LAMP and CRUISE LAMP. Other packed bits are not assigned a physical name \
+here.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "ascd-lamp-status-did-130e"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:22130e"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0212-l0212:source-row-extended-pids:parameter:0x130e-12913686"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 table maps DID 0x130E to ffff2a84 with support \
+mask ffff2a82. FUN 000cf020 packs the two lamp bits; homologous measured \
+diagnostic data supplies the SET LAMP and CRUISE LAMP names."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a50"
+value = "ffff2a84"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a54"
+value = "ffff2a82"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000d02a2"
+value = {named = ["00022a50", "00022a54", "0003235c", "000cf020", "12913686", "ffff2a82", "ffff2a84"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "flying-booby/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 74
+binding = "ascd-lamp-status-did-130e"
+
+[[ledger]]
+registry = "vars"
+order = 395
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flying-booby/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe9b8e"
@@ -24,6 +108,19 @@ note = "Selector reads this adjacent diagnostic byte"
 layout = "7mfk"
 address = "ffff2a84"
 former = ["mega-skunk/ram/7mfk-ffff2a84"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a50"
+value = "ffff2a84"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d02a2"
+value = {named = ["00022a50", "0003235c", "000cf020", "ffff2a84"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -55,3 +152,19 @@ supports = "homology"
 at = "jk78c:000fcc8a"
 to = "7mfk:ffff2a84"
 note = "Selector reads this adjacent diagnostic byte"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

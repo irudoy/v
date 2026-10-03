@@ -1,6 +1,90 @@
+summary = """
+Exact service-0x22 DID 0x1118 response byte. Homologous measured diagnostics \
+identify it as heated oxygen sensor 1 bank 1."""
+note = [
+    """
+Retired CAN telemetry profile 5 carries the byte as \
+front_oxygen_sensor_b1_raw; profile 6 does not stream it. Its physical \
+conversion remains unverified on JK08A.""",
+]
+level = "code"
 width = 8
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "heated-oxygen-sensor-1-bank-1-did-1118"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221118"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0025-l0025:source-row-extended-pids:parameter:0x1118-04cc504f"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1118 to response byte \
+ffff22c4. Homologous measured diagnostics identify the DID as heated oxygen \
+sensor 1 bank 1. The response identity is exact; its physical conversion \
+remains unverified on JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0002270c"
+value = "ffff22c4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002270c"
+value = {named = ["0003235c", "04cc504f", "ffff22c4"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 17
+binding = "heated-oxygen-sensor-1-bank-1-did-1118"
+
+[[ledger]]
+registry = "vars"
+order = 555
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff22c4"
 name = "copper-wombat"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002270c"
+value = "ffff22c4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002270c"
+value = {named = ["0003235c", "ffff22c4"], span = 1}
+key = "pointer"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

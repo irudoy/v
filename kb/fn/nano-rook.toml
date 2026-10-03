@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000737f0"
+name = "nano-rook"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000737f0"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013c98"
+name = "copper-elk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009b850"

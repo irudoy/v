@@ -1,0 +1,69 @@
+summary = """
+Parallel-channel accessory-load subtraction stage. It runs FUN 000655b4, FUN \
+0006570c, and FUN 00065764, then writes \
+ffff240e=sat_i16(s16[ffff18d8]-u16[ffff2410]), the source of CAN word \
+ffff3f98."""
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 633
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cobalt-groundhog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cunning-bird/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sepia-armadillo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00065860"
+name = "adorable-kudu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065860"
+value = {named = ["000655b4", "0006570c", "00065764", "ffff18d8", "ffff240e", "ffff2410"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "vigorous-saluki/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "impressive-harrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "evasive-trogon/fn/7mfk"
+relies = "structure"

@@ -1,0 +1,63 @@
+summary = """
+Scheduler snapshot of second commanded-mixture word ffff123c through the \
+0x3e-byte block copy ffff120e -> ffff124c in FUN 00020dfe; 0005651c reads it \
+as the ramp origin."""
+level = "code"
+unit = "ratio_q14"
+
+[[ledger]]
+registry = "vars"
+order = 749
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "frisky-beluga/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "efficient-skylark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff127a"
+name = "dandelion-bear"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f7c"
+value = {named = ["00020dfe", "0005651c", "ffff123c", "ffff127a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "efficient-skylark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

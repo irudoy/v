@@ -1,0 +1,159 @@
+title = "Add the pulse offset and schedule the APC reset compare"
+summary = """
+Secondary APC command builder. It computes byte offset=120-u8(ffff237a); \
+when ffff24c9.bit5 is set it also subtracts ROM8[0x8649] and lower-clamps at \
+zero. Stock ROM8[0x8649]=0 and ffff237a is bounded to 0..114, so the stock \
+offset is 6..120. It writes ffff2230, adds the offset to ffff2022, and \
+tail-calls 0002acba."""
+note = [
+    """
+For a newly applied primary target at most 117 the sum is at most 237, so \
+the override introduces no uint8 wrap before the GR11B scheduler. The offset \
+places the GR11B reset edge ffff237a crank degrees before the GR11A set edge \
+of the next cylinder, so ffff237a is the dwell angle in crank degrees; the \
+external driver stage remains a hardware boundary.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 111
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 512
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_compare_scheduler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-stork/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "apc_output/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elated-dalmatian/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e080"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008649"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e086"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e092"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e096"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0b0"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0b6"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0ba"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0be"
+value = {named = ["00008649", "00020dfe", "0002acba", "0004c1e4", "0004e080", "ffff2022", "ffff2230", "ffff237a", "ffff24c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "apc_reset_offset_source_builder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

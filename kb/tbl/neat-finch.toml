@@ -1,3 +1,36 @@
+summary = """
+1D table of an unsigned normalized coefficient selected by byte ffff106f. \
+Interpolated value t is stored in ffff1a1f, then multiplied within 0004ac7a \
+by the result of constant map 000129ca and by a quantity in r14 previously \
+constrained to uint16; after a right shift of 14, ffff14dc is formed. For \
+this ROM, the target map's effective coefficient is t/128."""
+note = [
+    """
+The physical subsystem is unknown. ffff1a1f has no external readers, but the \
+value is not dead: it is read in the same function at site 0004ae32 and \
+first consumed by multiplication at site 0004ae36. Adjacent map 000129ca is \
+constant and returns 128, so the expression with a common shift of 14 gives \
+effective target-map coefficient t/128. Numeric round trip: \
+102/128=0.796875, 0.796875*128=102; 128/128=1, 1*128=128. For t=102..128 and \
+r14<=65535, downstream uint16 saturation does not alter the result. Index: \
+Implicit eight-point uint8 axis. The unsigned selector is read from ffff106f \
+and passed in r5; for value >=224, the wrapper returns element 7; for a \
+lower value, linear interpolation in kernel 00026a80 is used. The selector's \
+physical unit is unknown. Output trace: 00012dca -> site 0004ae16 -> site \
+0004ae18 -> 00026370 -> site 00026aac -> site 00026ab6 -> 00026740 -> site \
+0004ae1c -> site 0004ae26 -> ffff1a1f -> site 0004ae32 -> site 0004ae36 -> \
+site 0004ae3e -> site 0004ae42 -> site 0004ae44 -> site 0004ae46 -> site \
+0004ae48 -> site 0004ae52 -> ffff14dc. Result disposition: consumer; Result \
+target: site 0004ae36.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
 category = "Internal Calculations"
@@ -7,7 +40,259 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 414
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+scale = [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gigantic-dragon/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-saluki/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "bizarre-koel/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012dca"
 name = "neat-finch"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae12"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae16"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae18"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae1a"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae1c"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae26"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae32"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae36"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae3e"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae52"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae20"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae24"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae2e"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae34"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae36"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae3e"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae42"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae44"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae46"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ae48"
+value = {named = ["000129ca", "00012dca", "00026740", "ffff106f", "ffff14dc", "ffff1a1f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.796875*128=102"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "102/128=0.796875"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128/128=1"
+
+[[link]]
+type = "depends"
+to = "bizarre-koel/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,68 @@
+summary = """
+Captured first-bank P0101 event-context copy of composite diagnostic byte \
+ffff12eb."""
+note = [
+    """
+This is the stock terminal consumer of the 0001236a-dependent first-bank \
+value.""",
+]
+level = "code"
+unit = "raw diagnostic snapshot"
+
+[[ledger]]
+registry = "vars"
+order = 730
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "clay-dugong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4566"
+name = "muscular-turaco"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081c62"
+value = {named = ["0008152a", "ffff12eb", "ffff4566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081c64"
+value = {named = ["0008152a", "ffff12eb", "ffff4566"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "clay-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

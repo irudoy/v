@@ -1,0 +1,166 @@
+summary = """
+Misfire revolution-window completion byte. FUN 000872d0 sets bit 5 when \
+counter ffff409e reaches the stock 200-revolution threshold, bit 7 when \
+ffff40a0 reaches 1000 revolutions, and bit 6 when ffff40a2 reaches the \
+second stock 200-revolution threshold. Coordinator 00082c8a services and \
+clears the flags independently in bit order 5, 7, 6."""
+note = [
+    """
+Bit 5 can produce reporter arguments 0/1. Bit 7 can produce 2/3 or 4/5. Bit \
+6 can first produce 0/1 and later 2/3 or 4/5; retained groups therefore do \
+not map one-to-one to revolution windows.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 319
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "keen-oxpecker/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "opalescent-buzzard/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-waxbill/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amethyst-chicken/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4241"
+name = "clever-dragon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083b2e"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d92"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083da0"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000843a4"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000843b4"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000847a4"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087300"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087318"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008733a"
+value = {named = ["00082c8a", "000872d0", "ffff409e", "ffff40a0", "ffff40a2", "ffff4241"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "keen-oxpecker/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "opalescent-buzzard/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-waxbill/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

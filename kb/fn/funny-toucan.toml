@@ -1,0 +1,148 @@
+summary = """
+Paired accessor for thresholds 0x15172 and 0x15182 on shared axis 0x13C88. \
+The first forms ffff9650 = (ffff35c0 > interpolate(0x15172)); the second \
+forms ffff9651 = (ffff35c4 > interpolate(0x15182))."""
+note = ["The physical quantities of ffff35c0 and ffff35c4 are unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 271
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "innocent-oryx/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "poised-dormouse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "granite-aardwolf/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0009cdd8"
+name = "funny-toucan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d568"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d570"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d574"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d57c"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d57e"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d588"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d59c"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5a4"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5a8"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5ae"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5b0"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009d5bc"
+value = {named = ["00013c88", "00015172", "00015182", "000264cc", "00026740", "0009cdd8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "granite-aardwolf/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,182 @@
+summary = """
+Dual-channel calculation branching on sign: 0x15306 is indexed by \
+offset-binary axis 0x15DA0 in nonnegative branches, while 0x153A0 is indexed \
+by axis 0x15DB0 in negative branches. Each uint16 M is multiplied by a \
+separate Q7 coefficient, after which the product is saturated or divided by \
+128."""
+note = [
+    """
+Axes 0x15DA0 and 0x15DB0 have code-level x-32768 scaling. The physical \
+quantity of both channels is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 191
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "belligerent-armadillo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "efficient-jackdaw/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "enthusiastic-pudu/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "robust-mantis/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hopping-nyala/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "uncovered-mongoose/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000602f2"
+name = "massive-dingo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060338"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060348"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060356"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060364"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006037e"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006038c"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006039a"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603c0"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603ce"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603dc"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603f2"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060400"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006043c"
+value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "hopping-nyala/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "uncovered-mongoose/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

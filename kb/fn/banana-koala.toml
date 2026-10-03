@@ -1,0 +1,19 @@
+summary = "2D interpolation over words; entries 0x265F0, 0x26628, and 0x26660."
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 110
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00026b28"
+name = "banana-koala"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"

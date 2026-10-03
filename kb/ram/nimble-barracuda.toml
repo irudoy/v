@@ -1,0 +1,117 @@
+summary = """
+Unsigned threshold subtracted from active low-seven-bit timing-map field \
+ffff12de by 0004af38. The result is lower-clamped at zero into ffff23bd."""
+note = [
+    """
+The cell is the scheduler 00020dfe snapshot of ffff11e7 inside the block \
+copy ffff11d4..ffff120b -> ffff119c..ffff11d3; ffff11e7 is written by \
+0004e0c2 at 0004e10c as a follower of ffff2363 limited to ROM8[0x845d] \
+counts per pass. One count is one crank degree of the map adjustment \
+field.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 719
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_timing_state_terms/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spicy-stoat/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nifty-aardwolf/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11af"
+name = "nimble-barracuda"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af74"
+value = {named = ["00020dfe", "0004af38", "0004e0c2", "ffff11af", "ffff11e7", "ffff23bd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af84"
+value = {named = ["00020dfe", "0004af38", "0004e0c2", "ffff11af", "ffff11e7", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e10c"
+value = {named = ["00020dfe", "0004af38", "0004e0c2", "ffff11af", "ffff11e7", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sincere-perch/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "spicy-stoat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "nifty-aardwolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

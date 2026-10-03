@@ -1,0 +1,234 @@
+summary = """
+Signed rotational-speed request-limit output written by FUN 0007584e under \
+periodic-table index 12. ROM16[0x942c]=0xffff writes neutral 0x7fff and \
+returns. Otherwise active/inactive ramp selection, the independent final \
+rate, recovery envelope ffff19dc, and optional ffff4252.bit1 neutral \
+override determine the value. Index-18 arbiter 00071508 takes its signed \
+minimum with other controller limits."""
+note = [
+    """
+Engagement requires previous signed output < APP request ffff243c; equality \
+takes the inactive/reset path. This candidate reaches the throttle target \
+chain but never enters independent six-channel fuel mask ffff22e0.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 112
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_limit_arbiter/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cocky-octopus/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_throttle_cut/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dandelion-locust/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "truthful-duck/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shrewd-manul/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19d8"
+name = "snobbish-tapir"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002199c"
+value = "000769c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219b8"
+value = "00071508"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007158e"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071590"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075878"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759ec"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759ee"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b82"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bd4"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075be2"
+value = {named = ["0000942a", "0000942c", "0002199c", "000219b8", "00071508", "0007584e", "000769c0", "ffff19d8", "ffff19da", "ffff19dc", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_limit_source_dispatch/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "dandelion-locust/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "truthful-duck/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cocky-octopus/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_request_limit_arbiter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "request_limiter_candidate_dispatch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,54 @@
+summary = """
+Periodic transition-state coordinator. Its fixed tail calls nonlinear \
+controller 00063f30 on both final branches."""
+note = [
+    """
+This function is periodic table index 66, after map selection at index 64 \
+and knock coordination at index 65 and before timing compositor 0004d888 at \
+index 71.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 514
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nonlinear_transition_controller/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00065434"
+name = "friendly-magpie"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065530"
+value = {named = ["00063f30", "00065434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065550"
+value = {named = ["00063f30", "00065434"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

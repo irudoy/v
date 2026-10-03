@@ -1,6 +1,207 @@
+summary = """
+Work-support timing adjustment (CONSULT TARGET IGN TIM ADJ), published as \
+DID 0x112d. Scheduler 00020dfe copies it from ffff56b2 as part of a \
+0x66-byte block, and final timing-coordinate builder 0004dbe8 consumes it."""
+note = [
+    """
+This byte is not a copy of ffff1513. FUN 0004dbe8 adds it to ffff12d6 only \
+while ffff5b31 bits 1..5 are clear (warm coolant, RPM/25 within \
+ROM8[0x8897]..ROM8[0x8896]=48..128, load ffff1048 within \
+ROM8[0x8768]..ROM8[0x8767]=64..96); the value is bounded to \
+ROM8[0x821d]..ROM8[0x821c]=-5..0 crank degrees at its source 0004aad0. The \
+homologous P32M profile names DID 0x112d CRRCTD IGN TIM; \
+JK08A.work-support.md specifies the service-0x3b path.""",
+]
+level = "code"
 width = 8
+unit = "deg"
+
+[[diagnostic]]
+id = "ignition-timing-adjustment-did-112d"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-112dh-crrctd-ign-tim"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-112dh-crrctd-ign-tim-f2c3d2db"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+FUN 0004aad0 writes the work-support timing adjustment to ffff56b2 within \
+ROM8[0x821d]..ROM8[0x821c]=-5..0 from service-0x3b LID-1 slot ffff99dc, \
+stored record 0x74, or the automatic step, and scheduler 00020dfe copies it \
+to ffff564c. The exact JK08A service-0x22 table publishes ffff564c as DID \
+0x112d, and FUN 0004dbe8 adds it to the final timing coordinate with \
+coefficient 1 in crank degrees inside the ffff5b31 window. A structured \
+Nissan profile names DID 0x112d CRRCTD IGN TIM and its write request 3b 01 \
+DataWrite.ADVADJ, and the factory manuals list the matching work-support \
+item TARGET IGN TIM ADJ."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "final_timing_coordinate_builder/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022760"
+value = "ffff564c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00021334"
+value = {named = ["00020dfe", "0003235c", "0004aad0", "0004dbe8", "f2c3d2db", "ffff564c", "ffff56b2"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022760"
+value = {named = ["00020dfe", "0003235c", "0004aad0", "0004dbe8", "f2c3d2db", "ffff564c", "ffff56b2"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004ab6e"
+value = {named = ["00020dfe", "0003235c", "0004aad0", "0004dbe8", "f2c3d2db", "ffff564c", "ffff56b2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "bounded_mode_state_source/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "papaya-adder/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 203
+binding = "ignition-timing-adjustment-did-112d"
+
+[[ledger]]
+registry = "vars"
+order = 608
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-adder/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff564c"
 name = "cryptic-honeybee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022760"
+value = "ffff564c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021330"
+value = {named = ["00020dfe", "0003235c", "0004dbe8", "ffff564c", "ffff56b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021332"
+value = {named = ["00020dfe", "0003235c", "0004dbe8", "ffff564c", "ffff56b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022760"
+value = {named = ["00020dfe", "0003235c", "0004dbe8", "ffff564c", "ffff56b2"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcca"
+value = {named = ["00020dfe", "0003235c", "0004dbe8", "ffff564c", "ffff56b2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "papaya-adder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

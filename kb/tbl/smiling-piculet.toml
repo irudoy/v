@@ -1,3 +1,22 @@
+summary = """
+High-byte-indexed raw factor in the paired P0101/P010B MAF range-performance \
+composite. It is multiplied by factors from 0001236a and 00012ac2 before the \
+per-bank model threshold and event snapshot are formed."""
+note = [
+    """
+Both monitors index the table by high8(uint16[ffff517c]), write the result \
+to ffff16ca, and consume the live register value in min(255, \
+floor(M*A*B/16384)). Stock ROM8[00008d92].bit5 is set, so the resulting \
+threshold comparison is bypassed; the composite remains present in captured \
+P0101/P010B event context. Result disposition: diagnostic_snapshot.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "MAF Diagnostic Composite Factor B - raw u8 (0x12868)"
 category = "Diagnostics / MAF"
@@ -7,7 +26,498 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[diagnostic]]
+id = "maf-range-composite-factor-b-p0101"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P0101"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c18"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+The high-byte-indexed factor enters the first-bank P0101 model threshold and \
+captured event context."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "smiling-piculet/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019c18"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080fb8"
+value = {named = ["00012868", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008174e"
+value = {named = ["00012868", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081754"
+value = {named = ["00012868", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_dispatch/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "maf_range_performance_bank_1_monitor/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "maf-range-composite-factor-b-p010b"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P010B"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193b4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+The high-byte-indexed factor enters the second-bank P010B model threshold \
+and captured event context."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "smiling-piculet/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193b4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080fde"
+value = {named = ["00012868", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081f80"
+value = {named = ["00012868", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081f86"
+value = {named = ["00012868", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_dispatch/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "maf_range_performance_bank_2_monitor/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 191
+binding = "maf-range-composite-factor-b-p0101"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 192
+binding = "maf-range-composite-factor-b-p010b"
+
+[[ledger]]
+registry = "findings"
+order = 397
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aboriginal-porpoise/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clay-dugong/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012868"
 name = "smiling-piculet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008174c"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008174e"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081752"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081754"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008175c"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081762"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081768"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008176e"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081774"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081778"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008177a"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008177c"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008177e"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081780"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081786"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008178a"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f7e"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f80"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f84"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f86"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f8e"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f94"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f9a"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fa0"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fa6"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081faa"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fac"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fae"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fb0"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fb2"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fb8"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081fbc"
+value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

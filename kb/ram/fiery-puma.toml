@@ -1,0 +1,73 @@
+summary = """
+Signed first-channel accelerator-pedal quantity produced as AN10 sample \
+ffff362c minus learned offset ffff55c0. FUN 0006ec68 clamps negative values \
+to zero before dual-channel selection."""
+level = "code"
+unit = "signed ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 219
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "accelerator_pedal_pair_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff27a0"
+name = "fiery-puma"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ec7c"
+value = {named = ["0006ec68", "00072b68", "ffff27a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b84"
+value = {named = ["0006ec68", "00072b68", "ffff27a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b88"
+value = {named = ["0006ec68", "00072b68", "ffff27a0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "accelerator_pedal_pair_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

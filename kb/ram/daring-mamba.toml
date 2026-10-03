@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c7a"
+name = "daring-mamba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a378"
+
+[[link]]
+type = "lookup"
+to = "infrared-uakari/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

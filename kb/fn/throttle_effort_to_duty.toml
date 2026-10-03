@@ -1,0 +1,111 @@
+title = "Apply supply compensation and publish bounded duty"
+summary = """
+Per-channel throttle-effort-to-duty converter. It reads ffff37b8+4*channel \
+using unsigned offset 0xe0 from base ffff36d8, shifts effort right by six, \
+applies the ffff39b0 supply-compensation divisor derived with ROM16[0x933a], \
+clamps the intermediate command to 500, applies stock literal cap 490, and \
+writes ffff374c+2*channel."""
+note = [
+    """
+The effective address is ffff37b8, not ffff36b8: SH extu.b converts \
+immediate -0x20 to unsigned 0xe0 before the base addition.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 163
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 583
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "incredible-sambar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "omniscient-goat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "acrid-tarantula/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cc5f0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000933a"
+value = "0x00d2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000cc71c"
+value = "0x01ea"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc60e"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc63c"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc650"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc656"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc680"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc694"
+value = {named = ["0000933a", "000cc5f0", "000cc71c", "ffff374c", "ffff37b8", "ffff39b0"], span = 1}
+key = "reference"

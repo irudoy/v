@@ -1,3 +1,26 @@
+summary = """
+Primary target-throttle angle-to-opening-area table. Paired \
+throttle-position paths convert both angle-domain channels through 00013202, \
+average or combine them in the opening-area domain, and use 000155a0 in \
+reverse to recover an angle coordinate."""
+note = [
+    """
+The 32 values are monotonic and byte-identical to trustful table 00018766; \
+axis 000155a0 is byte-identical to trustful axis 000190d0. This exact \
+duplicated pair matches the two A2L Target Throttle Valve Opening entries \
+and distinguishes it from the single Throttle Body Opening Area Calibration \
+Table entry. Exact DIDs and preprocessing bind the exposed source path to \
+paired throttle-position feedback. Physical units and scale require hardware \
+validation.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Throttle Opening Area [cm^2]"
+scale = "x*0.0008"
+to_raw = "x/0.0008"
+scale_level = "candidate"
+
 [editor]
 name = "Throttle Angle-to-Area Conversion - Primary"
 category = "Electronic Throttle Control / Throttle Geometry"
@@ -5,6 +28,64 @@ order = 122
 format = "0.000"
 fine = 0.01
 coarse = 0.1
+
+[[ledger]]
+registry = "findings"
+order = 436
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "glistening-gecko/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "weightless-piculet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "orange-elephant/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -38,6 +119,44 @@ note = "unique structural pair preserves interpolation-call order"
 layout = "7mfk"
 address = "00013202"
 name = "muscular-leech"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Target Throttle Valve Opening Table"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b6bc"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e548", "0003e63c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e5da"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e548", "0003e63c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e6c4"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e548", "0003e63c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073966"
+value = {named = ["00013202", "000155a0", "0003b520", "0003e548", "0003e63c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table|Opening Area (x*0.0008)"
 
 [[symbol]]
 layout = "jk00c"
@@ -84,3 +203,74 @@ to = "7mfk:0006f47c"
 count = 1
 value = 0
 note = "unique structural pair preserves interpolation-call order"
+
+[[link]]
+type = "depends"
+to = "monumental-snake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "orange-elephant/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "apricot-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "glistening-gecko/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "spiritual-rattlesnake/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "weightless-piculet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15df"
+name = "abstract-snake"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005323a"
+
+[[link]]
+type = "lookup"
+to = "illegal-raptor/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "remarkable-oriole/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

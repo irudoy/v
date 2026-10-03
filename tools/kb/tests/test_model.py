@@ -102,6 +102,21 @@ class MeaningTest(unittest.TestCase):
 
 
 class LinkTest(unittest.TestCase):
+    def test_a_word_remains_the_base_of_its_own_group_at_an_offset(self):
+        b = builder()
+        word = b.symbol("7mfk", "ram", 0xFFFF120E, "vars.csv")
+        mask = b.symbol("7mfk", "ram", 0xFFFF1220, "vars.csv")
+        b.link(word, "base", word, "vars.csv", props={"offset": 0x12, "relies": "structure"})
+        b.link(mask, "base", word, "vars.csv", props={"offset": 0x12, "relies": "structure"})
+        model = b.finish()
+        links = {link.owner.symbols["7mfk"].address: link for link in model.links}
+        self.assertEqual(set(links), {0xFFFF120E, 0xFFFF1220})
+        self.assertIs(links[0xFFFF120E].owner, links[0xFFFF120E].to)
+        self.assertIs(links[0xFFFF1220].to, model.meaning_of(word))
+        self.assertEqual([link.offset for link in links.values()], [0x12, 0x12])
+        self.assertEqual([link.props for link in links.values()],
+                         [{"relies": "structure"}, {"relies": "structure"}])
+
     def test_a_relation_stated_at_both_ends_is_one_link(self):
         b = builder()
         ram = b.symbol("7mfk", "ram", 0xFFFF106A, "vars.csv")

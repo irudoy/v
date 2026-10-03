@@ -1,0 +1,151 @@
+summary = """
+Purge-control circuit monitor feeding P0443. It samples word ffff10c4, \
+clears ffff247f bits 6 and 7 on reset, and sets bit 7 under its final \
+calibrated result gates. FUN 000abca2 consumes bit 7 and dispatches \
+descriptor index 0x2e."""
+note = [
+    """
+The exact descriptor is P0443, but FUN 000abca2 skips this monitor in stock \
+JK08A because ROM8[0x186d7].bit2 is clear. The complete physical circuit \
+metric and units remain unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "evap-purge-circuit-producer-p0443"
+kind = "monitor"
+label = "DtcCode"
+key = "P0443"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019588"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+FUN 000acc54 produces ffff247f bit 7 for the exact P0443 path, which is \
+configuration-disabled in stock JK08A. The function target keeps this \
+diagnostic claim separate from unrelated bits in the shared state byte."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000abee4"
+value = {named = ["000186d7", "00019588", "000abca2", "000acc54", "ffff247f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000acfb0"
+value = {named = ["000186d7", "00019588", "000abca2", "000acc54", "ffff247f"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "blue-oyster/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 132
+binding = "evap-purge-circuit-producer-p0443"
+
+[[ledger]]
+registry = "funcs"
+order = 409
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavy-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blue-oyster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000acc54"
+name = "devious-zebu"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085a6"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085a7"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000accaa"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000accae"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000accd2"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000acf98"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000acfb0"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000acfda"
+value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
+key = "reference"

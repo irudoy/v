@@ -12,7 +12,7 @@ import hashlib
 
 import pytest
 
-from kb import compile, derive, match, repo, sh2
+from kb import checks, compile, derive, match, repo, sh2
 from kb.model import SymbolKey
 
 
@@ -231,15 +231,18 @@ def verify_indexed_input_word_path(data, symbol, item):
 def compiled_binding():
     model = compile.cached(repo.ROOT)
     symbol = model.symbols[KEY]
-    assert not symbol.implicit and "defs/JK08A.vars.csv" in symbol.sources
+    assert not symbol.implicit and checks._owned(model, symbol)
+    assert "defs/JK08A.vars.csv" not in symbol.sources
     assert symbol.meaning.props["unit"] == "raw"
     assert symbol.meaning.props["level"] == "code"
-    explicit = [item for item in symbol.evidence if "legacy" not in item]
+    assert all("legacy" not in item for item in symbol.evidence)
+    explicit = [item for item in symbol.evidence if item["kind"] in ("indirect", "test")]
     assert explicit == [BASE, TEST]
     [item, test] = explicit
     _binding(symbol, item)
     assert match.verify(model, symbol, item) is None
     assert match.verify(model, symbol, test) is None
+    assert all(match.verify(model, symbol, item) is None for item in symbol.evidence)
     return model, symbol, item
 
 

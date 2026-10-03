@@ -1,0 +1,50 @@
+summary = """
+Cell in consumer 00085a70 register trace within ffff37d8..ffff3826, which \
+contains counters, 12-bit shift registers, and crankshaft speed irregularity \
+monitor flags; which of the three classes this cell carries is unresolved."""
+level = "candidate"
+
+[[ledger]]
+registry = "vars"
+order = 282
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-coucal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff37f8"
+name = "marigold-goldfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00082dde"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

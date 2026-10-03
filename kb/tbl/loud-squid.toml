@@ -1,3 +1,23 @@
+summary = """
+Curve A participates in paired normalization with 000127d8: for positive \
+differences, 256*(A(q)-B(q))/(A(128)-B(128)) is calculated and saturated to \
+255. FUN 0004569c can also write 4*A(q) to ffff1752 when ROM8[00008710].bit3 \
+is clear."""
+note = [
+    """
+Stock ROM8[00008710]=0x7c has bit3 set, so this curve is inactive in FUN \
+0004569c but remains live in FUN 000413cc. The curve's physical name is \
+unconfirmed. RPM scale x*25 remains a catalog-based candidate. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "RPM"
+scale = "x*25"
+to_raw = "x/25"
+scale_level = "candidate"
+
 [editor]
 name = "Paired Normalization Curve A - catalog RPM scale (0x12798)"
 category = "Internal Calculations"
@@ -7,10 +27,170 @@ format = "0"
 fine = 25
 coarse = 100
 
+[[ledger]]
+registry = "findings"
+order = 169
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+scale = [15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyan-pronghorn/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "thick-lionfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vivid-peacock/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-parakeet/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012798"
 name = "loud-squid"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041622"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004162e"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041640"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041650"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041664"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004166e"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041678"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004167c"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004168a"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045704"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004570e"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045712"
+value = {named = ["00008710", "00012798", "00021bbc", "00026388", "000413cc", "0004569c", "000468b0", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Bosch Fuel Cut Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "JECS Fuel Cut Table"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +223,28 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "cyan-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vivid-peacock/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

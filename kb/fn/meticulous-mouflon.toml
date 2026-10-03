@@ -1,0 +1,139 @@
+summary = """
+Accessor for shared uint16 addition 00023824. The lookup is conditionally \
+limited below at 46 and written to ffff2eba, which FUN 0006f938 adds with \
+saturation to ffff2c4e, forming ffff303c, and FUN 0006fe6e to ffff2c50, \
+forming ffff303e."""
+note = ["The physical quantity and units of the addition are unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 352
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mature-toad/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-tortoise/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prompt-mosquito/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006f8fa"
+name = "meticulous-mouflon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f8fe"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f906"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f918"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f91e"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f920"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f924"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f926"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f92c"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f936"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f944"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f94c"
+value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "mature-toad/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "screeching-tortoise/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

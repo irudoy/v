@@ -1,0 +1,128 @@
+summary = """
+Stored work-support timing adjustment, restored by 000686b8 from the high \
+byte of record 0x74 and stored by 00068040 from ffff56b2 when the \
+ffff41ab.bit7 latch is set. FUN 0004aad0 selects it as the ffff56b2 source \
+when neither ffff424c.bit4 nor bit5 is set and it lies within -5..0."""
+note = [
+    """
+One count is one crank degree of the final coordinate within the ffff5b31 \
+window. The idle latch of 00068040 writes it back as the high byte of record \
+0x74 beside ffff316a.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 843
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bounded_mode_state_source/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-adder/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tricky-marmoset/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "melodic-numbat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-jacamar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff29c6"
+name = "nebulous-eagle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ab4c"
+value = {named = ["0004aad0", "00068040", "000686b8", "ffff29c6", "ffff41ab", "ffff56b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680a6"
+value = {named = ["0004aad0", "00068040", "000686b8", "ffff29c6", "ffff41ab", "ffff56b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686ee"
+value = {named = ["0004aad0", "00068040", "000686b8", "ffff29c6", "ffff41ab", "ffff56b2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "papaya-adder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bounded_mode_state_source/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "tricky-marmoset/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "melodic-numbat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

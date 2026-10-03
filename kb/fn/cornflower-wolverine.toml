@@ -1,0 +1,126 @@
+summary = """
+Misfire per-cylinder flag builder. It clears ffff41ff bits 4..0 and ffff4200 \
+bits 7..6, then compares the byte threshold in r4 with six consecutive \
+uint16 counters at r5. Counter 0 at or above the threshold sets \
+ffff41ff.bit4, counters 1..4 set bits 3..0, and counter 5 sets \
+ffff4200.bit7; two or more qualifying counters set ffff4200.bit6. \
+Coordinator 00082c8a passes ffff37fa with threshold ROM8[00008862] = 6 and \
+ffff3808 with threshold ROM8[00008863] = 6, the per-cylinder elements one \
+word above totals ffff37f8 and ffff3806."""
+note = [
+    """
+Reporter 00084cd0 maps ffff41ff bits 4..0 to P0301..P0305 and ffff4200.bit7 \
+to P0306, so counter element ffff4038 = 1 reports P0301 and element 6 \
+reports P0306. ffff4200.bit6 marks two or more cylinders at the threshold.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 657
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "writes"
+to = "charming-lynx/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tricky-basilisk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00084aa4"
+name = "cornflower-wolverine"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008862"
+value = "0x06"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008863"
+value = "0x06"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d74"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d78"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084136"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008413a"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008417e"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084180"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084ab0"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084ab4"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084ac4"
+value = {named = ["00008862", "00008863", "00082c8a", "00084aa4", "ffff41ff", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "marvellous-malamute/fn/7mfk"
+relies = "structure"

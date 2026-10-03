@@ -1,0 +1,203 @@
+title = "Select the most restrictive signed request-limit candidate"
+summary = """
+Periodic-table index-18 signed minimum arbiter for controller limits. It \
+combines internal candidates with 0000942c-derived ffff19d8, adjacent \
+limiter candidate ffff19de, and other bounds, writes intermediate minimum \
+ffff349a, then applies ffff2c6c and ffff4138 before writing selected limit \
+ffff243a."""
+note = [
+    """
+The most restrictive signed candidate wins. The 0000942c branch belongs to \
+the electronic-throttle/airflow request chain, continues through ffff19c6 to \
+ATU-II BFR6A-D, and remains separate from fuel mask ffff22e0. Physical \
+request units, plate motion, and channel-to-bank identity remain \
+unverified.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 124
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 213
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "artichoke-skink/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "glossy-tody/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "icy-orangutan/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-fossa/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "snobbish-tapir/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "misty-bumblebee/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-cricket/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00071508"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219b8"
+value = "00071508"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007157e"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007158e"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071590"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715a6"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715b2"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715b6"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715c2"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715d4"
+value = {named = ["00020dfe", "000219b8", "000702c6", "00071508", "ffff19d8", "ffff19de", "ffff243a", "ffff2c6c", "ffff349a", "ffff4138"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "artichoke-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "glossy-tody/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "icy-orangutan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "malachite-fossa/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "snobbish-tapir/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

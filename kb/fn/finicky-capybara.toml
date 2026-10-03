@@ -1,0 +1,138 @@
+summary = """
+Accessor for map 0x120CE gated by ffff24c0. Two lookups of the same map \
+combine as (lookup1+lookup2-128)*8, and the correction is written to \
+ffff2018. FUN 00068d58, gated by the same bit, adds it to a quotient and \
+limits the sum to 125..(ffff201a-125) before it writes ffff201e."""
+note = ["The physical purpose of the correction is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 200
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sepia-marmoset/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "athletic-swallow/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "solid-honeybee/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-bloodhound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00068cb8"
+name = "finicky-capybara"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d08"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d0c"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d3a"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d3e"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d40"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d42"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d46"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d48"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d4a"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d4c"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "sepia-marmoset/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "solid-honeybee/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

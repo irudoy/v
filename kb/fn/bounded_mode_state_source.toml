@@ -1,0 +1,157 @@
+title = "Publish a bounded signed mode-dependent state for the periodic snapshot"
+summary = """
+Work-support timing adjustment source (CONSULT TARGET IGN TIM ADJ). With \
+ffff41b9.bit0 clear, ffff424c.bit4, the accepted service-0x3b LID 1 route, \
+selects LID-1 slot ffff99dc; ffff424c.bit5, the automatic route, selects a \
+piecewise step from ffff10da (0 below 0x20, 4-2*(ffff10da>>5) up to 0xbf, -8 \
+above); and otherwise stored adjustment ffff29c6 when it lies within the \
+bounds and zero when it does not; ffff41b9.bit0 set forces zero. Signed ROM \
+bounds ROM8[0x821d]=-5 and ROM8[0x821c]=0 clamp the result before it is \
+written to ffff56b2."""
+note = [
+    """
+Scheduler 00020dfe copies the enclosing source block at ffff56b2 to snapshot \
+ffff564c, which DID 0x112d publishes and 0004dbe8 adds to the timing sum \
+with coefficient 1 in crank degrees while ffff5b31 bits 1..5 are clear. \
+JK08A.work-support.md specifies the service, status, routing, and \
+stored-record paths; the automatic route stays inactive in JK08A.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 101
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 508
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "marigold-marmot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nebulous-eagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nickel-fulmar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "expert-lion/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "succinct-viper/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "papaya-adder/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004aad0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000821c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000821c"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000821d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000821d"
+value = "0xfb"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ab4c"
+value = {named = ["0000821c", "0000821d", "0004aad0", "000683cc", "000685f2", "ffff10da", "ffff29c6", "ffff41b9", "ffff424c", "ffff56b2", "ffff99dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ab6c"
+value = {named = ["0000821c", "0000821d", "0004aad0", "000683cc", "000685f2", "ffff10da", "ffff29c6", "ffff41b9", "ffff424c", "ffff56b2", "ffff99dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ab6e"
+value = {named = ["0000821c", "0000821d", "0004aad0", "000683cc", "000685f2", "ffff10da", "ffff29c6", "ffff41b9", "ffff424c", "ffff56b2", "ffff99dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "screeching-bumblebee/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "victorious-oriole/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "selector"
+to = "expert-lion/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "succinct-viper/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

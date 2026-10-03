@@ -1,0 +1,95 @@
+summary = """
+Accessor for map 0x11FBE: interpolated uint8 participates in conditional \
+scaling and composite multiplication; the result is capped at 127 and \
+written to ffff1831, which timing-state latch 0004c136 conditionally copies \
+to ffff2404."""
+note = ["The physical purpose of the composite result is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 303
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_latch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "chestnut-wapiti/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beautiful-wrasse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004c02e"
+name = "giga-leech"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c042"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c052"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c100"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c108"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c10e"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c128"
+value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "timing_state_latch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

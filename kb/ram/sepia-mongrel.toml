@@ -1,0 +1,81 @@
+summary = """
+Low-speed RPM exposure accumulator. FUN 0004f7e0 adds 12 per eligible pass \
+at coarse speed <=4 and 2300..2900 RPM up to stock cap 24000; its principal \
+decay path subtracts one."""
+note = [
+    """
+FUN 0004f958 converts cap attainment into the 1800/1500 RPM inhibit state.""",
+]
+level = "code"
+unit = "periodic weighted counts"
+
+[[ledger]]
+registry = "vars"
+order = 615
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_sustained_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "low_speed_rpm_exposure_accumulator_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1932"
+name = "sepia-mongrel"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084de"
+value = "0x0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000090e0"
+value = "0x07d0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f8d2"
+value = {named = ["000084de", "000090e0", "0004f7e0", "0004f958", "ffff1932"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004f93c"
+
+[[link]]
+type = "reader"
+to = "low_speed_sustained_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "low_speed_rpm_exposure_accumulator_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

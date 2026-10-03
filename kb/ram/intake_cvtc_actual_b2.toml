@@ -1,6 +1,65 @@
+summary = """
+Second byte of the centered two-bank intake-cam timing pair. FUN_000bd9f0 \
+writes clamp_u8(0x80 + ffff479a - ffff22cd), or neutral 0x80 under the \
+hardware-control mask."""
+note = [
+    """
+One count is 0.5 crank degrees through edge phase ffff22cd of capture \
+handler 0002a36a, the same unit and sign as ffff2442; the crank-wheel origin \
+of the absolute angle remains open.""",
+]
+level = "code"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"
+
+[[ledger]]
+registry = "vars"
+order = 167
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "centered_u8"
+identity = [1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intrepid-shellfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-dachshund/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "white-doberman/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -38,6 +97,27 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0004b3b4"
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda28"
+value = {named = ["0004afdc", "000bcd44", "000bd9f0", "ffff22cd", "ffff2443", "ffff479a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda34"
+value = {named = ["0004afdc", "000bcd44", "000bd9f0", "ffff22cd", "ffff2443", "ffff479a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda5c"
+value = {named = ["0004afdc", "000bcd44", "000bd9f0", "ffff22cd", "ffff2443", "ffff479a"], span = 1}
+key = "body"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff24c7"
@@ -73,3 +153,58 @@ at = "jk78c:ffff239d"
 to = "7mfk:ffff2443"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the adjacent channel byte"
+
+[[link]]
+type = "input"
+to = "intrepid-shellfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "portable-dachshund/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "hallowed-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "white-doberman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

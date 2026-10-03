@@ -1,3 +1,27 @@
+summary = """
+Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A \
+calculated metric exceeding the interpolated threshold contributes to \
+increasing the knock count."""
+note = [
+    """
+00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 \
+points along axis 0x15340, and stores the threshold for comparison in \
+0004a238. Stock rows 3 and 5 are all 0xffff. Value 0xffff is the uint16 \
+upper bound and makes exceeding the threshold practically impossible. The \
+catalog identifies the rows as cylinders, but exact code does not establish \
+their physical cylinder or sensor order.""",
+]
+level = "code"
+role = "table"
+access = "direct-row-major"
+cols = 16
+rows = 6
+storage = "uint16"
+unit = "knock strength"
+scale = "x*0.0015259"
+to_raw = "x/0.0015259"
+scale_level = "candidate"
+
 [editor]
 name = "Knock Threshold by Evaluator Channel"
 category = "Ignition Timing / Knock Control / Thresholds"
@@ -27,6 +51,35 @@ static_axis_x = [
 static_axis_x_name = "Engine Speed [RPM]"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 static_axis_y_name = "Evaluator Channel"
+
+[[ledger]]
+registry = "findings"
+order = 93
+fields = [
+    "family",
+    "width",
+    "height",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3]
+scale = [4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_evaluator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -60,6 +113,43 @@ operand"""
 layout = "7mfk"
 address = "0001108e"
 name = "amorphous-bird"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a014"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238"], span = 192}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a020"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238"], span = 192}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a02c"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238"], span = 192}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Knock Slice Map"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Knock Strength Threshold (x*0.0015259)"
 
 [[symbol]]
 layout = "jk00c"
@@ -97,3 +187,18 @@ value = "00011f4e"
 note = """
 exact normalized accessor shape preserves the direct-row-major table \
 operand"""
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_slice_threshold_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

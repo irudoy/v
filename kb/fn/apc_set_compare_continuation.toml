@@ -1,0 +1,177 @@
+title = "Continue normal APC GR11A scheduling across position events"
+summary = """
+Normal-mode APC set-compare continuation. It consumes the stored command \
+decade and remainder across later position events, calculates the next \
+fractional offset from ffff22bc, writes GR11A, and enables the \
+current-cylinder low-byte POPCR action. At the set compare it selects the \
+next dwell channel: ffff13d3 = ROM8[00022680 + ffff13c9], the successor of \
+the identified cylinder, or ffff13c9 itself on the alternate branch."""
+note = [
+    """
+Together with 00028dc8 this proves that command decades are scheduled rather \
+than discarded. The ignition advance moves only the GR11A set edge, so that \
+edge is the spark and the preceding low state of the pin is the dwell; the \
+external driver stage remains a hardware boundary.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 95
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 551
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "apc_mode/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "peridot-pony/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivacious-petrel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "zippy-newt/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amphibian-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loyal-snail/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "organic-coati/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-uakari/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002ab24"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022680=[0,2,3,4,5,6,1]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ab6a"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aba2"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aba6"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002abe6"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002ac2e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ac50"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ac6e"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ac76"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ac8c"
+value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
+key = "reference"

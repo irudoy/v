@@ -1,0 +1,208 @@
+summary = """
+Interpolated threshold curve with all points=610 for the same signal \
+ffff266e, with implicit axis from ffff110e; the branch is disabled by \
+calibration in JK08A because selector 0000870c bit 7=0 in byte 0x44"""
+note = [
+    """
+Interpolated threshold curve with all points=610 for the same signal \
+ffff266e, with implicit axis from ffff110e; the branch is disabled by \
+calibration in JK08A because selector 0000870c bit 7=0 in byte 0x44. Result \
+disposition: dead_control_flow. Result target: Map:0001473a. Machine trace: \
+Executable JK08A trace: site:00047a6a reads byte rom_const:0000870c=0x44; \
+site:00047a6c executes tst #0x80, so (0x44 & 0x80) == 0 and T=1; \
+site:00047a6e bf branches only when T=0, so the branch to site:00047a74 is \
+not selected; site:00047a70 transfers control unconditionally to 00047b88. \
+The target-map block is therefore unreachable from the accessor entry. \
+Syntactic but unreachable block trace: site:00047a74 -> site:00047a7a reads \
+unsigned byte ffff110e -> site:00047a7e zero-extends it -> \
+site:00047a80/site:00047a82/site:00047a84 multiply by 2048 -> \
+site:00047a86/site:00047a88/site:00047a8a form min(byte*2048, 65535) -> \
+site:00047a8c loads base Map:0001473a -> site:00047a90 calls wrapper \
+000263d8 with a uint16 input. Raw map sample is [0x0262, 0x0262, 0x0262, \
+0x0262, 0x0262, 0x0262, 0x0262, 0x0262]; wrapper 000263d8, kernel 00026a60, \
+and finisher 00026740 yield 610 for any index, after which site:00047a94 \
+moves the result and site:00047a9a syntactically writes uint16 to ffff1a42. \
+ffff1a42 has no external readers, but the write is also unreachable due to \
+the ROM selector.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 251
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[symbol]]
+layout = "7mfk"
+address = "0001473a"
+name = "discerning-armadillo"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870c"
+value = "0x44"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000263d8"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026a60"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a6a"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a6c"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a6e"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a70"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a74"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a7a"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a7e"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a80"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a82"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a84"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a86"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a88"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a8a"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a8c"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a90"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a94"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047a9a"
+value = {named = ["0000870c", "0001473a"], span = 1}
+key = "linked"

@@ -1,0 +1,147 @@
+summary = """
+Timing-state transition countdown. FUN 0004afdc reloads it from \
+ROM8[000086a3]=85 whenever current upstream DFCO bit ffff2458.bit5 is clear; \
+the periodic timer handler decrements it. Warm transition table 0001219e \
+requires the bit set and this timer nonzero."""
+note = [
+    """
+One count is exactly 204800/Pphi seconds. Passive target-CAN timestamps \
+establish Pphi=20 MHz, so the maximum 85-count selection window is 870.4 \
+ms.""",
+]
+level = "code"
+unit = "scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 565
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "idle_ignition_timing/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "asparagus-cockle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_timing_state_accumulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2590"
+name = "crimson-binturong"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000086a3=0x55"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b020"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b026"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b032"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b034"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b07e"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b080"
+value = {named = ["000086a3", "0001219e", "0002040c", "0004afdc", "ffff2458", "ffff2590"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "idle_ignition_timing/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

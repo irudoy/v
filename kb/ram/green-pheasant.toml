@@ -1,0 +1,100 @@
+summary = """
+Scaled transient threshold byte written by 0007b650 and consumed by 0007b7c0 \
+as 32*value in a hysteresis comparison."""
+note = [
+    "Code does not establish this byte as an applied ignition-retard amount.",
+]
+level = "code"
+unit = "threshold count"
+
+[[ledger]]
+registry = "vars"
+order = 588
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_hysteresis_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "myrtle-cougar/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transient_threshold_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1393"
+name = "green-pheasant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b6ee"
+value = {named = ["00011f6a", "0007b650", "0007b7c0", "ffff1393"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7e0"
+value = {named = ["00011f6a", "0007b650", "0007b7c0", "ffff1393"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7ea"
+value = {named = ["00011f6a", "0007b650", "0007b7c0", "ffff1393"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7f2"
+value = {named = ["00011f6a", "0007b650", "0007b7c0", "ffff1393"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "myrtle-cougar/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transient_threshold_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

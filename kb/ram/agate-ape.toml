@@ -1,0 +1,95 @@
+summary = """
+Bounded APC reset-offset source term written by 0004c1e4. Stock \
+ROM8[0x8b88]=6 supplies the lower bound and ROM8[0x8b87]=114 supplies the \
+upper bound."""
+note = [
+    """
+The numeric range is exact. The physical dwell interpretation remains \
+unverified.""",
+]
+level = "code"
+unit = "raw command count"
+
+[[ledger]]
+registry = "vars"
+order = 643
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_offset_source_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_offset_source_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1874"
+name = "agate-ape"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b87"
+value = "0x72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b88"
+value = "0x06"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c2f4"
+value = {named = ["00008b87", "00008b88", "0004c1e4", "ffff1874"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c304"
+value = {named = ["00008b87", "00008b88", "0004c1e4", "ffff1874"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c314"
+value = {named = ["00008b87", "00008b88", "0004c1e4", "ffff1874"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c36e"
+value = {named = ["00008b87", "00008b88", "0004c1e4", "ffff1874"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

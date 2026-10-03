@@ -1,0 +1,156 @@
+title = "P1217 engine-overtemperature RPM-gated fuel inhibit"
+summary = """
+P1217 engine-overtemperature fuel-inhibit contributor. It qualifies raw \
+coolant at 190 with retention through 180, then applies a 1900/1700 RPM \
+hysteresis under diagnostic phase and mode gates."""
+note = [
+    """
+The exact homologous coolant conversion raw-50 gives candidate thresholds \
+140/130 degrees C; P1217 is exact for JK08A.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "engine-overtemperature-inhibit-p1217"
+kind = "monitor"
+label = "DtcCode"
+key = "P1217"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019378"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 0004f494 owns the exact P1217 engine-overtemperature diagnostic phase \
+and its 1900/1700 RPM fuel-inhibit state."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "raspberry-dragon/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019378"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f494"
+value = {named = ["00019378", "0004ed88", "ffff1071", "ffff41f2"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f5e4"
+value = {named = ["00019378", "0004ed88", "ffff1071", "ffff41f2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f644"
+value = {named = ["00019378", "0004ed88", "ffff1071", "ffff41f2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "heavenly-whippet/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "curated"
+order = 23
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 174
+binding = "engine-overtemperature-inhibit-p1217"
+
+[[ledger]]
+registry = "funcs"
+order = 527
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heavenly-whippet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "outgoing-tuna/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f494"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000186c9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019378"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f494"
+value = {named = ["000186c9", "00019378", "0004ed88", "ffff1071", "ffff11b3", "ffff41ee", "ffff41f2"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

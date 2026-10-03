@@ -1,6 +1,50 @@
+summary = """
+Second cell of the live two-cell intake-VTC solenoid duty pair, written by \
+FUN 000be814 for channel 1 and read by the same cam-at-rest condition in FUN \
+000bdee4."""
+note = [
+    """
+Both cells must be zero for the condition, so the check confirms that no \
+intake bank is commanded rather than testing one bank.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*39/100"
+
+[[ledger]]
+registry = "vars"
+order = 737
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*100/39"
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "intake_cvtc_duty_b1/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1"
+offset = 0x1
+
+[[ledger.dependency]]
+role = "consumer"
+to = "agate-puma/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ludicrous-albatross/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -73,6 +117,20 @@ layout = "7mfk"
 address = "ffff2441"
 former = ["cute-hyena/ram/7mfk-ffff2441"]
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdf34"
+value = {named = ["000bdee4", "000be814", "ffff2440", "ffff2441"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be8dc"
+value = {named = ["000bdee4", "000be814", "ffff2440", "ffff2441"], span = 1}
+key = "reference"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff24c5"
@@ -128,3 +186,25 @@ note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
 programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
 the output stage of every VQ37 image"""
+
+[[link]]
+type = "base"
+to = "intake_cvtc_duty_b1/ram"
+offset = 0x1
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "agate-puma/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "ludicrous-albatross/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

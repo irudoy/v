@@ -1,3 +1,21 @@
+summary = """
+Optional unsigned cap for dynamic speed threshold ffff1796. FUN 0007584e \
+applies min(current,raw) when ffff4188.bit1 is set."""
+note = [
+    """
+The stock value 0xffff is neutral. The physical speed scale is the same \
+unresolved raw domain as 0x942c; the candidate HR conversion is x*0.78125 \
+RPM.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw speed x4"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Throttle Rev Limiter Mode Cap"
 category = "Limiters / Rev Limit / Internal State"
@@ -8,7 +26,100 @@ fine = 1
 coarse = 16
 static_axis = ["mode cap"]
 
+[[ledger]]
+registry = "findings"
+order = 29
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "groovy-kiwi/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_runtime/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000942e"
 name = "amiable-bug"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000942e"
+value = "0xffff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075996"
+value = {named = ["0000942e", "0007584e", "ffff1796", "ffff4188"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007599e"
+value = {named = ["0000942e", "0007584e", "ffff1796", "ffff4188"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759a2"
+value = {named = ["0000942e", "0007584e", "ffff1796", "ffff4188"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759ae"
+value = {named = ["0000942e", "0007584e", "ffff1796", "ffff4188"], span = 2}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "groovy-kiwi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

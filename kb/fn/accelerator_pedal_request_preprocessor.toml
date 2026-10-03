@@ -1,0 +1,115 @@
+title = "Normalize the pedal snapshot and publish the signed request precursor"
+summary = """
+Accelerator-pedal request preprocessor. It maps snapshot ffff266e to \
+ffff1e6c as 0 below 45, floor((input-45)*1500/125) between 45 and 170, and \
+1500 at or above 170, then combines bounded offsets and corrections before \
+publishing signed request precursor ffff18f2."""
+note = [
+    """
+ffff1e6c has an exact piecewise APP normalization. ffff18f2 additionally \
+contains other terms and is not a pure pedal percentage.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 139
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 562
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "arcane-cuscus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loose-cougar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075590"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff2"
+value = "0x05dc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff4"
+value = "0x00aa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff6"
+value = "0x002d"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075606"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075616"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075628"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075630"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007564e"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007575a"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff18f2", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"

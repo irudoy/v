@@ -1,0 +1,181 @@
+summary = """
+Multipurpose DTC status byte. FUN 000aacc0 controls bit 2 in its calibrated \
+complementary P0448 status path. FUN 000ad8fe sets bit 6 for the exact P0441 \
+purge-flow result, and FUN 000abca2 consumes and clears bit 6 after \
+dispatch."""
+note = [
+    """
+The same byte also participates in hysteresis comparators in FUN 00071448. \
+ROM8[0x18700].bit1 is clear, so the P0441 producer and exact dispatch branch \
+are skipped in stock JK08A. Individual bit roles must not be generalized \
+across those state machines.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "evap-purge-flow-state-p0441"
+kind = "monitor"
+label = "DtcCode"
+key = "P0441"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d68"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 6 is the final status consumed in the exact P0441 purge-flow path, which \
+is configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000abfb8"
+value = {named = ["00018700", "00019d68", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ae04a"
+value = {named = ["00018700", "00019d68", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ae054"
+value = {named = ["00018700", "00019d68", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "beryl-skua/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 141
+binding = "evap-purge-flow-state-p0441"
+
+[[ledger]]
+registry = "vars"
+order = 196
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mindful-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "red-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beryl-skua/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-jackal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a1"
+name = "devout-wasp"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab70e"
+value = {named = ["00018700", "00071448", "000aacc0", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000abfb8"
+value = {named = ["00018700", "00071448", "000aacc0", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae04a"
+value = {named = ["00018700", "00071448", "000aacc0", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae054"
+value = {named = ["00018700", "00071448", "000aacc0", "000abca2", "000ad8fe", "ffff24a1"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "mindful-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "red-mantis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "beryl-skua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

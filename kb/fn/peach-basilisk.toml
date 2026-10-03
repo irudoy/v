@@ -1,0 +1,75 @@
+summary = """
+Accessor for 1D-4 map 0x1292C: the interpolated uint8 is doubled, receives \
+addition ffff171d in the selected mode, and saturates above at 510."""
+note = ["The physical purpose of the local limiter is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 300
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "curious-cuttlefish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00044910"
+name = "peach-basilisk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044cd2"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044cdc"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044ce0"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044ce8"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044d0a"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044d12"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044d18"
+value = {named = ["0001292c", "00044910"], span = 1}
+key = "body"

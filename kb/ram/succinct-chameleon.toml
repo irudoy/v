@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4295"
+name = "succinct-chameleon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d332"
+
+[[link]]
+type = "writer"
+to = "nippy-wildcat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

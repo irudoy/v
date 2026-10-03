@@ -13,3 +13,10 @@
 /patches/can-telemetry-profile.toml
 /defs/JK08A.tuning-signals.toml
 /defs/JK08A.overrides.toml
+/defs/JK08A.funcs.csv
+/defs/JK08A.vars.csv
+/defs/JK08A.findings.csv
+/defs/JK08A.axes.csv
+/defs/JK08A.dtc.csv
+/defs/JK08A.diagnostic-bindings.csv
+/tools/ghidra/symbols/7mfk.csv

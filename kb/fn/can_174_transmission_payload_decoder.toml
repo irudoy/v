@@ -1,0 +1,136 @@
+title = "Decode CAN 0x174 target and current zero-based gear indices"
+summary = """
+CAN 0x174 payload decoder selected by internal key 0x2e80. It decodes \
+payload byte 3 high nibble into live zero-based target gear index ffff1087 \
+and low nibble into live zero-based current gear index ffff1086. Each nibble \
+value 1 through 7 is decremented; zero and values above 7 publish zero. \
+Scheduler 00020dfe copies the pair to ffff1082/ffff1083."""
+note = [
+    """
+Passive target transitions 0x44 -> 0x34 -> 0x33 and 0x22 -> 0x32 -> 0x33 \
+establish high-nibble target and low-nibble current ordering for downshifts \
+and upshifts.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 68
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 590
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "writes"
+to = "faithful-wildebeest/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strange-jackrabbit/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c47ea"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009786"
+value = "0x01082e80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c3c56"
+value = "0x2e80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c484a"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c486c"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4892"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4898"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48a0"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48a2"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48aa"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48e8"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48f2"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4950"
+value = {named = ["00009786", "00020dfe", "000c3c56", "000c47ea", "ffff1086", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2702"
+name = "mature-waxbill"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000cf172"
+
+[[link]]
+type = "reader"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

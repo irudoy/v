@@ -1,3 +1,21 @@
+summary = """
+Interpolated unsigned byte multiplier M: M is written to RAM ffff1529 and \
+used in calculation RAM ffff152c = min(255, (M * uint8(RAM ffff152d)) >> \
+7)."""
+note = [
+    """
+Lookup by uint8 ffff11b3 writes M to ffff1529; the saved register copy forms \
+ffff152c=min(255,(M*uint8[ffff152d])>>7). The shift and saturation belong to \
+the composite calculation rather than the map scale. The implicit RAM axis \
+does not create a separate Axis row; the physical quantity is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
 category = "Internal Calculations"
@@ -7,10 +25,192 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 371
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brass-galago/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000121ce"
 name = "super-chinchilla"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517f2"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517f8"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005180c"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005180e"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051810"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051814"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051818"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005181a"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005181e"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051820"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051822"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005182e"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051830"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051832"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051834"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051836"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051838"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005183c"
+value = {named = ["000121ce", "000224f8", "00026740", "ffff11b3", "ffff1529"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +243,17 @@ value = 8
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

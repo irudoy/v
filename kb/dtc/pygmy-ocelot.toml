@@ -1,0 +1,36 @@
+title = "Heater control high bank 1 sensor 2"
+level = "code"
+code = "P0038"
+group = "rear_o2_heater"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 30
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019b94"
+name = "pygmy-ocelot"
+index = 175
+attribute = "00016186"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016186"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019b94"
+value = "330703000000003800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a408"
+value = "00016186"

@@ -1,0 +1,157 @@
+summary = """
+Timing-state latch. It copies ffff1830 to ffff2404 when ffff1239 is 1 or 2, \
+or when ffff4184.bit6 and ffff2458.bit5 are both clear; otherwise it copies \
+ffff1831."""
+note = [
+    """
+Latch the active timing-state byte for the nonlinear transition controller""",
+    """
+The normal selected-map path uses ffff1830. Scheduler 00020dfe snapshots \
+ffff2404 into ffff2378 for the engine-event correction builder 0004d99c; \
+both alternatives are crank degrees of the final coordinate.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 105
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 510
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nonlinear_transition_controller/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "beautiful-wrasse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "obedient-civet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "futuristic-chinchilla/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "sassy-swan/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "functional-corgi/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004c136"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c172"
+value = {named = ["00020dfe", "0004c136", "00063f30", "ffff1239", "ffff1830", "ffff1831", "ffff2404", "ffff2458", "ffff4184"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c178"
+value = {named = ["00020dfe", "0004c136", "00063f30", "ffff1239", "ffff1830", "ffff1831", "ffff2404", "ffff2458", "ffff4184"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c17a"
+value = {named = ["00020dfe", "0004c136", "00063f30", "ffff1239", "ffff1830", "ffff1831", "ffff2404", "ffff2458", "ffff4184"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "sassy-swan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

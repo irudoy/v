@@ -1,0 +1,85 @@
+summary = """
+Base of a six-element signed 16-bit additive correction array written by \
+FUN_0004e614 and added to the parity-selected base pulse in FUN_0004eba2."""
+note = [
+    """
+The code establishes its additive role in the compensated pulse calculation; \
+the physical decomposition of the correction remains unresolved.""",
+]
+level = "code"
+unit = "raw_s16"
+
+[[ledger]]
+registry = "vars"
+order = 361
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lime-ape/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1396"
+name = "berserk-ocelot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e862"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e916"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e924"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec42"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "lime-ape/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

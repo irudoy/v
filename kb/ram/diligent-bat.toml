@@ -1,0 +1,84 @@
+summary = """
+Base of the 64-word bank 2 learned-fuel-trim RAM grid. FUN 0005796c selects \
+one Q8.8-percent cell by an 8x8 operating-region index, and FUN 00057d1e \
+updates selected cells with bounds 90..110 percent. Reset paths fill all \
+cells with 0x6400."""
+note = ["This is adaptive RAM state, not a flash calibration table."]
+level = "code"
+unit = "percent*256 array"
+
+[[ledger]]
+registry = "vars"
+order = 150
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-tarantula/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rousing-rhino/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4b10"
+name = "diligent-bat"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9e"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9f"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057a86"
+value = {named = ["00008a9e", "00008a9f", "0005796c", "00057d1e", "00058092", "ffff4b10"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057ec4"
+value = {named = ["00008a9e", "00008a9f", "0005796c", "00057d1e", "00058092", "ffff4b10"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nice-toad/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

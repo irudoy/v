@@ -1,3 +1,39 @@
+note = [
+    """
+Column axis for primary requested-torque surface 0000e98e and the \
+returned-value table for its inverse lookup in FUN 00073432. FUN 00073948 \
+passes column ffff1980, the value of segment table 00015690 over 00015500 or \
+000156d0 over 00015540 at ffff1824 = 8192*ffff12a0/RPM, which is an opening \
+area of 00013202 divided by engine speed, to wrapper 000262e0 at 000739e2; \
+its word core 00026984 compares each stored point with that word directly, \
+so one stored count is one coordinate count, unlike row core 00026a0c, which \
+multiplies each row point by 16. 000702c6, 00075540, 00075c48, and 0007ab18 \
+evaluate the last column, 0007584e the first, and 000753d4 and 0007a9fc \
+columns they form through the lower segment. The QH0 name, percent unit, and \
+scale are catalog candidates.""",
+]
+level = "code"
+quantity = "load"
+unit = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+to_raw = "x/0.00152588"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 32
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "request_flow/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "000158a6"
@@ -33,6 +69,43 @@ name = "rampant-poodle"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00070328"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map|Axis Percentage (x*0.00152588)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000739d6"
+value = {named = ["00014114", "000262e0", "00026984", "00073948", "00152588", "ffff1980"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000739e2"
+value = {named = ["00014114", "000262e0", "00026984", "00073948", "00152588", "ffff1980"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "bald-dachshund/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "versed-reindeer/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +152,10 @@ to = "7mfk:000754ac"
 count = 1
 value = 4
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "request_flow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

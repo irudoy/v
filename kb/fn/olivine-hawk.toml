@@ -1,0 +1,178 @@
+summary = """
+First accelerator-pedal sensor range monitor. It reads diagnostic value \
+ffff269e, accepts ROM16[0x8ffc]=60..ROM16[0x8ff8]=964 counts inclusive, and \
+dispatches exact JK08A descriptor indices 0xdf and 0xe0 for P2123 and \
+P2122."""
+note = [
+    """
+The exact ROM descriptor catalog identifies the two dispatcher indices as \
+accelerator-pedal position sensor 1 high and low circuit faults. At 5 mV per \
+count the window is 0.30..4.82 V, which brackets the factory band of \
+0.5..1.0 V released and 4.2..4.8 V depressed.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "accelerator-pedal-sensor-1-p2122"
+kind = "monitor"
+label = "DtcCode"
+key = "P2122"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019de0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000a7040 dispatches exact JK08A descriptor index 0xe0 when the first \
+accelerator-pedal diagnostic value is below its lower threshold."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "app1/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a70d0"
+value = {named = ["00019de0", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "accelerator-pedal-sensor-1-p2123"
+kind = "monitor"
+label = "DtcCode"
+key = "P2123"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019dd4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000a7040 dispatches exact JK08A descriptor index 0xdf when the first \
+accelerator-pedal diagnostic value exceeds its upper threshold."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "app1/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a70b2"
+value = {named = ["00019dd4", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 64
+binding = "accelerator-pedal-sensor-1-p2123"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 65
+binding = "accelerator-pedal-sensor-1-p2122"
+
+[[ledger]]
+registry = "funcs"
+order = 278
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "app1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a7040"
+name = "olivine-hawk"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ff8=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ffc=60"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a704c"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7054"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7060"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a70b2"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a70c2"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a70d0"
+value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

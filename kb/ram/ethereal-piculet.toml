@@ -1,0 +1,77 @@
+summary = """
+Scheduler snapshot of ramped commanded-mixture word ffff123a. FUN 00020dfe \
+copies the 0x3e-byte block ffff120e..ffff124b to ffff124c..ffff1289 every \
+pass, so 0005594a reads the previous-pass value here, as ffff124c + 0x2c, as \
+the ramp origin."""
+level = "code"
+unit = "ratio_q14"
+
+[[ledger]]
+registry = "vars"
+order = 747
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rugged-chipmunk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1278"
+name = "ethereal-piculet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f7c"
+value = {named = ["00020dfe", "00022558", "0005594a", "ffff123a", "ffff1278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000562f4"
+value = {named = ["00020dfe", "00022558", "0005594a", "ffff123a", "ffff1278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "rugged-chipmunk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

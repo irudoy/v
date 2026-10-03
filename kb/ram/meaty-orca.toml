@@ -1,0 +1,212 @@
+summary = """
+Previous-pass image of selected normalized-temperature byte ffff1078. After \
+the 69 entries of periodic table 00021834, dispatcher FUN 000209d8 copies \
+ffff1072..ffff1079 to ffff107a..ffff1081 through block-copy helper 00022558 \
+at 00020cba. FUN 000394b8 reads it on the hold branch of selector 0003967a, \
+so the selected byte keeps its last coolant selection. Startup initializer \
+FUN 00027c50 and clear services FUN 0002fc24 and FUN 00034b70 zero the byte \
+inside their RAM spans."""
+note = [
+    """
+The helper writes through its destination pointer, so the byte has no \
+literal-address store. The zero of RAM initialization is replaced at the end \
+of the first pass. The selector takes coolant once on that pass, before the \
+hold branch first reads the image.""",
+]
+level = "code"
+unit = "normalized coolant index"
+
+[[ledger]]
+registry = "vars"
+order = 453
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_temperature_pair_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quantum-fennec/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "start_low_voltage_temperature_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "selector"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-kudu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1080"
+name = "meaty-orca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020e6c"
+value = "ffff107a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020e74"
+value = "ffff1072"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cae"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cb8"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027c7a"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039514"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00027c50", "0002fc24", "00034b70", "000394b8", "0003967a", "ffff1072", "ffff1078", "ffff107a", "ffff1080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
+type = "input"
+to = "quantum-fennec/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cunning-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

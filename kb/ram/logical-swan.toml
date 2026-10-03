@@ -1,0 +1,33 @@
+summary = "Bits 0/1 gate sum terms in 00054ee0."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 157
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-snail/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff230e"
+name = "logical-swan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000532c8"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

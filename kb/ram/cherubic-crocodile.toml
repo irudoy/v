@@ -1,0 +1,53 @@
+summary = """
+Measured signal compared with the diagnostic lower limit (map 0x12870) in a \
+DTC monitor: while below the limit, debounce counter ffff1846 accumulates. \
+The physical quantity is unknown."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 103
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "romantic-jackal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "charcoal-malkoha/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff16d4"
+name = "cherubic-crocodile"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000aad94"
+
+[[link]]
+type = "input"
+to = "charcoal-malkoha/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4186"
+name = "xanthic-sponge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002108a"
+
+[[link]]
+type = "reader"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

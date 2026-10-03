@@ -1,0 +1,259 @@
+title = "Build and evaluate the P010B bank-2 range-performance state"
+summary = """
+Second-bank P010B MAF range-performance monitor. It mirrors 0008152a, builds \
+model byte ffff15bd and composite byte ffff12ec through the shared factor \
+tables, maintains event context, and returns a Boolean that 00080f82 \
+dispatches as runtime record 0x07."""
+note = [
+    """
+Stock 00008d92 bit 5 is set, so the model_byte < ffff12ec comparison is \
+bypassed. The composite survives only in captured P010B event context; exact \
+code does not connect it to fuel or actuator control.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "maf-range-monitor-bank2-p010b"
+kind = "monitor"
+label = "DtcCode"
+key = "P010B"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193b4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00081d74 returns the second-bank MAF range-performance result as \
+argument 7 of 00080f82, which dispatches exact runtime-record index 0x07 for \
+P010B."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193b4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080fde"
+value = {named = ["000193b4", "0007d8b8", "00080e20", "00080f82", "00081d74"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081f52"
+value = {named = ["000193b4", "0007d8b8", "00080e20", "00080f82", "00081d74"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008216a"
+value = {named = ["000193b4", "0007d8b8", "00080e20", "00080f82", "00081d74"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_range_monitor_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_dispatch/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "curated"
+order = 62
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 186
+binding = "maf-range-monitor-bank2-p010b"
+
+[[ledger]]
+registry = "funcs"
+order = 256
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "golden-goose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "persimmon-crow/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "smiling-piculet/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "feathered-boobook/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wondrous-bumblebee/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aboriginal-porpoise/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "asparagus-koel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elegant-guan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gabby-pug/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "idealistic-wren/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "solid-gaur/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00081d74"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193b4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080fde"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f52"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f5a"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082034"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008216a"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000824b4"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

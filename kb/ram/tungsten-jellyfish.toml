@@ -1,0 +1,131 @@
+summary = """
+Second-channel Q16 zero-surface crossfade scratch written by FUN 000720c4 as \
+floor((ffff1cba*(65536-ffff190e)+ffff1cbc*ffff190e)/65536)."""
+note = [
+    """
+Both endpoint surfaces are all zero, so the stock value is always zero. \
+Whole-program exact references contain this write and no reader; FUN \
+000720c4 keeps the same value in a register for its local processing.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 15
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "crazy-spider/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "granite-seagull/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-cuttlefish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tuscan-vulture/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff124a"
+name = "tungsten-jellyfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007211a"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072120"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072126"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007212a"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072130"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072136"
+value = {named = ["00017cc8", "00017ec8", "000720c4", "ffff124a", "ffff190e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "papaya-cuttlefish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "crazy-spider/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "granite-seagull/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

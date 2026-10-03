@@ -1,0 +1,205 @@
+summary = """
+Interpolated unsigned 8-bit threshold: the low result byte is written to RAM \
+ffff16d0, and its unsigned value directly serves as the right-hand bound of \
+test RAM[ffff16d4] >= output."""
+note = [
+    """
+Interpolated unsigned 8-bit threshold: the low result byte is written to RAM \
+ffff16d0, and its unsigned value directly serves as the right-hand bound of \
+test RAM[ffff16d4] >= output. Result disposition: inline_comparison. Result \
+target: JK08A:Map:00012870. Machine trace: 000ab696[extu.w of formed input] \
+-> 000ab69a/000ab69c[upper-bound test 0xff] -> 000ab6a4[store saturated \
+uint8 on stack] -> 000ab6b0/000ab6ba[load and extu.b input into r6]; \
+000ab6ae[r4=00012870] + 000ab6b2[r5=00012880] -> 000ab6b8[call 000264a0] -> \
+00026944[interval search on uint8 axis] -> 00026c78[fraction calculation] -> \
+00026740[linear interpolation with Q16 fraction] -> 000ab6bc[r2=r0] -> \
+000ab6c0[r13=extu.b(r2)] and 000ab6c2[RAM[ffff16d0]=low8(r2)] -> \
+000ab6c6/000ab6ca[r12=extu.b(RAM[ffff16d4])] -> 000ab6cc[cmp/ge r13,r12, \
+meaning RAM[ffff16d4] >= output] -> 000ab6ce[conditional branch on true \
+comparison].""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 173
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "charcoal-malkoha/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wine-pelican/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012870"
+name = "charcoal-malkoha"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab696"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab69a"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab69c"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6a4"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6ae"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6b0"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6b2"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6b8"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6bc"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6c0"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6c2"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6c6"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6ca"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6cc"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab6ce"
+value = {named = ["00012870", "00012880", "000264a0", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "charcoal-malkoha/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "wine-pelican/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

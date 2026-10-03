@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff351c"
+name = "scarlet-caracara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000796ac"
+
+[[link]]
+type = "lookup"
+to = "natural-hedgehog/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

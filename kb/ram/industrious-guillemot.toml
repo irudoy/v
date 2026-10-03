@@ -1,0 +1,126 @@
+summary = """
+Bit 6 is a one-shot init latch that gates the single baseline lookup of map \
+0x18766 in 00073824 through test-then-set. Bit 7 is the standstill flag of \
+exhaust-VTC conditioner FUN 000bfe88: hysteresis comparator 000259d0 sets it \
+while coarse vehicle-speed byte ffff110e is at or below ROM8[00008e3c]=2 and \
+clears it above 2+ROM8[000086e8]=3, stored at 000bff4e; it is one input of \
+standstill override predicate ffff246c bit 1."""
+note = [
+    """
+The claim for bit 4 of the same byte, threshold 'clamp activated', has no \
+verdict because its refutation failed; confidence remains candidate.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 202
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impressive-scorpion/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "discreet-mayfly/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24ac"
+name = "industrious-guillemot"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086e8"
+value = "1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e3c"
+value = "2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff1c"
+value = {named = ["000086e8", "00008e3c", "00018766", "00073824", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff34"
+value = {named = ["000086e8", "00008e3c", "00018766", "00073824", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff4e"
+value = {named = ["000086e8", "00008e3c", "00018766", "00073824", "000bfe88", "ffff110e", "ffff24ac"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "discreet-mayfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "imported-civet/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "impressive-scorpion/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

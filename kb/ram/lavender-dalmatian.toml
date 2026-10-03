@@ -1,0 +1,78 @@
+summary = """
+Bounded signed correction written by 0004cadc as clamp_s8(clamp(v, \
+-ROM8[0x8a9c], ROM8[0x82e9])) with stock bounds -15..0. Scheduler 00020dfe \
+snapshots it into ffff2356."""
+note = [
+    """
+Stock source maps 0x1239a and 0x123a2 are zero; one count is one crank \
+degree of the final coordinate.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 838
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "savvy-elephant/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23e2"
+name = "lavender-dalmatian"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000082e9"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008a9c=0x0f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021314"
+value = {named = ["000082e9", "00008a9c", "00020dfe", "0004cadc", "ffff23e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d17a"
+value = {named = ["000082e9", "00008a9c", "00020dfe", "0004cadc", "ffff23e2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "savvy-elephant/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

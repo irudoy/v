@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f8c"
+name = "athletic-uakari"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000772b8"
+
+[[link]]
+type = "reader"
+to = "psychedelic-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

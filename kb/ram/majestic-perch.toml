@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff936e"
+name = "majestic-perch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009b92a"
+
+[[link]]
+type = "lookup"
+to = "whispering-lemur/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

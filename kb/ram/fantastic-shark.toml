@@ -1,0 +1,252 @@
+summary = """
+State byte shared by several writers; enable coordinator 000bf630 owns bits \
+2 and 3. Bit 2 is the coolant window, set at 000bf864 while ffff24a9 bits 3 \
+and 6 are both set. Bit 3 is the oil-temperature hysteresis flag: \
+oil-temperature snapshot ffff2772, plus 3 while the bit is set, is at least \
+ROM8[00008dff]=110, stored at 000bf758 and 000bf75a. Scheduler 00020dfe \
+copies ffff246a..ffff246c to prior-cycle ffff246d..ffff246f at 0002105a. Bit \
+1 is the standstill exhaust-override predicate written by FUN 000bfe88 at \
+000c017e: operational enable ffff248b bit 2, engine-speed window flags \
+ffff24ab bits 0 and 1 (1800..4000 RPM), standstill flag ffff24ac bit 7 \
+(coarse speed ffff110e at or below ROM8[00008e3c]=2), and ffff244f bit 2 all \
+set. While it is set and cancel latch ffff2478 bit 4 is clear, the \
+conditioner replaces the map target with ROM8[00008e36]+128=168 (+20 degCA) \
+at 000c019e..000c01b8 independently of surfaces 0000b33a, 0000b2fa, and \
+0000ab4a."""
+note = [
+    """
+Other bits are written by 00043aee, 00048400, 00048754, 000556ec, and \
+000bfe88. Bit 3 sets once the oil temperature reaches raw 110 (60 degC) and \
+is a required term of the operating enable ffff248b bit 2 together with \
+latch ffff248c bit 7 clear.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 799
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-lyrebird/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "industrious-guillemot/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "onyx-jerboa/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sassy-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-coucal/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff246c"
+name = "fantastic-shark"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dff=110"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e36=40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e3c"
+value = "2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002105a"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf758"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf75a"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf864"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c017e"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c019e"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01a4"
+value = {named = ["00008dff", "00008e36", "00008e3c", "00020dfe", "000bf630", "000bfe88", "ffff244f", "ffff246c", "ffff248b", "ffff24a9", "ffff24ab", "ffff24ac", "ffff2772"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "aloof-lyrebird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "industrious-guillemot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sassy-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "silky-coucal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "flying-ladybug/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "opalescent-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

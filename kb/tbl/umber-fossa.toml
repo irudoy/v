@@ -1,0 +1,153 @@
+summary = """
+Upper bound of a signed raw value: in 00041750, value ffff202e forms a \
+minimum with ffff226a, then the result forms a maximum with ffff221a"""
+note = [
+    """
+Flat values 32815 produce 47 after code offset 0x8000. In the branch \
+starting at 00041c00, ffff202e bounds ffff226a from above, after which \
+ffff221a bounds the result from below. ffff202e has no external readers. The \
+physical quantity is unknown; the claim applies only to proven raw \
+upper-bound semantics. Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 271
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-gazelle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "ginger-sheep/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ginger-sheep/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014caa"
+name = "umber-fossa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b80"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b8a"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b96"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d4"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000419d8"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00041b8e"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00041b90"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00041b92"
+value = {named = ["00014caa", "000264cc", "00026740", "00026984", "00041750", "ffff202e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "ginger-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

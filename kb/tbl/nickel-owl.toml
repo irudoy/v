@@ -1,0 +1,116 @@
+summary = """
+Unsigned 1D coefficient table: the value interpolated by ffff177c is used as \
+a Q0.16 multiplier of the same ffff177c; the high 16 bits of the product are \
+stored in ffff181a."""
+note = [
+    """
+All map and axis cells are zero, so the current image yields a zero \
+coefficient. This does not prove unreachability or a physical subsystem. \
+ffff1836 has no external readers, but the same returned r2/r6 value is \
+consumed directly by mul.l at 000767d2. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 300
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9]
+
+[[symbol]]
+layout = "7mfk"
+address = "000153e0"
+name = "nickel-owl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767b6"
+value = {named = ["000153e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767ba"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767be"
+value = {named = ["000153e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767c8"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767cc"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767d2"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767dc"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767c6"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767d4"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767d6"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "pygmy-junglefowl/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

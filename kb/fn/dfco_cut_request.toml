@@ -1,0 +1,197 @@
+title = "Edge-sensitive DFCO cut-request evaluator"
+summary = """
+Edge-sensitive DFCO cut-request evaluator. It always interpolates \
+coolant-indexed RPM thresholds 000126e4 and 00012718 by ffff106f. With \
+current ffff2458.bit5 clear it returns 0. A rising edge with previous \
+ffff245a.bit5 clear requires coarse vehicle speed at least 4 and selects \
+00012718; a held edge selects 000126e4 on the common stock branch. It \
+returns 1 only when RPM/25 ffff11b3 is strictly above the adjusted selected \
+threshold."""
+note = [
+    """
+Both threshold tables are live in stock JK08A. A2L Bosch/JECS family labels \
+do not describe this executable's dynamic edge selection. Additional \
+branches apply saturating offsets, lower bounds, and runtime gates. A true \
+cut request is necessary but not sufficient for state-machine entry: FUN \
+000503e0 also requires restore class 0. The target-vehicle restore-only A/B \
+result confirms that distinction in warm moving operation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 33
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 163
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_fuel_cut/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_fuel_hold/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "gregarious-turkey/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004fbe2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085fa"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000870c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b3f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc02"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc10"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc16"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc96"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fce2"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fd8c"
+value = {named = ["000085fa", "0000870c", "00008b3f", "000126e4", "00012718", "00026388", "00026740", "0004ed88", "0004fbe2", "ffff106f", "ffff110e", "ffff11b3", "ffff2458", "ffff245a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "gregarious-turkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

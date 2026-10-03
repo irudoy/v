@@ -1,6 +1,176 @@
+summary = """
+Exact one-byte response source for UDS DID 0x1103 and current \
+battery-voltage byte. FUN 00039a9e copies phase-2 AN0 mux sample ffff1d6e to \
+ffff1fc4, stores uint8(sample >> 2) in ffff1fc6, scales that byte through \
+guard 00067188 and Q1.15 scaler 000671d8 with shared coefficient ffff4970, \
+saturates the result to 255, and writes it here at 00039ae2. FUN 00038618 \
+and selected-temperature gate 0003967a compare it with raw 100; scheduler \
+00020dfe snapshots it to ffff1108."""
+note = [
+    """
+One count is 0.08 V: the ROM limits that the DTC monitors apply to snapshot \
+ffff1108 reproduce the factory battery-voltage test conditions of 10, 10.5, \
+11, and 16 V; that row carries the constants and JK08A.diagnostics.md \
+derives the scale. With stock coefficient 0x8000 the byte equals the ten-bit \
+sample shifted right by two, so one count is 20 mV at the converter input \
+and the terminal divider is 4:1. Raw 100 is 8.00 V. Target recordings hold \
+157..180 counts, or 12.56..14.40 V, around a diagnostic reading of 13.92 \
+V.""",
+]
+level = "code"
 width = 8
 unit = "V"
 scale = "x*0.08"
+
+[[diagnostic]]
+id = "battery-voltage-did-1103"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221103"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0005-l0005:source-row-extended-pids:parameter:0x1103-83073d97"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1103 to ffff1188. FUN 00039a9e \
+converts phase-2 AN0 mux sample ffff1d6e and writes the response byte. \
+Homologous measured diagnostics identify the DID as battery voltage with V = \
+raw*0.08, and the ROM limits of the JK08A DTC monitors reproduce the factory \
+battery-voltage test conditions of 10, 10.5, 11, and 16 V at that scale. A \
+target diagnostic reading of 13.92 V lies inside the recorded range of \
+12.56..14.40 V."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "start_low_voltage_temperature_selector/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "eager-alligator/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000226b8"
+value = "ffff1188"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000226b8"
+value = {named = ["0003235c", "0003967a", "00039a9e", "83073d97", "ffff1188", "ffff1d6e"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003968c"
+value = {named = ["0003235c", "0003967a", "00039a9e", "83073d97", "ffff1188", "ffff1d6e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00039aae"
+value = {named = ["0003235c", "0003967a", "00039a9e", "83073d97", "ffff1188", "ffff1d6e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00039ae2"
+value = {named = ["0003235c", "0003967a", "00039a9e", "83073d97", "ffff1188", "ffff1d6e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "battery_voltage_publish/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 3
+binding = "battery-voltage-did-1103"
+
+[[ledger]]
+registry = "vars"
+order = 67
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*12.5"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "start_low_voltage_temperature_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eager-alligator/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-oarfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "battery_voltage_publish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "private-groundhog/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +202,80 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1188"
 former = ["heretic-vole/ram/7mfk-ffff1188"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226b8"
+value = "ffff1188"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226b8"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038968"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003896c"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003968c"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ab0"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ab8"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039aca"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ae2"
+value = {named = ["00020dfe", "0003235c", "00038618", "0003967a", "00039a9e", "00067188", "000671d8", "ffff1108", "ffff1188", "ffff1d6e", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "horned-frog/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-bobcat/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +313,111 @@ to = "7mfk:000390fa"
 count = 1
 value = 30
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "depends"
+to = "private-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "eager-alligator/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "satisfied-oarfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "eager-beluga/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "screeching-gaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "venomous-sturgeon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,145 @@
+summary = """
+Active cold/hot timing-map sample written by 0004e1c0. It uses 0x991A cold, \
+blends cold with the hot surface selected by ffff2466.bit6, or uses selected \
+0x9A1A/0x9B1A hot according to coolant. Bits 0..6 are timing state and bit 7 \
+independently enables a knock-state path."""
+note = [
+    "This is an intermediate state sample, not a direct final timing command.",
+]
+level = "code"
+unit = "raw map cell"
+
+[[ledger]]
+registry = "vars"
+order = 594
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_timing_state_terms/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cold_hot_timing_map_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff160f"
+name = "rare-weasel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004946e"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af44"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e23e"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e3ca"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e4c6"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e4f8"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e55a"
+value = {named = ["000493e8", "0004af38", "0004e1c0", "ffff160f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "high_detonation_timing_state/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "high_octane_timing_state/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "ignition_gated_surface_1/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

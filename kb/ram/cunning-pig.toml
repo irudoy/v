@@ -1,0 +1,60 @@
+summary = """
+DTC-monitor debounce counter associated with limit map 0x12870: incrementing \
+is enabled by ffff84c3 bit 6 and compared with threshold 0x8b71; upon \
+reaching it, fault bit 0x04 is set in ffff24a1 and response 000b4ef8(0x2f) \
+is called."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 109
+fields = ["semantics", "units", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-jackal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1846"
+name = "cunning-pig"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b71"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000aad90"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

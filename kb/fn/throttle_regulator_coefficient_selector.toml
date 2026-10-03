@@ -1,0 +1,99 @@
+title = "Select per-channel throttle-regulator gains and modes"
+summary = """
+Per-channel throttle-regulator coefficient selector. It updates two \
+hysteresis bits from feedback words, selects normal or fault coefficient \
+sets, and publishes the gain and mode arrays consumed by 000cb614."""
+note = [
+    """
+The coefficient selection is exact; individual physical controller-term \
+names remain unresolved.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "curated"
+order = 161
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 581
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "black-gazelle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mahogany-barracuda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb41c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb42c"
+value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb474"
+value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb4c8"
+value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb512"
+value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb5b6"
+value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

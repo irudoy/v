@@ -1,0 +1,49 @@
+summary = """
+Base of six 16-bit coefficients under which 00086b0c calculates the \
+irregularity metric: calculation occurs only when all six lie between \
+0x9452=32437 and 0x9454=33096, or 0x8000 +-1%."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 345
+fields = ["semantics", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lovely-koala/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff55a2"
+name = "unyielding-stingray"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009452"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009454"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000869f4"
+
+[[link]]
+type = "reader"
+to = "lovely-koala/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

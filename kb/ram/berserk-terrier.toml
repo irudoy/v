@@ -1,0 +1,95 @@
+summary = """
+Scheduler snapshot of transformed injection-pulse array ffff23d4, produced \
+by the 140-byte ffff23bc -> ffff2330 copy in 00020dfe. FUN_00054d3e copies \
+each word into scheduled-duration array ffff224e after lower-bounding it at \
+ffff2390."""
+note = [
+    """
+One count is 10 us. The snapshot carries the values produced by the \
+preceding scheduler pass.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 855
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bulky-hound/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "handsome-spaniel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2348"
+name = "berserk-terrier"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021314"
+value = {named = ["00020dfe", "00054d3e", "ffff2348", "ffff23d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021316"
+value = {named = ["00020dfe", "00054d3e", "ffff2348", "ffff23d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054da4"
+value = {named = ["00020dfe", "00054d3e", "ffff2348", "ffff23d4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "handsome-spaniel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bulky-hound/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

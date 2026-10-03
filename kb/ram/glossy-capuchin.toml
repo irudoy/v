@@ -1,0 +1,87 @@
+summary = """
+Bank-2 exhaust-VTC duty request word at window offset 0x9e6 of base \
+ffff128c. FUN 000c2040 writes it at 000c20ae with bank index 1 from \
+controller state ffff1aa8."""
+level = "code"
+unit = "duty/1024"
+
+[[ledger]]
+registry = "vars"
+order = 774
+fields = ["semantics", "units", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2534"
+offset = 0x9e6
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flat-oryx/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-fulmar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c72"
+name = "glossy-capuchin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20ae"
+value = {named = ["000c2040", "ffff1108", "ffff128c", "ffff1aa8", "ffff1c72"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x9e6
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "flat-oryx/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff75e"
+name = "encouraging-scallop"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00000ea0"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

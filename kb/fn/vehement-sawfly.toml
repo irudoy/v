@@ -1,0 +1,103 @@
+summary = """
+Wrapper for derived readiness source ffff283a. When ffff421d.bit1 is clear, \
+it first copies ffff2837 to ffff283a and sets that bit; it then always calls \
+FUN 0003d702, whose derived write replaces the copied value within the same \
+invocation."""
+note = [
+    """
+The transient initialization copy does not establish intake-air-temperature \
+semantics for the final ffff283a value.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 427
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rapid-snake/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "iat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "lively-anteater/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lively-anteater/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olive-yak/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003d7b4"
+name = "vehement-sawfly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d7bc"
+value = {named = ["0003d702", "0003d7b4", "ffff2837", "ffff283a", "ffff421d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d7c4"
+value = {named = ["0003d702", "0003d7b4", "ffff2837", "ffff283a", "ffff421d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d7c8"
+value = {named = ["0003d702", "0003d7b4", "ffff2837", "ffff283a", "ffff421d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d7ce"
+value = {named = ["0003d702", "0003d7b4", "ffff2837", "ffff283a", "ffff421d"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "rapid-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

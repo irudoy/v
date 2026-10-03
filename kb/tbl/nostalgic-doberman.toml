@@ -1,0 +1,109 @@
+summary = """
+Raw 8-bit threshold for RAM byte ffff19aa: the interpolated map result is \
+written to ffff17f0 and used directly in condition ffff19aa > ffff17f0."""
+note = [
+    """
+All 8 cells equal 0, so the interpolated threshold is 0 for any index. The \
+value has no external readers but is consumed inside 000bd20a: 000bd3c8 \
+executes cmp/gt r5,r6, testing ffff19aa > ffff17f0, and 000bd3ca branches on \
+the result. Branch unreachability has not been proven. The artifact does not \
+establish the physical meaning of RAM byte ffff19aa or the axis input.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 192
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a92"
+name = "nostalgic-doberman"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd312"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd31c"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd320"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd328"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3c4"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3c8"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd3ca"
+value = {named = ["00012a92", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

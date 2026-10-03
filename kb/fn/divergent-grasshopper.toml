@@ -1,0 +1,162 @@
+summary = """
+Short-term fuel-trim diagnostic-word producer. It calls FUN 0005cbec, then \
+normally copies working Q8.8-percent words ffff40ac/ffff40ae to \
+ffff22dc/ffff22de. In an alternate control mode it writes one forced byte \
+shifted left by 8 to both banks after clamping it to 75..125 percent."""
+note = [
+    """
+The normal path preserves fractional Q8.8 content. UDS DIDs return only the \
+high bytes, while Mode 01 conversion uses the complete words. The upstream \
+closed-loop arithmetic is retained separately in FUN 0005cbec.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 347
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benevolent-bird/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "groovy-ape/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005c910"
+name = "divergent-grasshopper"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005c9c8"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca10"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca34"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca38"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca3c"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca42"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca46"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca48"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca4a"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "strong-tarsier/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

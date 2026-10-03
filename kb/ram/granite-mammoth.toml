@@ -1,0 +1,232 @@
+summary = """
+Latch byte of enable coordinator 000bf630. Bit 6 sets at 000bf880 on the \
+rising edge of coolant-window bit ffff246c bit 2 against prior-cycle \
+ffff246f while ffff2458 bit 5 is clear, and clears at 000bf884 while that \
+bit is set. Bit 7 sets at 000bf8c6 on the rising edge of oil-temperature \
+flag ffff246c bit 3 against ffff246f bit 3, and clears at 000bf894 while \
+ffff2458 bit 5 and low-speed flag ffff24aa bit 7 are both set. Bit 6 blocks \
+the coolant-window term of ffff248b bit 2, and bit 7 clear is a required \
+term of that bit while ROM8[00008616] bit 0 is set, as in stock JK08A."""
+note = [
+    """
+FUN 000bf630 is the only writer of bits 6 and 7: 0004c4cc and 0004c9d2 write \
+bits 4 and 5, 0004c536 bits 0 to 2, and 0004c6ba bit 3. Bit 6 stays set from \
+the rising edge of the coolant window until ffff2458 bit 5 clears it; that \
+bit is the scheduled copy of ffff2459 bit 5, the CLSD THL POS status of DID \
+0x1302 bit 0, so the latch releases on the first pass with the accelerator \
+pedal at its idle position.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 800
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amigurumi-pheasant/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "asparagus-cockle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fantastic-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "observant-pillbug/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elated-hamster/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "famous-bittern/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fragrant-mule/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "origami-guillemot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff248c"
+name = "granite-mammoth"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf880"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf884"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf894"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf8c6"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf8d6"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf97e"
+value = {named = ["00008616", "0004c4cc", "0004c536", "0004c6ba", "0004c9d2", "000bf630", "ffff2458", "ffff246c", "ffff246f", "ffff248c", "ffff24aa"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "amigurumi-pheasant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "fantastic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "observant-pillbug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "elated-hamster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "famous-bittern/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fragrant-mule/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "origami-guillemot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,118 @@
+summary = """
+Shared misfire revolution-track inhibit and output of curve 0x12CBE, a \
+duplicate of 0x1263A in an inhibit role. A nonzero value freezes counters \
+ffff409e and ffff40a0 in FUN 000872d0; zero admits both increments. The same \
+byte is consumed by detection core 00085a70 and helper 00085020."""
+note = [
+    """
+The operational inhibit role is exact. The physical quantity behind curve \
+0x12CBE remains unresolved.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 329
+fields = ["semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amethyst-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fearless-mamba/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gleaming-whale/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff444d"
+name = "vermilion-tuna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087368"
+value = {named = ["00012cbe", "00082c8a", "00085020", "00085a70", "000872d0", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008736c"
+value = {named = ["00012cbe", "00082c8a", "00085020", "00085a70", "000872d0", "ffff444d"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "gleaming-whale/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fearless-mamba/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

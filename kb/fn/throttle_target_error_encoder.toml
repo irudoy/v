@@ -1,0 +1,85 @@
+title = "Encode target-reference magnitude and direction"
+summary = """
+Per-channel target-error encoder. It compares selected target \
+ffff3926/ffff3928 with sat_u16(ROM8[0x8cb6]*64+0x2000), writes absolute \
+magnitude ffff3902/ffff3904, and writes direction ffff3900/ffff3901."""
+note = [
+    "The magnitude and direction are exact internal target-reference terms.",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 159
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 579
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wandering-chachalaca/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "keen-chihuahua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quirky-gopher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb2b6"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008cb6=0x27"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb2c2"
+value = {named = ["00008cb6", "000cb2b6", "ffff3900", "ffff3902", "ffff3926"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb2e0"
+value = {named = ["00008cb6", "000cb2b6", "ffff3900", "ffff3902", "ffff3926"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb304"
+value = {named = ["00008cb6", "000cb2b6", "ffff3900", "ffff3902", "ffff3926"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb34c"
+value = {named = ["00008cb6", "000cb2b6", "ffff3900", "ffff3902", "ffff3926"], span = 1}
+key = "body"

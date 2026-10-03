@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4194"
+name = "flying-woodpecker"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021094"
+
+[[link]]
+type = "writer"
+to = "psychedelic-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000995c4"
+name = "translucent-tapir"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000995c4"

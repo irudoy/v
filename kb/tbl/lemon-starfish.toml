@@ -1,0 +1,131 @@
+summary = """
+Dimensionless Q7 multiplier for two intermediate 16-bit quantities; the \
+physical purpose of the corrected quantities is unknown."""
+note = [
+    """
+On two paths, result 00015112 multiplies ffff3270 or ffff304c. Three SHLR2 \
+operations and one SHLR divide the product by 128; derived values are \
+written to ffff2f92 and ffff2f7e. Their physical consumers are absent from \
+the artifact, so map identity remains candidate while coefficient scale is \
+established by code.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "dimensionless coefficient"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 293
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10, 11, 12]
+
+[[symbol]]
+layout = "7mfk"
+address = "00015112"
+name = "lemon-starfish"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff2f7e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff2f92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009eac4"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009ead4"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009ebfc"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009ec0c"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ead4"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009eaf6"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009eaf8"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009eafa"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009eafc"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ec0c"
+value = {named = ["00015112", "ffff2f7e", "ffff2f92"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "righteous-frigatebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

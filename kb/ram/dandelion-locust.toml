@@ -1,0 +1,193 @@
+summary = """
+Signed recovery envelope of rotational-speed request limiter 0007584e. It \
+tracks a lower request immediately only when that request is also below APP \
+and ffff1083 > ffff1082. Otherwise it advances toward 0x7fff by 0x943a or \
+0x943c according to ffff1083 > ffff1064. Output is the signed minimum of the \
+request and this envelope."""
+note = [
+    """
+When this envelope is more restrictive, the function restores ramp ffff19da \
+to its entry value. The physical context and request scale remain \
+unresolved.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 114
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "glittering-cuttlefish/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "independent-koel/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-rottweiler/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ginger-raven/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19dc"
+name = "dandelion-locust"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b2e"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b30"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b4e"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b52"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b6c"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b78"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b7c"
+value = {named = ["0000943a", "0000943c", "0007584e", "ffff1064", "ffff1082", "ffff1083", "ffff19dc"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "charming-rottweiler/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ginger-raven/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "glittering-cuttlefish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "independent-koel/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,22 @@
+summary = """
+Q1.7 multiplier for the second two-bank diagnostic path in FUN 00094f26. The \
+map is indexed by bank coordinate ffff323c+2*bank. Its output K multiplies \
+signed ffff2bde+2*bank, the product is divided by 128 with truncation toward \
+zero and clamped to int16, and the result is compared with -10000."""
+note = [
+    """
+The physical monitored quantity remains unresolved. The map is independent \
+of adjacent coefficient 00012262 and has a separate coordinate and threshold \
+path. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Diagnostic Signed-Value Multiplier Q1.7 (0x12272)"
 category = "Diagnostics / Internal Calculations"
@@ -7,7 +26,240 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 455
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+scale = [15, 16, 17, 18, 19, 20, 21]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loud-caribou/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "literate-sawfly/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "radical-labradoodle/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sage-wolverine/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-platypus/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012272"
 name = "nano-ape"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008eac"
+value = "0xd8f0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955d2"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955d6"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955de"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955ea"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955f0"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955f4"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000955fc"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00095600"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00095640"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00095642"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sly-tuna/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000955f4"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000955f8"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000955fc"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00095600"
+value = {named = ["00008eac", "00012272", "00013b08", "000224f8", "00026550", "00026740", "00026984", "00094f26", "ffff2bde", "ffff2f8b", "ffff323c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128/128=1"
+
+[[link]]
+type = "depends"
+to = "radical-labradoodle/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "literate-sawfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "sage-wolverine/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

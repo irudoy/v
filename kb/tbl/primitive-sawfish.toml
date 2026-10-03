@@ -1,0 +1,77 @@
+summary = """
+On the 0000b61a map-selection branch, its uint8 2D interpolation result with \
+bounds 40..128 is written to ffff314b without conversion. Consumer 00085a70 \
+reads this byte as signed and uses raw 0x80 (signed -128) as a sentinel: \
+0x80 blocks a compound condition, while any other value allows the remaining \
+checks."""
+note = [
+    """
+On the 0000b61a map-selection branch, its uint8 2D interpolation result with \
+bounds 40..128 is written to ffff314b without conversion. Consumer 00085a70 \
+reads this byte as signed and uses raw 0x80 (signed -128) as a sentinel: \
+0x80 blocks a compound condition, while any other value allows the remaining \
+checks. Result disposition: inline_comparison. Result target: 00085a70: \
+signed-byte comparison [ffff314b] != -128 (raw 0x80). Machine trace: \
+0000b61a -> 000832cc -> 000832d6 -> 00026320 -> 00026944/00026c78 -> \
+000268a4/00026740 -> 000832e0 -> ffff314b -> 00085a70 -> [ffff314b] != raw \
+0x80.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 76
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "obedient-dingo/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b61a"
+name = "primitive-sawfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832cc"
+value = {named = ["0000b61a", "00085a70", "ffff314b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832d6"
+value = {named = ["0000b61a", "00085a70", "ffff314b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832e0"
+value = {named = ["0000b61a", "00085a70", "ffff314b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

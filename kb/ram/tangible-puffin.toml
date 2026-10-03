@@ -1,0 +1,50 @@
+summary = """
+Bit 1 gates the branch that reads 4x4 weight 0x9eca and performs blending in \
+0007a090."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 300
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vagabond-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-capybara/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41b7"
+name = "tangible-puffin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006935a"
+
+[[link]]
+type = "input"
+to = "intelligent-capybara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

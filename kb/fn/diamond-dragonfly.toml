@@ -1,0 +1,79 @@
+summary = """
+A/F adjustment integrator: per bank, adds the unsigned up step \
+ffff97a4/ffff97a6 (map 0x1462a on selector 2, 0 on selectors 1 and 3, 1 on \
+selector 4) to the sign-extended state ffff45a0/ffff45a2, subtracts the \
+unsigned down step ffff97a0/ffff97a2 (map 0x1463a on selector 2, 0 on \
+selectors 1 and 3, 1 on selector 4), saturates the result to signed 16 bits, \
+bounds it with signed compares to ROM16[0x8e7c]..ROM16[0x8e7e] = -500..500, \
+and writes it back."""
+note = ["The physical scale of the states is not derived."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 272
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thick-goshawk/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "topaz-chameleon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "af_adjustment_b1/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "af_adjustment_b2/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a0ee8"
+name = "diamond-dragonfly"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e7c=-500"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e7e=500"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a16ca"
+value = {named = ["00008e7c", "00008e7e", "0001462a", "0001463a", "000a0ee8", "ffff45a0", "ffff45a2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1738"
+value = {named = ["00008e7c", "00008e7e", "0001462a", "0001463a", "000a0ee8", "ffff45a0", "ffff45a2"], span = 1}
+key = "body"

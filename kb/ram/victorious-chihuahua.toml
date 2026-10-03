@@ -1,0 +1,42 @@
+summary = """
+Knock-sensor diagnostic-path threshold against which 000a5530 compares \
+accumulator ffff3334 before setting ffff4204.bit3."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 267
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "defiant-galago/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff32ee"
+name = "victorious-chihuahua"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a54be"
+
+[[link]]
+type = "reader"
+to = "defiant-galago/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "foamy-stallion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

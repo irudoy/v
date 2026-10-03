@@ -1,0 +1,22 @@
+summary = """
+One of eight consumers of outputs from component 0003b498. Together the \
+consumers close the loop but do not establish physical units."""
+level = "code"
+role = "consumer"
+
+[[ledger]]
+registry = "funcs"
+order = 220
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00072e5e"
+name = "rustling-ibis"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "spiritual-rattlesnake/fn/7mfk"
+relies = "level"

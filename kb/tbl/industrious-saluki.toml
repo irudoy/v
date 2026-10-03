@@ -1,3 +1,27 @@
+summary = """
+Unsigned 8-bit table multiplier M: lookup result 0001211e is stored in \
+ffff14d8, then multiplied by the results of 0001212e and 00009d2a; the final \
+value is calculated as min(255, (M*N*B)>>14) and written to ffff14d9."""
+note = [
+    """
+All eight cells equal 128, so in this ROM the lookup result does not depend \
+on the index. ffff14d8 has no external readers, but the value is not dead: \
+0004ac7a reads it again and uses it in the product. Code does not establish \
+the physical quantity or allocation of the common divisor 2^14 among the \
+three multipliers, so the scale remains raw. Index: u=0 when U16[ffff18e2] < \
+0x2000; u=floor((U16[ffff18e2]-0x2000)/64) when 0x2000 <= U16[ffff18e2] < \
+0x6000; u=255 when U16[ffff18e2] >= 0x6000. u is passed as uint8; for u >= \
+224, 00026370 returns cell[7]; otherwise it performs implicit 1D-8 \
+interpolation of adjacent uint8 cells. Result disposition: consumer \
+(ffff14d8 -> 0004ac7a@0004ad60 -> ffff14d9@0004ad7c).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
 category = "Internal Calculations"
@@ -7,7 +31,291 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 360
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lemon-badger/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "merry-viper/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lilac-worm/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001211e"
 name = "industrious-saluki"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "128"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acae"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acb2"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acb8"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acbe"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acc6"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acca"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad24"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad26"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad2a"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad2c"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad2e"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad34"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad5c"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad5e"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad60"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad62"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad64"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad6a"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad6c"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad6e"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad70"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad72"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad74"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad76"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad78"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad7c"
+value = {named = ["00009d2a", "0001211e", "0001212e", "00026740", "ffff14d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "lemon-badger/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "merry-viper/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "competent-lyrebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

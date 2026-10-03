@@ -1,0 +1,36 @@
+title = "Intake valve timing control solenoid valve circuit bank 2"
+level = "code"
+code = "P0081"
+group = "intake_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 15
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000195c4"
+name = "smart-caterpillar"
+index = 51
+attribute = "000162b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162b8"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000195c4"
+value = "130300000000008100000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a218"
+value = "000162b8"

@@ -1,3 +1,22 @@
+summary = """
+Calibrated inclusive readiness threshold for stationary rev-limiter \
+accumulator ffff16a6. FUN 0004f324 sets readiness bit 4 of ffff247f when the \
+accumulator is greater than or equal to this scalar and its secondary gate \
+passes."""
+note = [
+    """
+The stock value is 381 accumulator counts. The threshold controls readiness \
+for stationary fuel-cut/restore hysteresis 000085d9/000085da.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "accumulator counts"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Stationary Limiter Readiness Threshold"
 category = "Limiters / Engine Speed / Stationary"
@@ -6,6 +25,48 @@ format = "0"
 fine = 1
 coarse = 16
 static_axis = ["readiness"]
+
+[[ledger]]
+registry = "findings"
+order = 23
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "meaty-dragon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blue-oyster/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -37,6 +98,116 @@ note = "homologous readiness state machine preserves the 0x04b0 threshold role"
 layout = "7mfk"
 address = "0000911c"
 name = "robust-meerkat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000911c=0x017d"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3d2"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3d4"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3d6"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3d8"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3dc"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e0"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e2"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e4"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e6"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3e8"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3ea"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3ec"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3ee"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3f0"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f3f8"
+value = {named = ["0000911c", "0004f324", "ffff16a6", "ffff247f"], span = 2}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -75,3 +246,18 @@ supports = "homology"
 at = "jk78c:0006b036"
 to = "7mfk:0000911c"
 note = "aligned readiness state machine preserves the threshold role"
+
+[[link]]
+type = "index"
+to = "meaty-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "accessor"

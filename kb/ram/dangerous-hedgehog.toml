@@ -1,0 +1,59 @@
+summary = """
+Distance accumulator longword. FUN 00035856 returns floor(ffff560c/2548) \
+through unsigned divider 00021ce0 for J1979 Mode 01 PID 0x21 at 00035eca, or \
+0xffff once the accumulator reaches 0x09f3f60c."""
+note = [
+    """
+J1979 defines PID 0x21 as kilometres travelled while the MIL is on, so one \
+count is 1/2548 km. Ghidra cross-references place the writers in 0003a286, \
+0003a34a, 0003a436, and 0007cf14.""",
+]
+level = "code"
+unit = "km*2548"
+
+[[ledger]]
+registry = "vars"
+order = 439
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff560c"
+name = "dangerous-hedgehog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035ec0"
+value = {named = ["00021ce0", "00035856", "ffff560c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035eca"
+value = {named = ["00021ce0", "00035856", "ffff560c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

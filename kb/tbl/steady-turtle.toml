@@ -1,3 +1,25 @@
+summary = """
+Interpolated 1D table of a neutral-centered multiplier for a composite byte \
+result: 64 is subtracted from the lookup result, the difference is \
+multiplied by RAM8[ffff10bf], divided by 128 with truncation toward zero, \
+and offset again by 64; the resulting multiplier scales a base from maps \
+00009eda and 00012432 before being written to RAM8[ffff15de]. Flat value 64 \
+defines a neutral multiplier."""
+note = [
+    """
+The lookup by uint8 ffff106f is converted to \
+64+trunc0((x-64)*uint8[ffff10bf]/128) and scales the base from 00009eda and \
+00012432 before the write to ffff15de. Operations -64/+64 belong to the \
+consumer, so the map is retained as raw identity. Value 64 is neutral; the \
+implicit RAM axis is not emitted separately.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
 category = "Internal Calculations"
@@ -7,10 +29,122 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 389
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "natural-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "kind-kittiwake/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meticulous-slug/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-beetle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001242a"
 name = "steady-turtle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526ec"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526f2"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526fe"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052702"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052714"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052718"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005271a"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052726"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005272a"
+value = {named = ["00009eda", "0001242a", "00012432", "000526a0", "ffff106f", "ffff15de"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +177,35 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "kind-kittiwake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "meticulous-slug/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

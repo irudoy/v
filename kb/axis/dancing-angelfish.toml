@@ -1,0 +1,76 @@
+note = [
+    """
+Row axis for coefficient map 0000a4aa. FUN 0004d2a6 divides the RPM/12.5 \
+snapshot ffff11bc by four and limits it to uint8 before interpolation, so \
+one stored axis count represents 50 RPM. The points span 800..6400 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 41
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "000125ea"
+name = "dancing-angelfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004d478"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d440"
+value = {named = ["000125ea", "000261b8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d444"
+value = {named = ["000125ea", "000261b8", "ffff11bc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d468"
+value = {named = ["000125ea", "000261b8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4*12.5=50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "exhaust_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

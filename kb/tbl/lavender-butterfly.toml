@@ -1,7 +1,199 @@
+summary = """
+Normal-mode initializer H and direction threshold for Q12 accumulator \
+ffff33a8. H < target T from map 00013182 selects addition of step S; H >= T \
+selects subtraction, and initialization writes H << 12."""
+note = [
+    """
+The output is saved at 000626c4, compared with target T at 00062738, and \
+shifted left by 12 on the initialization path at 00062788-00062796. Maps \
+00013182 and 000131a2 are byte-identical in stock JK08A, so the comparison \
+selects the subtraction branch when reached. The dedicated scale fixture \
+binds independent SHA locks and fixed instruction/literal spans for JK00A, \
+JK03A, JK03B, JK08A, JK00C and JK00D; it executes actual exact/end-point H \
+lookup, normal Q12 initialization, no-floor extraction, C1 word publication \
+and signed word read/copy. In the integer linear domain 4074..10626 the \
+initialized component equals nominal 10*H-73500; separate 4073/4074, \
+10626/10627 and raw-extrema witnesses check signed saturation of selected \
+count N. Publication follows stock GBR: ffff8d6c at home and ffff8d7c on \
+JK00C/JK00D. Executed retained-state, alternate/save and restore \
+counterexamples disprove a universal H-to-component relation. \
+Nonzero-fraction explicit-axis paths and optional floor are excluded, and \
+the local component is not a final actuator output. The engineering scale \
+remains candidate and identifies no physical unit; the nominal inverse is \
+limited to its integer grid, not saturated publication. Result disposition: \
+inline_comparison and writes. Result target: comparison 00062738 and Q12 \
+accumulator ffff33a8 at 00062796.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "centered ffff8d6c channel counts"
+scale = "x*10-73500"
+to_raw = "(x+73500)/10"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 235
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+scale = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tan-toucan/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-mole/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000131a2"
 name = "lavender-butterfly"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_lavender_scale.py"
+key = "test_lavender_nominal_initialized_scale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626ba"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626c0"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626c4"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006272c"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062730"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062732"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062734"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062738"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006273a"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006273e"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062750"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062788"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006278c"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062790"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062792"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062794"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062796"
+value = {named = ["000131a2", "00015ce0", "ffff33a8", "ffff8d6c"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +226,18 @@ value = 10
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "tan-toucan/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

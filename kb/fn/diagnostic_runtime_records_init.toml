@@ -1,0 +1,81 @@
+summary = """
+Diagnostic runtime-record initializer. Its first loop covers 0x157 \
+three-byte records from ffff5718, clears extension record 0x129, and \
+preserves only the explicit higher-index exception set."""
+note = [
+    """
+Initialize 0x157 runtime diagnostic records including extension summaries""",
+    """
+Record 0x129 is the first extension record after the exact ROM descriptor \
+range and is not in the preserved exception set.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "curated"
+order = 56
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 544
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tourmaline-jackal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007ebec"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ec1c"
+value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ec1e"
+value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ec22"
+value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ec68"
+value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ec7e"
+value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
+key = "body"

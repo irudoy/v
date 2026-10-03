@@ -1,0 +1,225 @@
+summary = """
+Scheduler snapshot of current gear index ffff1086 decoded from the low \
+nibble of CAN 0x174 payload byte 3. Values 1 through 7 become zero-based \
+indices 0 through 6; zero and values above 7 become zero. Rotational-speed \
+request limiter 0007584e uses target > current to admit immediate recovery \
+tracking and auxiliary output."""
+note = [
+    """
+Passive target transitions 0x44 -> 0x34 -> 0x33 and 0x22 -> 0x32 -> 0x33 \
+establish that the low nibble changes after the target nibble and represents \
+current gear.""",
+]
+level = "code"
+unit = "zero-based current gear index"
+
+[[ledger]]
+registry = "vars"
+order = 56
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "strange-jackrabbit/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherry-chupacabra/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dandelion-locust/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "small-oarfish/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1082"
+name = "charming-rottweiler"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f3a"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f3e"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f46"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f4a"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f4e"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b3e"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b42"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b48"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bf8"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bfc"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c00"
+value = {named = ["00020dfe", "0007584e", "ffff1082", "ffff1083", "ffff1086", "ffff19dc", "ffff2400", "ffff413c"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "cherry-chupacabra/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "dandelion-locust/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "small-oarfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "strange-jackrabbit/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

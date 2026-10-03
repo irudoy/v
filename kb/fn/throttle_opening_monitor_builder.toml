@@ -1,0 +1,99 @@
+title = "Derive the common opening-coordinate monitor from the area request"
+summary = """
+Common opening-coordinate monitor. It converts ffff183e/2 through inverse \
+pair 0x155a0/0x13202, divides the uint16 result by four, and writes \
+ffff40c6."""
+note = [
+    """
+This derived monitor is not a per-channel target, TPS measurement, regulator \
+effort, or PWM duty.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 150
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 570
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "courageous-puma/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-swallow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-hare/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000710bc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710c4"
+value = {named = ["00013202", "000155a0", "000710bc", "ffff183e", "ffff40c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710ce"
+value = {named = ["00013202", "000155a0", "000710bc", "ffff183e", "ffff40c6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710d2"
+value = {named = ["00013202", "000155a0", "000710bc", "ffff183e", "ffff40c6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710dc"
+value = {named = ["00013202", "000155a0", "000710bc", "ffff183e", "ffff40c6"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "courageous-puma/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

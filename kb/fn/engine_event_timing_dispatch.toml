@@ -1,0 +1,172 @@
+title = "Run the ordered engine-event timing command stages"
+summary = """
+Engine-event timing dispatch. Its exact call order is 0004e112, 0004e0c2, \
+0004d99c, 0004dbe8, 0004df82, then 0004e080."""
+note = [
+    """
+The dispatcher is engine-event task table index 4 and establishes the \
+ordered path from correction state to both APC compare registers.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 113
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 513
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_command_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_set_command_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sincere-perch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_decay/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e162"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e164"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e168"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e16c"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e170"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e174"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e178"
+value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "apc_reset_command_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "apc_set_command_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sincere-perch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "timing_state_decay/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

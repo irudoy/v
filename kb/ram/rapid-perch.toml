@@ -1,0 +1,87 @@
+summary = """
+Base of the five-byte decoded ASCD steering-switch sample window \
+ffff2701..ffff2705, the scheduler latch of ffff2805..ffff2809. While bit 0 \
+of ROM8[0x8B28] is set, 000d0f44 moves ffff2805..ffff2808 up by one byte on \
+each run and stores the decoded code ffff36d8 in ffff2805; FUN 000cf020 \
+accepts a new stable code only when all five latched bytes are equal."""
+note = [
+    """
+No instruction stores into the window directly: the 0x104-byte FUN 00022558 \
+call at 00020fcc in 00020dfe copies ffff277e..ffff2881 to \
+ffff267a..ffff277d. FUN 000d185c decodes word ffff3630 against a threshold \
+table and accepts the one-hot result in ffff36d8 when two consecutive \
+decodes agree; the ADC channel and MCU pin behind ffff3630 are not traced.""",
+]
+level = "code"
+unit = "one-hot switch code"
+
+[[ledger]]
+registry = "vars"
+order = 391
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flying-booby/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2701"
+name = "rapid-perch"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf16c"
+value = {named = ["00020dfe", "000cf020", "ffff2701"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf172"
+value = {named = ["00020dfe", "000cf020", "ffff2701"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf186"
+value = {named = ["00020dfe", "000cf020", "ffff2701"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf198"
+value = {named = ["00020dfe", "000cf020", "ffff2701"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf1a6"
+value = {named = ["00020dfe", "000cf020", "ffff2701"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,151 @@
+note = [
+    """
+Shared RPM axis for the P0101/P010B MAF range-performance factor 0001236a. \
+Both monitors pass the code-proven RPM/50 byte ffff11ae directly to the \
+explicit-axis wrapper. Stored points 8..128 in steps of 8 represent exactly \
+400..6400 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 13
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-waxbill/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001238a"
+name = "hissing-donkey"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00081728"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081720"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081724"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081728"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081f52"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081f56"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00081f5a"
+value = {named = ["0001238a", "000264a0", "00026944", "000384fe", "0008152a", "00081d74", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "pearl-waxbill/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

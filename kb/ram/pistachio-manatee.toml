@@ -1,0 +1,71 @@
+summary = """
+Base of the first two-word throttle-feedback estimate array written by \
+six-sample acquisition stage 0003e75a and normalized by 0003ea9a."""
+note = [
+    """
+Elements are at ffff38a8 and ffff38aa. External sensor and bank identities \
+remain unverified.""",
+]
+level = "code"
+unit = "raw feedback array"
+
+[[ledger]]
+registry = "vars"
+order = 693
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_normalizer_a/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_acquisition/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff38a8"
+name = "pistachio-manatee"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e86e"
+value = {named = ["0003e75a", "0003ea9a", "ffff38a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eaa6"
+value = {named = ["0003e75a", "0003ea9a", "ffff38a8"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_normalizer_a/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_acquisition/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2266"
+name = "greedy-dragonfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041dfe"
+
+[[link]]
+type = "reader"
+to = "cooperative-tench/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

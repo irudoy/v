@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff9f1a"
+name = "kind-stallion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002043a"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

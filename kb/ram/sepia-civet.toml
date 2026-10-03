@@ -1,0 +1,47 @@
+summary = "Result of comparing the output of map 0x15182 in 0009cdd8."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 360
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "poised-dormouse/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "funny-toucan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9651"
+name = "sepia-civet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009d5bc"
+
+[[link]]
+type = "input"
+to = "poised-dormouse/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "funny-toucan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

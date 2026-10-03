@@ -1,3 +1,28 @@
+summary = """
+Interpolated 1D table of a dimensionless coefficient with step 1/128 that \
+multiplies byte[ffff1717] in calculation of derived byte ffff3218; a copy of \
+the coefficient is written to ffff3406."""
+note = [
+    """
+The interpolated byte is written separately to ffff3406, but the RAM sink \
+has no external readers. The write is not the final disposition: the same r4 \
+remains live, is zero-extended at 000b5fee, and is multiplied at 000b6000. \
+On branch byte[ffff22e0]==0, the derived result is calculated as an \
+arithmetic right shift by 7 of expression M*uint8[ffff1717]-128*B, saturated \
+to 0..255, and written to ffff3218; B is byte[00008bc4] or 0 depending on \
+flag byte[ffff2458]. Saturation applies to the derived result rather than \
+the map scale. The artifact does not establish the physical meaning of RAM \
+quantities, so only operational semantics proven by code are claimed. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "1"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Internal Product Coefficient Q0.7 (0x12C02)"
 category = "Internal Calculations"
@@ -7,7 +32,141 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 202
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "truthful-nightingale/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "calm-asp/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "red-barracuda/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "truthful-nightingale/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012c02"
 name = "rampant-groundhog"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5fc2"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5fc6"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5fca"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5fd0"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5fee"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6000"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b5fca"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b5fee"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b6000"
+value = {named = ["00012c02", "000224f8", "00026740", "ffff3218", "ffff3406"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "truthful-nightingale/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = ["identity", "scale"]

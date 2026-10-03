@@ -1,7 +1,173 @@
+summary = """
+Upper endpoint curve for the three-coordinate normalization in FUN 0007af78. \
+Its interpolation result U forms nonnegative span max(0,U-L) against lower \
+endpoint 000154e0. A nonzero span scales each lower-relative base into \
+0..800; a zero span selects 800."""
+note = [
+    """
+Every stock cell is zero. With lower endpoint 000154e0 also zero, the stock \
+span is zero and all three outputs are exactly 800. FUN 0007ae80 consumes \
+ffff3478, ffff347a, and ffff347c in its live bound selection. Code proves \
+the endpoint role and normalized output domain but not the physical quantity \
+or engineering unit. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 5
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "aromatic-coua/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-ferret/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cerise-spaniel/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivid-macaque/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "onyx-axolotl/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "origami-curassow/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "real-orca/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000154c0"
 name = "glaring-chachalaca"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afa0"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afa4"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afaa"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afae"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afe2"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afe4"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aff8"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b00e"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b024"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b040"
+value = {named = ["00014baa", "000154c0", "000264f8", "00026984", "0007ae80", "0007af78", "ffff113c", "ffff3478", "ffff347a", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +200,34 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "cerise-spaniel/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "vivid-macaque/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

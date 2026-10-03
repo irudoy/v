@@ -1,0 +1,172 @@
+summary = """
+Bank-2 exhaust-cam edge phase byte. IMI4C capture handler 000c2c58 writes it \
+at 000c2d2c as 20*segment + floor(20*interval / ffff22bc) through signed \
+divider 00021bbc, with the same segment mapping of ffff13b2 as bank 1 and \
+interval as the 16-bit difference between capture GR4C and crank reference \
+count ffff158a. The update runs only while cylinder index ffff11de is 2, 4, \
+or 6 and driver status ffff850c bit 6 is clear, after shifting the previous \
+values into ffff1203 and ffff1205. Scheduler 00020dfe copies the byte to \
+ffff11c9."""
+note = [
+    """
+The interval word is stored at ffff1a82 and the segment at ffff16f2 through \
+window base ffff128c. One unit is 0.5 crank degrees.""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 796
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "imperial-beagle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "perky-gopher/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1201"
+name = "invaluable-taipan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cde"
+value = {named = ["00020dfe", "00021bbc", "000c2c58", "ffff11de", "ffff1201", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cfa"
+value = {named = ["00020dfe", "00021bbc", "000c2c58", "ffff11de", "ffff1201", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d06"
+value = {named = ["00020dfe", "00021bbc", "000c2c58", "ffff11de", "ffff1201", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2d2c"
+value = {named = ["00020dfe", "00021bbc", "000c2c58", "ffff11de", "ffff1201", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "imperial-beagle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

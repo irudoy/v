@@ -1,0 +1,84 @@
+summary = """
+Previous bank-2 exhaust-VTC duty word. It is the bank-indexed companion of \
+ffff1ab4 in the same four-slot array."""
+note = [
+    """
+Slots 3 and 4 of this array are unused for the same reason as ffff1ab0 and \
+ffff1ab2.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 733
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "brown-swallow/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2"
+offset = 0x2
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-fulmar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ab6"
+name = "bizarre-civet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20da"
+value = {named = ["000c2040", "ffff1ab4", "ffff1ab6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2114"
+value = {named = ["000c2040", "ffff1ab4", "ffff1ab6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "brown-swallow/ram"
+offset = 0x2
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

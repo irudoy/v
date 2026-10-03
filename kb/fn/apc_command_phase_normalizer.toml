@@ -1,0 +1,152 @@
+title = "Normalize command decade and remainder across APC position events"
+summary = """
+Tooth-count normalizer of the crank-angle compare schedulers. A command is a \
+count of 10-degree steps from the current tooth plus a remainder in degrees; \
+the normalizer converts the step count into a count of tooth events across \
+the two-missing-teeth gap that follows tooth 7, selected by tooth counter \
+ffff13b2. On tooth 4 it maps 4 to 3 with remainder + 10, 5 to 3 with \
+remainder + 20, and 6..15 to count - 2. On tooth 9 it maps 9 to 8 with \
+remainder + 10 and 10 or more to count - 2 with remainder + 20. On every \
+other tooth, which is tooth 7 for the primary scheduler, it maps 1 to 0 with \
+remainder + 10, 2 to 0 with remainder + 20, 3..12 to count - 2, 13 to 10 \
+with remainder + 10, 14 to 10 with remainder + 20, and 15..24 to count - 4."""
+note = [
+    """
+Callers are primary scheduler 0002a892, secondary scheduler 0002acba, \
+delayed injection-start programmer 0002b64a, and 00057380. The arithmetic is \
+exact for a plate with ten teeth at 10-degree pitch per 120 crank degrees \
+and two missing teeth between tooth 7 and tooth 8: a step that lands inside \
+the gap is fired from tooth 7 with the missing 10 or 20 degrees added to the \
+remainder, and a step beyond the gap loses two tooth events per gap crossed. \
+On tooth 9 the exact range ends at count 10.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 92
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 550
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "peridot-pony/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivacious-petrel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00028dc8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028dce"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028dd0"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028dda"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028de0"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028e50"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028e62"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028e74"
+value = {named = ["00028dc8", "0002a892", "0002acba", "0002b64a", "00057380", "ffff13b2", "ffff1558", "ffff155a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "apc_reset_compare_scheduler/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pumpkin-peacock/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "opalescent-mustang/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

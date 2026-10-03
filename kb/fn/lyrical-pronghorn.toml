@@ -1,0 +1,223 @@
+summary = """
+CAN torque-word packer reached from FUN 00079de4 through the trampoline at \
+0007a050. It converts scheduler latches of the torque chain and of the \
+signed request boundary to 12-bit CAN words clamp(trunc0(x/5)+800, 0, 4094): \
+ffff3fa0 from ffff4106, ffff3f90 from ffff4108, ffff3f9c from \
+ffff237c+ffff2384, ffff3f96 from ffff2380, and ffff3f98 from \
+max(min(ffff23a8,ffff2382),ffff2374). It writes invalid code 4095 to \
+ffff3f96 and ffff3f98 while ffff4221.bit2 is set, stores the complement of \
+ffff40d2 in ffff3d6e, and derives the two-bit status codes ffff3e89, \
+ffff3d3f, and ffff3d3e."""
+note = [
+    """
+FUN 00079de4 is entry 58 of the 69-entry pending-task table at 00021834. \
+Serializers 000c577a and 000c590e are the only readers of the packed \
+words.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 626
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "congenial-wren/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nippy-skink/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sage-dog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "helpful-caiman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adaptable-orangutan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "delightful-lynx/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "great-fulmar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grumpy-warthog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "icy-cuscus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-skylark/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mauve-koel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "peculiar-bug/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "persimmon-kagu/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00079e70"
+name = "lyrical-pronghorn"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002191c"
+value = "00079de4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa4"
+value = "0x0320"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa6"
+value = "0x0ffe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079df8"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079eaa"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ed0"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f00"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f34"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f6c"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a050"
+value = {named = ["0002191c", "00021bbc", "00021ce0", "00079de4", "00079e70", "00079fa4", "00079fa6", "ffff2380", "ffff3d3e", "ffff3d3f", "ffff3d6e", "ffff3e89", "ffff3f90", "ffff3f96", "ffff3f98", "ffff3f9c", "ffff3fa0", "ffff4106", "ffff4108", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "selector"
+to = "helpful-caiman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

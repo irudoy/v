@@ -1,0 +1,140 @@
+summary = """
+Interpolated uint16 parameter: a zero result from 00015bf0 is replaced with \
+1, while a nonzero result is stored in ffff35a0 and passed as the fourth \
+argument to 000b78da. The physical purpose of the parameter is unknown."""
+note = [
+    """
+Code implements replacement of zero only, not a general max(x,1). The map \
+and axis consist of zeros, so JK08A passes 1. The catalog accel-throttle \
+family does not distinguish the purposes of the three adjacent maps.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 313
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "complex-firefly/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015bf0"
+name = "prehistoric-boa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7860"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b786c"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7874"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ae"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78b4"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78b6"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ba"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78bc"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c0"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c2"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c4"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78c6"
+value = {named = ["00013ca8", "00015bf0"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "complex-firefly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

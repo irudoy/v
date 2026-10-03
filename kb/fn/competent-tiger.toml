@@ -1,0 +1,119 @@
+summary = """
+Accessor for upper raw bound 0x12DB2: computes clamp(x*13, 908, 2908), \
+stores it in ffff350a, and uses it to cap an adjacent calculation."""
+note = [
+    """
+Code establishes the upper-threshold role but not the physical quantity of \
+the adjacent calculation. TVO identity and x*0.3575 scale remain \
+candidate.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 219
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "organic-inchworm/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "singing-goshawk/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-gazelle/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007249e"
+name = "competent-tiger"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725d4"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725dc"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725e0"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725e6"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725f0"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725f6"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007260e"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072616"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072618"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "chestnut-gazelle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

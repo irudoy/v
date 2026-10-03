@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000a81b4"
+name = "thundering-sambar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a81b4"

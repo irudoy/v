@@ -1,0 +1,61 @@
+summary = """
+Software-indexed word read at 000a7786 by FUN 000a773a before its bit-7 \
+guard. Its address is GBR ffff267a + 0xd0 + 2 * uint8(index); caller indices \
+0 and 1 select ffff274a and ffff274c. EXTU.W at 000a778a retains the uint16 \
+bit pattern of the MOV.W result."""
+note = [
+    """
+The physical interpretation of this word is unresolved; the producer is not \
+established by this placement claim.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 0
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [1, 2, 0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "frisky-swine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff274a"
+name = "modest-unicorn"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_throttle_correlation_indexed_inputs.py"
+key = "test_throttle_correlation_274a_word_placement"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a7838"
+value = "ffff267a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7786"
+value = {named = ["000a773a", "000a7838", "ffff267a", "ffff274a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "frisky-swine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

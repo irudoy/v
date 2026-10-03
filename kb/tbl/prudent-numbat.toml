@@ -1,3 +1,29 @@
+summary = """
+Target mixture map: Q7 fuel-multiplier command against the stoichiometric \
+base schedule (commanded equivalence ratio x/128), 128 = closed-loop \
+stoichiometric target, 149 = 1.16. Stage 0005594a looks it up on engine \
+speed (axis 00011cc0, rpm/50 against word ffff11bc) and load (axis 00011ac7, \
+normalized BFS Q7 from ffff102c, or 0xff while wide-open latch ffff2468 bit \
+3 holds), scales the deviation from 128 by 00012552 when ffff2466 bit 6 \
+selects the high-detonation surface, and publishes the byte as ffff15eb and, \
+through enrichment latch ffff24a2 bit 7 and the ramp of ffff123a, as \
+commanded mixture ffff22e8 = byte << 7."""
+note = [
+    """
+Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes \
+Cylinder Filling Up Efficiency (x*0.78125 percent) and Engine Speed (x*50); \
+the AFR scale is a candidate, the Q7 ratio and the stoichiometric neutral \
+are code. Three 2026-08-26 vehicle recordings match the lookup in 98.3..100 \
+percent of settled records. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Target Mixture - Main"
 category = "Fuelling / Target Mixture"
@@ -7,10 +33,289 @@ format = "0.000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 58
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+scale = [22, 23, 24, 25, 26, 27, 28, 29]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "literate-hornet/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "uptight-tiger/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000a9aa"
 name = "prudent-numbat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559ac"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559b6"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559bc"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559c0"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559c2"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559c4"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559c8"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559d0"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559d6"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559da"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559dc"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559de"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559e2"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559e4"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559e6"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559e8"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559ee"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000559fc"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055a00"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "rousing-kingfisher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559bc"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559da"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559dc"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559de"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00055a50"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056444"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056508"
+value = {named = ["0000a9aa", "000224f8", "00026178", "00026770", "00026944", "000269c4", "000556ec", "0005594a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -80,3 +385,35 @@ note = """
 mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
 normalized-shape candidate in the target export, and neither the map nor its \
 axes 00011cc0 and 00011ac7 recur as exact storage in the target image"""
+
+[[link]]
+type = "depends"
+to = "literate-hornet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "uptight-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

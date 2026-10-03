@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00013ab8"
+name = "valiant-okapi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00061ee6"

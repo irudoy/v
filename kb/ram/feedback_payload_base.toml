@@ -1,3 +1,39 @@
+summary = """
+Base of the 30 ten-byte stock HCAN1 software mailbox records corresponding \
+to ROM table records at 0000975a. Record i is ffff3ab5+10*i; bytes 0 and 1 \
+hold state and age, and bytes 2 through 9 hold the payload copied to \
+physical mailbox i+1 by FUN 000c3746."""
+note = [
+    """
+Only firmware type-3 records use the stock periodic serializer and submitter \
+path.""",
+]
+level = "code"
+unit = "CAN software records"
+
+[[ledger]]
+registry = "vars"
+order = 659
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "free-coot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "kind-booby/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeb0ef"
@@ -22,6 +58,53 @@ note = "Target serializer uses payload offset 0x142"
 layout = "7mfk"
 address = "ffff3ab5"
 former = ["wandering-macaw/ram/7mfk-ffff3ab5"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000975a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c375c"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3766"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c376a"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c376e"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e78"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e7a"
+value = {named = ["0000975a", "000c3746", "000c3de4", "ffff3ab5"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -54,3 +137,28 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000b2e44"
 note = "Target serializer uses payload offset 0x2a"
+
+[[link]]
+type = "reader"
+to = "free-coot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "kind-booby/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "kind-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

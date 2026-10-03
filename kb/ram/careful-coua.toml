@@ -1,0 +1,148 @@
+summary = """
+Multipurpose status byte. Bit 0 contains NATS registered channel 0 and is \
+managed by FUN_000937dc. In the misfire component, bit 1 gates group-0 \
+snapshot capture; even reporter argument 0 sets it after capture. Global \
+expiry FUN 0007c57a and group-0 cleanup FUN 0007c8fa clear it with the \
+retained payload."""
+note = [
+    """
+The NATS and misfire uses are independent. The group-0 bit is a capture \
+latch; code does not assign it a physical phase name.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 335
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classy-seahorse/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "impartial-bettong/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sincere-asp/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41c1"
+name = "careful-coua"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c654"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c97c"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084cf8"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084cfc"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d36"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000938ce"
+value = {named = ["0007c57a", "0007c8fa", "00084cd0", "000937dc", "ffff41c1"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "classy-seahorse/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "impartial-bettong/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sincere-asp/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

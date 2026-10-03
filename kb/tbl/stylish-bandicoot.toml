@@ -1,0 +1,78 @@
+summary = """
+Unsigned 16-bit threshold: branching separates cases uVar1 >= map value and \
+uVar1 < map value."""
+note = [
+    """
+Unsigned 16-bit threshold: branching separates cases uVar1 >= map value and \
+uVar1 < map value. Result disposition: inline_comparison. Result target: \
+FUN_00082c8a: unsigned 16-bit value from RAM 0xffff2b90 in comparisons \
+uVar12 <= uVar1 and uVar1 < uVar12. Machine trace: 000836a8: byte from \
+0xffff106f -> extu.b -> subtract 0x20 with lower saturation to 0 -> shift \
+left by 9 with upper saturation to 0xffff -> r14/r5 -> 000836c4:r4=0001497a \
+-> 000836ca: call 000263bc, branching into 00026a5c/00026740 or reading the \
+last uint16 map cell -> r0 -> 000836ce:r2 -> 000836d8: delay-slot mov.w r2 \
+write to 0xffff2b90 -> later load in FUN_00082c8a as ushort uVar12 -> \
+complementary tests uVar12 <= uVar1 and uVar1 < uVar12.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "counts"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 261
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "finicky-gazelle/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001497a"
+name = "stylish-bandicoot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836a8"
+value = {named = ["0001497a", "00082c8a", "ffff2b90"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836ca"
+value = {named = ["0001497a", "00082c8a", "ffff2b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836d8"
+value = {named = ["0001497a", "00082c8a", "ffff2b90"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

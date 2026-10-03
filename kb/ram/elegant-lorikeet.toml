@@ -1,0 +1,253 @@
+summary = """
+EVAP vent-control result byte. FUN 000aab54 sets bit 6 for path-A P0447; FUN \
+000aacc0 sets bit 7 for P0448. FUN 000abca2 dispatches descriptor indices \
+0x31 and 0x2f from those bits and clears each bit after handling."""
+note = [
+    """
+The descriptor identities are exact. The stock configuration skips both \
+vent-control producers and their exact P0447 path-A and P0448 dispatch \
+branches. The physical valve command and feedback paths remain unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "evap-vent-open-a-state-p0447"
+kind = "monitor"
+label = "DtcCode"
+key = "P0447"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000195ac"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 6 is the one-shot status consumed in the exact path-A P0447 path, which \
+is configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008370"
+value = "0x50"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186d8"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000aac38"
+value = {named = ["00008370", "000186d7", "000186d8", "000195ac", "000aab54", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ac068"
+value = {named = ["00008370", "000186d7", "000186d8", "000195ac", "000aab54", "000abca2", "ffff247a"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "overjoyed-buffalo/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "evap-vent-short-state-p0448"
+kind = "monitor"
+label = "DtcCode"
+key = "P0448"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019594"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 7 is the one-shot status consumed in the exact P0448 path, which is \
+configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186d8"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ab42c"
+value = {named = ["000186d7", "000186d8", "00019594", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ab794"
+value = {named = ["000186d7", "000186d8", "00019594", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ab7e2"
+value = {named = ["000186d7", "000186d8", "00019594", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ac080"
+value = {named = ["000186d7", "000186d8", "00019594", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "romantic-jackal/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 133
+binding = "evap-vent-short-state-p0448"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 135
+binding = "evap-vent-open-a-state-p0447"
+
+[[ledger]]
+registry = "vars"
+order = 413
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mindful-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "overjoyed-buffalo/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-jackal/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff247a"
+name = "elegant-lorikeet"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186d8"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aac38"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab42c"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab794"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab7e2"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac068"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac080"
+value = {named = ["000186d7", "000186d8", "000aab54", "000aacc0", "000abca2", "ffff247a"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "mindful-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "overjoyed-buffalo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

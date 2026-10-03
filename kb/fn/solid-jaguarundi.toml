@@ -1,0 +1,114 @@
+summary = """
+State controller using shared nonzero gate curve 000122d2. When its read \
+gates pass, it interpolates the curve by uint16[ffff11b8] over axis 00014d2a \
+and writes ffff2524. A retained-value branch and the following transition \
+logic test only whether ffff2524 is zero."""
+note = [
+    """
+The interpolated magnitude is not consumed. The physical state, coordinate, \
+and timing represented by the gate are unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 471
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "notorious-lyrebird/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mauve-skua/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "polite-oryx/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mottled-horse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004776c"
+name = "solid-jaguarundi"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004779c"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477a0"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477a4"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477aa"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477ac"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477ae"
+value = {named = ["000122d2", "00014d2a", "00026550", "0004776c", "ffff11b8", "ffff2524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sly-tuna/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "polite-oryx/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

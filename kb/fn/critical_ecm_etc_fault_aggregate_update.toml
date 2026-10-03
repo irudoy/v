@@ -1,0 +1,117 @@
+title = "Update the P0603/P0605/P2119/P1238 aggregate status bit"
+summary = """
+Critical ECM/ETC diagnostic aggregate updater. It recomputes ffff41ea.bit5 \
+as the OR of predicate 0007c3b4 over exact runtime indices 0x4e, 0x51, 0x6f, \
+0x121, 0x70, 0x122, 0x72, 0x73, 0x77, and 0x79."""
+note = [
+    """
+The records are exact P0603/P0605 ECM and P2119/P1238 ETC-actuator \
+descriptors. A 2315-function p-code census found no unresolved ffff41ea \
+writer; every runtime writer preserves bit 7.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 52
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 541
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_record_predicate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c166"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c1ee"
+value = {named = ["00050920", "0007c166", "0007c3b4", "0007d856", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c1f8"
+value = {named = ["00050920", "0007c166", "0007c3b4", "0007d856", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c398"
+value = {named = ["00050920", "0007c166", "0007c3b4", "0007d856", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c3a8"
+value = {named = ["00050920", "0007c166", "0007c3b4", "0007d856", "ffff41ea"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "critical_diagnostic_record_predicate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

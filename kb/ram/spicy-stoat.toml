@@ -1,0 +1,87 @@
+summary = """
+Nonnegative active-map state max((ffff160f&0x7f)-ffff11af,0), written by \
+0004af38 and included linearly in the normal branch of 0004bdc2."""
+note = [
+    """
+Crank-degree map adjustment before the 64 centering applied in 0004bdc2. One \
+count is one crank degree of the J1979 PID 0x0E coordinate ffff11d4; every \
+downstream coefficient is 1.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 603
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nimble-barracuda/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_timing_state_terms/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23bd"
+name = "spicy-stoat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af84"
+value = {named = ["0004af38", "0004bdc2", "ffff11af", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bddc"
+value = {named = ["0004af38", "0004bdc2", "ffff11af", "ffff23bd"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "nimble-barracuda/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

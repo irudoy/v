@@ -1,0 +1,154 @@
+summary = """
+Unidentified 4x4 calibration table; its output is an interpolated unsigned \
+byte in an internal raw representation."""
+note = [
+    """
+The map's physical meaning is unknown. Code proves retrieval of an \
+interpolated unsigned byte and its x*64 conversion before writing. Seven \
+cataloged 4x4 variants cannot be distinguished by geometry alone and \
+therefore do not identify the map. Scale x*64 describes only the internal \
+raw representation, not physical units. Result disposition: writes. Blocking \
+condition: At 0003bf58 the target-map trace reaches a write of x*64 to RAM \
+ffff1efc, but the artifact contains no reader of ffff1efc or other consumer \
+that establishes the quantity's physical semantics.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x*64"
+to_raw = "x/64"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 44
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3]
+scale = [4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_compensation_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cerise-coot/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "liberal-axolotl/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009cea"
+name = "tangerine-quokka"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bf30"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bf3e"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "amusing-ara/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bf42"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bf46"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bf4c"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bf50"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bf58"
+value = {named = ["00009cea", "00011a2d", "00011a31", "00026100", "00026770", "0003bd74"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "cerise-coot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "liberal-axolotl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

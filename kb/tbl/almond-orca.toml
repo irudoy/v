@@ -1,0 +1,178 @@
+summary = """
+Direct low-speed fallback Base Fuel Schedule grid selected when ffff2449 bit \
+7 is set. Rows are selected by saturated RPM/12.5 byte ffff11ea for ranges \
+below 800, 1600, and 2400 RPM; at or above 2400 RPM the branch writes zero \
+without reading a row. Columns are selected by byte ffff1075 at thresholds \
+7, 15, and 22. The selected cell is shifted left by eight and written to \
+ffff1026."""
+note = [
+    """
+The exact 3x4 stock grid is 36 3c 4c 61 / 32 34 40 5a / 30 31 38 54. Code \
+proves layout, selectors, zero-above-range behavior, left shift, and \
+destination. Base Fuel Schedule identity follows from exact DID 0x1208; the \
+x/8 ms cell conversion follows from the homologous full-word raw/2048 ms \
+profile and requires hardware validation.""",
+]
+level = "code"
+role = "table"
+access = "direct-row-major"
+cols = 4
+rows = 3
+storage = "uint8"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 38
+fields = [
+    "family",
+    "width",
+    "height",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "angelic-shark/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bfs/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000974e"
+name = "almond-orca"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000974e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc16"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc1c"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc42"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc44"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc66"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc70"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc74"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc7e"
+value = {named = ["0000974e", "0003b75c", "ffff1026", "ffff11ea"], span = 12}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "12.125*8=97"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "48/8=6"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "6*8=48"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "97/8=12.125"
+
+[[link]]
+type = "index"
+to = "angelic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

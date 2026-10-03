@@ -1,3 +1,33 @@
+summary = """
+Operational table of the step used to change a 16-bit blend coefficient. \
+When unsigned RAM[ffff10d2] < 200, lookup by the constrained absolute \
+difference between signed16 RAM[ffff18e6] and RAM[ffff18e8] writes the step \
+to RAM[ffff17f8]. On the active branch, 00074b68 subtracts this step with \
+saturation toward 0 or adds it with saturation toward 65535, updating \
+RAM[ffff2422]; 00074c08 uses the updated coefficient as the weight for \
+linear blending of signed16 RAM[ffff18e8] and RAM[ffff18e6] and writes the \
+result to RAM[ffff18f4]."""
+note = [
+    """
+The physical subsystem is unknown. The map result is a Q0.16 step: raw x \
+represents dimensionless fraction x/65536, and inverse pair x*65536 is exact \
+on the representable grid. Saturation occurs later when ffff2422 is updated \
+and is not part of the map-value conversion. 00074c08 uses updated ffff2422 \
+as a weight; separate handling of 0 and 65535 defines blend boundary cases, \
+not a conditional map scale. When RAM[ffff10d2] >= 200, the same accessor \
+selects adjacent map 000153b0 rather than the target map. Index: 1D-4, \
+implicit axis with no separate array; r5 = min(abs((int16)RAM[ffff18e6] - \
+(int16)RAM[ffff18e8]) * 64, 49152), returning the last cell when r5 >= \
+49152. Result disposition: consumer (RAM ffff17f8 -> function 00074b68).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless fraction"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
 [editor]
 name = "Blend Coefficient Step B Q0.16 (0x153B8)"
 category = "Internal Calculations"
@@ -7,10 +37,310 @@ format = "0.000000"
 fine = 1.52587890625e-05
 coarse = 0.001
 
+[[ledger]]
+registry = "findings"
+order = 341
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+]
+scale = [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "authentic-eagle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "brass-barnacle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tungsten-chowchow/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "opal-mole/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "righteous-aardwark/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000153b8"
 name = "opal-camel"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "200"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "49152"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "65535"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "65536"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cbe"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cc0"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cc4"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cc6"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cc8"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cce"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cd6"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cd8"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cdc"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cde"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf4"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf6"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf8"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cfe"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d00"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d04"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "clay-capuchin/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "placid-shrew/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "vengeful-wildebeest/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "65536"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00074b68"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00074c08"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074cf4"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074cf6"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074cfe"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074d00"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074d04"
+value = {named = ["000153b8", "00022590", "000263bc", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.014068603515625*65536=922"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.034423828125*65536=2256"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "2256/65536=0.034423828125"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "922/65536=0.014068603515625"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +373,31 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "authentic-eagle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "brass-barnacle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "tungsten-chowchow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

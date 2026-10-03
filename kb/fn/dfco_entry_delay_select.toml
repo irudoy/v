@@ -1,0 +1,130 @@
+title = "Select two-stage DFCO entry delay"
+summary = """
+DFCO entry-delay selector. It returns stage1<<8|stage2 for 000503e0. Stock \
+ROM8[0000870c].bit7 clear branches select stage 1 values 40, 60, or 75 and \
+stage 2 zero; a configuration override can place 10 or 20 in stage 2. \
+Conditional non-stock branch interpolates 000120f6 into stage 1 from a \
+speed-derived coordinate."""
+note = [
+    """
+All cells of 000120f6 are 60. Delay units are the periodic DFCO scheduler \
+count.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 34
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 485
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "attentive-axolotl/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004fe9c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083da"
+value = "0xfe"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000870c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff3a"
+value = {named = ["000083da", "0000870c", "000120f6", "0004ed88", "0004fe9c", "000503e0", "ffff110e", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff42"
+value = {named = ["000083da", "0000870c", "000120f6", "0004ed88", "0004fe9c", "000503e0", "ffff110e", "ffff11ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff6c"
+value = {named = ["000083da", "0000870c", "000120f6", "0004ed88", "0004fe9c", "000503e0", "ffff110e", "ffff11ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ff70"
+value = {named = ["000083da", "0000870c", "000120f6", "0004ed88", "0004fe9c", "000503e0", "ffff110e", "ffff11ae"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

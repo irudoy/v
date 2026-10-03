@@ -1,0 +1,62 @@
+title = "Map RPM/25 to staged six-channel ETC fault mask"
+summary = """
+ETC-fault staged six-channel RPM mask. RPM/25 values below 43 return 00; \
+values 43..48 return 01,05,07,0f,1f,3f respectively; values above 48 retain \
+3f."""
+note = [
+    """
+The non-linear bit sequence is exact and is not interpreted as physical \
+injector order.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 43
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 536
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_actuator_fault_inhibit_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000509a0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000509a0"
+value = {named = ["0005096c", "ffff11b3"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

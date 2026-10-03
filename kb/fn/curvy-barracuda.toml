@@ -1,0 +1,155 @@
+summary = """
+Automatic work-support request withdrawal. It clears timing request \
+ffff41aa.bit0 and idle request ffff41ef.bit6 when ffff41a6.bit1 falls or \
+ffff41a6.bit5 rises against previous-pass copy ffff41a8, clears the timing \
+request while ffff99f4 bits 0 or 1 are set, and clears the idle request \
+while ffff99f4 bits 2 or 3 are set."""
+note = [
+    """
+ffff99f4 bits 0..3 are the apply and store bits of service-0x3b LIDs 1 and \
+2.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "funcs"
+order = 674
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "armored-sawfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "accomplished-cockle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruby-mouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tungsten-goat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quaint-magpie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thankful-jaybird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006836e"
+name = "curvy-barracuda"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068378"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068380"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068386"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006838c"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068392"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068396"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006839c"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000683a4"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000683a8"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000683ae"
+value = {named = ["0006836e", "00068670", "ffff41a6", "ffff41a8", "ffff41aa", "ffff41ef", "ffff99f4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "armored-sawfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

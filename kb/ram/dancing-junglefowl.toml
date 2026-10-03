@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff54d0"
+name = "dancing-junglefowl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a5452"
+
+[[link]]
+type = "reader"
+to = "foamy-stallion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

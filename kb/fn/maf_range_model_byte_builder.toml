@@ -1,0 +1,139 @@
+title = "Build one bank-indexed comparison byte for P0101 or P010B"
+summary = """
+Bank-indexed model-byte builder called with index 0 by P0101 monitor \
+0008152a and index 1 by P010B monitor 00081d74. It combines ffff1956 and \
+per-bank state with Base Fuel Schedule K-Value 00009284, MAF Factor \
+00008a27, normalization reference 00009534, event scalar 000088fb, and byte \
+ffff10e0, then writes a saturated byte to ffff15bc[index]."""
+note = [
+    """
+The two outputs are model-side comparison bytes and captured event values in \
+the exact P0101/P010B range-performance path. Their complete physical \
+conversion remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 63
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 257
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "active-caracal/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "precise-nuthatch/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "spectral-corgi/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "zircon-swan/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "friendly-poodle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00082604"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fb"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008262a"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008265e"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008266a"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000827aa"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000827b0"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082808"
+value = {named = ["000088fb", "00008a27", "00009284", "00009534", "0003b498", "0008152a", "00081d74", "00082604", "ffff10e0", "ffff15bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "spiritual-rattlesnake/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "maf_range_performance_bank_1_monitor/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "maf_range_performance_bank_2_monitor/fn/7mfk"
+relies = "structure"

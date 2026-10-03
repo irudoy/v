@@ -1,0 +1,161 @@
+title = "Scale duty and write complementary ATU-II BFR6A-D outputs"
+summary = """
+Throttle ATU-II PWM publisher. It converts ffff374c/ffff374e to \
+min(320,floor(raw*320/500)), uses direction masks ffff36dc/ffff385e to drive \
+one member and clear the other in each pair, and writes channel 0 to BFR6A/B \
+at fffff510/fffff512 and channel 1 to BFR6C/D at fffff514/fffff516. Disabled \
+output clears all four registers; a fault branch writes fixed 0x40/0x60 \
+values."""
+note = [
+    """
+The MCU register and TO6A-D pin mapping is exact. ECM connector continuity, \
+H-bridge polarity, and channel-to-bank identity require bench validation.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 166
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 586
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "acrid-tarantula/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fantastic-rhino/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "married-inchworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spirited-rottweiler/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blazing-hog/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "steady-jaguar/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thundering-elk/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wondrous-giraffe/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000407c0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004090e"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00040920"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00040936"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004094a"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004097a"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000409a8"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000409d2"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000409de"
+value = {named = ["000407c0", "ffff36dc", "ffff374c", "ffff374e", "ffff385e", "fffff510", "fffff512", "fffff514", "fffff516"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"

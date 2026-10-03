@@ -1,0 +1,30 @@
+note = [
+    """
+Explicit 16-point axis for EVAP leak transfer 000152d6. Stored points are 0, \
+64, 128, 192, 256, 320, 384, 512, 768, 1280, 2048, 3072, 4608, 7168, 10752, \
+and 16384. FUN 000b2096 passes baseline-relative pressure-depression \
+coordinate ffff2c92; FUN 000b29b8 passes corrected and saturated companion \
+coordinate ffff2c98. Code proves the two raw coordinate paths and axis role. \
+Physical pressure conversion and engineering units remain unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 1
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013c18"
+name = "married-cobra"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b2166"

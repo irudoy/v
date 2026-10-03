@@ -1,3 +1,38 @@
+summary = """
+Six-position knock-threshold result bitmap maintained by FUN 0004a238. The \
+selected one-based channel bit is set while its current comparison exceeds \
+the threshold and cleared otherwise."""
+note = [
+    """
+The bitmap represents current per-channel evaluator states rather than a \
+proven interval OR. Physical cylinder order remains unverified.""",
+]
+level = "code"
+unit = "channel bit mask"
+
+[[ledger]]
+registry = "vars"
+order = 658
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_evaluator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_slice_evaluator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe910c"
@@ -26,6 +61,48 @@ note = "Target knock event function sets and clears this channel mask"
 layout = "7mfk"
 address = "ffff2150"
 former = ["vanilla-moth/ram/7mfk-ffff2150"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a34e"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a356"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a358"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a42c"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a432"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a436"
+value = {named = ["0004a238", "ffff2150"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -57,3 +134,19 @@ supports = "homology"
 at = "jk78c:00063bde"
 to = "7mfk:ffff2150"
 note = "Target knock event function sets and clears this channel mask"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

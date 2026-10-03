@@ -1,0 +1,177 @@
+summary = """
+Multipurpose phase-mask byte. Within the AN1-derived component, FUN 0003d258 \
+alternates bits 0 and 1 for indices 0 and 1; a set bit marks an admitted \
+fresh filter update, and FUN 0003d45c requires that same bit before lowering \
+the corresponding running minimum. Startup and conditional recovery ranges \
+clear the byte."""
+note = [
+    """
+The claim is limited to bits 0 and 1 in this component. One admitted update \
+occurs every other FUN 0003d832 invocation; the physical time per invocation \
+remains unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 465
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "abstract-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abstract-lyrebird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f3e"
+name = "ultramarine-woodlouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d26a"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2d2"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d472"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d47a"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0003d258", "0003d45c", "ffff3f3e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "abstract-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "piquant-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "abstract-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,23 @@
+summary = """
+Entry into implicit-axis shift chain 0x26A5C..0x26A94. The chain contains \
+consecutive SHLR R5 / ROTCR R3 pairs; entry K pairs above the merge yields \
+index = raw >> K, so step = 2^K. This is the core for primitive 0x263BC with \
+step 16384."""
+note = [
+    """
+0x26A5C..0x26A88 are not seven functions but offset entries into one chain. \
+Adjacent entries are 4 bytes apart, exactly one SHLR/ROTCR pair.""",
+]
+level = "code"
+role = "kernel"
+
+[[ledger]]
+registry = "funcs"
+order = 106
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
 [[symbol]]
 layout = "1nd"
 address = "00028ea0"
@@ -14,6 +34,16 @@ key = "00026a5c"
 layout = "7mfk"
 address = "00026a5c"
 name = "intrepid-millipede"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "implicit-axis-bank"
 
 [[symbol]]
 layout = "jk00c"

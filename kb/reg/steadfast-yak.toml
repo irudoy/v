@@ -1,0 +1,80 @@
+summary = """
+GR11B, the APC channel-11 compare register used for the output-low event \
+selected by the high byte of POPCR."""
+note = [
+    """
+Register behavior comes from the SH7058 hardware manual; physical spark-edge \
+polarity is unverified.""",
+]
+level = "code"
+unit = "timer count"
+
+[[ledger]]
+registry = "vars"
+order = 612
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_compare_scheduler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-stoat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff5c4"
+name = "steadfast-yak"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aeb6"
+value = {named = ["0002acba", "0002af38", "fffff5c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b320"
+value = {named = ["0002acba", "0002af38", "fffff5c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[link]]
+type = "lookup"
+to = "sincere-dragonfly/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

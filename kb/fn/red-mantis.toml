@@ -1,0 +1,149 @@
+summary = """
+Component with hysteresis comparators ffff24a4/ffff24a1, aggregate enable \
+ffff249a, and mode gates. In the same component, uint16 map 00015750 defines \
+neutral upper limit 0x7fff for a cascade selecting a signed minimum through \
+ffff34d4."""
+note = ["The physical quantity of the limited state is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 212
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "imaginary-kakapo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "devout-wasp/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "glittering-salmon/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "loyal-narwhal/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00071448"
+name = "red-mantis"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000870f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ce"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714d2"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714da"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714e6"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ec"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ee"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714fc"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071508"
+value = {named = ["0000870f", "00015750", "00071448", "ffff2466", "ffff249a", "ffff24a1", "ffff24a4"], span = 1}
+key = "linked"
+
+[[link]]
+type = "selector"
+to = "devout-wasp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "glittering-salmon/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "loyal-narwhal/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

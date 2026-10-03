@@ -1,0 +1,121 @@
+summary = """
+Conditional uint16 term written by FUN 000554f8 from map 0x154b0 on axis \
+0x13b28, capped at 3768; disabled paths write zero. FUN 000556ec adds it to \
+ffff231a before Q14 scaling."""
+note = [
+    """
+The Cranking Base Fuel Schedule name and engineering scale remain \
+candidate.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 568
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "solemn-monkey/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prompt-hummingbird/axis"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "conditional_cranking_fuel_term/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff240a"
+name = "mega-kudu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055570"
+value = {named = ["00013b28", "000154b0", "000554f8", "000556ec", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055576"
+value = {named = ["00013b28", "000154b0", "000554f8", "000556ec", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557c"
+value = {named = ["00013b28", "000154b0", "000554f8", "000556ec", "ffff240a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558c"
+value = {named = ["00013b28", "000154b0", "000554f8", "000556ec", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055702"
+value = {named = ["00013b28", "000154b0", "000554f8", "000556ec", "ffff240a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "prompt-hummingbird/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "solemn-monkey/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "conditional_cranking_fuel_term/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

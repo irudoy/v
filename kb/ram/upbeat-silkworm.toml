@@ -1,0 +1,123 @@
+summary = """
+Base of the two-word filtered AN1 sample pair produced by FUN 0003d258. The \
+first admitted sample is copied directly; later samples use \
+floor((3*previous + sample)/4) with a one-count upward anti-stall \
+correction."""
+note = [
+    """
+The pair contains indices 0 and 1 at ffff2832 and ffff2834. The physical \
+sampling cadence remains unresolved.""",
+]
+level = "code"
+unit = "filtered ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 463
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "persimmon-raven/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smoky-puffin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abstract-lyrebird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2832"
+name = "upbeat-silkworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d284"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2a4"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2ae"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2b0"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2bc"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2c6"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d322"
+value = {named = ["0003d258", "0003d2dc", "ffff1d58", "ffff2832"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "smoky-puffin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "persimmon-raven/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "abstract-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

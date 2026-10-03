@@ -1,0 +1,83 @@
+summary = """
+Source byte of scheduler snapshot ffff10da. No static writer exists; startup \
+initializer 00027c50 zeroes it with the ffff1000..ffff261c span."""
+note = [
+    """
+FUN 000703b2 reads it only while ROM8[0x8b36].bit6 is set; stock \
+ROM8[0x8b36]=0x04 has the bit clear.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 934
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refreshing-hyena/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff115a"
+name = "discerning-oyster"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b36"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070412"
+value = {named = ["00008b36", "00020dfe", "00027c50", "000703b2", "ffff115a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refreshing-hyena/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cunning-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

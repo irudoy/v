@@ -1,0 +1,210 @@
+summary = """
+Diagnostic status-byte builder. For DID 0x130a byte ffff2c56, bit 4 is set \
+only when ffff24d2 bit 3 is set and ffff4255 bit 3 is clear. For DID 0x130b \
+byte ffff2c57, output bit 1 follows ffff2377 bit 0, while output bit 0 \
+follows ffff2377 bit 1 when ROM8[0x8b2a] bit 2 is clear. The exact DID \
+records supply support masks 0x10 and 0x03. For DID 0x1311 byte ffff2c58, \
+stored at 0002e404, output bit 3 follows ffff5b32 bit 3, the scheduler copy \
+of exhaust-VTC learning status ffff5b33 bit 3, and output bit 4 follows \
+ffff24cd bit 4; the DID record supplies support mask 0x18."""
+note = [
+    """
+Reviewed Nissan diagnostics identify DID 0x130a bit 4 as THRTL RELAY. A \
+homologous structured Nissan profile identifies DID 0x130b bits 1 and 0 as \
+HO2S2 heater states for banks 1 and 2. The function establishes reported \
+control states, not physical output pins. The structured profile names DID \
+0x1311 bit 3 EXH V/T LEARN with 0 = DONE and 1 = YET.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 335
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "esoteric-barracuda/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intelligent-eel/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delicate-peccary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "monumental-ibex/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nano-axolotl/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pretty-caracal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "slim-mouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002e2e8"
+name = "jovial-bird"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b2a"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a39"
+value = "0x10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a3a"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a3b"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a68"
+value = "ffff2c58"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e384"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e390"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e392"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3ca"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3d2"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3e4"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e3ea"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e404"
+value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "esoteric-barracuda/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "intelligent-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

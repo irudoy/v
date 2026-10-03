@@ -1,0 +1,104 @@
+title = "Evaluate auxiliary gate for upstream DFCO mode"
+summary = """
+Auxiliary upstream DFCO gate. It requires ffff4184.bit6 clear and \
+ffff244f.bit5 set. It normally returns true; one exception returns false \
+when ffff41a5.bit2 is set, ffff41bd.bit0 is clear, and both ffff34e4 and \
+ffff34e6 are below 20."""
+note = ["Boolean behavior is exact; physical signal names are unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 66
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 494
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_upstream_mode_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dexterous-ladybug/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fine-pheasant/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "futuristic-chinchilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "judicious-shrimp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "solid-meerkat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008c3fa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c3fa"
+value = {named = ["0006efbc", "ffff244f", "ffff34e4", "ffff34e6", "ffff4184", "ffff41a5", "ffff41bd"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dfco_upstream_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

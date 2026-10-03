@@ -1,0 +1,52 @@
+title = "Merge three inputs and limit result to six bits"
+summary = """
+Merge three mask inputs with bitwise OR and return only the low six bits."""
+note = ["The result is the final value written to ffff22e0."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 47
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 492
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050a4c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x3f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a4c"
+value = {named = ["0004ed88"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

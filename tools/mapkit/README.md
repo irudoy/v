@@ -10,13 +10,13 @@ not be edited by hand.
 | Input | Responsibility |
 |---|---|
 | Memgraph ROM layer | Measured map geometry, accessors, axes, values, and projected reviewed claims |
-| `defs/JK08A.findings.csv` | Canonical map semantics and map-specific evidence |
-| `defs/JK08A.axes.csv` | Canonical axis semantics and scaling evidence |
+| `defs/JK08A.findings.csv` | Generated map semantics and map-specific evidence from `kb/tbl/` |
+| `defs/JK08A.axes.csv` | Generated axis semantics and scaling evidence from `kb/axis/` |
 | `defs/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
-| `defs/JK08A.dtc.csv` | Addressed DTC descriptor and attribute controls |
+| `defs/JK08A.dtc.csv` | Generated addressed DTC descriptor and attribute controls from `kb/dtc/` |
 | `defs/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
 | `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, native switches, and the Logger parameters of lookup operands: the `kb` projection of `[editor]` and `[logparam]` of the `7mfk` meanings and of `kb/feature/definitions.toml` |
-| `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
+| `defs/JK08A.diagnostic-bindings.csv` | Generated diagnostic context from the `[[diagnostic]]` tables of meanings |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
 | `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |

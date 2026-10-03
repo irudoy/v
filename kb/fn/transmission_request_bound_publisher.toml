@@ -1,0 +1,170 @@
+summary = """
+Common transmission request-bound publisher called after the selected or \
+alternate coordinator. Under stock ROM8[0x83c1].bit0 clear and ffff41a6.bit3 \
+set, it publishes min(ffff34c8, ffff4162) as lower bound ffff3484, ffff4162 \
+as upper bound ffff3480 under stock ROM8[0x89c5].bit0, and ffff349c as \
+ffff347e and ffff3482. With bit 3 clear, it publishes the ordinary \
+preselected request words. The resulting four words ffff347e, ffff3480, \
+ffff3482, and ffff3484 enter FUN 00079030."""
+note = [
+    """
+Publish transmission-derived signed bounds for the common request boundary""",
+    """
+FUN 00077892 sets the selecting bit during a gear change with TCM status 3 \
+and for the 307.2 ms hold after it; the 2026-09-22 road captures show the \
+resulting bounds on ffff19c6 in 4-3 and 3-2 downshifts.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 128
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 588
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_boundary/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "accomplished-cockle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "manipulative-coati/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-urchin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "outstanding-badger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spicy-smilodon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wakeful-lemur/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000777fa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c1"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089c5"
+value = "0x19"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077812"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077822"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077830"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077840"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077866"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007786a"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007786e"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077872"
+value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

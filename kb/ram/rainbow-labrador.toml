@@ -1,0 +1,50 @@
+summary = """
+Bit 4 indicates that the pass event was already counted and gates \
+incrementing saturating counter ffff54ea."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 308
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "huge-stoat/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "melodic-antelope/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41da"
+name = "rainbow-labrador"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003ed24"
+
+[[link]]
+type = "reader"
+to = "huge-stoat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "melodic-antelope/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

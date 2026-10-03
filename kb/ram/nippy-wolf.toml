@@ -1,0 +1,164 @@
+summary = """
+Signed byte input to the alternative common-MAF-correction mode in FUN \
+0003b320. FUN 000686b8 writes the high byte of stored record 0x7e, and while \
+service-0x3b LID 3 is active and the status is accepted FUN 000683cc copies \
+LID-3 slot ffff99de here."""
+note = [
+    """
+Stock ROM flags disable the consuming branch. The LID-3 store edge makes \
+00068040 write it to record 0x7e. The external SCI2 peer, physical quantity, \
+and engineering scale remain unresolved.""",
+]
+level = "code"
+unit = "raw correction input"
+
+[[ledger]]
+registry = "vars"
+order = 482
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-jacamar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "therapeutic-elk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-butterfly/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "melodic-numbat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff56ba"
+name = "nippy-wolf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b3c8"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068146"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685a6"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685a8"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686f4"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686fa"
+value = {named = ["0003b320", "00066bd0", "0006727c", "00068040", "000683cc", "000686b8", "ffff56ba", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "paper-viper/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "notorious-goat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "rare-butterfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "therapeutic-elk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "melodic-numbat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

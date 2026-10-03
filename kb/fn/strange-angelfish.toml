@@ -1,0 +1,167 @@
+summary = """
+Trustful RPM-row interpolation and inverse-coordinate lookup. It selects or \
+interpolates one 16-point offset-binary output row of 000175c8 over byte \
+axis 00018716, searches that row with centered signed request ffff19c6 plus \
+0x8000, returns values from 00018ac6, and writes the result to ffff1d14."""
+note = [
+    """
+The operational transform is exact. The physical QH0/torque identity and \
+engineering scales remain catalog candidates. This path is the parallel \
+counterpart of FUN 00073432 and uses byte-identical table and axis \
+contents.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 223
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "groovy-clam/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "horned-hedgehog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "famous-skink/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavenly-binturong/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_request_bounded/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thankful-snail/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00073628"
+name = "strange-angelfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007363c"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073644"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000736aa"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000736b6"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007375c"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073772"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737c6"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737c8"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737ce"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737d8"
+value = {named = ["000175c8", "00018716", "00018ac6", "00021ce0", "000266e8", "00073628", "ffff19c6", "ffff1cca", "ffff1d14"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "crimson-dalmatian/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "heavenly-binturong/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

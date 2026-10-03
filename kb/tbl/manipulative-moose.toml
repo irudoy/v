@@ -1,0 +1,129 @@
+summary = """
+When accessor branching selects map 00012908, its interpolated uint8 output \
+defines a lower threshold for internal quantity uVar4: when uVar4 < raw*8, \
+uVar4 is replaced by raw*8. When bit 0x08 is clear, adjacent map 00012918 is \
+selected instead."""
+note = [
+    """
+When accessor branching selects map 00012908, its interpolated uint8 output \
+defines a lower threshold for internal quantity uVar4: when uVar4 < raw*8, \
+uVar4 is replaced by raw*8. When bit 0x08 is clear, adjacent map 00012918 is \
+selected instead. Result disposition: inline_comparison. Result target: \
+FUN_000474a4@000474a4: (uVar4 & 0xffff) < (*(uint8_t *)0xffff171a << 3). \
+Machine trace: 00012908 (uint8, values 0..162) -> conditional branch with \
+bit 0x08 set in ffff4250: read 00046c0c, tst 00046c0e, branch to adjacent \
+00012918 only when the bit is zero at 00046c10 -> load base 00012908 at \
+00046c14 -> call wrapper 00026550 at 00046c1c -> interval search on axis \
+000140d4 in 00026984 -> fraction calculation in 00026c78 -> linear \
+interpolation of uint8 counts in 00026740, including boundary return of an \
+axis point -> r0 -> r2 at 00046c20 -> byte write to ffff171a at 00046c26 -> \
+sole reader 000474a4 -> unsigned load raw -> raw << 3 = raw * 8, threshold \
+range 0..1296 -> comparison with uVar4 previously saturated to 0..65535 -> \
+if uVar4 < raw*8, replace uVar4 with raw*8 -> write result to ffff23fa.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 175
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "manipulative-moose/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-ammonite/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012908"
+name = "manipulative-moose"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c0c"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c0e"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c10"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c14"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c1c"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046c26"
+value = {named = ["00012908", "000474a4", "ffff171a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "manipulative-moose/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dramatic-roadrunner/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

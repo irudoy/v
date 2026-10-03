@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00090f24"
+name = "majestic-carp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00090f24"

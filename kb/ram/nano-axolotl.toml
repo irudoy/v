@@ -1,0 +1,137 @@
+summary = """
+Exact UDS DID 0x130a runtime status byte. FUN 0002e2e8 sets bit 4 when \
+ffff24d2 bit 3 is set and ffff4255 bit 3 is clear; the DID record supplies \
+support mask 0x10. Reviewed Nissan diagnostics identify bit 4 as THRTL \
+RELAY."""
+note = [
+    """
+This is the reported throttle-control-motor relay condition. It does not \
+identify the physical relay-output pin.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "throttle-control-motor-relay"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:thrtl-relay"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0119:data_monitor:thrtl-relay-6644a8cf"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+Exact JK08A DID 0x130a returns ffff2c56 and support byte ROM8[0x11a39]=0x10. \
+FUN 0002e2e8 constructs bit 4 from control and inhibit flags. Reviewed \
+Nissan diagnostic profiles and the factory VQ35HR manual identify the bit as \
+the throttle-control-motor relay condition."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00011a39"
+value = "0x10"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a30"
+value = "ffff2c56"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e392"
+value = {named = ["00011a39", "00022a30", "0002e2e8", "0003235c", "6644a8cf", "ffff2c56"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000325b2"
+value = {named = ["00011a39", "00022a30", "0002e2e8", "0003235c", "6644a8cf", "ffff2c56"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "jovial-bird/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 72
+binding = "throttle-control-motor-relay"
+
+[[ledger]]
+registry = "vars"
+order = 388
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-bird/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c56"
+name = "nano-axolotl"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a39"
+value = "0x10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a30"
+value = "ffff2c56"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e392"
+value = {named = ["00011a39", "00022a30", "0002e2e8", "0003235c", "ffff2c56"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000325b2"
+value = {named = ["00011a39", "00022a30", "0002e2e8", "0003235c", "ffff2c56"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "jovial-bird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,126 @@
+summary = """
+Signed net engine torque after accessory loads. FUN 00065e2c writes \
+sat_i16(s16[ffff18d2]-u16[ffff2410]). Scheduler FUN 00020dfe latches it to \
+ffff2380 inside the 140-byte copy ffff23bc->ffff2330 at 00021318, and CAN \
+packer 00079e70 converts the latch to word ffff3f96 of frame 0x180."""
+note = [
+    """
+FUN 00065e54, entry 96 of the 124-entry periodic table at 0002196c, runs the \
+chain 00065b08, 00065cd8, 00065de4, 00065f9c, 00065e2c. This is the static \
+path from Engine Torque Map 00010b8e to the CAN frame.""",
+]
+level = "code"
+unit = "signed torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 867
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cobalt-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fascinating-crow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "terrestrial-nuthatch/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff240c"
+name = "fervent-bittern"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021aec"
+value = "00065e54"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00020dfe", "00021aec", "00065e54", "00079e70", "000c577a", "ffff18d2", "ffff240c", "ffff2410"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065e2c"
+value = {named = ["00020dfe", "00021aec", "00065e54", "00079e70", "000c577a", "ffff18d2", "ffff240c", "ffff2410"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f32"
+value = {named = ["00020dfe", "00021aec", "00065e54", "00079e70", "000c577a", "ffff18d2", "ffff240c", "ffff2410"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lyrical-pronghorn/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "space-puma/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "cobalt-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "fascinating-crow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "terrestrial-nuthatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

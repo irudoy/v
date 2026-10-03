@@ -1,0 +1,95 @@
+summary = """
+Start of the crankshaft speed irregularity monitor threshold array \
+(ffff3100..3105, six channels), built from ffff314a/ffff314b through \
+000224f8; written in 00082c8a and read as windows in 00085a70. Channel \
+calibration is ROM bytes 0x87c1..c6 = 60 ff 40 40 ff 60, where 0xff disables \
+a channel."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 242
+fields = ["semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-kudu/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "obedient-dingo/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3100"
+name = "amazing-pegasus"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087c1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00083320"
+
+[[link]]
+type = "input"
+to = "cryptic-kudu/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "obedient-dingo/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

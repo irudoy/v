@@ -1,0 +1,42 @@
+summary = """
+One of three RAM inputs of reciprocal-transfer-pair component 0x72f1e; the \
+write source is unidentified."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 276
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vigorous-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35fe"
+name = "screeching-shellfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007267e"
+
+[[link]]
+type = "reader"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vigorous-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

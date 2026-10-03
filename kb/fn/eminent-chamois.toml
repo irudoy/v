@@ -1,0 +1,165 @@
+summary = """
+J1979 Calculated Load byte producer. It interpolates M from uint16 map \
+0x1491a by uint8[ffff11b3]<<8, calculates q=floor((uint16[ffff1024]<<8)/M), \
+optionally recalculates q=floor((q<<7)/uint8[ffff329f]) when ROM8[0x870e] \
+bit 4 is set, clamps q to 255, and writes ffff413e. Stock \
+ROM8[0000870e]=0x28 has bit 4 clear, so stock normal-path output uses only \
+the RPM-dependent 0x1491a reference."""
+note = [
+    """
+Entry gates can force output 0 or 255. A zero optional divisor also forces \
+255. FUN 00035856 returns ffff413e for J1979 Mode 01 PID 0x04, whose \
+standard scale is 100*A/255 percent. This diagnostic byte is not internal Q7 \
+map coordinate ffff102c: that byte uses fixed Base Fuel Schedule reference \
+00009534 and scale 100*A/128 percent.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 350
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "colorful-dogfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adaptable-hamster/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "calculated_load/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008083c"
+name = "eminent-chamois"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808ca"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808d4"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808de"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808e2"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808ec"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "0001491a", "00021ce0", "000263f4", "00026740", "00026a60", "0008083c", "ffff1024", "ffff11b3", "ffff329f", "ffff413e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"

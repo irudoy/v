@@ -819,7 +819,8 @@ class AscdMainVehicleTest(unittest.TestCase):
         with VARS.open(encoding="utf-8", newline="") as source:
             variables = {row["addr"]: row for row in csv.DictReader(source)}
         stable = variables[f"{self.symbols['button_state']:08x}"]
-        self.assertNotIn(f"spec:hardware-results:{KEY_MAIN}", stable["evidence"].split(";"))
+        self.assertNotIn(f"spec:hardware-results:{KEY_MAIN}",
+                         [token.strip() for token in stable["evidence"].split(";")])
         self.assertEqual(stable["confidence"], "code")
         self.assertIn(KEY_MAIN, stable["note"])
         self.assertIn(f"accepted code 0x{main:02X} to physical MAIN presses", stable["note"])

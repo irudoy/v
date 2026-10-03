@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00012a5a"
+name = "cream-seahorse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b2116"

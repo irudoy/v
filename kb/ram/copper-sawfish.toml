@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff12da"
+name = "copper-sawfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004bbd0"
+
+[[link]]
+type = "writer"
+to = "pretty-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,277 @@
+title = "Build post-replacement P2119 or P1238 RPM-shaped inhibit mask"
+summary = """
+P2119/P1238 ETC-actuator-fault six-channel inhibit-mask coordinator. \
+Runtime-record byte1.bit7 at exact indices 0x71 and 0x123 enables 000509a0, \
+which maps RPM/25 43..48 to masks 01,05,07,0f,1f,3f; 000509ea can add 3f at \
+coarse speed <=2 under ffff10e4.bit2."""
+note = [
+    """
+Exact JK08A descriptor index 113 is P2119 ETC ACTR-B1 and index 291 is P1238 \
+ETC ACTR-B2. The mask is ORed after Power Balance and cannot be cleared by \
+that replacement.""",
+]
+level = "code"
+role = "accessor"
+
+[[diagnostic]]
+id = "etc-actuator-fault-mask-p1238"
+kind = "monitor"
+label = "DtcCode"
+key = "P1238"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001a104"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x123 is P1238 ETC ACTR-B2 and enables the staged \
+six-channel auxiliary inhibit mask."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "etc_fault_staged_rpm_mask/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001a104"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0005097e"
+value = {named = ["0001a104", "00025e20", "0004ed88", "0005096c", "000509a0"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0005098e"
+value = {named = ["0001a104", "00025e20", "0004ed88", "0005096c", "000509a0"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "etc-actuator-fault-mask-p2119"
+kind = "monitor"
+label = "DtcCode"
+key = "P2119"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000198ac"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x71 is P2119 ETC ACTR-B1 and enables the staged \
+six-channel auxiliary inhibit mask."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "etc_fault_staged_rpm_mask/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000198ac"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050972"
+value = {named = ["000198ac", "00025e20", "0004ed88", "0005096c", "000509a0"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0005098e"
+value = {named = ["000198ac", "00025e20", "0004ed88", "0005096c", "000509a0"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "curated"
+order = 42
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 175
+binding = "etc-actuator-fault-mask-p2119"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 176
+binding = "etc-actuator-fault-mask-p1238"
+
+[[ledger]]
+registry = "funcs"
+order = 489
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_record_byte1_bit7_predicate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_fault_low_speed_full_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_fault_staged_rpm_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005096c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000198ac"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0001a104"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050972"
+value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050974"
+value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005097e"
+value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005098a"
+value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005098e"
+value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "diagnostic_record_byte1_bit7_predicate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "etc_fault_low_speed_full_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "etc_fault_staged_rpm_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

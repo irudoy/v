@@ -1,0 +1,88 @@
+summary = """
+Output byte of 16-point curve 000129f2 indexed by engine-speed byte ffff11b3 \
+in builder 00053698."""
+note = [
+    """
+Stock curve values fall from 33 at zero speed to 0 at 4000 rpm and above.""",
+]
+level = "code"
+unit = "raw_u8"
+
+[[ledger]]
+registry = "vars"
+order = 906
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "greedy-sunfish/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff17bb"
+name = "shapeless-wildcat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537be"
+value = {named = ["000129f2", "00026388", "00053698", "ffff11b3", "ffff17bb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537ce"
+value = {named = ["000129f2", "00026388", "00053698", "ffff11b3", "ffff17bb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "greedy-sunfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

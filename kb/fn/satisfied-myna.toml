@@ -1,0 +1,126 @@
+summary = """
+Exhaust-VTC position-sensor monitor, path B (extra-edge), called from \
+0008f168 with the bank in r4 and the enable in r5. It sets or clears bit b \
+of arm byte ffff4179 at 000901d8, 000901fa, 0009022c, and 00090246 by the \
+rules of 00090086, raises reset request ffff850c bit 7 at 000901de when both \
+arm bytes were clear for the bank, reloads timer ffff43be + b with \
+ROM8[00008e23]=100 while indicator ffff850d bit 4 + b is clear or the enable \
+is clear, and sets judged latch ffff3581 bit b at 00090222 when the \
+indicator is set and the timer has expired."""
+note = [
+    """
+The arm bit reaches capture handler 000c2c58 and monitor 000c22dc through \
+scheduler copy ffff4121. Timer ffff43be + b lies in the 102.4 ms block of \
+base-tick handler 0002040c, so the reload of 100 is 10.24 s.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 610
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-robin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "great-owl/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enigmatic-oyster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "imperial-beagle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "real-vulture/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silent-elephant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0009018c"
+name = "satisfied-myna"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e23=100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000901d8"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000901de"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000901fa"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090222"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009022c"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090246"
+value = {named = ["00008e23", "0009018c", "ffff3581", "ffff4178", "ffff4179", "ffff43be", "ffff850c", "ffff850d"], span = 1}
+key = "reference"

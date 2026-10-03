@@ -1,0 +1,73 @@
+summary = """
+Filtered vehicle-speed word. FUN 0003a174 applies a first-order filter to \
+ffff113c and preserves the word for FUN 0003a254, which divides it by 20 \
+into coarse byte ffff118e."""
+note = ["The unit follows from J1979 PID 0x0D as described at ffff118e."]
+level = "code"
+unit = "km/h*10"
+
+[[ledger]]
+registry = "vars"
+order = 433
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "daring-mongoose/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivid-macaque/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "illegal-rook/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff115e"
+name = "stoic-crow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039f18"
+
+[[link]]
+type = "input"
+to = "vivid-macaque/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "daring-mongoose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "illegal-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

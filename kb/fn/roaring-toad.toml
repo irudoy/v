@@ -1,0 +1,122 @@
+summary = """
+ADC2 DMAC channel-2 completion interrupt handler. It disables and rearms \
+CHCR2, toggles the destination-buffer selector ffff20c0, programs the next \
+128-byte transfer to ffff86cc or ffff874c from ADC2 ADDR24 or ADDR28, \
+processes the completed buffer through 0004928c, restores all saved \
+registers, and returns with RTE."""
+note = [
+    """
+All recovered programmed destinations remain within ffff86cc..ffff87cb and \
+cannot produce ffff2368.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 453
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[symbol]]
+layout = "7mfk"
+address = "0004a6d4"
+name = "roaring-toad"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a6d4"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a734"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a770"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a782"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a786"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a790"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a7b0"
+value = {named = ["0004928c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a816"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a834"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a872"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a886"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a88a"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a894"
+value = {named = ["0004928c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "simple-narwhal/fn/7mfk"
+relies = "structure"

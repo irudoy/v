@@ -1,0 +1,51 @@
+summary = """
+Result of comparison against a map output in 0005651c together with \
+ffff2493."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 181
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "writes"
+to = "frisky-beluga/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2474"
+name = "spiked-bear"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00056542"
+
+[[link]]
+type = "lookup"
+to = "cooperative-caracara/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff321e"
+name = "airborne-echidna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a658e"
+
+[[link]]
+type = "lookup"
+to = "camouflaged-stallion/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "almond-flamingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

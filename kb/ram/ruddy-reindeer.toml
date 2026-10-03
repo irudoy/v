@@ -1,0 +1,126 @@
+summary = """
+First corrected conversion output. FUN 0003edb4 writes \
+clamp(Y+A+O+P-32768,0,65535), where Y comes from common curve 000148fa, A \
+from 0000c10e, O from ffff45a0, and P from ffff2b54."""
+note = [
+    """
+The paired outputs feed two-bank fuel-trim calculations, but the exact AFR \
+engineering scale is not established by this trace.""",
+]
+level = "code"
+unit = "raw converted value"
+
+[[ledger]]
+registry = "vars"
+order = 512
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-tarsier/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unique-aardwolf/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dandelion-cow/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "esoteric-chachalaca/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "af_adjustment_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enlightened-orangutan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff29e2"
+name = "ruddy-reindeer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ef24"
+value = {named = ["0000c10e", "000148fa", "0003edb4", "0005911c", "0005cbec", "ffff29e2", "ffff45a0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "af_adjustment_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "dandelion-cow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "esoteric-chachalaca/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-tarsier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unique-aardwolf/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

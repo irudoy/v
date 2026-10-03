@@ -54,7 +54,7 @@ class SiliconGroundingTest(unittest.TestCase):
                 self.assertIsNotNone(evidence)
                 keys = [
                     token.removeprefix(HARDWARE_TOKEN)
-                    for token in evidence.split(";")
+                    for token in (item.strip() for item in evidence.split(";"))
                     if token.startswith(HARDWARE_TOKEN)
                 ]
                 self.assertTrue(keys)

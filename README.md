@@ -43,7 +43,7 @@ engines.
 
 | Information | Canonical source |
 |---|---|
-| Addressed technical claims and evidence | `defs/*.csv`, TOML manifests, assembly, and narrow repository specifications |
+| Addressed technical claims and evidence | `kb` meanings and typed evidence, unconverted registries, TOML manifests, assembly, and narrow repository specifications |
 | Stock ROM identity, provenance, hashes, and homology | `rom-images/roms.csv`, `rom-images/homology.toml`, `rom-images/homology.csv`, and `rom-images/README.md` |
 | Derived-image identity and hardware result | `patches/hardware-results.toml` |
 | Query and relationship index | Reproducible Memgraph projection built by tracked loaders |
@@ -55,7 +55,7 @@ engines.
 | Path | Responsibility |
 |---|---|
 | `rom-images/` | Versioned stock dumps and provenance registry |
-| `defs/` | Canonical JK08A annotations, target identities, and generated editor projections |
+| `defs/` | JK08A annotation views, architecture, target identities, and generated editor projections |
 | `patches/` | ROM builder, layouts, payloads, assembly, checksums, and patch tests |
 | `tools/ghidra/` | Headless structure extraction and Ghidra p-code fixtures |
 | `tools/memgraph/` | Reproducible graph ingestion, provenance audit, and backup |

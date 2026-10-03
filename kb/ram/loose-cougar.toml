@@ -1,0 +1,93 @@
+summary = """
+Piecewise accelerator-pedal normalization written by 00075590 from snapshot \
+ffff266e. It is 0 at input <=45, 1500 at input >=170, and \
+floor((input-45)*1500/125) between those boundaries."""
+note = [
+    """
+The normalized maximum is an internal count, not a percentage or voltage.""",
+]
+level = "code"
+unit = "normalized APP raw"
+
+[[ledger]]
+registry = "vars"
+order = 673
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_request_preprocessor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e6c"
+name = "loose-cougar"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff2"
+value = "0x05dc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff4"
+value = "0x00aa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ff6"
+value = "0x002d"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075606"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075628"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff1e6c", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007564e"
+value = {named = ["00008ff2", "00008ff4", "00008ff6", "00075590", "ffff1e6c", "ffff266e"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "capable-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_request_preprocessor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,172 @@
+summary = """
+First-channel raw endpoint-crossfade result before multiplicative trims. FUN \
+0007a592 writes floor((A*(32768-w)+B*w)/32768), saturated to uint16, where \
+A/B are the selected endpoint curves and w is ffff31c8."""
+note = [
+    """
+Q15 trim 0001484a is applied after this write when ffff245e.bit6 is set. The \
+physical quantity is unresolved.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 32
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "brown-rook/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "debonair-kestrel/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "idealistic-mastiff/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "mauve-turtle/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "secret-spider/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a7c"
+name = "aquatic-jackrabbit"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6a2"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6b2"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6ba"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6c0"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6d6"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6f2"
+value = {named = ["0000d78e", "0001480a", "0001482a", "00015360", "00015380", "0007a592", "ffff2a7c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "brown-rook/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "debonair-kestrel/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "idealistic-mastiff/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "mauve-turtle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "secret-spider/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

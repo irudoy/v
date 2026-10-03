@@ -1,0 +1,128 @@
+summary = """
+Bank-1 exhaust-VTC release counter. FUN 000bfe88 increments it with \
+saturation while ffff1ad9 bit 0 is armed, zeroes it when actual position \
+ffff2324 reaches ROM8[00008de6]+128, and requires it to reach ROM8[00008cbc] \
+before clearing enable bit 0 of ffff1246."""
+level = "code"
+unit = "samples"
+
+[[ledger]]
+registry = "vars"
+order = 764
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1733"
+offset = 0x6c5
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "original-starfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1951"
+name = "abstract-wapiti"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cbc"
+value = "1"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008de6=16"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0624"
+value = {named = ["00008cbc", "00008de6", "000bfe88", "ffff128c", "ffff1951", "ffff1ad9", "ffff2324"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0794"
+value = {named = ["00008cbc", "00008de6", "000bfe88", "ffff128c", "ffff1951", "ffff1ad9", "ffff2324"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c07c0"
+value = {named = ["00008cbc", "00008de6", "000bfe88", "ffff128c", "ffff1951", "ffff1ad9", "ffff2324"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x6c5
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "original-starfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,233 @@
+summary = """
+Baseline-relative EVAP pressure-depression coordinate used for the first \
+000152d6 lookup. Direct producer paths call FUN 000abb84 with baseline \
+ffff2abc and current sample ffff10c4, clamp a negative result to zero, and \
+store the resulting uint16 here."""
+note = [
+    """
+On those direct paths the stored value is max(0, \
+floor((uint16[ffff2abc]-uint16[ffff10c4])*112/32)). Other state-machine \
+paths can retain or update the same coordinate. Its physical pressure scale \
+remains unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 24
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "classic-pelican/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavy-leopard/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "utopian-bug/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beige-corgi/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gregarious-marmot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nickel-caracara/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rainbow-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "translucent-crayfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c92"
+name = "large-spoonbill"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc1a"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc22"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc24"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc28"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc2e"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000afc34"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b0564"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b056c"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b056e"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b057e"
+value = {named = ["000152d6", "000abb84", "000afb7c", "000b0070", "000b04dc", "000b12dc", "000b15ca", "000b2096", "ffff10c4", "ffff2abc", "ffff2c92"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lilac-rattlesnake/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "heavy-leopard/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "utopian-bug/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "beige-corgi/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gregarious-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nickel-caracara/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rainbow-pelican/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "translucent-crayfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

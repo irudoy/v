@@ -1,3 +1,28 @@
+summary = """
+Step for changing a dimensionless Q0.16 blend coefficient: the lookup result \
+is stored in ffff17f8, then 00074b68 subtracts it from ffff2422 or adds it \
+to ffff2422 with limits; 00074c08 applies ffff2422 to linearly blend \
+signed16 ffff18e8 and ffff18e6 and writes ffff18f4."""
+note = [
+    """
+The physical subsystem is unknown. The map result is a step, not the final \
+coefficient. 00074b68 subtracts the step from ffff2422 or adds it with a \
+lower limit and saturation; 00074c08 uses updated ffff2422 as a weight. \
+Final weight value 0xffff is handled by a separate branch as full selection \
+of ffff18e6. Index: implicit 1D-4; \
+coordinate=min(abs(s16[ffff18e6]-s16[ffff18e8])*64,49152); for \
+coordinate>=49152 the wrapper returns element 3, otherwise interpolation \
+proceeds through 00026a5c/00026740. Result disposition: consumer (00074b68 \
+through ffff17f8).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless fraction"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
 [editor]
 name = "Blend Coefficient Step A Q0.16 (0x153B0)"
 category = "Internal Calculations"
@@ -7,10 +32,129 @@ format = "0.000000"
 fine = 1.52587890625e-05
 coarse = 0.001
 
+[[ledger]]
+registry = "findings"
+order = 340
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "authentic-eagle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "righteous-aardwark/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "authentic-eagle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "000153b0"
 name = "origami-kangaroo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cda"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074ce4"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074ce8"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074cf0"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d00"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074d04"
+value = {named = ["000153b0", "00074b68", "00074c08", "ffff17f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brass-barnacle/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "65536"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.0068817138671875*65536=451"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.0688018798828125*65536=4509"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4509/65536=0.0688018798828125"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "451/65536=0.0068817138671875"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "brass-barnacle/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +187,17 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "authentic-eagle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

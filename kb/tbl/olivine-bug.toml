@@ -1,7 +1,178 @@
+summary = """
+Flat 1D calibration of a nonzero control value: raw value 5 is loaded into \
+ffff2566, and 000bec52 tests this sink for zero before conditionally \
+clearing bit 0x08 in ffff248d; the purpose of the control state is unknown."""
+note = [
+    """
+ROM byte at 00008616 is 0x01, so tst 0x01 leaves branch 00012e32 reachable \
+and does not select alternative 00012e3a. 000bcd44 writes the result with \
+instruction 000bcdd6. 000bec52 may conditionally write the same result to \
+ffff2566 and then tests the sink for zero. Both accessors return void. The \
+warning about unreachable block 0002ccf4 in the caller does not apply to \
+target-map access. The catalog contains 22 1D-8 variants and does not \
+identify the purpose. Result disposition: inline_comparison. Blocking \
+condition: The trace stops in 000bec52 at conditional clearing of bit 0x08 \
+at ffff248d after testing ffff2566 == 0. The artifact does not reveal the \
+purpose of this bit and contains no operation that distinguishes 5 from any \
+other nonzero value; exact stopping address: ffff248d.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 226
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quizzical-pug/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inescapable-wren/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nippy-moose/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "polite-rat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012e32"
 name = "olivine-bug"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "5"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcda4"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcda6"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdb2"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdca"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcdd6"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed90"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed92"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bed9c"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bedbe"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bedc4"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bedc8"
+value = {named = ["00011bcb", "00012e32", "00026474", "00026740", "00026944", "00026c78", "000bec52", "ffff248d", "ffff2566"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +203,20 @@ value = "000151df"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "inescapable-wren/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "quizzical-pug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -10,7 +10,7 @@
 # over the registries. A baseline step runs `run` from the repository root and
 # counts its output, or with `read = true` counts the files whose paths it
 # prints. Tokens are UTF-8 bytes divided by three, rounded up.
-stage = 4
+stage = 5
 converted = [
     "Ghidra export directories",
     "Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata",
@@ -33,7 +33,7 @@ command = "kb where normalized_load/ram"
 budget = 400
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "-i", "-e", "normalized_load_raw", "-e", "ffff102c", "patches", "defs"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "-e", "normalized_load_raw", "-e", "ffff102c", "patches", "defs"] },
 ]
 
 [[question]]
@@ -43,7 +43,7 @@ command = "kb impact 7mfk:0000a4aa"
 budget = 1500
 stage = 2
 baseline = [
-    { run = ["rg", "-n", "-i", "0000a4aa", "defs", "patches"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0000a4aa", "defs", "patches"] },
 ]
 
 [[question]]
@@ -53,7 +53,7 @@ command = "kb path 7mfk:ffff1079 7mfk:ffff2326"
 budget = 1500
 stage = 2
 baseline = [
-    { run = ["rg", "-n", "-i", "-e", "ffff1079", "-e", "ffff2326", "defs/JK08A.vars.csv", "defs/JK08A.funcs.csv", "defs/JK08A.findings.csv", "defs/JK08A.architecture.toml"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "-e", "ffff1079", "-e", "ffff2326", "defs/JK08A.vars.csv", "defs/JK08A.funcs.csv", "defs/JK08A.findings.csv", "defs/JK08A.architecture.toml"] },
 ]
 
 [[question]]
@@ -63,7 +63,7 @@ command = "kb gaps --feature can_telemetry --layout 1nd"
 budget = 1000
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "^telemetry,.*,unsupported,", "patches/1nd-runtime-correspondence.csv"] },
+    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1nd-runtime-correspondence.csv"] },
 ]
 
 [[question]]
@@ -73,7 +73,7 @@ command = "kb suggest 7mfk:0003b75c --layout jk78c"
 budget = 1500
 stage = 9
 baseline = [
-    { run = ["rg", "-n", "-i", "0003b75c", "defs", "patches"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003b75c", "defs", "patches"] },
 ]
 
 [[question]]
@@ -83,7 +83,7 @@ command = "kb find knock threshold"
 budget = 800
 stage = 2
 baseline = [
-    { run = ["rg", "-n", "-i", "knock[^,]*threshold|threshold[^,]*knock", "defs", "patches", "tools/ghidra/symbols"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "knock[^,]*threshold|threshold[^,]*knock", "defs", "patches", "tools/ghidra/symbols"] },
 ]
 
 [[question]]
@@ -123,7 +123,7 @@ command = "kb gaps --feature can_telemetry --layout 1me3b"
 budget = 1000
 stage = 3
 baseline = [
-    { run = ["rg", "-n", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
+    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
 ]
 
 [[question]]
@@ -133,5 +133,15 @@ command = "kb show 7mfk:0003deec"
 budget = 1200
 stage = 6
 baseline = [
-    { run = ["rg", "-n", "-i", "0003deec", "defs"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs"] },
+]
+
+[[question]]
+id = 13
+question = "The reviewed function facts of a JK08A ledger address"
+command = "kb show 7mfk:0003c3ac"
+budget = 2400
+stage = 5
+baseline = [
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003c3ac", "defs/JK08A.funcs.csv", "defs/JK08A.vars.csv", "defs/JK08A.findings.csv", "defs/JK08A.axes.csv", "defs/JK08A.dtc.csv", "defs/JK08A.diagnostic-bindings.csv", "tools/ghidra/symbols/7mfk.csv"] },
 ]

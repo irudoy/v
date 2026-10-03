@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ff4"
+name = "wandering-earthworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020c54"
+
+[[link]]
+type = "reader"
+to = "screeching-gaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

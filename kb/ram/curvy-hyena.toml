@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff20b5"
+name = "curvy-hyena"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00029190"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

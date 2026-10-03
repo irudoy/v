@@ -1,0 +1,89 @@
+summary = """
+Retard-difference producer. It evaluates a curve of ffff11b3 into ffff12da \
+and a curve of ffff106f into ffff12d9 and writes \
+ffff12dc=max(ffff12da-ffff12d9,0)."""
+note = [
+    """
+The normal compositor branch of 0004bdc2 subtracts the result in crank \
+degrees.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 616
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "copper-sawfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "didactic-slug/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fine-herring/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004bbac"
+name = "pretty-rhino"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bbe4"
+value = {named = ["0004bbac", "0004bdc2", "ffff106f", "ffff11b3", "ffff12d9", "ffff12da", "ffff12dc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

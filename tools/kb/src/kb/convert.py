@@ -146,12 +146,13 @@ The editor presentation (section 20.5):
 """
 
 import argparse
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 import sys
 
-from kb import adapters, compile, graph, lock, match, repo, store, write
-from kb.adapters import definitions, interp, native, overrides, profiles, signals, telemetry
+from kb import adapters, compile, graph, lock, match, repo, sites, store, tokens, write
+from kb.adapters import (curated, definitions, interp, ledgers, native, overrides, profiles,
+                         signals, telemetry)
 from kb.model import Ref, SymbolKey
 from kb.repo import KbError
 
@@ -181,6 +182,12 @@ def _notes(value):
     if value is None:
         return []
     return [value] if isinstance(value, str) else list(value)
+
+
+def _ledger_equal(first, second):
+    """Compare selectors after the store's canonical ordering of nested tables."""
+    return (store.render("fn", {"ledger": [first]})
+            == store.render("fn", {"ledger": [second]}))
 
 
 def _native_notes(held, stated, carriers, subject):
@@ -276,6 +283,9 @@ class Conversion:
         if adapter is overrides:
             # The overrides name the symbols of the model before them.
             self.facts.index(before.symbols)
+        if adapter is ledgers:
+            self.facts.index(before.symbols)
+            self.facts.stash["telemetry_units"] = before.stash.get("telemetry_units", set())
         adapter.declare(self.facts, root)
         if adapter is signals:
             # The signals relate their sources to the RAM that the features
@@ -312,6 +322,7 @@ class Conversion:
         # that a projection renders from the model, and [(line, comment)] of
         # the comments of a registry that its projection drops.
         self.meaning_notes, self.changed, self.comments = {}, [], []
+        self.ledger_tables = {}
 
     def run(self):
         getattr(self, self.adapter.__name__.rsplit(".", 1)[1])()
@@ -323,6 +334,271 @@ class Conversion:
             _, found = self.change.document(meaning)
             self.documents[id(meaning)] = found
         return self.documents[id(meaning)]
+
+    def ledgers(self):
+        """Move ledger facts and retain selectors for the legacy CSV views."""
+        from kb import ledger_projection as projection
+        before, facts = self.before, self.facts
+        keys = set(facts.symbols)
+        for fact in facts.link_facts:
+            keys.update((fact.owner, fact.to))
+        for symbol in facts.symbols.values():
+            keys.update(item["to"] for item in symbol.evidence
+                        if isinstance(item.get("to"), SymbolKey))
+        for _, _, table, _ in facts.meaning_tables:
+            keys.update(item["to"] for item in table.get("evidence", ())
+                        if isinstance(item.get("to"), SymbolKey))
+        for key in sorted(keys):
+            symbol = before.symbols.get(key)
+            if symbol is None or symbol.meaning is None:
+                raise KbError(f"{key.key}: no meaning before ledger conversion", code=3)
+            self._entry(self._document(symbol.meaning), symbol)
+        for anchor, props, _ in facts.meaning_props:
+            meaning = before.meaning_of(anchor)
+            document = self._document(meaning)
+            for name, value in props.items():
+                if value not in (None, "", []):
+                    document[name] = meaning.props[name]
+        for key, symbol in facts.symbols.items():
+            held = before.symbols[key]
+            entry = self._entry(self._document(held.meaning), held)
+            for name in symbol.props:
+                entry[name] = held.props[name]
+            for item in symbol.evidence:
+                if "legacy" not in item:
+                    typed = {name: value.location if isinstance(value, SymbolKey) else value
+                             for name, value in item.items()}
+                    if typed not in entry.setdefault("evidence", []):
+                        entry["evidence"].append(typed)
+        # Lift each already merged link once, preserving both directions.
+        wanted = {(before.meaning_of(fact.owner).key, fact.type,
+                   before.meaning_of(fact.to).key, fact.props.get("slot"),
+                   fact.props.get("offset")) for fact in facts.link_facts}
+        for link in before.links:
+            key = (link.owner.key, link.type, link.to.key, link.slot, link.offset)
+            if key not in wanted:
+                continue
+            document = self._document(link.owner)
+            entry = {"type": link.type, "to": link.to.key, **link.props}
+            if link.slot is not None:
+                entry["slot"] = link.slot
+            if link.offset is not None:
+                entry["offset"] = link.offset
+            if link.roles:
+                if len(link.roles) != 1:
+                    raise KbError(f"{key}: multiple roles cannot project one link", code=3)
+                entry["role"] = next(iter(link.roles))
+            entry["layouts"] = sorted(link.stated)
+            if link.evidence:
+                entry["evidence"] = [_location(item) for item in link.evidence]
+            existing = [item for item in document.get("link", ())
+                        if (item.get("type"), item.get("to"), item.get("slot"),
+                            item.get("offset")) != (link.type, link.to.key, link.slot,
+                                                   link.offset)]
+            document["link"] = [*existing, entry]
+        for fact in before.self_links:
+            if fact.type == "base":
+                continue
+            owner = before.by_node[fact.owner]
+            if (owner.key, fact.type, owner.key, fact.props.get("slot"),
+                    fact.props.get("offset")) not in wanted:
+                continue
+            document = self._document(owner)
+            entry = {"type": fact.type, "to": owner.key, **fact.props,
+                     "layouts": sorted(fact.layouts) if fact.layouts else [owner.home]}
+            if entry not in document.get("link", ()):
+                document["link"] = [*document.get("link", ()), entry]
+        self._ledger_raw = defaultdict(list)
+        self._ledger_items = defaultdict(list)
+        for registry in ledgers.PATHS:
+            for ordinal, row in enumerate(ledgers.rows(self.root, registry)):
+                symbol = projection.subject(before, registry, row)
+                document = self._document(symbol.meaning)
+                entry = self._entry(document, symbol)
+                if registry == "diagnostic-bindings":
+                    self._ledger_diagnostic(symbol, document, row, projection)
+                    marker = {"registry": registry, "order": ordinal, "binding": row["id"]}
+                    existing = next((item for item in document.get("ledger", ())
+                                     if item.get("binding") == row["id"]), None)
+                    if existing is None:
+                        document["ledger"] = [*document.get("ledger", ()), marker]
+                    elif not _ledger_equal(existing, marker):
+                        raise KbError(f"{row['id']}: diagnostic selector differs", code=3)
+                    continue
+                marker = {"registry": registry, "order": ordinal,
+                          "fields": [name for name, value in row.items()
+                                     if value and name not in projection.PLACEMENT
+                                     and name not in tokens.SUPPORTS and name != "note"]}
+                if registry == "dtc" and row.get("note"):
+                    marker["fields"].append("note")
+                notes = _notes(document.get("note"))
+                if row.get("note") and registry != "dtc":
+                    marker["notes"] = [notes.index(row["note"])]
+                if registry == "vars" and row["units"] != (symbol.value("unit") or ""):
+                    marker["storage_description"] = row["units"]
+                for column, supports in tokens.SUPPORTS.items():
+                    if column not in row:
+                        continue
+                    indices, dependencies = [], []
+                    for token in tokens.parse(row[column]):
+                        if token.role in tokens.PROCESS:
+                            self.changed.append((f"{registry}:{symbol.key.location}:{column}",
+                                                 token.text, "review history"))
+                            continue
+                        if token.role in tokens.DEPENDENCY and token.role != "trace":
+                            to = self.facts.resolve(symbol.layout, token.address,
+                                                    tokens.TARGET_KINDS[token.role],
+                                                    ledgers.PATHS[registry].as_posix())
+                            dependency = {"role": token.role,
+                                          "to": before.meaning_of(to).key,
+                                          "relies": token.relies, "supports": supports}
+                            _, type_, _, end, props = ledgers.dependency(
+                                symbol.key, to, token, supports, facts.row_tokens)
+                            dependency.update(type=type_, end=end)
+                            if props.get("role"):
+                                dependency["link_role"] = props["role"]
+                            if token.offset is not None:
+                                dependency["offset"] = token.offset
+                                dependency["offset_text"] = token.value.partition("+")[2]
+                            dependencies.append(dependency)
+                            continue
+                        item, raw = self._ledger_item(symbol, registry, row, token, supports)
+                        self._ledger_items[symbol.key].append(item)
+                        self._ledger_raw[symbol.key].append(raw)
+                        evidence = entry.setdefault("evidence", [])
+                        if item not in evidence:
+                            evidence.append(item)
+                        index = evidence.index(item)
+                        indices.append(index)
+                        if token.role == "indirect_base":
+                            marker.setdefault("offset", []).append({
+                                "evidence": index, "text": token.value.partition("+")[2]})
+                    if indices:
+                        marker[supports] = indices
+                    if dependencies:
+                        marker["dependency"] = [*marker.get("dependency", ()), *dependencies]
+                held = next((item for item in document.get("ledger", ())
+                             if item["registry"] == registry), None)
+                if held is None:
+                    document["ledger"] = [*document.get("ledger", ()), marker]
+                elif not _ledger_equal(held, marker):
+                    raise KbError(f"{symbol.key.key}: ledger selector differs: "
+                                  f"{held!r} != {marker!r}", code=3)
+        for key in self._ledger_raw:
+            self.evidence[key] = (self._ledger_items[key], self._ledger_raw[key])
+        for ordinal, row in enumerate(curated.rows(self.root, ledgers.LAYOUT)):
+            symbol = before.symbols[SymbolKey(ledgers.LAYOUT, "fn", int(row["addr"], 16))]
+            document = self._document(symbol.meaning)
+            marker = {"registry": "curated", "order": ordinal, "fields": ["name"]}
+            if row["name"] != symbol.meaning.name:
+                marker["name"] = row["name"]
+            if row.get("note"):
+                if len(row["note"]) <= curated.TITLE:
+                    marker["title"] = True
+                else:
+                    marker["notes"] = [_notes(document.get("note")).index(row["note"])]
+            held = next((item for item in document.get("ledger", ())
+                         if item["registry"] == "curated"), None)
+            if held is None:
+                document["ledger"] = [*document.get("ledger", ()), marker]
+            elif not _ledger_equal(held, marker):
+                raise KbError(f"{symbol.key.key}: curated selector differs", code=3)
+            # The file tier owns the selected name; retain previous curated
+            # aliases as former names, as the other registry conversions do.
+            old = {(name, tier) for name, tier, src in symbol.meaning.other_names
+                   if src == (curated.DIRECTORY / "7mfk.csv").as_posix()}
+            added = {(name, "former") for name, _ in old if name != symbol.meaning.name}
+            if added:
+                document["former"] = sorted(set(document.get("former", ()))
+                                             | {name for name, _ in added})
+            self.names[symbol.meaning.key] = (old, added)
+        for key in sorted(keys):
+            symbol = before.symbols[key]
+            entry = self._entry(self._document(symbol.meaning), symbol)
+            anchored = any(item.get("supports", "identity") == "identity"
+                           and match.rank(item, symbol, before) >= match.CANDIDATE
+                           and match._complete(item)
+                           and match.verify(before, symbol, item) is None
+                           for item in entry.get("evidence", ()))
+            if anchored:
+                continue
+            item = ({"kind": "l0", "supports": "identity", "at": key.location}
+                    if key.kind == "fn" else None)
+            if item is not None and match.verify(before, symbol, item) is not None:
+                item = None
+            item = item or self._try_placed(symbol, {"kind": "l0", "supports": "identity"})
+            item = item or match.base_item(before, symbol)
+            if item is None or match.verify(before, symbol, item) is not None:
+                raise KbError(f"{key.key}: L0 places no independent identity item; "
+                              "nothing is written", code=3)
+            entry.setdefault("evidence", []).append(item)
+            converted, raw = self.evidence.setdefault(key, ([], []))
+            converted.append(item)
+            self.changed.append((key.location, "identity evidence", repr(item)))
+
+    def _ledger_item(self, symbol, registry, row, token, supports=None):
+        """Type one terminal without inventing a byte binding or a scale."""
+        manual = repo.config(self.root).get("tokens", {}).get("manual", ())
+        if token.role == "trace":
+            to = self.facts.resolve(symbol.layout, token.address, tokens.TARGET_KINDS["trace"],
+                                    ledgers.PATHS[registry].as_posix())
+            raw = {"kind": "trace", "to": to, "relies": token.relies, "legacy": token.text}
+        else:
+            raw = tokens.evidence(token, symbol.layout, manual)
+            if token.role not in tokens.TYPED_TERMINAL and registry != "dtc":
+                raw["legacy"] = token.text
+        if supports is not None:
+            raw = {"kind": raw["kind"], "supports": supports,
+                   **{key: value for key, value in raw.items() if key != "kind"}}
+        item = {key: value.location if isinstance(value, SymbolKey) else value
+                for key, value in raw.items() if key != "legacy"}
+        if token.role == "trace":
+            item["to"] = f"{self.before.meaning_of(to).key}/{to.layout}"
+        if token.role == "site":
+            named, span = sites.row_footprint(registry, row)
+            layout = symbol.layout
+            classification = sites.classify(
+                int(token.value, 16), symbol.address, span, named,
+                sites.references(layout, self.root), sites.owners(layout, self.root),
+                match.images(self.before, layout)[0][1], sites.linkers(layout, self.root))
+            item["kind"] = "l0-context" if classification else "unverified-site"
+            if classification:
+                footprint = {"span": span}
+                if named:
+                    footprint["named"] = [f"{addr:08x}" for addr in sorted(named)]
+                item.update(key=classification, value=footprint)
+            self.changed.append((f"{registry}:{symbol.key.location}", token.text,
+                                 classification or "unverified site"))
+        elif token.role == "rom_const" and (not match._complete(item)
+                                               or match.verify(self.before, symbol, item)):
+            item = {"kind": "unbound-constant", "value": token.value}
+            if supports is not None:
+                item["supports"] = supports
+            self.changed.append((f"{registry}:{symbol.key.location}", token.text,
+                                 "unbound constant: no grounded byte assertion"))
+        return item, raw
+
+    def _ledger_diagnostic(self, symbol, document, row, projection):
+        """A diagnostic table retains its prose and typed terminal or trace items."""
+        binding = next(item for item in symbol.meaning.tables.get("diagnostic", ())
+                       if item["id"] == row["id"])
+        typed = []
+        for token in tokens.parse(row["evidence"]):
+            if token.role in tokens.PROCESS:
+                continue
+            if token.role in tokens.DEPENDENCY:
+                to = self.facts.resolve(symbol.layout, token.address,
+                                        tokens.TARGET_KINDS[token.role],
+                                        ledgers.PATHS["diagnostic-bindings"].as_posix())
+                item = {"kind": "trace", "to": f"{self.before.meaning_of(to).key}/{to.layout}",
+                        "relies": token.relies, "note": token.role}
+            else:
+                item, _ = self._ledger_item(symbol, "diagnostic-bindings", row, token)
+            typed.append(item)
+        found = {**binding, "evidence": typed}
+        existing = [item for item in document.get("diagnostic", ()) if item["id"] != row["id"]]
+        document["diagnostic"] = [*existing, found]
+        self.ledger_tables.setdefault(symbol.meaning.key, {})[row["id"]] = found
 
     def interp(self):
         before, change = self.before, self.change
@@ -1177,6 +1453,31 @@ class Conversion:
             props, evidence, stated, roles = found["links"][key]
             found["links"][key] = (props, evidence | {_value(before, item) for item in items},
                                    stated, roles)
+        if self.adapter is ledgers:
+            for key, rows in self.ledger_tables.items():
+                entry = found["meanings"][key]
+                tables = dict(entry["tables"])
+                meaning = next(item for item in before.meanings if item.key == key)
+                bindings = [item for item in meaning.tables.get("diagnostic", ())
+                            if item["id"] not in rows]
+                tables["diagnostic"] = tuple(sorted(
+                    _value(before, bindings + list(rows.values())), key=repr))
+                entry["tables"] = tuple(sorted(tables.items()))
+            for link in before.links:
+                # Layout selection is explicit in a converted link; its
+                # semantic endpoints, claims, roles, and evidence stay intact.
+                if id(link.owner) not in self.documents:
+                    continue
+                key = (link.owner.key, link.type, link.to.key, link.slot, link.offset)
+                props, evidence, stated, roles = found["links"][key]
+                props = dict(props)
+                document = self.documents[id(link.owner)]
+                held = next((item for item in document.get("link", ())
+                             if (item["type"], item["to"], item.get("slot"), item.get("offset"))
+                             == (link.type, link.to.key, link.slot, link.offset)), None)
+                if held is not None and held.get("layouts"):
+                    props["layouts"] = tuple(held["layouts"])
+                    found["links"][key] = (tuple(sorted(props.items())), evidence, stated, roles)
         by_id = {id(meaning): meaning for meaning in before.meanings}
         for (key, layout), (status, raw) in self.statuses.items():
             meaning = by_id[key]
@@ -1227,14 +1528,24 @@ def _value(model, value):
     if isinstance(value, Ref):
         return repr(value)
     if isinstance(value, dict):
+        if value.get("kind") == "trace" and isinstance(value.get("to"), str) \
+                and "/" in value["to"]:
+            name, kind, layout = value["to"].split("/")
+            meaning = next((item for item in model.meanings if item.key == f"{name}/{kind}"), None)
+            if meaning is not None and layout in meaning.symbols:
+                value = {**value, "to": meaning.symbols[layout].key}
         if "kernel" in value and "access" in value:
             held = model.symbols.get(value["kernel"])
             if held is not None and held.meaning is not None:
                 value = {**value, "kernel": held.meaning.key}
-        return tuple(sorted((key, _value(model, frozenset(_value(model, entry)
-                                                        for entry in item))
-                             if key == "evidence" and isinstance(item, (list, tuple))
-                             else _value(model, item)) for key, item in value.items()))
+        result = {}
+        for key, item in value.items():
+            converted = _value(model, item)
+            if key in ("evidence", "diagnostic") and isinstance(item, (list, tuple)):
+                converted = tuple(sorted(set(converted) if key == "evidence" else converted,
+                                         key=repr))
+            result[key] = converted
+        return tuple(sorted(result.items()))
     if isinstance(value, (list, tuple, set, frozenset)):
         items = tuple(_value(model, item) for item in value)
         return tuple(sorted(items, key=repr)) if isinstance(value, (set, frozenset)) else items
@@ -1325,11 +1636,22 @@ def plan(name, root=repo.ROOT):
                                  "nothing is written"] + lines[:SHOWN]), code=3)
     refused = write.refusals(before, result)
     if refused:
+        counts = Counter(issue.check for issue in refused)
+        shown = [issue for check in sorted(counts)
+                 for issue in [item for item in refused if item.check == check][:5]]
         raise KbError("\n".join(
             [f"the conversion adds {len(refused)} issues; nothing is written"]
+            + [f"  {check}: {count} issues" for check, count in sorted(counts.items())]
             + [f"  {issue.check}: {issue.path}: {issue.subject}: {issue.message}"
-               for issue in refused[:SHOWN]]), code=3)
+               for issue in shown[:SHOWN]]), code=3)
     rendered = projections(adapter, result)
+    if adapter is ledgers:
+        from kb import ledger_projection
+        for path, text in rendered.items():
+            original = (root / path).read_text(encoding="utf-8")
+            ledger_projection.validate_conversion(path, original, text)
+            if original != text:
+                texts[Path(path)] = text
     if adapter is overrides:
         # The projection renders the file without its comments and wraps its
         # notes.
@@ -1377,6 +1699,9 @@ def projections(adapter, model):
     if adapter is overrides:
         return {overrides.OVERRIDES.as_posix(): overrides.render_presentation(
             overrides.presentation_document(model))}
+    if adapter is ledgers:
+        from kb import ledger_projection
+        return ledger_projection.render(model)
     return {}
 
 

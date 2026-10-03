@@ -1,0 +1,70 @@
+summary = """
+Bit 0x10 is the throttle-release detector output in 0005185c; addressed as \
+ffff24ce+4."""
+note = [
+    """
+The complete ROM reference scan finds no direct test of bit 0x10; consumers \
+of this byte test other bits. A direct link from this detector to the \
+aggregate fuel-output inhibit path is therefore not established.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 211
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "greedy-rottweiler/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "4"
+offset = 0x4
+
+[[ledger.dependency]]
+role = "writes"
+to = "sly-chowchow/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24d2"
+name = "esoteric-barracuda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c98e"
+
+[[link]]
+type = "base"
+to = "greedy-rottweiler/ram"
+offset = 0x4
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "composite_status_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

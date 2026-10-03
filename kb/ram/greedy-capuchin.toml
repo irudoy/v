@@ -1,0 +1,158 @@
+summary = """
+Unsigned P0128 surface product. FUN 000b7b98 writes zero when aggregate \
+inhibit mask ffff22e0 is nonzero; otherwise it writes \
+uint8(coefficient)*lookup_u16(0000d40e, RPM, Base Fuel Schedule). FUN \
+000b6b5a is the only reader and subtracts half of a saturated three-term sum \
+from half of this value before signed scaling."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one reader. Every \
+stock cell of 0000d40e is zero, so this word is always zero in stock JK03A \
+and JK08A; the surrounding monitor calculation remains live.""",
+]
+level = "code"
+unit = "P0128 model raw"
+
+[[ledger]]
+registry = "vars"
+order = 529
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "origami-hare/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-piculet/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2d04"
+name = "greedy-capuchin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d16"
+value = {named = ["0000d40e", "000b6b5a", "000b7b98", "ffff1024", "ffff11bc", "ffff22e0", "ffff2d04"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1a"
+value = {named = ["0000d40e", "000b6b5a", "000b7b98", "ffff1024", "ffff11bc", "ffff22e0", "ffff2d04"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1c"
+value = {named = ["0000d40e", "000b6b5a", "000b7b98", "ffff1024", "ffff11bc", "ffff22e0", "ffff2d04"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1e"
+value = {named = ["0000d40e", "000b6b5a", "000b7b98", "ffff1024", "ffff11bc", "ffff22e0", "ffff2d04"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7bd0"
+value = {named = ["0000d40e", "000b6b5a", "000b7b98", "ffff1024", "ffff11bc", "ffff22e0", "ffff2d04"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fuel_inhibit_mask/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "origami-hare/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cherubic-piculet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,7 +1,226 @@
+summary = """
+Stock-disabled bank-specific limit for one P0420/P0430 catalyst-monitor \
+branch. FUN 000a2ee4 interpolates the table by saturated RPM/12.5 \
+engine-speed byte ffff11b2 and writes ffff2b6f[bank]; FUN 000a2f56 \
+dispatches the bank DTC only when unsigned metric ffff314d[bank] is below \
+that limit."""
+note = [
+    """
+All eight stock cells are zero, so unsigned ffff314d[bank] < ffff2b6f[bank] \
+is impossible and this fault branch is dead in unmodified JK08A. Independent \
+FUN 000a2254 still dispatches P0420/P0430 from another catalyst-monitor \
+result. The physical quantity and unit of ffff314d and the table output \
+remain unresolved. Result disposition: dead_control_flow.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+
+[[diagnostic]]
+id = "catalyst-limit-table-p0420"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P0420"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001942c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Table 0x11FB6 supplies the bank-1 limit for a direct P0420 branch. All eight \
+stock cells are zero, making the unsigned below-limit condition unreachable \
+in unmodified JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aromatic-kagu/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2efe"
+value = {named = ["00011fb6", "0001942c", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fd2"
+value = {named = ["00011fb6", "0001942c", "000a2f56", "ffff2b6f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "catalyst-limit-table-p0430"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P0430"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019438"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Table 0x11FB6 supplies the bank-2 limit for a direct P0430 branch. All eight \
+stock cells are zero, making the unsigned below-limit condition unreachable \
+in unmodified JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aromatic-kagu/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2efe"
+value = {named = ["00011fb6", "00019438", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a301e"
+value = {named = ["00011fb6", "00019438", "000a2f56", "ffff2b6f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 103
+binding = "catalyst-limit-table-p0420"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 104
+binding = "catalyst-limit-table-p0430"
+
+[[ledger]]
+registry = "findings"
+order = 106
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mauve-tuatara/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-dachshund/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011fb6"
 name = "aromatic-kagu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2efe"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f00"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f04"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f0e"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f88"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f8c"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fbe"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fc0"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fd2"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a301e"
+value = {named = ["00011fb6", "000a2f56", "ffff11b2", "ffff2b6f"], span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +253,38 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "succinct-pudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-ape/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "mauve-tuatara/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "spry-serval/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "violet-sparrow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

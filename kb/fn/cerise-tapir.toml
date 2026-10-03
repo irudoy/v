@@ -1,9 +1,30 @@
+summary = """
+Explicit-axis 1D-8 wrapper over core 0x26B84; geometry is in the entry \
+registry."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "garnet-caracara/fn"
 cols = 8
 storage = "uint16"
 x_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 95
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "defiant-tapir/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -26,6 +47,11 @@ at = "1nd:00028b08"
 layout = "7mfk"
 address = "000266bc"
 name = "cerise-tapir"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -77,3 +103,11 @@ key = "000266bc"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000284ec"
+
+[[link]]
+type = "depends"
+to = "defiant-tapir/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

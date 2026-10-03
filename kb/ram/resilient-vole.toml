@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41d9"
+name = "resilient-vole"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007c784"
+
+[[link]]
+type = "writer"
+to = "portable-carp/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

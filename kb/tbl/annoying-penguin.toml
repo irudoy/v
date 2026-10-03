@@ -1,0 +1,54 @@
+summary = """
+The 1D lookup result is used as a signed8 exact-equality reference for \
+signed16 value ffff1230 in compound condition 00054152. All eight cells \
+equal 240: the interpolation branch returns 240, the boundary branch returns \
+sign-extended 0xf0, and the byte write preserves 0xf0 in both cases; the \
+consumer interprets it as -16."""
+note = [
+    """
+The 1D lookup result is used as a signed8 exact-equality reference for \
+signed16 value ffff1230 in compound condition 00054152. All eight cells \
+equal 240: the interpolation branch returns 240, the boundary branch returns \
+sign-extended 0xf0, and the byte write preserves 0xf0 in both cases; the \
+consumer interprets it as -16. Result disposition: inline_comparison. Result \
+target: 00054152: signed16(ffff1230) == sign_extend8(ffff172f). Machine \
+trace: 00012954 -> 00044a3a:r4; ffff106f -> 00044a38:r0 -> \
+00044a42:extu.b(r0)->r5 -> 00044a40 -> 00026370; r5<0xe0 -> 00026a80 -> \
+uint8 endpoints -> 00026740 -> r0=240, r5>=0xe0 -> map[7]=0xf0 -> r0=-16; \
+both branches -> low8(r0)=0xf0 -> 00044a44:r2 -> 00044a4a -> ffff172f -> \
+00054152 -> signed16(ffff1230) == sign_extend8(ffff172f).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 178
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012954"
+name = "annoying-penguin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a40"
+value = {named = ["00012954"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a4a"
+value = {named = ["00012954"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00054152"

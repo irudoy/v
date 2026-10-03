@@ -1,0 +1,82 @@
+summary = """
+Base of the 64-word bank 1 learned-fuel-trim RAM grid. Its selection, \
+update, bounds, and full-grid reset mirror bank 2."""
+note = ["This is adaptive RAM state, not a flash calibration table."]
+level = "code"
+unit = "percent*256 array"
+
+[[ledger]]
+registry = "vars"
+order = 151
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-tarantula/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rousing-rhino/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4b90"
+name = "delectable-vole"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9e"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9f"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057a8e"
+value = {named = ["00008a9e", "00008a9f", "0005796c", "00057d1e", "00058092", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057eb8"
+value = {named = ["00008a9e", "00008a9f", "0005796c", "00057d1e", "00058092", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nice-toad/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

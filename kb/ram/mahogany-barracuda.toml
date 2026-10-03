@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2662"
+name = "mahogany-barracuda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d6aa"
+
+[[link]]
+type = "reader"
+to = "throttle_regulator_coefficient_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff24ad"
+name = "wealthy-caracal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00038130"
+
+[[link]]
+type = "writer"
+to = "battery_adc_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

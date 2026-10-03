@@ -1,3 +1,34 @@
+summary = """
+Implicit 1D table of a zero/nonzero permission to hold internal state 2. The \
+lookup result is written to u8[ffff254b] and tested for zero on the state-2 \
+branch: a nonzero result enables comparison battery-voltage raw ffff1188 > \
+100; if the comparison is true, state 2 is retained, otherwise state 1 is \
+selected."""
+note = [
+    """
+Exact DID 0x1103 identifies ffff1188 as battery voltage. All eight stock \
+cells equal 6, so the lookup always yields a nonzero result and effectively \
+enables the above-raw-100 test, or above 8.00 V under the source-bound 0.08 \
+V/count conversion. ffff107f is the previous-pass image of normalized \
+coolant index ffff1077, so the implicit nodes are -40,-20,...100 deg C. The \
+write and read occur in 00038618 but belong to different states; ffff254b \
+has no external readers. The physical identity of the state remains \
+unresolved. The implicit map has no separate axis array. Index: implicit \
+1D-8: x = u8[ffff107f]; for x < 224, i = floor(x/32), Q0.16 fraction q = (x \
+mod 32)*2048, interpolation of map[i]..map[i+1]; for x >= 224, map[7] is \
+returned. Output trace: 00038a68 -> 00038a6e -> 00026370 -> 00026a80 -> \
+00026740 -> 00038a74 -> ffff254b -> 00038ad6 -> 00038ad8; zero -> 00038ada \
+-> 00038b7c, nonzero -> 00038adc -> 00038ae2 -> 00038ae4 -> 00038ae6. Result \
+disposition: inline_comparison; Result target: RAM ffff254b; consumer \
+00038618; site 00038ad8.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
 category = "Internal Calculations"
@@ -7,7 +38,186 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 410
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rousing-jackal/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012ada"
 name = "daffy-centipede"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "6"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a68"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a6a"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a6e"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a70"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a74"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ad6"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ad8"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ada"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ae0"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ae2"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ae4"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ae6"
+value = {named = ["00012ada", "00026370", "00026740", "00038618", "ffff107f", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "index"
+to = "battery_voltage/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "rousing-jackal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

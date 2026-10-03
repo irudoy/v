@@ -1,0 +1,49 @@
+summary = """
+Byte input of an implicit axis in 000a643c: interpolation index = \
+saturate(byte[ffff3510] << 1, 255). Prescale x*2 is established by the shll \
+instruction, with saturation to 0xff at 000a6468..646c; the physical input \
+quantity has not been recovered."""
+note = [
+    """
+No ROM axis object exists, so the durable home of this fact is the code \
+layer rather than axes.csv. Flags from the same component failed refutation \
+and were downgraded to candidate.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 273
+fields = ["semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "invaluable-rat/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3510"
+name = "quizzical-agama"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6464"
+value = {named = ["000a643c", "ffff3510"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "invaluable-rat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

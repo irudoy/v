@@ -1,0 +1,161 @@
+summary = """
+Scheduler snapshot of work-support idle adjustment ffff56f6, copied by \
+00020dfe in the ffff56b2..ffff5717 -> ffff564c..ffff56b1 block after its \
+periodic loop and published as DID 0x112e."""
+note = [
+    """
+The homologous P32M profile names DID 0x112e CRRCT IDL RPM at 12.5 rpm per \
+count.""",
+]
+level = "code"
+unit = "count"
+
+[[diagnostic]]
+id = "idle-speed-adjustment-did-112e"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-112eh-crrct-idl-rpm"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-112eh-crrct-idl-rpm-e5544d19"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+FUN 000420b8 writes the work-support idle adjustment to ffff56f6 within \
+0..20 counts from service-0x3b LID-2 value ffff3168, stored record 0x74, or \
+the automatic step, and scheduler 00020dfe copies it to ffff5690. The exact \
+JK08A service-0x22 table publishes ffff5690 as DID 0x112e. A structured \
+Nissan profile names DID 0x112e CRRCT IDL RPM at 12.5 rpm per count and its \
+write request 3b 02 DataWrite.CRRCT IDL RPM, and the factory manuals list \
+the matching work-support item TARGET IDLE RPM ADJ."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022764"
+value = "ffff5690"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00021334"
+value = {named = ["00020dfe", "0003235c", "000420b8", "e5544d19", "ffff5690", "ffff56f6"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022764"
+value = {named = ["00020dfe", "0003235c", "000420b8", "e5544d19", "ffff5690", "ffff56f6"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00042ed4"
+value = {named = ["00020dfe", "0003235c", "000420b8", "e5544d19", "ffff5690", "ffff56f6"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "quirky-silkworm/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "tacky-cobra/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 204
+binding = "idle-speed-adjustment-did-112e"
+
+[[ledger]]
+registry = "vars"
+order = 938
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tacky-cobra/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5690"
+name = "cornflower-polecat"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022764"
+value = "ffff5690"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021334"
+value = {named = ["00020dfe", "0003235c", "ffff5690", "ffff56f6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022764"
+value = {named = ["00020dfe", "0003235c", "ffff5690", "ffff56f6"], span = 1}
+key = "pointer"
+
+[[link]]
+type = "input"
+to = "tacky-cobra/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,143 @@
+summary = """
+Interpolated second threshold in the three-zone classification of the high \
+byte of ffff1024: after condition high8(ffff1024) < output(0001261a), test \
+high8(ffff1024) >= output(0001263a) selects the zone with bit 0x20; a false \
+result selects the zone with bits 0x20/0x40 clear."""
+note = [
+    """
+Interpolated second threshold in the three-zone classification of the high \
+byte of ffff1024: after condition high8(ffff1024) < output(0001261a), test \
+high8(ffff1024) >= output(0001263a) selects the zone with bit 0x20; a false \
+result selects the zone with bits 0x20/0x40 clear. Result disposition: \
+inline_comparison. Result target: high byte of the unsigned 16-bit word at \
+ffff1024, compared at 000839ba with output of map 0001263a and classified by \
+bits 0x20/0x40 of byte ffff41c3. Machine trace: 0008397e loads uint8 \
+ffff11ae; 0008398e loads target-map base 0001263a, 00083992 passes shared \
+axis 0001264a, 00083994 loads uint8 ffff11ae again, and 00083996 calls \
+wrapper 000264a0; 000264a0 performs 1D interpolation through 00026944, \
+00026c78, and 00026740 and returns the result in r0; 0008399c executes \
+r11=extu.b(r0). Independently, 0008399a reads word ffff1024, 000839a0 \
+executes extu.w, and 000839a2 executes shlr8 to obtain the high byte in r6. \
+r12 contains extu.b of adjacent-map 0001261a output after call 00083988. \
+000839a4 first tests r6 >= r12; this path sets 0x40 and clears 0x20 in \
+ffff41c3. On path r6 < r12, instruction 000839ba tests unsigned r6 >= r11; \
+true path 000839c2/000839c8 clears 0x40 and sets 0x20, while false path \
+000839ce clears both bits. Output 0001263a is not written to RAM and is \
+consumed in place.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 158
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tall-agouti/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001263a"
+name = "tall-agouti"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008397e"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008398e"
+value = {named = ["0001263a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083994"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083996"
+value = {named = ["0001263a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008399a"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008399c"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839a2"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839ba"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839bc"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839c2"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839c8"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839ce"
+value = {named = ["0001263a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "tall-agouti/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"

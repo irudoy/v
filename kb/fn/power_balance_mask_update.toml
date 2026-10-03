@@ -1,0 +1,115 @@
+title = "Cache service 0x30 IOLID 0x0c Power Balance mask and active state"
+summary = """
+Power Balance mask updater. When service-0x30 IOLID-0x0c active flag \
+ffff99c5.bit3 is set it copies value byte ffff992f to ffff2b2c and sets \
+ffff41fb.bit6; otherwise it clears that active bit."""
+note = [
+    """
+A structured Nissan-family profile identifies IOLID 0x0c as Power Balance \
+and maps bits 1..32 to cylinders 1..6. The VQ35HR factory ESM independently \
+defines the test as cutting one injector signal at a time.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 45
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 490
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-starling/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-ostrich/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cuddly-dragon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fluffy-salamander/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050a06"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a12"
+value = {named = ["00030c4c", "0004ed88", "00050a06", "ffff2b2c", "ffff41fb", "ffff992f", "ffff99c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a1a"
+value = {named = ["00030c4c", "0004ed88", "00050a06", "ffff2b2c", "ffff41fb", "ffff992f", "ffff99c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a22"
+value = {named = ["00030c4c", "0004ed88", "00050a06", "ffff2b2c", "ffff41fb", "ffff992f", "ffff99c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a2e"
+value = {named = ["00030c4c", "0004ed88", "00050a06", "ffff2b2c", "ffff41fb", "ffff992f", "ffff99c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nissan_service_30_output_control/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

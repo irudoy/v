@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4248"
+name = "inquisitive-spaniel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d942"

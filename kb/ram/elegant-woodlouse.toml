@@ -1,0 +1,121 @@
+summary = """
+Saturated intermediate base of the EVAP leak-result calculation. FUN \
+000b2096 writes zero when the transformed 000152d6 difference is \
+nonpositive, writes a normalized positive result on the admitted division \
+path, or writes 0xffff on zero-divisor and saturation paths. The word is \
+then multiplied by byte coefficients ffff2f8d and ffff2f94."""
+note = [
+    """
+Normalization parameter ffff2c86 and the two byte coefficients have \
+unresolved physical scales, so this intermediate remains raw.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 26
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "classic-pelican/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classic-pelican/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3018"
+name = "elegant-woodlouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b216e"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2202"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2276"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b227c"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2280"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2288"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2290"
+value = {named = ["000152d6", "000b2096", "ffff3018"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "ancient-terrier/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

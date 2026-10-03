@@ -1,0 +1,122 @@
+summary = """
+Periodic snapshot of ffff2406 used by 0004e080 and 0002af38 while \
+constructing and maintaining the GR11B command offset. FUN 00020dfe copies \
+0x8c bytes from ffff23bc to ffff2330, mapping source offset 0x4a exactly to \
+this byte."""
+note = [
+    """
+Producer 0004c1e4 bounds ffff2406 and this snapshot to 0..114. The physical \
+offset meaning remains unverified.""",
+]
+level = "code"
+unit = "raw offset source"
+
+[[ledger]]
+registry = "vars"
+order = 605
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_command_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-stoat/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cuddly-crow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff237a"
+name = "aloof-stork"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021314"
+value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021316"
+value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aff8"
+value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e086"
+value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cuddly-crow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_command_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

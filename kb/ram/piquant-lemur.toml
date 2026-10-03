@@ -1,0 +1,69 @@
+summary = """
+DFCO rotating-release class selected by state machine 000503e0. The stock \
+branch maps runtime value ffff1517 below 4, equal to 4, or at least 5 to \
+classes 0, 1, or 2."""
+note = [
+    """
+An alternate configuration branch selects the class from rotational-speed \
+and vehicle-speed products.""",
+]
+level = "code"
+unit = "enum_u8"
+
+[[ledger]]
+registry = "vars"
+order = 576
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1939"
+name = "piquant-lemur"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050574"
+value = {named = ["000503e0", "ffff1939"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050592"
+value = {named = ["000503e0", "ffff1939"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

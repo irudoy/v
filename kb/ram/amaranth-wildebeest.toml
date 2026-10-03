@@ -1,0 +1,161 @@
+summary = """
+Bit 6 is the second-channel override gate. FUN 00079ba4 maintains it with \
+source ffff35ea; FUN 0007a804 selects ffff35ea instead of the bounded \
+calculation for final word ffff35cc; FUN 0007b0a0 selects ffff35ea instead \
+of ffff2a7a as its local input. Other bits in the same byte carry local \
+bound states."""
+note = ["The physical mode selected by bit 6 is unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 316
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tomato-mastodon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ingenious-honeybee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "phenomenal-aardwolf/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brown-inchworm/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4214"
+name = "amaranth-wildebeest"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bf0"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079c08"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079c10"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a95c"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a964"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0be"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0c8"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0ce"
+value = {named = ["00079ba4", "0007a804", "0007b0a0", "ffff2a7a", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "ingenious-honeybee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "phenomenal-aardwolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tomato-mastodon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "brown-inchworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tomato-mastodon/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

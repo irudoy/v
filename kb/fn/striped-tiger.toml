@@ -1,0 +1,90 @@
+summary = """
+Exhaust duty reset, reached from initialization path 0002e81a and \
+service-0xa0 handler 000306f8. It clears ffff4251 bit 0 at 000cd76e and \
+ffff41de bit 2 at 000cd772, zeroes checksum state ffff30f8, ffff3084, and \
+ffff30b0, and programs both ATU-II channel-7 cycle pairs from \
+ROM8[00008dfc]=33 and ROM8[00008dfd]=20."""
+note = [
+    """
+Clearing ffff4251 bit 0 returns 000c2152 to the computed duty words; \
+service-0xa0 request 3 selects the fixed 60/50 percent test fractions by \
+setting the bit.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 612
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "enthusiastic-chicken/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nice-bison/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shaggy-nyala/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uptight-nyala/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vagabond-labradoodle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cd75c"
+name = "striped-tiger"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfc=33"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfd=20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd76e"
+value = {named = ["00008dfc", "00008dfd", "000cd75c", "ffff3084", "ffff30b0", "ffff30f8", "ffff41de", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd772"
+value = {named = ["00008dfc", "00008dfd", "000cd75c", "ffff3084", "ffff30b0", "ffff30f8", "ffff41de", "ffff4251"], span = 1}
+key = "reference"

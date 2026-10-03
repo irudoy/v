@@ -1,3 +1,22 @@
+summary = """
+Common conversion curve for two adjusted channels. FUN 0003edb4 interpolates \
+it at Z1/Z2 from FUN 0003ef74, then combines each result Y with one \
+offset-binary correction-map result, one signed state, and one optional \
+signed term as clamp(Y+A+O+P-32768,0,65535). The outputs are ffff29e2 and \
+ffff29e4."""
+note = [
+    """
+The output values span 5000..30000. The vendor AFR Conversion Table name and \
+downstream two-bank fuel-trim context are supporting evidence, but code does \
+not establish a physical AFR scale. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Dual-Channel Conversion Curve - raw u16 (0x148FA)"
 category = "Internal Calculations"
@@ -7,7 +26,233 @@ format = "0"
 fine = 1
 coarse = 100
 
+[[ledger]]
+registry = "findings"
+order = 454
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enlightened-orangutan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dandelion-cow/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "optimal-wolf/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-buffalo/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "discreet-whale/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rough-wren/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-chamois/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ruddy-reindeer/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000148fa"
 name = "esoteric-chachalaca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ea4"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee68"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee80"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee86"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee8a"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee8e"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee90"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee98"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee9c"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eeda"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ef24"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ef60"
+value = {named = ["00008ea4", "0000c10e", "0000c18e", "000148fa", "00015d20", "000264f8", "00026740", "00026984", "0003edb4", "ffff29e2", "ffff29e4", "ffff322c", "ffff322e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dandelion-cow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "discreet-whale/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "optimal-wolf/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "chestnut-buffalo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "rough-wren/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

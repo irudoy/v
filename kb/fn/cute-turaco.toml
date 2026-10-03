@@ -1,0 +1,34 @@
+role = "service"
+contract = """
+Not arithmetic: ROM self-test pass epilogue. It takes no arguments and runs \
+unconditionally after every completed pass. It performs four writes: \
+0xFFFF2B1C <- 0xFFFF3000 (XOR latch), 0xFFFF2B20 <- 0xFFFF3008 (sum latch), \
+then clears both accumulators for the next pass. It returns no result and \
+has no diagnostic channel."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 28
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00021774"
+name = "cute-turaco"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "000217ac"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021774"

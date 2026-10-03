@@ -1,0 +1,204 @@
+summary = """
+Shared 16-point response curve C for three derived cam coordinates. FUN \
+0004d2a6 evaluates T0=C(max(u8[ffff1c87]-64,0)), \
+T1=C(max(u8[ffff1c86]-64,0)), and T2=C(max(u8[ffff1c8f]-64,0)); coefficient \
+map 0000a4aa scales differences T0-T2 and T1-T2."""
+note = [
+    """
+The coordinate bytes combine common intake target ffff2326 and common \
+exhaust target ffff2327 with actual intake bytes ffff2442/ffff2443 and \
+actual exhaust bytes ffff2324/ffff2325. Exact UDS bindings establish those \
+target and actual identities. Results are stored in ffff1636, ffff1635, and \
+ffff1638 and consumed before centered correction ffff1a7d reaches \
+ignition-angle calculations. Code proves the response-curve role and raw \
+representation; the high-level valve-overlap interpretation and degree scale \
+remain physical candidates. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw response"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 442
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b2/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_target/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "just-dog/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000125ca"
+name = "thoughtful-whale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d3dc"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d3e6"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d3ee"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d404"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d40e"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d432"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d43c"
+value = {named = ["000125ca", "000264a0", "0004d2a6", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "exhaust_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "exhaust_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "intake_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

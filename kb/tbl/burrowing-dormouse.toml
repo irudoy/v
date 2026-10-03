@@ -1,3 +1,19 @@
+summary = """
+The low byte returned by calling 00026388 with base 00012042 is multiplied \
+without sign by U8(ffff1a18); the exact product in range 0..65025 is written \
+as uint16 to ffff1720."""
+note = [
+    """
+The physical quantities of both factors and their product are unknown. \
+Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Unsigned Product Multiplier - raw u8 (0x12042)"
 category = "Internal Calculations"
@@ -7,7 +23,132 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 112
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dramatic-roadrunner/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "invisible-oryx/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012042"
 name = "burrowing-dormouse"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000469fc"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a00"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a04"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a08"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a0c"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a0e"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a10"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046a12"
+value = {named = ["00012042", "00026388", "00026740", "00046938", "ffff1720"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "dramatic-roadrunner/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

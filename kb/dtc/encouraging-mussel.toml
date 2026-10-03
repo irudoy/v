@@ -1,0 +1,36 @@
+title = "Vent control circuit open alternate path"
+level = "code"
+code = "P0447"
+group = "evap"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 44
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d74"
+name = "encouraging-mussel"
+index = 215
+attribute = "00016044"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016044"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d74"
+value = "380006000000044700000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a4a8"
+value = "00016044"

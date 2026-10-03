@@ -1,3 +1,21 @@
+summary = """
+Shared nonzero enable curve. FUN 0004121c and FUN 00041750 index it by \
+uint16[ffff11f0], while FUN 0004776c uses uint16[ffff11b8]. The three \
+retained outputs are consumed only by zero tests that gate subsequent state \
+transitions; their numeric magnitudes are discarded."""
+note = [
+    """
+The physical state and coordinate quantities are unresolved. Code proves the \
+common lookup, three destinations, and boolean consumption. Result \
+disposition: inline comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Shared Nonzero Enable Curve - raw u8 (0x122D2)"
 category = "Internal Calculations"
@@ -7,7 +25,238 @@ format = "0"
 fine = 1
 coarse = 8
 
+[[ledger]]
+registry = "findings"
+order = 457
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-gazelle/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "resilient-auk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "solid-jaguarundi/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mauve-skua/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "military-marmoset/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "polite-oryx/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-caiman/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mottled-horse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wine-puma/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000122d2"
 name = "notorious-lyrebird"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004128e"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041296"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000412ac"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041354"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417bc"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417c4"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417d8"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041874"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004779c"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477a4"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477aa"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000477ac"
+value = {named = ["000122d2", "00014d2a", "00026550", "00026740", "00026984", "0004121c", "00041750", "0004776c", "ffff11b8", "ffff11f0", "ffff2522", "ffff2523", "ffff2524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sly-tuna/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "polite-oryx/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "mauve-skua/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "military-marmoset/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "resilient-auk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "solid-jaguarundi/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

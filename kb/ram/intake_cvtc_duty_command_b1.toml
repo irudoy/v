@@ -1,6 +1,53 @@
+summary = """
+First cell of the two-cell intake-VTC solenoid duty command and scheduler \
+latch of live duty cell ffff2440. FUN 000beace reads it at offset 0x84 of \
+base ffff2330 and programs ATU-II channel-7 buffer register fffff592 with \
+raw*ROM8[00008dfc]*39/80."""
+note = [
+    """
+Cycle register fffff58a holds 125*ROM8[00008dfc], so percent = raw*39/100 \
+and full scale 255 is 99.45 percent. FUN 00020dfe copies 140 bytes from \
+ffff23bc to ffff2330 through the block-copy call at 00021318, so this cell \
+receives ffff2440 once per scheduler pass.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*39/100"
+
+[[ledger]]
+registry = "vars"
+order = 734
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*100/39"
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "pastel-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "132"
+offset = 0x84
+
+[[ledger.dependency]]
+role = "consumer"
+to = "smart-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -83,6 +130,32 @@ layout = "7mfk"
 address = "ffff23b4"
 former = ["mahogany-raven/ram/7mfk-ffff23b4"]
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfc=33"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff2330", "ffff23b4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb1c"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff2330", "ffff23b4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beb38"
+value = {named = ["00008dfc", "00020dfe", "000beace", "ffff2330", "ffff23b4"], span = 1}
+key = "body"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff2430"
@@ -141,3 +214,25 @@ note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
 programs between x*25/64 - 0.1 and (x+1)*25/64 percent; the module executes \
 the output stage of every VQ37 image"""
+
+[[link]]
+type = "base"
+to = "pastel-marmot/ram"
+offset = 0x84
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "smart-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

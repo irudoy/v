@@ -1,0 +1,86 @@
+summary = """
+Critical-diagnostic qualification counter produced by FUN 0007d856 and \
+consumed by 00050920. A clear ffff41ea.bit5 resets it; with that aggregate \
+set, ffff422e.bit7 and ffff422f.bits4/5 permit saturating increment while \
+loss of any readiness latch holds the prior count."""
+note = [
+    """
+The fuel-inhibit branch qualifies when the counter is greater than stock \
+threshold four and the critical aggregate remains set.""",
+]
+level = "code"
+unit = "periodic counts"
+
+[[ledger]]
+registry = "vars"
+order = 640
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4b0e"
+name = "eccentric-salmon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008867"
+value = "0x04"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005092a"
+value = {named = ["00008867", "00050920", "0007d856", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d87c"
+value = {named = ["00008867", "00050920", "0007d856", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d896"
+value = {named = ["00008867", "00050920", "0007d856", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

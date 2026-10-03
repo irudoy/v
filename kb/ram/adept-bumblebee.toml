@@ -1,0 +1,153 @@
+summary = """
+Derived 32-bit state written by FUN 00052f00 from the return of FUN 000532ae \
+after that function consumes ffff15ce, signed ffff15fe, and state ffff1426. \
+FUN 0004afdc uses it as a coordinate between ROM thresholds; FUN 000554ae \
+adds it to 0x4000, ffff230c, and ffff15da before saturation into ffff231a."""
+note = [
+    """
+The exact arithmetic branches in FUN 000532ae are code-visible, but their \
+physical subsystem and engineering scale remain unresolved.""",
+]
+level = "code"
+unit = "raw derived state"
+
+[[ledger]]
+registry = "vars"
+order = 97
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_base_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lush-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cornflower-moth/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "true-fennec/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15f8"
+name = "adept-bumblebee"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b124"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b276"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053280"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053284"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053346"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554bc"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554c0"
+value = {named = ["0004afdc", "00052f00", "000532ae", "000554ae", "ffff15ce", "ffff15f8"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "cornflower-moth/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_base_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "lush-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

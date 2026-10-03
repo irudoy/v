@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff193b"
+name = "economic-collie"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000295f6"
+
+[[link]]
+type = "writer"
+to = "pumpkin-peacock/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

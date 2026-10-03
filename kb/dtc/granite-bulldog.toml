@@ -1,0 +1,36 @@
+title = "Random or multiple cylinder misfire detected"
+level = "code"
+code = "P0300"
+group = "misfire"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 6
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019420"
+name = "granite-bulldog"
+index = 16
+attribute = "00016114"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016114"
+value = "0030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019420"
+value = "06070d000000030040000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a18c"
+value = "00016114"

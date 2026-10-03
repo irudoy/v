@@ -1,0 +1,60 @@
+summary = """
+Diagnostic service-0x30 active-bit byte. Bit 3 marks IOLID 0x0c Power \
+Balance active and is consumed by FUN 00050a06."""
+note = ["Startup FUN 0002e76e clears the active-bit and value arrays."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 642
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nissan_service_30_output_control/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99c5"
+name = "charming-starling"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a12"
+value = {named = ["00030c4c", "00050a06", "ffff99c5"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nissan_service_30_output_control/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

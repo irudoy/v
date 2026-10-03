@@ -1,0 +1,81 @@
+summary = """
+Periodic snapshot of decoded internal-key-0x2ee0 payload byte ffff2818. FUN \
+00050a60 interprets valid values as a requested RPM ceiling in RPM/50 \
+units."""
+note = ["Values 0 and 0xff disable the dynamic ceiling in the consumer."]
+level = "code"
+unit = "RPM/50"
+
+[[ledger]]
+registry = "vars"
+order = 629
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "debonair-locust/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2714"
+name = "miniature-dove"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a78"
+value = {named = ["00020dfe", "00050a60", "ffff2714", "ffff2818"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a9c"
+value = {named = ["00020dfe", "00050a60", "ffff2714", "ffff2818"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "debonair-locust/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

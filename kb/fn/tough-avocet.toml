@@ -1,0 +1,41 @@
+summary = """
+Stored-fault clearer of the diagnostic runtime records. For an index other \
+than -1 it clears bit 7 of byte 1 of ffff5718 + 3*index."""
+level = "code"
+role = "service"
+contract = "Input r4 is a record index; -1 returns without a write."
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 648
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+identity = [0]
+contract = [1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008c348"
+name = "tough-avocet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c348"
+value = {named = ["ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0008c348"
+value = {named = ["ffff5718"], span = 1}
+key = "reference"

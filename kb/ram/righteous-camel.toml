@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3d58"
+name = "righteous-camel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00073c8a"
+
+[[link]]
+type = "lookup"
+to = "pink-sloth/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "faithful-carp/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

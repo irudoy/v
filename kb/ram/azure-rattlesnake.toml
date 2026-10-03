@@ -1,0 +1,115 @@
+summary = """
+Engine speed in RPM*0.64 counts. While ffff417f bit 5 is clear, FUN 000385bc \
+writes floor(12000000/(ROM8[0x88fb]*ffff22d4)) through unsigned divider \
+00021ce0; while it is set, it writes zero."""
+note = [
+    """
+With ROM8[0x88fb] = 3 and ffff22d4 = 6250000/RPM counts, the quotient is \
+4000000/ffff22d4 = 0.64*RPM.""",
+]
+level = "code"
+unit = "rpm*0.64"
+
+[[ledger]]
+registry = "vars"
+order = 955
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "berserk-woodlouse/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tentacled-prawn/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1206"
+name = "azure-rattlesnake"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fb"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00038610"
+value = "0x00b71b00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385d2"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385d8"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385da"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385dc"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385e0"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385ec"
+value = {named = ["000088fb", "00021ce0", "000385bc", "00038610", "ffff1206", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "berserk-woodlouse/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tentacled-prawn/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

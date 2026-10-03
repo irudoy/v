@@ -1,0 +1,136 @@
+summary = """
+Bounded correction derived from RPM curve 00014c1a. FUN 000658a4 multiplies \
+the lookup by a selected nonnegative byte difference, divides by 256, and \
+writes this word; FUN 00065cd8 and FUN 00064a1c consume it in the \
+engine-torque state component."""
+note = [
+    """
+The candidate physical conversion is x*0.1 Nm. The selector-controlled byte \
+difference remains physically unresolved.""",
+]
+level = "code"
+unit = "unsigned torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 528
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ginger-hedgehog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "messy-perch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-chipmunk/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "augmented-limpet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14e2"
+name = "voracious-stingray"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064bd4"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064c44"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065900"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065908"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006591e"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065d08"
+value = {named = ["00014c1a", "00064a1c", "000658a4", "00065cd8", "ffff14e2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "intelligent-chipmunk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "messy-perch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "augmented-limpet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

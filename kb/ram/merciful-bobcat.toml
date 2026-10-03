@@ -1,0 +1,177 @@
+summary = """
+Bits 7, 2, and 0 are the stored-fault summary of DTC attribute bit 10: FUN \
+0008c272 sets all three at 0008c28c while event byte ffff48e0 is nonzero and \
+clears them otherwise. A set bit 7 blocks exhaust-VTC operating enable \
+ffff248b bit 2 in 000bf630. Bit 1 is written by 00097018, bits 4 and 5 by \
+000abca2, bit 6 by 000ae5a4 and 000b29b8, and bit 3 by 000aee06, 000b29b8, \
+and 000b3284."""
+note = [
+    """
+The class holds the six mass-airflow records, so bit 7 follows a stored \
+P0101, P0102, P0103, P010B, P010C, or P010D fault.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 883
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-worm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brown-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "caped-barracuda/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "divergent-spoonbill/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "famous-platypus/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fierce-sidewinder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "humongous-coati/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mindful-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41d1"
+name = "merciful-bobcat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c27e"
+value = {named = ["0008c272", "00097018", "000abca2", "000ae5a4", "000aee06", "000b29b8", "000b3284", "000bf630", "ffff41d1", "ffff48e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c28c"
+value = {named = ["0008c272", "00097018", "000abca2", "000ae5a4", "000aee06", "000b29b8", "000b3284", "000bf630", "ffff41d1", "ffff48e0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "succinct-worm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "brown-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "divergent-spoonbill/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "famous-platypus/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fierce-sidewinder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "humongous-coati/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "mindful-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

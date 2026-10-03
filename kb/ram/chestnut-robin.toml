@@ -1,0 +1,115 @@
+summary = """
+Exhaust-cam edge-count indicator byte of 000c22dc: bit 6 (bank 1) and bit 7 \
+(bank 2) mark a capture window with no edge, bit 4 and bit 5 a window with \
+two or more edges. The monitor sets them together with ffff850c bits 5 and 6 \
+and clears them on a normal window or reset request (000c231c, 000c2344, \
+000c239c, 000c23c4). Monitors 00090086 and 0009018c read bits 6/7 and 4/5 to \
+reload or run down timer ffff43be + b and judge P1078/P1084."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 816
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quartz-trogon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "satisfied-myna/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fat-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff850d"
+name = "chestnut-robin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009016a"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009017a"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c231c"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2344"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c239c"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c23c4"
+value = {named = ["00090086", "0009018c", "000c22dc", "ffff850d"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "quartz-trogon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "satisfied-myna/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fat-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

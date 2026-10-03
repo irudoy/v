@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1222"
+name = "watchful-penguin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00052310"
+
+[[link]]
+type = "reader"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vivacious-cheetah/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

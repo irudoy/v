@@ -1,0 +1,36 @@
+title = "Catalyst efficiency bank 1"
+level = "code"
+code = "P0420"
+group = "catalyst"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 7
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "0001942c"
+name = "clay-wallaby"
+index = 17
+attribute = "0001603a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001603a"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001942c"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a190"
+value = "0001603a"

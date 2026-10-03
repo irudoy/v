@@ -1,0 +1,187 @@
+summary = """
+Saturating count of consecutive qualified rotational-reference interval \
+samples for the misfire monitor. FUN 0003cf24 consumes ffff84f2.bit7, shifts \
+the interval history, and increments this byte only when the \
+speed/prior-reference checks pass and ffff4247.bit6 is set. Invalid \
+qualification or a clear configuration bit resets it. Detection core \
+00085a70 requires at least 19 samples; revolution-window producer 000872d0 \
+requires at least 31."""
+note = [
+    """
+The counter saturates at 255. Static code does not establish the physical \
+cadence of one accepted sample, so the 19- and 31-sample gates are not \
+converted to revolutions or time.""",
+]
+level = "code"
+unit = "qualified interval samples"
+
+[[ledger]]
+registry = "vars"
+order = 143
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amethyst-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cute-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "laughing-partridge/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "umber-dove/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "warping-goldfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fat-buzzard/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3834"
+name = "enlightened-panther"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cfc0"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cfd0"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cffa"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085e18"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085e20"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008735a"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008735e"
+value = {named = ["0003cf24", "00085a70", "000872d0", "ffff3834", "ffff4096", "ffff4247", "ffff84f1", "ffff84f2"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "cute-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "laughing-partridge/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "umber-dove/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "warping-goldfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

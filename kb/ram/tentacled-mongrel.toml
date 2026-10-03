@@ -1,0 +1,110 @@
+summary = """
+Inverse engine-speed factor of QH0 byte ffff1170: FUN 0003b436 writes \
+min(65535, floor(0xdc1d00/ffff1f46)) through unsigned divider 00021ce0, or \
+zero while ffff1f46 is zero. With ffff1f46 = 8*RPM, the word is about \
+1803168/RPM."""
+level = "code"
+unit = "1803168/rpm"
+
+[[ledger]]
+registry = "vars"
+order = 966
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spiritual-rattlesnake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cerulean-antelope/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curious-bird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff114e"
+name = "tentacled-mongrel"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0003b66c"
+value = "0x00dc1d00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b43e"
+value = {named = ["00021ce0", "0003b436", "0003b498", "0003b66c", "ffff114e", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b448"
+value = {named = ["00021ce0", "0003b436", "0003b498", "0003b66c", "ffff114e", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b44a"
+value = {named = ["00021ce0", "0003b436", "0003b498", "0003b66c", "ffff114e", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b452"
+value = {named = ["00021ce0", "0003b436", "0003b498", "0003b66c", "ffff114e", "ffff1f46"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b466"
+value = {named = ["00021ce0", "0003b436", "0003b498", "0003b66c", "ffff114e", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "cerulean-antelope/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "spiritual-rattlesnake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "curious-bird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

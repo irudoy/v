@@ -1,7 +1,187 @@
+summary = """
+Upper segment of a piecewise-linear conversion of ffff1d10: for input >= \
+64512, 00018e46 is interpolated over axis 00018f96, and the result is \
+multiplied by 16 and written as a 32-bit value to ffff1ce4. The physical \
+quantity is unknown."""
+note = [
+    """
+The x16 operation is applied directly to interpolated uint16 before the \
+write; range 2824..53333 becomes 45184..853328. ffff1ce4 has no readers. The \
+live value later participates in arithmetic at 000738f2, but physical units \
+are not exposed.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "ffff1ce4 internal units"
+scale = "x*16"
+to_raw = "x/16"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 324
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+scale = [11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "passionate-junglefowl/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "arboreal-cormorant/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018e46"
 name = "dashing-mongrel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007385a"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007385e"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073864"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073868"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073874"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073876"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073878"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007387c"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007387e"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073880"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073886"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073874"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073876"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073878"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007387c"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007387e"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073880"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073886"
+value = {named = ["00018e46", "00018e86", "00018f96", "ffff1ce4"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +214,26 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "arboreal-cormorant/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "passionate-junglefowl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

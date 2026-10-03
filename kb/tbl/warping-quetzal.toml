@@ -1,0 +1,146 @@
+summary = """
+Interpolated unsigned 2D multiplication operand: the uint8 result is written \
+to ffff17ef, then multiplied by u8 from ffff1601 and by 4; the result is \
+saturated to 0xffff and written to ffff15fc."""
+note = [
+    """
+Operational semantics are proven; no physical quantity is asserted. The \
+write to ffff17ef has no external readers, but the same result in r2 is used \
+inline after 00052f64. The saturation branch is reachable, so the map is not \
+dead control flow. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 64
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "writes"
+to = "gay-bloodhound/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "super-taipan/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000ab6a"
+name = "warping-quetzal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f5c"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f60"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f64"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f66"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f6a"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f6c"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f6e"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f76"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f78"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f7c"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f82"
+value = {named = ["0000ab6a", "00026084", "00026770", "00026944", "00026c78", "ffff15fc", "ffff17ef"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"

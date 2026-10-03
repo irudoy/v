@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff152c"
+name = "refreshing-peccary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005183c"
+
+[[link]]
+type = "writer"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,200 @@
+summary = """
+Base of a two-byte bank-indexed catalyst-monitor limit array. FUN 000a2ee4 \
+writes the interpolated uint8 result of table 0x11fb6, and FUN 000a2f56 \
+dispatches P0420/P0430 only when unsigned ffff314d[bank] is below this \
+limit."""
+note = [
+    """
+All eight stock table cells are zero, making the unsigned below-limit fault \
+branch unreachable in the stock image. The physical quantity and units \
+remain unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "catalyst-limit-state-p0420"
+kind = "monitor"
+label = "DtcCode"
+key = "P0420"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001942c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bank element 0 is the map-derived limit in the direct P0420 comparison. Its \
+stock value is always zero."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aromatic-kagu/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2f8c"
+value = {named = ["00011fb6", "0001942c", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fd2"
+value = {named = ["00011fb6", "0001942c", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "boisterous-ape/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "catalyst-limit-state-p0430"
+kind = "monitor"
+label = "DtcCode"
+key = "P0430"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019438"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bank element 1 is the map-derived limit in the direct P0430 comparison. Its \
+stock value is always zero."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aromatic-kagu/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fc0"
+value = {named = ["00011fb6", "00019438", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a301e"
+value = {named = ["00011fb6", "00019438", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "boisterous-ape/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 105
+binding = "catalyst-limit-state-p0420"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 106
+binding = "catalyst-limit-state-p0430"
+
+[[ledger]]
+registry = "vars"
+order = 406
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mauve-tuatara/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aromatic-kagu/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-ape/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b6f"
+name = "venomous-dachshund"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f0e"
+value = {named = ["00011fb6", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f8c"
+value = {named = ["00011fb6", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fc0"
+value = {named = ["00011fb6", "000a2ee4", "000a2f56", "ffff2b6f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "aromatic-kagu/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "mauve-tuatara/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "boisterous-ape/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "violet-sparrow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

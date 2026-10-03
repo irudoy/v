@@ -1,0 +1,186 @@
+summary = """
+Unsigned auxiliary MAF contribution read by FUN 0003b224, combined-MAF \
+producer 0003b252, and total-MAF producer 0003b27e. Startup initializer \
+00027c50 clears it as part of [ffff1000,ffff261c). A whole-program p-code \
+scan found these three reads and no direct or computed-address writer. A \
+direct-reference audit of DMAOR and all four DMAC channel register blocks \
+found no recovered transfer covering this word; the only recovered complete \
+setup writes ADC2 bytes to ffff86cc..ffff87cb."""
+note = [
+    """
+It remains zero in the recovered normal application-code and statically \
+recovered DMAC configuration. Static analysis cannot exclude an unresolved \
+computed peripheral access, external bus master, execution outside the \
+analyzed application, or establish the physical meaning.""",
+]
+level = "code"
+unit = "raw MAF correction"
+
+[[ledger]]
+registry = "vars"
+order = 483
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "artichoke-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "combined_maf_aggregate/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wondrous-camel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2368"
+name = "wondrous-sparrow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027c7a"
+value = {named = ["00027c50", "0003b224", "0003b252", "0003b27e", "ffff2368"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b23c"
+value = {named = ["00027c50", "0003b224", "0003b252", "0003b27e", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b268"
+value = {named = ["00027c50", "0003b224", "0003b252", "0003b27e", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b29e"
+value = {named = ["00027c50", "0003b224", "0003b252", "0003b27e", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a600"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a614"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a618"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a678"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a690"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a694"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a770"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a782"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a786"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a872"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a886"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a88a"
+
+[[link]]
+type = "reader"
+to = "artichoke-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "combined_maf_aggregate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "wondrous-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cunning-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

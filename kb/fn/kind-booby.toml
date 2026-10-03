@@ -1,0 +1,157 @@
+summary = """
+Periodic stock HCAN1 payload-serialization coordinator. It maintains the \
+transmit phase counters, scans only firmware type-3 records, invokes the \
+ID-specific serializer, and updates the ten-byte software record and ready \
+state used by the subsequent 000c38de scan."""
+note = [
+    """
+Entry 63 at word 00021930 of the 69-entry table 00021834 calls this function \
+after 000c38de, so payload preparation is for a later scan. A custom type-4 \
+mailbox remains outside this serializer.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 557
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "feedback_payload_base/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3de4"
+name = "kind-booby"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000975a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3df0"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e0c"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e16"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e24"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e44"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e5a"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e68"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e6a"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e78"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e82"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3e94"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3fda"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3fdc"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3fe4"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3fea"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3ff0"
+value = {named = ["0000975a", "000c3de4", "000c509e", "ffff3ab5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sage-sawfish/fn/7mfk"
+relies = "structure"

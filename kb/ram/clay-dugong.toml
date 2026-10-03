@@ -1,0 +1,150 @@
+summary = """
+First-bank composite byte built in P0101 range-performance monitor 0008152a \
+from factors 0001236a, 00012ac2, and 00012868 plus per-bank opening-area \
+weighting. It is an alternate comparison threshold and captured event \
+value."""
+note = [
+    """
+Stock 00008d92 bit 5 bypasses the model-byte comparison, so this byte \
+affects only captured P0101 event context in the unmodified image.""",
+]
+level = "code"
+unit = "raw diagnostic factor"
+
+[[ledger]]
+registry = "vars"
+order = 725
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "golden-goose/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "persimmon-crow/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "smiling-piculet/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "muscular-turaco/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12eb"
+name = "clay-dugong"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000817ec"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "0008152a", "ffff12eb", "ffff4566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081942"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "0008152a", "ffff12eb", "ffff4566"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081c62"
+value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "0008152a", "ffff12eb", "ffff4566"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "muscular-turaco/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "lookup"
+to = "golden-goose/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "persimmon-crow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "smiling-piculet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

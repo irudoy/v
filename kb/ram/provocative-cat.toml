@@ -1,0 +1,71 @@
+summary = """
+Bank-0 offset-neutral correction used by FUN 0004ead4 after the primary trim \
+multiplication. Startup function 000593ac writes 0x8000; a whole-program \
+p-code census found no later application-code writer, so the correction is \
+neutral in the analyzed application."""
+note = [
+    "Unresolved indirect hardware activity remains outside the static census.",
+]
+level = "code"
+unit = "offset_binary_u16"
+
+[[ledger]]
+registry = "vars"
+order = 561
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2310"
+name = "provocative-cat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eb7a"
+value = {named = ["0004ead4", "000593ac", "ffff2310"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593ea"
+value = {named = ["0004ead4", "000593ac", "ffff2310"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,166 @@
+summary = """
+Saturated composite output of FUN 00055098: \
+min(65535,u16(ffff2ff0)+((u8(ffff1680)*u8(ffff193d)*u8(ffff1955)*u8(ffff1b14))>>12)). \
+FUN 000532ae consumes it together with ffff15fe and state ffff1426; FUN \
+00058740 also publishes whether it is zero."""
+note = [
+    """
+The exact physical quantity and global fixed-point normalization are \
+unresolved.""",
+]
+level = "code"
+unit = "raw composite"
+
+[[ledger]]
+registry = "vars"
+order = 95
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "base"
+to = "golden-tench/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "juicy-panther/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lush-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "didactic-alligator/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adaptable-eel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15ce"
+name = "cornflower-moth"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053346"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055220"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005522a"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055230"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055234"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000589ae"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000589b0"
+value = {named = ["000532ae", "00055098", "00058740", "ffff15ce", "ffff1b14", "ffff2ff0"], span = 1}
+key = "body"
+
+[[link]]
+type = "base"
+to = "golden-tench/ram"
+offset = 0x0
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "didactic-alligator/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "caped-mammoth/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "juicy-panther/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "lush-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

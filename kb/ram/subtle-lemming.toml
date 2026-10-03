@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff40d2"
+name = "subtle-lemming"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079f8e"
+
+[[link]]
+type = "reader"
+to = "shapeless-eagle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

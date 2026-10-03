@@ -1,0 +1,48 @@
+note = [
+    """
+Shared row axis for Knock Sensor Circuit Monitor Surface A/B. Code passes it \
+to 0x26140 together with current engine speed ffff11ae; the physical x*50 \
+scale matches the native RPM representation.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 9
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012be2"
+name = "spirited-worm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a532c"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Axis RPM (x*50)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a531a"
+value = {named = ["00012be2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a534a"
+value = {named = ["00012be2"], span = 1}
+key = "reference"

@@ -1,0 +1,83 @@
+title = "Run the periodic signed request-boundary stages"
+summary = """
+Periodic-table index-21 request-boundary coordinator. It calls 000797d0 and \
+then signed boundary stage 00079030, which publishes shared request \
+coordinate ffff19c6 before index-22 consumers."""
+note = [
+    """
+This is the scheduling bridge from the selected signed limit to downstream \
+inverse-coordinate calculations.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 131
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 520
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "acoustic-spaniel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_boundary/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_request_bounded/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00079dd8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c4"
+value = "00079dd8"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "acoustic-spaniel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

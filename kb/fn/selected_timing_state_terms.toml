@@ -1,0 +1,154 @@
+summary = """
+Active/reference timing-state field extractor. It writes \
+ffff12de=ffff160f&0x7f and ffff12e0=ffff1610&0x7f. When ROM8[0x8b3f].bit1 is \
+set it writes ffff12df=max(ffff12e0-ffff12de,0), otherwise zero. It also \
+writes ffff23bd=max(ffff12de-ffff11af,0)."""
+note = [
+    """
+Extract the selected map fields and publish downstream timing-state terms""",
+    """
+ffff23bd carries the active cold/hot map state into the normal timing-state \
+compositor branch.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 102
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 509
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "esoteric-rat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nimble-barracuda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-weasel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "devious-hyena/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spicy-stoat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ubiquitous-whale/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "xanthic-wren/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004af38"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b3f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af44"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af4a"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af4e"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af54"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af6e"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af84"
+value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

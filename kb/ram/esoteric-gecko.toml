@@ -1,0 +1,291 @@
+summary = """
+Base of the two-byte bank-indexed rear O2 heater circuit-feedback array. FUN \
+0008b93a dispatches P0037/P0057 below ROM8[0x8aaf]=0x0c and P0038/P0058 at \
+or above ROM8[0x8ab0]=0xec."""
+note = [
+    """
+A whole-program p-code scan found reads but no direct write. The runtime \
+producer is pointer-mediated, external, or unresolved; the physical current \
+or voltage scale is not established.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "rear-o2-heater-feedback-high-p0038"
+kind = "monitor"
+label = "DtcCode"
+key = "P0038"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b94"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 0 is the circuit-feedback byte compared with the exact high \
+threshold in the P0038 path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dynamic-moose/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019b94"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d6"
+value = {named = ["00008ab0", "00019b94", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008baa0"
+value = {named = ["00008ab0", "00019b94", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-heater-feedback-high-p0058"
+kind = "monitor"
+label = "DtcCode"
+key = "P0058"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019ba0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 1 is the circuit-feedback byte compared with the exact high \
+threshold in the P0058 path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dynamic-moose/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019ba0"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d6"
+value = {named = ["00008ab0", "00019ba0", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba9e"
+value = {named = ["00008ab0", "00019ba0", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-heater-feedback-low-p0037"
+kind = "monitor"
+label = "DtcCode"
+key = "P0037"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bac"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 0 is the circuit-feedback byte compared with the exact low \
+threshold in the P0037 path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dynamic-moose/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019bac"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d6"
+value = {named = ["00008aaf", "00019bac", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba8e"
+value = {named = ["00008aaf", "00019bac", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-heater-feedback-low-p0057"
+kind = "monitor"
+label = "DtcCode"
+key = "P0057"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019bb8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 1 is the circuit-feedback byte compared with the exact low \
+threshold in the P0057 path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dynamic-moose/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019bb8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008b9d6"
+value = {named = ["00008aaf", "00019bb8", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008ba8a"
+value = {named = ["00008aaf", "00019bb8", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 113
+binding = "rear-o2-heater-feedback-high-p0038"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 114
+binding = "rear-o2-heater-feedback-high-p0058"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 115
+binding = "rear-o2-heater-feedback-low-p0037"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 116
+binding = "rear-o2-heater-feedback-low-p0057"
+
+[[ledger]]
+registry = "vars"
+order = 408
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "charming-anaconda/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dynamic-moose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2722"
+name = "esoteric-gecko"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008aaf"
+value = "0x0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab0"
+value = "0xec"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b70e"
+value = {named = ["00008aaf", "00008ab0", "0008b604", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b8ba"
+value = {named = ["00008aaf", "00008ab0", "0008b604", "0008b93a", "ffff2722"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008b9d6"
+value = {named = ["00008aaf", "00008ab0", "0008b604", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008bad6"
+value = {named = ["00008aaf", "00008ab0", "0008b604", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008bb0e"
+value = {named = ["00008aaf", "00008ab0", "0008b604", "0008b93a", "ffff2722"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "charming-anaconda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dynamic-moose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

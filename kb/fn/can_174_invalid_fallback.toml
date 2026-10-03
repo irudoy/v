@@ -1,0 +1,53 @@
+title = "Reset decoded CAN 0x174 transmission fields after invalid data"
+summary = """
+Invalid-message fallback for CAN 0x174. On the invalid-data branch it writes \
+zero to both live gear indices ffff1086 and ffff1087, resets associated \
+decoded fields, and marks the fallback state."""
+note = [
+    """
+Zero is also the decoder fallback for out-of-range nibble values, so \
+consumers cannot distinguish invalid CAN data from decoded gear index zero \
+through these two bytes alone.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 70
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 591
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "writes"
+to = "faithful-wildebeest/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strange-jackrabbit/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c5cb2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c5cb2"
+value = {named = ["ffff1086", "ffff1087"], span = 1}
+key = "body"

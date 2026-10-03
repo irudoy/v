@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3998"
+name = "annoying-foxhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d920"
+
+[[link]]
+type = "reader"
+to = "enchanted-cricket/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,119 @@
+summary = """
+Exhaust-VTC evaluation window byte. FUN 0008f168 writes it at 0008f57a as \
+the staircase lookup ROM8[0000988a+8*row+col], where row counts axis \
+000119f8 points at or below engine-speed byte ffff11ae and col counts axis \
+00011a08 points at or below coolant byte ffff1071. A non-zero value is a \
+prerequisite of the target-tracking enable."""
+note = ["All 64 stock cells of the 8x8 block 0000988a..000098c9 hold 60."]
+level = "code"
+unit = "samples"
+
+[[ledger]]
+registry = "vars"
+order = 779
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "391"
+offset = 0x187
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "paper-hippo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1413"
+name = "industrious-chihuahua"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000988a"
+value = "0x3c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f57a"
+value = {named = ["0000988a", "0008f168", "ffff1071", "ffff11ae", "ffff128c", "ffff1413"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f794"
+value = {named = ["0000988a", "0008f168", "ffff1071", "ffff11ae", "ffff128c", "ffff1413"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x187
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

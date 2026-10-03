@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff13fe"
+name = "brilliant-scorpion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004220c"
+
+[[link]]
+type = "lookup"
+to = "precious-weasel/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a1e"
+name = "arboreal-wrasse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdc34"
+
+[[link]]
+type = "lookup"
+to = "daffy-skua/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "excellent-donkey/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

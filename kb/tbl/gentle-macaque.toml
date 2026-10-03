@@ -1,3 +1,25 @@
+summary = """
+Raw table of a target level and upper bound for a linear transition: the \
+lookup result is multiplied by a relative difference, divided by signed \
+32/32, then the original table value acts as the result's upper bound before \
+it is written to ffff15ec."""
+note = [
+    """
+Code proves only raw semantics of the target level and upper bound for a \
+linear transition, not the physical quantity. The 16 values of 0xff do not \
+prove that the function is disabled. The target map executes on the branch \
+where (RAM[ffff2466] & 0x40) == 0; unreachability of this branch has not \
+been proven. ffff15ee has no external readers, but the value is consumed \
+inside 0004bbee, so this is not dead control flow. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Linear Transition Target and Upper Clamp (0x12462)"
 category = "Internal Calculations"
@@ -7,10 +29,139 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 143
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "acoustic-moth/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tungsten-crow/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012462"
 name = "gentle-macaque"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc22"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc24"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc26"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc2a"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc30"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcdc"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcea"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcec"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcee"
+value = {named = ["00012462", "00021bbc", "00026388", "0004bbee", "ffff11b3", "ffff15ec", "ffff15ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +194,19 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

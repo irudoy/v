@@ -1,0 +1,80 @@
+summary = """
+HCAN1 MBIMR1 mailbox activity interrupt mask for physical mailboxes 16 \
+through 31. Zero enables and one masks the corresponding mailbox interrupt. \
+FUN 000c2fbe clears bits for firmware table types 2 and 4."""
+note = [
+    """
+Bit 10 controls physical mailbox 26. MBIMR masks interrupt generation but \
+does not suppress TXACK or ABACK state.""",
+]
+level = "code"
+unit = "peripheral bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 664
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "writes"
+to = "granite-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffd850"
+name = "micro-labradoodle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c30ee"
+value = {named = ["000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c312e"
+value = {named = ["000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3132"
+value = {named = ["000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3140"
+value = {named = ["000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c32a6"
+value = {named = ["000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.5.7"
+
+[[link]]
+type = "writer"
+to = "granite-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

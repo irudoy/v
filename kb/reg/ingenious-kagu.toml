@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff430"
+name = "ingenious-kagu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0000204e"
+
+[[link]]
+type = "reader"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

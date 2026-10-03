@@ -1,0 +1,77 @@
+title = "Apply per-channel throttle-feedback fallback selection"
+summary = """
+Per-channel throttle-feedback fault selector. It normally copies \
+ffff3884/ffff3886 to ffff3888/ffff388a and otherwise applies learned or \
+fixed closed-reference fallbacks according to channel status masks."""
+note = ["The selected word is the regulator feedback input."]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "curated"
+order = 155
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 575
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garrulous-chicken/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "discerning-fox/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cb078"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb09a"
+value = {named = ["000cb078", "ffff3884", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb0a0"
+value = {named = ["000cb078", "ffff3884", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb0b0"
+value = {named = ["000cb078", "ffff3884", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb0ce"
+value = {named = ["000cb078", "ffff3884", "ffff3888"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb104"
+value = {named = ["000cb078", "ffff3884", "ffff3888"], span = 1}
+key = "body"

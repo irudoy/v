@@ -1,0 +1,83 @@
+summary = """
+Per-bank captured integrator of the exhaust valve timing control learning \
+(ffff1484 + 4b). FUN 000bfe88 copies ffff147c + 4b into it at 000c0a6a and \
+000c0aaa on a clean bank release and marks the capture in ffff147a bit b; \
+error stage 000c1152 copies it into retained ffff4838 + 4b and ffff4840 + 4b \
+under ffff1c8e bit b."""
+level = "code"
+unit = "offset-binary int32"
+
+[[ledger]]
+registry = "vars"
+order = 915
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "resourceful-kangaroo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1484"
+name = "modest-jackrabbit"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0a6a"
+value = {named = ["000bfe88", "000c1152", "ffff147c", "ffff1484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0aaa"
+value = {named = ["000bfe88", "000c1152", "ffff147c", "ffff1484"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "resourceful-kangaroo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

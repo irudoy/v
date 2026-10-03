@@ -1,0 +1,106 @@
+title = "Publish signed current-pass pulse additive word ffff2300"
+summary = """
+Signed transient additive-term producer. It writes \
+clamp_s16(trunc_toward_zero(uint8(ffff150a)*int16(ffff1a66)/256)) to \
+ffff2300; a runtime gate involving ffff245d can force zero."""
+note = [
+    """
+The exact signed rounding and saturation are code-proven. The physical \
+transient qualifier remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 82
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 497
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "attractive-donkey/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "auspicious-jacamar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "urban-degu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enigmatic-mouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00052902"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052908"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005290e"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052914"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052920"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052944"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052958"
+value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
+key = "reference"

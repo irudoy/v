@@ -1,0 +1,122 @@
+title = "Sample and align the two accelerator-pedal ADC channels"
+summary = """
+Samples on-chip A/D channels AN10 and AN17 through FUN 0002df5c, shifts each \
+aligned result right by six, and writes the resulting 10-bit values to \
+ffff362c and ffff362e."""
+note = [
+    """
+Downstream adjustment, paired accelerator-pedal diagnostics, and \
+P2122/P2123/P2127/P2128 monitors establish that these two analog channels \
+belong to the dual-channel accelerator-pedal path.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 135
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 54
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "writes"
+to = "auburn-finch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "merry-shrimp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002862c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028630"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028632"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028638"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002863e"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028640"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028642"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028644"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002864a"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028650"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028654"
+value = {named = ["0002862c", "0002df5c", "ffff362c", "ffff362e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mottled-bullmastiff/fn/7mfk"
+relies = "structure"

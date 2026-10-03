@@ -1,0 +1,292 @@
+summary = """
+Multipurpose misfire status byte. Reporter 00084cd0 sets bit 7 when group 2 \
+is captured and clears it when the odd-argument path removes group 2. Before \
+each reporter call, coordinator 00082c8a sets selector bit 6, 5, or 4 for \
+even group 0, 1, or 2 respectively; odd paths clear all three bits. Handler \
+0007dc32 tests the combined mask 0x70: a nonzero selector uses the \
+record-bits3/6 branch, while zero uses the record-bits4/5 branch and sets \
+ffff5b2c.bit3."""
+note = [
+    """
+The operational selector mapping is exact. Code does not identify either \
+polarity as a physical pass or fail phase and does not name groups 0..2.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 444
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ultraviolet-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5b2b"
+name = "jumping-carp"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dc60"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dc62"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d60"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d64"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083d68"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008411c"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008411e"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084366"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084384"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008451a"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084538"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084770"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008477c"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084782"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084788"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d9c"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d9e"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084de0"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084de2"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e44"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e46"
+value = {named = ["0007dc32", "00082c8a", "00084cd0", "ffff5b2b"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ultraviolet-mushroom/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "classy-seahorse/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "persimmon-giraffe/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

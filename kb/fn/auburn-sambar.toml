@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0003a5e0"
+name = "auburn-sambar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003a5e0"

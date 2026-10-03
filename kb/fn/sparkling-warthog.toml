@@ -1,3 +1,15 @@
+summary = """
+Second independent copy of the implicit-axis shift chain: 12 SHLR/ROTCR \
+pairs, step 4096. Core for primitive 0x266A0."""
+level = "code"
+role = "kernel"
+
+[[ledger]]
+registry = "funcs"
+order = 113
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
 [[symbol]]
 layout = "1nd"
 address = "00029060"
@@ -14,6 +26,18 @@ key = "00026c1c"
 layout = "7mfk"
 address = "00026c1c"
 name = "sparkling-warthog"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026c1c"
+value = {span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"

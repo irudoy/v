@@ -1,0 +1,69 @@
+summary = """
+Saturated upper term written by 000476a0 as ffff122a*ROM16[0x92fc]>>13 and \
+used to bound the idle/opening-area base ffff1340."""
+note = ["The operational bound is exact; physical units remain candidate."]
+level = "code"
+unit = "raw opening-area bound"
+
+[[ledger]]
+registry = "vars"
+order = 685
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_opening_area_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "opening_area_upper_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff133e"
+name = "attractive-sambar"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000092fc=0x235f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476cc"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff133e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004771c"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff133e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "opening_area_upper_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

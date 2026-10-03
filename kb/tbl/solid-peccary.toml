@@ -1,3 +1,24 @@
+summary = """
+Dimensionless 1D correction multiplier: the interpolated map value scales \
+iVar6 in FUN_000474a4 together with coefficients from ffff2fc0 and ffff2fc1 \
+before limiting and writing the result to ffff122a."""
+note = [
+    """
+FUN_000474a4 multiplies three byte map outputs and iVar6 with a total shift \
+of 21 bits. Decomposition 2^21 = 128^3 assigns seven fractional bits to each \
+byte coefficient; for the target map, 128 -> 1, and pair x/128 with x*128 \
+gives an exact numeric round trip. The artifact does not establish the \
+physical quantity corrected by the product or the physical meaning of input \
+ffff106f; no catalog name is claimed. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
 category = "Internal Calculations"
@@ -7,7 +28,122 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 222
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+scale = [10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tiny-lobster/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012dd2"
 name = "solid-peccary"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012dd2", "00026388", "00026740", "000474a4", "000475a2", "ffff1a20"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047480"
+value = {named = ["00012dd2", "00026388", "00026740", "000474a4", "000475a2", "ffff1a20"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047486"
+value = {named = ["00012dd2", "00026388", "00026740", "000474a4", "000475a2", "ffff1a20"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004748a"
+value = {named = ["00012dd2", "00026388", "00026740", "000474a4", "000475a2", "ffff1a20"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047490"
+value = {named = ["00012dd2", "00026388", "00026740", "000474a4", "000475a2", "ffff1a20"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "important-kittiwake/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

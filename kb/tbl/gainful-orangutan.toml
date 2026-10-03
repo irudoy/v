@@ -1,7 +1,144 @@
+summary = """
+Interpolated unsigned 16-bit upper limit for the lookup result of map \
+00014bfa: FUN_0004c02e selects min(lookup(00014bea), lookup(00014bfa)) \
+before downstream arithmetic."""
+note = [
+    """
+The physical quantity is unknown. There is no separate ROM axis: an implicit \
+grid with dynamic input ffff106f is used. After min selection, the value \
+participates in multiplications, a shift, saturation to 0x7f, and a write to \
+ffff1831, but this RAM result also depends on other quantities and is not an \
+associated sink of the target map. Index: implicit 1D-8 uint16: \
+q=uint8[ffff106f]<<8; for q<0xe000, linear interpolation is performed \
+through 00026a60/00026740; for q>=0xe000, element 7 at base+0x0e is \
+selected. Output trace: 00014bea -> 0004c0c4 -> 0004c0cc -> 0004c0ce -> \
+000263d8 -> 00026a60 -> 00026740 -> 0004c0d2 -> 0004c0f0 -> 0004c0f2 -> \
+0004c0f4 -> 0004c0f6/0004c0f8. Result disposition: inline_comparison; Result \
+target: site 0004c0f4.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 426
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "giga-leech/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "hopping-bumblebee/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014bea"
 name = "gainful-orangutan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0c4"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0cc"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0ce"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0d2"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0ea"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f0"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f2"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f4"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f6"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f8"
+value = {named = ["00014bea", "00014bfa", "000263d8", "00026740", "00026a60", "0004c02e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +171,18 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "hopping-bumblebee/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "giga-leech/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

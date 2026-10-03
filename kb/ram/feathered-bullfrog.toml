@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff229b"
+name = "feathered-bullfrog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00038494"
+
+[[link]]
+type = "writer"
+to = "hypersonic-seagull/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

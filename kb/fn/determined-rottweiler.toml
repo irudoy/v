@@ -1,0 +1,44 @@
+role = "init"
+contract = """
+Not arithmetic: background ROM self-test scanner initializer. It takes no \
+arguments. It writes two words: cursor 0xFFFF2FF4 = 0x0002040C and scan step \
+0xFFFF3004 = 478 = (end - start) / 18 + 1, using unsigned division through \
+call 00021ce0. It returns no result."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 25
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2, 3]
+
+[[symbol]]
+layout = "7mfk"
+address = "00021654"
+name = "determined-rottweiler"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00022648"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "0002264c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021654"

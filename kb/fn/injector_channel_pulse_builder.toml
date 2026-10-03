@@ -1,0 +1,193 @@
+title = "Per-channel pulse calculation with aggregate-mask override"
+summary = """
+Compensated six-channel injection-pulse writer. For channel i, a set \
+ffff22e0 bit selects override ffff2436. Otherwise it selects base \
+ffff191c/ffff191e by parity, adds signed ffff1396+2*i, conditionally \
+subtracts signed ffff1466+2*i, multiplies a positive result by \
+ROM8[000129c0+i], shifts right by 7, and saturates to uint16. The raw result \
+is written to ffff23c8+2*i and a transformed result to ffff23d4+2*i."""
+note = [
+    """
+Stock ROM8[00008d92]=0x7a enables the subtractive correction. All six \
+multiplier cells are 0x80, or 1.0 in Q1.7. Channel order is proven; physical \
+cylinder order is not.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 18
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 367
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_channel_multiplier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "able-cougar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "apricot-raven/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "berserk-ocelot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enlightened-mastodon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-kingfisher/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "handsome-spaniel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_0/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004eba2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ebc8"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec2c"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec34"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec42"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec58"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec60"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec64"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec68"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec6c"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec94"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec9e"
+value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
+key = "reference"

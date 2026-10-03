@@ -1,0 +1,61 @@
+summary = """
+SH7058 A/D data register 1 (ADDR1), containing the left-aligned 10-bit \
+conversion result for analog channel AN1. FUN 000280d8 reads the 16-bit \
+register and shifts it right by six for the readiness-source acquisition \
+path."""
+note = [
+    """
+The hardware manual maps AN1 to MCU pin 87/G18. The corresponding ECM \
+terminal and physical signal remain unresolved.""",
+]
+level = "code"
+unit = "aligned ADC register"
+
+[[ledger]]
+registry = "vars"
+order = 461
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff802"
+name = "tunneling-pig"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002816c"
+value = {named = ["000280d8", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000282a0"
+value = {named = ["000280d8", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr1"
+
+[[link]]
+type = "reader"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

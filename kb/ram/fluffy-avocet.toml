@@ -1,0 +1,105 @@
+summary = """
+Filtered total MAF quantity written by FUN 0003b27e from ffff1058 + ffff105a \
++ ffff2368. Stock ROM8[0x8a08]=1 selects a half-step first-order update \
+through shift helper 000221bc; the result saturates to uint16."""
+note = [
+    """
+When the rounded update equals the previous value while the unfiltered sum \
+is larger, code increments by one to avoid stalling.""",
+]
+level = "code"
+unit = "raw MAF quantity"
+
+[[ledger]]
+registry = "vars"
+order = 484
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dancing-hippo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-adder/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wondrous-sparrow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wondrous-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1df4"
+name = "fluffy-avocet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b29e"
+value = {named = ["000221bc", "0003b27e", "ffff1058", "ffff105a", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b2fe"
+value = {named = ["000221bc", "0003b27e", "ffff1058", "ffff105a", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "copper-crayfish/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "dancing-hippo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "precious-adder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "wondrous-sparrow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wondrous-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

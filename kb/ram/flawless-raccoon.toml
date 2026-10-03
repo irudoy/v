@@ -1,0 +1,124 @@
+summary = """
+Cold intake-cam target byte written directly from 8x8 surface 0000b53a. FUN \
+000bdc66 selects it at raw coolant <=106 and blends it with warm/main target \
+ffff1c5c between raw coolant 106 and 131 before the target enters ffff2326."""
+note = [
+    """
+The centered representation and cold intake CVTC target path are exact. The \
+engineering conversion raw*0.5-64 crank degrees follows the intake \
+edge-phase unit of the actual bytes ffff2442/ffff2443 that the target is \
+compared with.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 125
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-jackrabbit/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "victorious-catfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c5e"
+name = "flawless-raccoon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d738"
+value = {named = ["0000b53a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdae6"
+value = {named = ["0000b53a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdaf4"
+value = {named = ["0000b53a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddaa"
+value = {named = ["0000b53a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddfa"
+value = {named = ["0000b53a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "cunning-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "victorious-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

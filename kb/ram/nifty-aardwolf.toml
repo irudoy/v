@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11e7"
+name = "nifty-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e0d2"
+
+[[link]]
+type = "writer"
+to = "sincere-perch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

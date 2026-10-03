@@ -1,0 +1,139 @@
+summary = """
+Multipurpose status byte. FUN 00050a06 sets bit 6 while service-0x30 \
+IOLID-0x0c Power Balance is active; FUN 00050a34 uses it to replace the \
+aggregate mask with cached byte ffff2b2c. Bits 4/5 independently force \
+output ffff2c6c to lower/upper limits ffff413a/ffff4138 in 0007b2c8."""
+note = [
+    """
+The diagnostic replacement occurs before the P2119/P1238 ETC auxiliary mask \
+is ORed.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 313
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hulking-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_apply/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cuddly-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aromatic-coua/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "power_balance_mask_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41fb"
+name = "fluffy-salamander"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a22"
+value = {named = ["00050a06", "00050a34", "0007af78", "0007b2c8", "ffff2b2c", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a38"
+value = {named = ["00050a06", "00050a34", "0007af78", "0007b2c8", "ffff2b2c", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a46"
+value = {named = ["00050a06", "00050a34", "0007af78", "0007b2c8", "ffff2b2c", "ffff41fb"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cuddly-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "hulking-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "power_balance_mask_apply/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

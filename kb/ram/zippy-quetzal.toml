@@ -1,0 +1,56 @@
+summary = """
+Second partition of common value ffff2842: \
+uint16((uint32(ffff2842)*uint8(ffff3d45))>>8)."""
+note = ["No direct reader is present in the exact-JK08A xref export."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 228
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "helpful-swine/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2846"
+name = "zippy-quetzal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b624"
+value = {named = ["0003b520", "ffff2846"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b628"
+value = {named = ["0003b520", "ffff2846"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b640"
+value = {named = ["0003b520", "ffff2846"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

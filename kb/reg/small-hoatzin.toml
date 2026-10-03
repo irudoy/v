@@ -1,0 +1,80 @@
+summary = """
+HCAN1 ABACK1 transmission-abort register for physical mailboxes 16 through \
+31. Bit 10 or 0x0400 represents mailbox 26; stock SLE1 ISR 000c7914 handles \
+only mailbox-28 bit 12 or 0x1000."""
+note = ["Bits are write-one-to-clear."]
+level = "code"
+unit = "peripheral bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 663
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_sle1_isr/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stock_sle1_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffd838"
+name = "small-hoatzin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7954"
+value = {named = ["000c7914", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7958"
+value = {named = ["000c7914", "ffffd838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7962"
+value = {named = ["000c7914", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.5.4"
+
+[[link]]
+type = "reader"
+to = "stock_sle1_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "stock_sle1_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff237c"
+name = "almond-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00079ef2"

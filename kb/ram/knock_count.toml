@@ -1,3 +1,47 @@
+summary = """
+Saturating count of selected-channel knock-threshold exceedances accumulated \
+by FUN 0004a238. The evaluator increments it when ffff24c2.bit6 is set and \
+caps it at 0xff. Periodic coordinator 000493e8 consumes the count and clears \
+it before the final FUN 00020dfe snapshot boundary."""
+note = [
+    """
+A telemetry snapshot after FUN 00020dfe must use a pre-coordinator latch \
+rather than read this byte directly.""",
+]
+level = "code"
+unit = "event count"
+
+[[ledger]]
+registry = "vars"
+order = 656
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_function/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_slice_evaluator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe90fe"
@@ -24,6 +68,41 @@ note = "Target knock event function updates this saturating counter"
 layout = "7mfk"
 address = "ffff2142"
 former = ["russet-swift/ram/7mfk-ffff2142"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004952c"
+value = {named = ["000493e8", "0004a238", "ffff2142"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00049580"
+value = {named = ["000493e8", "0004a238", "ffff2142"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a368"
+value = {named = ["000493e8", "0004a238", "ffff2142"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a374"
+value = {named = ["000493e8", "0004a238", "ffff2142"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a384"
+value = {named = ["000493e8", "0004a238", "ffff2142"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -61,3 +140,31 @@ to = "7mfk:0004a010"
 count = 1
 value = 26
 note = "Target knock event function updates this saturating counter"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

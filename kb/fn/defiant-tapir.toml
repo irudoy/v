@@ -1,0 +1,28 @@
+summary = """
+1D linear interpolation for entries using core 0x26B84; its formula is \
+identical to 0x26740."""
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 109
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00026af8"
+name = "defiant-tapir"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026af8"
+value = {span = 1}
+key = "body"

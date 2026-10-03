@@ -1,0 +1,137 @@
+summary = """
+Three-byte response-curve result group ffff1635..ffff1638 in FUN 0004d2a6. \
+Curve 000125ca produces T0 at ffff1636, T1 at ffff1635, and T2 at ffff1638; \
+coefficient 0000a4aa produces W at ffff1637. Code forms \
+c0=max(0,64+trunc0(W*(T0-T2)/512)) and c1=max(0,64+trunc0(W*(T1-T2)/512))."""
+note = ["The engineering scale of the response values is unresolved."]
+level = "code"
+unit = "raw intermediate"
+
+[[ledger]]
+registry = "vars"
+order = 101
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aspiring-chupacabra/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thoughtful-whale/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blazing-gibbon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1636"
+name = "competent-pony"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d3ee"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d40e"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d43c"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d482"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d4b4"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d55a"
+value = {named = ["0000a4aa", "000125ca", "0004d2a6", "ffff1636", "ffff2458"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "aspiring-chupacabra/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "thoughtful-whale/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

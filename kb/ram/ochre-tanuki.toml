@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff12fc"
+name = "ochre-tanuki"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00047702"
+
+[[link]]
+type = "writer"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

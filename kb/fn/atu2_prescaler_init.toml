@@ -1,0 +1,56 @@
+title = "ATU-II prescaler initialization with PSCR1 value 1"
+summary = """
+ATU-II prescaler initialization. It writes 1 to PSCR1 at fffff404 and to the \
+other prescaler registers, then configures associated control bytes."""
+note = [
+    """
+Together with TCR3 = 5 and TCR8 = 0x55 in 0002718a this gives timer channel \
+3 and the channel-8 one-shot down-counters an input of Pphi/64 according to \
+the SH7059 hardware manual.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "curated"
+order = 2
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 483
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-lori/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000274ac"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000274b2=0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000274ac"
+value = {named = ["fffff404"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000274b2"
+value = {named = ["fffff404"], span = 1}
+key = "body"

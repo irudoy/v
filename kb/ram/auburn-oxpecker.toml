@@ -1,0 +1,123 @@
+summary = """
+Bounded signed coarse-state output in FUN 000a5a06 after the \
+current/prior-cycle coefficient calculation and subtractive correction from \
+map 00013ce8. The function copies it into its retained state block at the \
+end of the invocation."""
+note = [
+    """
+A whole-program p-code scan finds no access outside FUN 000a5a06. The \
+physical state quantity is unresolved.""",
+]
+level = "code"
+unit = "signed raw state"
+
+[[ledger]]
+registry = "vars"
+order = 521
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "conscious-caterpillar/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-giraffe/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-marmot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3106"
+name = "auburn-oxpecker"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5e58"
+value = {named = ["0000c78e", "00013ce8", "000a5a06", "ffff3106"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5edc"
+value = {named = ["0000c78e", "00013ce8", "000a5a06", "ffff3106"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5ef0"
+value = {named = ["0000c78e", "00013ce8", "000a5a06", "ffff3106"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6346"
+value = {named = ["0000c78e", "00013ce8", "000a5a06", "ffff3106"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6348"
+value = {named = ["0000c78e", "00013ce8", "000a5a06", "ffff3106"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "conscious-caterpillar/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "impetuous-giraffe/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

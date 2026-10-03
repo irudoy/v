@@ -1,3 +1,22 @@
+summary = """
+Interpolated eight-point uint8 multiplier table: through ffff2ff2, its byte \
+enters a product at 000a5284 with RAM8[ffff338a] and (param_2 & 0xffff), \
+after which the product participates in saturating 16-bit blending with \
+(param_1 & 0xffff)."""
+note = [
+    """
+The lookup uses q=4*uint8[ffff110e] when the value is <64 and q=255 \
+otherwise; the result is written to ffff2ff2. 000a5284 includes this byte in \
+a three-factor product and saturating 16-bit blend. On the bypass path, raw \
+128 is written to ffff2ff2; the physical quantity is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
 category = "Internal Calculations"
@@ -7,10 +26,74 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 387
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cherubic-narwhal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000123e2"
 name = "organic-markhor"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a5284"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55a4"
+value = {named = ["000123e2", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55a8"
+value = {named = ["000123e2", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55ac"
+value = {named = ["000123e2", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a55b2"
+value = {named = ["000123e2", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +126,17 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "cherubic-narwhal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "xanthic-wolf/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

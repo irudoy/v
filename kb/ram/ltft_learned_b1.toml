@@ -1,6 +1,65 @@
+summary = """
+Selected bank 1 cell from the 64-word learned-fuel-trim grid at ffff4b90. \
+FUN 0005796c writes the selected Q8.8-percent value; FUN 00057d1e adapts the \
+selected grid cell and FUN 00057b26 consumes this word when forming \
+diagnostic LTFT."""
+note = [
+    """
+Selection uses an 8x8 operating-region index whose ffff1024 dimension is \
+current Base Fuel Schedule.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x/256-100"
+
+[[ledger]]
+registry = "vars"
+order = 140
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*256"
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "liberal-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rousing-rhino/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delectable-vole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "successful-tarantula/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -34,6 +93,27 @@ index as the first summand"""
 layout = "7mfk"
 address = "ffff2306"
 former = ["agile-bandicoot/ram/7mfk-ffff2306"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b0c"
+value = {named = ["0005796c", "00057b26", "00057d1e", "000593ac", "ffff2306", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b36"
+value = {named = ["0005796c", "00057b26", "00057d1e", "000593ac", "ffff2306", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057e0e"
+value = {named = ["0005796c", "00057b26", "00057d1e", "000593ac", "ffff2306", "ffff4b90"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -70,3 +150,54 @@ value = "ffff225e"
 note = """
 The target long-term trim publisher reads this base with the doubled bank \
 index as the first summand"""
+
+[[link]]
+type = "input"
+to = "delectable-vole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pretty-mongrel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

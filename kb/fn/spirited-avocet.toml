@@ -1,0 +1,26 @@
+summary = """
+Reciprocal-pair component where bit 5 of ROM byte 0x89fb selects \
+interpolation versus direct pass-through."""
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 228
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00074728"
+name = "spirited-avocet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089fb"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074728"

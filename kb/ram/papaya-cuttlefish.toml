@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff190e"
+name = "papaya-cuttlefish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070ec2"
+
+[[link]]
+type = "lookup"
+to = "cute-shark/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

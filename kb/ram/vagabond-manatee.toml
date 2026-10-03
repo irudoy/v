@@ -1,0 +1,103 @@
+summary = """
+Q0.16 weight for blending signed endpoints ffff1cfc and ffff1cfe. FUN \
+000740ae changes it by 300 with saturation toward 0 or 65535 according to \
+ffff245c.bit2; FUN 000740e2 consumes it."""
+note = ["The physical mode represented by the weight is unresolved."]
+level = "code"
+unit = "Q0.16 weight"
+
+[[ledger]]
+registry = "vars"
+order = 492
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dark-earthworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wonderful-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "green-cockle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d0c"
+name = "vagabond-manatee"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000162dc=0x012c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000740bc"
+value = {named = ["000162dc", "000740ae", "000740e2", "ffff1d0c", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000740de"
+value = {named = ["000162dc", "000740ae", "000740e2", "ffff1d0c", "ffff245c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000740f2"
+value = {named = ["000162dc", "000740ae", "000740e2", "ffff1d0c", "ffff245c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dark-earthworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "green-cockle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "wonderful-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "green-cockle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

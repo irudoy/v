@@ -1,0 +1,91 @@
+summary = """
+Per-bank fault counter of the P0078/P0084 magnet retarder circuit pair \
+(ffff3596 + b). FUN 00090642 increments it with saturation while a driver \
+status byte of the bank equals 1 during a zero-duty evaluation, zeroes it \
+otherwise, sets result ffff358d bit b at ROM8[00008b00]=10, and sets judged \
+latch ffff3584 bit b at ROM8[00008b02]=100. Reset helper 0008fc6a zeroes \
+it."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 922
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cherubic-goose/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-goose/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3596"
+name = "magenta-nightingale"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b00=10"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b02=100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009074c"
+value = {named = ["00008b00", "00008b02", "0008fc6a", "00090642", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000907c2"
+value = {named = ["00008b00", "00008b02", "0008fc6a", "00090642", "ffff3596"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "cherubic-goose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cherubic-goose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

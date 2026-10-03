@@ -1,0 +1,74 @@
+summary = """
+Base of two uint32 feedback-reference magnitude terms written by 000cb140 at \
+stride four and consumed by 000cb614."""
+note = ["Channel elements are ffff36a0 and ffff36a4."]
+level = "code"
+unit = "fixed-point magnitude array"
+
+[[ledger]]
+registry = "vars"
+order = 699
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_error_encoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff36a0"
+name = "thistle-zebu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb180"
+value = {named = ["000cb140", "000cb614", "ffff36a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb9c8"
+value = {named = ["000cb140", "000cb614", "ffff36a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cbf16"
+value = {named = ["000cb140", "000cb614", "ffff36a0"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

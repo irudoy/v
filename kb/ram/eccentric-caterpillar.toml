@@ -1,0 +1,74 @@
+summary = """
+Runtime selector byte read by FUN 0003ece8 and captured by FUN 0004faac as \
+min(7,value) for indexing stock table 000126f4."""
+note = [
+    """
+Both eight-byte halves of the stock table are zero, so the selected \
+threshold is always zero. Its producer is not assigned here.""",
+]
+level = "code"
+unit = "selector index"
+
+[[ledger]]
+registry = "vars"
+order = 630
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "saffron-squirrel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "status_gated_engine_running_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff273c"
+name = "eccentric-caterpillar"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000126f4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ed54"
+value = {named = ["000126f4", "0003ece8", "0004faac", "ffff273c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fae6"
+value = {named = ["000126f4", "0003ece8", "0004faac", "ffff273c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "saffron-squirrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "status_gated_engine_running_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

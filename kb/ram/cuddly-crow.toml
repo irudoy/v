@@ -1,0 +1,152 @@
+summary = """
+Current APC reset-offset source selected by 0004c1e4 as \
+min(ffff1874,ffff1875), with a diagnostic-state override to 24. Its proven \
+stock range is 0..114. Periodic dispatcher 00020dfe copies it to ffff237a."""
+note = [
+    """
+The copy uses matching offset 0x4a inside the 0x8c-byte ffff23bc -> ffff2330 \
+snapshot.""",
+]
+level = "code"
+unit = "raw command count"
+
+[[ledger]]
+registry = "vars"
+order = 645
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "agate-ape/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chubby-lobster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aloof-stork/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_offset_source_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2406"
+name = "cuddly-crow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021314"
+value = {named = ["00020dfe", "0004c1e4", "ffff1874", "ffff1875", "ffff237a", "ffff2406", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00020dfe", "0004c1e4", "ffff1874", "ffff1875", "ffff237a", "ffff2406", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c37a"
+value = {named = ["00020dfe", "0004c1e4", "ffff1874", "ffff1875", "ffff237a", "ffff2406", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c380"
+value = {named = ["00020dfe", "0004c1e4", "ffff1874", "ffff1875", "ffff237a", "ffff2406", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c38e"
+value = {named = ["00020dfe", "0004c1e4", "ffff1874", "ffff1875", "ffff237a", "ffff2406", "ffff4251"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "aloof-stork/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "agate-ape/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "chubby-lobster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

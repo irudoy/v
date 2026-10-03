@@ -1,7 +1,119 @@
+summary = """
+Second channel of a mode-gated paired override. The interpolated uint16 \
+result is written to ffff2ffc and, through the common return path, to the \
+second word of the caller-provided output pair."""
+note = [
+    """
+The mode branch at 00062a34-00062a3c enables the paired lookups. Base \
+00014e02 and axis 00013b98 feed the interpolation call at 00062a5a; the \
+result is written to ffff2ffc at 00062a62, loaded at 00062abc, and reaches \
+the second output word at 00062b58. All map cells and all axis points are \
+zero in stock JK08A, so this live override channel publishes zero. The \
+physical quantity and engineering scale are not assigned. Result \
+disposition: writes. Result target: ffff2ffc and output pair word 1.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 260
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-cicada/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "porcelain-slug/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014e02"
 name = "giga-pigeon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a34"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a3a"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a3c"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a54"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a5a"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a5e"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062a62"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ab8"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062abc"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062b58"
+value = {named = ["00013b98", "00014e02", "ffff2ffc"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +146,18 @@ value = 27
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "hallowed-cicada/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

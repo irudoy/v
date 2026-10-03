@@ -1,0 +1,144 @@
+summary = """
+Unknown physical quantity: a mode-selected 1D uint8 table whose interpolated \
+byte 00064cb2 uses as the high byte of a 16-bit target in RAM ffff1866."""
+note = [
+    """
+00012b32 is selected by instruction 00064336 when bVar1 == 1 on the branch \
+with (ffff2466 & 0x40) == 0. Accessor 0006425a writes the interpolation \
+result to ffff3373; consumer 00064cb2, called later from 00065434, reads \
+this byte. All 8 map cells and all 8 axis points are zero; this does not \
+prove role=dead or threshold and defines no physical scale.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 196
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fine-cockatoo/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "daring-koala/fn"
+type = "depends"
+end = "owner"
+link_role = "selector"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rough-panther/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012b32"
+name = "carrot-frog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064336"
+value = {named = ["00012b32", "00012b42", "00026474", "00026740", "00026944", "00026c78", "0006425a", "00064cb2", "00065434", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006433c"
+value = {named = ["00012b32", "00012b42", "00026474", "00026740", "00026944", "00026c78", "0006425a", "00064cb2", "00065434", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064344"
+value = {named = ["00012b32", "00012b42", "00026474", "00026740", "00026944", "00026c78", "0006425a", "00064cb2", "00065434", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "friendly-magpie/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
+type = "depends"
+to = "fine-cockatoo/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

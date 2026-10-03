@@ -1,0 +1,162 @@
+summary = """
+Optional 0..727 blend of inverse coordinates written by FUN 00076ad0 as \
+floor((uint8[ffff3e72]*uint16[ffff1f60]+(255-uint8[ffff3e72])*uint16[ffff1e7a])/255)."""
+note = [
+    """
+Additional ROM and runtime gates control the blend. The exact \
+fixed-denominator arithmetic is proven; the physical quantity and mode \
+remain unresolved.""",
+]
+level = "code"
+unit = "scaled first-channel raw"
+
+[[ledger]]
+registry = "vars"
+order = 496
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pistachio-vole/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "auspicious-earthworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "certain-urchin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glittering-jackal/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-vole/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f5e"
+name = "unselfish-tamarin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f5e"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f64"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f6a"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f6e"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f7a"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f84"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076f92"
+value = {named = ["00021ce0", "00076ad0", "ffff1e7a", "ffff1f5e", "ffff1f60", "ffff3e72"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "auspicious-earthworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "certain-urchin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "glittering-jackal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "hairy-lori/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "pistachio-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pistachio-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

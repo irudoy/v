@@ -1,0 +1,121 @@
+summary = """
+Multipurpose retained status byte. Bit 3 is the exhaust valve timing control \
+learning status, set for YET: default initializer 000bccf0 and service 0x31 \
+routine 0x0c (000340c2) set it, and FUN 000bfe88 clears it at 000c0ca4 once \
+both banks have stored their first learning. Scheduler 00020dfe copies the \
+byte to ffff5b32 at 0002135e."""
+note = [
+    """
+FUN 0002e2e8 publishes bit 3 of the copy as DID 0x1311 bit 3, which a \
+structured Nissan profile names EXH V/T LEARN with 0 = DONE and 1 = YET. \
+Functions 0007d84c, 0007dc32, 0007dddc, 0007dfc0, 0007e1d6, 0007e334, and \
+00080b54 write other bits of the byte.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 920
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adamant-bullmastiff/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gorgeous-adder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5b33"
+name = "honored-cricket"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002135e"
+value = {named = ["00020dfe", "00033f78", "000bccf0", "000bfe88", "ffff5b33"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000340c2"
+value = {named = ["00020dfe", "00033f78", "000bccf0", "000bfe88", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0a18"
+value = {named = ["00020dfe", "00033f78", "000bccf0", "000bfe88", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0ca4"
+value = {named = ["00020dfe", "00033f78", "000bccf0", "000bfe88", "ffff5b33"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "adamant-bullmastiff/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gorgeous-adder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4058"
+name = "cinnamon-mole"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009b50c"
+
+[[link]]
+type = "lookup"
+to = "inventive-mosquito/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]

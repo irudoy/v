@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8c3a"
+name = "cherry-swift"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00060448"
+
+[[link]]
+type = "lookup"
+to = "belligerent-armadillo/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

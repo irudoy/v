@@ -1,3 +1,33 @@
+summary = """
+Eight-point uint16 table of a value for conditional internal-state loading: \
+lookup result x is converted as min(x*256,65535), written to ffff32b8, and \
+its high byte is written to ffff413f. On the alternate path, this state is \
+compared with a step quantity and reduced with saturation toward zero."""
+note = [
+    """
+The physical subsystem and physical units are unknown: root FUN_00066186 has \
+no call sites, and the artifact has no external readers of the RAM values. \
+Code confidence applies only to narrow operational semantics. The map is \
+flat, so in this ROM the lookup always yields 20; runtime conversion \
+produces 5120 (0x1400), while 20 is written to ffff413f. Saturating \
+conversion min(x*256,65535) is not claimed as a scale because it lacks an \
+exact inverse pair. Index: implicit 1D-8: q=min(uint16[ffff40c6]*128,65535); \
+for q<57344, the kernel performs linear interpolation of adjacent uint16 \
+values; for q>=57344, the wrapper selects element 7. Output trace: 000661be \
+[delay slot 000661c0 sets r4=00015330] -> 000263d8 -> 00026a60 -> 00026740 \
+-> return to 000661c2 -> 000661c6 -> 000661ca/000661ce -> 000661d6 -> \
+ffff32b8 -> high-byte extraction in 00066186 -> ffff413f; on the alternate \
+path, ffff32b8 -> 000661f4 -> comparison and subtraction in 00066186 -> \
+ffff32b8. Result disposition: writes; Result target: RAM ffff32b8 at site \
+000661d6; RAM ffff413f receives the high byte of ffff32b8 in FUN_00066186.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Saturating Internal State Load - raw u16 (0x15330)"
 category = "Internal Calculations"
@@ -7,7 +37,138 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 429
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "abiding-badger/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015330"
 name = "honored-duck"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661a2"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661a6"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661b8"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661be"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c0"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c2"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c6"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661ca"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661ce"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661d6"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661f4"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661fc"
+value = {named = ["00015330", "000263d8", "00026740", "00026a60", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "abiding-badger/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

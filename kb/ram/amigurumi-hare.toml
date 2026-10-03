@@ -1,0 +1,94 @@
+summary = """
+Derived common opening-coordinate monitor written by 000710bc from inverse \
+conversion of ffff183e/2 through 0x155a0/0x13202 followed by division by \
+four."""
+note = [
+    """
+It is not a channel target, measured TPS value, regulator effort, or PWM \
+duty.""",
+]
+level = "code"
+unit = "raw opening coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 683
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-swallow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_opening_monitor_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff40c6"
+name = "amigurumi-hare"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710dc"
+value = {named = ["000710bc", "ffff183e", "ffff40c6"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "papaya-swallow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bouncy-barracuda/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "indigo-starfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tungsten-capuchin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_opening_monitor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

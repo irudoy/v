@@ -1,0 +1,95 @@
+summary = """
+Startup RAM initializer driven by descriptor table 0x2260C. Its longword \
+loops clear [ffff84a0,ffff981c) and effective span [ffff1000,ffff261c), \
+whose unaligned descriptor stop is ffff261a; the latter includes \
+previous-pass bytes ffff107e..ffff1080 and fuel-inhibit prerequisite byte \
+ffff2494. It also copies initialized data from ROM 0x25590 to RAM \
+[ffff9f0c,ffffa314) and then calls range check FUN 00026ea0, and \
+retained-region reinitializer FUN 00026f08 when the check returns zero."""
+note = [
+    """
+Startup entry FUN 00027e24 reaches this initializer before the main loop; \
+the descriptor endpoints and longword width prove zero initialization of the \
+listed state.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 10
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "writes"
+to = "amiable-mule/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "meaty-orca/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rousing-jackal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stirring-mayfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00027c50"
+name = "cunning-ocelot"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002260c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022614"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022618"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027c7a"
+value = {named = ["0002260c", "00022614", "00022618", "00026f08", "00027c50", "ffff107e", "ffff107f", "ffff1080", "ffff2494"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027cd8"
+value = {named = ["0002260c", "00022614", "00022618", "00026f08", "00027c50", "ffff107e", "ffff107f", "ffff1080", "ffff2494"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "archetypal-spoonbill/fn/7mfk"
+relies = "structure"

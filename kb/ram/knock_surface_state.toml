@@ -1,4 +1,19 @@
+summary = """
+Multipurpose state byte. Bit 6 selects active hot timing surface 0x9A1A when \
+clear and 0x9B1A when set in 0004e1c0; reference sample ffff1610 remains \
+based on 0x9A1A. Coordinator 000493e8 updates the selector through several \
+gates. One hysteresis branch sets it at signed Q8 ffff1382 <= -1792 and \
+clears it only above 8192. Bit 6 also selects the high-detonation scaling of \
+the target mixture in 0005594a: when set, the deviation of the 0000a9aa \
+result from 128 is scaled by 00012552."""
+note = [
+    """
+Bit-6 feedback forms the knock/high-detonation surface-selection loop. Other \
+coordinator gates can force either state.""",
+]
+level = "code"
 width = 8
+unit = "bitfield"
 
 [[bit]]
 bit = 6
@@ -98,6 +113,69 @@ kind = "l0"
 supports = "role"
 at = "7mfk:00049a8c"
 note = "mov.b r0,@(0xe,gbr) stores the byte with the bit clear"
+
+[[ledger]]
+registry = "vars"
+order = 176
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cold_hot_timing_map_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "red-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "magnificent-crab/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_function/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -226,6 +304,18 @@ layout = "7mfk"
 address = "ffff2466"
 former = ["liberal-trout/ram/7mfk-ffff2466"]
 
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f00"
+value = "0x2000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f02"
+value = "0xf900"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff24ea"
@@ -261,3 +351,54 @@ at = "jk78c:000657c0"
 to = "7mfk:0004bc84"
 value = "ffff23c6"
 note = "Ignition and correction consumers test bit 0x40 to select the surface"
+
+[[link]]
+type = "input"
+to = "magnificent-crab/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "red-mantis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

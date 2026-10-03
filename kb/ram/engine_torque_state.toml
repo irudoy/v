@@ -1,4 +1,9 @@
-note = """
+summary = """
+Saturated signed engine-torque state from FUN 000659ae after adding ffff2408 \
+to centered map result ffff18ca and applying Q14 and Q8 calibrated \
+multipliers."""
+note = [
+    """
 A signed gross state in the ECU torque-model raw domain, before the recorded \
 net-state deductions. Engineering conversion is unestablished. Retained \
 hypothesis: Candidate x*0.1 Nm for the internal modeled state, with x*0.08 \
@@ -9,8 +14,81 @@ equals 0.1 Nm rather than 0.08 Nm. Gross state ffff18cc directly represents \
 flywheel torque. The tracked road result explicitly does not support that \
 interpretation. The physical multiplier and reference location remain valid \
 across all target layouts without target validation. Source references: \
-defs/JK08A.can.md:211-295, defs/JK08A.tuning-telemetry.md:107-113."""
+defs/JK08A.can.md:211-295, defs/JK08A.tuning-telemetry.md:107-113.""",
+    """
+Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers \
+unity. The chain 00065b08, 00065cd8, 00065de4, 00065e2c carries this state \
+to net torque ffff240c, which CAN packer 00079e70 divides by five and \
+offsets by 800 for frame 0x180. The candidate physical conversion is x*0.1 \
+Nm, equal to 0.5 Nm per CAN count with zero at count 800; a moving-load \
+capture then spans -73.5..226 Nm.""",
+]
+level = "code"
 width = 16
+
+[[ledger]]
+registry = "vars"
+order = 527
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "signed torque raw"
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vigorous-saluki/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "encouraging-buzzard/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lyrical-dragon/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-fossa/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pink-vulture/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "white-malkoha/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -42,6 +120,55 @@ note = "Three-generation homologous torque function writes this state"
 layout = "7mfk"
 address = "ffff18cc"
 former = ["monumental-bison/ram/7mfk-ffff18cc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000656c8"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a5a"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a68"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a72"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a7c"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a86"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065bec"
+value = {named = ["00010b8e", "0001245a", "000655b4", "000659ae", "00065b08", "ffff18ca", "ffff18cc", "ffff2408"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +206,62 @@ to = "7mfk:00065a2e"
 count = 1
 value = 50
 note = "Homologous torque functions write this state at aligned call order"
+
+[[link]]
+type = "input"
+to = "encouraging-buzzard/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "kickass-fossa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "pink-vulture/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "lyrical-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "vigorous-saluki/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,208 @@
+summary = """
+Component enabled by master gate bit 7 of ffff84c0. On the r5>=r7 branch, \
+map 00012126 defines floor((r5-r7)*x/2048). Separately, lookup 00012332 by \
+uint8 ffff1077 defines a lower raw bound: code selects \
+max(lookup<<8,uint16[ffff1e5c])."""
+note = [
+    """
+The physical purpose of both computed quantities is unresolved; shifting \
+lookup 00012332 by 8 bits is an internal representation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 127
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "festive-marmot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "statuesque-binturong/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "woodoo-loon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "urban-roadrunner/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "big-dodo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003c4a0"
+name = "fabulous-leech"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c4fe"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c514"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c51c"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c522"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c526"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c52c"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c530"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c534"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c536"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c540"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c546"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c54c"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c550"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c552"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c554"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c556"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c566"
+value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "festive-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "urban-roadrunner/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

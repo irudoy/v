@@ -1,0 +1,68 @@
+summary = """
+Signed limiter candidate written by adjacent calibrated branch 00075798 and \
+selected by minimum arbiter 00071508."""
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 115
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_limit_arbiter/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sincere-agama/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19de"
+name = "glossy-tody"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009476"
+value = "0x0708"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000715a6"
+value = {named = ["00009476", "00071508", "00075798", "ffff19de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007582e"
+value = {named = ["00009476", "00071508", "00075798", "ffff19de"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "signed_request_limit_arbiter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sincere-agama/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

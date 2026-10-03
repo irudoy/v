@@ -1,0 +1,39 @@
+summary = """
+2D interpolation over bytes, plain uint8: the full byte is the value. It \
+serves six explicit-axis entries plus 0x26040. Both operands of each \
+interpolation are read unsigned with EXTU.B."""
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 99
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gabby-vole/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026770"
+name = "careful-terrier"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"
+
+[[link]]
+type = "depends"
+to = "gabby-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

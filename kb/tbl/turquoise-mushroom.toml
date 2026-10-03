@@ -1,3 +1,29 @@
+summary = """
+Four-point Boolean inhibit table for publication of the filtered positive \
+RPM-drop class while the upstream mode bit is set."""
+note = [
+    """
+When ffff2459.bit5 is clear, FUN 0003e1da indexes this map by \
+q=clamp(uint16[ffff114a]-96,0,255), stores the result in ffff1ee0 and \
+ffff257a, and forces ffff1072 to zero. The implicit nodes q=0,64,128,192 \
+correspond to 1200,2000,2800,3600 RPM because ffff114a is RPM/12.5. When \
+ffff2459.bit5 is set, the retained ffff257a byte is tested: a nonzero result \
+with ffff2451.bit7 clear forces ffff1072 to zero; a zero result or set bit7 \
+publishes high8(ffff1e50). All four stock cells equal 200, and byte \
+magnitude is otherwise unused, so every nonzero value is operationally \
+equivalent. ffff2451.bit7 directly mirrors SH7058 PHDR bit 1 (PH1DR); FUN \
+0002e0d4 publishes that bit as DID 0x1305 bit 2, which a structured Nissan \
+profile names BRAKE SW. The address-free Initial Retard Quantity catalog \
+match is contradicted by this machine path. Result disposition: inline \
+Boolean gate before ffff1072 and scheduled snapshot ffff106a.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw Boolean"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "RPM-Drop Publication Inhibit by Pre-Mode RPM (0x1202E)"
 category = "Internal Calculations"
@@ -9,10 +35,187 @@ coarse = 200
 static_axis = [1200, 2000, 2800, 3600]
 static_axis_name = "Engine Speed [RPM]"
 
+[[ledger]]
+registry = "findings"
+order = 336
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "phenomenal-cricket/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sophisticated-magpie/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wisteria-sheep/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "porcelain-mastiff/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purring-shellfish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "teal-giraffe/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vivid-meerkat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001202e"
 name = "turquoise-mushroom"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001202e"
+value = "0xc8c8c8c8"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2b0"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2bc"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2ce"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2d2"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2da"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2de"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f0"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f8"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e31a"
+value = {named = ["0001202e", "00020dfe", "00026358", "00026740", "0003e1da", "ffff106a", "ffff1072", "ffff114a", "ffff1ee0", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "hypnotic-dugong/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -45,3 +248,40 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "sophisticated-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "wisteria-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

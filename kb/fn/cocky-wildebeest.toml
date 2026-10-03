@@ -1,0 +1,108 @@
+summary = """
+Accessor for uint16 map pair 00014304/00014314 by saturated coordinate \
+ffff1210<<7. A mode range selects the map; its result limits the descending \
+update of ffff17c0 by subtracting a step or clearing the state."""
+note = ["The physical quantity of the state and steps is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 322
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "enchanted-tuatara/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fractal-mussel/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-taipan/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-peacock/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00074e4e"
+name = "cocky-wildebeest"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f30"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f36"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f48"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f58"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f5c"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f64"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f6c"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f70"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"

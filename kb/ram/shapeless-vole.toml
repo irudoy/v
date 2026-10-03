@@ -1,0 +1,155 @@
+summary = """
+Exhaust-VTC active-target timer. FUN 0008f168 reloads it with ROM8[00008e40] \
+at 0008f428 while it is non-zero and ffff24aa bit 4 is clear or common \
+target ffff2327 differs from 0x80; FUN 00090256 reads it at 000902aa. \
+Initializer FUN 0007ebec and reset helper FUN 0008fc6a write it."""
+note = [
+    """
+The timer lies in the 102.4 ms byte block of base-tick handler 0002040c, so \
+the reload of 60 is 6.14 s.""",
+]
+level = "code"
+unit = "102.4 ms counts"
+
+[[ledger]]
+registry = "vars"
+order = 784
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apricot-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "amigurumi-pheasant/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_runtime_records_init/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "paper-hippo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff43c2"
+name = "shapeless-vole"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e40=60"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f3a6"
+value = {named = ["00008e40", "0007ebec", "0008f168", "0008fc6a", "00090256", "ffff2327", "ffff24aa", "ffff43c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f428"
+value = {named = ["00008e40", "0007ebec", "0008f168", "0008fc6a", "00090256", "ffff2327", "ffff24aa", "ffff43c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000902aa"
+value = {named = ["00008e40", "0007ebec", "0008f168", "0008fc6a", "00090256", "ffff2327", "ffff24aa", "ffff43c2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "amigurumi-pheasant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diagnostic_runtime_records_init/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

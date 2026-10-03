@@ -1,3 +1,23 @@
+note = [
+    """
+X axis for map 00009C5A. Code forms the key as min(uint16(ffff2698) >> 2, \
+255), so points 50, 100, 150, and 200 correspond to original raw values 200, \
+400, 600, and 800. The physical quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x*4"
+to_raw = "x/4"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 28
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1]
+
 [[symbol]]
 layout = "7mfk"
 address = "000119ae"
@@ -7,6 +27,13 @@ name = "delectable-echidna"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0007a498"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a468"
+value = {named = ["000119ae"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"

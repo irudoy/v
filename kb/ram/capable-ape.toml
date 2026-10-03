@@ -1,0 +1,111 @@
+summary = """
+Newest misfire crank interval and head of the 14-longword interval history. \
+The common tail of 00028ea2 writes abs(ICR0A - ffff84d4) on tooth 9, the \
+ICR0A time between consecutive tooth-9 captures over 120 crank degrees; \
+updater 0003cf24 shifts the history and detection helper 00086b0c reads it."""
+note = [
+    """
+The interval captured on event index c spans 50..170 degrees after \
+compression TDC of index c - 2.""",
+]
+level = "code"
+unit = "ICR0A timer count"
+
+[[ledger]]
+registry = "vars"
+order = 895
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fat-buzzard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lovely-koala/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1dac"
+name = "capable-ape"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdc"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdd"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a21e"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "00085a70", "00086b0c", "ffff1dac"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "lovely-koala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

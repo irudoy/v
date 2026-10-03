@@ -1,0 +1,112 @@
+summary = """
+Exhaust-VTC active-test offset. FUN 0002e466 stores clamp(int8(ffff9940), \
+ROM8[0000873e]=-20..ROM8[0000873f]=20) at 0002e612 while it sets request bit \
+ffff249c bit 6; FUN 000bfe88 reads it at 000c04da while the bit is set and \
+adds it to the exhaust target."""
+note = [
+    """
+ffff9940 is the value byte of service-0x30 Output Control IOLID 0x1d \
+(ffff9923 + n in handler 00030c4c). The unit of the offset follows the \
+exhaust target byte.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 804
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wine-swallow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "jovial-buzzard/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "muscular-lizard/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1706"
+name = "humongous-coua"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000873e"
+value = "0xec"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000873f=20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e612"
+value = {named = ["0000873e", "0000873f", "0002e466", "000bfe88", "ffff1706", "ffff249c", "ffff9940"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c04da"
+value = {named = ["0000873e", "0000873f", "0002e466", "000bfe88", "ffff1706", "ffff249c", "ffff9940"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "wine-swallow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "jovial-buzzard/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

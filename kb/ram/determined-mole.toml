@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff395c"
+name = "determined-mole"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00082d6c"
+
+[[link]]
+type = "writer"
+to = "steady-eagle/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

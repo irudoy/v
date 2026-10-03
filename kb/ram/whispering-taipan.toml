@@ -1,0 +1,62 @@
+summary = """
+Learned mask of the exhaust cam reference, bits 0 and 1. FUN 00090884 sets \
+bit b at 000909be when it stores the first reference of the bank; FUN \
+00090bd2 requires the bit for its reference-deviation path."""
+note = [
+    """
+No code in the whole-program references clears a bit of the byte. Stock \
+JK08A never runs 00090bd2.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 924
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loose-frigatebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "whimsical-quokka/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff48df"
+name = "whispering-taipan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000909be"
+value = {named = ["00090884", "00090bd2", "ffff48df"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "loose-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "whimsical-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

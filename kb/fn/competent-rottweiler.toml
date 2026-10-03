@@ -1,0 +1,166 @@
+summary = """
+Bounded-ramp coordinator. It selects lower threshold L from 0x1243A or \
+0x1244A by ffff2466.bit6, reads live Q7 normalized-BFS byte ffff1048, and \
+combines it with upper coordinate C=ROM8[0x11ECD]=128 and a branch-specific \
+upper value H from 0x12462 or 0x12472. On the code-proven bit-clear branch \
+it calculates clamp(H*(ffff1048-L)/(C-L),0,H) when L<C and selects zero \
+otherwise."""
+note = [
+    """
+The live load representation is exact at raw*100/128 percent of \
+ROM16[00009534]. Address 00011ecd is the terminal cell of ignition \
+normalized-BFS axis 00011ebe, so C is exactly the 100-percent reference \
+point; this function reads only that terminal cell and does not interpolate \
+the axis. The physical purpose of the ramp output remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 150
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arrogant-catfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cerise-sturgeon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gentle-macaque/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "red-okapi/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-bloodhound/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "conscious-oriole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tungsten-crow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004bbee"
+name = "competent-rottweiler"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc0c"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc14"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc98"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca0"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcce"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce0"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "cryptic-bloodhound/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

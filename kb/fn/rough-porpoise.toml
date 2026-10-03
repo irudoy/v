@@ -1,0 +1,21 @@
+summary = """
+Saturating addition that returns INT_MIN/INT_MAX on overflow; reads no \
+tables. One of four non-table entries in the region, with 11 slots."""
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 90
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000265c4"
+name = "rough-porpoise"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "region-entries"

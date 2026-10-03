@@ -1,0 +1,35 @@
+summary = """
+Bit 0 participates in selecting the Y-axis input source together with \
+ffff2468 bit 3."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 347
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5773"
+name = "notorious-ringtail"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bfddc"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,3 +1,9 @@
+summary = """
+Explicit-axis 16x16 wrapper over the word core, with both axes using words \
+(clamps 30/30 through one r7 pointer)."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "versatile-junglefowl/fn"
@@ -6,6 +12,21 @@ rows = 16
 storage = "uint16"
 x_storage = "uint16"
 y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 71
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amiable-bloodhound/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +49,11 @@ at = "1nd:000286b6"
 layout = "7mfk"
 address = "000262a8"
 name = "elegant-dragon"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +105,11 @@ key = "000262a8"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002809a"
+
+[[link]]
+type = "depends"
+to = "amiable-bloodhound/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

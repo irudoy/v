@@ -1,0 +1,109 @@
+summary = """
+Signed 32-bit bank 2 MAF contribution written by FUN 0003af42 from filtered \
+bank-2 quantity ffff1df2 and stateful corrections. FUN 0003b252 includes it \
+in combined MAF aggregate ffff1e38."""
+note = [
+    """
+The MAF and bank identity are code-proven; the individual correction terms \
+and engineering scale remain unresolved.""",
+]
+level = "code"
+unit = "raw MAF contribution"
+
+[[ledger]]
+registry = "vars"
+order = 479
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "combined_maf_aggregate/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spiked-dalmatian/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mustard-squid/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1dfc"
+name = "imposing-auk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b170"
+value = {named = ["0003af42", "0003b252", "ffff1df2", "ffff1dfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b190"
+value = {named = ["0003af42", "0003b252", "ffff1df2", "ffff1dfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b202"
+value = {named = ["0003af42", "0003b252", "ffff1df2", "ffff1dfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b262"
+value = {named = ["0003af42", "0003b252", "ffff1df2", "ffff1dfc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "spiked-dalmatian/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "artichoke-mantis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "combined_maf_aggregate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

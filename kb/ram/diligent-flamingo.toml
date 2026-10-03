@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff40b6"
+name = "diligent-flamingo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d964"
+
+[[link]]
+type = "reader"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

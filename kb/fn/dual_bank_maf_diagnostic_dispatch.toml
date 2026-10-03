@@ -1,0 +1,134 @@
+summary = """
+Boolean-to-record dispatcher for the six exact dual-bank MAF circuit \
+diagnostics. Nonzero inputs call diagnostic reporter 0007d8b8 with fixed \
+record indices."""
+note = [
+    """
+Dispatch six exact MAF diagnostic runtime records from Boolean monitor \
+results""",
+    """
+Argument 3 is wired to the minus-one sentinel by FUN 00080e20 and therefore \
+cannot report a descriptor on this exact path.""",
+]
+level = "code"
+role = "service"
+contract = """
+Arguments 1..7 dispatch records 0xbc, 0xbb, -1, 0xba, 0x09, 0x08, and 0x07 \
+respectively when nonzero. The exact non-sentinel descriptors encode P0103, \
+P0102, P0101, P010D, P010C, and P010B."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 60
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 254
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4]
+contract = [5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00080f82"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193b4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019c18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080f82"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080fb8"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080fde"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080f94"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fa0"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fac"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fb6"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fc4"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fd0"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00080fdc"
+value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

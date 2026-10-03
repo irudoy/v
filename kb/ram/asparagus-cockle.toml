@@ -1,0 +1,278 @@
+summary = """
+Current periodic snapshot of producer byte ffff2459; scheduler 00020dfe \
+first copies the old value to ffff245a and then copies ffff2459 here. Bit 5 \
+is the upstream DFCO mode/eligibility input: 0004fbe2 requires it for cut \
+request, 00050018 returns master-inhibit class 1 when clear, 000503e0 uses \
+it in release/reset branches, and 0004afdc uses its clear-to-set interval to \
+reload then consume timing-transition timer ffff2590. Bit 7 combines with \
+ffff22ff state 3 to select the +30 timing constant bypass."""
+note = [
+    """
+The bit-5 Boolean role in DFCO and timing-transition selection is \
+code-proven. Bit 5 is the scheduled copy of ffff2459.bit5, which FUN \
+0002e0d4 publishes as DID 0x1302 bit 0; a structured Nissan profile names \
+that bit CLSD THL POS.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 170
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dramatic-roadrunner/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wisteria-sheep/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "crimson-binturong/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "overjoyed-wildcat/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gregarious-turkey/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2458"
+name = "asparagus-cockle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002103c"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021040"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021044"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021046"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b020"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b09e"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b0a2"
+value = {named = ["00020dfe", "00046938", "0004afdc", "0004d2a6", "0004f324", "0004fbe2", "00050018", "000503e0", "ffff22ff", "ffff2458", "ffff2459", "ffff245a", "ffff2590"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "gregarious-turkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "wisteria-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "composite_status_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dramatic-roadrunner/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "crimson-binturong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "overjoyed-wildcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

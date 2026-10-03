@@ -1,0 +1,310 @@
+summary = """
+Composite accessor for internal multipliers. Maps 0x1453A and 0x1454A form \
+min(0xffff, floor(M*Q/64)). When initial states are zero, 0x15002 forms \
+255*M and derived min(255, floor((255*M)/20000)), while 0x15012 forms \
+initial uint16 M through an exact multiplication and division pair with \
+divisor 1071."""
+note = [
+    """
+The physical quantities of the results are unresolved. Scale x*0.000488 BFS \
+for 0x15012 remains candidate based on the catalog.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 192
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "famous-lorikeet/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "friendly-raccoon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ingenious-python/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ochre-tuna/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rare-groundhog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "steady-beetle/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eminent-piculet/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fragrant-malkoha/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "funny-rook/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006062c"
+name = "fine-gopher"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000606c4"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000606e0"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000606ec"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060770"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006078a"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060790"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060898"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608a0"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608a6"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608aa"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608b0"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608b6"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608c2"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000608cc"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060926"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006092e"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060934"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006093c"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060944"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006095a"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060964"
+value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "eminent-piculet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "fragrant-malkoha/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "funny-rook/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"

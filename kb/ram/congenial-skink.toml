@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff221a"
+name = "congenial-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041b82"
+
+[[link]]
+type = "lookup"
+to = "fuzzy-vulture/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

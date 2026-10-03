@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff34d6"
+name = "cyber-zebra"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064baa"
+
+[[link]]
+type = "writer"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,99 @@
+summary = """
+Accumulator of the MAF coefficient calibration sequence. FUN 000662f6 adds \
+eight ffff1a3e samples into it, each required to lie within \
+ROM8[0x8d3e]*4=856..ROM8[0x8d3f]*4=944 counts."""
+note = [
+    """
+FUN 0006635c divides ROM8[0x8d40]=225 shifted left by twenty by this sum, so \
+the sequence returns stock coefficient 0x8000 at an average of 900 counts, \
+which is 4.50 V at 5 mV per count and the centre of the 856..944 acceptance \
+window.""",
+]
+level = "code"
+unit = "ADC counts sum"
+
+[[ledger]]
+registry = "vars"
+order = 853
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amber-hound/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "simple-whale/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "faithful-trout/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3524"
+name = "cream-puffin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d3e=214"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d3f=236"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066322"
+value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "ffff3524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066378"
+value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "ffff3524"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "simple-whale/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amber-hound/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "faithful-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

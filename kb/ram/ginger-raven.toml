@@ -1,0 +1,157 @@
+summary = """
+Scheduler snapshot of TCM gear-phase index ffff1066 decoded from CAN 0x177 \
+payload byte 2 bits 0..2. Rotational-speed request limiter 0007584e advances \
+recovery envelope ffff19dc by the 30-count calibration 0x943a when target \
+gear index ffff1083 is greater than this phase index and by the 50-count \
+calibration 0x943c otherwise."""
+note = [
+    """
+In the 2026-08-17 target capture this index equals current gear minus one in \
+stable 1st through 4th gear and changes after the 0x174 target field but \
+before the 0x174 current field during shifts; the 2026-09-22 road captures \
+extend the identity to all 24,009 stable-gear TCM groups of gears 1 through \
+5. The operational phase role is verified; a direct mechanical engagement \
+boundary is not claimed.""",
+]
+level = "code"
+unit = "zero-based gear-phase index"
+
+[[ledger]]
+registry = "vars"
+order = 48
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "glittering-cuttlefish/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "independent-koel/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-camel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1064"
+name = "ginger-raven"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f1c"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f20"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f2a"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f30"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b56"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b58"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b60"
+value = {named = ["0000943a", "0000943c", "00020dfe", "0007584e", "ffff1064", "ffff1066", "ffff1083"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "placid-camel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

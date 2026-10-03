@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff19a4"
+name = "astonishing-wrasse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00071722"
+
+[[link]]
+type = "lookup"
+to = "terrestrial-sparrow/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "tunneling-fennec/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "uppish-cheetah/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,102 @@
+title = "Run and aggregate P0101/P0102/P0103 and P010B/P010C/P010D monitors"
+summary = """
+Dual-bank MAF diagnostic coordinator reached from periodic dispatcher \
+0007bfc4. It runs the P0101/P0102/P0103 and P010B/P010C/P010D submonitors \
+and passes seven Boolean groups to 00080f82 for exact runtime-record \
+dispatch."""
+note = [
+    """
+The initialization branch clears monitor-local state. The normal branch \
+supplies FUN 0008152a as dispatcher argument 4 and FUN 00081d74 as argument \
+7.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 59
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 253
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00080e20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080ed6"
+value = {named = ["0007bfc4", "00080e20", "00080f82", "0008152a", "00081d74"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080f0a"
+value = {named = ["0007bfc4", "00080e20", "00080f82", "0008152a", "00081d74"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_periodic_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

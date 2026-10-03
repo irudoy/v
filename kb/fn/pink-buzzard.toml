@@ -1,0 +1,60 @@
+summary = """
+Primary developer-immobilizer state machine. Reads bit 0 of ROM 0x8725 and \
+updates internal states 0xffff3e28, 0xffff4230, 0xffff55e4, and 0xffff4198."""
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 356
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "funky-mink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knowing-manul/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magnificent-sponge/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-fulmar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bbc88"
+name = "pink-buzzard"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008725"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bbd42"
+value = {named = ["00008725", "000bbc88", "ffff3e28", "ffff4198", "ffff4230", "ffff55e4"], span = 1}
+key = "reference"

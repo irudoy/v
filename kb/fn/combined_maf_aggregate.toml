@@ -1,0 +1,154 @@
+title = "Build the nonnegative combined MAF value used by BFS"
+summary = """
+Nonnegative combined MAF producer. It writes \
+ffff1e38=max(0,int32[ffff1df8]+int32[ffff1dfc]+int16[ffff1e2a]+uint16[ffff2368]). \
+Caller 0003a904 executes immediately before Base Fuel Schedule producer \
+0003b75c in the same seven-entry periodic table. Stock configuration makes \
+ffff1e2a zero on every producer call."""
+note = [
+    """
+Signedness, saturation at zero, destination, and MAF identity are exact. The \
+engineering scale and physical meaning of ffff2368 remain unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 74
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 299
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "imposing-auk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-walrus/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mindful-goose/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wondrous-sparrow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "polar-viper/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b252"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a970"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b258"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b25e"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b262"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b268"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b270"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b274"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b278"
+value = {named = ["0003a904", "0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff1e38", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dual_bank_maf_coordinator/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

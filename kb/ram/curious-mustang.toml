@@ -1,0 +1,88 @@
+summary = """
+Signed Q8 base term used by the direct hot-surface difference branch of \
+000493e8. The branch forms \
+ffff121a=int16(ffff1380+((low7(0x9A1A)-low7(0x9B1A))<<8))."""
+note = ["The formula applies only under the direct-branch mode gates."]
+level = "code"
+unit = "signed Q8 state"
+
+[[ledger]]
+registry = "vars"
+order = 721
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_timing_state/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_detonation_timing_state/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_octane_timing_state/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1380"
+name = "curious-mustang"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00049570"
+
+[[link]]
+type = "depends"
+to = "knock_timing_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "high_detonation_timing_state/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "high_octane_timing_state/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

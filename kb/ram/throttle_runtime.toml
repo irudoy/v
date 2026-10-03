@@ -1,7 +1,159 @@
+summary = """
+Dynamic rotational-speed threshold in FUN 0007584e. Init routine 0002c648 \
+copies ROM16[0x942c]. Coolant latch ffff249e.bit0 selects \
+min(0x942c,0x9434); ffff84c3.bit7 gates down/up rates 0x9430 and 0x9436; \
+ffff4188.bit1 applies optional cap 0x942e. Equality holds the current \
+value."""
+note = [
+    """
+Stock rates are zero and both alternate caps are 0xffff, so the normal-path \
+value remains 0x2580. The physical x*0.78125 RPM interpretation remains \
+catalog-supported rather than code-proven.""",
+]
+level = "code"
+unit = "raw speed x4"
+
+[[ledger]]
+registry = "vars"
+order = 107
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "agate-yak/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "amiable-bug/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_throttle_cut/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "robust-uakari/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tasteful-porpoise/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "encouraging-octopus/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "groovy-kiwi/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff1796"
 former = ["lilac-peccary/ram/7mfk-ffff1796"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ce70"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075912"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007592a"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007598c"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759aa"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759b2"
+value = {named = ["0000942c", "0000942e", "00009430", "00009434", "00009436", "0002c648", "0007584e", "ffff1796", "ffff249e", "ffff4188", "ffff84c3"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -26,3 +178,94 @@ at = "jk00d:000780a0"
 to = "7mfk:00075900"
 count = 1
 value = 28
+
+[[link]]
+type = "lookup"
+to = "agate-yak/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "amiable-bug/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "robust-uakari/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "tasteful-porpoise/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "encouraging-octopus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "groovy-kiwi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

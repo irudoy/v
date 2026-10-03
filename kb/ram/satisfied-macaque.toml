@@ -1,0 +1,166 @@
+summary = """
+Current Q8 filtered positive four-sample RPM drop written by FUN 0003e1da. \
+On the normal path it is \
+min(65535,64*max(uint16[ffff1f76]-uint16[ffff114a],0)+floor(192*uint16[ffff1e58]/256))."""
+note = [
+    """
+Separate initialization and disabled branches write 0xff00 or zero. Its high \
+byte is the publication candidate for ffff1072.""",
+]
+level = "code"
+unit = "RPM/12.5 drop Q8"
+
+[[ledger]]
+registry = "vars"
+order = 10
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "phenomenal-cricket/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cinnamon-crayfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sophisticated-magpie/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "teal-curassow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "phenomenal-cricket/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e50"
+name = "satisfied-macaque"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084a4"
+value = "0x40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cd6"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e226"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e250"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e26a"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e29a"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2fe"
+value = {named = ["000084a4", "000209d8", "0003e1da", "ffff114a", "ffff1e50", "ffff1e58", "ffff1f76"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cinnamon-crayfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sophisticated-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "teal-curassow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

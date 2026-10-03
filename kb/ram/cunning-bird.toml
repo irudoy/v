@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff18d8"
+name = "cunning-bird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000645d0"
+
+[[link]]
+type = "reader"
+to = "adorable-kudu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

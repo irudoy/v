@@ -1,0 +1,141 @@
+summary = """
+Signed forward value of primary surface 0xe98e at the current operating \
+point: FUN 00073948 interpolates the surface at row ffff1702 and column \
+ffff1980 and adds 0x8000 to the offset-binary result. Selector 00075396 and \
+dispatcher 00075e9e read it."""
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 960
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_mode_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_limiter_candidate_dispatch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "khaki-antelope/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "request_flow/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versed-reindeer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19ba"
+name = "scrupulous-shark"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739e6"
+value = {named = ["0000e98e", "00073948", "00075396", "00075e9e", "ffff1702", "ffff1980", "ffff19ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ea"
+value = {named = ["0000e98e", "00073948", "00075396", "00075e9e", "ffff1702", "ffff1980", "ffff19ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ee"
+value = {named = ["0000e98e", "00073948", "00075396", "00075e9e", "ffff1702", "ffff1980", "ffff19ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739f0"
+value = {named = ["0000e98e", "00073948", "00075396", "00075e9e", "ffff1702", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "arcane-griffin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "khaki-antelope/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "request_flow/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pedal_request_mode_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "request_limiter_candidate_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

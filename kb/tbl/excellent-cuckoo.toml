@@ -1,3 +1,28 @@
+summary = """
+Eight-point uint8 table of the base operand for a branching saturating \
+calculation: the interpolated value is used as a minuend or first addend, \
+after which the derived result is constrained to range 0..255."""
+note = [
+    """
+The physical quantity and subsystem are unknown. The lookup result has no \
+direct RAM sink: it is consumed in registers within FUN_0004afdc. The \
+derived saturated byte is written to ffff12db at 0004b2d2. On one branch, \
+the lookup of map 00011f1a and byte ffff1842 are subtracted from the value \
+with a lower cap of zero; on another, the lookup of map 00011f22 is added \
+with an upper cap of 255; on the remaining branch, ffff1842 is subtracted \
+with a lower cap of zero. Index: Implicit eight-point axis by unsigned byte \
+ffff106f: raw nodes 0, 32, 64, 96, 128, 160, 192, 224. For x < 224, the \
+index is x/32 with the remainder discarded and interpolation fraction \
+(x%32)/32; for x >= 224, cell 7 is selected. Result disposition: consumer \
+(FUN_0004afdc: inline arithmetic sites 0004b186, 0004b1c8, 0004b1e4).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Branching Saturated Calculation Base (0x11F12)"
 category = "Internal Calculations"
@@ -7,7 +32,199 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 349
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+]
+
 [[symbol]]
 layout = "7mfk"
 address = "00011f12"
 name = "excellent-cuckoo"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x00e0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002674a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a90"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b158"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b15a"
+value = {named = ["00011f12"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b15c"
+value = {named = ["00011f12"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b15e"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b162"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b176"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b178"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b186"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b18c"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b192"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1ba"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1bc"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1c8"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1d0"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1e4"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b1ea"
+value = {named = ["00011f12"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b2d2"
+value = {named = ["00011f12"], span = 1}
+key = "linked"

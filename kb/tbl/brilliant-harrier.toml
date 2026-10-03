@@ -1,0 +1,192 @@
+summary = """
+Unsigned eight-point threshold calibration for byte ffff110e. The lookup \
+result is written to ffff140f. On the direct branch, bit 3 of ffff247b is \
+set if and only if ffff110e > ffff140f. On another branch, ffff110e, \
+threshold ffff140f, parameter 2, and the previous state of bit 3 are passed \
+to 000259be, and the low bit of the result updates bit 3 of ffff247b."""
+note = [
+    """
+All 8 cells equal 0, so in this ROM the threshold is raw 0 for every input. \
+The physical quantity of ffff110e is unknown. The artifact does not contain \
+the contract of 000259be, so the internal logic of that function is not \
+claimed; the direct comparison branch at 000638b4 independently proves the \
+threshold role and relation direction. Index: \
+q=min(floor(52429*uint8(ffff10ec)/32768),255); for q<224: i=floor(q/32), \
+Q0.16 fraction=(q%32)*2048, linear interpolation of cell[i] and cell[i+1]; \
+for q>=224: cell[7]. Result disposition: inline_comparison (ffff140f -> \
+comparison with ffff110e at 000638b4; argument 2 of 000259be; result -> bit \
+3 of ffff247b).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 355
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hysterical-agouti/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lime-kittiwake/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-spider/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "vehicle_speed/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "feathered-jellyfish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "outrageous-cat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012032"
+name = "brilliant-harrier"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000cccd"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b1c"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b24"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b26"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b3a"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b3e"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b42"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b4a"
+value = {named = ["0000cccd", "00012032", "000259be", "00026740", "000638b4", "ffff10ec", "ffff110e", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "silky-spider/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "hysterical-agouti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "lime-kittiwake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

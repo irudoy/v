@@ -1,0 +1,91 @@
+summary = """
+Engine speed in RPM/3.125 counts. FUN 000385bc writes \
+floor(uint16[ffff1206]/2) = floor(2000000/ffff22d4), or zero while ffff417f \
+bit 5 is set. Scheduler 00020dfe copies it to snapshot ffff11d0."""
+note = [
+    """
+Interval ffff22d4 equals ffff11fc, so the word has the representation of \
+ffff11ee = ffff1196>>4 = floor(2000000/ffff11fc).""",
+]
+level = "code"
+unit = "rpm/3.125"
+
+[[ledger]]
+registry = "vars"
+order = 956
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "azure-rattlesnake/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tentacled-prawn/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1208"
+name = "evasive-taipan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385ee"
+value = {named = ["00020dfe", "000385bc", "ffff1206", "ffff1208"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385f0"
+value = {named = ["00020dfe", "000385bc", "ffff1206", "ffff1208"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000385f2"
+value = {named = ["00020dfe", "000385bc", "ffff1206", "ffff1208"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "azure-rattlesnake/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tentacled-prawn/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

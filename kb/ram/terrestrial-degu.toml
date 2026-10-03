@@ -1,0 +1,87 @@
+summary = """
+Pending work-support idle adjustment. While LID 2 is active and the status \
+is accepted, 000683cc writes unsigned min(ffff99dd, ROM8[0x8909]=20) here. \
+FUN 000420b8 selects it for ffff56f6 while ffff41ef.bit3 is set, and the \
+idle latch of 00068040 copies it to ffff316a."""
+note = ["ffff3168 lies at ffff28f8+0x870."]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 935
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-jacamar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3168"
+name = "terrestrial-degu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068100"
+value = {named = ["000420b8", "00068040", "000683cc", "ffff3168"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068586"
+value = {named = ["000420b8", "00068040", "000683cc", "ffff3168"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

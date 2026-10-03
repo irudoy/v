@@ -1,3 +1,45 @@
+summary = """
+Current normalized dual-channel accelerator-pedal quantity. FUN 0006ec68 \
+clamps two adjusted analog channels, selects their minimum with mode \
+handling, optionally rate-limits it, and writes this word; scheduler \
+00020dfe snapshots it to ffff266e."""
+note = [
+    "This internal normalized count is not either individual sensor voltage.",
+]
+level = "code"
+unit = "normalized ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 216
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "remarkable-lynx/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_pair_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe96a0"
@@ -24,6 +66,27 @@ note = "Pedal activation source is recovered from target consumers"
 layout = "7mfk"
 address = "ffff2672"
 former = ["abiding-cheetah/ram/7mfk-ffff2672"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fc0"
+value = {named = ["00020dfe", "00047a56", "0006ec68", "ffff2672"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fc4"
+value = {named = ["00020dfe", "00047a56", "0006ec68", "ffff2672"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed6e"
+value = {named = ["00020dfe", "00047a56", "0006ec68", "ffff2672"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -58,3 +121,26 @@ at = "jk78c:0003d410"
 to = "7mfk:00039cc4"
 value = "ffff25d0"
 note = "Pedal activation source is recovered from target consumers"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_pair_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

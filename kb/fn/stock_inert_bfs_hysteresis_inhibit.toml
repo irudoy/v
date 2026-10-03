@@ -1,0 +1,146 @@
+title = "All-zero stock BFS-threshold hysteresis contributor"
+summary = """
+BFS-threshold hysteresis contributor for ffff249f.bit0. It compares the high \
+byte of ffff1024 with RPM-indexed 0-to-1 map 00012116 and 1-to-0 map \
+00012984; ffff25b9 additionally gates the transition to one."""
+note = [
+    """
+Both complete maps contain only zero in stock JK08A. An unsigned BFS byte \
+cannot be below the clear-state threshold, so the bit cannot set through \
+this function; an externally set bit clears on the next evaluation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 24
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 162
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "complex-tuna/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "grumpy-skylark/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cerise-turtle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resolute-bullfinch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f662"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f674"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f680"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f686"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f690"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6ae"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f6b8"
+value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "cerise-turtle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

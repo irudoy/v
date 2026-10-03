@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10a6"
+name = "married-chowchow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00043c0c"
+
+[[link]]
+type = "reader"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

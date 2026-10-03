@@ -1,0 +1,48 @@
+summary = "Monitor condition in 00047a56 within the rev-limiter component."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 203
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "remarkable-lynx/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "remarkable-lynx/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24b4"
+name = "determined-pronghorn"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000399ee"
+
+[[link]]
+type = "reader"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

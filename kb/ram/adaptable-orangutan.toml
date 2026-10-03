@@ -1,0 +1,127 @@
+summary = """
+CAN actual-torque word for frame 0x180 byte 2 and byte 3 bits 7..4. FUN \
+00079e70 writes 4095 while ffff4221.bit2 is set and otherwise \
+clamp(trunc0(s16[ffff2380]/5)+800, 0, 4094), where ffff2380 is the scheduler \
+latch of ffff240c."""
+note = [
+    """
+One CAN count is five raw torque counts and count 800 is zero torque. A \
+moving-load vehicle capture spans 653..1252 with an idle median of 820.""",
+]
+level = "code"
+unit = "CAN torque count"
+
+[[ledger]]
+registry = "vars"
+order = 871
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "space-puma/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sage-dog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "helpful-caiman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-pronghorn/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f96"
+name = "adaptable-orangutan"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa4"
+value = "0x0320"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fa6"
+value = "0x0ffe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00079fae"
+value = "0x0fff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f34"
+value = {named = ["00021bbc", "00079e70", "00079fa4", "00079fa6", "00079fae", "000c577a", "ffff2380", "ffff3f96", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f88"
+value = {named = ["00021bbc", "00079e70", "00079fa4", "00079fa6", "00079fae", "000c577a", "ffff2380", "ffff3f96", "ffff4221"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "sage-dog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "space-puma/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "helpful-caiman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lyrical-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

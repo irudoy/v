@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff347e"
+name = "outstanding-badger"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002da54"
+
+[[link]]
+type = "reader"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transmission_request_bound_publisher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

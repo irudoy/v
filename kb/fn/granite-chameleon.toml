@@ -1,0 +1,202 @@
+summary = """
+HCAN1 mailbox initializer. It reads 30 four-byte records at 0000975a, maps \
+record index i to physical mailbox i+1, decodes bytes as firmware type, DLC, \
+and big-endian STDID<<5, and programs the mailbox control fields. Types 1/2 \
+configure MBC 010 receive, types 3/4 configure MBC 000 transmit, and type 5 \
+configures MBC 111 inactive. Types 2 and 4 additionally clear the \
+corresponding MBIMR bit to enable mailbox activity interrupts."""
+note = [
+    """
+Record 25 at 000097be configures physical mailbox 26 as stock-inactive. \
+Mailbox 0 and mailbox 31 are initialized separately. The table describes \
+configured capability and does not prove traffic observed on a vehicle.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 554
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "writes"
+to = "micro-labradoodle/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c2fbe"
+name = "granite-chameleon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000975a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2fe4"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2fee"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ff2"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ff6"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ffa"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2ffe"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3002"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c300a"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c300e"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3012"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3028"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3034"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3058"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c306e"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c30ee"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c312e"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3178"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c31bc"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c31ca"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c32a6"
+value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
+key = "reference"

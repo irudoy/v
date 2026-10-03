@@ -1,0 +1,42 @@
+summary = """
+Sensor selector for the Knock Sensor Circuit Monitor Surface B/A mode pair: \
+condition byte[ffff3427] > byte[0x8796] with ROM threshold 0x5F=95."""
+note = ["The selector's physical quantity is unidentified."]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 272
+fields = ["semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vague-ringtail/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3427"
+name = "nano-kangaroo"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008796"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00051202"
+
+[[link]]
+type = "reader"
+to = "vague-ringtail/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

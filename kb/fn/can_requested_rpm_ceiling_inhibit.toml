@@ -1,0 +1,100 @@
+title = "CAN-derived requested RPM ceiling fuel inhibit"
+summary = """
+CAN-derived RPM-ceiling fuel-inhibit contributor. A valid source byte \
+defines max(36,source)*50 RPM; the contributor activates strictly above that \
+threshold and releases with 300 RPM hysteresis."""
+note = [
+    """
+Source values 0 and 0xff and fault bits ffff4189.bit1 or ffff4250.bit7 \
+disable the limiter. Internal dispatch key 0x2ee0 is not asserted to be a \
+physical CAN identifier.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 48
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 538
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "miniature-dove/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gleaming-pillbug/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-buzzard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050a60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fc"
+value = "0x06"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fd"
+value = "0x24"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a60"
+value = {named = ["000089fc", "000089fd", "0004ed88", "ffff11ae", "ffff2488", "ffff249c", "ffff2714"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

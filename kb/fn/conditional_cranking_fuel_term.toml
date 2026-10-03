@@ -1,0 +1,132 @@
+title = "Publish capped conditional 0x154b0 term ffff240a"
+summary = """
+Conditional accessor for 0x154B0: interpolated uint16 M is capped at 3768, \
+written to ffff240a, and passed to 000556ec as a term in a saturated \
+calculation before Q14 scaling."""
+note = [
+    """
+The Cranking Base Fuel Schedule name and x*0.000488 BFS scale remain \
+candidate based on the catalog.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 85
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 180
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "solemn-monkey/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prompt-hummingbird/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000554f8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055570"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055576"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557e"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055580"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055584"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "000554f8", "000556ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "prompt-hummingbird/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

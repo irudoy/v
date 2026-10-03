@@ -1,0 +1,99 @@
+title = "Convert the shared target area to the common opening coordinate"
+summary = """
+Common target-opening coordinate builder. It converts ffff19b2/2 through \
+inverse pair 0x155a0/0x13202 and writes ffff3374 without the later monitor \
+division by four."""
+note = [
+    """
+The operational coordinate is exact and carries the percent scale of axis \
+000155a0; the catalog degree scale remains a candidate.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 148
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 569
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "courageous-puma/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_shared/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zealous-salmon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006f464"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f46c"
+value = {named = ["00013202", "000155a0", "0006f464", "ffff19b2", "ffff3374"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f476"
+value = {named = ["00013202", "000155a0", "0006f464", "ffff19b2", "ffff3374"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f47a"
+value = {named = ["00013202", "000155a0", "0006f464", "ffff19b2", "ffff3374"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f484"
+value = {named = ["00013202", "000155a0", "0006f464", "ffff19b2", "ffff3374"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "courageous-puma/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

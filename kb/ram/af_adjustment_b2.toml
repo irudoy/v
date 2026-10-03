@@ -1,8 +1,110 @@
-note = "The -500..500 bounds limit the candidate factor to -1..1."
+summary = """
+Bank-2 A/F adjustment integrator state in 000a0ee8, a signed word updated \
+like ffff45a0 from the up step ffff97a6 and the down step ffff97a2 of the \
+same maps 0x1462a and 0x1463a, with the same saturation and -500..500 \
+bounds, and published as exact DID 0x124a."""
+note = [
+    "The -500..500 bounds limit the candidate factor to -1..1.",
+    """
+Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code \
+fixes the signed count range; public sources disagree on the scale, so the \
+physical conversion remains unresolved.""",
+]
+level = "code"
 width = 16
 unit = "ratio"
 scale = "x*0.002"
 scale_level = "candidate"
+
+[[diagnostic]]
+id = "air-fuel-adjustment-bank-2-did-124a"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-124ah-a-f-adj-b2"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-124ah-a-f-adj-b2-f1d5ae33"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x124A to big-endian word \
+ffff45a2. Structured Nissan diagnostics identify the DID as bank-2 A/F \
+adjustment. Exact code proves the symmetric bounded integrator state; \
+conflicting public scales prevent a physical conversion claim."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229c4"
+value = "ffff45a2"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000229c4"
+value = {named = ["0003235c", "000a0ee8", "f1d5ae33", "ffff45a2"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a1792"
+value = {named = ["0003235c", "000a0ee8", "f1d5ae33", "ffff45a2"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diamond-dragonfly/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 23
+binding = "air-fuel-adjustment-bank-2-did-124a"
+
+[[ledger]]
+registry = "vars"
+order = 343
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "diagnostic raw"
+identity = [1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thick-goshawk/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "topaz-chameleon/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diamond-dragonfly/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -43,6 +145,29 @@ note = """
 The structured Nissan-family profile converts CID 0x124A, A/F ADJ-B2, as raw \
 * 2.0 / 1000.0"""
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e7c=-500"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e7e=500"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229c4"
+value = "ffff45a2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1792"
+value = {named = ["00008e7c", "00008e7e", "0001462a", "0001463a", "000229c4", "0003235c", "000a0ee8", "ffff45a2"], span = 1}
+key = "reference"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff4776"
@@ -79,3 +204,33 @@ to = "7mfk:00058d10"
 count = 1
 value = 166
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "thick-goshawk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "topaz-chameleon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

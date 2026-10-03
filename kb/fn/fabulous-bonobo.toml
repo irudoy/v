@@ -1,0 +1,72 @@
+summary = """
+Shared interpolator for three components (0005fdb0, 000602f2, and 000617ea). \
+Its body lies outside their boundaries, so the physical quantity of their \
+argument cannot be resolved internally."""
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 189
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "able-koel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "massive-dingo/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tactful-corgi/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005fac0"
+name = "fabulous-bonobo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005fac0"
+
+[[link]]
+type = "depends"
+to = "able-koel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "massive-dingo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "tactful-corgi/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

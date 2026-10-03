@@ -1,0 +1,78 @@
+summary = """
+Bit 6 gates the throttle-gated subsection of the angle summation, pair \
+0x11efa/0x147ca through mul.l and 0x21ce0. Bit 7 is the work-support timing \
+record latch: 00068040 sets it on the LID-1 store edge with accepted status \
+(ffff41aa bits 2 and 4) or on timing request ffff41aa.bit0 with \
+ffff4184.bit7 clear, and clears it after requesting record 0x74."""
+note = [
+    """
+The exact role of the pair, such as knock limit, torque ratio, or timing \
+limit, is unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 298
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-jacamar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ab"
+name = "tricky-marmoset"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068082"
+value = {named = ["0004afdc", "00068040", "ffff41ab"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068088"
+value = {named = ["0004afdc", "00068040", "ffff41ab"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680cc"
+value = {named = ["0004afdc", "00068040", "ffff41ab"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

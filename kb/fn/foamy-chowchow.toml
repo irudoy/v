@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000306f8"
+name = "foamy-chowchow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000306f8"

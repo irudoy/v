@@ -1,0 +1,142 @@
+summary = """
+Limited signed request clamped for CAN. FUN 00079030 writes \
+clamp(min(lower-path request, upper-path request), s16[ffff413a], \
+s16[ffff4138]); the scheduler latch ffff4106 feeds word ffff3fa0 of frame \
+0x160."""
+note = [
+    """
+The word shares the divide-by-five CAN packing of net engine torque \
+ffff240c, which places the signed request coordinate of FUN 00079030 in the \
+torque domain.""",
+]
+level = "code"
+unit = "signed torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 869
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alternate_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "asparagus-parrot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-skink/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_request_boundary/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff415e"
+name = "glaring-angelfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "000774c4", "00077dec", "00079030", "00079e70", "ffff4138", "ffff413a", "ffff415e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791e0"
+value = {named = ["00020dfe", "000774c4", "00077dec", "00079030", "00079e70", "ffff4138", "ffff413a", "ffff415e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079e90"
+value = {named = ["00020dfe", "000774c4", "00077dec", "00079030", "00079e70", "ffff4138", "ffff413a", "ffff415e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lyrical-pronghorn/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "artichoke-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "glistening-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "alternate_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "asparagus-parrot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

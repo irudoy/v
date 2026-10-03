@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0008d10a"
+name = "certain-finch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008d10a"

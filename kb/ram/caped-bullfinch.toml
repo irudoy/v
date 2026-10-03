@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4237"
+name = "caped-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00038486"
+
+[[link]]
+type = "reader"
+to = "hypersonic-seagull/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

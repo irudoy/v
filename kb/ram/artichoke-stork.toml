@@ -1,0 +1,114 @@
+summary = """
+Throttle-opening byte written by 00054eb8 as min(255, uint16 ffff40c6 * \
+0x505b >> 16), the quarter-coordinate monitor scaled by 0.3139. The byte is \
+throttle opening on the same 0..255 scale 0006f236 publishes as J1979 PID \
+0x11, so one count is 100/255 percent and one coordinate count of axis \
+000155a0 is 34285/1114112 percent. Stage 0005594a compares it with the flat \
+200 of map 0001214e, 78.4 percent, for wide-open latch ffff2468 bit 3; \
+00052f00 also reads it."""
+note = [
+    """
+The code chain ffff40c6 -> ffff3528 -> ffff2468 bit 3 is exact, and gradient \
+0x505b is the one 0006f236 applies before publishing ffff1075 for PID 0x11. \
+Unlike that byte, this one is measured from coordinate zero instead of idle \
+base ffff28f8.""",
+]
+level = "code"
+unit = "raw throttle opening"
+
+[[ledger]]
+registry = "vars"
+order = 755
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "true-fennec/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amigurumi-hare/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "indigo-starfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3528"
+name = "artichoke-stork"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00054f2e"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054eda"
+value = {named = ["00052f00", "00054eb8", "00054f2e", "0005594a", "ffff3528", "ffff40c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055974"
+value = {named = ["00052f00", "00054eb8", "00054f2e", "0005594a", "ffff3528", "ffff40c6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "amigurumi-hare/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "indigo-starfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

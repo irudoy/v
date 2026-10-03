@@ -1,0 +1,184 @@
+title = "Decode CAN 0x177 requested RPM ceiling and TCM gear-phase index"
+summary = """
+CAN 0x177 payload decoder selected by internal key 0x2ee0. It copies payload \
+byte 0 into live RPM-ceiling source ffff2818, writes payload byte 2 bits \
+0..2 into live TCM gear-phase index ffff1066 for periodic snapshotting to \
+ffff1064, stores payload byte 4 in ffff283e, and stores the shift-code index \
+of byte 5 in ffff282c: 15 when bit 7 is set and bits 3..6 otherwise."""
+note = [
+    """
+The stock mailbox record encodes standard ID 0x177 as STDID shifted left by \
+five. Passive target traffic correlates the low three bits of byte 2 with \
+zero-based gear progression and shift phase. The 2026-09-22 road captures \
+hold byte 5 constant through each shift event and at 0x78 outside them.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 69
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 548
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "debonair-locust/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "innocent-boa/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "placid-camel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wooden-saluki/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c4ace"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009782"
+value = "0x01062ee0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c3c5a"
+value = "0x2ee0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4ae6"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4af2"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf0"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf2"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf4"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf6"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4c6e"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4c7a"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4c7c"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4c90"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4cdc"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4cec"
+value = {named = ["00009782", "00020dfe", "00050a60", "000c3c5a", "000c4ace", "ffff1066", "ffff2818", "ffff282c", "ffff283e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

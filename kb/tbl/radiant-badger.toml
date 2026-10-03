@@ -1,3 +1,28 @@
+summary = """
+Unreferenced 6x16 uint16 calibration bank. Its geometry and contents \
+resemble active Knock Slice Map 0x1108e, but exact JK08A code has no direct, \
+literal-pool, or recovered interpolation access to 0x10f8e..0x1104d."""
+note = [
+    """
+The complete Ghidra direct/literal reference census has zero hits across the \
+192-byte array. The exact 32-bit base 0x00010f8e does not occur in the ROM. \
+By contrast, the active base 0x0001108e occurs exactly once at literal \
+0x0004a204, is loaded at 0x0004a014, and reaches lookup call 0x0004a02c. The \
+recovered interpolation inventory assigns no accessor to 0x10f8e. Similar \
+shape and disabled rows 3 and 5 do not establish execution. Result \
+disposition: unreferenced_calibration_data.""",
+]
+level = "code"
+role = "dead"
+access = "direct-row-major"
+cols = 16
+rows = 6
+storage = "uint16"
+unit = "knock strength"
+scale = "x*0.0015259"
+to_raw = "x/0.0015259"
+scale_level = "candidate"
+
 [editor]
 name = "Unreferenced Knock-Shaped Bank (0x10F8E)"
 category = "Internal Calculations"
@@ -28,7 +53,55 @@ static_axis_x_name = "Engine Speed [RPM]"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 static_axis_y_name = "Unverified Row"
 
+[[ledger]]
+registry = "findings"
+order = 92
+fields = [
+    "family",
+    "width",
+    "height",
+    "storagetype",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4]
+
 [[symbol]]
 layout = "7mfk"
 address = "00010f8e"
 name = "radiant-badger"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0004a204"
+value = "0001108e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a014"
+value = {named = ["00010f8e", "0001108e", "0004a204"], span = 192}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0004a02c"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Knock Slice Map"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Knock Strength Threshold (x*0.0015259)"

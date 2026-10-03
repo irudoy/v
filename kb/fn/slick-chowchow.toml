@@ -1,0 +1,239 @@
+summary = """
+ROM-gated Q0.16 signed-endpoint blend coordinator. On the enabled path it \
+calls 0007604c to produce A=ffff18ec and B=ffff18ee, updates weight \
+w=ffff2420 through 000760d2, and writes ffff18e6 as A for w=0, B for \
+w=65535, or floor(((65536-w)*A+w*B)/65536) otherwise."""
+note = [
+    """
+Stock ROM8[00008b3f].bit7 is clear, but ROM8[000089fa].bit5 is also clear \
+and skips the entire evaluation and blend. The endpoint maps are identical \
+if the path is enabled. The physical quantity and engineering unit are \
+unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 464
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "accelerator_pedal_request_preprocessor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "brass-barnacle/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "scarlet-starling/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vengeful-wildebeest/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "flat-cat/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangerine-rook/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shiny-eagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "topaz-eagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "victorious-goose/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brainy-oyster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00076108"
+name = "slick-chowchow"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fa"
+value = "0x40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b3f"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007610e"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076116"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007611c"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076120"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076128"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076130"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076142"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076156"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007615c"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076168"
+value = {named = ["000089fa", "00008b3f", "0000de8e", "0000e08e", "00074c08", "00074c82", "000752e4", "00075590", "0007604c", "000760d2", "00076108", "ffff18e6", "ffff18ec", "ffff18ee", "ffff2420"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-sidewinder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "feathered-cobra/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "accelerator_pedal_request_preprocessor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "brass-barnacle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "scarlet-starling/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

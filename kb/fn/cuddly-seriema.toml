@@ -1,0 +1,130 @@
+summary = """
+Periodic scheduler task (list entry 00021aa0) for memory task 000cd85c. It \
+clears ffff41b3 bit 4 at 0002e8e8 while byte timer ffff25c4 is zero, and \
+while pending flag ffff41de bit 0 is set (tst #1; bt exit at 0002e8f2) it \
+calls 000cd85c at 0002e8f8 with request byte ffff40be."""
+note = [
+    """
+The pending flag is set by service-0xa0 handler 000306f8 at 000309d6 and \
+cleared by the memory task when a pass completes.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 611
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "jovial-manul/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "graceful-armadillo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maroon-zebu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "vagabond-labradoodle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "colossal-tuatara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002e8d2"
+name = "cuddly-seriema"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021aa0"
+value = "0002e8d2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8de"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8e8"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8ee"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8f2"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8f4"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e8f8"
+value = {named = ["00021aa0", "0002e8d2", "000cd85c", "ffff25c4", "ffff40be", "ffff41b3", "ffff41de"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "jovial-manul/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "vagabond-labradoodle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

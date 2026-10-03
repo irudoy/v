@@ -1,0 +1,96 @@
+summary = """
+Filter coefficient x of the actual exhaust-cam timing bytes. FUN 000bfc2e \
+stores interp(00012f7e over axis 00012f6e by RPM/50 byte ffff11ae) at \
+000bfc70; stock holds 0xcd at 800 RPM and 0xff from 1600 RPM, so the output \
+passes 255/256 of each new sample above 1600 RPM."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 829
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "subtle-booby/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bronze-rattlesnake/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-vulture/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff160e"
+name = "dashing-meerkat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc5e"
+value = {named = ["00012f6e", "00012f7e", "000bfc2e", "ffff11ae", "ffff160e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc70"
+value = {named = ["00012f6e", "00012f7e", "000bfc2e", "ffff11ae", "ffff160e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "bronze-rattlesnake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "subtle-booby/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

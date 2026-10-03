@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4411"
+name = "burrowing-pegasus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000cee26"
+
+[[link]]
+type = "writer"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

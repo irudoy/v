@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2330"
+name = "pastel-marmot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021314"

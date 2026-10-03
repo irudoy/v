@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff808"
+name = "real-sawfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000280b6"
+
+[[link]]
+type = "reader"
+to = "fuzzy-parakeet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,7 +1,89 @@
+summary = """
+Unsigned 16-bit upper bound for ffff31e6 before lower bounding at 0x8000 and \
+writing to ffff31e2."""
+note = [
+    """
+The lookup output is stored in ffff3456. Code 0007a574..0007a57c selects \
+min(ffff31e6, map), then 0007a57e..0007a586 applies lower bound 0x8000 and \
+writes the result to ffff31e2. All map points equal 0x8000, so the current \
+calibration clamps the result to 0x8000. The physical quantity of these \
+registers is unknown.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw uint16"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 282
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
 [[symbol]]
 layout = "7mfk"
 address = "00014fa2"
 name = "petite-cobra"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff31e2"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff31e6"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff3456"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a568"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a570"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a574"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a578"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a582"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a58a"
+value = {named = ["00014fa2", "ffff31e2", "ffff31e6", "ffff3456"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +116,10 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "prophetic-kagu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,91 @@
+title = "Normalize the second throttle-feedback candidate"
+summary = """
+Second throttle-feedback normalizer. For each channel it subtracts \
+64*ffff55b0[channel] from ffff38e8[channel], divides by four with truncation \
+toward zero, adds 0x2000, lower-clamps at zero, and writes \
+ffff2664[channel]."""
+note = [
+    """
+The negative add-three correction before the arithmetic shift implements \
+truncation toward zero.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 153
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 573
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "emerald-bittern/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wandering-wasp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maize-dogfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003eade"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eaea"
+value = {named = ["0003eade", "ffff2664", "ffff38e8", "ffff55b0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eaf4"
+value = {named = ["0003eade", "ffff2664", "ffff38e8", "ffff55b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eafa"
+value = {named = ["0003eade", "ffff2664", "ffff38e8", "ffff55b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eb02"
+value = {named = ["0003eade", "ffff2664", "ffff38e8", "ffff55b0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eb16"
+value = {named = ["0003eade", "ffff2664", "ffff38e8", "ffff55b0"], span = 1}
+key = "body"

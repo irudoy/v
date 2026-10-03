@@ -1,0 +1,164 @@
+summary = """
+Bank 1 MAF-table input written by FUN 0003ae8a from diagnostic word \
+ffff101c: the first call copies the word, and later calls write \
+uint16(ffff101c-c) with c = floor(floor(K*335/65536)/min(65535, previous \
+ffff1e48+80)) and K = uint32 ffff3998. FUN 0003a904 uses its low 12 bits to \
+interpolate curve 0x14274."""
+note = [
+    """
+Init 0002d120 seeds K = 0x00180000, so c = floor(8040/(previous+80)) until \
+0003aa12 rewrites K: 32 counts, 0.16 V, at a steady 1 V input. The transfer \
+curve therefore follows this word, not diagnostic word ffff101c. The \
+physical meaning of the correction remains unresolved.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 472
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "wealthy-woodlouse/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "annoying-foxhound/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maf_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enchanted-cricket/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e48"
+name = "ginger-stingray"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009586"
+value = "0x014f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000958c"
+value = "0x0050"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000095b6"
+value = "0x0018"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002d920"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a926"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aeac"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aec0"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af04"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af20"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af30"
+value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0003ae8a", "ffff101c", "ffff1e48", "ffff3998"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "annoying-foxhound/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "maf_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "enchanted-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

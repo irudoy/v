@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff22e3"
+name = "arboreal-rook"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d2ca"

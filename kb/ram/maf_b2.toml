@@ -1,6 +1,132 @@
+summary = """
+Bank 2 MAF sensor diagnostic word. FUN 0003c408 scales ten-bit AN15 sample \
+ffff1d64 by coefficient ffff4970 with saturation and adds one at full-scale \
+raw 0x03ff; exact UDS DID 0x1205 returns the word in big-endian order."""
+note = [
+    """
+The same guarded coefficient and transform as bank 1 apply. The diagnostic \
+display unit is V at 5 mV per count; JK08A.diagnostics.md derives that \
+scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "mass-airflow-sensor-bank-2-did-1205"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221205"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0115-l0115:source-row-extended-pids:parameter:0x1205-004ea21e"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1205 to big-endian word ffff101e. The \
+sole whole-program writer path scales SH7058 AN15 sample ffff1d64 through \
+000671d8 and writes this word. The diagnostic identity and bank assignment \
+are exact for JK08A. Near-adjacent target readings are consistent with the \
+homologous raw/200 V conversion but do not provide a synchronized \
+validation."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hairy-dalmatian/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000092be"
+value = "0x8000"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228b0"
+value = {named = ["000092be", "0003235c", "0003c408", "004ea21e", "ffff101e", "ffff1d64"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000280d6"
+value = {named = ["000092be", "0003235c", "0003c408", "004ea21e", "ffff101e", "ffff1d64"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003c420"
+value = {named = ["000092be", "0003235c", "0003c408", "004ea21e", "ffff101e", "ffff1d64"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003c450"
+value = {named = ["000092be", "0003235c", "0003c408", "004ea21e", "ffff101e", "ffff1d64"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "outstanding-penguin/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 15
+binding = "mass-airflow-sensor-bank-2-did-1205"
+
+[[ledger]]
+registry = "vars"
+order = 471
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enchanted-cricket/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hairy-dalmatian/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "outstanding-penguin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +158,43 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff101e"
 former = ["happy-potoo/ram/7mfk-ffff101e"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228b0"
+value = {named = ["0003235c", "0003ae8a", "0003c408", "ffff101e", "ffff1d64"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c420"
+value = {named = ["0003235c", "0003ae8a", "0003c408", "ffff101e", "ffff1d64"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c450"
+value = {named = ["0003235c", "0003ae8a", "0003c408", "ffff101e", "ffff1d64"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "1024-counts-5.12v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec163-maf-display-idle-0.8-1.1v"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +231,51 @@ at = "jk78c:ffff1026"
 to = "7mfk:ffff101e"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "hairy-dalmatian/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "enchanted-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "outstanding-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

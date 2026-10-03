@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000ccb7c"
+name = "zealous-buffalo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000ccb7c"

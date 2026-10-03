@@ -1,6 +1,100 @@
+summary = """
+Final signed timing coordinate in degBTDC written by 0004dbe8 after \
+mode-dependent limits and overrides. Before the rate limiter and bounds it \
+is ffff11da=clamp(ffff12d6+gated ffff564c, ROM8[0x8221]=-7, \
+ROM8[0x821e]=50), and the full chain is ffff23f1 + (low7-64) + (ffff1a7d-64) \
+- ffff23c5 - ffff12dc - ffff15ea + ffff134a - ffff11af + ffff2356 - ffff11f9 \
+- ffff1ff6 + ffff564c with every coefficient 1. FUN 0004df82 transforms the \
+result into ffff2022 and passes it to APC scheduler 0002a892. J1979 Mode 01 \
+PID 0x0E in FUN 00035856 returns clamp((ROM8[0x83d5]-ffff2022)*2, \
+-128..127)+128, which is 2*ffff11d4+128 on the normal path."""
+note = [
+    """
+The normal transform is uint8(110-uint8(ffff11d4)). In the instrumented 1.11 \
+target capture, this identity holds outside the Rolling Launch late \
+override. During that override ffff11d4 remains the upstream stock \
+coordinate while ffff2022 carries the effective command. The -7 bound is not \
+universal across diagnostic and fallback modes; physical degree scale and \
+pulse polarity remain hardware boundaries. J1979 defines PID 0x0E as A/2-64 \
+degrees before TDC, so the ECU declares one count of this coordinate as one \
+crank degree of advance; the physical spark angle remains a hardware item.""",
+]
+level = "code"
 width = 8
 unit = "degBTDC"
 scale = "x"
+
+[[ledger]]
+registry = "vars"
+order = 78
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_set_command_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-koel/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sincere-dragonfly/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-honeybee/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "holistic-mouflon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "final_timing_coordinate_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -34,6 +128,120 @@ consumer"""
 layout = "7mfk"
 address = "ffff11d4"
 former = ["axiomatic-copperhead/ram/7mfk-ffff11d4"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000821e=0x32"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008221"
+value = "0xf9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000083d5=110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d6a"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d6c"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d74"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d96"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcc8"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcca"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcd0"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dce0"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcee"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcf6"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004df64"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dfaa"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e026"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e074"
+value = {named = ["0000821e", "00008221", "000083d5", "000147da", "0002a892", "00035856", "0004dbe8", "0004df82", "ffff11d4", "ffff11da", "ffff12d6", "ffff564c"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -72,3 +280,64 @@ sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = """
 Exact-size homologous command builder binds the final timing byte at equal \
 instruction ordinal"""
+
+[[link]]
+type = "depends"
+to = "viridian-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "input"
+to = "cryptic-honeybee/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "holistic-mouflon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "sincere-dragonfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_set_command_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

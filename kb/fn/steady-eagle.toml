@@ -1,0 +1,168 @@
+summary = """
+Six-bucket misfire operating-range counter updater called only by detection \
+core 00085a70. It requires ffff41d2.bits0/1 both set, divides \
+calculated-load code ffff413e at 128, divides current RPM/25 byte ffff11eb \
+at 64 and 160, and saturating-increments one of ffff395c..ffff3961. Failure \
+of the low-bit gate clears all six buckets and ffff36f0."""
+note = [
+    """
+The speed boundaries are 1600 and 4000 RPM. Calculated-load code 128 is \
+approximately 50.2 percent under the J1979 100*A/255 scale. The physical \
+diagnostic phase of these buckets remains unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 430
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "calculated_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "liberal-falcon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "loutish-puma/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classic-goshawk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "determined-mole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eggplant-malamute/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "idealistic-wallaby/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purring-binturong/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "solemn-guan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tacky-shellfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00086d2a"
+name = "steady-eagle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086d2e"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086d3e"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086d4e"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086d60"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086dc4"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086e84"
+value = {named = ["00085a70", "00086d2a", "ffff11eb", "ffff36f0", "ffff395c", "ffff395d", "ffff395e", "ffff395f", "ffff3960", "ffff3961", "ffff413e", "ffff41d2"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

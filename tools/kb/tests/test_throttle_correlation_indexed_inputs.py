@@ -4,7 +4,7 @@ from itertools import product
 
 import pytest
 
-from kb import checks, compile, levels, match, repo, sh2, sites
+from kb import checks, compile, levels, match, repo, sh2, sites, store
 from kb.model import SymbolKey
 
 
@@ -25,12 +25,13 @@ BYTE_SPANS = (
 )
 
 
-def _evidence(site, key):
+def _evidence(address, site, key):
     return [
         {"kind": "rom-bytes", "supports": "identity", "at": "7mfk:000a7838",
-         "value": "ffff267a", "legacy": "rom_const:000a7838=ffff267a"},
-        {"kind": "l0", "supports": "identity", "at": f"7mfk:{site:08x}",
-         "legacy": f"site:{site:08x}"},
+         "value": "ffff267a"},
+        {"kind": "l0-context", "supports": "identity", "at": f"7mfk:{site:08x}",
+         "key": "reference", "value": {"span": 1, "named": [
+             "000a773a", "000a7838", "ffff267a", f"{address:08x}"]}},
         {"kind": "test", "supports": "identity", "path": PATH, "key": key},
     ]
 
@@ -223,9 +224,11 @@ def compiled_placements():
 
 def _compiled_symbol(model, address, site, key):
     symbol = model.symbols[SymbolKey("7mfk", "ram", address)]
-    assert "defs/JK08A.vars.csv" in symbol.sources
+    assert symbol.sources == {store.path_of("ram", symbol.meaning.name).as_posix()}
     assert symbol.value("unit") == "raw" and symbol.value("level") == "code"
-    assert symbol.evidence == _evidence(site, key) and not checks._owned(model, symbol)
+    expected = _evidence(address, site, key)
+    assert len(symbol.evidence) == len(expected) and all(item in symbol.evidence for item in expected)
+    assert checks._owned(model, symbol)
     assert levels.held(model, symbol)
     references = sites.references("7mfk", model.root)
     assert 0xFFFF267A in references[0xA7744]

@@ -1,0 +1,34 @@
+note = [
+    """
+Base Fuel Schedule high-byte axis for 0xB23A. Exact code supplies \
+ffff1024>>8; the x/8 ms conversion is homologous-profile evidence pending \
+hardware validation.""",
+]
+level = "code"
+quantity = "load"
+unit = "Base Fuel Schedule (ms)"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 15
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012860"
+name = "uncovered-hoatzin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000befd8"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"

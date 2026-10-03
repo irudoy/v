@@ -1,0 +1,116 @@
+summary = """
+P0128 thermostat-function monitor dispatcher. It invokes FUN 000b6b5a every \
+tenth pass, then reports DTC descriptor 0xcb on either of two completion \
+conditions."""
+note = [
+    """
+The exact descriptor 203 record at 00019ce4 contains DTC P0128. The two \
+completion conditions and their status-bit updates are code-proven; their \
+physical trip interpretation is not assigned here.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 474
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b5908"
+name = "wakeful-mushroom"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019cea"
+value = "0x0128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b591c"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5922"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5926"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b592a"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b593a"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5954"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5956"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5976"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5978"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_periodic_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

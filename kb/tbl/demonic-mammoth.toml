@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011d00"
+name = "demonic-mammoth"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00052f5c"

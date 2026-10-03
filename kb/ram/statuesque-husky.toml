@@ -1,0 +1,160 @@
+summary = """
+Interval-derived engine-speed byte. FUN 0003df2c divides 41666 by interval \
+quotient ffff22bc through signed divider 00021bbc, saturates the quotient to \
+255, keeps the last three results in ffff3e34..ffff3e36, and publishes their \
+median; when diagnostic-mode snapshot ffff24c9 bit 5 is set it copies \
+saturated engine-speed byte ffff11ea instead. The substitute fixes the \
+representation as rpm/12.5; the dividend corresponds to 120-degree crank \
+events on a 3.2 us timer tick. Scheduler 00020dfe copies it to ffff2700."""
+note = [
+    """
+The rpm/12.5 representation is code through the ffff11ea substitute; the \
+timer tick and event angle are the consistent candidate.""",
+]
+level = "code"
+unit = "rpm/12.5"
+
+[[ledger]]
+registry = "vars"
+order = 756
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "computed_start_signal_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "talented-wolverine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "angelic-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tidy-tiger/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2804"
+name = "statuesque-husky"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0003e150=0xa2c2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df46"
+value = {named = ["00038d44", "0003b75c", "0003df2c", "0003dfc6", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df64"
+value = {named = ["00038d44", "0003b75c", "0003df2c", "0003dfc6", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dfbe"
+value = {named = ["00038d44", "0003b75c", "0003df2c", "0003dfc6", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "angelic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "talented-wolverine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tidy-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

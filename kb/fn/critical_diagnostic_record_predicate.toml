@@ -1,0 +1,86 @@
+title = "Test critical runtime-record status and descriptor attribute"
+summary = "Critical diagnostic-record predicate with minus-one sentinel support."
+note = ["The descriptor-attribute pointer table begins at 0001a14c."]
+level = "code"
+role = "service"
+contract = """
+Given signed record index n, return 1 iff n is not -1, runtime[n].byte1.bit7 \
+is set, and either runtime[n].byte1.bit5 or descriptor_attribute[n].bit13 is \
+set; otherwise return 0."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 54
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 543
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0]
+contract = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c3b4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c3b4"
+value = {named = ["ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3b8"
+value = {named = ["ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3c6"
+value = {named = ["ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3c8"
+value = {named = ["ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3d2"
+value = {named = ["ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3dc"
+value = {named = ["ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007c3e6"
+value = {named = ["ffff5718"], span = 1}
+key = "body"

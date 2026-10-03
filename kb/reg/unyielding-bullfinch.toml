@@ -1,0 +1,66 @@
+summary = """
+HCAN1 TXPR1 transmit-wait register for physical mailboxes 16 through 31. Bit \
+n corresponds to physical mailbox 16+n; bit 10 or mask 0x0400 therefore \
+requests mailbox 26."""
+note = [
+    """
+Writing one requests transmission; successful completion or acknowledged \
+cancellation clears the bit in hardware.""",
+]
+level = "code"
+unit = "peripheral bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 661
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "bright-octopus/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffd820"
+name = "unyielding-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3930"
+value = {named = ["000c38de", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3934"
+value = {named = ["000c38de", "ffffd820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3936"
+value = {named = ["000c38de", "ffffd820"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.5.1"
+
+[[link]]
+type = "writer"
+to = "bright-octopus/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

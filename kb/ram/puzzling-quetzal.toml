@@ -1,0 +1,170 @@
+summary = """
+Multipurpose misfire status byte. Reporter 00084cd0 sets bit 2 when group 0 \
+is captured and bit 0 when group 1 is captured. Its odd-argument path clears \
+each marker when it clears that group's retained payload."""
+note = [
+    """
+The claim is limited to group-retention markers in bits 2 and 0. Other bits \
+and uses remain unassigned.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 443
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "neon-seagull/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "rampant-lobster/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "realistic-capybara/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5b2a"
+name = "puzzling-quetzal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d28"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d2a"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d70"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d72"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084dd8"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084dda"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e22"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e24"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e66"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e68"
+value = {named = ["00084cd0", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5b2a"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "neon-seagull/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "rampant-lobster/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "realistic-capybara/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

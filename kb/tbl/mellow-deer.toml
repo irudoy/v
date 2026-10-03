@@ -1,7 +1,118 @@
+summary = """
+Statically unreachable alternative 1D calibration; the live path reads map \
+0000e98e."""
+note = [
+    """
+ROM[000083c1] = 0x2c, so bit 0 is clear and branch 0007ab2c always bypasses \
+read site 0007ab3a. The live path begins at 0007ab4c and reads 0000e98e. If \
+the alternative branch were enabled, its uint16 output would be extended, \
+reduced by 32768, and written to ffff307a. role=dead is established by the \
+ROM selector rather than zero map values.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 278
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014ea2"
 name = "mellow-deer"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c1"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab28"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab2a"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab2c"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007ab3a"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "32768"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007ab80"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007ab88"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007ab8c"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007ab90"
+value = {named = ["000083c1", "0000e98e", "00014ea2"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +145,11 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "arcane-griffin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"

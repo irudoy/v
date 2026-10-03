@@ -1,0 +1,28 @@
+note = [
+    """
+Row axis shared by signed endpoint surfaces 000171c8 and 00016fc8. With \
+ffff4255.bit7 clear, FUN 00074028 uses uint16[ffff10d2]; with the bit set it \
+uses max(uint16[ffff10d2],uint16[ffff10e2]). It is byte-identical to axis \
+00013d34. The physical quantity and engineering scale are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 49
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00018936"
+name = "beryl-mongoose"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074072"

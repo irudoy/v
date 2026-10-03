@@ -1,0 +1,103 @@
+title = "Build the saturated upper term for the idle opening-area base"
+summary = """
+Opening-area upper-term builder. It computes sat_u16(ffff122a * \
+ROM16[0x92fc] >> 13) and writes ffff133e, which bounds the 0x1465a plus \
+0x1469a base in 000476d2."""
+note = [
+    """
+The raw upper-bound role is exact; its physical opening-area scale remains \
+candidate.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 144
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 566
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_opening_area_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maroon-aardwolf/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "attractive-sambar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000476a0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000092fc=0x235f"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476a6"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476a8"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476ae"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476b6"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476cc"
+value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

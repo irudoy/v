@@ -1,0 +1,36 @@
+title = "Intake valve timing control performance bank 1"
+level = "code"
+code = "P0011"
+group = "intake_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 37
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d20"
+name = "diamond-binturong"
+index = 208
+attribute = "000162ae"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162ae"
+value = "0020"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d20"
+value = "370300000000001100000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a48c"
+value = "000162ae"

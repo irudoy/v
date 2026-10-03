@@ -1,3 +1,23 @@
+summary = """
+Negative-contribution coefficient for the positive branch of signed \
+difference u16[ffff11bc]-u16[ffff11be]: the raw map byte multiplies the \
+positive difference, and the result is negated, divided by 4, and saturated \
+to int8."""
+note = [
+    """
+Code confirms the lookup and write of the raw byte to ffff15c9. \
+Decompilation associates the result with the negative contribution on the \
+positive branch of the difference, but the machine listing for region \
+0004d0ba..0004d0cc is absent and ffff15c9 has no readers. Therefore, \
+semantics and confidence remain candidate; zero content is not evidence.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
 category = "Internal Calculations"
@@ -7,7 +27,113 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 385
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-agama/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intrepid-robin/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000123a2"
 name = "airborne-sawfly"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d04c"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d062"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d074"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d07a"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d07e"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d082"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d084"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d088"
+value = {named = ["000123a2", "ffff15c9", "ffff23f1"], span = 1}
+key = "linked"
+
+[[link]]
+type = "index"
+to = "silky-agama/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

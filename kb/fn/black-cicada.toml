@@ -1,0 +1,160 @@
+summary = """
+Composite accessor: uint8 output of map 0x11F2A multiplies \
+((uint16[ffff160a] * uint16[ffff165e]) >> 8), the product passes through \
+logical right shift by 15 in 0002227c, and the resulting coefficient scales \
+adjacent lookup results."""
+note = [
+    """
+The physical quantity of the coefficient and purpose of adjacent lookups are \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 184
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "solemn-coua/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fascinating-rooster/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00056714"
+name = "black-cicada"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056864"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056866"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005686e"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056870"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056874"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056880"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056882"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056886"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005688c"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056890"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056896"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056898"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005689a"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005689c"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000568a4"
+value = {named = ["00011f2a", "0002227c", "00026388", "00056714"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "solemn-coua/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"

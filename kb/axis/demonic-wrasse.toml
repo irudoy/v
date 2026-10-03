@@ -1,3 +1,22 @@
+note = [
+    """
+Breakpoint axis for inverse lookup 0001199e and returned-value table for \
+forward nonlinear lookup 00011d24 over 0001199e. Code proves the reciprocal \
+coordinate role. The physical quantity and engineering scale are \
+unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 39
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
 [[symbol]]
 layout = "7mfk"
 address = "00011d24"

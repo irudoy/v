@@ -1,0 +1,32 @@
+summary = "Source of a calibration limit in 00062c68 together with ffff24c2."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 175
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-tiger/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2465"
+name = "eggplant-curassow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002104e"
+
+[[link]]
+type = "reader"
+to = "tall-tiger/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

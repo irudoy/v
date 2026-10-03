@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control position sensor path A bank 1"
+level = "code"
+code = "P1078"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 18
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019990"
+name = "gray-moose"
+index = 132
+attribute = "000162c6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162c6"
+value = "02a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019990"
+value = "290700000000107800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a35c"
+value = "000162c6"

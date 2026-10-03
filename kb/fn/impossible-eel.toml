@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00093424"
+name = "impossible-eel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00093424"

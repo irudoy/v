@@ -1,3 +1,15 @@
+summary = """
+Explicit-axis 16x16 wrapper over the byte core; geometry is in the entry \
+registry. It obtains axes through GBR-relative references rather than a \
+shared literal, so each map has its own axes."""
+note = [
+    """
+Method note: the extractor must recover gbr+offset, not only pc-literal, or \
+r5/r6 are lost.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
@@ -7,10 +19,40 @@ storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
 
+[[ledger]]
+registry = "funcs"
+order = 67
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "careful-terrier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000261b8"
 former = ["ultraviolet-puffin/fn/7mfk-000261b8"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -63,3 +105,19 @@ count = 0
 l0 = "6bd18b774cb344a9"
 note = """
 complete-JK78C-interpolation-library-census-has-no-matching-standard-finisher-contract"""
+
+[[link]]
+type = "depends"
+to = "careful-terrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,70 @@
+summary = """
+P0011/P0021 qualification counter. FUN 00050b3c increments it up to 255 \
+while its software qualification and hardware ffff84c3.bit6 are active; loss \
+of software qualification resets it, while a clear hardware bit freezes it."""
+note = [
+    """
+A count of at least 10 permits exact runtime records 208 and 209 to set \
+ffff2486.bit6.""",
+]
+level = "code"
+unit = "periodic counts"
+
+[[ledger]]
+registry = "vars"
+order = 616
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1946"
+name = "unselfish-tanuki"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050bd8"
+value = {named = ["00050b3c", "ffff1946"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050be6"
+value = {named = ["00050b3c", "ffff1946"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

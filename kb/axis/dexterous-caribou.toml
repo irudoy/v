@@ -1,3 +1,23 @@
+note = [
+    """
+Offset-binary uint16 axis for map 00014c9a in the nonnegative branches of \
+0005fdb0. At both sites the key is formed from a signed word with an offset \
+of 0x8000; the physical input quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 26
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
 [[symbol]]
 layout = "7mfk"
 address = "00015d60"
@@ -7,6 +27,83 @@ name = "dexterous-caribou"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0005fea0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fe8e"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fe90"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fe96"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fe98"
+value = {named = ["00015d60"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fe9c"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005fea2"
+value = {named = ["00015d60"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ff50"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ff52"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ff58"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ff5c"
+value = {named = ["00015d60"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ff60"
+value = {named = ["00015d60"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2490"
+name = "exotic-bird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00043e20"

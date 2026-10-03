@@ -1,0 +1,124 @@
+summary = """
+Published uint16 lower-bounded state from 0006205c. With A = min(ffff33a8 >> \
+12, 65535) and normalized floor Q from map 0x1459a or 0x145ca, the enabled \
+gate writes max(A, Q); the disabled gate writes A."""
+note = [
+    """
+The output consumer, physical quantity, and subsystem identity are \
+unresolved.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 270
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "brown-jackrabbit/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "placid-mastiff/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tested-dragon/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spirited-lion/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff33a4"
+name = "dashing-galago"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006284e"
+value = {named = ["0001459a", "000145ca", "0001495a", "0006205c", "ffff33a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062856"
+value = {named = ["0001459a", "000145ca", "0001495a", "0006205c", "ffff33a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062860"
+value = {named = ["0001459a", "000145ca", "0001495a", "0006205c", "ffff33a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062872"
+value = {named = ["0001459a", "000145ca", "0001495a", "0006205c", "ffff33a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062890"
+value = {named = ["0001459a", "000145ca", "0001495a", "0006205c", "ffff33a4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "tested-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "brown-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "placid-mastiff/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

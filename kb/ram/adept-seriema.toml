@@ -1,13 +1,134 @@
-note = """
+summary = """
+Runtime column coordinate for Engine Torque Map 00010b8e. FUN 00065928 \
+writes min(65535,floor(u16[ffff1024]*40960/ROM16[00009534])) here and passes \
+the same value to the stack-copied axis from ROM 0002378c."""
+note = [
+    """
 It is the ratio that the feed publishes from the Q7 byte \
 [[normalized_load/ram]] at a finer resolution; the coordinate saturates at \
-160 percent and the byte at 199.2 percent."""
+160 percent and the byte at 199.2 percent.""",
+    """
+Multiplication by 100/40960 makes the exact representation 100*BFS/scaler \
+percent of the fixed BFS reference. The HR catalog calls this ratio Cylinder \
+Filling Up Efficiency; that physical name remains a candidate.""",
+]
+level = "code"
+unit = "normalized BFS coordinate"
 
 [logparam]
 id = "X_VQ_Engine_Load"
 unit = "Normalized BFS [%]"
 
+[[ledger]]
+registry = "vars"
+order = 522
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lyrical-dragon/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "precise-nuthatch/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "primitive-lizard/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff15c4"
 name = "adept-seriema"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065948"
+value = {named = ["00009534", "00010b8e", "00065928", "ffff1024", "ffff15c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065960"
+value = {named = ["00009534", "00010b8e", "00065928", "ffff1024", "ffff15c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065980"
+value = {named = ["00009534", "00010b8e", "00065928", "ffff1024", "ffff15c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065984"
+value = {named = ["00009534", "00010b8e", "00065928", "ffff1024", "ffff15c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006598e"
+value = {named = ["00009534", "00010b8e", "00065928", "ffff1024", "ffff15c4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "lyrical-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "precise-nuthatch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "primitive-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

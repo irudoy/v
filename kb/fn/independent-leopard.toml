@@ -1,0 +1,120 @@
+summary = """
+Dual-branch per-channel calculation of signed difference d. For d >= 0 map \
+0x12522 supplies k for 500 + floor(d*k/100); for d < 0 map 0x12526 supplies \
+k for 500 - floor((-d)*k/100). Results are written to array ffff40a4."""
+note = ["The physical name of the per-channel quantity is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 301
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuzzy-giraffe/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rough-moose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "modest-walrus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005ac54"
+name = "independent-leopard"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ac92"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acb2"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acba"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4a"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4e"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad5a"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad5c"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad62"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad66"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad74"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad78"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"

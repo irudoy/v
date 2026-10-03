@@ -1,0 +1,74 @@
+summary = """
+Base of the two-byte feedback-reference direction array written by 000cb140 \
+and consumed by 000cb614."""
+note = ["Elements are ffff369c and ffff369d."]
+level = "code"
+unit = "direction code array"
+
+[[ledger]]
+registry = "vars"
+order = 700
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_error_encoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff369c"
+name = "classic-goose"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb1c0"
+value = {named = ["000cb140", "000cb614", "ffff369c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cba6e"
+value = {named = ["000cb140", "000cb614", "ffff369c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cbf88"
+value = {named = ["000cb140", "000cb614", "ffff369c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

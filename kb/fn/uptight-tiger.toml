@@ -1,3 +1,23 @@
+summary = """
+Byte-axis interpolation core: searches downward for the first axis element \
+<= key using ADD #-1,R4; sub-helper 0x26C78 computes the second-stage \
+fractional part. Eleven wrappers serve 94 tables; wrapper geometry is \
+recorded in defs/JK08A.interp.csv from the clamp."""
+note = [
+    """
+One of three explicit-axis cores. The cores are byte-identical except for \
+axis element width; downward-search stride is the decisive distinction.""",
+]
+level = "code"
+role = "kernel"
+
+[[ledger]]
+registry = "funcs"
+order = 103
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
 [[symbol]]
 layout = "1nd"
 address = "00028d88"
@@ -14,6 +34,16 @@ key = "00026944"
 layout = "7mfk"
 address = "00026944"
 name = "uptight-tiger"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "clamp"
 
 [[symbol]]
 layout = "jk00c"

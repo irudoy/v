@@ -1,0 +1,67 @@
+summary = """
+HCAN1 interrupt register. Bit 8 is the mailbox-empty interrupt flag used by \
+SLE1; stock ISR 000c7914 clears it by writing word 0x0100."""
+note = [
+    """
+The flag is shared by every HCAN1 transmit mailbox whose mailbox activity \
+interrupt is enabled.""",
+]
+level = "code"
+unit = "peripheral bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 660
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "stock_sle1_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffd808"
+name = "fantastic-mongrel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7940"
+value = {named = ["000c7914", "ffffd808"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7944"
+value = {named = ["000c7914", "ffffd808"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c795e"
+value = {named = ["000c7914", "ffffd808"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7968"
+value = {named = ["000c7914", "ffffd808"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "stock_sle1_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

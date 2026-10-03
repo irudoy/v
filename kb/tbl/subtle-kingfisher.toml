@@ -1,3 +1,19 @@
+summary = """
+The interpolated uint8 output is a multiplier in \
+y=min(65535,(uint16(ffff165e)*out*100)>>14); y is written to ffff192c."""
+note = [
+    """
+The physical quantities of the multiplier and result ffff192c are unknown; a \
+subsequent copy to ffff241e is outside the code claim. Result disposition: \
+writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Batch Scale Multiplier E - raw u8 (0x12D62)"
 category = "Internal Calculations"
@@ -7,10 +23,248 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 216
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shaggy-catfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012d62"
 name = "subtle-kingfisher"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a8a"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a8e"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a92"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a94"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a96"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b3c"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b40"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b42"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b44"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b46"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b48"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b4a"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b4c"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b4e"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b50"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b52"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b54"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b56"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b58"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b5a"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b5c"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b5e"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b60"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b62"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b64"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b68"
+value = {named = ["00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +297,12 @@ value = 4
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "shaggy-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

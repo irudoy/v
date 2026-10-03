@@ -1,3 +1,18 @@
+summary = """
+The interpolated uint8 output is added to uint16(ffff5620); the low 16 bits \
+of the sum are written to ffff1fb0."""
+note = [
+    """
+The physical quantity of the sum is unknown. Every map cell in the current \
+ROM equals 76. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Additive Initialization Term - raw u8 (0x12D8A)"
 category = "Internal Calculations"
@@ -7,7 +22,100 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 219
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "base"
+to = "amethyst-oyster/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "valiant-bulldog/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012d8a"
 name = "green-hog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c574"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c576"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c57c"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c580"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c586"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c58a"
+value = {named = ["00012d8a", "00026388", "00026740", "ffff1fb0", "ffff5620"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "amethyst-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "reader"
+to = "heavenly-jaguar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

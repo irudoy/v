@@ -1,0 +1,149 @@
+summary = """
+Shared uint16 sample word used throughout the EVAP monitor subsystem. Its \
+high byte feeds the vent-control, purge-control circuit, pressure-sensor \
+circuit, pressure range/performance, purge-flow, and leak-monitor state \
+machines."""
+note = [
+    """
+The monitor topology and byte selection are exact. Physical pressure \
+conversion, sensor polarity, and units remain unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 412
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "beryl-skua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devious-zebu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "overjoyed-buffalo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sassy-quail/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stereotyped-binturong/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff10c4"
+name = "heavy-leopard"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aabf2"
+value = {named = ["000aab54", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "ffff10c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac9ea"
+value = {named = ["000aab54", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "ffff10c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000accd2"
+value = {named = ["000aab54", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "ffff10c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ada0e"
+value = {named = ["000aab54", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "ffff10c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae408"
+value = {named = ["000aab54", "000ac994", "000acc54", "000ad8fe", "000ae1a8", "ffff10c4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "beryl-skua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "devious-zebu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "overjoyed-buffalo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "sassy-quail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stereotyped-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

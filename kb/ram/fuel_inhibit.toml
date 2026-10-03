@@ -1,3 +1,25 @@
+summary = """
+Shared fuel-inhibit state byte. FUN 0004f282 uses bit 1 for engine-speed cut \
+delay arming and bit 2 for the active main RPM cut. FUN 0004f9c4 uses bit 7 \
+for its transition-window low-speed RPM cut. FUN 00050b3c uses bit 0 for the \
+P0011/P0021 3000/2800 RPM hysteresis state. Idle function 000420b8 uses bit \
+5 as the arm flag of the after-start idle term block and bit 4 as its latch: \
+with ROM8[00008b3f] bit 7 clear and ROM8[00008710] bit 3 set, bit 5 is set \
+while intake air temperature raw ffff2733 lies strictly inside \
+ROM8[00008b53]=55..ROM8[00008b52]=100, word ffff4524 lies inside \
+ROM16[0000938c]=0xa000..ROM16[00009388]=0xe100, and the listed diagnostic \
+records are clear; when the arm falls while ffff244f bit 5 is set, bit 4 \
+sets, and with bit 5 clear and bit 4 set the terms ffff1510, ffff23ed, and \
+ffff23f3 take 0, 0, and 0x80."""
+note = [
+    """
+Each writer preserves the unrelated bits. Bits 0, 2, and 7 feed separate \
+global contributors. The records of the bit-5 arm include the exhaust-VTC \
+indices 0x43, 0x44, 0x151, 0x152, 0x84..0x89, and 0xd0..0xd3.""",
+]
+level = "code"
+unit = "bitfield"
+
 [[bit]]
 bit = 1
 name = "armed"
@@ -106,10 +128,129 @@ at = "7mfk:0004f316"
 note = """
 mov.b @(0x4b,gbr),r0 loads the byte whose active cut the function returns"""
 
+[[ledger]]
+registry = "vars"
+order = 190
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_fuel_cut/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quirky-silkworm/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff2497"
 former = ["tomato-vulture/ram/7mfk-ffff2497"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b52=100"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b53=55"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c69"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f302"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f30e"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fa34"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fa8c"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050c34"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050c36"
+value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -360,3 +501,49 @@ at = "jk00d:00050bf0"
 to = "7mfk:0004f27e"
 count = 1
 value = 17
+
+[[link]]
+type = "lookup"
+to = "rev_limit_fuel_cut/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

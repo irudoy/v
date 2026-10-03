@@ -1,0 +1,29 @@
+note = [
+    """
+Axis for common dual-channel conversion curve 000148fa. FUN 0003edb4 passes \
+the two uint16 coordinates returned by FUN 0003ef74 directly to wrapper \
+000264f8. Stored points span 0..1960. Code proves the adjusted-sample \
+coordinate role; the physical sensor quantity and engineering scale are \
+unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 55
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00015d20"
+name = "discreet-whale"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003ee86"

@@ -1,0 +1,161 @@
+summary = """
+Unsigned blended speed threshold written by FUN 0007584e as \
+clamp_u16(S_entry+floor(ROM16[0x9424]*(ffff1796-S_entry)/1024)). First-pass \
+initialization uses the newly initialized filter value; later passes use \
+ffff1794 from function entry."""
+note = [
+    """
+All request-rate terms subtract the newly stored ffff1794 from this word. At \
+steady speed, stock gain 76 gives a 13-count lower-side deadband and an \
+immediate one-count response above the threshold because negative arithmetic \
+shifts round down.""",
+]
+level = "code"
+unit = "raw speed x4"
+
+[[ledger]]
+registry = "vars"
+order = 108
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_container/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "porcelain-boobook/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_runtime/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1798"
+name = "white-dove"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759b4"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759be"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759c0"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759de"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a48"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a90"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075afe"
+value = {named = ["00009424", "0007584e", "ffff1794", "ffff1796", "ffff1798"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "porcelain-boobook/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_runtime/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "throttle_container/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

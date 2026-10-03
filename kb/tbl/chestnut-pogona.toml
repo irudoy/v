@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00011e15"
+name = "chestnut-pogona"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00077c00"

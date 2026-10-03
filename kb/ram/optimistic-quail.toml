@@ -1,0 +1,63 @@
+summary = """
+Alternate unsigned 16-bit source selected by ffff245d bit 5 in per-channel \
+difference producer 0005727a; when the bit is clear, ffff1024 is selected \
+instead."""
+note = ["The physical quantity is unresolved."]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 86
+fields = ["semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "imperial-lobster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "auspicious-jacamar/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff123e"
+name = "optimistic-quail"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e998"
+
+[[link]]
+type = "reader"
+to = "imperial-lobster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "auspicious-jacamar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

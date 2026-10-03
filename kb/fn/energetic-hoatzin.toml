@@ -1,0 +1,252 @@
+summary = """
+Mode-dependent masked six-channel pulse scheduler. In stock JK08A mode \
+ROM8[00008d92] bit 3 is set. When ffff1220 is nonzero, the function calls \
+FUN 0002c13c with ffff1220 as the channel mask and the six-word duration \
+array at ffff1568, then ORs the same mask into status bytes ffff14c3 and \
+ffff14c2."""
+note = [
+    """
+Both branches form the array pointer as ffff128c+0x2dc = ffff1568; ffff14c3 \
+and ffff14c2 are status bytes in the same window at +0x237 and +0x236. The \
+scheduled quantity is an injection duration in 10 us counts.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 168
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "brilliant-dugong/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "straight-labradoodle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00051f1e"
+name = "energetic-hoatzin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f2a"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f2c"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f2e"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f30"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f62"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f64"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051fc4"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051fce"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051fd0"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051fec"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff0"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff2"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff4"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff6"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff8"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ffa"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052004"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052008"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005200c"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005200e"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052012"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052014"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052016"
+value = {named = ["00008d92", "0002c13c", "00051f1e", "ffff1220", "ffff1568"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

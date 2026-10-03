@@ -1,7 +1,145 @@
+summary = """
+Conditionally selected uint8 lookup defines the lower threshold of a \
+composite gate: FUN_000a65ca permits the branch only when RAM32[ffff2b80] >= \
+RAM8[ffff351a]*2560, where RAM8[ffff351a] is the result specifically from \
+map 00012fb6 on its selector branch."""
+note = [
+    """
+The target map is selected when RAM8[ffff106e] >= ROM8[00008730], whose \
+first ROM byte is 0x28; otherwise 00012fc6 is selected. All eight cells \
+equal 255, so the threshold in the comparison domain is 652800. Threshold \
+semantics follow from reading ffff351a, multiplying by 0xa00, and comparing \
+in 000a65ca, not from flat content. Numeric round trip: 255*2560=652800; \
+652800/2560=255. The physical unit and subsystem are unknown. Index: \
+Implicit 1D grid of 8 nodes with step 32. Input u=min(2*RAM8[ffff3510],255). \
+For u<224, the kernel takes elements floor(u/32) and floor(u/32)+1 and \
+linearly interpolates with fraction (u%32)/32; for u>=224, the wrapper \
+returns element 7. Output trace: 00012fb6 -> 000a647c -> 000a6480 -> \
+00026370 -> [00026a80 -> 00026740 | direct element-7 read in 00026370] -> \
+000a6484 -> 000a648a -> ffff351a -> 000a65ca. Result disposition: consumer; \
+Result target: RAM8[ffff351a] -> FUN_000a65ca.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw_u32@ffff2b80"
+scale = "x*2560"
+to_raw = "x/2560"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 419
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "archetypal-peccary/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dynamic-collie/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "archetypal-peccary/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012fb6"
 name = "cryptic-ara"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a647c"
+value = {named = ["00012fb6", "00026740", "000a65ca", "ffff2b80", "ffff351a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6480"
+value = {named = ["00012fb6", "00026740", "000a65ca", "ffff2b80", "ffff351a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6484"
+value = {named = ["00012fb6", "00026740", "000a65ca", "ffff2b80", "ffff351a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a648a"
+value = {named = ["00012fb6", "00026740", "000a65ca", "ffff2b80", "ffff351a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "2560"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*2560=2560"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "255*2560=652800"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "2560/2560=1"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "652800/2560=255"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +170,10 @@ value = "00015367"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "archetypal-peccary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

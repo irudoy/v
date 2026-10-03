@@ -56,7 +56,7 @@ def test_the_tree_matches_its_sources(facts):
     assert single_source.check_can_id() > 0
     single_source.check_product_identity()
     single_source.check_stock_hashes()
-    assert single_source.check_kb_questions() == 12
+    assert single_source.check_kb_questions() == 13
     assert single_source.check_rom_registries() == len(
         single_source.registered_labels()
     )

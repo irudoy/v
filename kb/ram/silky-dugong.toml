@@ -1,0 +1,103 @@
+summary = """
+Identified cylinder number 1..6 written on tooth 4 by 00028ea2 from the cam \
+edge counts. Tooth 7 copies it to event index ffff11de and tooth 8 copies it \
+to ffff13c9. Fallback handler 0002b768 and 00099a48 also write it."""
+note = ["The value identifies the cylinder of the next tooth-7 event."]
+level = "code"
+unit = "cylinder number 1..6"
+
+[[ledger]]
+registry = "vars"
+order = 897
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13c8"
+name = "silky-dugong"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297a6"
+value = {named = ["00028ea2", "0002b768", "00099a48", "ffff13c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297d4"
+value = {named = ["00028ea2", "0002b768", "00099a48", "ffff13c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029f8a"
+value = {named = ["00028ea2", "0002b768", "00099a48", "ffff13c8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,135 @@
+summary = """
+Phase-2 AN0 external-mux sample for selector code 001. Cyclic sampler \
+000280d8 writes the ADDR0 result here after phase 1 selects PF13; \
+battery-voltage publisher 00039a9e consumes it, and raw hysteresis updater \
+00038128 uses the pre-conversion word."""
+note = [
+    """
+The exact DID 0x1103 response path through ffff1188 binds selector code 001 \
+to battery voltage. No engineering scale is assigned directly to this \
+pre-conversion word.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 670
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_adc_hysteresis_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_voltage_publish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blue-condor/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d6e"
+name = "eager-alligator"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281d8"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281dc"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281f0"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281fe"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003813e"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039aae"
+value = {named = ["000280d8", "00038128", "00039a9e", "ffff1d6e", "fffff800"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "blue-condor/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "battery_adc_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

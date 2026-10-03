@@ -1,0 +1,229 @@
+summary = """
+EVAP negative-pressure leak transfer evaluated at baseline-relative \
+coordinate ffff2c92 and corrected coordinate ffff2c98. The two lookup \
+results form ffff3240 and ffff3242; their positive difference feeds the \
+normalized leak-result calculation that writes ffff301c."""
+note = [
+    """
+The stored axis is \
+[0,64,128,192,256,320,384,512,768,1280,2048,3072,4608,7168,10752,16384], and \
+the map is [0,28,40,49,57,64,70,81,99,128,162,198,242,302,370,457]. At the \
+stored knots, the map differs from sqrt(12.75*x) by less than 0.566 raw, so \
+its measured shape is square-root-like without proving an exact formula. The \
+same map and axis byte sequences occur in the registered VQ37VHR, VQ35HR, \
+and VQ25HR ROMs at family-specific addresses. Factory ESM pages EC-274 and \
+EC-316 define P0442 and P0456 as negative-pressure leak tests. EC-529 gives \
+Service 06 leak-area conversion 1/128 mm2, but no code trace binds that \
+publication conversion to this internal map or ffff301c; internal units \
+remain raw. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 10
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "caped-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "classic-pelican/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "large-spoonbill/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "umber-bandicoot/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-boa/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enchanted-ocelot/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000152d6"
+name = "ancient-terrier"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b215e"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2160"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2162"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2166"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b216a"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b216e"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2172"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c6e"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c70"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c74"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c76"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c80"
+value = {named = ["000152d6", "000264f8", "00026740", "00026984", "00026c78", "000b2096", "000b29b8", "ffff2c92", "ffff2c98", "ffff3240", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "index"
+to = "large-spoonbill/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "umber-bandicoot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "classic-pelican/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

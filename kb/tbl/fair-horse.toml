@@ -1,3 +1,21 @@
+summary = """
+Unsigned 1D interpolated multiplier table: the lookup result is multiplied \
+by the selected byte from ROM 0000990a; the product is conditionally \
+step-limited and upper-capped before updating 16-bit state ffff15da."""
+note = [
+    """
+The lookup by transformed uint8 ffff106f is written to ffff15dd, multiplied \
+by selected ROM8[0000990a], and updates ffff15da after step limiting and an \
+upper clamp. Direct sink ffff15dd has no external readers, but the register \
+copy is consumed. The physical quantity is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
 category = "Internal Calculations"
@@ -7,7 +25,266 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 388
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+]
+
+[[ledger.dependency]]
+role = "writes"
+to = "competent-pillbug/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precise-chamois/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012422"
 name = "fair-horse"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009090"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000929a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000990a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00012422"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00026382"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0005533c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a96"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a98"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a9a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005532a"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005532c"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055332"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055334"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005533a"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055384"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055388"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005538a"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005538c"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055392"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055396"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005539e"
+value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "00026370", "00026382", "00026740", "0005525a", "0005533c", "ffff15da", "ffff15dd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "clay-capuchin/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "knowing-potoo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "knowing-potoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

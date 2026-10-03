@@ -1,0 +1,135 @@
+summary = """
+2D coefficient for an additional term in the calculation of ffff230c; \
+ffff230c is a term in the saturating calculation of ffff231a and a quantity \
+subtracted when calculating ffff18e2."""
+note = [
+    """
+The interpolated uint8 is used in 00054ee0 as a multiplier for an additional \
+term in the calculation of ffff230c. The shifts apply to a composite product \
+with uVar6 and bytes ffff1600, ffff1b14, and 000087e8, so they do not define \
+a separate invertible map scale. In 000554ae, ffff230c is added to 0x4000 \
+and two other terms with saturation into ffff231a. In 0004ab94, it is \
+subtracted from ffff231a before multiplication by ffff22e8 and saturation \
+into ffff18e2. The artifact does not establish the physical loop or units. \
+Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 56
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_base_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tuscan-jerboa/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beneficial-ringtail/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000a49a"
+name = "poetic-sidewinder"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054fcc"
+value = {named = ["0000a49a", "00026084", "00026770", "00026944", "00026c78", "0004ab94", "00054ee0", "000554ae", "00057608", "ffff230c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054fd4"
+value = {named = ["0000a49a", "00026084", "00026770", "00026944", "00026c78", "0004ab94", "00054ee0", "000554ae", "00057608", "ffff230c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fanatic-snail/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fuel_multiplier_coordinator/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_base_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tuscan-jerboa/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

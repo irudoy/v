@@ -1,0 +1,120 @@
+summary = """
+Raw multiplier for the decrement step of internal 16-bit state RAM_ffff1866"""
+note = [
+    """
+The claim is limited to operational semantics. The interpolated map byte is \
+multiplied by RAM_ffff3373, written as a word to RAM_ffff13dc, and \
+subtracted from RAM_ffff1866 with saturation to zero in FUN_00064cb2. Code \
+in the artifact does not establish the physical purpose of RAM_ffff1866, map \
+units, or physical axis names; catalog matches for 4x4 geometry are not \
+used. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 75
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stalwart-polecat/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b5fa"
+name = "sturdy-baboon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064860"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064876"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006487a"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006487e"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064884"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fe"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064a04"
+value = {named = ["0000b5fa", "00026084", "00026770", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "spotted-zebra/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

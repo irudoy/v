@@ -1,0 +1,139 @@
+summary = """
+ATU-II/APC engine-event configuration driver. When bit 1 of 0xffff4198 is \
+set, it skips the primary timer-configuration block and clears 0xffff13d1; \
+the enabled path passes the cylinder mask to POPCR 0xfffff700. It forms the \
+dwell mask as ffff13d1 = ROM8[00022687 + ffff13d3], the one-hot bit of dwell \
+channel ffff13d3."""
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 361
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pink-mustang/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "organic-coati/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-mustang/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-uakari/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002af38"
+name = "berserk-stoat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022687=[0,2,4,8,16,32,1]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afa6"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afc2"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afc6"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afec"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aff0"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b1a4"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b34e"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b358"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "knowing-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pink-mustang/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

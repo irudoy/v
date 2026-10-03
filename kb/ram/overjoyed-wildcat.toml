@@ -1,0 +1,123 @@
+summary = """
+Discrete state 0 through 5 produced by 00053574 from ffff1083 and auxiliary \
+gates. Timing-state selector 0004afdc uses state 3 together with \
+ffff2458.bit7 to choose constant ROM8[000086a2] instead of a timing table."""
+note = [
+    """
+The state values and constant-selection predicate are exact. The complete \
+physical operating-mode names of states 0 through 5 remain unresolved.""",
+]
+level = "code"
+unit = "enum_u8"
+
+[[ledger]]
+registry = "vars"
+order = 560
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fine-sawfly/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ff"
+name = "overjoyed-wildcat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000086a2=0x9e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b09a"
+value = {named = ["000086a2", "0004afdc", "00053574", "ffff1083", "ffff22ff", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b09c"
+value = {named = ["000086a2", "0004afdc", "00053574", "ffff1083", "ffff22ff", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053660"
+value = {named = ["000086a2", "0004afdc", "00053574", "ffff1083", "ffff22ff", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053662"
+value = {named = ["000086a2", "0004afdc", "00053574", "ffff1083", "ffff22ff", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053664"
+value = {named = ["000086a2", "0004afdc", "00053574", "ffff1083", "ffff22ff", "ffff2458"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fine-sawfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

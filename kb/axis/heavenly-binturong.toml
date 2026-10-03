@@ -1,3 +1,35 @@
+note = [
+    """
+Row axis for trustful requested-torque surface 000175c8; its 16 stored bytes \
+equal primary axis 00011d0c. FUN 0003de4c writes row coordinate ffff1cca = \
+max(32, ffff11d0), where ffff11d0 is the scheduler snapshot of RPM/3.125 \
+word ffff1208. Lookups in 00073a44, 00074728, 000749bc, and 0007acb4 pass it \
+to wrapper 00026660, whose byte core 00026bc4 multiplies each stored point \
+by 16, and inverse lookup 00073628 applies the same multiplication, so one \
+stored count is 50 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 31
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "famous-skink/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "0001b018"
@@ -33,6 +65,89 @@ name = "heavenly-binturong"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00073ade"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map Trustful|Axis RPM (x*50)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026bca"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026bcc"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073644"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073648"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007364c"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073ad8"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073ae0"
+value = {named = ["00018716", "00026660", "00026bc4", "0003de4c", "00073628", "ffff1cca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16*3.125=50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "interesting-horse/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "certain-cassowary/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "fuzzy-pogona/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "strange-angelfish/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +194,10 @@ to = "7mfk:00074778"
 count = 1
 value = 3
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "famous-skink/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

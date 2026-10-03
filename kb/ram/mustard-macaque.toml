@@ -1,0 +1,156 @@
+summary = """
+Saturated uint16 product controlled by Q1.7 coefficient ffff90d0. FUN \
+00069374 computes d=(u16[ffff1040]-u16[ffff8dc8]) mod 65536 and writes \
+min(65535,floor(ffff90d0*floor(ROM8[000089cf]*d/64)/128))."""
+note = ["The physical quantity and engineering unit are unresolved."]
+level = "code"
+unit = "scaled raw product"
+
+[[ledger]]
+registry = "vars"
+order = 508
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cream-ladybug/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "funky-boar/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "lemon-wasp/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-dogfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8f0a"
+name = "mustard-macaque"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089cf=0x0e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b69c"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b69e"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6a0"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6a6"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6ae"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6b0"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6c0"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6f2"
+value = {named = ["000089cf", "00069374", "ffff1040", "ffff8dc8", "ffff8f0a", "ffff90d0"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "cream-ladybug/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "funky-boar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "lemon-wasp/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "devout-chicken/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "meteoric-wildebeest/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

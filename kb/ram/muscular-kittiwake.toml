@@ -1,0 +1,105 @@
+summary = """
+Bank-2 no-edge window counter of edge-count monitor 000c22dc: incremented \
+with saturation while the bank-2 edge count ffff4073 is zero with arm byte \
+ffff4120 bit 1 set; at ROM8[00008e21]=10 the monitor sets result bit \
+ffff850c bit 4. Zeroed on reset request unless the result bit is set."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 814
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enormous-limpet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nano-trout/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fat-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff408d"
+name = "muscular-kittiwake"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e21=10"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c23d8"
+value = {named = ["00008e21", "000c22dc", "ffff4073", "ffff408d", "ffff4120"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c29b6"
+value = {named = ["00008e21", "000c22dc", "ffff4073", "ffff408d", "ffff4120"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2a82"
+value = {named = ["00008e21", "000c22dc", "ffff4073", "ffff408d", "ffff4120"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2bb8"
+value = {named = ["00008e21", "000c22dc", "ffff4073", "ffff408d", "ffff4120"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2c34"
+value = {named = ["00008e21", "000c22dc", "ffff4073", "ffff408d", "ffff4120"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enormous-limpet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "nano-trout/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fat-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

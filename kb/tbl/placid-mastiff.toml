@@ -1,7 +1,157 @@
+summary = """
+Default mode-selected lower-bound curve for published word ffff33a4. With U \
+from this map and coefficient K from 0001495a, Q = min(floor(U * K / 50000), \
+65535); the enabled gate publishes max(Q, min(ffff33a8 >> 12, 65535))."""
+note = [
+    """
+This map is selected when either selector test routes around the primary map \
+0001459a. The interpolated result is written to ffff8d68 at 000627d0, \
+multiplied by K at 000627dc, divided by 50000 through 00021ce0, saturated to \
+uint16, and compared with the accumulator-derived value at \
+0006284e-00062860. The physical quantity and engineering scale are not \
+assigned. Result disposition: inline_comparison. Result target: lower bound \
+of ffff33a4.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 257
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tested-dragon/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tan-toucan/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-galago/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000145ca"
 name = "placid-mastiff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627b2"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627b4"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627c0"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627c8"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627ca"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627cc"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627d0"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627dc"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627e0"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627e8"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006284e"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062856"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062860"
+value = {named = ["000145ca", "0001495a", "00015ce0", "00021ce0", "ffff33a4"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +182,35 @@ value = "000169ec"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "tan-toucan/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "tested-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

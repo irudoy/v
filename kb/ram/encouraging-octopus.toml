@@ -1,0 +1,126 @@
+summary = """
+Multipurpose state byte. FUN 0007584e uses bit 0 as coolant-indexed \
+alternate-threshold hysteresis: clear sets at raw ffff1071 >= 255; set adds \
+16 before the same comparison, retaining through raw 239 and clearing at \
+238."""
+note = [
+    """
+Exact DID conversion raw-50 gives theoretical 205/189/188 deg C boundaries. \
+The stock alternate threshold 0x9434 is 0xffff, so this latch does not \
+change the normal stock limiter threshold. Other bits and consumers remain \
+independent.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 193
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "robust-uakari/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff249e"
+name = "encouraging-octopus"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a99"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9a"
+value = "0x10"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758d6"
+value = {named = ["00008a99", "00008a9a", "00009434", "0007584e", "ffff1071", "ffff249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758da"
+value = {named = ["00008a99", "00008a9a", "00009434", "0007584e", "ffff1071", "ffff249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758fa"
+value = {named = ["00008a99", "00008a9a", "00009434", "0007584e", "ffff1071", "ffff249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758fc"
+value = {named = ["00008a99", "00008a9a", "00009434", "0007584e", "ffff1071", "ffff249e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "robust-uakari/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

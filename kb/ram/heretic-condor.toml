@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff186a"
+name = "heretic-condor"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00063fe4"
+
+[[link]]
+type = "reader"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

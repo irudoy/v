@@ -1,0 +1,83 @@
+summary = """
+First adjusted coordinate returned by FUN 0003ef74 and used by FUN 0003edb4 \
+for lookup of common conversion curve 000148fa."""
+note = [
+    """
+The value is a persistent copy of the first temporary coordinate. Its \
+physical sensor unit is unresolved.""",
+]
+level = "code"
+unit = "raw coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 510
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "elite-turaco/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "esoteric-chachalaca/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enlightened-orangutan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff322c"
+name = "chestnut-buffalo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee7e"
+value = {named = ["00012292", "000148fa", "0003edb4", "ffff322c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee86"
+value = {named = ["00012292", "000148fa", "0003edb4", "ffff322c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eea8"
+value = {named = ["00012292", "000148fa", "0003edb4", "ffff322c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "elite-turaco/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

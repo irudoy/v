@@ -1,7 +1,97 @@
+summary = """
+Alternate-mode direct initializer for Q12 accumulator ffff33a8: the \
+interpolated uint16 result is shifted left by 12 and stored without a ramp \
+update."""
+note = [
+    """
+The branch executes when the outer mode inputs select the alternate path. \
+Base 000131c2 is loaded at 00062702, interpolation returns at 0006270c, \
+shifts at 00062710-00062714 form result << 12, and the delay-slot write at \
+00062718 stores it in ffff33a8. The physical quantity and engineering scale \
+are not assigned. Result disposition: writes. Result target: ffff33a8 at \
+00062718.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 236
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tan-toucan/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-mole/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000131c2"
 name = "enigmatic-silkworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062702"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062708"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006270c"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062710"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062712"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062714"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062718"
+value = {named = ["000131c2", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +124,18 @@ value = 12
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "tan-toucan/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

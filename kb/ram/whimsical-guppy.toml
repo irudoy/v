@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff416b"
+name = "whimsical-guppy"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00035012"
+
+[[link]]
+type = "writer"
+to = "khaki-guppy/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

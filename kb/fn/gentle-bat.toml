@@ -1,0 +1,178 @@
+summary = """
+Engine-event scheduler feeder and timing-task dispatcher. It first calls \
+00028af8 and 00028b5c to publish two wrap-corrected interval snapshots, then \
+sets ffff84ba bit 7, advances modulo-3 phase ffff9f24, and sets ffff84ba bit \
+6 when the phase reaches three. It invokes all ten entries of the \
+engine-event task table at 00021b5c; index 4 is timing dispatcher 0004e162."""
+note = [
+    """
+Three admitted current-cylinder events correspond to one crankshaft \
+revolution on the V6. The table order establishes that final \
+timing-coordinate construction and APC scheduling execute in the \
+engine-event path.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 7
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "engine_event_timing_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_interval_snapshot_a/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_interval_snapshot_b/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "antique-hawk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultraviolet-teal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000208f8"
+name = "gentle-bat"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021b6c"
+value = "0004e162"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020928"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002092c"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020930"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020938"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002093c"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000209bc"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000209c6"
+value = {named = ["000208f8", "000209d8", "00021b6c", "00028af8", "00028b5c", "00028ea2", "0002b768", "0004e162", "ffff84ba", "ffff9f24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pastel-yak/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "capture_interval_update/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "engine_event_timing_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "event_interval_snapshot_a/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "event_interval_snapshot_b/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

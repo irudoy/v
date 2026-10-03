@@ -1,0 +1,131 @@
+summary = """
+Two-lane unfiltered temperature PID pair. FUN 0003d4a8 writes element[lane] \
+= max(lookup(00012dea, uint8(ffff1d58[lane] >> 2)) - 10, 0) through \
+implicit-axis primitive 000263a0 at 0003d4da, or zero at 0003d4e6; FUN \
+0003d832 copies element 0 into PID byte ffff3f41."""
+note = [
+    """
+The pair follows the lane layout of ffff1d58: element 0 for phase 1 and \
+element 1 for phase 3. Only element 0 reaches J1979 PID 0x0F; element 1 has \
+no found consumer.""",
+]
+level = "code"
+unit = "degC+40"
+
+[[ledger]]
+registry = "vars"
+order = 436
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "romantic-caiman/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smoky-puffin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "foamy-pony/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f42"
+name = "elated-bullfrog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4b8"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4c0"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4da"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4e6"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d8c0"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "prudent-loon/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "smoky-puffin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "romantic-caiman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "foamy-pony/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

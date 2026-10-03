@@ -1,0 +1,111 @@
+title = "Coarse vehicle-speed fuel-cut state with RPM gate"
+summary = """
+Vehicle-speed fuel-cut contributor. With RPM gate ffff24a7.bit5 clear, it \
+enters at coarse speed 93 and remains active until speed falls below 91; \
+stock activation delay is zero."""
+note = [
+    """
+The candidate speed conversion is approximately 186/182 km/h and requires \
+hardware validation.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 22
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 526
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flat-doberman/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "xanthic-yak/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f19c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008caf"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008db7"
+value = "0x5d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008dc3"
+value = "0x5b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f19c"
+value = {named = ["00008caf", "00008db7", "00008dc3", "0004ed88", "ffff110e", "ffff24a6", "ffff24a7"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

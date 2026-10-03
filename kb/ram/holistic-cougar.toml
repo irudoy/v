@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff454e"
+name = "holistic-cougar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026fde"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_normalizer_a/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

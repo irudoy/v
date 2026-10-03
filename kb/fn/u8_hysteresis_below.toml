@@ -1,0 +1,66 @@
+summary = """
+Unsigned byte below-threshold hysteresis comparator used by the \
+vehicle-speed fuel-cut RPM gate."""
+note = [
+    """
+Unsigned byte-domain below-threshold helper with state-dependent \
+hysteresis""",
+    """
+FUN 0004f050 uses threshold 180 and hysteresis 20 in RPM/25 units, so its \
+state sets below 4500 RPM and clears at or above 5000 RPM.""",
+]
+level = "code"
+role = "service"
+contract = """
+Given uint8 value r4, threshold r5, hysteresis r6, and previous Boolean r7, \
+returns uint8((r4 - (r7 ? r6 : 0)) < r5)."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 13
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 521
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [1]
+identity = [0]
+contract = [1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_cut_rpm_gate_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000259aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000259aa"
+value = {named = ["0004f050"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259aa"
+value = {named = ["0004f050"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "vehicle_speed_cut_rpm_gate_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

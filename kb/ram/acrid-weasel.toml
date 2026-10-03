@@ -1,0 +1,136 @@
+summary = """
+Bit 6 is the selected-temperature transition latch maintained by FUN \
+0003967a. Computed START SIGNAL ON with battery-voltage raw below 100 clears \
+it and returns coolant. Outside that condition, a clear latch is set while \
+coolant is returned once; subsequent calls with the latch set return 0, and \
+FUN 000394b8 holds the selected pair through previous-pass images \
+ffff107e/ffff1080."""
+note = [
+    """
+The latch state machine is exact. At 0.08 V per count the clearing condition \
+uses voltage below 8.00 V.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 454
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "start_low_voltage_temperature_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-sheep/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "selected_temperature_pair_update/fn"
+type = "depends"
+end = "owner"
+link_role = "selector"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "start_low_voltage_temperature_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24be"
+name = "acrid-weasel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003967c"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039694"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003969c"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000396a4"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
+type = "input"
+to = "battery_voltage/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "small-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

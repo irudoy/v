@@ -1,0 +1,36 @@
+role = "service"
+contract = """
+Not arithmetic: longword block copy. It copies r0 bytes from [r2] to [r1], \
+with r0 divisible by 4. For r0 <= 0x40 it unrolls through jump table \
+0x22094; otherwise it loops. It returns no result and clobbers r0; r2 and r3 \
+are preserved on the stack. It writes only destination range [r1, r1+r0) and \
+has no diagnostic channel."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 35
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022038"
+name = "complex-bug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00020f56"
+value = {named = ["00022038"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022038"

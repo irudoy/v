@@ -1,0 +1,84 @@
+summary = """
+Diagnostic runtime-record byte-1 bit-7 predicate. It addresses ffff5718 + \
+3*index and returns that bit as a Boolean."""
+note = [
+    """
+Test runtime diagnostic record byte 1 bit 7 with minus-one sentinel \
+support""",
+    """
+Indices 0x71 and 0x123 are exact P2119 and P1238 descriptors in 0005096c.""",
+]
+level = "code"
+role = "service"
+contract = """
+Input r4 is interpreted as a signed 16-bit record index. Index -1 returns \
+zero without reading RAM; other indices return byte1.bit7 of the selected \
+three-byte record."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 15
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 522
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [1]
+identity = [0]
+contract = [1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "contract"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_actuator_fault_inhibit_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00025e20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e20"
+value = {named = ["0005096c", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025e20"
+value = {named = ["0005096c", "ffff5718"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

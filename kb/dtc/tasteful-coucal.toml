@@ -1,0 +1,38 @@
+title = """
+NATS LOCK MODE; descriptor suppression only because attribute is already \
+zero"""
+level = "code"
+code = "P1610"
+group = "nats"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 9
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019540"
+name = "tasteful-coucal"
+index = 40
+attribute = "000160fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000160fe"
+value = "0000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019540"
+value = "0d0500000000161000000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a1ec"
+value = "000160fe"

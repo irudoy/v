@@ -1,6 +1,161 @@
+summary = """
+Common conditioned exhaust-cam target byte. FUN 000bfe88 selects or blends \
+cold/fallback ffff1c5f and warm/main ffff1c5d, applies mode, rate, and \
+offset constraints, and writes this byte. The exact service-0x22 pointer \
+table publishes it as target-exhaust-angle DID 0x1166."""
+note = [
+    """
+The exact DID and exhaust-VTC DTC paths prove the physical subsystem. \
+Warm-path replay converges to this byte after downstream conditioning. \
+Monitor 0008f168 forms target minus actual plus 0x80 against actual bytes \
+ffff2324 and ffff2325, and FUN 0004d2a6 adds this byte to intake target \
+ffff2326, so it shares their unit of 0.5 crank degrees per count about \
+neutral 128.""",
+]
+level = "code"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"
+
+[[diagnostic]]
+id = "exhaust-cam-target-did-1166"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1166h-t-vtc-angl-ex"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1166h-t-vtc-angl-ex-60838270"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1166 to ffff2327. Structured \
+Nissan diagnostics identify the DID as the common target exhaust-VTC angle. \
+Exhaust-VTC control and DTC paths independently consume the same byte. \
+Conflicting public engineering conversions remain unresolved for JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "blazing-gibbon/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "paper-hippo/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "meaty-guillemot/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "exhaust_cvtc_target/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000c0cee"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "60838270", "ffff2327"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "wild-taipan/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 34
+binding = "exhaust-cam-target-did-1166"
+
+[[ledger]]
+registry = "vars"
+order = 130
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "centered_u8"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "exhaust_cvtc_target/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meaty-guillemot/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cornflower-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "illegal-husky/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +187,68 @@ note = "Aligned diagnostic pointer table preserves the field position"
 layout = "7mfk"
 address = "ffff2327"
 former = ["antique-degu/ram/7mfk-ffff2327"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d376"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfea6"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00ca"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00d8"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00e0"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c013e"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0144"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0cee"
+value = {named = ["0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "000bfe88", "ffff1c5d", "ffff1c5f", "ffff2327"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +285,79 @@ at = "jk78c:ffff23a4"
 to = "7mfk:ffff2327"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the field position"
+
+[[link]]
+type = "input"
+to = "cornflower-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "illegal-husky/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "exhaust_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "meaty-guillemot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fortunate-mantis/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

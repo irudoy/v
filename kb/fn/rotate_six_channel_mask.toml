@@ -1,0 +1,59 @@
+title = "Rotate one-hot mask through six channels"
+summary = """
+Rotate a six-channel one-hot mask left with wrap from bit 5 to bit 0. State \
+machine 000503e0 applies it repeatedly to build the injector-event \
+release-tail mask."""
+note = ["The loop in 000503e0 limits the generated mask to six channels."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 38
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 487
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050766"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050766"
+value = {named = ["000503e0"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

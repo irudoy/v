@@ -1,0 +1,117 @@
+summary = """
+Retained Boolean lookup result from calibration 0001202e. FUN 0003e1da \
+updates it while ffff2459.bit5 is clear and tests only zero versus nonzero \
+after that bit sets."""
+note = [
+    """
+All four stock cells are 200. Any nonzero value is operationally equivalent; \
+zero bypasses the PH1-derived ffff2451.bit7 requirement for RPM-drop \
+publication.""",
+]
+level = "code"
+unit = "raw Boolean"
+
+[[ledger]]
+registry = "vars"
+order = 13
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "phenomenal-cricket/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "turquoise-mushroom/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wisteria-sheep/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "phenomenal-cricket/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff257a"
+name = "purring-shellfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2de"
+value = {named = ["0001202e", "0003e1da", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f0"
+value = {named = ["0001202e", "0003e1da", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "turquoise-mushroom/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "wisteria-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,88 @@
+summary = """
+Signed result published by FUN 00070d82 at the end of periodic-table index \
+21 from limiter aggregate ffff243a and controller result ffff19c0, then \
+consumed by index-22 FUN 00079030."""
+note = [
+    """
+FUN 00070d82 writes the same value to ffff19c2. This is a shared controller \
+boundary rather than a proven hardware command.""",
+]
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 381
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_boundary/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "request_limit_selector/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2438"
+name = "elegant-marmoset"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c0"
+value = "000702a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c4"
+value = "00079dd8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070db6"
+value = {named = ["000219c0", "000219c4", "000702a0", "00070d82", "00079030", "00079dd8", "ffff2438"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007904e"
+value = {named = ["000219c0", "000219c4", "000702a0", "00070d82", "00079030", "00079dd8", "ffff2438"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "request_limit_selector/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

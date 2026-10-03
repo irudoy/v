@@ -1,0 +1,191 @@
+title = "Build and cap one channel throttle target"
+summary = """
+Per-channel throttle-target builder. It converts shared area word ffff19b2 \
+through inverse pair 0x155a0/0x13202, applies a channel-specific signed \
+correction on the normal controller branch, and clamps the result between \
+ROM16[0x9574]=15 and the selected upper bound before writing \
+ffff28bc+2*channel. The dynamic upper bound is \
+clamp(raw(0x12daa)*13,908,2908); the fixed stock upper value is \
+ROM16[0x9578]*4=2908. DTC-record predicates 0x6f/0x121 and 0x70/0x122 apply \
+additional caps."""
+note = [
+    """
+The per-channel target role is exact. Channel-to-bank identity and the \
+catalog TVO engineering scale remain unverified.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 149
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 206
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_scaler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "flat-fennec/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elated-frog/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_shared/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fantastic-armadillo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_channel_0/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006f48c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009574"
+value = "0x000f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009578"
+value = "0x02d7"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f4f6"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f526"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f596"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5ba"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5e6"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5ee"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f620"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f640"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f668"
+value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "elated-frog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "flat-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

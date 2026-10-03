@@ -1,0 +1,32 @@
+summary = "Full-byte gate for the OFF->ON transition in 0004f662."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 214
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff25b9"
+name = "cerise-turtle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004f70e"
+
+[[link]]
+type = "reader"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

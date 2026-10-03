@@ -1,7 +1,300 @@
+summary = """
+Upper segment of an inverse piecewise-linear conversion: for input > 45187, \
+the input is divided by 16, then 000156d0 is interpolated over axis \
+00015540. The result is used as a dimensionless Q0.16 multiplier for \
+ffff1632 and as a coordinate for 2D interpolation of 0000e98e."""
+note = [
+    """
+Range 64512..65535 corresponds to 0.984375..0.9999847412109375. The path \
+through ffff1988 calculates floor(ffff1632*map/65536); path 00073948 passes \
+the same raw code to the next interpolation. The physical subsystem is \
+unknown.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "1"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 310
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+scale = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-jackrabbit/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-porcupine/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000156d0"
 name = "translucent-cormorant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e04"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e0c"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e0e"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e2c"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e2e"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e3a"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e3c"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e40"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e44"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072e4a"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739aa"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ae"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b0"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739b8"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739ba"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739c2"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739c4"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739c8"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739cc"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d6"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739e2"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072e3a"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072e3c"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072e40"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072e44"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072e4a"
+value = {named = ["00015540", "00015690", "000156d0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e64"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e68"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e6a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e6c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e6e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e74"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00072e76"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +327,40 @@ value = 4
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "aloof-porcupine/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "arcane-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "pretty-centipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

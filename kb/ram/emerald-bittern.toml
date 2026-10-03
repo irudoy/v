@@ -1,0 +1,67 @@
+summary = """
+Base of the second two-word throttle-feedback estimate array written by \
+0003e75a and normalized by 0003eade."""
+note = ["Elements are at ffff38e8 and ffff38ea."]
+level = "code"
+unit = "raw feedback array"
+
+[[ledger]]
+registry = "vars"
+order = 694
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_normalizer_b/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_acquisition/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff38e8"
+name = "emerald-bittern"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e886"
+value = {named = ["0003e75a", "0003eade", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eaea"
+value = {named = ["0003e75a", "0003eade", "ffff38e8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_normalizer_b/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_acquisition/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

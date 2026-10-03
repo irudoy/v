@@ -1,0 +1,185 @@
+summary = """
+Engine-speed window flags of exhaust-VTC conditioner FUN 000bfe88. Bit 0 \
+sets when engine-speed byte ffff11ae reaches ROM8[00008e3b]=36 (1800 RPM) \
+and holds until the byte plus ROM8[000086e1]=4 falls below 36 (1600 RPM), \
+stored at 000bfee4. Bit 1 follows hysteresis comparator 000259d0: it sets \
+when the byte is at or below ROM8[00008e3a]=80 (4000 RPM) and clears above \
+80+ROM8[000086e1]=84 (4200 RPM), stored at 000bff14. Both bits are inputs of \
+standstill override predicate ffff246c bit 1. Bit 2 is the first-learning \
+request of the exhaust valve timing control learning, stored at 000c0a2c as \
+settle flag ffff24d3 bit 4 together with learning status ffff5b33 bit 3 and \
+cleared at the end of the pass."""
+note = [
+    """
+Bit 0 has no consumer other than the hysteresis at 000bfebe and the \
+predicate at 000c0158, so ROM8[00008e3b]=0xff keeps the standstill override \
+predicate clear at every reachable engine speed.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 12
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "honored-cricket/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sticky-limpet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24ab"
+name = "silky-coucal"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086e1"
+value = "4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e3a=80"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e3b=36"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfeb4"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfee4"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfefa"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bff14"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0156"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0a2c"
+value = {named = ["000086e1", "00008e3a", "00008e3b", "000bfe88", "ffff11ae", "ffff24ab", "ffff24d3", "ffff5b33"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "honored-cricket/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sticky-limpet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "apricot-carp/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "neon-llama/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-parakeet/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,120 @@
+summary = """
+Signed schedule-rate correction produced by 0003b75c. Under its enable gates \
+it is clamp_s16(arithmetic_shift7(160*(ffff1dee-ffff1e06))); otherwise it is \
+zero. The selected current schedule word receives this correction before the \
+Base Fuel Schedule upper limit."""
+level = "code"
+unit = "BFS delta raw"
+
+[[ledger]]
+registry = "vars"
+order = 250
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elite-dormouse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flashy-elk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1060"
+name = "magenta-anaconda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000865a"
+value = "0xa0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bae2"
+value = {named = ["0000865a", "000224fa", "0003b75c", "ffff1060", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bae8"
+value = {named = ["0000865a", "000224fa", "0003b75c", "ffff1060", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bb2e"
+value = {named = ["0000865a", "000224fa", "0003b75c", "ffff1060", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bb3a"
+value = {named = ["0000865a", "000224fa", "0003b75c", "ffff1060", "ffff1dee", "ffff1e06"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "elite-dormouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "flashy-elk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

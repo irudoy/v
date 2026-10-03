@@ -1,0 +1,316 @@
+summary = """
+Multipurpose status byte. Bit 7 gates dynamic-threshold movement in \
+rotational-speed request limiter 0007584e: a set bit permits calibrated \
+down/up steps 0x9430 and 0x9436. Bit 6 independently gates debounce counter \
+ffff1846 in DTC monitor 000aacc0 and permits the ffff2b73 >= 5 P030 inhibit \
+branch in misfire coordinator 00082c8a. Scheduler 00020dfe copies tick-flag \
+byte ffff84c4 into it at 00020ee6 and reloads ffff84c4 from ffff84bb at \
+00020ef0; base-tick handler 0002040c ORs 0x80 into ffff84c4 at 00020734 \
+every 1.024 ms, so bit 7 is set on every scheduler pass, and FUN 000904c2 \
+counts ffff1998+b once per 10.24 ms pass while it is set."""
+note = [
+    """
+Stock limiter rates are zero, so bit 7 cannot move the stock threshold. The \
+wave 2 claim that bit 6 selects the base mode in 00055098 is refuted. Bit 7 \
+is the scheduler-pass tick; the physical meaning of bit 6 remains unresolved \
+and must not be merged with it.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 355
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "romantic-jackal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "weightless-coati/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "agate-yak/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tasteful-porpoise/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-quail/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tasteful-caiman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-ant/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_runtime/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84c3"
+name = "dainty-cheetah"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008500"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c2e"
+value = "0x32"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020734"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020ee6"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020ef0"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007591c"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007591e"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075920"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075980"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075982"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075984"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082faa"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fac"
+value = {named = ["00008500", "00008c2e", "00009430", "00009436", "0002040c", "00020dfe", "0007584e", "00082c8a", "000904c2", "000aacc0", "ffff1796", "ffff2b73", "ffff436f", "ffff84c3", "ffff84c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "periodic_tick_isr/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "nostalgic-ant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "throttle_runtime/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "agate-yak/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "artichoke-quail/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tasteful-caiman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tasteful-porpoise/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "romantic-jackal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "weightless-coati/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

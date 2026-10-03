@@ -1,0 +1,132 @@
+summary = """
+Forward-blend-inverse correction through 00011d24/0001199e. On the admitted \
+path, x=clamp_u8(s8[ffff23f1]-s8[ffff2404]), a=F(x), \
+y=floor((0xff00-u8[ffff1862]*(256-a))/256), and \
+ffff1346=clamp_s8(s8[ffff23f1]-G(y))."""
+note = [
+    """
+F(z)=interp_u8(00011d24,axis 0001199e,z) and G(q)=interp_u8(0001199e,axis \
+00011d24,q). Entry is suppressed only by the exact ROM/runtime gate at \
+000646a8-000646c2. The physical quantity and engineering scale are \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 456
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "azure-deer/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "carmine-potoo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "functional-corgi/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "illegal-sturgeon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-agama/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hopeful-sawfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006469c"
+name = "private-raven"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000646c4"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000646c8"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000646e8"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000646f4"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064714"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064718"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064738"
+value = {named = ["0001199e", "00011d24", "000264a0", "0006469c", "ffff1346", "ffff1862", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"

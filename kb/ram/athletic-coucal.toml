@@ -1,0 +1,71 @@
+summary = """
+Bounded Q8 transition state written by nonlinear controller 00063f30. With \
+stock ROM8[0x8710].bit5 set, 0004d99c consumes its high byte while building \
+ffff12d6."""
+note = [
+    """
+The value forms the multi-cycle selected-map state path. Physical units \
+remain unresolved.""",
+]
+level = "code"
+unit = "Q8 state"
+
+[[ledger]]
+registry = "vars"
+order = 604
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nonlinear_transition_controller/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23c2"
+name = "athletic-coucal"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9fa"
+value = {named = ["00008710", "0004d99c", "00063f30", "ffff23c2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d18"
+name = "magic-chamois"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00072414"
+
+[[link]]
+type = "reader"
+to = "radiant-chital/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

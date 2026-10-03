@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4242"
+name = "spirited-malkoha"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002134c"

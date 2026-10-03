@@ -1,0 +1,116 @@
+summary = """
+Signed offset-corrected second channel of paired-sensor stage 0003e4cc. It \
+is min(ffff2864 - ffff561c, 0x7fff) with a -0x8000 floor."""
+note = [
+    """
+The learned offset removes the closed-position reading, so the corrected \
+value is zero-referenced while keeping the 5 mV per count scale.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 850
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "glistening-gecko/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "weightless-piculet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-spoonbill/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "secondary_tps_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-chipmunk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2860"
+name = "invaluable-wasp"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e516"
+value = {named = ["0003e4cc", "0003e548", "0003e63c", "ffff2860", "ffff2864", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e530"
+value = {named = ["0003e4cc", "0003e548", "0003e63c", "ffff2860", "ffff2864", "ffff561c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "glistening-spoonbill/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "secondary_tps_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "glistening-gecko/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "weightless-piculet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "tall-chipmunk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

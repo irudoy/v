@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff14db"
+name = "nonchalant-lizard"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004aca8"
+
+[[link]]
+type = "writer"
+to = "competent-lyrebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

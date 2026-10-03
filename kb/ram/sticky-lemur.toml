@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff14c0"
+name = "sticky-lemur"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064114"
+
+[[link]]
+type = "writer"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

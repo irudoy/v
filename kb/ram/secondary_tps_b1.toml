@@ -1,6 +1,82 @@
+summary = """
+Exact UDS DID 0x1210 runtime word and bank 1 throttle-position sensor 2 \
+value. Pointer table 0x2289c maps the DID to this address; FUN 000a75c0 \
+accepts ROM16[0x9550]=60..ROM16[0x954e]=964 counts and dispatches \
+P0123/P0122 outside that window."""
+note = [
+    """
+The factory documentation states that the sensor 2 signal is converted \
+inside the ECM, and bank 2 stage 0003e4cc performs that conversion as 0x0400 \
+minus the ten-bit sample, so the published word rises with throttle opening \
+like sensor 1. The diagnostic display unit is V at 5 mV per count; \
+JK08A.diagnostics.md derives that scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "throttle-position-sensor-2-bank-1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:tp-sen-2-b1"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0117:data_monitor:tp-sen-2-b1-7c26668f"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 98
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x1210 to ffff275e. Reviewed \
+Nissan diagnostic profiles identify the DID as TP SEN 2-B1, and the factory \
+VQ35HR manual defines it as internally converted throttle-position sensor \
+voltage."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228dc"
+value = "ffff275e"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032452"
+value = {named = ["000228dc", "0003235c", "7c26668f", "ffff275e"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 69
+binding = "throttle-position-sensor-2-bank-1"
+
+[[ledger]]
+registry = "vars"
+order = 384
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "opalescent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +108,53 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff275e"
 former = ["premium-mongrel/ram/7mfk-ffff275e"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000954e=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009550=60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228dc"
+value = "ffff275e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["0000954e", "00009550", "000228dc", "0003235c", "000a75c0", "ffff275e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7676"
+value = {named = ["0000954e", "00009550", "000228dc", "0003235c", "000a75c0", "ffff275e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a769e"
+value = {named = ["0000954e", "00009550", "000228dc", "0003235c", "000a75c0", "ffff275e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec117-tp-sen-2-internal-conversion"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec179-tp2-released-lt-4.75v"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +192,20 @@ to = "7mfk:000a8c76"
 count = 1
 value = 47
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "opalescent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

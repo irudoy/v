@@ -1,7 +1,249 @@
+summary = """
+Upper segment of an inverse piecewise-linear conversion: for input > 45187, \
+the input is divided by 16, then 00018f96 is interpolated over axis \
+00018e46. The result is stored as a 16-bit coordinate and used as a \
+multiplier or input to the next 2D interpolation. The physical quantity is \
+unknown."""
+note = [
+    """
+Paths 00072f1e and 00073a44 independently confirm selection of the upper \
+branch. Downstream operations do not establish a physical unit or nontrivial \
+map scale.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 326
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "spicy-marmoset/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "annoying-chimpanzee/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018f96"
 name = "caped-pelican"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f20"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f26"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f2e"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f30"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f4e"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f50"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f52"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f5c"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f5e"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f62"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f66"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072f6c"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aa0"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aa6"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aaa"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aac"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ab4"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ab6"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073abe"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ac0"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ac4"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ac8"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ace"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ad2"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ade"
+value = {named = ["00018e46", "00018f96", "00018fd6"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +276,26 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "annoying-chimpanzee/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "spicy-marmoset/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

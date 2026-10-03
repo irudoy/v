@@ -1,0 +1,139 @@
+summary = """
+Bit 0 is the first-channel override gate. In FUN 0007a592, a set bit selects \
+ffff3026 for the final raw output when stock ROM8[000083c1].bit0 is clear; \
+FUN 0007ae80 independently selects ffff3026 instead of its bounded \
+ffff2a7a-derived value. FUN 00079a98 maintains the bit together with the \
+override source."""
+note = ["The physical mode selected by the gate is unresolved."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 312
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-ferret/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "married-jaguarundi/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-hoatzin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41f3"
+name = "fierce-beagle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079af0"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b12"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b46"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a760"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a762"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a772"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aed6"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aee4"
+value = {named = ["00079a98", "0007a592", "0007ae80", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "married-jaguarundi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "active-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

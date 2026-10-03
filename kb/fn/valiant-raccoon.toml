@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00040e6c"
+name = "valiant-raccoon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00040e6c"

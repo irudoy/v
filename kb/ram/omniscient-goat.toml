@@ -1,0 +1,99 @@
+summary = """
+Base of two uint32 throttle-regulator effort magnitudes written by 000cb614 \
+at stride four and consumed by 000cc5f0."""
+note = [
+    """
+Elements are ffff37b8 and ffff37bc. The consumer's immediate -0x20 is \
+zero-extended to unsigned 0xe0 before addition to base ffff36d8.""",
+]
+level = "code"
+unit = "fixed-point effort array"
+
+[[ledger]]
+registry = "vars"
+order = 707
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_effort_to_duty/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_fixed_point_regulator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff37b8"
+name = "omniscient-goat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc46e"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc486"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc49c"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4b4"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc4ce"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc63c"
+value = {named = ["000cb614", "000cc5f0", "ffff37b8"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_effort_to_duty/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

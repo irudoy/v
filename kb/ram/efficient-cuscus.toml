@@ -1,0 +1,70 @@
+summary = """
+Reload source of tick-flag byte ffff84c4: scheduler 00020dfe loads it at \
+00020eec and stores it into ffff84c4 at 00020ef0. The export holds only \
+reads of the byte (000209d8, 00020dfe)."""
+note = [
+    """
+With no writer in the export the byte holds its initialization value, so \
+ffff84c3 carries bit 7 from the base tick on every pass.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 809
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84bb"
+name = "efficient-cuscus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020eec"
+value = {named = ["000209d8", "00020dfe", "ffff84bb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020ef0"
+value = {named = ["000209d8", "00020dfe", "ffff84bb"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,95 @@
+summary = """
+Work-support idle adjustment (CONSULT TARGET IDLE RPM ADJ) written by \
+000420b8 while ROM8[0x870e].bit0 is clear: zero with ffff41b9.bit0 set, \
+unsigned min(ffff3168, 20) with ffff41ef.bit3 set, the automatic step of \
+ffff10da with ffff41ef.bit4 set, and otherwise ffff316a when it is at most \
+20 and zero when it is larger. The same function raises its idle aggregate \
+to at least min(255, ffff56f6+ROM8[0x12754]=44)."""
+note = [
+    """
+Scheduler 00020dfe copies it to ffff5690, which DID 0x112e publishes. The \
+homologous profile scale of 12.5 rpm per count gives the 20-count limit as \
+250 rpm; the unit of the idle aggregate is not code-proven.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 937
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quirky-silkworm/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff56f6"
+name = "tacky-cobra"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00012754"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021334"
+value = {named = ["0000870e", "00012754", "00020dfe", "000420b8", "ffff56f6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042ed4"
+value = {named = ["0000870e", "00012754", "00020dfe", "000420b8", "ffff56f6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042ee0"
+value = {named = ["0000870e", "00012754", "00020dfe", "000420b8", "ffff56f6"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

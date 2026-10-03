@@ -1,0 +1,52 @@
+summary = "Cranking Base Fuel Schedule Table"
+note = [
+    """
+Candidate identity is based on the sole uint16 Cranking Base Fuel Schedule \
+Table entry among catalogs with 1D-8 shape and is consistent with range \
+0..350, but the catalog does not prove semantics. Code unambiguously selects \
+00014a4a for param_1=1 and writes the interpolation result to ffff1418. \
+Consumer 000bfe88 is associated only with blended writes ffff1c7f and \
+ffff1c8e and is therefore not evidence for this map. Result disposition: \
+writes. Blocking condition: The target-branch trace stops at write 000c1222 \
+to RAM ffff1418; the artifact contains no target-specific reader of this \
+register and no chain to consumption that confirms Cranking Base Fuel \
+Schedule Table through code.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "BFS"
+scale = "x*0.000488"
+to_raw = "x/0.000488"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 264
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014a4a"
+name = "jolly-labradoodle"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Cranking Base Fuel Schedule Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table scale x*0.000488 BFS"

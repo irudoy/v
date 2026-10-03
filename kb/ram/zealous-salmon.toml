@@ -1,0 +1,61 @@
+summary = """
+Common target-opening coordinate written by 0006f464 from inverse conversion \
+of ffff19b2/2 through 0x155a0/0x13202."""
+note = [
+    """
+Unlike ffff40c6, this word is not divided by four, so it carries the percent \
+scale of axis 000155a0 directly.""",
+]
+level = "code"
+unit = "raw target coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 689
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_shared/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "common_throttle_target_coordinate/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3374"
+name = "zealous-salmon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f484"
+value = {named = ["0006f464", "ffff19b2", "ffff3374"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "throttle_target_shared/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "common_throttle_target_coordinate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,334 @@
+summary = """
+Multiplicative gain that scales base table 00014a7a; division by 64 with \
+unity at raw=64. Flat 64 makes output equal the base (gain 1.0). The \
+physical domain, such as fuel or temperature correction, is not established \
+by the trace."""
+note = [
+    """
+Multiplicative gain that scales base table 00014a7a; division by 64 with \
+unity at raw=64. Flat 64 makes output equal the base (gain 1.0). The \
+physical domain, such as fuel or temperature correction, is not established \
+by the trace. Result disposition: consumer. Result target: 000b1ecc. Machine \
+trace: On the map-calculation branch, 000b1e92 loads base of uint16 map \
+00014a7a, 000b1e9c calls its 1D interpolation, 000b1ea0 moves the result \
+from r0 to r2, and 000b1ea8 stores the low 16 bits in ffff353a. Then \
+000b1eae loads base of target uint8 map 00012bda, 000b1eb0 loads its axis \
+0001255a, and 000b1eb4 calls specialized 1D-8 wrapper 00026474; machinery \
+00026944/00026c78 selects an interval by unsigned axis bytes, and 00026740 \
+linearly interpolates unsigned map bytes. 000b1eb8 moves output r0 to r2, \
+000b1ec0 stores the byte in ffff3010, and 000b1ec2 zero-extends this exact \
+output. 000b1ec6 loads the stored 16-bit output of 00014a7a, 000b1eca \
+zero-extends it, 000b1ecc calculates the product, 000b1ed2 takes it from \
+MACL, and 000b1ed4/000b1ed6/000b1ed8 perform a total logical right shift by \
+6, or integer division by 64. 000b1ece/000b1ed0 forms limit 65535; \
+000b1eda/000b1edc compares the result with it, 000b1ee0 keeps the result \
+when no overflow occurs, and otherwise leaves 65535. 000b1ee6 writes \
+min(65535, output_00014a7a * output_00012bda / 64) to ffff2c0a, and 000b1eec \
+duplicates it to ffff44b2. Prior checks 000b1e74/000b1e76 and \
+000b1e7c/000b1e7e may select a bypass branch with constant 100 and skip both \
+maps, but do not change target-map semantics on the branch where it is \
+called. Scale confidence: code. Scale: x/64; inverse encoding: x*64; units: \
+gain (unity=64). Scale trace: 000b1e9c adjacent uint16-map 00014a7a result \
+-> 000b1ea8 separate write ffff353a; 000b1eac unsigned byte sample ffff10f9 \
+for axis -> 000b1eb4 call uint8 map 00012bda through wrapper 00026474 and \
+kernel 00026944 -> 000b1eb8 r0 to r2 -> 000b1ec0 write low result byte to \
+ffff3010 -> 000b1ec2 extu.b target result -> 000b1ec6 load independent \
+uint16 result from ffff353a and 000b1eca extu.w -> 000b1ecc mul.l r5,r2 -> \
+000b1ed2 MACL to r6 -> 000b1ed4/000b1ed6/000b1ed8 three shlr2 operations, \
+meaning logical product shift right by 6 -> 000b1eda..000b1ee0 saturate \
+result above at 0xffff -> 000b1ee6 write uint16 to ffff2c0a and 000b1eec to \
+ffff44b2.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "gain (unity=64)"
+scale = "x/64"
+to_raw = "x*64"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 201
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+scale = [18, 19, 20, 21, 22, 23, 24]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-finch/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "magic-teal/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "independent-shellfish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "indigo-armadillo/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orthodox-beagle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-finch/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "indigo-armadillo/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012bda"
+name = "impetuous-finch"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1e9c"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ea8"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eae"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eb4"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ec0"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ec2"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ec6"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eca"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ecc"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed2"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed4"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed6"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ed8"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eda"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1edc"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ee0"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1ee6"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b1eec"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1eb4"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ec0"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ecc"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ed2"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ed4"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ed6"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b1ed8"
+value = {named = ["00012bda", "00014a7a", "ffff2c0a", "ffff3010", "ffff44b2"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "impetuous-finch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "impetuous-finch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "magic-teal/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "lyrical-pig/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

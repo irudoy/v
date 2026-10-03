@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00039896"
+name = "determined-bumblebee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039896"

@@ -1,3 +1,26 @@
+summary = """
+Physical semantics are unknown: the 1D lookup result is stored as an unnamed \
+byte in RAM ffff1934."""
+note = [
+    """
+All 16 cells equal 0xff, so every lookup writes result 0xff. The call \
+executes only when (RAM[ffff24b8]&0x04)==0; code then sets mask 0x04, but \
+the calculation branch has not been proven unreachable. The result's \
+physical meaning and nontrivial scale are unknown. The artifact associates \
+no separately addressed axis with the implicit map, so axes are empty. \
+Blocking condition: The trace stops at instruction 000399fa, which writes \
+the byte to RAM ffff1934; this register has no external readers. At \
+00039a02, r2 is overwritten with the adjacent map's input; there is no \
+inline comparison or return of the target value. The calculation branch has \
+not been proven unreachable. Result disposition: writes.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Init-only Constant Output 255 - raw u8 (0x12C3A)"
 category = "Unidentified Calibrations"
@@ -7,7 +30,63 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 205
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "writes"
+to = "unselfish-duck/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012c3a"
 name = "strong-owl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000399e8"
+value = {named = ["00012c3a", "0003995a", "ffff1934"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000399ee"
+value = {named = ["00012c3a", "0003995a", "ffff1934"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000399fa"
+value = {named = ["00012c3a", "0003995a", "ffff1934"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a02"
+value = {named = ["00012c3a", "0003995a", "ffff1934"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "charcoal-foxhound/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "charcoal-foxhound/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,35 @@
+summary = """
+Participates in hysteresis comparators in 00071448 together with ffff24a1; \
+the trace does not distinguish whether it is the input or state."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 199
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "red-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a4"
+name = "glittering-salmon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00048aba"
+
+[[link]]
+type = "reader"
+to = "red-mantis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

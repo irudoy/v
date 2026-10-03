@@ -1,0 +1,117 @@
+summary = """
+Event byte of DTC attribute bit 10. FUN 0008c2d2 writes 1 at 0008c326 when \
+the record it stores has attribute bit 10 set; stage 3 of summary pass \
+0008c65c writes 0 once FUN 0008c396(0x0400) finds no record of the class \
+with byte 1 bit 7 set. FUN 0008c272 projects a nonzero value onto ffff41d1 \
+bits 7, 2, and 0."""
+note = [
+    """
+Attribute bit 10 is carried by the six mass-airflow records P0101, P0102, \
+P0103 (indices 0xba..0xbc) and P010B, P010C, P010D (indices 0x07..0x09).""",
+]
+level = "code"
+unit = "flag"
+
+[[ledger]]
+registry = "vars"
+order = 884
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "famous-platypus/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cobalt-mussel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-uakari/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prehistoric-skua/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff48e0"
+name = "succinct-worm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c27e"
+value = {named = ["0008c09c", "0008c272", "0008c2d2", "0008c396", "0008c65c", "ffff48e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c326"
+value = {named = ["0008c09c", "0008c272", "0008c2d2", "0008c396", "0008c65c", "ffff48e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c6de"
+value = {named = ["0008c09c", "0008c272", "0008c2d2", "0008c396", "0008c65c", "ffff48e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-mule/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "famous-platypus/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cobalt-mussel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lyrical-uakari/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "prehistoric-skua/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,0 +1,249 @@
+title = "Select and run the exact JK08A transmission request coordinator"
+summary = """
+Transmission request coordinator dispatcher. It always runs four preparation \
+functions, then stock ROM8[0x83c1].bit0 clear admits the transmission block \
+and stock ROM8[0x870c].bit7 clear selects FUN 00077892 instead of alternate \
+FUN 00077dec. It then calls FUN 000789d6 and the common completion function \
+FUN 000777fa."""
+note = [
+    """
+Both selector decisions and the active exact-JK08A implementation are \
+code-proven.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 127
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 587
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alluring-petrel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alternate_transmission_request_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "asparagus-parrot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clay-scallop/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "jade-catfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "speedy-reindeer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transmission_request_bound_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00077352"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c1"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870c"
+value = "0x44"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077354"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077358"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007735c"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077360"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077364"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007736c"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077374"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007737c"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077380"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077386"
+value = {named = ["000083c1", "0000870c", "00077352", "00077394", "000774c4", "0007764a", "0007770a", "000777fa", "00077892", "00077dec", "000789d6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "alluring-petrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "alternate_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "asparagus-parrot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "clay-scallop/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "jade-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "speedy-reindeer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "transmission_request_bound_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

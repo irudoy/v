@@ -1,0 +1,33 @@
+summary = "Reset gate in 0009b816."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 359
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "speedy-chital/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9310"
+name = "shiny-pogona"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009b228"
+
+[[link]]
+type = "reader"
+to = "speedy-chital/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

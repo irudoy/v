@@ -1,0 +1,173 @@
+summary = """
+Bank-1 exhaust-VTC target-tracking sample counter, bank 2 at ffff1999. FUN \
+000904c2 increments it with saturation while ffff84c3 bit 7 is set, zeroes \
+it while ffff1994 exceeds ROM8[00008e43], and judges the bank once it \
+exceeds window ffff13a8. FUN 0008f168 zeroes it at 0008f5ca and reset helper \
+FUN 0008fc6a clears it."""
+note = [
+    "The meaning of ffff84c3 bit 7 as the sample condition is unresolved.",
+]
+level = "code"
+unit = "samples"
+
+[[ledger]]
+registry = "vars"
+order = 782
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1804"
+offset = 0x70c
+
+[[ledger.dependency]]
+role = "consumer"
+to = "weightless-coati/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dainty-cheetah/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stereotyped-earwig/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vague-donkey/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "paper-hippo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "weightless-coati/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1998"
+name = "efficient-potoo"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e43"
+value = "2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f5ca"
+value = {named = ["00008e43", "0008f168", "0008fc6a", "000904c2", "ffff128c", "ffff13a8", "ffff1994", "ffff1998", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090536"
+value = {named = ["00008e43", "0008f168", "0008fc6a", "000904c2", "ffff128c", "ffff13a8", "ffff1994", "ffff1998", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090540"
+value = {named = ["00008e43", "0008f168", "0008fc6a", "000904c2", "ffff128c", "ffff13a8", "ffff1994", "ffff1998", "ffff84c3"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x70c
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "stereotyped-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vague-donkey/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "weightless-coati/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "weightless-coati/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

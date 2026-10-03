@@ -1,0 +1,78 @@
+summary = """
+Automatic-request decision window. It sets ffff41aa.bit3 once ffff244f.bit5 \
+is set; no static writer clears the bit."""
+note = [
+    """
+000682f6 evaluates the automatic request only while ffff41aa.bit3 is clear, \
+so it decides before the first pass with ffff244f.bit5 set after RAM \
+initialization.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "funcs"
+order = 672
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "armored-sawfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thankful-jaybird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000682e0"
+name = "adventurous-octopus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682e4"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682ec"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682f0"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "armored-sawfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,141 @@
+summary = """
+Unknown two-dimensional calibration quantity; only the result of \
+interpolating a 4x4 uint8 table along axes 00011ac3 and 00011abf is \
+confirmed."""
+note = [
+    """
+ROM values are 82..134. Code proves an interpolated table result and its \
+byte write without further conversion, but does not select a physical \
+quantity or any catalog class. scale_expr=x records only raw identity and is \
+not a scale claim. Result disposition: writes. Blocking condition: The trace \
+stops at the 0003c2b6 write to RAM ffff115b, which has no readers; after the \
+write, the value is not used in an inline comparison and is not returned \
+from root void function 0003bd74. Code therefore does not connect the result \
+to physical semantics, and the seven catalog classes with 4x4 geometry do \
+not resolve it.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 48
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rainbow-oarfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sexy-walrus/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009e3a"
+name = "interesting-coucal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2a0"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2a8"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2aa"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2ae"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2b2"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c2b6"
+value = {named = ["00009e3a", "00011abf", "00011ac3", "00026100", "00026770", "00026944", "000269c4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "amusing-ara/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "literate-hornet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "rainbow-oarfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "sexy-walrus/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

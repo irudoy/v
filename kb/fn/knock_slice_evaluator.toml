@@ -1,6 +1,187 @@
+summary = """
+Per-evaluator-channel knock monitor. It refreshes the current channel \
+threshold through 00049ffc, compares the calculated uint32 metric with the \
+selected uint16 threshold, writes the current result to ffff24c2 bit 6, sets \
+or clears the selected bit in ffff2150, and saturating-increments ffff2142 \
+on an exceedance."""
+note = [
+    """
+Compare the current evaluator-channel knock metric with its interpolated \
+threshold""",
+    """
+The counter saturates at 0xff. The six bitmap positions follow the \
+function's one-based internal channel selector; physical cylinder or sensor \
+order remains unverified. Threshold 0xffff is the uint16 upper bound and \
+effectively prevents an exceedance.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 100
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 144
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_threshold_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_threshold_base/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_count/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_mask/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "military-flamingo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0004a238"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a2ee"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a31a"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a326"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a32c"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a330"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a34e"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a358"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a368"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a374"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a384"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a410"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a418"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a42c"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a436"
+value = {named = ["000493e8", "00049ffc", "0004a238", "ffff2142", "ffff2144", "ffff2150", "ffff24c2"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -55,3 +236,19 @@ at = "jk78c:00063ac8"
 to = "7mfk:0004a238"
 count = 1
 value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "knock_slice_threshold_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

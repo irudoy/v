@@ -1,0 +1,178 @@
+summary = """
+Power-of-two divisor table: interpolated uint16 M is used as the divisor in \
+floor(256/M), and the low byte of the quotient is written to ffff90cd."""
+note = [
+    """
+Code proves only operational use: interpolated uint16 becomes a positive \
+divisor in calculating floor(256/x), after which the low byte is written to \
+ffff90cd. Stock points yield 128, 64, 32, 16, 8, 4, 2, 1, but without a RAM \
+reader this does not prove a bit-mask role or physical quantity. Conversion \
+256/x is not claimed as the map scale: it is consumer arithmetic, so the \
+scale fields retain raw identity without confidence. Result disposition: \
+writes. No physical quantity is asserted beyond narrow operational \
+semantics.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 331
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "busy-barracuda/const"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bipedal-lyrebird/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000237c4"
+name = "peach-skunk"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000237c4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069612"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069614"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069616"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006961a"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006961e"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069622"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069624"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069626"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006962c"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069636"
+value = {named = ["00021bbc", "000237b4", "000237c4", "000264cc", "00026740", "00026984", "00026c78", "ffff90cd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "busy-barracuda/const"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

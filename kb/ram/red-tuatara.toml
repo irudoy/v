@@ -1,0 +1,147 @@
+summary = """
+Bank-1 exhaust-VTC rest-position byte. FUN 0008f168 writes \
+clamp_u8(ffff11c8-ROM8[0000831d]+128) at 0008f4ec; FUN 00090256 compares it \
+with 128-ROM8[00008952]..128+ROM8[00008951] while the common target ffff2327 \
+is neutral 0x80 and sets the P0014 result bit outside the window. \
+Initializer FUN 0007f30c writes its reset value."""
+note = [
+    """
+Source byte ffff11c8 has no direct writer in the export; its physical \
+meaning is unresolved.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 777
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "1070"
+offset = 0x42e
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apricot-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "paper-hippo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "unselfish-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff16ba"
+name = "red-tuatara"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008951=34"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008952=34"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f4ec"
+value = {named = ["0000831d", "00008951", "00008952", "0007f30c", "0008f168", "00090256", "ffff11c8", "ffff128c", "ffff16ba", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009030c"
+value = {named = ["0000831d", "00008951", "00008952", "0007f30c", "0008f168", "00090256", "ffff11c8", "ffff128c", "ffff16ba", "ffff2327"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x42e
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "garnet-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "unselfish-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

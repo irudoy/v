@@ -1,0 +1,182 @@
+summary = """
+Power-of-two divisor table: interpolated uint16 M is used as the divisor in \
+floor(256/M), and the low byte of the quotient is written to ffff90cf."""
+note = [
+    """
+Code proves the computational role: the interpolated map value is used as \
+the divisor for 256, after which the result is written as a byte. Map values \
+are powers of two, but this does not identify a physical quantity. \
+Unattributed consumers of other writes by accessor 00069374 do not apply to \
+the claim. Result disposition: writes. No physical quantity is asserted \
+beyond narrow operational semantics.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 332
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "grinning-macaw/const"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000237e4"
+name = "curious-oyster"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069612"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069616"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006962e"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069630"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069642"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069644"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069648"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006964a"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006964c"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006964e"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069650"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069652"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069654"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069656"
+value = {named = ["00021bbc", "000237d4", "000237e4", "000264cc", "00026740", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "grinning-macaw/const"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,22 @@
+summary = """
+Auxiliary duration word written to ffff413c when final limiter output is \
+below APP request and zero-based target gear index ffff1083 is greater than \
+zero-based current gear index ffff1082. Otherwise zero is written."""
+note = [
+    """
+The stock value is 182. CAN 0x174 byte 3 supplies both indices and passive \
+target shifts establish the target-first upshift relation. The exact \
+consumer and physical time semantics of ffff413c remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw duration word"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Throttle Rev Limiter Upshift Auxiliary Duration"
 category = "Limiters / Rev Limit / Internal State"
@@ -8,7 +27,115 @@ fine = 1
 coarse = 16
 static_axis = ["target above current duration"]
 
+[[ledger]]
+registry = "findings"
+order = 35
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-rottweiler/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherry-chupacabra/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000943e"
 name = "tunneling-woodpecker"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000943e"
+value = "0x00b6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bf0"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c00"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c22"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075c30"
+value = {named = ["0000943e", "0007584e", "ffff1082", "ffff1083", "ffff413c"], span = 2}
+key = "reference"
+
+[[link]]
+type = "index"
+to = "charming-rottweiler/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

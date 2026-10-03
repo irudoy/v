@@ -1,0 +1,157 @@
+summary = """
+Third normalized output of FUN 0007af78. It equals 800 when endpoint span \
+max(0,U-L) is zero; otherwise it is \
+min(800,floor(max(0,32768+int16[ffff3396]-L)*800/span))."""
+note = [
+    """
+Both stock endpoint curves are zero, so span is zero and this word is \
+exactly 800. FUN 0007ae80 applies it as the upper bound after the two lower \
+bounds.""",
+]
+level = "code"
+unit = "normalized raw 0..800"
+
+[[ledger]]
+registry = "vars"
+order = 20
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-ferret/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cooperative-elk/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "glaring-chachalaca/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precise-avocet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aromatic-coua/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff347c"
+name = "real-orca"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aec8"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afd6"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afd8"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afda"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afdc"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b01c"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b040"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff3396", "ffff347c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "precise-avocet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cooperative-elk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "glaring-chachalaca/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

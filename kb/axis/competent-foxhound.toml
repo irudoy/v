@@ -1,10 +1,129 @@
+note = [
+    """
+Column axis shared by signed endpoint surfaces 000171c8 and 00016fc8. FUN \
+00074028 passes uint16[ffff1210] directly as the runtime coordinate, and FUN \
+0007a592 produces that word as floor(first_channel_raw*727/800). It is \
+byte-identical to axis 00013d14. Code proves the scale relationship inside \
+the unresolved first-channel raw domain; it does not assign a physical \
+quantity.""",
+]
+level = "code"
+quantity = "raw"
+unit = "first-channel raw coordinate"
+scale = "x*800/727"
+to_raw = "x*727/800"
+scale_level = "code"
+
 [editor]
 name = "Scaled First-Channel Raw Coordinate (Duplicate)"
 format = "0.0"
 fine = 1
 coarse = 10
 
+[[ledger]]
+registry = "axes"
+order = 48
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-cougar/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-taipan/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-hawk/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018916"
 name = "competent-foxhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074072"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0007a7d6"
+value = "0x02d7"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00074052"
+value = {named = ["00018916", "00074028", "0007a592", "0007a7d6", "ffff1210"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a776"
+value = {named = ["00018916", "00074028", "0007a592", "0007a7d6", "ffff1210"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a77e"
+value = {named = ["00018916", "00074028", "0007a592", "0007a7d6", "ffff1210"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a784"
+value = {named = ["00018916", "00074028", "0007a592", "0007a7d6", "ffff1210"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "727*800/727=800"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "800*727/800=727"
+
+[[link]]
+type = "depends"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "index"
+to = "jasper-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "devout-cougar/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

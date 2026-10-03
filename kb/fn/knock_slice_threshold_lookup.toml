@@ -1,0 +1,123 @@
+summary = """
+Per-evaluator-channel accessor for Knock Slice Map 0x1108E: it selects one \
+of six 16-element uint16 rows by one-based channel number, interpolates the \
+row through 000264f8 using speed axis 0x15340, and stores the threshold at \
+ffff2144 + 2*(channel-1) for evaluator 0004a238."""
+note = [
+    """
+Interpolate the current evaluator-channel knock threshold by engine speed""",
+    """
+The six uint16 thresholds occupy ffff2144..ffff214f. The apparent base \
+reference ffff2142 in an indexed-listing comment is two bytes below the \
+first effective one-based write and is the independent event counter. ROM \
+axis 0x15340 corresponds to 400..6400 RPM. Stock ROM8[00008b3d].bit3 is \
+clear, so the selected channel comes from ffff11de rather than alternate \
+ffff2143. Physical cylinder or sensor order is not established.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 99
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 143
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_evaluator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "amorphous-bird/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_threshold_base/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00049ffc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a010"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a014"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a020"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a030"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a032"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a038"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a03a"
+value = {named = ["0001108e", "000264f8", "00049ffc", "0004a238", "ffff2144"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

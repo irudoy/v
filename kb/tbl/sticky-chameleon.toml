@@ -1,7 +1,132 @@
+summary = """
+Lower 16-bit threshold for uVar8 in FUN_000556ec: when uVar8 is below the \
+value from RAM_ffff15cc, the threshold replaces uVar8"""
+note = [
+    """
+The second call at 000556d2 carries the target-map result through extu.b and \
+shll8 into RAM_ffff15cc; FUN_000556ec reads the same private register as a \
+lower threshold. Only this operational semantics is proven. The physical \
+quantity of uVar8 is unknown. Zero map contents are not used as evidence. \
+Scale x*256 describes an internal raw_u16 representation; the inverse \
+conversion is exact for representable values divisible by 256. Result \
+disposition: writes.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw_u16"
+scale = "x*256"
+to_raw = "x/256"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 133
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+scale = [8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "cunning-gerbil/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-gerbil/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000123b2"
 name = "sticky-chameleon"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556cc"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556d2"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556d6"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556da"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556e2"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000556d6"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000556da"
+value = {named = ["000123b2", "000556ec", "ffff15cc"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +159,24 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "cherry-oryx/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "cunning-gerbil/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

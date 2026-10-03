@@ -1,0 +1,85 @@
+summary = """
+Service-0x3b work-support status of LIDs 1..3, written by 000683cc on every \
+pass as the first failing check: 0xa2 START SIGNAL or its afterrun, 0xa3 \
+coolant below the gate, 0xa1 stored-record read failure, 0xa4 ffff10da at \
+least 0xe0, 0xa5 ffff244f.bit5 clear, 0x10 ffff41a6.bit5 set, 0xa6 \
+ffff4184.bit7 clear, and 0xff accepted."""
+note = [
+    """
+Scheduler 00020dfe copies ffff4124..ffff417b to ffff40cc..ffff4123 after its \
+periodic loop, so handler 00034194 checks copy ffff40cc.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 939
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "screeching-bumblebee/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4124"
+name = "exuberant-galago"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132a"
+value = {named = ["00020dfe", "000683cc", "ffff4124"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "000683cc", "ffff4124"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068520"
+value = {named = ["00020dfe", "000683cc", "ffff4124"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068528"
+value = {named = ["00020dfe", "000683cc", "ffff4124"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

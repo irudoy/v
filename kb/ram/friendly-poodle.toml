@@ -1,0 +1,147 @@
+summary = """
+Base of the two-byte bank-indexed MAF range-performance model array. FUN \
+00082604 writes ffff15bc for P0101 and ffff15bd for P010B; each bank monitor \
+can compare its byte with ffff12eb/ffff12ec and captures it in event \
+context."""
+note = [
+    """
+The exact monitor identity is proven. The complete engineering conversion of \
+the model byte remains unresolved.""",
+]
+level = "code"
+unit = "raw diagnostic model"
+
+[[ledger]]
+registry = "vars"
+order = 727
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "asparagus-koel/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_range_model_byte_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sparkling-woodlouse/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15bc"
+name = "friendly-poodle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081940"
+value = {named = ["0008152a", "00081d74", "00082604", "ffff15bc", "ffff4564", "ffff4565"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081c5c"
+value = {named = ["0008152a", "00081d74", "00082604", "ffff15bc", "ffff4564", "ffff4565"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082168"
+value = {named = ["0008152a", "00081d74", "00082604", "ffff15bc", "ffff4564", "ffff4565"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000824ae"
+value = {named = ["0008152a", "00081d74", "00082604", "ffff15bc", "ffff4564", "ffff4565"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082808"
+value = {named = ["0008152a", "00081d74", "00082604", "ffff15bc", "ffff4564", "ffff4565"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "asparagus-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "sparkling-woodlouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_range_model_byte_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

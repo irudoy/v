@@ -1,7 +1,145 @@
+summary = """
+Dimensionless normalization coefficient for the result of selected map \
+0001459a or 000145ca: Q = floor(U * K / 50000), saturated to uint16."""
+note = [
+    """
+Base 0001495a is loaded at 000627a6, lookup is called at 000627aa, and \
+result K is written to ffff2b68 at 000627b6. Branch 000627c0 selects U from \
+0001459a or 000145ca; 000627dc multiplies U by K, and call 00021ce0 at \
+000627e0 divides the product by ROM constant 50000. All K points equal \
+50000, so the current calibration gives a unity multiplier. The physical \
+quantity U is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless coefficient"
+scale = "x/50000"
+to_raw = "x*50000"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 258
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "brown-jackrabbit/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "placid-mastiff/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001495a"
 name = "tested-dragon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627a6"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627aa"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627b6"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627c0"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627d6"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627dc"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627e8"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "50000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000627d8"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000627dc"
+value = {named = ["0001459a", "000145ca", "0001495a", "00021ce0"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +172,35 @@ value = 13
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "brown-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "placid-mastiff/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = ["identity", "scale"]
+reverse_relies = "structure"
+reverse_supports = "identity"

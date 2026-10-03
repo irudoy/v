@@ -1,6 +1,49 @@
+summary = """
+Bank 1 Q8.8-percent adjustment term maintained by FUN 00058168. FUN 00057b26 \
+combines it with selected learned cell ffff2306 as ffff2306 + ffff5648 - \
+0x6400 when forming diagnostic LTFT ffff2302."""
+note = [
+    """
+Fault paths force neutral 0x6400. The exact operating-mode name for this \
+term remains unresolved.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x/256-100"
+
+[[ledger]]
+registry = "vars"
+order = 152
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*256"
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "liberal-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pretty-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -34,6 +77,27 @@ neutral correction"""
 layout = "7mfk"
 address = "ffff5648"
 former = ["merciful-donkey/ram/7mfk-ffff5648"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b3a"
+value = {named = ["00057b26", "00058168", "ffff2302", "ffff5648"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00058186"
+value = {named = ["00057b26", "00058168", "ffff2302", "ffff5648"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005848e"
+value = {named = ["00057b26", "00058168", "ffff2302", "ffff5648"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -70,3 +134,30 @@ value = "ffff5be0"
 note = """
 The same publisher reads this base as the second summand before the 0x6400 \
 neutral correction"""
+
+[[link]]
+type = "depends"
+to = "ltft_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pretty-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

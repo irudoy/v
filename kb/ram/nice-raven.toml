@@ -1,0 +1,103 @@
+summary = """
+Interpolated uint16 normalization coefficient K from map 0x1495a. Function \
+0006205c calculates min(floor(U * K / 50000), 65535) for U from map 0x1459a \
+or 0x145ca."""
+note = [
+    """
+All map points equal 50000 in stock JK08A, so K is unity in the normalized \
+product.""",
+]
+level = "code"
+unit = "dimensionless coefficient"
+
+[[ledger]]
+registry = "vars"
+order = 230
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tested-dragon/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spirited-lion/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b68"
+name = "nice-raven"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627a6"
+value = {named = ["0001495a", "00021ce0", "0006205c", "ffff2b68"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627aa"
+value = {named = ["0001495a", "00021ce0", "0006205c", "ffff2b68"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627b6"
+value = {named = ["0001495a", "00021ce0", "0006205c", "ffff2b68"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627dc"
+value = {named = ["0001495a", "00021ce0", "0006205c", "ffff2b68"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000627e0"
+value = {named = ["0001495a", "00021ce0", "0006205c", "ffff2b68"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "tested-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

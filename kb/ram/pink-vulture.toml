@@ -1,0 +1,167 @@
+summary = """
+Unsigned base/correction term added to the centered Engine Torque Map \
+output. FUN 00065c26 calculates sat_u16(lookup(000154a0)-ffff18de+C); FUN \
+000659ae adds this word without rescaling to signed ffff18ca."""
+note = [
+    """
+Stock ROM8[000087f3]=32 makes C zero. The candidate physical conversion is \
+x*0.1 Nm.""",
+]
+level = "code"
+unit = "unsigned torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 526
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ginger-hedgehog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-malkoha/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lyrical-dragon/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "pristine-deer/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sepia-bear/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nocturnal-mammoth/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2408"
+name = "pink-vulture"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064a4e"
+value = {named = ["00010b8e", "000154a0", "00064a1c", "000659ae", "00065c26", "ffff18de", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000659ec"
+value = {named = ["00010b8e", "000154a0", "00064a1c", "000659ae", "00065c26", "ffff18de", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000659f2"
+value = {named = ["00010b8e", "000154a0", "00064a1c", "000659ae", "00065c26", "ffff18de", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ccc"
+value = {named = ["00010b8e", "000154a0", "00064a1c", "000659ae", "00065c26", "ffff18de", "ffff2408"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "lyrical-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sepia-bear/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "pristine-deer/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "messy-perch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

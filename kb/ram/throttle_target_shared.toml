@@ -1,4 +1,10 @@
-note = """
+summary = """
+Shared throttle target-area word. Normal 00072c3c writes \
+clamp_u16(ffff183e+ffff1340-(ffff120e>>2)); alternate mode reconstructs it \
+from final channel targets. It is consumed by common and per-channel target \
+converters 0006f464 and 0006f48c."""
+note = [
+    """
 A shared unsigned area-domain target count used by the two channel-target \
 conversions. Engineering conversion is unestablished. Retained hypothesis: \
 Candidate physical target opening area at x*0.0008 cm2 for the shared \
@@ -11,8 +17,45 @@ bound layout. The percent opening-coordinate gradient or the table shape \
 supplies an absolute geometric area reference. Source references: \
 defs/JK08A.throttle-control.md:3-17, defs/JK08A.throttle-control.md:48-60, \
 defs/JK08A.throttle-control.md:433-480, \
-defs/JK08A.tuning-telemetry.md:107-113."""
+defs/JK08A.tuning-telemetry.md:107-113.""",
+    """
+The normal forward path is independent of the alternate feedback \
+reconstruction.""",
+]
+level = "code"
 width = 16
+
+[[ledger]]
+registry = "vars"
+order = 687
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "raw target area"
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "channel_throttle_target_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "common_throttle_target_coordinate/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_area_compositor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -44,6 +87,34 @@ note = "Producer limiter and external consumer bind the shared target"
 layout = "7mfk"
 address = "ffff19b2"
 former = ["small-sloth/ram/7mfk-ffff19b2"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f46c"
+value = {named = ["0006f464", "0006f48c", "00072c3c", "ffff19b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f4f6"
+value = {named = ["0006f464", "0006f48c", "00072c3c", "ffff19b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c8c"
+value = {named = ["0006f464", "0006f48c", "00072c3c", "ffff19b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072ce0"
+value = {named = ["0006f464", "0006f48c", "00072c3c", "ffff19b2"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -81,3 +152,47 @@ to = "7mfk:0006f456"
 count = 1
 value = 31
 note = "Producer limiter and external consumer bind the shared target"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apricot-sidewinder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "common_throttle_target_coordinate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_area_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

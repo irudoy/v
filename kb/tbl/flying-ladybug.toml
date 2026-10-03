@@ -1,3 +1,31 @@
+summary = """
+Eight-node byte-state table. When bit 6 of ffff2462 is set, the lookup \
+writes the result to ffff254d and sets bit 7 of ffff246c. On the branch with \
+bit 6 clear, saved byte ffff254d is tested for zero: zero clears bit 7 of \
+ffff246c, while nonzero preserves it. All cells equal 6, so this map's \
+result is always 6 and is handled as nonzero."""
+note = [
+    """
+The physical subsystem and engineering unit are not established: ffff254d \
+has no external readers and the catalog shape is ambiguous. All eight cells \
+equal 6, so interpolation and the terminal branch return 6; this proves a \
+nonzero state and branch behavior but not the physical name of the quantity. \
+Index: x=uint8(ffff106f). For x<224: i=floor(x/32), q=(x-32*i)*2048 in \
+Q0.16, and cell[i] and cell[i+1] are interpolated. For x>=224, cell[7] is \
+returned. The axis is implicit, with no separate Axis claim. Output trace: \
+00012afa -> 00043afe -> 00043b04 -> 00026370 -> 00026a80 -> \
+{00026aac,00026aae} -> 00026740 -> 00043b08 -> ffff254d; subsequent state \
+read: ffff254d -> 00043b10 -> 00043b12 -> 00043b14 -> 00043b1a. Value 6 does \
+not follow zero branch 00043b18. Result disposition: inline_comparison; \
+Result target: site 00043b12 through ffff254d.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
 category = "Internal Calculations"
@@ -7,10 +35,230 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 412
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "opalescent-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "brass-herring/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brass-herring/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fantastic-shark/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012afa"
 name = "flying-ladybug"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x00e0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x40"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x7f"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "6"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043af8"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043afa"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043afe"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b00"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b04"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b08"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b0e"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b10"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b12"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b14"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b18"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00043b1a"
+value = {named = ["00012afa", "00026370", "00026740", "00043aee", "ffff106f", "ffff246c", "ffff254d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +291,26 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "opalescent-mushroom/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "brass-herring/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

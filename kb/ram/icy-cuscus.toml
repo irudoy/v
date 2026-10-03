@@ -1,0 +1,86 @@
+summary = """
+CAN-scaled friction-and-load word. FUN 00079e70 writes \
+clamp(trunc0((u16[ffff237c]+u16[ffff2384])/5)+800, 0, 4094) from the \
+scheduler latches of base term ffff2408 and accessory sum ffff2410."""
+note = ["None of the nine stock transmit serializers reads this word."]
+level = "code"
+unit = "CAN torque count"
+
+[[ledger]]
+registry = "vars"
+order = 875
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "almond-bullfinch/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blond-jacamar/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-pronghorn/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f9c"
+name = "icy-cuscus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f00"
+value = {named = ["00021ce0", "00079e70", "ffff237c", "ffff2384", "ffff3f9c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f1e"
+value = {named = ["00021ce0", "00079e70", "ffff237c", "ffff2384", "ffff3f9c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "almond-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "blond-jacamar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lyrical-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

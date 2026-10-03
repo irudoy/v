@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8513"
+name = "flawless-silkworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002916a"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

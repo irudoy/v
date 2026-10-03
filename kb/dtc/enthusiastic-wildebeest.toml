@@ -1,0 +1,36 @@
+title = "Heater control high bank 2 sensor 2"
+level = "code"
+code = "P0058"
+group = "rear_o2_heater"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 31
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019ba0"
+name = "enthusiastic-wildebeest"
+index = 176
+attribute = "00016188"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016188"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019ba0"
+value = "330604000000005800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a40c"
+value = "00016188"

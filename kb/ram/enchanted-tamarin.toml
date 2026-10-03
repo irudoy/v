@@ -1,0 +1,94 @@
+summary = """
+Direct Q15 normalization of pedal snapshot ffff266e written by 000753d4 \
+using stock lower word ROM16[0x94e4]=0 and upper word ROM16[0x94e8]=170, \
+then clamped to 0..32768."""
+note = [
+    """
+The upper word address includes the SH scaled word displacement. This value \
+bounds the 0x10b0e coefficient and is not an actuator target.""",
+]
+level = "code"
+unit = "Q15 pedal fraction"
+
+[[ledger]]
+registry = "vars"
+order = 677
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pedal_request_compensator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18c8"
+name = "enchanted-tamarin"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094e4"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753ee"
+value = {named = ["000094e4", "000094e8", "000753d4", "ffff18c8", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753f0"
+value = {named = ["000094e4", "000094e8", "000753d4", "ffff18c8", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753fe"
+value = {named = ["000094e4", "000094e8", "000753d4", "ffff18c8", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075474"
+value = {named = ["000094e4", "000094e8", "000753d4", "ffff18c8", "ffff266e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "capable-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pedal_request_compensator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

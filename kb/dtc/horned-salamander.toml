@@ -1,0 +1,36 @@
+title = "Intake valve timing control performance bank 2"
+level = "code"
+code = "P0021"
+group = "intake_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 38
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019d2c"
+name = "horned-salamander"
+index = 209
+attribute = "000162b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162b0"
+value = "0020"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019d2c"
+value = "370200000000002100000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a490"
+value = "000162b0"

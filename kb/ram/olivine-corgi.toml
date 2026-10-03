@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1300"
+name = "olivine-corgi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006e4c2"
+
+[[link]]
+type = "lookup"
+to = "scrupulous-yak/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bouncy-barracuda/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "burgundy-hawk/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

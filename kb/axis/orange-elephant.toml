@@ -1,5 +1,55 @@
+note = [
+    """
+Static TVO axis for primary opening-area table 00013202. Code also passes it \
+as the returned-value table for the inverse area-to-angle conversion. FUN \
+00072c3c passes throttle targets ffff28bc and ffff28be unscaled to wrapper \
+00026524, whose word core 00026984 compares each of the 32 stored points \
+with the operand directly, so one stored count is one count of the target \
+word; FUN 0003b520 passes 4*ffff284a and 4*ffff284c and FUN 00073948 passes \
+4*ffff1332 in the same domain. FUN 0003e548 converts both throttle-position \
+channels through this pair, averages the opening areas, converts back and \
+divides by four into ffff3f7c; FUN 0006f236 writes min(255, (ffff3f7c - \
+ffff28f8) * 0x505b >> 16) to absolute-throttle byte ffff1075, which FUN \
+00035856 returns unchanged for J1979 Mode 01 PID 0x11 at A*100/255 percent, \
+and FUN 00054eb8 applies the same 0x505b gradient to quarter-coordinate \
+monitor ffff40c6. One stored count is therefore 0x505b/65536/4*100/255 = \
+34285/1114112 percent of throttle opening measured from coordinate zero, \
+while the published byte subtracts idle base ffff28f8 first. The catalog \
+degree scale x*0.0275 stays a candidate: no ECM diagnostic item publishes \
+this coordinate in degrees.""",
+]
+level = "code"
+quantity = "raw"
+unit = "Throttle Valve Opening [%]"
+scale = "x*34285/1114112"
+to_raw = "x*1114112/34285"
+scale_level = "code"
+
 [editor]
 format = "0.0"
+
+[[ledger]]
+registry = "axes"
+order = 34
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_channel_0/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
 
 [[symbol]]
 layout = "1me3b"
@@ -38,6 +88,95 @@ name = "orange-elephant"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003b6c2"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table|Degrees (x*0.0275)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00054f2e"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0006f2ae"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003e610"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006f292"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006f2a4"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006f2e2"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072cb6"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00072cc6"
+value = {named = ["000155a0", "00026524", "00026984", "00035856", "0003e548", "00054f2e", "0006f236", "0006f2ae", "00072c3c", "ffff28bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "angelic-saluki/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "glistening-gecko/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "determined-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "throttle_area_compositor/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -84,3 +223,17 @@ to = "7mfk:0006f47c"
 count = 1
 value = 0
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "throttle_target_channel_0/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

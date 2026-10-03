@@ -1,0 +1,112 @@
+summary = """
+Unsigned opening-area-domain request written by 000730fc after \
+shared-request arbitration, piecewise coordinate conversion, scaling by \
+ffff1702 and ROM8[0x8d8f], and clamping through the first value of 0x13202."""
+note = [
+    """
+The actuator path continues through ffff19b2. The opening-area physical unit \
+and scale remain candidate.""",
+]
+level = "code"
+unit = "raw opening-area request"
+
+[[ledger]]
+registry = "vars"
+order = 682
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_area_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_opening_monitor_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "request_coordinate_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff183e"
+name = "papaya-swallow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000710c4"
+value = {named = ["000710bc", "00072c3c", "000730fc", "ffff183e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c60"
+value = {named = ["000710bc", "00072c3c", "000730fc", "ffff183e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073420"
+value = {named = ["000710bc", "00072c3c", "000730fc", "ffff183e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_area_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_opening_monitor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

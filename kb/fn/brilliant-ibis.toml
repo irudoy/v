@@ -1,9 +1,47 @@
+summary = """
+Canonical explicit-axis wrapper: 1D-8 over the byte core, with a body and \
+its own two-slot pool for core and finisher. The clamp in the delay slot \
+sets point count, and row stride sets row width."""
+note = [
+    """
+Wrapper geometry is readable from its code and does not require caller \
+traces. The rule reproduces all five wrappers whose dimensions were \
+previously established by independent traces.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
 cols = 8
 storage = "uint8"
 x_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 83
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "didactic-civet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lyrical-pig/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -26,6 +64,11 @@ at = "1nd:000288c0"
 layout = "7mfk"
 address = "00026474"
 name = "brilliant-ibis"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -77,3 +120,19 @@ key = "00026474"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000282a4"
+
+[[link]]
+type = "depends"
+to = "didactic-civet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "lyrical-pig/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

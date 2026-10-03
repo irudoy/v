@@ -1,0 +1,46 @@
+role = "service"
+contract = """
+Not arithmetic: block copier, even-parity entry into unrolled ladder \
+0x22116. It copies r0 bytes from [r2] to [r1], with r0 divisible by 4 and an \
+even count of 0..16 longwords; writes proceed in descending order. It \
+returns no result and clobbers r0; r1 and r2 are preserved, with r3 \
+preserved on the stack. The paired odd-parity entry is 00022104."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 37
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[ledger.dependency]]
+role = "homolog"
+to = "certain-sloth/fn"
+type = "depends"
+end = "owner"
+link_role = "homolog"
+relies = "contract"
+supports = "contract"
+
+[[symbol]]
+layout = "7mfk"
+address = "000220f8"
+name = "acoustic-waxbill"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000220f8"
+
+[[link]]
+type = "depends"
+to = "certain-sloth/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "contract"
+role = "homolog"

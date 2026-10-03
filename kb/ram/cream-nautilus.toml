@@ -1,0 +1,177 @@
+summary = """
+Multipurpose diagnostic readiness byte. FUN 000804ce sets bit 4 when raw \
+coolant ffff1071 exceeds start-latched raw coolant ffff106e by at least 20 \
+and sets bit 5 once raw coolant reaches 0x78. FUN 00080b54 clears both bits \
+during diagnostic reset; both gate qualification-counter increment in FUN \
+0007d856."""
+note = [
+    """
+A 2315-function p-code census found no unresolved writer. Other runtime \
+writers preserve bits 4 and 5. Bit 4 is the coolant rise of 20 deg C after \
+engine start and bit 5 the coolant temperature of 70 deg C of factory \
+driving pattern A.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 639
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuzzy-mouse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_readiness_latches_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_state_reset/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff422f"
+name = "cream-nautilus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d86c"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008055c"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080560"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008056a"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080574"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080578"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080580"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d44"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d4c"
+value = {named = ["0007d856", "000804ce", "00080b54", "ffff106e", "ffff1071", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec150-driving-pattern-a"
+
+[[link]]
+type = "input"
+to = "fuzzy-mouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "diagnostic_readiness_latches_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diagnostic_state_reset/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

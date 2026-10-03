@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10c0"
+name = "uppish-slug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041f72"

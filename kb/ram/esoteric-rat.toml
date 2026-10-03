@@ -1,0 +1,93 @@
+summary = """
+Cold/high-octane reference timing-map sample written by 0004e1c0. It uses \
+0x991A cold, blends 0x991A with 0x9A1A in the coolant transition band, and \
+uses 0x9A1A hot regardless of ffff2466.bit6."""
+note = [
+    """
+This is an intermediate reference sample, not a second independently \
+selected hot surface or a direct final timing command.""",
+]
+level = "code"
+unit = "raw map cell"
+
+[[ledger]]
+registry = "vars"
+order = 595
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_timing_state_terms/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cold_hot_timing_map_selector/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1610"
+name = "esoteric-rat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004af4e"
+value = {named = ["0004af38", "0004e1c0", "ffff1610"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e514"
+value = {named = ["0004af38", "0004e1c0", "ffff1610"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e55e"
+value = {named = ["0004af38", "0004e1c0", "ffff1610"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "high_octane_timing_state/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "ignition_gated_surface_1/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

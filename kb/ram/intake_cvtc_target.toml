@@ -1,6 +1,112 @@
+summary = """
+Common conditioned intake-cam target byte. FUN 000bdc66 starts from the \
+coolant-selected main/cold target, or from intake idle source byte ffff1553 \
+while ffff24a7 bit 1 is set, applies mode, rate, and offset logic, and \
+writes this byte. FUN 0004d2a6 compares the same target with actual \
+intake-cam bytes ffff2442 and ffff2443 for both banks."""
+note = [
+    """
+The target role, centered arithmetic, and common use for both intake banks \
+are exact. Target-vehicle replay confirms the warm main-map path and \
+identifies 1,968 samples in 51 runs where downstream logic forces neutral \
+128 despite an active reconstructed map result. The cold-start replays in \
+JK08A.cvtc.md reproduce the coolant blend, the idle source byte in the \
+stationary cold band, and the direct cold lookup in the moving cold band. \
+FUN 000bdc66 writes neutral 0x80 while intake operating bit ffff246b bit 6 \
+is clear.""",
+]
+level = "code"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"
+
+[[ledger]]
+registry = "vars"
+order = 129
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "centered_u8"
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-jackrabbit/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "humongous-skunk/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intake_cvtc_target/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gainful-tarsier/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "crimson-crane/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "radiant-cuckoo/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +138,55 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2326"
 former = ["translucent-moth/ram/7mfk-ffff2326"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d31e"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d32a"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d356"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdcf6"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde0a"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde14"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdeca"
+value = {named = ["0000ab5a", "0000b43a", "0000b53a", "0004d2a6", "000bdc66", "ffff1553", "ffff2326", "ffff2442", "ffff2443", "ffff246b", "ffff24a7"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +223,78 @@ at = "jk78c:ffff227a"
 to = "7mfk:ffff2326"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "cunning-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "gainful-tarsier/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "humongous-skunk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "crimson-crane/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

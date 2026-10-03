@@ -1,0 +1,185 @@
+title = "Build the bounded source for the APC reset-edge command offset"
+summary = """
+APC reset-offset source builder. It bounds ffff1874 to 6..114 with \
+ROM8[0x8b88] and ROM8[0x8b87], calculates and caps map-derived byte \
+ffff1875, and writes ffff2406=min(ffff1874,ffff1875). Diagnostic state \
+ffff4251.bit0 instead forces ffff2406=24."""
+note = [
+    """
+Periodic dispatcher 00020dfe copies ffff2406 to actuator-facing snapshot \
+ffff237a. The arithmetic and 0..114 output bound are exact; the physical \
+dwell meaning remains unverified.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 106
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 152
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "huge-pelican/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prophetic-jacamar/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "futuristic-chinchilla/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-ape/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "chubby-lobster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cuddly-crow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "horned-turkey/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olivine-tiger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004c1e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b87"
+value = "0x72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b88"
+value = "0x06"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c2f4"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c304"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c30e"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c36c"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c370"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c37a"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c380"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c38e"
+value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

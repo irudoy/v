@@ -1,6 +1,72 @@
+summary = """
+Exact UDS DID 0x124b runtime word. Pointer table 0x2289c maps the DID to \
+this address; reviewed Nissan diagnostics identify the parameter as TP SEN \
+1-B2 voltage."""
+note = [
+    """
+Bank 2 sensor 1 working word ffff2758 carries the same quantity for range \
+monitor 000a7418. The diagnostic display unit is V at 5 mV per count; \
+JK08A.diagnostics.md derives that scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "throttle-position-sensor-1-bank-2"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:tp-sen-1-b2"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0119:data_monitor:tp-sen-1-b2-ea8241c0"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 98
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x124b to ffff285c. Reviewed \
+Nissan diagnostic profiles identify the DID as TP SEN 1-B2, and the factory \
+VQ35HR manual defines it as throttle-position sensor voltage. Near-adjacent \
+target readings give stream raw 151 / 200 = 0.755 V and diagnostic 0.77 V, \
+supporting raw/200 V as a candidate conversion."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229c8"
+value = "ffff285c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032452"
+value = {named = ["000229c8", "0003235c", "ea8241c0", "ffff285c"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 70
+binding = "throttle-position-sensor-1-bank-2"
+
+[[ledger]]
+registry = "vars"
+order = 385
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +98,24 @@ note = "Aligned diagnostic pointer table preserves the bank-relative field"
 layout = "7mfk"
 address = "ffff285c"
 former = ["spotted-herring/ram/7mfk-ffff285c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229c8"
+value = "ffff285c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["000229c8", "0003235c", "ffff285c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec179-tp1-depressed-lt-4.75v"
 
 [[symbol]]
 layout = "jk00c"
@@ -66,3 +150,10 @@ at = "jk78c:ffff27ac"
 to = "7mfk:ffff285c"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the bank-relative field"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,101 @@
+summary = """
+Engine speed in RPM*8 counts: FUN 0003b40a writes min(65535, \
+ROM8[0x8d8f]*ffff11f4) with ROM8[0x8d8f] = 100 and ffff11f4 = RPM/12.5."""
+level = "code"
+unit = "rpm*8"
+
+[[ledger]]
+registry = "vars"
+order = 965
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "curious-bird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "authentic-wasp/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fragrant-muskox/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f46"
+name = "cerulean-antelope"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d8f=0x64"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b410"
+value = {named = ["00008d8f", "0003b40a", "0003b436", "ffff11f4", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b416"
+value = {named = ["00008d8f", "0003b40a", "0003b436", "ffff11f4", "ffff1f46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b41a"
+value = {named = ["00008d8f", "0003b40a", "0003b436", "ffff11f4", "ffff1f46"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b422"
+value = {named = ["00008d8f", "0003b40a", "0003b436", "ffff11f4", "ffff1f46"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b430"
+value = {named = ["00008d8f", "0003b40a", "0003b436", "ffff11f4", "ffff1f46"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "authentic-wasp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "curious-bird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fragrant-muskox/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

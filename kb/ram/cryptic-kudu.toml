@@ -1,0 +1,90 @@
+summary = """
+Interpolation output of base surface 0xB81A, the unconditional branch of \
+accessor 00082c8a. Value 0x80 is a 'no value' sentinel rather than a number: \
+finisher 0x268a4 returns it without interpolation, and the consumer tests != \
+-0x80."""
+note = [
+    """
+Exactly two functions read it: the accessor itself and 00085a70; the output \
+does not enter the ignition path.""",
+]
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 246
+fields = ["semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x852"
+offset = 0x852
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff314a"
+name = "cryptic-kudu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832be"
+value = {named = ["00082c8a", "00085a70", "ffff28f8", "ffff314a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "bipedal-tortoise/ram"
+offset = 0x852
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "vermilion-panda/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

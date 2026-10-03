@@ -1,0 +1,137 @@
+summary = """
+Shared status byte. Bit 1 is returned directly by global fuel-inhibit \
+contributor 0004faa0."""
+note = [
+    """
+Normal startup clears the containing [ffff261c,ffff4514) span and both \
+recovery paths clear [ffff1000,ffff5cf4). The full p-code census finds no \
+store to the byte; its only unresolved base-ffff4184 store targets offsets \
+0x54 or 0x65. Recovered DMAC destinations are limited to ffff86cc..ffff87cb, \
+so bit 1 remains zero in the proven stock lifecycle.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 633
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shared_status_bit1_fuel_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff418c"
+name = "obedient-stoat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "0004faa0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "0004faa0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "0004faa0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004faa2"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "0004faa0", "ffff418c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "shared_status_bit1_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

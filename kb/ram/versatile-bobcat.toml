@@ -1,0 +1,152 @@
+summary = """
+Common Q14 gain written by alternating-pass builder 00053698 as \
+floor(uint8(ffff160d)*ROM16[0x9332]/256), with ROM16[0x9332]=13972. Pulse \
+precursor 0004e974 uses it in signed helper 0002657c(v,ffff165e,-2), \
+equivalent to trunc_toward_zero(v*ffff165e/16384)."""
+note = [
+    """
+The arithmetic scale is exact. Factor byte ffff160d spans 225..255, so the \
+gain spans 12280..13917, 0.7495..0.8494 of unity 16384; ROM16[0x9332]/16384 \
+= 0.8528 is a fixed calibration scalar. With stock pressure slope \
+ROM8[0x89FE] = 0 the gain depends only on Base Fuel Schedule, the \
+intake-temperature byte, and the engine-speed byte. Its replay from those \
+three recorded inputs reproduces both bank pulse words of three 2026-09-17 \
+vehicle recordings at a median ratio of 1.000. The builder has the form of \
+an injector differential-pressure correction; that physical reading is a \
+candidate recorded at ffff160d.""",
+]
+level = "code"
+unit = "ratio_q14"
+
+[[ledger]]
+registry = "vars"
+order = 546
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-cicada/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_pulse_precursor_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shaggy-catfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "asparagus-toucan/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff165e"
+name = "versatile-bobcat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009332=0x3694"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea30"
+value = {named = ["00009332", "0004e974", "00053698", "00056714", "00056a7a", "ffff160d", "ffff165e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea74"
+value = {named = ["00009332", "0004e974", "00053698", "00056714", "00056a7a", "ffff160d", "ffff165e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053862"
+value = {named = ["00009332", "0004e974", "00053698", "00056714", "00056a7a", "ffff160d", "ffff165e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053876"
+value = {named = ["00009332", "0004e974", "00053698", "00056714", "00056a7a", "ffff160d", "ffff165e"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "asparagus-toucan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-cicada/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "shaggy-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

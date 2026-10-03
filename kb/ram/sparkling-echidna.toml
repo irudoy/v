@@ -1,0 +1,88 @@
+summary = """
+Optional activation-delay countdown for engine-speed fuel-cut state machine \
+0004f282. On a new activation request it is loaded from ROM8[00008c69]; \
+state bit 2 in ffff2497 is set when the countdown is zero."""
+note = [
+    """
+Stock ROM8[00008c69]=0, so the working fuel cut activates without a \
+calibrated delay.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 212
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24f1"
+name = "sparkling-echidna"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008c69"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2fa"
+value = {named = ["00008c69", "0004f282", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2fc"
+value = {named = ["00008c69", "0004f282", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f304"
+value = {named = ["00008c69", "0004f282", "ffff24f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f306"
+value = {named = ["00008c69", "0004f282", "ffff24f1"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

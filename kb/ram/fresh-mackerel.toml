@@ -1,0 +1,77 @@
+summary = """
+Bank 2 throttle-position sensor 1 runtime word. FUN 000a7418 monitors it as \
+channel index 1 against ROM16[0x9550]=60..ROM16[0x954e]=964 counts."""
+note = [
+    """
+The exact ROM descriptor catalog resolves dispatcher indices 0x111 and 0x112 \
+to P2133 and P2132, throttle-position sensor 1 bank 2 high and low input. \
+The word shares the count domain and the scale of ffff2756.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 844
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cinnamon-zebra/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2758"
+name = "fresh-mackerel"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000954e=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009550=60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a755e"
+value = "0x0111"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a7560"
+value = "0x0112"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a751c"
+value = {named = ["0000954e", "00009550", "000a7418", "000a755e", "000a7560", "ffff2758"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7544"
+value = {named = ["0000954e", "00009550", "000a7418", "000a755e", "000a7560", "ffff2758"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "cinnamon-zebra/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

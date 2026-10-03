@@ -1,0 +1,183 @@
+summary = """
+Active-test state of the VTC channel enabled by ffff248b bit 1. FUN 0002e466 \
+writes bit 4 at 0002e50a as ffff248b bit 1 and ffff244f bit 1 set with \
+vehicle-speed byte ffff110e at most ROM8[000089f1]=2 and raw coolant \
+ffff1071 in ROM8[000089f3]=110..ROM8[000089f2]=170, and bit 0 at 0002e522 as \
+service-0x30 IOLID 0x19 active flag ffff99c7 bit 0 together with bit 4, \
+storing offset ffff1704 = clamp(int8(ffff993c), \
+ROM8[0000873e]=-20..ROM8[0000873f]=20) at 0002e54c."""
+note = [
+    """
+The second bank of the same channel is ffff41fb bit 7 from IOLID 0x1a with \
+offset ffff1705 (0002e576, 0002e59e). The consumers of the bits are outside \
+the exhaust-VTC review.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 805
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-shellfish/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chocolate-civet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "muscular-lizard/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41fa"
+name = "origami-iguana"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000873e"
+value = "0xec"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000873f=20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089f1"
+value = "2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089f2=170"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089f3=110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e50a"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff41fa", "ffff993c", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e522"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff41fa", "ffff993c", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e54c"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff41fa", "ffff993c", "ffff99c7"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "capable-shellfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "chocolate-civet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

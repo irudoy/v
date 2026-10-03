@@ -1,0 +1,152 @@
+summary = """
+Interpolated uint8 x is converted to x<<8, written to ffff31ca, and used as \
+one candidate in an unsigned minimum with uint16[ffff8fae]; the minimum is \
+written to ffff8fcc."""
+note = [
+    """
+The interpolated byte is shifted by 8, written to ffff31ca, and participates \
+in selecting an unsigned minimum with uint16[ffff8fae]; the minimum is \
+written to ffff8fcc. The TVO catalog name and x*0.3575 scale are not \
+confirmed by code, so raw identity is retained.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 174
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[symbol]]
+layout = "7mfk"
+address = "000128b0"
+name = "steel-lyrebird"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c438"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c43c"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c446"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c44a"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c450"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c452"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c454"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c456"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c458"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c45a"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c45c"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c45e"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c460"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c462"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006c464"
+value = {named = ["000128b0", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"

@@ -1,0 +1,179 @@
+title = "Convert the AN0 mux battery sample and publish DID 0x1103 raw voltage"
+summary = """
+Battery-voltage diagnostic publisher. It copies phase-2 AN0 mux sample \
+ffff1d6e to ffff1fc4 at 00039ab0, stores uint8(sample >> 2) in ffff1fc6 at \
+00039ab8, runs coefficient guard 00067188, scales the byte through Q1.15 \
+scaler 000671d8 with shared coefficient ffff4970, saturates the result to \
+255, and writes DID-0x1103 response byte ffff1188 at 00039ae2."""
+note = [
+    """
+The exact service-0x22 table binds ffff1188 to DID 0x1103. With stock \
+coefficient 0x8000 the byte equals the ten-bit sample shifted right by two, \
+so one count is 20 mV at the converter input. One count is 0.08 V at the \
+battery terminal, which the ROM limits of the DTC monitors fix against the \
+factory test conditions on row ffff1108 and in JK08A.diagnostics.md; the \
+terminal divider is therefore 4:1. A target diagnostic reading of 13.92 V \
+lies inside the recorded range of 12.56..14.40 V.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 10
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 381
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eager-alligator/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-oarfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amaranth-swine/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "battery_voltage/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crouching-mole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00039a9e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226b8"
+value = "ffff1188"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226b8"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039aae"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ab0"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ab8"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039abc"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039aca"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039ae2"
+value = {named = ["0003235c", "00038618", "00039a9e", "00067188", "000671d8", "ffff1188", "ffff1d6e", "ffff1fc4", "ffff1fc6", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "horned-frog/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-bobcat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

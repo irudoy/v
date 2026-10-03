@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00045e30"
+name = "invaluable-toucan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00045e30"

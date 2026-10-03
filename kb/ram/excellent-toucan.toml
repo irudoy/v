@@ -1,0 +1,88 @@
+summary = """
+Output-driver status bytes of the exhaust magnet outputs: ffff111e and \
+ffff111f for bank 1, ffff1120 and ffff1121 for bank 2. Decoder 0004110a \
+stores the two-bit fields of channels 2, 3, 0, and 1 of the 16-bit \
+diagnostic word of device 1 (ffff1eb2, identifier 0x4000) through the \
+channel pointer table at 000232b8, and zeroes them when the word is \
+rejected. Scheduler 00020dfe copies them to ffff109e..ffff10a1."""
+note = [
+    """
+The electrical condition behind each code belongs to the driver device and \
+is not recoverable from ECU code.""",
+]
+level = "code"
+unit = "driver status code"
+
+[[ledger]]
+registry = "vars"
+order = 928
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brawny-sheep/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "10"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff111e"
+name = "excellent-toucan"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00020f50"
+value = 10
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_snapshot_source_and_decoder_path"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000411bc"
+value = "00023290"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f56"
+value = {named = ["00020dfe", "00020f50", "00023290", "0004110a", "000411bc", "ffff111e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "brawny-sheep/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,117 @@
+summary = """
+Target injection slot of the current engine event: (ffff11de - 1 - lead) mod \
+6, where the lead is 3 or snapshot ffff2364. Sequencer 00054a44 writes it \
+and engine-event driver 00028ea2 reads it to seed ffff2228 and ffff221e."""
+level = "code"
+unit = "slot index 0..5"
+
+[[ledger]]
+registry = "vars"
+order = 890
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fabulous-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-dormouse/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff20b4"
+name = "acrid-bonobo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002974c"
+value = {named = ["00028ea2", "00054a44", "ffff11de", "ffff20b4", "ffff2364"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002975c"
+value = {named = ["00028ea2", "00054a44", "ffff11de", "ffff20b4", "ffff2364"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ab8"
+value = {named = ["00028ea2", "00054a44", "ffff11de", "ffff20b4", "ffff2364"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ac0"
+value = {named = ["00028ea2", "00054a44", "ffff11de", "ffff20b4", "ffff2364"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ac6"
+value = {named = ["00028ea2", "00054a44", "ffff11de", "ffff20b4", "ffff2364"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fabulous-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,174 @@
+summary = """
+Shared throttle-area compositor. With ffff24d2.bit0 and ffff24ce.bit2 clear, \
+it writes ffff19b2=clamp_u16(ffff183e+ffff1340-(ffff120e>>2)) and \
+ffff19b6=sat_u16(ffff183e+ffff2a1c). The alternate mode converts final \
+channel targets ffff28bc/ffff28be through 0x13202/0x155a0 and sums them into \
+ffff19b2/ffff19b6."""
+note = [
+    """
+Compose the normal shared throttle target area and alternate feedback \
+value""",
+    """
+The normal request composition and alternate feedback branch are exact. The \
+alternate branch does not establish a normal reverse dependency.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 146
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 567
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "channel_throttle_target_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "analytic-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "papaya-swallow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "red-sidewinder/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_channel_0/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_target_channel_1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "super-chimpanzee/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_target_shared/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00072c3c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c4e"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c56"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c60"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c62"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c6c"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072c8c"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072cac"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072cbe"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072ce0"
+value = {named = ["0006f48c", "00072c3c", "ffff120e", "ffff1340", "ffff183e", "ffff19b2", "ffff19b6", "ffff28bc", "ffff28be"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

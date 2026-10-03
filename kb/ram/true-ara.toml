@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2746"
+name = "true-ara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006fac4"
+
+[[link]]
+type = "reader"
+to = "frisky-swine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

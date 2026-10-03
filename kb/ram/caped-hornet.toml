@@ -1,0 +1,125 @@
+summary = """
+Area-over-speed coordinate of the primary requested-torque conversion: FUN \
+00073948 writes uint32 floor(4*floor(ffff12a0*65536/ROM8[0x8d8f])/ffff1702) \
+through unsigned divider 00021ce0, with ROM8[0x8d8f] = 100. With ffff1702 in \
+RPM/3.125 counts, it is 8192*ffff12a0/RPM."""
+level = "code"
+unit = "raw area/speed coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 958
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "khaki-antelope/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "resolute-carp/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versed-reindeer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1824"
+name = "caped-hornet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d8f=0x64"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007397a"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073982"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007398c"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073996"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073998"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007399c"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739a6"
+value = {named = ["00008d8f", "00021ce0", "00073948", "ffff12a0", "ffff1702", "ffff1824"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "khaki-antelope/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "resolute-carp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

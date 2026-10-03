@@ -1,0 +1,209 @@
+summary = """
+Paired uint16 lookup accessor for maps 0x18C96/0x18C76: stores the first \
+output in ffff1cac, adds both outputs with saturation at 65535, and limits \
+the composite value above by uint16(ffff133e)."""
+note = ["The physical identity of the pair and upper bound is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 217
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "soft-rooster/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "zircon-copperhead/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00072378"
+name = "icy-copperhead"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072384"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072390"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072394"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007239a"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723a0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723a6"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723aa"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ae"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723b4"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723b8"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ba"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723be"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723c0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723c2"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ca"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ce"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d2"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d6"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-chital/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "crimson-dalmatian/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "defiant-tapir/fn/7mfk"
+relies = "structure"

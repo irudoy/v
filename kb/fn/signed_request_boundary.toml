@@ -1,0 +1,243 @@
+title = "Apply signed request bounds and publish the shared coordinate"
+summary = """
+Signed request-boundary stage reached by periodic-table index-21 dispatcher \
+00079dd8. It reads duplicated controller selection ffff2438/ffff19c2, \
+applies mode-controlled lower and upper bounds from several independent \
+signed candidates, including transmission-completion bounds ffff347e, \
+ffff3480, ffff3482, and ffff3484, and writes bounded outputs including \
+ffff19cc and ffff19c6. FUN 00073432 and FUN 00073628 consume ffff19c6 in \
+downstream interpolation branches."""
+note = [
+    """
+This closes the signed-request boundary before stock-active inverse \
+coordinate ffff198a. ffff4162 can reach this function only through \
+ffff3480/ffff3484 while ffff41a6.bit3 is set; the selected stock-lifecycle \
+path clears that bit before publication. Exact code continues through \
+ffff183e, ffff19b2, per-channel targets, the regulator, and ATU-II BFR6A-D; \
+physical scale, plate response, bank identity, and ECM terminals require \
+hardware evidence. The function also writes ffff415e and ffff4160, the \
+limited and pre-limiter requests clamped to [ffff413a, ffff4138]; CAN packer \
+00079e70 scales their scheduler latches exactly as net engine torque, which \
+places this request coordinate in the torque domain.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 132
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 239
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adorable-shrew/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "elegant-marmoset/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-angelfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amber-urchin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "outstanding-badger/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spicy-smilodon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wakeful-lemur/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "holistic-doberman/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_request_bounded/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00079030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c4"
+value = "00079dd8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007904e"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079054"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000790ee"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079114"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079122"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007914a"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007914e"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007915c"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791a8"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791b2"
+value = {named = ["000219c4", "00073432", "00073628", "00079030", "00079dd8", "ffff19c2", "ffff19c6", "ffff19cc", "ffff2438", "ffff347e", "ffff3480", "ffff3482", "ffff3484"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_boundary_dispatch/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "adorable-shrew/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "elegant-marmoset/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "strange-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

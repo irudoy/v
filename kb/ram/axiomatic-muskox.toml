@@ -1,0 +1,79 @@
+summary = """
+Saturating transition counter maintained by FUN 0004f9c4 from current \
+ffff244f.bit2 and previous ffff2453.bit2. Values below 60 permit entry to \
+the transition-window fuel cut; values at or above 150 force release."""
+note = [
+    """
+A current set bit loads 255, a previous-only set bit loads zero, and the \
+continuing path increments with saturation.""",
+]
+level = "code"
+unit = "scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 614
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1690"
+name = "axiomatic-muskox"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fa3e"
+value = {named = ["0004f9c4", "ffff1690"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fa52"
+value = {named = ["0004f9c4", "ffff1690"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fa7c"
+value = {named = ["0004f9c4", "ffff1690"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

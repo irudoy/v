@@ -1,0 +1,95 @@
+title = "Update upstream DFCO mode or eligibility bit 5"
+summary = """
+Update upstream DFCO mode or eligibility bit ffff2459.bit5. One gate \
+requires ffff2451.bit7 or ffff24cd.bit7 together with 0008c3fa. The \
+alternate gate selects inverted ffff417f.bit3 or ffff4230.bit7 according to \
+ffff4245.bit0, ffff4249.bit4, and ffff259c. The same function derives \
+ffff417f.bit3 and maintains ffff4230.bit7 through a small hysteresis state."""
+note = [
+    """
+Whole-program p-code establishes this as the only writer of bit 5. Physical \
+signal identities remain unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 65
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 493
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_upstream_aux_gate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "military-dogfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "funky-mink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nice-silkworm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wisteria-sheep/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006efbc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f07a"
+value = {named = ["0006efbc", "0008c3fa", "ffff2459", "ffff259c", "ffff417f", "ffff4230"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f0bc"
+value = {named = ["0006efbc", "0008c3fa", "ffff2459", "ffff259c", "ffff417f", "ffff4230"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "dfco_upstream_aux_gate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

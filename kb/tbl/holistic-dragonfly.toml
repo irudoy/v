@@ -1,7 +1,282 @@
+summary = "Accumulation threshold for ffff2b80, variant when ffff106e < 0x28"
+note = [
+    """
+Accumulation threshold for ffff2b80, variant when ffff106e < 0x28. Result \
+disposition: inline_comparison. Result target: 000a65ca: byte[ffff351a] * \
+0x0a00 <= uint[ffff28f8 + 0x0288]. Machine trace: 00012fc6 -> 000a6476 -> \
+000a6478/000a647a [selection when byte[ffff106e] < byte[00008730] = 0x28] -> \
+000a6480 -> 00026370 -> {raw < 0x00e0: 00026a80 -> \
+00026aaa/00026aac/00026aae/00026ab0/00026ab2 -> 00026ab4 -> 00026740; raw >= \
+0x00e0: direct read byte[00012fc6 + 7]} -> 000a6484 -> 000a648a -> ffff351a \
+-> 000a65ca -> byte[ffff351a] * 0x0a00 <= uint[ffff28f8 + 0x0288]. Scale \
+confidence: code. Scale: x*2560; inverse encoding: x/2560; units: counts. \
+Scale trace: raw uint8@00012fc6 -> 000a6476:r4 [000a6478 cmp/hs false -> \
+000a647a bf; 000a647c skipped] -> 000a6480 -> 00026370 [index < 0x00e0 -> \
+00026a80; otherwise low byte byte@(r4+7)] -> 00026a80 [mov.b and extu.b for \
+adjacent elements] -> 00026740 [unsigned Q0.16 interpolation, r0 in range \
+0..255] -> 000a6484:r0->r2 -> 000a648a:mov.b -> ffff351a -> \
+000a65ca:unsigned byte * 0x0a00 -> unsigned 32-bit comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "counts"
+scale = "x*2560"
+to_raw = "x/2560"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 233
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+scale = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "holistic-dragonfly/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "holistic-dragonfly/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012fc6"
 name = "holistic-dragonfly"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008730"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6460"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6464"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6468"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a646c"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6476"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6478"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a647a"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6480"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6484"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a648a"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a65ca"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026370"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a6476"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a6478"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a647a"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a6480"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a6484"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000a648a"
+value = {named = ["00008730", "00012fc6"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:000a65ca"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +307,19 @@ value = "00015377"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "holistic-dragonfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "holistic-dragonfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"

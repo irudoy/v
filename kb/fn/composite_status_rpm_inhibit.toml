@@ -1,0 +1,125 @@
+summary = """
+Composite status/RPM fuel-inhibit contributor. It combines stock-inert \
+lifecycle-zero status ffff41ea.bit7, an 1800/1600 RPM state gated by \
+ffff245d.bit6 and ffff2458.bit5, and a high-RPM state selected by \
+ffff24ce.bit2 or ffff24d2.bit0."""
+note = [
+    """
+Combine a lifecycle-zero direct seed with two live status-gated RPM \
+fuel-inhibit paths""",
+    """
+Normal startup and both recovery paths clear ffff41ea. A 2315-function \
+p-code census finds only runtime writers 0007c166, 00050920, and 0007f870, \
+all of which preserve bit 7; the recovered DMAC does not overlap the byte. \
+Stock map 00012a32 is all 0xff, producing a 6375 RPM high boundary with 200 \
+RPM hysteresis. Two calls with index -1 are inert.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 40
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 534
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "agate-kingfisher/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "asparagus-cockle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "auspicious-jacamar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "esoteric-barracuda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "greedy-rottweiler/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accomplished-chicken/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resolute-bullfinch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000507ce"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00012a32"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000507ce"
+value = {named = ["00012a32", "0004ed88", "ffff2458", "ffff245d", "ffff2489", "ffff249f", "ffff24ce", "ffff24d2", "ffff41ea"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

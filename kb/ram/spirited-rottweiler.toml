@@ -1,0 +1,78 @@
+summary = """
+Second two-bit throttle PWM direction mask written by 000cc6a2 and consumed \
+by 000407c0 together with ffff36dc."""
+note = [
+    """
+The pair selects which complementary ATU-II register receives nonzero \
+duty.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 713
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "atu2_throttle_pwm_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_direction_publisher/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff385e"
+name = "spirited-rottweiler"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004096c"
+value = {named = ["000407c0", "000cc6a2", "ffff385e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000409b8"
+value = {named = ["000407c0", "000cc6a2", "ffff385e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc716"
+value = {named = ["000407c0", "000cc6a2", "ffff385e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "atu2_throttle_pwm_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_direction_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

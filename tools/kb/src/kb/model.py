@@ -688,7 +688,10 @@ class Builder:
                 continue
             if owner is to:
                 model.self_links.append(fact)
-                continue
+                # A base relation can use the owning word as the base of
+                # another byte at a nonzero offset. It remains a real link.
+                if fact.type != "base":
+                    continue
             slot = fact.props.get("slot")
             offset = fact.props.get("offset")
             key = (id(owner), fact.type, id(to), slot, offset)

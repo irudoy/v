@@ -1,3 +1,38 @@
+summary = """
+Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by \
+RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and \
+writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream \
+conditioning into common exhaust target ffff2327."""
+note = [
+    """
+The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured \
+Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths \
+consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 \
+exhaust-VTC-control monitors. This closes the subsystem identity \
+independently of map geometry. Code proves centered raw arithmetic and the \
+conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae \
+as 128 plus the filtered edge deviation from the learned rest edge in counts \
+of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the \
+120-degree event interval), and monitor 0008f168 forms the tracking gap \
+clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw \
+units, so the target and this surface are (raw-128)*0.5 crank degrees \
+relative to the learned rest edge. Target-vehicle replay of the warm path \
+matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and \
+in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining \
+differences are downstream mode, rate, and offset conditioning. The \
+2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes \
+within two counts of a target unchanged for 100 records in 98 percent of \
+83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the \
+learned rest edge remains open. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "degCA"
+scale = "(x-128)*0.5"
+to_raw = "x*2+128"
+scale_level = "code"
+
 [editor]
 name = "Exhaust CVTC Target - Main"
 category = "Variable Valve Timing / Exhaust Cam"
@@ -7,10 +42,233 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[[ledger]]
+registry = "findings"
+order = 69
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apricot-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fortunate-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loose-frigatebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "righteous-sparrow/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "athletic-jackal/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "loose-termite/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "exhaust_cvtc_target/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "illegal-husky/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000b33a"
 former = ["daffy-urchin/tbl/7mfk-0000b33a"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe22"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe6c"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c00d8"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0144"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0cee"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Exhaust Cam Timing Map | Degrees | (x-128)*0.5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0002283c"
+value = "ffff2324"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f496"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f4bc"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfdae"
+value = {named = ["0000ab4a", "0000b33a", "00012f0e", "00012f2e", "0002283c", "00022844", "0003235c", "0008f168", "00090256", "000907e8", "00090bd2", "000bfc2e", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "(128-128)*0.5=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "(168-128)*0.5=20"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "(178-128)*0.5=25"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "black-vulture/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -85,3 +343,78 @@ value = "370200000000002100000000380306000000045200000000"
 note = """
 the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
 P0014 and P0024 have no record"""
+
+[[link]]
+type = "depends"
+to = "athletic-jackal/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "loose-termite/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "righteous-sparrow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "apricot-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fortunate-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "loose-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

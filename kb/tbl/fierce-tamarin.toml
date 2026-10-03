@@ -1,0 +1,149 @@
+summary = """
+Additive correction to the output of base map 0001465a in the same raw \
+unsigned 16-bit units. The interpolated output is written to ffff12fc, added \
+to ffff1e74, saturated to 0xffff in ffff12fa, and bounded above by ffff133e \
+in ffff1340. The physical quantity is unknown."""
+note = [
+    """
+Additive correction to the output of base map 0001465a in the same raw \
+unsigned 16-bit units. The interpolated output is written to ffff12fc, added \
+to ffff1e74, saturated to 0xffff in ffff12fa, and bounded above by ffff133e \
+in ffff1340. The physical quantity is unknown. Result disposition: consumer. \
+Result target: 0004770a. Machine trace: 0001469a (uint16, axis 000146ba, raw \
+input ffff11bc) -> r4/r5/r6 at 000476f6-000476fe -> 000264f8 -> 00026984 -> \
+00026c78 and 00026740 -> r0 at 00047700 -> ffff12fc at 00047702 and extu.w \
+r2 at 00047706 -> add extu.w of output 0001465a from ffff1e74 at \
+00047704-0004770a -> unsigned check and saturation to 0xffff at \
+0004770c-00047714 -> ffff12fa at 00047718 -> unsigned 16-bit comparison with \
+threshold ffff133e at 0004771a-00047724 -> ffff1340 at 00047728.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 250
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fierce-tamarin/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001469a"
+name = "fierce-tamarin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476f6"
+value = {named = ["0001469a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000476fc"
+value = {named = ["0001469a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047700"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047702"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047706"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004770a"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047710"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047714"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047718"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004771a"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047720"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047724"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047728"
+value = {named = ["0001469a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "fierce-tamarin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,68 @@
+summary = """
+Captured second-bank P010B event-context copy of composite diagnostic byte \
+ffff12ec."""
+note = [
+    """
+This is the stock terminal consumer of the 0001236a-dependent second-bank \
+value.""",
+]
+level = "code"
+unit = "raw diagnostic snapshot"
+
+[[ledger]]
+registry = "vars"
+order = 731
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aboriginal-porpoise/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4567"
+name = "solid-gaur"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000824b4"
+value = {named = ["00081d74", "ffff12ec", "ffff4567"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000824b6"
+value = {named = ["00081d74", "ffff12ec", "ffff4567"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "aboriginal-porpoise/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

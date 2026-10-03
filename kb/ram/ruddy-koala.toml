@@ -1,0 +1,179 @@
+summary = """
+Shared uint16 lookup coordinate for both parallel endpoint-curve channels \
+and their trim curves. It is passed without rescaling to axes 00014f82 and \
+00018f76. FUN 00079a98 normally copies it to first-channel override source \
+ffff3026; both channel calculations pass values at or above 800 into their \
+final-bound stage."""
+note = [
+    """
+The stock breakpoint domain is 0..840 raw. Catalog concepts do not identify \
+the physical quantity or unit.""",
+]
+level = "code"
+unit = "raw coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 225
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "prophetic-kagu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "active-hoatzin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2698"
+name = "ruddy-koala"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ad4"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a55e"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a5ee"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a678"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6de"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a73c"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a826"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a83c"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a84c"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8ca"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a93e"
+value = {named = ["00079a98", "0007a4de", "0007a592", "0007a804", "ffff2698"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "active-hoatzin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "prophetic-kagu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "active-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

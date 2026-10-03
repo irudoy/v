@@ -1,0 +1,225 @@
+summary = """
+Element 0 of the two-byte AN1-derived running-min accumulator. Normal \
+startup seeds both elements to 255 through FUN 0002d120. On admitted updates \
+FUN 0003d45c can only lower each element to the corresponding map-00012dea \
+output at ffff2838/ffff2839. FUN 0003d832 copies element 0 through ffff283c \
+into the P030 readiness chain."""
+note = [
+    """
+The indexed runtime writer is code-proven by whole-program p-code analysis. \
+Conditional clear services zero the accumulator but do not reseed it within \
+those functions. The ECM terminal, physical signal, and engineering scale \
+remain unresolved.""",
+]
+level = "code"
+unit = "running-min transfer code"
+
+[[ledger]]
+registry = "vars"
+order = 459
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "romantic-caiman/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "strong-ammonite/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magic-rat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "piquant-echidna/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f4c"
+name = "shapeless-raven"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002d1c6"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002d1ca"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d492"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d498"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4a2"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d89c"
+value = {named = ["00012dea", "00027ac0", "0002d120", "0002fc24", "00034b70", "0003d45c", "0003d832", "ffff2838", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "strong-ammonite/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "romantic-caiman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "magic-rat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "piquant-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

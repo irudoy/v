@@ -18,14 +18,14 @@ presentation and generated output.
 | `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
 | `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
 | `1ND0A-1ME3B.census-correspondence.csv` | Table-level homology of the 1ME3B accessor census against the 1ND0A census | no, regenerate |
-| `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
-| `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
-| `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
-| `JK08A.vars.csv` | RAM and peripheral semantics and evidence | yes |
-| `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
+| `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | no, `kb` projection |
+| `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | no, `kb` projection |
+| `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | no, `kb` projection |
+| `JK08A.vars.csv` | RAM and peripheral semantics and evidence | no, `kb` projection |
+| `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | no, `kb` projection |
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | no, `kb` projection |
 | `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | yes |
-| `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
+| `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | no, `kb` projection |
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | no, `kb` projection |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
@@ -41,6 +41,13 @@ presentation and generated output.
 The exact ROM supplies every map and axis value during ingestion. Handwritten
 files must not duplicate image values. The graph is a reproducible relationship
 projection and does not replace these tracked sources.
+
+The six JK08A ledgers and the curated function names in
+`tools/ghidra/symbols/7mfk.csv` are views of the meanings in `kb/` from stage 5
+of `tools/kb/SPEC.md`. Use `kb` to read and change their facts, then
+`uv run kb project` to regenerate the views. Reproduced ledger sites carry
+checked L0 contexts; unverified sites and constants retain their source claims
+without grounding a level. The `levels` gate checks each claim independently.
 
 ## Canonical exact-code layer
 

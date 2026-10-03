@@ -1,0 +1,80 @@
+summary = """
+Bank-indexed raw MAF ADC snapshot copier. It copies ffff1d62/ffff1d64 to \
+ffff1a3e/ffff1a40 after the diagnostic words are refreshed."""
+note = [
+    """
+FUN 0003c3ac invokes exactly indices 0 and 1. The downstream role of the raw \
+snapshots remains unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 444
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enthusiastic-pillbug/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hairy-dalmatian/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "camouflaged-cockle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "simple-whale/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003c45c"
+name = "active-snail"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c466"
+value = {named = ["0003c3ac", "0003c45c", "ffff1a3e", "ffff1a40", "ffff1d62", "ffff1d64"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

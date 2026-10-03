@@ -1,0 +1,35 @@
+summary = """
+Start of consumer 00085a70 register trace (ffff37d8..3826): counters, 12-bit \
+per-cylinder shift registers, and flags; metric hits within threshold \
+windows populate the registers."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 280
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "writes"
+to = "dashing-coucal/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff37d8"
+name = "cyber-penguin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00085d92"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

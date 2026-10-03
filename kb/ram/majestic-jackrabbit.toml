@@ -1,0 +1,144 @@
+summary = """
+Current Q7 Fuel Compensation Main coefficient. Init routine 0002c648 and \
+runtime coordinator 0003bd74 write the 0xA29A result or a gated bounded \
+bypass value here. Base Fuel Schedule producer 0003b75c forms \
+ffff1062=min(65535,floor(ffff1e40*uint8(ffff1160)/128))."""
+note = [
+    """
+Raw 128 is neutral 1.0 or 100 percent. Runtime gates can bypass the lookup, \
+so not every write is necessarily a table result.""",
+]
+level = "code"
+unit = "ratio_q7"
+
+[[ledger]]
+registry = "vars"
+order = 252
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "startup_initializer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuel_compensation_main/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_compensation_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1160"
+name = "majestic-jackrabbit"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8e0"
+value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b906"
+value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c284"
+value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c292"
+value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c29c"
+value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fuel_compensation_main/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

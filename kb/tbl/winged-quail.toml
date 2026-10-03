@@ -1,7 +1,92 @@
+summary = """
+Unidentified 1D table: an interpolated unsigned byte 103..115 is written to \
+RAM ffff1a7b; the physical quantity is unknown"""
+note = [
+    """
+The target-map branch passes through call 000be72a; alternate map branch \
+00012e72 converges with it at 000be792 and writes the same sink. The branch \
+condition is dynamic, and target-branch unreachability has not been proven. \
+After the write, live value r2 participates in saturating arithmetic \
+000be79e..000be7b6 and forms a separate write ffff1a9c, but assigned sink \
+ffff1a7b is not read. This noninvertible composition with an unknown base \
+quantity is not claimed as a physical map scale. Result disposition: writes. \
+Blocking condition: The target-sink trace stops at 000be798, where the \
+interpolated byte is written to ffff1a7b; the artifact contains no reads of \
+ffff1a7b, inline comparison of this sink, or returned value. The trace \
+therefore does not reach a consumer capable of establishing physical \
+semantics.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 230
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "writes"
+to = "neon-barnacle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012e82"
 name = "winged-quail"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be722"
+value = {named = ["00012e82", "00026474", "00026740", "00026944", "00026c78", "ffff1a7b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be72a"
+value = {named = ["00012e82", "00026474", "00026740", "00026944", "00026c78", "ffff1a7b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be798"
+value = {named = ["00012e82", "00026474", "00026740", "00026944", "00026c78", "ffff1a7b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"

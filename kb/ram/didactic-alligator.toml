@@ -1,0 +1,172 @@
+summary = """
+Selected byte factor for the 00012ede path. FUN 00055098 writes \
+interpolate(00012ede,00011bfb,min(u8[ffff2442],u8[ffff2443])) when \
+ffff246b.bit6 is set and writes bypass constant 64 otherwise. The same \
+factor enters FUN 00055098 and FUN 00054ee0."""
+note = [
+    """
+Raw 64 is the bypass-relative identity. Coordinator 00057608 calls 00055098 \
+before 00054ee0, so both consumers use the current invocation's selected \
+factor.""",
+]
+level = "code"
+unit = "relative factor raw"
+
+[[ledger]]
+registry = "vars"
+order = 96
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adaptable-eel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-snail/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "caped-mammoth/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "crimson-crane/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adaptable-eel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1b14"
+name = "didactic-alligator"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005505a"
+value = {named = ["00012ede", "00054ee0", "00055098", "ffff1b14", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551de"
+value = {named = ["00012ede", "00054ee0", "00055098", "ffff1b14", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055202"
+value = {named = ["00012ede", "00054ee0", "00055098", "ffff1b14", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005520a"
+value = {named = ["00012ede", "00054ee0", "00055098", "ffff1b14", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055210"
+value = {named = ["00012ede", "00054ee0", "00055098", "ffff1b14", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "caped-mammoth/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "crimson-crane/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

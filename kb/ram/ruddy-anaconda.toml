@@ -1,0 +1,289 @@
+summary = """
+Signed P0128 model-temperature state in 1e-6 deg C. FUN 000b6b5a seeds it as \
+1000000*uint8[ffff1071]-50000000, otherwise loads the retained integrated \
+state ffff9df0, and passes it to three P0128 term accessors before adding \
+scaled balance ffff3400."""
+note = [
+    """
+Exact DID 0x1101 and the hard-coded -50 offset establish the temperature \
+representation. When the model-ready gate is clear, the retained state is \
+replaced by current coolant temperature after the calculation; otherwise the \
+saturated integrated result is retained for the next pass.""",
+]
+level = "code"
+unit = "P0128 model temperature [1e-6 deg C]"
+
+[[ledger]]
+registry = "vars"
+order = 532
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "curly-flounder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refined-goose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-armadillo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "great-loon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "striped-horse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "zealous-dalmatian/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3348"
+name = "ruddy-anaconda"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c22"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c60"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c62"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c64"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c66"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c6a"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c6e"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c7e"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c8e"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cc0"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cd4"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d26"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d2e"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d36"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d9c"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ee"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f0"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f2"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a5a"
+value = {named = ["000b6b5a", "000b7768", "000b78da", "000b7a3c", "ffff1071", "ffff3348", "ffff3400", "ffff9df0"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "great-loon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "striped-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "curly-flounder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff24e1"
+name = "didactic-carp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002cfd2"
+
+[[link]]
+type = "lookup"
+to = "gleaming-lori/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

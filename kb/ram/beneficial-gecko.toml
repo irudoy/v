@@ -1,0 +1,71 @@
+summary = """
+Delay timer used by side-effect-only low-speed BFS/RPM latch updater \
+0004f758. Expiry permits setting ffff41d4.bit0 under the function's speed, \
+RPM, BFS, and status gates."""
+note = ["The latch then blocks later low-speed protection branches."]
+level = "code"
+unit = "periodic counts"
+
+[[ledger]]
+registry = "vars"
+order = 628
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_bfs_rpm_latch_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "low_speed_bfs_rpm_latch_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff255b"
+name = "beneficial-gecko"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c07"
+value = "0x14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7bc"
+value = {named = ["00008c07", "0004f758", "ffff255b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7c2"
+value = {named = ["00008c07", "0004f758", "ffff255b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

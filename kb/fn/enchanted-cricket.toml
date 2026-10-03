@@ -1,0 +1,229 @@
+summary = """
+Bank-indexed MAF input preprocessor. For indices 0 and 1 it reads diagnostic \
+word ffff101c/ffff101e. The first call per index copies the word to table \
+input ffff1e48/ffff1e4a and sets bit index+1 of ffff3976; later calls write \
+uint16(word-c) with c=floor(floor(K*ROM16[0x9586]/65536)/min(65535, previous \
+output+ROM16[0x958c])) through unsigned divider 00021ce0, where K is uint32 \
+ffff3998/ffff399c. Caller 0003a904 consumes the outputs."""
+note = [
+    """
+Caller 0003a904 invokes exactly indices 0 and 1. Init 0002d120 seeds both K \
+words with ROM16[0x95b6]<<16 = 0x00180000, which gives c = \
+floor(8040/(previous output+80)): 32 counts, 0.16 V, at a steady 1 V input. \
+FUN 0003aa12 rewrites K. The MAF and bank identities are exact; the physical \
+meaning of the correction remains unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 436
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "annoying-foxhound/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maf_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maf_b2/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unselfish-okapi/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "careful-penguin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ginger-stingray/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-bandicoot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003ae8a"
+name = "enchanted-cricket"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009586"
+value = "0x014f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000958c"
+value = "0x0050"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aea0"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aeac"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aeb2"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aec0"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aec6"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aed2"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aed4"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aee2"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af04"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af08"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af10"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af16"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af20"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af2e"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af30"
+value = {named = ["00009586", "0000958c", "00021ce0", "0003a904", "0003ae8a", "ffff101c", "ffff101e", "ffff1e48", "ffff1e4a", "ffff3976", "ffff3998", "ffff399c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

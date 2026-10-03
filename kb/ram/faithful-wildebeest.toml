@@ -1,0 +1,157 @@
+summary = """
+Live target gear index decoded by FUN 000c47ea from the high nibble of CAN \
+0x174 payload byte 3. Input values 1 through 7 are decremented; zero and \
+values above 7 publish zero. Scheduler 00020dfe copies the byte to \
+ffff1083."""
+note = [
+    """
+CAN 0x174 is the exact standard identifier represented by dispatcher key \
+0x2e80 and stock mailbox record 0x9786.""",
+]
+level = "code"
+unit = "zero-based target gear index"
+
+[[ledger]]
+registry = "vars"
+order = 59
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_174_transmission_payload_decoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "private-squid/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1087"
+name = "faithful-wildebeest"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f46"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f4a"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f4e"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c484a"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c484e"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4852"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c486c"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4882"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4892"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4898"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c48a0"
+value = {named = ["00020dfe", "000c47ea", "ffff1083", "ffff1087"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_174_invalid_fallback/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_174_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

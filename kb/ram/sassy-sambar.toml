@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff432a"
+name = "sassy-sambar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000275a4"
+
+[[link]]
+type = "reader"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

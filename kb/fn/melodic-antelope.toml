@@ -1,0 +1,178 @@
+summary = """
+Composite threshold accessor. Lookup 000128e0 by a uint8 from the stack is \
+written to ffff3405 and compared with ffff2a9d. Lookup of uint16 map \
+00015640 by a piecewise Q8 coordinate is written to ffff344e and directly \
+serves as the minimum threshold for ffff1814."""
+note = ["The physical quantities of both thresholds are unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 316
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "futuristic-shark/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "jumping-kingfisher/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "fat-chameleon/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerated-bumblebee/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b5c36"
+name = "melodic-antelope"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f00"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f0e"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f1c"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f28"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f30"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f38"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f42"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f48"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f4c"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5f50"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61aa"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61b2"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61bc"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61de"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e2"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e4"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b61e6"
+value = {named = ["000128e0", "00015640", "000b5c36", "ffff2a9d", "ffff3405"], span = 1}
+key = "body"
+
+[[link]]
+type = "threshold"
+to = "fat-chameleon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

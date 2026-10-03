@@ -1,0 +1,145 @@
+summary = """
+Unsigned P0128 temperature-difference term. FUN 000b7768 writes \
+floor(d*floor(lookup_u16(00014b0a)*ROM8[00008543]/256)/256), where d is the \
+nonnegative model-temperature-minus-IAT difference in 0.01 deg C units. FUN \
+000b6b5a is the only reader and adds the term to ffff2d00 with uint32 \
+saturation into ffff3220."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one reader. Every \
+stock cell of 00014b0a is zero, so this term is always zero in stock JK03A \
+and JK08A.""",
+]
+level = "code"
+unit = "P0128 model raw"
+
+[[ledger]]
+registry = "vars"
+order = 533
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "authentic-octopus/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perky-agama/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curly-flounder/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2d08"
+name = "cherubic-ibex"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008543=0x08"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c94"
+value = {named = ["00008543", "00014b0a", "000b6b5a", "000b7768", "ffff2733", "ffff2d08", "ffff3348"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c9a"
+value = {named = ["00008543", "00014b0a", "000b6b5a", "000b7768", "ffff2733", "ffff2d08", "ffff3348"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c9e"
+value = {named = ["00008543", "00014b0a", "000b6b5a", "000b7768", "ffff2733", "ffff2d08", "ffff3348"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ca4"
+value = {named = ["00008543", "00014b0a", "000b6b5a", "000b7768", "ffff2733", "ffff2d08", "ffff3348"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b77de"
+value = {named = ["00008543", "00014b0a", "000b6b5a", "000b7768", "ffff2733", "ffff2d08", "ffff3348"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "perky-agama/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ruddy-anaconda/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "authentic-octopus/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "curly-flounder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

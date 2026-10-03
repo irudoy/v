@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff19aa"
+name = "magic-kudu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd2e6"

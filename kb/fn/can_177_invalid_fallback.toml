@@ -1,0 +1,61 @@
+summary = """
+Invalid-message fallback for the internal-key-0x2ee0 source. It writes 0xfe \
+to ffff2818."""
+note = [
+    """
+Publish the invalid-data fallback for the CAN 0x177 requested RPM ceiling""",
+    """
+The consumer treats 0xfe as a valid neutral 12700 RPM ceiling rather than \
+its explicit 0 or 0xff invalid values.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 71
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 549
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "debonair-locust/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c5d2e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c5d2e"
+value = {named = ["00050a60", "ffff2818"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

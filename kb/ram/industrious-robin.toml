@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15ac"
+name = "industrious-robin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046724"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

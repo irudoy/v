@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10e4"
+name = "stoic-numbat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00048106"
+
+[[link]]
+type = "reader"
+to = "etc_fault_low_speed_full_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

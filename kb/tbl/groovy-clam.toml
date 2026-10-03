@@ -1,3 +1,24 @@
+summary = """
+Unsigned 16-point coordinate table used both as the column axis of 000175c8 \
+and as the returned values of the inverse lookup that converts centered \
+signed request ffff19c6 through an RPM-interpolated row of 000175c8."""
+note = [
+    """
+FUN 00073628 biases ffff19c6 by 0x8000, passes the locally interpolated \
+torque row as the search axis, passes 00018ac6 as the returned-value table, \
+and writes the result to ffff1d14. Code proves the reciprocal-coordinate \
+role. The QH0 name, percent unit, and scale are catalog candidates. The \
+stored values are byte-identical to primary coordinate table 00014114. \
+Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+to_raw = "x/0.00152588"
+scale_level = "candidate"
+
 [editor]
 name = "QH0 Flow Potential Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
@@ -7,10 +28,69 @@ format = "0.00"
 fine = 0.1
 coarse = 1
 
+[[ledger]]
+registry = "findings"
+order = 438
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-angelfish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "horned-hedgehog/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018ac6"
 name = "groovy-clam"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737c8"
+value = {named = ["000175c8", "00018ac6", "00073628", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737ce"
+value = {named = ["000175c8", "00018ac6", "00073628", "00152588"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000737d8"
+value = {named = ["000175c8", "00018ac6", "00073628", "00152588"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map Trustful|Axis Percentage (x*0.00152588)"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +123,20 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "horned-hedgehog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "strange-angelfish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

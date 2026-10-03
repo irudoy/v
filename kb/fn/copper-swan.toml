@@ -1,0 +1,57 @@
+summary = """
+Misfire-monitor initializer: writes -128 (0x80) to every metric byte in \
+ffff3816..381b, ffff381c..381f, and ffff3820..3826, establishing \
+offset-binary encoding with neutral value 0x80."""
+note = [
+    """
+The exact P0300..P0306 reporter path through 00082c8a and 00084cd0 \
+establishes the subsystem identity; these writes establish only the \
+offset-binary neutral encoding.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 258
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "meek-griffin/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sexy-flounder/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00082bd8"
+name = "copper-swan"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "misfire-monitor"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"

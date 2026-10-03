@@ -1,0 +1,163 @@
+summary = """
+The unsigned Base Fuel Schedule lookup result is the lower threshold of \
+code-3 range and code-4 threshold for high byte ffff1024: input >= threshold \
+permits code 3 after the upper-bound check, while input < threshold writes 4 \
+to ffff2b4b."""
+note = [
+    """
+All 16 cells equal 252, so the index does not change the effective \
+threshold. Exact DID 0x1208 establishes the Base Fuel Schedule input \
+identity; x/8 ms is profile-derived and requires hardware validation. Index: \
+implicit 1D-16 with q=min(2*max(u8[ffff11ae]-8,0),255), interpolation below \
+240, and cell 15 at or above 240. Result disposition: inline_comparison; \
+target sites 0008368e and 0008369a; code 4 is written at 000836a4.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 162
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "heavenly-shrew/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "kickass-mole/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001268a"
+name = "colorful-snake"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "252"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835e2"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835e6"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083660"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008368e"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008369a"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836a4"
+value = {named = ["0001268a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "252/8=31.5"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "31.5*8=252"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "heavenly-shrew/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,33 @@
+summary = """
+Second owner of ROM constant pair 0x8FD8 = raw [506, 484], separating it \
+from accelerator-pedal hysteresis at 0x8FDC. Its own role has not been \
+analyzed."""
+note = [
+    """
+Candidate confidence: ownership of the constants is traced, but the function \
+body has not been analyzed.""",
+]
+level = "candidate"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 208
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "0007054a"
+name = "azure-smilodon"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008fd8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007054a"

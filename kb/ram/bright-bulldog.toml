@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff117a"
+name = "bright-bulldog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000398f8"
+
+[[link]]
+type = "writer"
+to = "impressive-wrasse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

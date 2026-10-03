@@ -1,0 +1,33 @@
+summary = "Gate for the entire calculation branch in 00068cb8."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 205
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "finicky-capybara/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24c0"
+name = "solid-honeybee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00028f18"
+
+[[link]]
+type = "reader"
+to = "finicky-capybara/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

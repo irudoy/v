@@ -1,0 +1,124 @@
+summary = """
+SCI2-backed two-byte read primitive. For each of byte addresses 2*key and \
+2*key+1 it writes command 0x03, sends the address through TDR2, clocks one \
+response byte with 0xff, and combines the two RDR2 bytes into a big-endian \
+uint16 result."""
+note = [
+    """
+The SH7058 hardware manual establishes the SCI2 register identities. The \
+external peer and stored quantity are not identified by the transaction \
+mechanics.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 448
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "notorious-goat/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "classy-koel/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "slick-seahorse/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-hoatzin/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00066bd0"
+name = "paper-viper"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066c2a"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066c38"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066c7e"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066cb2"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066ce6"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066d0e"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066d26"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066d2c"
+value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "notorious-goat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

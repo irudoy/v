@@ -1,0 +1,51 @@
+summary = """
+Absolutely addressed byte adjacent to structure ffff119c: its writer \
+resolves through an xref, while no resolved writes exist anywhere in \
+ffff119c..11b7 because that structure is populated by a handler through a \
+pointer argument. The physical quantity is unresolved."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 71
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "peach-basilisk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1198"
+name = "pragmatic-dodo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020f5c"
+
+[[link]]
+type = "reader"
+to = "peach-basilisk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,20 @@
+summary = "Caller of init routine 0002c648."
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 117
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00027ce4"
+name = "military-monkey"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "startup_initializer/fn/7mfk"
+relies = "level"

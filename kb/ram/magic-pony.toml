@@ -1,0 +1,89 @@
+summary = """
+Output byte of 16-point curve 000129e2 indexed by load coordinate ffff13b1 \
+in builder 00053698."""
+note = [
+    """
+Stock curve values rise from 34 by 20 per 16 coordinate counts and reach 255 \
+at coordinate 176.""",
+]
+level = "code"
+unit = "raw_u8"
+
+[[ledger]]
+registry = "vars"
+order = 905
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "married-whippet/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "woodoo-mule/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff17ba"
+name = "magic-pony"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537ba"
+value = {named = ["000129e2", "00026388", "00053698", "ffff13b1", "ffff17ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537d4"
+value = {named = ["000129e2", "00026388", "00053698", "ffff13b1", "ffff17ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "married-whippet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "woodoo-mule/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

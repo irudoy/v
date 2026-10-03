@@ -1,0 +1,34 @@
+role = "service"
+contract = """
+Not a function: a 17-longword jump table at 0x22094..0x220d7 belonging to \
+the copier entered at 00022038. Ghidra declared it as a separate function by \
+combining data with code. The copier convention is r0 = byte length, r1 = \
+destination, r2 = source."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 36
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022094"
+name = "wealthy-lyrebird"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "complex-bug/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022094"

@@ -1,0 +1,132 @@
+summary = """
+Engine-coolant transfer code. FUN 00039550 stores lookup(00012dea, ffff1186) \
+through implicit-axis primitive 000263a0 at 0003957e while ROM8[0x8b42] has \
+bit 7 or bit 0 set and constant 0x82 otherwise. Fall-rate limiter 00039588 \
+reads it."""
+note = [
+    """
+Stock ROM8[0x8b42] = 0xe0 selects the lookup. Constant 0x82 is 80 deg C \
+under deg C = raw-50.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 880
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "liberal-tuna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-mushroom/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "feathered-asp/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1187"
+name = "armored-whippet"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b42"
+value = "0xe0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039566"
+value = {named = ["00008b42", "00012dea", "00039550", "00039588", "ffff1186", "ffff1187"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003956a"
+value = {named = ["00008b42", "00012dea", "00039550", "00039588", "ffff1186", "ffff1187"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039576"
+value = {named = ["00008b42", "00012dea", "00039550", "00039588", "ffff1186", "ffff1187"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003957e"
+value = {named = ["00008b42", "00012dea", "00039550", "00039588", "ffff1186", "ffff1187"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003958e"
+value = {named = ["00008b42", "00012dea", "00039550", "00039588", "ffff1186", "ffff1187"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "adventurous-mushroom/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "liberal-tuna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "feathered-asp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

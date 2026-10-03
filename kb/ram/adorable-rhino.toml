@@ -1,0 +1,162 @@
+summary = """
+Multipurpose state byte. FUN 0007584e uses bit 2 as the nonpositive-ramp \
+latch. The inactive/reset branch clears it; an active pass sets it when \
+entry ramp ffff19da is not greater than ROM16[0x8f2c]=0. A set bit selects \
+normal rate 0x9426 instead of fast rate 0x9428."""
+note = [
+    """
+The latch is checked before the ramp update, so one final fast step can \
+cross zero before the next pass selects the normal rate. Other bits and \
+consumers remain independent.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 198
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "khaki-aardwolf/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "poetic-stallion/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "truthful-duck/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a3"
+name = "adorable-rhino"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f2c"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759fc"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a00"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a06"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a38"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a3a"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075aec"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075af4"
+value = {named = ["00008f2c", "00009426", "00009428", "0007584e", "ffff19da", "ffff24a3"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "khaki-aardwolf/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "poetic-stallion/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "truthful-duck/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

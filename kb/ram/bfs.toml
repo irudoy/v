@@ -1,6 +1,156 @@
+summary = """
+Newest Base Fuel Schedule word. Init routine 0002c648 and runtime producer \
+0003b75c are its only whole-program p-code writers; scheduler 00020dfe \
+copies it to current sample ffff1024. UDS DID 0x1208 returns this word in \
+big-endian order."""
+note = [
+    """
+A whole-program p-code scan found no other resolved or computed-address \
+writers. One count is 1/2048 ms in the time base of the injection-pulse \
+words. The stage normalizers between this word and the 10 us pulse words \
+multiply to exactly 100/2048: FUN 0004e974 scales the schedule by multiplier \
+ffff22e6 over 131072 with unity 0x4000, and FUN 0004ead4 scales the \
+precursor by the trim sum over 65536 with neutral 0x6400. At unity bank \
+multiplier, unity common gain, and neutral trims the pulse before injector \
+opening time is floor(raw*100/2048) counts of 10 us. Common Q14 gain \
+ffff165e stays within 12280..13917 of 16384, so the delivered pulse is \
+0.7495..0.8494 of the schedule; the adjacent power-of-two scales would need \
+a gain of 0.39 or 1.57, outside that range. Replaying the chain over three \
+2026-09-17 vehicle recordings reproduces both bank pulse words at a median \
+ratio of 1.000, with 87 to 98 percent of steady records within 2 percent. \
+The raw/2048 ms conversion of the homologous structured Nissan profile for \
+DID 0x1208 agrees with this arithmetic.""",
+]
+level = "code"
 width = 16
 unit = "ms"
 scale = "x/2048"
+
+[[diagnostic]]
+id = "base-fuel-schedule-did-1208"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1208h-b-fuel-schdl"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1208h-b-fuel-schdl-1d9d9605"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1208 to the two-byte big-endian word \
+ffff1026. Runtime producer 0003b75c and init routine 0002c648 are its only \
+whole-program p-code writers; scheduler 00020dfe rolls it into ffff1024. A \
+structured homologous Nissan profile names DID 0x1208 B/FUEL SCHDL and \
+defines raw/2048 ms. The homologous VQ35HR factory ESM independently defines \
+Base Fuel Schedule as the pre-learned fuel-injection pulse width. Identity \
+is exact for the JK08A response path, and the JK08A pulse chain fixes the \
+same conversion: the stage normalizers between the schedule and the 10 us \
+injection-pulse words, 0x4000/131072 in 0004e974 and 0x6400/65536 in \
+0004ead4, multiply to exactly 100/2048."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228bc"
+value = "ffff1026"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00020f10"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "1d9d9605", "ffff1026"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00020f14"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "1d9d9605", "ffff1026"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228bc"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "1d9d9605", "ffff1026"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002cd74"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "1d9d9605", "ffff1026"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003bc7e"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "1d9d9605", "ffff1026"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "startup_initializer/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "base_fuel_schedule_producer/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 13
+binding = "base-fuel-schedule-did-1208"
+
+[[ledger]]
+registry = "vars"
+order = 42
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "ms*2048"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +182,48 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1026"
 former = ["taupe-swan/ram/7mfk-ffff1026"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f0e"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f10"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f14"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228bc"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd74"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc7e"
+value = {named = ["00020dfe", "0002c648", "0003235c", "0003b75c", "ffff1026"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -66,3 +258,82 @@ at = "jk78c:000a7c94"
 to = "7mfk:00085d38"
 value = "ffff102e"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "lookup"
+to = "active-caracal/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "almond-orca/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "lilac-magpie/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "nice-coucal/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nostalgic-sturgeon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "ultramarine-taipan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

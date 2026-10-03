@@ -1,0 +1,197 @@
+summary = """
+Current coolant snapshot byte produced by FUN 0008092e as \
+max(lookup_u8(00012dea, ffff1186)-10, 0). Misfire reporter 00084cd0 copies \
+it into each retained operating-point group, and matcher 000847dc requires \
+current and retained values to be on the same side of code 110. FUN 00035856 \
+returns it for J1979 Mode 01 PID 0x05 at 00035bf8."""
+note = [
+    """
+The same lookup result is exact raw coolant byte ffff1079 with deg C = \
+raw-50. Therefore code 0 represents at most -40 deg C; for positive codes, \
+deg C = code-40; matcher boundary 110 is 70 deg C. J1979 defines PID 0x05 as \
+A-40 deg C, which fixes the same conversion.""",
+]
+level = "code"
+unit = "degC+40"
+
+[[ledger]]
+registry = "vars"
+order = 431
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-mushroom/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fanatic-hare/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3fa4"
+name = "solid-guppy"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035bf8"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080934"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008093a"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080940"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080952"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084874"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084884"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d20"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d66"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d92"
+value = {named = ["00012dea", "00035856", "0008092e", "000847dc", "00084cd0", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "adventurous-mushroom/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "devout-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fanatic-hare/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

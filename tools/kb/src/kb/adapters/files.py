@@ -41,7 +41,7 @@ from kb.model import MEANING_REF, Ref
 
 ADDRESS_KEYS = ("layout", "address", "name", "former", "evidence")
 MEANING_ARRAYS = ("symbol", "status", "link", "analog")
-TABLE_KEYS = ("editor", "logparam", "diagnostic")
+TABLE_KEYS = ("editor", "logparam", "diagnostic", "ledger")
 # Keys of a feature target whose entries hold a symbol reference: tables of
 # named entries, arrays of entries, tables of references, and lists of meaning
 # references, which name the home symbol of their meaning.
@@ -193,6 +193,8 @@ def _meaning(b, kind, name, document, src):
         if key in document:
             props[key] = document[key]
     b.props(group, _keys(props, src), src)
+    if document.get("ledger"):
+        b.stash.setdefault("ledger_rows", []).append((kind, name, document["ledger"], src))
     for binding in document.get("diagnostic", ()):
         b.table(group, "diagnostic", {**binding, "evidence": _evidence(
             binding.get("evidence", ()), src)}, src)
@@ -242,7 +244,7 @@ def _meaning(b, kind, name, document, src):
         stated = {item["at"].split(":", 1)[0] for item in evidence
                   if isinstance(item.get("at"), str) and ":" in item["at"]}
         b.link(group, entry["type"], Ref(entry["to"], src), src, props=props,
-               evidence=evidence, layouts=stated or None)
+               evidence=evidence, layouts=stated or props.get("layouts") or None)
     return keys
 
 

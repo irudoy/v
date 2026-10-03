@@ -1,3 +1,25 @@
+summary = """
+High-range branch of a piecewise denominator table: the high byte of \
+interpolated uint16 is tested for zero and, when nonzero, used as divisor in \
+unsigned quotient (ffff1737 << 8) / value."""
+note = [
+    """
+Code establishes operational rather than physical semantics. The \
+interpolation result is quantized as (r0 >> 8) & 0xff, written to ffff1738, \
+and used through the same r6 without reading RAM. ffff1738 has no external \
+readers, but the flow is not dead: r6 is tested for zero and becomes divisor \
+00021ce0 on the nonzero branch; the zero branch forms 0xff. No physical \
+quantity or engineering unit follows from this consumption. Loss of the low \
+8 bits has no exact inverse, so only raw identity is claimed. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "High-range Quotient Divisor - raw u16 (0x15022)"
 category = "Internal Calculations"
@@ -7,10 +29,137 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 289
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "benevolent-aardwark/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015022"
 name = "rugged-gerbil"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081676"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008167e"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081686"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008168a"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008168e"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081696"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008169a"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f12"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f1a"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f22"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f26"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f2a"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f32"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f36"
+value = {named = ["00015022", "00021ce0", "000263f4", "ffff1738"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -41,3 +190,10 @@ value = "000174e4"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

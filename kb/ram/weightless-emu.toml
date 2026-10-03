@@ -1,0 +1,98 @@
+summary = """
+Saturating retention-maintenance counter for the global P030 odd-polarity \
+result latch. Reporter 00084cd0 clears it after every retained \
+operating-point capture. While ffff5b2c.bit3 and the maintenance gates are \
+active, FUN 0007c57a increments it and expires all retained P030 state when \
+the value reaches 3."""
+note = [
+    """
+The threshold is three invocations of the admitted maintenance path; one \
+count has no assigned physical-time duration.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 447
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impartial-bettong/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "impartial-bettong/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4a49"
+name = "weightless-emu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c5c0"
+value = {named = ["0007c57a", "00084cd0", "ffff4a49"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c5da"
+value = {named = ["0007c57a", "00084cd0", "ffff4a49"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c5dc"
+value = {named = ["0007c57a", "00084cd0", "ffff4a49"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084dae"
+value = {named = ["0007c57a", "00084cd0", "ffff4a49"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "impartial-bettong/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "impartial-bettong/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

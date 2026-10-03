@@ -1,0 +1,192 @@
+summary = """
+Base of the second two-byte bank-indexed rear O2 monitor metric used with \
+ffff26e9. FUN 00089d92 dispatches P0139/P0159 when either metric is below \
+calibrated limit 0x80."""
+note = [
+    """
+A whole-program p-code scan found reset/initialization stores but no direct \
+runtime producer; the producer is pointer-mediated or unresolved. The \
+physical scale is not established.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "rear-o2-slow-metric-b-p0139"
+kind = "monitor"
+label = "DtcCode"
+key = "P0139"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b34"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 0 of the parallel metric array participates directly in the \
+exact P0139 below-0x80 dispatch condition."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0000851b=0x80"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089e4e"
+value = {named = ["0000851b", "00019b34", "00089d92", "ffff26eb"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089e88"
+value = {named = ["0000851b", "00019b34", "00089d92", "ffff26eb"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-slow-metric-b-p0159"
+kind = "monitor"
+label = "DtcCode"
+key = "P0159"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b40"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 1 of the parallel metric array participates directly in the \
+exact P0159 below-0x80 dispatch condition."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0000851b=0x80"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089e4e"
+value = {named = ["0000851b", "00019b40", "00089d92", "ffff26eb"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00089e9e"
+value = {named = ["0000851b", "00019b40", "00089d92", "ffff26eb"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 87
+binding = "rear-o2-slow-metric-b-p0139"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 88
+binding = "rear-o2-slow-metric-b-p0159"
+
+[[ledger]]
+registry = "vars"
+order = 401
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "aspiring-harrier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thundering-giraffe/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-flamingo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff26eb"
+name = "polar-guillemot"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000851b=0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008944c"
+value = {named = ["0000851b", "00089310", "00089d92", "0008aa46", "ffff26eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00089e4e"
+value = {named = ["0000851b", "00089310", "00089d92", "0008aa46", "ffff26eb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac82"
+value = {named = ["0000851b", "00089310", "00089d92", "0008aa46", "ffff26eb"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "aspiring-harrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "grumpy-dolphin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "thundering-giraffe/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-flamingo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

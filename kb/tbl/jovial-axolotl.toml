@@ -1,3 +1,37 @@
+summary = """
+Eight-point table indexed by selected normalized-temperature snapshot \
+ffff1070. FUN 00082c8a conditionally stores its result in inter-cycle latch \
+ffff42a8; the retained zero/nonzero value determines P030 counting-readiness \
+bit ffff41d2.bit1 when ffff244f.bit5 is set."""
+note = [
+    """
+All eight cells equal zero in JK03A and JK08A. With stock ROM8[0x8afc].bit3 \
+set, a clear ffff244f.bit5 refreshes ffff42a8 with the zero map result when \
+ffff422d.bit4 is clear or with ROM8[0x8499] = 0xb4 when that bit is set, and \
+clears ffff41d2.bit1. A set ffff244f.bit5 retains the latch and sets bit 1 \
+exactly when the retained value is zero. Startup FUN 00027ac0 and the two \
+recovery initializers clear ffff422d and ffff42a8. All seven resolved direct \
+runtime writers of ffff422d preserve bit 4, so the stock application-code \
+lifecycle keeps the latch at zero and the normal coordinator update makes \
+ffff41d2.bit1 follow ffff244f.bit5. An exhaustive ffff42a8 scan found only \
+the two direct writes and one direct read in FUN 00082c8a. Index: implicit \
+uniform 1D-8 indexing by x=uint8 RAM[ffff1070]. When x<224: i=floor(x/32), \
+q=(x-32*i)*2048 in Q0.16, with interpolation between map[i] and map[i+1]. \
+When x>=224, map[7] is selected. ffff1070 is the normalized coolant index \
+latched at engine start. Output trace: ffff1070 -> site 00083868 (x in r5); \
+00012026 -> site 0008386a (r4) -> site 0008386e -> 00026370. When x<224: \
+00026a80 -> cell reads at 00026aac/00026aae -> 00026740; when x>=224: direct \
+cell 0001202d. Return r0 -> site 00083872 (r12) -> conditional write to \
+ffff42a8 -> zero test -> ffff41d2.bit1. Result disposition: \
+inline_comparison; Result target: RAM ffff42a8.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Latched Zero Condition Table - raw u8 (0x12026)"
 category = "Internal Calculations"
@@ -7,7 +41,161 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 111
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-galago/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "burgundy-hoatzin/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loutish-puma/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prophetic-junglefowl/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012026"
 name = "jovial-axolotl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083868"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008386a"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008386e"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083872"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838d8"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838ee"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008391a"
+value = {named = ["00012026", "00026370", "00026740", "00027ac0", "00082c8a", "ffff1070", "ffff244f", "ffff41d2", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nostalgic-camel/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "ambitious-galago/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "burgundy-hoatzin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

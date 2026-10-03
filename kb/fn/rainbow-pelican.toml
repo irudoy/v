@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000b15ca"
+name = "rainbow-pelican"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b15ca"

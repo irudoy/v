@@ -1,0 +1,95 @@
+summary = """
+Adjusted low-speed upper/intermediate-restore RPM threshold written by \
+00050018 from coolant-indexed table 0001298c after runtime floors and \
+offsets."""
+note = [
+    """
+At speed below 4, the band above ffff16aa and at or below this threshold \
+returns class 2. Every moving branch reachable under stock compile-time \
+flags ignores this value.""",
+]
+level = "code"
+unit = "RPM/25"
+
+[[ledger]]
+registry = "vars"
+order = 572
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_fuel_intermediate_restore/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_restore_classify/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1778"
+name = "nocturnal-adder"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000501aa"
+value = {named = ["0001298c", "00050018", "ffff110e", "ffff1778"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "over_run_fuel_intermediate_restore/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

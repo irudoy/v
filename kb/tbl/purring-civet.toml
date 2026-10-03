@@ -1,0 +1,232 @@
+summary = """
+On the state-1 branch, the map is interpolated by uint8[ffff27b5], the \
+result is written to ffff25c0, and the state machine then transitions to \
+state 3; the physical quantity is unknown."""
+note = [
+    """
+On the state-1 branch, the map is indexed by uint8[ffff27b5], the result is \
+written to ffff25c0, and the state then changes to 3. ffff25c0 has no \
+readers, but branch unreachability has not been proven, so the role remains \
+table/writes rather than dead.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 194
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "persimmon-foxhound/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012af2"
+name = "purring-civet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038a54"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b06"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b0a"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b0c"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b0e"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b10"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b22"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b24"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b26"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b28"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b2a"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b2c"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b2e"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b30"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b34"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b38"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b3a"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b3c"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b44"
+value = {named = ["00012af2", "00026474", "00026740", "00026944", "00026c78", "00038618", "ffff27b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pearl-malamute/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "persimmon-foxhound/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

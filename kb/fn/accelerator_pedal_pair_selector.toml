@@ -1,0 +1,140 @@
+title = "Select and rate-limit the dual-channel pedal quantity"
+summary = """
+Dual-channel accelerator-pedal quantity producer. It clamps signed \
+channel-adjusted values ffff27a0 and ffff27a4 to nonnegative values, selects \
+their minimum subject to mode bits in ffff24c8, optionally rate-limits the \
+result through state ffff1384, and writes current normalized quantity \
+ffff2672."""
+note = [
+    """
+The output is a normalized internal count, not either sensor voltage and not \
+an engine-speed coordinate.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 138
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 203
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fiery-puma/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nifty-earthworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pedal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006ec68"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ec72"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ec7c"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ec86"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ecb2"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ecb4"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ecb8"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed0e"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed3c"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed58"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed66"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006ed6e"
+value = {named = ["00020dfe", "0006ec68", "ffff2672", "ffff27a0", "ffff27a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"

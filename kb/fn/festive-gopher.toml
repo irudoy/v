@@ -1,0 +1,205 @@
+summary = """
+Generic table-driven DTC monitor with 0x38-byte entries rooted at ROM \
+0x23ac4. Entry 6 at 0x23c14 tests word fffff754 with mask 0x0004, requires \
+low mode bits of ffff1098 to equal 1, uses state byte ffff4348, and \
+dispatches descriptor index 0xd7 through FUN 0007d8b8."""
+note = [
+    """
+Descriptor record 0x19d74 identifies entry 6 as path-B P0447. Its only \
+caller, FUN 000a6fee, skips entry 6 in stock JK08A because \
+ROM8[0x18700].bit0 is clear.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "evap-vent-open-b-p0447"
+kind = "monitor"
+label = "DtcCode"
+key = "P0447"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d74"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Table entry 6 dispatches exact path-B descriptor index 0xD7 for P0447. Its \
+only caller skips the entry in stock JK08A because ROM8[0x18700].bit0 is \
+clear."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "stoic-oriole/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "tall-wildebeest/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "precise-kagu/reg/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00023c28"
+value = "000000d7"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a6f7e"
+value = {named = ["000000d7", "00018700", "00019d74", "00023c28", "0007d8b8", "000a6dc4", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a6f82"
+value = {named = ["000000d7", "00018700", "00019d74", "00023c28", "0007d8b8", "000a6dc4", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 129
+binding = "evap-vent-open-b-p0447"
+
+[[ledger]]
+registry = "funcs"
+order = 402
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precise-kagu/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stoic-oriole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tall-wildebeest/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a6dc4"
+name = "festive-gopher"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c14"
+value = "fffff754"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c18"
+value = "00040000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c24"
+value = "ffff4348"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c28"
+value = "000000d7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c2c"
+value = "00000002"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c44"
+value = "ffff1098"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c48"
+value = "01000000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6dc8"
+value = {named = ["00000002", "000000d7", "00023c14", "00023c18", "00023c24", "00023c28", "00023c2c", "00023c44", "00023c48", "00040000", "0007d8b8", "000a6dc4", "01000000", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ea2"
+value = {named = ["00000002", "000000d7", "00023c14", "00023c18", "00023c24", "00023c28", "00023c2c", "00023c44", "00023c48", "00040000", "0007d8b8", "000a6dc4", "01000000", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6f7e"
+value = {named = ["00000002", "000000d7", "00023c14", "00023c18", "00023c24", "00023c28", "00023c2c", "00023c44", "00023c48", "00040000", "0007d8b8", "000a6dc4", "01000000", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6f82"
+value = {named = ["00000002", "000000d7", "00023c14", "00023c18", "00023c24", "00023c28", "00023c2c", "00023c44", "00023c48", "00040000", "0007d8b8", "000a6dc4", "01000000", "ffff1098", "ffff4348", "fffff754"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

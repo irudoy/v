@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2f2a"
+name = "strong-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b7c0"
+
+[[link]]
+type = "lookup"
+to = "lemon-mink/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]

@@ -1,0 +1,127 @@
+summary = """
+Retard-request producer. It writes ffff11f9=0 when (ffff4242&0x30)!=0; \
+otherwise min(max(hi(ffff2336),hi(ffff235e)),127) while ffff24cb.bit5 is \
+clear, or the ffff2025-adjusted variant when it is set. It also writes \
+ffff2015."""
+note = [
+    """
+ffff2336 and ffff235e are scheduler snapshots of the Q8 states ffff23c2 and \
+ffff23ea. FUN 0004d99c negates the result into ffff11d6, so one count is one \
+crank degree of retard in the final coordinate.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 618
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-auk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "onyx-dinosaur/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "muscular-malamute/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "spirited-malkoha/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "convivial-uakari/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hopeful-hedgehog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00062e10"
+name = "uptight-degu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ed2"
+value = {named = ["0004d99c", "00062e10", "ffff11f9", "ffff2015", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ee2"
+value = {named = ["0004d99c", "00062e10", "ffff11f9", "ffff2015", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062ee4"
+value = {named = ["0004d99c", "00062e10", "ffff11f9", "ffff2015", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "muscular-malamute/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "spirited-malkoha/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

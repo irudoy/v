@@ -1,3 +1,23 @@
+note = [
+    """
+Shared 16-point explicit axis for curves 000127a8 and 000127e8. FUN 0004569c \
+passes uint8[ffff22e4] directly to wrapper 000264a0 when ROM8[00008710].bit3 \
+is set. Stored points are 0, 32, and 40..144 in steps of 8. Code proves the \
+raw coordinate and axis role; the physical quantity and engineering scale \
+are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 51
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012778"

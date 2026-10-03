@@ -1,3 +1,27 @@
+summary = """
+Physical semantics are unknown; a constant 1D table produces raw byte 255 \
+for RAM ffff2ea2."""
+note = [
+    """
+All 16 elements equal 0xff, so the written raw byte is 255 for any index. \
+This constant alone does not prove a limit role, threshold role, or physical \
+quantity. The call and write are in a branch that tests bit 4 through \
+ffff24b8; after execution, the bit is set at site 00039a18. Branch \
+unreachability has not been proven, so the map is not dead. The catalog \
+contains several incompatible 1D-16 uint8 classes and does not identify the \
+map by shape or contents. Blocking condition: The trace stops at RAM \
+ffff2ea2 after the write at site 00039a10: ffff2ea2 has no external readers, \
+and inside 0003995a the target-map result is not compared, returned, or used \
+in another consuming operation. Physical semantics therefore cannot be \
+established from code. Result disposition: writes.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Constant Output 255 - raw u8 (0x120BE)"
 category = "Unidentified Calibrations"
@@ -7,7 +31,106 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 114
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vivacious-ibex/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-horse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000120be"
 name = "jovial-capuchin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "255"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a00"
+value = {named = ["000120be", "00026388", "0003995a", "ffff1f88", "ffff2ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a02"
+value = {named = ["000120be", "00026388", "0003995a", "ffff1f88", "ffff2ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a06"
+value = {named = ["000120be", "00026388", "0003995a", "ffff1f88", "ffff2ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a0a"
+value = {named = ["000120be", "00026388", "0003995a", "ffff1f88", "ffff2ea2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039a10"
+value = {named = ["000120be", "00026388", "0003995a", "ffff1f88", "ffff2ea2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "charcoal-foxhound/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "vivacious-ibex/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "charcoal-foxhound/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

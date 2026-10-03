@@ -1,0 +1,87 @@
+title = "Build the paired per-channel throttle-feedback estimates"
+summary = """
+Per-channel throttle-feedback acquisition stage. It executes a six-sample \
+estimator and writes paired internal feedback estimates ffff38a8+2*channel \
+and ffff38e8+2*channel. Its direct-A/D fallback reads channel 7 for code \
+channel 0 and channel 11 for code channel 1."""
+note = [
+    """
+The dual throttle-feedback role is exact. External sensor, bank, and plate \
+identities remain unverified.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 151
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 571
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "writes"
+to = "emerald-bittern/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-manatee/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003e75a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e75a"
+value = {named = ["0002df5c", "ffff38a8", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e7c8"
+value = {named = ["0002df5c", "ffff38a8", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e7ee"
+value = {named = ["0002df5c", "ffff38a8", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e86e"
+value = {named = ["0002df5c", "ffff38a8", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e886"
+value = {named = ["0002df5c", "ffff38a8", "ffff38e8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mottled-bullmastiff/fn/7mfk"
+relies = "structure"

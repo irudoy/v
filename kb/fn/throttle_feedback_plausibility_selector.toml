@@ -1,0 +1,91 @@
+title = "Select one normalized throttle-feedback candidate per channel"
+summary = """
+Per-channel throttle-feedback plausibility selector. It selects between \
+normalized candidates ffff2660/ffff2662 and ffff2664/ffff2666 under \
+DTC-record 0x57 for channel 0, record 0x120 for channel 1, status masks, and \
+calibrated crossover bounds, then writes ffff3884/ffff3886."""
+note = [
+    """
+The code-channel mapping to DTC records is exact; external bank identity is \
+not asserted.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "curated"
+order = 154
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 574
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "black-gazelle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maize-dogfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "garrulous-chicken/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cafbc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cafde"
+value = {named = ["000cafbc", "ffff2660", "ffff2664", "ffff3884"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cafea"
+value = {named = ["000cafbc", "ffff2660", "ffff2664", "ffff3884"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb000"
+value = {named = ["000cafbc", "ffff2660", "ffff2664", "ffff3884"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb026"
+value = {named = ["000cafbc", "ffff2660", "ffff2664", "ffff3884"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb068"
+value = {named = ["000cafbc", "ffff2660", "ffff2664", "ffff3884"], span = 1}
+key = "reference"

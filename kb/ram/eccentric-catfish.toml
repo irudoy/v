@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f8e"
+name = "eccentric-catfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002dac2"
+
+[[link]]
+type = "reader"
+to = "psychedelic-lizard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

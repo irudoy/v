@@ -1,0 +1,103 @@
+summary = """
+Exact first response byte for UDS DID 0x1302. FUN 0002e0d4 packs seven \
+status bits; bit 1 is copied from ffff24ae.bit7 and therefore mirrors \
+computed START SIGNAL ffff4185.bit6."""
+note = [
+    """
+The exact support mask is 0x3f. A structured Nissan profile identifies DID \
+0x1302 bit 1 as START SIGNAL; the remaining packed bits retain their \
+code-level sources without target physical names here.""",
+]
+level = "code"
+unit = "diagnostic bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 672
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "emerald-mouflon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3342"
+name = "organic-cow"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011e41"
+value = "0x3f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f0"
+value = "ffff3342"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229f4"
+value = "00011e41"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000229f0"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff24ae", "ffff3342"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e162"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff24ae", "ffff3342"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "emerald-mouflon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

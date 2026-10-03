@@ -1,0 +1,34 @@
+summary = "Component where ffff8cb4 carries the comparison result for map 0x12362."
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 193
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "radical-capuchin/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sage-chamois/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00060fb4"
+name = "banana-marten"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00060fb4"

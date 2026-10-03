@@ -1,0 +1,213 @@
+summary = """
+Unsigned state-weighted inverse-weight term in the P0128 model. FUN 000b7a3c \
+derives temperature-difference base B, parameter-ratio coordinate q, inverse \
+map weight w, and four-state coefficient K, then writes \
+K*floor(H*floor(B*w/255)/2500). FUN 000b6b5a is the only reader and adds \
+this term to ffff2f98 with uint32 saturation into ffff3224."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one reader. Stock \
+ROM8[00008a30] is zero, so B and ffff3228 are always zero in JK03A and \
+JK08A. The physical heat-transfer interpretation remains unresolved.""",
+]
+level = "code"
+unit = "P0128 model raw"
+
+[[ledger]]
+registry = "vars"
+order = 538
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sassy-flamingo/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sweet-bear/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gainful-crab/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "peach-anteater/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perky-agama/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "viridian-armadillo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3228"
+name = "eminent-guan"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a30"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a34"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a35"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a36"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce0"
+value = {named = ["00008a30", "00008a34", "00008a35", "00008a36", "00014e42", "000151f2", "000b6b5a", "000b7a3c", "ffff110e", "ffff178e", "ffff2733", "ffff3228", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce6"
+value = {named = ["00008a30", "00008a34", "00008a35", "00008a36", "00014e42", "000151f2", "000b6b5a", "000b7a3c", "ffff110e", "ffff178e", "ffff2733", "ffff3228", "ffff3348", "ffff35b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b84"
+value = {named = ["00008a30", "00008a34", "00008a35", "00008a36", "00014e42", "000151f2", "000b6b5a", "000b7a3c", "ffff110e", "ffff178e", "ffff2733", "ffff3228", "ffff3348", "ffff35b6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "gainful-crab/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "peach-anteater/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "perky-agama/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ruddy-anaconda/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sassy-flamingo/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "sweet-bear/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

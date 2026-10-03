@@ -1,0 +1,166 @@
+summary = """
+Current target mixture byte, Q7 fuel-multiplier command with 128 = \
+closed-loop stoichiometric target. Stage 0005594a writes the 0000a9aa \
+lookup, scaled around 128 by 00012552 when ffff2466 bit 6 selects the \
+high-detonation surface, then forces 128 unless enrichment latch ffff24a2 \
+bit 7 holds (set at value >= ROM8[00008b9b] = 130, held while value + \
+ROM8[00008b9b] - ROM8[00008b9f] >= 130). The same stage ramps ffff123a \
+toward this byte << 7 and reports the arrival in ffff2485 bit 5. 0004bbee \
+and 000659ae also read it."""
+note = [
+    """
+Stock bytes 128..149 of 0000a9aa give 1.00..1.16 commanded equivalence \
+ratio.""",
+]
+level = "code"
+unit = "ratio_q7"
+
+[[ledger]]
+registry = "vars"
+order = 98
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-malkoha/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prudent-numbat/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-quokka/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "big-junglefowl/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15eb"
+name = "inquisitive-crow"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9b=130"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9f=129"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055a50"
+value = {named = ["00008b9b", "00008b9f", "0000a9aa", "00012552", "0004bbee", "0005594a", "000659ae", "ffff15eb", "ffff2466", "ffff24a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056332"
+value = {named = ["00008b9b", "00008b9f", "0000a9aa", "00012552", "0004bbee", "0005594a", "000659ae", "ffff15eb", "ffff2466", "ffff24a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056444"
+value = {named = ["00008b9b", "00008b9f", "0000a9aa", "00012552", "0004bbee", "0005594a", "000659ae", "ffff15eb", "ffff2466", "ffff24a2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "prudent-numbat/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-quokka/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "big-junglefowl/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

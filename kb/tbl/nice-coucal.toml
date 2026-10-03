@@ -1,3 +1,30 @@
+summary = """
+Eight-point uint16 Base Fuel Schedule fallback table. Lookup M by normalized \
+coolant index uint8[ffff1077]<<8 is used during initialization and selected \
+runtime fallback. Init writes q=min(65535,floor(M*uint8[ffff1160]/512)) to \
+ffff1062 and min(65535,4*q) to ffff1026. Runtime uses floor(M/4) as the \
+common schedule source before the same downstream Base Fuel Schedule \
+producer."""
+note = [
+    """
+The runtime map branch is selected when uint8[ffff2804] is zero, when \
+ffff4185 bit 7 is set with nonzero ffff437a, or when ffff4185 bit 6 is set \
+with uint8[ffff2804] below 0x20. The primary runtime branch supplies the \
+common source through independent arithmetic. Raw M is written to ffff1e44 \
+and floor(M/4) to ffff1e40. Exact DID 0x1208 identifies the eventual \
+ffff1026 output as Base Fuel Schedule, closing the fallback table's \
+operational identity. The Cranking qualifier and raw/2048 ms conversion \
+remain catalog/profile candidates pending hardware validation. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/2048"
+to_raw = "x*2048"
+scale_level = "candidate"
+
 [editor]
 name = "Fallback Source Table - BFS candidate scale (0x15630)"
 category = "Internal Calculations"
@@ -7,7 +34,337 @@ format = "0.000000"
 fine = 0.000488
 coarse = 0.062464
 
+[[ledger]]
+registry = "findings"
+order = 430
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+scale = [22, 23, 24, 25, 26, 27]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nostalgic-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "startup_initializer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ultramarine-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "majestic-jackrabbit/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bfs/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-quoll/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015630"
 name = "nice-coucal"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cc72"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cc7e"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cc86"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ccf2"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd1a"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd74"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b79a"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b7ae"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b7c2"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8c0"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8c2"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8cc"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8d0"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8d4"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8d8"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8e6"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8f4"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b906"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bc7e"
+value = {named = ["00015630", "000263d8", "00026740", "00026a60", "0002c648", "00039316", "0003a750", "0003b75c", "ffff1026", "ffff1062", "ffff1077", "ffff1160"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table|1D-8|uint16|BFS|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "11.84423828125*2048=24257"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "15971/2048=7.79833984375"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "24257/2048=11.84423828125"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "7.79833984375*2048=15971"
+
+[[link]]
+type = "index"
+to = "coolant_index/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "majestic-jackrabbit/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nostalgic-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ultramarine-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

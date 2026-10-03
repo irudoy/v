@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff409c"
+name = "intelligent-mantis"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005ad54"
+
+[[link]]
+type = "lookup"
+to = "fuzzy-giraffe/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

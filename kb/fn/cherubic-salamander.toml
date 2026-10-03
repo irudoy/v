@@ -1,0 +1,117 @@
+summary = """
+Accessor for 1D-8 threshold base 000128d8: lookup by transformed uint8 \
+ffff22e4 is written to ffff1716. Consumer 000420b8 subtracts two ROM \
+constants from the base, compares thresholds with ffff1742, and updates \
+delayed correction ffff1693."""
+note = [
+    """
+The physical quantities of the input, thresholds, and correction are \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 315
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "smiling-bustard/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "electric-gopher/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-lizard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-ibex/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000464de"
+name = "cherubic-salamander"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046544"
+value = {named = ["000128d8", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004654a"
+value = {named = ["000128d8", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004654e"
+value = {named = ["000128d8", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046552"
+value = {named = ["000128d8", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "electric-gopher/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

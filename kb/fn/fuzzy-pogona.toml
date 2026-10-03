@@ -1,0 +1,178 @@
+summary = """
+Requested-torque row-coordinate producer and overspeed bookkeeping. It \
+writes ffff1702=max(32, ffff11b6) and ffff1cca=max(32, ffff11d0), keeps \
+ffff246b bit 3 set while ffff11b6 is at least ROM16[0x934a], or at least \
+ROM16[0x934a]-64 once the bit is set, increments saturating byte ffff4994 \
+while the bit is set and ffff246e bit 3 is clear, and holds the maximum of \
+ffff11b6 in ffff506e."""
+note = [
+    """
+With ffff11b6 in RPM/3.125 counts, ROM16[0x934a] = 2560 is 8000 RPM and the \
+release point is 7800 RPM.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 681
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stalwart-snail/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "famous-skink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "khaki-antelope/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003de4c"
+name = "fuzzy-pogona"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000934a"
+value = "0x0a00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de52"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de54"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de58"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de5e"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de64"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de66"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de6a"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de6e"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de76"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de82"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de88"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de8c"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003de94"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003deba"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dec4"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dec8"
+value = {named = ["0000934a", "0003de4c", "ffff11b6", "ffff11d0", "ffff1702", "ffff1cca"], span = 1}
+key = "body"

@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff10f9"
+name = "hulking-curassow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000aafec"
+
+[[link]]
+type = "reader"
+to = "peculiar-bear/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

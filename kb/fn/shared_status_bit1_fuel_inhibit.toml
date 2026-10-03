@@ -1,0 +1,61 @@
+title = "Stock-inert lifecycle-zero shared status bit 1 fuel-inhibit contributor"
+summary = "Direct shared-status fuel-inhibit contributor. It returns ffff418c.bit1."
+note = [
+    """
+Primary startup and both recovery clear paths zero the byte. A whole-program \
+exact and computed-address census plus the recovered DMAC configuration find \
+no path that can set bit 1, so the contributor is stock-inert in the proven \
+application lifecycle.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 30
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 532
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "obedient-stoat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004faa0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004faa0"
+value = {named = ["0004ed88", "ffff418c"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

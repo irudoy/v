@@ -1,0 +1,101 @@
+summary = """
+Second-channel Q15 trim scratch. FUN 0007a804 always writes the \
+interpolation result of map 00018d36 here; ffff245e.bit6 selects \
+multiplication of ffff35ca by this value or bypass of the trim."""
+note = ["Map 00018d36 is flat unity in stock JK08A."]
+level = "code"
+unit = "Q15 fraction"
+
+[[ledger]]
+registry = "vars"
+order = 40
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gifted-mantis/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wondrous-cow/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crazy-toucan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35fc"
+name = "pastel-tody"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8cc"
+value = {named = ["00018d36", "0007a804", "ffff245e", "ffff35fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d6"
+value = {named = ["00018d36", "0007a804", "ffff245e", "ffff35fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d8"
+value = {named = ["00018d36", "0007a804", "ffff245e", "ffff35fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e0"
+value = {named = ["00018d36", "0007a804", "ffff245e", "ffff35fc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e6"
+value = {named = ["00018d36", "0007a804", "ffff245e", "ffff35fc"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "gifted-mantis/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "wondrous-cow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

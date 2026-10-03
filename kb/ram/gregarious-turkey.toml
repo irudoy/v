@@ -1,0 +1,88 @@
+summary = """
+Previous periodic snapshot of ffff2458 written by scheduler 00020dfe before \
+ffff2458 is refreshed from producer ffff2459. FUN 0004fbe2 compares bit 5 \
+with the current snapshot to distinguish rising-edge DFCO entry from a held \
+request."""
+note = ["The edge-selection role is code-proven."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 579
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "asparagus-cockle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff245a"
+name = "gregarious-turkey"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002103c"
+value = {named = ["00020dfe", "0004fbe2", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021040"
+value = {named = ["00020dfe", "0004fbe2", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004fc96"
+value = {named = ["00020dfe", "0004fbe2", "ffff2458", "ffff245a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

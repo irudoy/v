@@ -1,0 +1,148 @@
+summary = """
+Base of the six-element transformed mask-gated injection-pulse array. \
+FUN_00051a98 passes each ffff155c element through FUN_0005b7ec and writes \
+the result at index 2*i. FUN_00051f1e passes this array with channel mask \
+ffff1220 to ATU-II one-shot scheduler 0002c13c."""
+note = [
+    """
+One count is 10 us. This is the second of the two duration arrays reaching \
+DCNT8A..DCNT8F; the other is ffff224e.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 858
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "energetic-hoatzin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "messy-hawk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "straight-labradoodle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "discerning-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1568"
+name = "brilliant-dugong"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ef6"
+value = {named = ["0002c13c", "00051a98", "00051f1e", "0005b7ec", "ffff1220", "ffff155c", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f62"
+value = {named = ["0002c13c", "00051a98", "00051f1e", "0005b7ec", "ffff1220", "ffff155c", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051f64"
+value = {named = ["0002c13c", "00051a98", "00051f1e", "0005b7ec", "ffff1220", "ffff155c", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff0"
+value = {named = ["0002c13c", "00051a98", "00051f1e", "0005b7ec", "ffff1220", "ffff155c", "ffff1568"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051ff8"
+value = {named = ["0002c13c", "00051a98", "00051f1e", "0005b7ec", "ffff1220", "ffff155c", "ffff1568"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pulse_affine_floor_transform/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "messy-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "straight-labradoodle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "energetic-hoatzin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

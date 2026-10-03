@@ -1,0 +1,199 @@
+summary = """
+Composite accessor: 8x8 map 00009eda is read through 00026040 using implicit \
+axes ffff106f and ffff10f0. Its result is multiplied by Q1.7 lookup 00012432 \
+and normalized by /128. Centered shaping curve 0001242a forms a second \
+multiplier; after /64 normalization and saturation, the result is written to \
+ffff15de."""
+note = [
+    """
+00012432 has code-level x/128 scaling. Operations around 0001242a belong to \
+the composite consumer and do not establish scaling of its raw byte. The \
+physical quantity of ffff15de is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 173
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "angelic-ermine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lime-ape/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-tapir/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "kind-kittiwake/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meticulous-slug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "steady-turtle/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "watchful-penguin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-beetle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000526a0"
+name = "natural-degu"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526c8"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526de"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526e2"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526e6"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526ec"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526f2"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052704"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005271a"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052726"
+value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "000526a0", "0005279c", "ffff106f", "ffff10f0", "ffff1222", "ffff15de"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "angelic-ermine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "lime-ape/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "tall-tapir/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

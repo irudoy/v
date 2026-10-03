@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff480e"
+name = "caped-cougar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009be26"
+
+[[link]]
+type = "writer"
+to = "alluring-rottweiler/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

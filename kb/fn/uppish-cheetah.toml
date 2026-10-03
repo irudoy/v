@@ -1,0 +1,135 @@
+summary = """
+Paired accessor for 1D-8 multipliers 00012a22 and 00012a2a. Their unsigned \
+results are written to ffff17c7 and ffff17c8, multiplied together, and \
+max(product,0x4000) is written to ffff19a4."""
+note = [
+    """
+Every cell in both maps equals 128. Their multiplier role follows from code \
+rather than the flat contents.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 214
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "terrestrial-sparrow/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tunneling-fennec/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "innocent-mayfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-jackrabbit/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "almond-llama/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "astonishing-wrasse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "attentive-marten/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00071650"
+name = "uppish-cheetah"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716c0"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716ca"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716fc"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071706"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071710"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071718"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071722"
+value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
+key = "reference"

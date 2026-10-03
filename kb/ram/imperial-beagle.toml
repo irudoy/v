@@ -1,0 +1,358 @@
+summary = """
+Exhaust-VTC driver status byte maintained by edge-count monitor 000c22dc \
+from engine-event driver 00028ea2. Bits 5 and 6 are the per-bank edge-count \
+anomaly flags: set while the bank-1 (bank-2) edge count ffff4072 (ffff4073) \
+of the last capture window is zero with arm byte ffff4120 bit 0 (1) set or \
+at least two with arm byte ffff4121 bit 0 (1) set, and cleared on a count of \
+one or while both arm bits are clear. Bits 3 and 1 (bank 1) and 4 and 2 \
+(bank 2) are the ten-window results: set when no-edge counters \
+ffff408c/ffff408d or extra-edge counters ffff408e/ffff408f reach \
+ROM8[00008e21]=10. Bit 7 is the reset request raised by monitors 00090086 \
+and 0009018c when a bank is armed and cleared by 000c22dc at 000c23f6 after \
+it zeroes the counters. Bits 5 and 6 inhibit the bank-1 and bank-2 \
+edge-phase updates in capture handlers 000c2de0 and 000c2c58 and the \
+actual-position update in 000bfc2e, and enable coordinator 000bf630 requires \
+both clear for ffff248b bit 0. Writers in the export are 0000284e, 0008fc6a, \
+00090086, 0009018c, and 000c22dc."""
+note = [
+    """
+Bank-1 counts are judged while cylinder index ffff11de is 2, 4, or 6 and \
+bank-2 counts while it is 1, 3, or 5, after the corresponding capture window \
+has closed. Monitors 00090086 and 0009018c judge P1078/P1084 from the \
+indicator byte ffff850d rather than from the result bits.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 798
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "clay-wasp/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "perky-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enormous-limpet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nano-trout/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "primitive-earthworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "proud-eel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rose-mastodon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spiritual-coati/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fat-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "futuristic-elephant/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quartz-trogon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-myna/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff850c"
+name = "imperial-beagle"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e21=10"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf79e"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc50"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c23f6"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2438"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2514"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c25de"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c26d2"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2780"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2cde"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e12"
+value = {named = ["0000284e", "00008e21", "0008f168", "0008fc6a", "00090086", "0009018c", "000bf630", "000bfc2e", "000c22dc", "000c2c58", "000c2de0", "ffff4072", "ffff4073", "ffff408c", "ffff408e", "ffff4120", "ffff4121", "ffff850c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enormous-limpet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "nano-trout/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "primitive-earthworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "proud-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "rose-mastodon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spiritual-coati/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "perky-gopher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fat-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "futuristic-elephant/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quartz-trogon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "satisfied-myna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

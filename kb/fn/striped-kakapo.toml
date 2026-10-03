@@ -1,0 +1,199 @@
+summary = """
+Primary torque-ratio lookup of the requested-torque conversion. While row \
+coordinate ffff1702 is nonzero it writes ffff17e2=min(0xffff, \
+floor(61440*min(ffff10d6, ffff1582)/floor(25*ffff1702/8))), otherwise \
+0xffff; it scales ffff17e2 by ROM16[0000920e]/32768 with saturation into \
+ffff16b2 and writes lookup(00015770, ffff16b2) to ffff19a2."""
+note = [
+    """
+Entry 10 of the 124-entry periodic table at 0002196c calls it; L0 records no \
+direct caller. With ffff1702 in RPM/3.125 counts, floor(25*ffff1702/8) is \
+the engine speed in RPM, so ffff17e2 is 61440 times the smaller of ffff10d6 \
+and ffff1582 per RPM. L0 records no writer of ffff10d6, and the physical \
+quantities of both inputs and of the ratio are unresolved. Pedal-request \
+scaler 00075306 and the six other consumers that the 00015770 map row lists \
+use ffff19a2 as a zero-protected divisor.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 689
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_scaler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "vigilant-rat/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fragrant-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "khaki-antelope/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wild-chinchilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "artichoke-tarantula/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lush-viper/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "warping-albatross/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075174"
+name = "striped-kakapo"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000920e=0x9719"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021994"
+value = "00075174"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007517e"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007518a"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075190"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751c0"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751da"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751dc"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751f6"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751fa"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751fc"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075204"
+value = {named = ["0000920e", "00015770", "00021994", "00021ce0", "000263f4", "00075174", "00075306", "ffff10d6", "ffff1582", "ffff16b2", "ffff1702", "ffff17e2", "ffff19a2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "pedal_request_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

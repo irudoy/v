@@ -1,0 +1,112 @@
+summary = """
+Second intake-cam reference byte. FUN_000bccdc initializes it from \
+ROM8[00008321], FUN_000bdf5c conditionally updates it, and FUN_000bd9f0 \
+subtracts capture byte ffff22cd from it."""
+note = [
+    """
+The reference is a rest edge phase in the 0.5-crank-degree unit of ffff22cd; \
+the stock value 140 is the phase of selector 8 at zero interval.""",
+]
+level = "code"
+unit = "raw_u8"
+
+[[ledger]]
+registry = "vars"
+order = 378
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hallowed-chameleon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gray-cougar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "warping-gazelle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff479a"
+name = "intrepid-shellfish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008321"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcce6"
+value = {named = ["00008321", "000bccdc", "000bd9f0", "000bdf5c", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bccee"
+value = {named = ["00008321", "000bccdc", "000bd9f0", "000bdf5c", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda28"
+value = {named = ["00008321", "000bccdc", "000bd9f0", "000bdf5c", "ffff479a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be0da"
+value = {named = ["00008321", "000bccdc", "000bd9f0", "000bdf5c", "ffff479a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be10c"
+value = {named = ["00008321", "000bccdc", "000bd9f0", "000bdf5c", "ffff479a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "hallowed-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gray-cougar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "warping-gazelle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

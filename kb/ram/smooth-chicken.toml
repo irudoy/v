@@ -1,0 +1,178 @@
+summary = """
+Bank-1 exhaust-cam edge phase byte. IMI4D capture handler 000c2d76 \
+(continuation body 000c2de0) writes it at 000c2e60 as 20*segment + \
+floor(20*interval / ffff22bc) through signed divider 00021bbc, where segment \
+maps event selector ffff13b2 (values above 7 minus 5, 7 to 0, lower values \
+plus 5) and interval is the 16-bit difference between capture GR4D and crank \
+reference count ffff158a. The update runs only while cylinder index ffff11de \
+is 1, 3, or 5 and driver status ffff850c bit 5 is clear, after shifting the \
+previous values into ffff1202 and ffff1204. Scheduler 00020dfe copies the \
+byte to ffff11c8."""
+note = [
+    """
+Ghidra lists the handler as 000c2d76 and 000c2de0 because the segment-index \
+branch splits the body; the interval is also stored as a word at ffff1a80 \
+and the segment at ffff16f2, both reached through window base ffff128c. The \
+phase is a crank-relative timing of the cam sensor edge in 0.5-degree units \
+(ffff22bc is 10 crank degrees), and the stock rest value ROM8[0000831d]=88 \
+places the calibrated rest edge 44 crank degrees after the event origin, 8 \
+units into segment 4.""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 795
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "imperial-beagle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clay-wasp/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1200"
+name = "smooth-chicken"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e12"
+value = {named = ["00020dfe", "00021bbc", "000c2de0", "ffff11de", "ffff1200", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e2e"
+value = {named = ["00020dfe", "00021bbc", "000c2de0", "ffff11de", "ffff1200", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e3a"
+value = {named = ["00020dfe", "00021bbc", "000c2de0", "ffff11de", "ffff1200", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e60"
+value = {named = ["00020dfe", "00021bbc", "000c2de0", "ffff11de", "ffff1200", "ffff13b2", "ffff158a", "ffff22bc", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "imperial-beagle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

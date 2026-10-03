@@ -1,0 +1,96 @@
+summary = """
+Settle countdown of the exhaust-VTC learning stroke. FUN 000bfe88 reloads it \
+with ROM8[00008cbf]=50 at 000bffbc while position error byte ffff1240 or \
+ffff1241 lies outside 128 +/- ROM8[00008e16]=6, and sets settle bit ffff247e \
+bit 0 at 000c0992 when it reads zero."""
+note = [
+    """
+The byte lies in the 10.24 ms block ffff256a..ffff25f3 of base-tick handler \
+0002040c, so the reload is 0.512 s.""",
+]
+level = "code"
+unit = "10.24 ms counts"
+
+[[ledger]]
+registry = "vars"
+order = 912
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-aardwolf/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "periodic_tick_isr/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff25e7"
+name = "magic-viper"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008cbf=50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e16"
+value = "6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bffbc"
+value = {named = ["00008cbf", "00008e16", "0002040c", "000bfe88", "ffff1240", "ffff25e7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0992"
+value = {named = ["00008cbf", "00008e16", "0002040c", "000bfe88", "ffff1240", "ffff25e7"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "benign-aardwolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

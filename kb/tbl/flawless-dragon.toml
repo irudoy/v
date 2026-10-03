@@ -1,7 +1,127 @@
+summary = """
+Lower reference boundary: the centered output is subtracted from ffff338c, \
+ffff338e, and ffff3396 before nonnegative checks."""
+note = [
+    """
+Site 0007b0e4 reads 00018e06, then code reduces the output by 32768. At \
+0007b10a, 0007b11e, and 0007b130 this boundary is subtracted from three RAM \
+inputs, and the sign of the difference controls branching. The physical \
+quantity of the inputs is unknown, so map identity remains candidate. All \
+map points equal zero.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 323
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "vagabond-seagull/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018e06"
 name = "flawless-dragon"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff338c"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff338e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff3396"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0e4"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b10a"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b11e"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b130"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "32768"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0da"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0de"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0e8"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0f2"
+value = {named = ["00018de6", "00018e06", "ffff338c", "ffff338e", "ffff3396"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +154,11 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "vagabond-seagull/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"

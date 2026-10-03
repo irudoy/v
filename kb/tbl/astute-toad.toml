@@ -1,7 +1,182 @@
+summary = """
+The interpolated uint8 output is an upper bound for updating uint16 state \
+ffff13ea: the selected limit is converted to internal representation limit \
+<< 7, while the state is later read as ffff13ea >> 7."""
+note = [
+    """
+Code proves only the operational role. The first map result is compared \
+unsigned with a dynamic quantity at 000472ae. If it is not greater, the \
+repeated result from 000472ba enters r7, is multiplied by 128 through shifts \
+000472c0-000472cc, and conditionally limits the update of RAM ffff13ea. \
+Function 000474a4 reads ffff13ea and uses the value after >>7 as a \
+subtrahend. The shifts form an internal representation rather than a proven \
+physical scale. The implicit map has no explicit axis; the physical meaning \
+of input ffff1a7a/ffff110e is unknown. Code cannot select any catalog name. \
+Blocking condition: 000474a4 reads RAM ffff13ea and subtracts it after >>7 \
+from a composite expression, but the artifact does not define the physical \
+semantics of the other RAM fields or function result. Code therefore does \
+not prove a physical map name or units. Promotion rejected: Machine sites \
+confirm map attribution and role=threshold: 000472a0/000472b4 loads \
+00011ff6, calls 000472a6/000472ba return a byte, 000472ac-000472be selects \
+the minimum with the current candidate, and 000472c0, 000472c4, 000472c8, \
+and 000472cc produce exactly limit << 7. The full code trace is nevertheless \
+absent: the visible listing ends the value path with only a stack write at \
+000472d0 and does not show machine instructions that read, update, and write \
+ffff13ea. For 000474a4, the ffff13ea >> 7 read appears only in C pseudocode \
+and a structural table, without machine sites. The arithmetic is therefore \
+confirmed only for << 7, while disposition=writes, complete semantics, and \
+evidence sufficiency are refuted under the uncertainty rule. No separate \
+scale is claimed; << 7 and >> 7 belong to operational semantics, and \
+normalized_scale_evidence is empty. Sole source: \
+/private/tmp/claude-501/-Users-isrudoy-src-docs-vq/d31db600-b7d4-488a-b83b-86388fed907c/scratchpad/sweep-p230-259/map-00011ff6.md. \
+Result disposition: writes.""",
+]
+level = "candidate"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 108
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "huge-yak/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011ff6"
 name = "astute-toad"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472a0"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472a2"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472a6"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472aa"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472ac"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472ae"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472b0"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472b4"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472b8"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472ba"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472be"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472c0"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472c4"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472c8"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472cc"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000472d0"
+value = {named = ["00011ff6", "000474a4", "ffff13ea"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -31,3 +206,17 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

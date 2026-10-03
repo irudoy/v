@@ -197,16 +197,23 @@ def ledger_sites(layout_id, rom, root=repo.ROOT):
             continue
         for row in _rows(path):
             subject = int(row[subject_column], 16)
-            structured = ";".join(value for column, value in row.items()
-                                  if value and column not in prose)
-            named = {int(value, 16) for value in ADDRESS_RE.findall(structured)}
-            listed = {int(value, 16) for value in SITE_RE.findall(structured)}
-            named -= listed
-            span = extent(ledger, row)
+            named, span = row_footprint(ledger, row)
+            listed = {int(value, 16) for column, text in row.items()
+                      if column not in prose for value in SITE_RE.findall(text or "")}
             for site in sorted(listed):
                 sites.append(Site(ledger, subject, site,
                                   classify(site, subject, span, named, found, owned, data, links)))
     return sites
+
+
+def row_footprint(ledger, row):
+    """The structured addresses and storage span used to reproduce a row."""
+    _, prose = LEDGERS[ledger]
+    structured = ";".join(value for column, value in row.items()
+                          if value and column not in prose)
+    named = {int(value, 16) for value in ADDRESS_RE.findall(structured)}
+    named -= {int(value, 16) for value in SITE_RE.findall(structured)}
+    return named, extent(ledger, row)
 
 
 @lru_cache(maxsize=None)

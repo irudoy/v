@@ -1,0 +1,161 @@
+summary = """
+Unsigned 1D table of a subtractive correction: the interpolated uint8 is \
+doubled and written to ffff19a8, then subtracted as uint16 from signed \
+ffff17de in 00046c70; the difference is saturated to int16 and written to \
+ffff17dc."""
+note = [
+    """
+The physical quantity is unknown. The claim is limited to operational \
+semantics proven by code. Scale x*2 describes conversion of the map result \
+to raw ffff19a8 counts rather than a physical unit. ffff19a8 has no external \
+readers; the value is consumed inside 00046c70.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x*2"
+to_raw = "x/2"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 211
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unyielding-duck/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "subtle-pelican/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wealthy-roadrunner/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "xanthic-beagle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012d0a"
+name = "nimble-hornet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047020"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047022"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047024"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047028"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047034"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004702c"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00047030"
+value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "subtle-pelican/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "unyielding-duck/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

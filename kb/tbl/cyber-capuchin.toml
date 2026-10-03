@@ -1,7 +1,198 @@
+summary = "Mismatch tolerance for two pairs of 16-bit quantities."
+note = [
+    """
+Mismatch tolerance for two pairs of 16-bit quantities. Result disposition: \
+inline_comparison. Result target: 000a7266,000a7270. Machine trace: In \
+FUN_000a71a0, RAM byte ffff269a is doubled and capped at 255, after which \
+000a7256 loads target map base 00023dd4 and 000a725a calls wrapper 00026370. \
+For index >=224, the wrapper returns map[7]; for a lower index, it transfers \
+control to kernel 00026a80. The byte branch of the kernel at \
+00026aaa..00026ab2 reads two adjacent uint8 elements, then \
+00026ab4..00026ab6 passes them to finisher 00026740. The finisher performs \
+unsigned linear interpolation and returns a value between the elements; for \
+this map content the result is in range 34..160. At 000a7262, result r0 is \
+explicitly narrowed to uint8 in r6. Before the call, abs((s16)RAM[ffff26a0] \
+- (s16)RAM[ffff269c]) and abs((u16)RAM[ffff2692] - (u16)RAM[ffff2694]) are \
+calculated separately; after the call, the first result is restored from r13 \
+and extended as uint16 in r4 at 000a725e, while the second is loaded from \
+the stack and extended as uint16 in r7 at 000a726c. 000a7266 performs r4 > \
+r6 and, on success, 000a7268 branches to 000a7274. If the first comparison \
+is false, 000a7270 performs r7 > r6; 000a7272 skips 000a7274 only when the \
+second comparison is also false. Therefore, the map sets the threshold for a \
+local OR predicate. Its output is not written to RAM and is consumed \
+directly by these two comparisons; subsequent checks further constrain the \
+final branch.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 334
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cyber-capuchin/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00023dd4"
 name = "cyber-capuchin"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0002676c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7240"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7256"
+value = {named = ["00023dd4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a725a"
+value = {named = ["00023dd4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a725e"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7262"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7266"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7268"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a726c"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7270"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7272"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7274"
+value = {named = ["00023dd4"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +225,18 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "cyber-capuchin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "boisterous-meerkat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

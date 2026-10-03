@@ -1,3 +1,31 @@
+summary = """
+Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. \
+With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], \
+and engine-speed count N, FUN 0003b75c forms \
+min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point \
+conversion to ffff1e40."""
+note = [
+    """
+Stock F is 109. The A2L MAF Factor entry matches the byte's operational \
+position, representation, and cross-ROM literal-pool signature and \
+distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, \
+131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit \
+and multiplier remain source-derived pending hardware validation. J1979 Mode \
+01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the total quantity \
+that the Base Fuel Schedule producer reproduces from A+B, which is 0.01477 \
+kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count; \
+the A2L unit of F does not match the ECU's declared airflow.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+storage = "uint8"
+unit = "kg/hr"
+scale = "x*0.0001"
+to_raw = "x/0.0001"
+scale_level = "candidate"
+
 [editor]
 name = "MAF Factor"
 category = "Fuelling / MAF Scaling"
@@ -7,6 +35,58 @@ format = "0.0000"
 fine = 1
 coarse = 10
 static_axis = ["MAF Factor"]
+
+[[ledger]]
+registry = "findings"
+order = 21
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+scale = [10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_model_byte_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "polar-viper/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "voracious-oarfish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -43,6 +123,87 @@ layout = "7mfk"
 address = "00008a27"
 name = "spectral-corgi"
 
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fb"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008a27=0x6d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009284"
+value = "0x68b6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b824"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b82c"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b844"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b850"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b858"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008266a"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000827aa"
+value = {named = ["000088fb", "00008a27", "00009284", "0003b75c", "00082604", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "MAF Factor|kg/hr|x*0.0001"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.0109/0.0001=109"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "109*0.0001=0.0109"
+
 [[symbol]]
 layout = "jk00c"
 address = "00008a4c"
@@ -77,3 +238,29 @@ at = "jk78c:0004091c"
 to = "7mfk:0003b9ac"
 value = "00008896"
 note = "normalized homologous consumers reference the target MAF factor scalar"
+
+[[link]]
+type = "index"
+to = "polar-viper/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "reader"
+to = "maf_range_model_byte_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

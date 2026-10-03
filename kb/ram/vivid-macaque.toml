@@ -1,0 +1,70 @@
+summary = """
+CAN-derived vehicle-speed word. FUN 000c4506 assembles CAN 0x280 bytes 4 and \
+5 as big-endian uint16, treats 0xffff as invalid, divides by 10, and writes \
+the word; FUN 0003a174 filters it into ffff115e."""
+note = [
+    """
+J1979 PID 0x0D returns min(255, 2*ffff118e) with ffff118e = ffff115e/20, so \
+the CAN word is km/h*100 and this word km/h*10.""",
+]
+level = "code"
+unit = "km/h*10"
+
+[[ledger]]
+registry = "vars"
+order = 432
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "illegal-rook/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nimble-zebra/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff113c"
+name = "vivid-macaque"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003a186"
+
+[[link]]
+type = "reader"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "illegal-rook/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nimble-zebra/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

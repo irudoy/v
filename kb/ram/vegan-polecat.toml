@@ -1,0 +1,95 @@
+summary = """
+Filtered bank 1 MAF quantity written by FUN 0003a9aa from working curve \
+output ffff1058. A mode bit selects direct copy or a weighted first-order \
+update with one-count anti-stall correction."""
+level = "code"
+unit = "raw MAF quantity"
+
+[[ledger]]
+registry = "vars"
+order = 476
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mustard-squid/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-adder/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sandy-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1df0"
+name = "vegan-polecat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a9ce"
+value = {named = ["0003a9aa", "0003af42", "ffff1058", "ffff1df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa06"
+value = {named = ["0003a9aa", "0003af42", "ffff1058", "ffff1df0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa0a"
+value = {named = ["0003a9aa", "0003af42", "ffff1058", "ffff1df0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af68"
+value = {named = ["0003a9aa", "0003af42", "ffff1058", "ffff1df0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "precious-adder/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "sandy-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

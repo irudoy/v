@@ -1,0 +1,164 @@
+summary = """
+EVAP pressure-sensor range/performance monitor. It samples ffff10c4 into a \
+21-sample sequence, produces word metric ffff2cac, and dispatches descriptor \
+index 0xc3 for P0451 when the metric is greater than ROM16[0x92f8]=0x0c00. \
+The complementary branch calls FUN 000b4ef8 with the same index."""
+note = [
+    """
+The arithmetic and threshold are exact. The metric's physical units and the \
+precise aggregation interpretation remain unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "evap-pressure-range-p0451"
+kind = "monitor"
+label = "DtcCode"
+key = "P0451"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c84"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000ae1a8 dispatches exact descriptor index 0xC3 for P0451 when its \
+21-sample metric ffff2cac is greater than 0x0C00."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000092f8"
+value = "0x0c00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ae4a2"
+value = {named = ["000092f8", "00019c84", "0007d8b8", "000ae1a8", "ffff2cac"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ae4bc"
+value = {named = ["000092f8", "00019c84", "0007d8b8", "000ae1a8", "ffff2cac"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "messy-cuckoo/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 123
+binding = "evap-pressure-range-p0451"
+
+[[ledger]]
+registry = "funcs"
+order = 411
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "attractive-grasshopper/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavy-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "messy-cuckoo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000ae1a8"
+name = "sassy-quail"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092f8"
+value = "0x0c00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae408"
+value = {named = ["000092f8", "0007d8b8", "000ae1a8", "000b4ef8", "ffff10c4", "ffff2cac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae4a2"
+value = {named = ["000092f8", "0007d8b8", "000ae1a8", "000b4ef8", "ffff10c4", "ffff2cac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae4ac"
+value = {named = ["000092f8", "0007d8b8", "000ae1a8", "000b4ef8", "ffff10c4", "ffff2cac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae4bc"
+value = {named = ["000092f8", "0007d8b8", "000ae1a8", "000b4ef8", "ffff10c4", "ffff2cac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ae4c8"
+value = {named = ["000092f8", "0007d8b8", "000ae1a8", "000b4ef8", "ffff10c4", "ffff2cac"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "attractive-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

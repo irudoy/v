@@ -1,3 +1,31 @@
+note = [
+    """
+Row axis for cold intake-cam target surface 0000b53a. FUN 000bda64 passes \
+current RPM/50 byte ffff11ae directly to the 8x8 interpolator. Stored points \
+represent 800, 1000, 1200, 1600, 2000, 2400, 2800, and 3200 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 66
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012eca"
@@ -7,6 +35,43 @@ name = "sexy-avocet"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bdae6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdadc"
+value = {named = ["00012eca", "00026140", "00026944", "000bd170", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdae6"
+value = {named = ["00012eca", "00026140", "00026944", "000bd170", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "private-aardwolf/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "grinning-duck/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -31,3 +96,10 @@ supports = "identity"
 at = "jk00d:000c3652"
 note = """
 engine-speed axis operand at the cold intake-target interpolation callsite"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

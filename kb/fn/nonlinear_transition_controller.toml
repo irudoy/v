@@ -1,0 +1,249 @@
+title = "Update the bounded Q8 transition state through reciprocal curves"
+summary = """
+Two-mode nonlinear transition controller using reciprocal pair \
+00011d24/0001199e. With ffff2482.bit2 clear it converts a nonnegative \
+signed-byte difference through F, combines the result with weight ffff186a \
+in the F-domain, inverse-converts through G, and writes bounded Q8 state \
+ffff23c2. With bit2 set it evaluates F at two separated coordinates, writes \
+ffff14c0 and ffff2ec3, decrements ffff23c2 under its gates, and clears bit2 \
+when the state reaches zero."""
+note = [
+    """
+Periodic table index 66 reaches this function through 00065434 after index \
+64 map selection and index 65 knock coordination. Stock ROM8[0x8710].bit5 \
+makes the high byte of ffff23c2 an input to 0004d99c. The normal-path \
+difference is max(ffff23f1-ffff2404,0) and the upper limit is \
+ffff2404-ROM8[0x8240]=ffff2404+7, both in crank degrees; the Q8 high byte \
+reaches the final coordinate through ffff2336 and ffff11f9 with coefficient \
+1.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 115
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 455
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "uptight-degu/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "azure-deer/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "carmine-potoo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "functional-corgi/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heretic-condor/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-agama/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "puzzling-squirrel/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "athletic-coucal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-dogfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sticky-lemur/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00063f30"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008240"
+value = "0xf9"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063f46"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063fd8"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063ffe"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064024"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000640ba"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000640dc"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064114"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006411c"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064146"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006417e"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064186"
+value = {named = ["00008240", "0001199e", "00011d24", "00021bbc", "000264a0", "0004d99c", "00062e10", "00063f30", "ffff14c0", "ffff186a", "ffff23c2", "ffff23f1", "ffff2404", "ffff2482", "ffff2ec3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "uptight-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "puzzling-squirrel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,109 @@
+summary = """
+Cylinder number of the current engine event as used by the dwell-channel \
+selection. The first tooth-4 identification writes ROM8[0002266b + id], the \
+predecessor of the identified cylinder; tooth 8 copies ffff13c8 into it. \
+Continuation 0002ab24 reads it to select dwell channel ffff13d3."""
+level = "code"
+unit = "cylinder number 1..6"
+
+[[ledger]]
+registry = "vars"
+order = 898
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_set_compare_continuation/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13c9"
+name = "zippy-newt"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002266b=[0,6,1,2,3,4,5]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000297ac"
+value = {named = ["0002266b", "00028ea2", "0002ab24", "0002b768", "00099a48", "ffff13c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029f9a"
+value = {named = ["0002266b", "00028ea2", "0002ab24", "0002b768", "00099a48", "ffff13c9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ab9e"
+value = {named = ["0002266b", "00028ea2", "0002ab24", "0002b768", "00099a48", "ffff13c9"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "apc_set_compare_continuation/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

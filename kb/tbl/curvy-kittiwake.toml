@@ -1,0 +1,152 @@
+summary = """
+Dimensionless Q7 multiplier for two intermediate 16-bit quantities; the \
+physical purpose of the corrected quantities is unknown."""
+note = [
+    """
+On two paths, result 000150f2 multiplies ffff326e or ffff304a. Three SHLR2 \
+operations and one SHLR divide the product by 128; derived values are \
+written to ffff2f90 and ffff2f7c. Their physical consumers are absent from \
+the artifact, so map identity remains candidate while coefficient scale is \
+established by code.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "dimensionless coefficient"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 292
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[symbol]]
+layout = "7mfk"
+address = "000150f2"
+name = "curvy-kittiwake"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff2f7c"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff2f90"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009ea5a"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009ea6a"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009eba6"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ea6a"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ea86"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ea88"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ea8a"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ea8c"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009eba6"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ebc4"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ebc6"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ebc8"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009ebca"
+value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "righteous-frigatebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

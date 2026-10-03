@@ -1,3 +1,23 @@
+summary = """
+Interpolated unsigned addition to the output of map 000129e2; the sum is \
+bounded above by 255."""
+note = [
+    """
+The physical quantity is unknown. The result is written to ffff17bb at \
+000537ce, and this RAM register has no external readers. After the write, a \
+live copy of the result in r2 is blended with the output of 000129e2. \
+ffff17b9 is therefore not treated as the sink of the target map \
+specifically. Comparison 000537dc tests saturation of the sum and does not \
+define a threshold role for the map. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Saturating Reduction Addend B - raw u8 (0x129F2)"
 category = "Internal Calculations"
@@ -7,7 +27,134 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 184
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_common_gain_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "married-whippet/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000129f2"
 name = "greedy-sunfish"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537be"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537c0"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537c4"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537c8"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537ce"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537d4"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537d8"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537da"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537dc"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537e2"
+value = {named = ["000129e2", "000129f2", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "married-whippet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

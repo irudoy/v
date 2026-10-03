@@ -1,0 +1,100 @@
+summary = """
+Current crank/cam position-diagnostic mode byte. FUN 00099a48 can set bit 6 \
+from the P0335 runtime-record pair when the P0340 and P0345 pairs do not \
+select companion modes. Scheduler 00020dfe copies this byte to ffff24c9."""
+note = [
+    """
+Other functions maintain independent bits. Bit 6 selects alternate behavior \
+in both APC compare schedulers.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 646
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_mode/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24cf"
+name = "hallowed-newt"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021346"
+value = {named = ["00020dfe", "00099a48", "ffff24c9", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021348"
+value = {named = ["00020dfe", "00099a48", "ffff24c9", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099ad6"
+value = {named = ["00020dfe", "00099a48", "ffff24c9", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099c4c"
+value = {named = ["00020dfe", "00099a48", "ffff24c9", "ffff24cf"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

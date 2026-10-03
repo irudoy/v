@@ -1,4 +1,11 @@
-note = """
+summary = """
+Shared signed request coordinate written by FUN 00079030 in periodic-table \
+index-21 dispatcher 00079dd8 after applying mode-controlled bounds to \
+duplicated selection ffff2438/ffff19c2. Index-22 FUN 00073432 adds numeric \
+bias 0x8000, inverse-searches the current-RPM 0xe98e row, and writes \
+stock-active coordinate ffff198a."""
+note = [
+    """
 A final bounded signed internal request used as the inverse torque-surface \
 input. Engineering conversion is unestablished. Retained hypothesis: \
 Candidate requested torque at x*0.1 Nm, dependent on the unresolved physical \
@@ -12,8 +19,55 @@ physical multiplier is validated on each homologous layout. Source \
 references: defs/JK08A.throttle-control.md:3-17, \
 defs/JK08A.throttle-control.md:304-330, \
 defs/JK08A.throttle-control.md:400-431, defs/JK08A.can.md:232-236, \
-defs/JK08A.tuning-telemetry.md:107-113."""
+defs/JK08A.tuning-telemetry.md:107-113.""",
+    """
+The continuous 0x942c path continues through ffff198a, ffff183e, ffff19b2, \
+per-channel targets, the feedback regulator, and ATU-II BFR6A-D. It remains \
+separate from fuel mask ffff22e0; physical plate motion, channel-to-bank \
+identity, and ECM terminals require hardware evidence.""",
+]
+level = "code"
 width = 16
+
+[[ledger]]
+registry = "vars"
+order = 111
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "signed internal request"
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-angelfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "signed_request_boundary/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -45,6 +99,53 @@ note = "Three-generation homologous fail-safe branch reads this bounded request"
 layout = "7mfk"
 address = "ffff19c6"
 former = ["cherry-goat/ram/7mfk-ffff19c6"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734a8"
+value = {named = ["000730fc", "00073432", "00073628", "00079030", "00079dd8", "ffff19c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734f4"
+value = {named = ["000730fc", "00073432", "00073628", "00079030", "00079dd8", "ffff19c6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735ca"
+value = {named = ["000730fc", "00073432", "00073628", "00079030", "00079dd8", "ffff19c6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791a8"
+value = {named = ["000730fc", "00073432", "00073628", "00079030", "00079dd8", "ffff19c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000791b2"
+value = {named = ["000730fc", "00073432", "00073628", "00079030", "00079dd8", "ffff19c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_coordinate_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_boundary_dispatch/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -82,3 +183,69 @@ to = "7mfk:0007378a"
 count = 1
 value = 52
 note = "Three-generation homologous fail-safe branch reads this bounded request"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "request_boundary_dispatch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

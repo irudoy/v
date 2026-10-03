@@ -1,0 +1,135 @@
+summary = """
+Second commanded-mixture word of 0005651c, Q14, addressed as ffff120e + \
+0x2e. Gates ffff2474 bit 7 (load ffff102c >= ffff12e7) and ffff2493 bit 2 \
+(vehicle speed ffff110e <= ROM8[000087d9]) select a ramp from snapshot \
+ffff127a toward ROM16[00008f86] = 0x4000 with the same \
+ROM8[0000849b]/ROM8[0000849c] steps as ffff123a. Stock constants keep the \
+word at 0x4000, so max(ffff123a, ffff123c) in 0005594a always returns \
+ffff123a."""
+level = "code"
+unit = "ratio_q14"
+
+[[ledger]]
+registry = "vars"
+order = 748
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dandelion-bear/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cerise-skink/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "spiked-bear/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "frisky-beluga/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff123c"
+name = "efficient-skylark"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087d9"
+value = "0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f86"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564b0"
+value = {named = ["000087d9", "00008f86", "0005594a", "0005651c", "000593ac", "ffff123c", "ffff127a", "ffff2474", "ffff2493"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "dandelion-bear/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "cerise-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "spiked-bear/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

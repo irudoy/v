@@ -1,0 +1,250 @@
+summary = """
+Automatic work-support request router. When ffff42d4 is zero, ffff4184.bit6 \
+is clear, ffff41a6.bit1 is set, ffff244f.bit5 is set, ffff41a6.bit5 is \
+clear, and ffff4184.bit7 is set, it copies timing request ffff41aa.bit0 to \
+ffff424c.bit5 and sets ffff41ef.bit4 exactly when idle request ffff41ef.bit6 \
+is set and ROM8[0x870e].bit0 is clear. Otherwise, with ffff4184.bit7 set, it \
+clears ffff424c.bit5 and ffff41ef.bit4."""
+note = [
+    """
+The same checks form statuses 0xa2, 0xa3, 0xa5, 0x10, and 0xa6 of 000683cc. \
+FUN 0004aad0 reads ffff424c.bit5 and FUN 000420b8 reads ffff41ef.bit4 as the \
+automatic branches of the timing and idle adjustments.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "funcs"
+order = 676
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "armored-sawfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quaint-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shrewd-whippet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "thankful-jaybird/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "accomplished-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "futuristic-chinchilla/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "expert-lion/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quaint-magpie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000685f2"
+name = "victorious-oriole"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068608"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068610"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068614"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006861e"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068624"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068628"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068632"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006863a"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006863c"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068640"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006864a"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068652"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068656"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006865a"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068664"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068668"
+value = {named = ["0000870e", "000685f2", "00068670", "ffff244f", "ffff4184", "ffff41a6", "ffff41aa", "ffff41ef", "ffff424c", "ffff42d4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "armored-sawfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "accomplished-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

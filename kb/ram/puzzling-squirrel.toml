@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2482"
+name = "puzzling-squirrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00052c36"

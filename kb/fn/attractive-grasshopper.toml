@@ -1,0 +1,93 @@
+summary = """
+Common complementary DTC-state updater. For ordinary descriptor indices it \
+clears state bit 0, calls FUN 00025d02, sets state bit 2, and clears pending \
+bit 6 when appropriate. Indices 0xd8/0xd9 and 0xda/0xdb use grouped handling \
+coordinated with descriptor 0x30."""
+note = [
+    """
+This helper is distinct from common fault dispatcher FUN 0007d8b8. A call to \
+this function does not by itself identify a fault-producing branch.""",
+]
+level = "code"
+role = "consumer"
+
+[[ledger]]
+registry = "funcs"
+order = 282
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "congenial-ladybug/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-newt/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b4ef8"
+name = "attractive-grasshopper"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f42"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f5e"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f7a"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f80"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b50f0"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "congenial-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "successful-newt/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

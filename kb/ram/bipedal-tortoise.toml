@@ -1,0 +1,56 @@
+summary = """
+Base of internal throttle-target working storage. 0006f48c writes the \
+inverse conversion of ffff1340/2 divided by four at the base and uses \
+adjacent words for channel corrections and learned references."""
+note = ["Individual adjacent fields retain separate operational roles."]
+level = "code"
+unit = "raw target working array"
+
+[[ledger]]
+registry = "vars"
+order = 690
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "analytic-mole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "channel_throttle_target_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff28f8"
+name = "bipedal-tortoise"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f4bc"
+value = {named = ["0006f48c", "ffff1340", "ffff28f8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "analytic-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

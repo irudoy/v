@@ -1,0 +1,37 @@
+summary = """
+Finisher recovered by wave 2 in the crossfade blend path of component \
+0007a804 together with core 0x26B28."""
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 115
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026d10"
+name = "provocative-uakari"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026d10"
+
+[[link]]
+type = "depends"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

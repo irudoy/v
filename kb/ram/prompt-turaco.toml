@@ -1,0 +1,186 @@
+summary = """
+Signed centered correction scratch in the stock-disabled branch of FUN \
+0007b3f4. The branch writes \
+int16(interpolate_u16(00016948,ffff35ce,ffff11b6)-32768)."""
+note = [
+    """
+Stock ROM8[000083c1].bit1 is clear, so this word is not written by the \
+function. Every map cell is 0x8000 and would produce zero if the branch were \
+enabled.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 21
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "functional-chachalaca/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "demonic-hound/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glossy-auk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "functional-chachalaca/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35d0"
+name = "prompt-turaco"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c1"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b3fe"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b400"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b402"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b434"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b444"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b448"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b44c"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b454"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b456"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b45a"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b4b4"
+value = {named = ["000083c1", "00016948", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "glossy-auk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-sloth/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "demonic-hound/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,3 +1,86 @@
+summary = """
+Unsigned 32/32 division, a shared library primitive. In two analyzed \
+components it closes a fixed-point denominator: angle summation in 0004afdc \
+(pair 0x11efa/0x147ca gated by bit 6 of ffff41ab) and normalization (V * M) \
+/ 50000 in 0006205c, where V is output of 0x1495a, M is output of 0x1459a or \
+0x145ca, and 50000 is divisor literal 0xC350."""
+level = "code"
+role = "service"
+contract = """
+Unsigned 32/32 division: r0 = r1 / r0 (dividend r1, divisor r0), rounding \
+down. The implementation is an unrolled div0u/div1 sequence that selects a \
+path by operand bit width. It does not return a remainder: on exit r1 \
+contains an unreconstructed remainder mixed with quotient bits. r2 and r3 \
+are preserved on the stack, and PR is untouched. On division by zero it \
+writes 0x0000044E to 0xFFFF9818 and returns 0. Its pair 00021f40 returns the \
+remainder under the same convention."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 31
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+contract = [1, 2, 3]
+
+[[ledger.dependency]]
+role = "homolog"
+to = "charcoal-reindeer/fn"
+type = "depends"
+end = "owner"
+link_role = "homolog"
+relies = "contract"
+supports = "contract"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spirited-lion/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "indigo-fossa/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "outrageous-bustard/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "placid-mastiff/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tested-dragon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "00022394"
@@ -29,6 +112,21 @@ former = ["zircon-zebu/fn/7mfk-00021ce0"]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00021ce0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00021dc8"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00021dcc"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
 
 [[symbol]]
 layout = "jk00c"
@@ -66,3 +164,27 @@ to = "7mfk:00021668"
 count = 1
 value = 0
 note = "Exact unsigned division helper is recovered from target callers"
+
+[[link]]
+type = "depends"
+to = "charcoal-reindeer/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "contract"
+role = "homolog"
+
+[[link]]
+type = "depends"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

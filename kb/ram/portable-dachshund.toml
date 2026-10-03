@@ -1,0 +1,197 @@
+summary = """
+Bank-2 intake-cam edge phase byte. Capture handler 0002a36a copies running \
+phase ffff22d3 here at 0002a496 while event state ffff13c8 is 1, 3, or 5. \
+The running phase is 20*ffff13b2 + floor(20*interval / ffff22bc) - 60 \
+(selector below 8) or - 20 (selector 8 and above) through signed divider \
+00021bbc, clamped at zero, where interval is the 16-bit difference between \
+GR1E capture fffff44c and crank reference count ffff158a stored at ffff22ca. \
+The pass requires ffff84ff bit 7 set, ffff8504 bit 7 clear, and edge count \
+ffff1390 equal to 1, and first shifts the previous values into ffff22cf and \
+ffff22d1. FUN_000bd9f0 subtracts the byte from rest reference ffff479a to \
+form actual position ffff2443."""
+note = [
+    """
+One count is 0.5 crank degrees: ffff22bc is 10 crank degrees and the \
+selector step is 20 counts, the same arithmetic as exhaust edge phase \
+ffff1200. The selector offsets differ from the exhaust segment mapping, so \
+the intake phase axis has its own origin; the stock rest value \
+ROM8[00008321]=140 is the phase of selector 8 at zero interval. The SH7059 \
+hardware manual identifies 0xFFFFF44C as ATU-II channel 1A GR1E.""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 366
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hallowed-chameleon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inescapable-bullfinch/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-dugong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lovely-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22cd"
+name = "portable-dachshund"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a40e"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a41e"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a442"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a47e"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a496"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bda34"
+value = {named = ["00021bbc", "0002a36a", "000bd9f0", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22cd", "fffff44c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "inescapable-bullfinch/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "silky-dugong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "gray-cougar/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "hallowed-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

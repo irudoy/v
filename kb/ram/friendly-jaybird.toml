@@ -1,0 +1,94 @@
+summary = """
+Diagnostic transport flag byte. Transmit-complete interrupt 0002f12c sets \
+bit 7 for mode 0x06; state machine 0002ea0a observes and clears that bit \
+before redispatching the active service."""
+note = ["Other bits and writers belong to independent transport conditions."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 653
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refreshing-dinosaur/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knowing-coyote/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "refreshing-dinosaur/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff82e4"
+name = "friendly-jaybird"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002eb24"
+value = {named = ["0002ea0a", "0002f12c", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002eb56"
+value = {named = ["0002ea0a", "0002f12c", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002eb64"
+value = {named = ["0002ea0a", "0002f12c", "ffff82e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1b2"
+value = {named = ["0002ea0a", "0002f12c", "ffff82e4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "refreshing-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knowing-coyote/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "refreshing-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

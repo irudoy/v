@@ -1,0 +1,87 @@
+summary = """
+Common-gain factor byte written by alternating-pass builder 00053698 as \
+min(255, floor((uint8(ffff17ee)*5259 + 0x128500)/10000)). The affine map \
+sends 256 to 256 and, before the integer floor, stays within 0.4 count of \
+256*sqrt(x/256) over the reachable input range 198..255. The builder then \
+writes ffff165e = floor(ffff160d*ROM16[0x9332]/256)."""
+note = [
+    """
+The reachable range is 225..255. Read with ffff17ee, the byte approximates \
+256*sqrt(C/(C+V)), the square-root flow correction of an injector whose \
+differential pressure rises from reference C by manifold depression V; this \
+physical reading is a candidate.""",
+]
+level = "code"
+unit = "ratio_q8"
+
+[[ledger]]
+registry = "vars"
+order = 900
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "famous-potoo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_common_gain_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff160d"
+name = "asparagus-toucan"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005384a"
+value = {named = ["00053698", "ffff160d", "ffff17ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005384c"
+value = {named = ["00053698", "ffff160d", "ffff17ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053850"
+value = {named = ["00053698", "ffff160d", "ffff17ee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053862"
+value = {named = ["00053698", "ffff160d", "ffff17ee"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "famous-potoo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

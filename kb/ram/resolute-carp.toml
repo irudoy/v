@@ -1,0 +1,160 @@
+summary = """
+Doubled primary opening area of the first-channel request: FUN 00073948 \
+writes min(0xffff, 2*area), where area interpolates 00013202 over 000155a0 \
+at min(0xffff, 4*ffff1332). 000730fc and 0006e4c8 also read it."""
+level = "code"
+unit = "raw opening area*2"
+
+[[ledger]]
+registry = "vars"
+order = 957
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bouncy-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "muscular-leech/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "conscious-caracal/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versed-reindeer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12a0"
+name = "resolute-carp"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073956"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007395e"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073966"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073968"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073972"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073986"
+value = {named = ["00013202", "000155a0", "00026524", "0006e4c8", "000730fc", "00073948", "ffff12a0", "ffff1332"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "angelic-saluki/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "conscious-caracal/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "monumental-snake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "muscular-leech/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bouncy-barracuda/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "request_coordinate_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

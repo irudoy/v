@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000752e4"
+name = "scarlet-starling"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000752e4"

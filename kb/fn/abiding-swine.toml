@@ -1,0 +1,45 @@
+role = "init"
+contract = """
+Not arithmetic: ROM self-test initializer. It takes no arguments, and no \
+register is read before being written. Its only effect is *(u32)0xFFFF2C04 = \
+0x00008204, which places the background scan cursor at the start of the \
+monitored region. It returns no result and clobbers r0, r2, and r6."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 24
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1, 2, 3]
+
+[[symbol]]
+layout = "7mfk"
+address = "00021610"
+name = "abiding-swine"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00021638"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00022650"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0007ec16"
+value = {named = ["00021610", "00021638", "00022650"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021610"

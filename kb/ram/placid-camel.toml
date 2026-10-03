@@ -1,0 +1,122 @@
+summary = """
+Live TCM gear-phase index decoded by FUN 000c4ace as CAN 0x177 payload byte \
+2 masked with 0x07. Scheduler 00020dfe copies it to limiter snapshot \
+ffff1064."""
+note = [
+    """
+The target captures of 2026-08-17 and 2026-09-22 correlate values 0 through \
+4 with transmission operation in gears 1 through 5. Payload bit 3 and higher \
+bits are independent status flags.""",
+]
+level = "code"
+unit = "zero-based gear-phase index"
+
+[[ledger]]
+registry = "vars"
+order = 49
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_177_transmission_payload_decoder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ginger-raven/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1066"
+name = "placid-camel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f28"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f2a"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f30"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf0"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf2"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf4"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c4bf6"
+value = {named = ["00020dfe", "000c4ace", "ffff1064", "ffff1066"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "ginger-raven/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_177_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,9 +1,47 @@
+summary = """
+Explicit-axis 1D-32 wrapper over core 0x26B84. Wave 2 used it to recover \
+reciprocal pairs in component 00072f1e, where each table is the other's \
+axis; search proceeds downward and [+0x3e] is the upper bound."""
+note = [
+    """
+Wave 2 prose calls it a core, while the entry registry classifies it as a \
+wrapper over core 0x26B84. This is a naming difference, not a geometry \
+difference.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "garnet-caracara/fn"
 cols = 32
 storage = "uint16"
 x_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 97
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "defiant-tapir/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vigorous-silkworm/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -26,6 +64,11 @@ at = "1nd:00028b60"
 layout = "7mfk"
 address = "00026714"
 name = "inescapable-dachshund"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -77,3 +120,19 @@ key = "00026714"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00028544"
+
+[[link]]
+type = "depends"
+to = "defiant-tapir/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vigorous-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

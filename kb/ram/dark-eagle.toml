@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff34da"
+name = "dark-eagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002dac8"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

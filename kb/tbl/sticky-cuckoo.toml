@@ -1,3 +1,29 @@
+summary = """
+Unsigned eight-point coefficient table K for a calculated expression in \
+000532ae: interpolated K is written to ffff1601 and conditionally \
+participates both in term 256*K and in difference K - 2*C before ffff1600 is \
+formed."""
+note = [
+    """
+The physical name of the coefficient is unknown. On a conditional branch in \
+000532ae, value K from ffff1601 enters expression iVar12 = 256*K - B*(K - \
+2*C) + 2*(D*E + F), where B = uint8 ffff15df, C = int8 ffff1660, D = uint8 \
+ffff193d, E = uint8 ffff1680, and F = uint16 ffff2ff0. The sign of iVar12 \
+and subsequent scaling determine the byte written to ffff1600 with \
+saturation to 255. Index: Implicit uniform 1D-8 axis over uint8 from \
+ffff106f: raw points 0, 32, 64, 96, 128, 160, 192, 224; adjacent cells are \
+linearly interpolated, and input >= 224 selects the last cell. Output trace: \
+00012a82 -> 00052f1e -> 00052f28 -> 00026370 -> 00026a80 -> 00026740 -> \
+00052f30 -> ffff1601 -> 000532ae -> ffff1600. Result disposition: consumer; \
+Result target: 000532ae.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Composite Output Coefficient K - raw u8 (0x12A82)"
 category = "Internal Calculations"
@@ -7,7 +33,111 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 406
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lush-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "true-fennec/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aspiring-starling/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a82"
 name = "sticky-cuckoo"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f1e"
+value = {named = ["00012a82", "00026740", "00052f00", "000532ae", "ffff106f", "ffff1601"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f22"
+value = {named = ["00012a82", "00026740", "00052f00", "000532ae", "ffff106f", "ffff1601"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f28"
+value = {named = ["00012a82", "00026740", "00052f00", "000532ae", "ffff106f", "ffff1601"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052f30"
+value = {named = ["00012a82", "00026740", "00052f00", "000532ae", "ffff106f", "ffff1601"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "lush-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

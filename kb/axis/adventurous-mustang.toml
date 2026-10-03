@@ -1,0 +1,32 @@
+note = [
+    """
+Axis for P0128 inverse-weight curve 000151f2. FUN 000b7a3c receives uint16 \
+parameter H from ffff35b6 and obtains A from upstream curve 00014e42 by \
+previous-cycle coarse vehicle speed ffff110e << 8. For H != 0 it derives \
+q=max(0,65535-floor(20*A*ROM8[00008832]/H)); for H=0 it selects q=65535 when \
+A*ROM8[00008832]=0 and q=0 otherwise. It passes q directly as the coordinate \
+paired with this axis. Stock ROM8[00008832], every upstream map cell, and \
+all 16 stock axis points are zero, so q=65535. Code proves the raw \
+coordinate formula but not its physical quantity.""",
+]
+level = "code"
+quantity = "raw"
+unit = "P0128 parameter-ratio raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 74
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013bf8"
+name = "adventurous-mustang"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b7b14"

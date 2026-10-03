@@ -1,0 +1,118 @@
+summary = """
+Latched copy of ASCD display state ffff4128. Scheduler FUN 00020dfe copies \
+the 0x58 bytes ffff4124..ffff417b to ffff40cc..ffff4123 through block copier \
+00022038 at 0002132c. CAN 0x551 serializer FUN 000c5372 reads the low three \
+bits at 000c53d2 and places them in payload byte 5 bits 4 through 6."""
+note = [
+    """
+The 0x551 serializer transmits the display state and does not read SET-lamp \
+flag ffff4252 bit 0. The delayed SET lamp observed on the target vehicle \
+while an injected field holds 6 is consistent with a blink timer in the \
+meter; the meter firmware is not analyzed. The saved target-vehicle captures \
+contain only 0 in the stock field.""",
+]
+level = "code"
+unit = "enumerated state"
+
+[[ledger]]
+registry = "vars"
+order = 399
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "feedback_serializer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-falcon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff40d0"
+name = "delectable-octopus"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000213ac"
+value = "ffff40cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000213b8"
+value = "ffff4124"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c5464"
+value = "ffff40cc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "000213ac", "000213b8", "000c5372", "000c5464", "ffff40cc", "ffff40d0", "ffff4124", "ffff4128"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132e"
+value = {named = ["00020dfe", "000213ac", "000213b8", "000c5372", "000c5464", "ffff40cc", "ffff40d0", "ffff4124", "ffff4128"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c53d2"
+value = {named = ["00020dfe", "000213ac", "000213b8", "000c5372", "000c5464", "ffff40cc", "ffff40d0", "ffff4124", "ffff4128"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c53d4"
+value = {named = ["00020dfe", "000213ac", "000213b8", "000c5372", "000c5464", "ffff40cc", "ffff40d0", "ffff4124", "ffff4128"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "adventurous-falcon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "feedback_serializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

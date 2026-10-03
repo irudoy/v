@@ -1,3 +1,25 @@
+summary = """
+Unsigned local-correction coefficient: on branch r5>=r7, lookup result x in \
+r4 multiplies nonnegative difference r5-r7, after which 0002251c forms \
+floor((r5-r7)*x/2048)."""
+note = [
+    """
+The physical name of the quantity is not proven. The formula is proven for \
+branch r5>=r7; the listing of the second branch is available only through \
+0003c56a, so the claim does not generalize it to r5<r7. Numeric scale round \
+trip: 5 -> 0.00244140625 -> 5; 12 -> 0.005859375 -> 12. Index: implicit \
+1D-8: r5=uint8[ffff1170]; for r5<224, adjacent uint8 cells are interpolated; \
+for r5>=224, cell 7 is returned. Result disposition: consumer (site \
+0003c556).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless"
+scale = "x/2048"
+to_raw = "x*2048"
+scale_level = "code"
+
 [editor]
 name = "Local Correction Coefficient /2048 (0x12126)"
 category = "Internal Calculations"
@@ -7,10 +29,155 @@ format = "0.000000"
 fine = 0.00048828125
 coarse = 0.0078125
 
+[[ledger]]
+registry = "findings"
+order = 361
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+scale = [10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "didactic-civet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "festive-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "festive-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012126"
 name = "woodoo-loon"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c4fe"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c514"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c51c"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c522"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c54c"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c552"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c554"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c556"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "12"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "2048"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "5"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c552"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c556"
+value = {named = ["00012126", "0002251c", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.005859375*2048=12"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "12/2048=0.005859375"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +210,24 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "didactic-civet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fabulous-leech/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "festive-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

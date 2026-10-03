@@ -1,0 +1,91 @@
+summary = """
+Volatile currently defined dynamic local identifier. SID 0xac stores the \
+accepted DLID here after building its pointer list, and SID 0x21 requires a \
+requested dynamic LID above 0x80 to match this byte."""
+note = [
+    """
+A fresh definition normally uses 0x81. The value and associated pointer list \
+are runtime session state and are not persistent ROM configuration.""",
+]
+level = "code"
+unit = "diagnostic local ID"
+
+[[ledger]]
+registry = "vars"
+order = 648
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "olive-mandrill/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quick-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3ee2"
+name = "neat-capybara"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003298a"
+value = {named = ["000328c0", "00033810", "ffff3ee2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003385a"
+value = {named = ["000328c0", "00033810", "ffff3ee2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00033d8e"
+value = {named = ["000328c0", "00033810", "ffff3ee2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "olive-mandrill/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "quick-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quick-hawk/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

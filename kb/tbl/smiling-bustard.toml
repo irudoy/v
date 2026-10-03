@@ -1,0 +1,165 @@
+summary = """
+Interpolated raw base of two thresholds for a correction state machine. \
+Consumer 000420b8 calculates max(M-ROM[0000889b],0) and \
+max(M-ROM[0000889a],0), compares both thresholds with uint8[ffff1742], and \
+uses delayed bits ffff2496 to select an increase or decrease of correction \
+ffff1693, which is then added with saturation to the working value before \
+call 00041f2c."""
+note = [
+    """
+The artifact does not establish the physical quantities of the input, \
+thresholds, or correction. Consumption occurs on a conditional branch in \
+000420b8. There is no separate Axis map: the index is synthesized from RAM \
+ffff22e4. Shape 1D-8 is ambiguous among catalog entries, so the catalog is \
+not used for code semantics. A nontrivial scale is not proven. Index: \
+Implicit uniform index from x=uint8[ffff22e4]: q=clamp(4*(x-40),0,255). For \
+q<224, adjacent uint8 cells are interpolated; for q>=224, cell 7 is \
+returned. Effective nodes by x: 40,48,56,64,72,80,88,96; outside the range, \
+the result is constrained to the endpoint cells. Output trace: \
+00046544/0004654a -> 00026370 -> 00026a80 -> 00026aac,00026aae -> 00026740 \
+-> 0004654e -> 00046552 -> ffff1716 -> 000420b8 -> \
+ffff2496,ffff2537,ffff2538 -> ffff1693. Result disposition: consumer; Result \
+target: ffff1716 -> 000420b8.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 398
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "electric-gopher/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-lizard/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-ibex/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000128d8"
+name = "smiling-bustard"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046544"
+value = {named = ["000128d8", "00026370", "00026740", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004654a"
+value = {named = ["000128d8", "00026370", "00026740", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004654e"
+value = {named = ["000128d8", "00026370", "00026740", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046552"
+value = {named = ["000128d8", "00026370", "00026740", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "cherubic-salamander/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "index"
+to = "saffron-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cherubic-salamander/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "electric-gopher/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

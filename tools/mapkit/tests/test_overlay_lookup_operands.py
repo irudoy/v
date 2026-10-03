@@ -179,7 +179,7 @@ def rows(path):
 
 
 def evidence(row, field="evidence"):
-    return row[field].split(";")
+    return [item.strip() for item in row[field].split(";")]
 
 
 class OverlayLookupOperandTest(unittest.TestCase):

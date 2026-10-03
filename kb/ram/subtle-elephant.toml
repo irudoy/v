@@ -1,0 +1,83 @@
+summary = """
+Scheduler copy of work-support status ffff4124 from the previous pass. \
+Handler 00034194 requires 0xff for controls 0x00 and 0x55 of LIDs 1..3 and \
+otherwise answers with this byte as the negative response code."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 941
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "passionate-penguin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exuberant-galago/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff40cc"
+name = "subtle-elephant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00020dfe", "00034194", "ffff40cc", "ffff4124"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003427e"
+value = {named = ["00020dfe", "00034194", "ffff40cc", "ffff4124"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000342ae"
+value = {named = ["00020dfe", "00034194", "ffff40cc", "ffff4124"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "exuberant-galago/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

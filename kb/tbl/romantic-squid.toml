@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015d40"
+name = "romantic-squid"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00044526"

@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff11ee"
+name = "hungry-sawfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003854c"
+
+[[link]]
+type = "reader"
+to = "space-puma/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pearl-waxbill/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,6 +1,40 @@
+summary = """
+Absolute throttle byte. FUN 0006f236 writes it and FUN 00035856 returns it \
+unchanged for J1979 Mode 01 PID 0x11 at 00035de2."""
+note = [
+    """
+J1979 defines PID 0x11 as A*100/255 percent, so the ECU declares the byte as \
+absolute throttle position with 100/255 percent per count. CAN telemetry \
+schema 2 streams it as absolute_throttle_raw.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*100/255"
+
+[[ledger]]
+registry = "vars"
+order = 434
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*255/100"
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "determined-lynx/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +66,13 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1075"
 former = ["almond-nightingale/ram/7mfk-ffff1075"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035de2"
+value = {named = ["00035856", "0006f236", "ffff1075"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +110,27 @@ to = "7mfk:000393f8"
 count = 1
 value = "mnemonic"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "determined-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,176 @@
+summary = """
+State and corridor controller. On its calibration-read branch it looks up \
+shared curve 000122d2 by uint16[ffff11f0] over axis 00014d2a and writes \
+ffff2523; downstream code uses only whether this byte is zero. Separately, \
+00014caa defines an upper signed bound, 00014e92 defines a lower signed \
+bound, and code selects max(lower,min(upper,value)) before writing \
+ffff2260."""
+note = [
+    """
+The 000122d2 result is a nonzero gate; its magnitude is not consumed in this \
+function. Both corridor bounds decode as x-32768. The physical quantities \
+and branch purposes remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 132
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuzzy-vulture/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "notorious-lyrebird/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tomato-robin/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "umber-fossa/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "military-marmoset/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "polite-oryx/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-caiman/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00041750"
+name = "piquant-gazelle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417bc"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417c0"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417c4"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000417d8"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041874"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b6a"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b72"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b80"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b82"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b8a"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041b96"
+value = {named = ["000122d2", "00014c2a", "00014caa", "00014d2a", "00014e92", "00026550", "00041750", "ffff11f0", "ffff2523"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sly-tuna/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "polite-oryx/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

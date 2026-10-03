@@ -1,0 +1,95 @@
+summary = """
+Revolution-phase misfire dispatcher. It is entry 1 of the three-function \
+ffff84ba-bit-6 table. Each service calls FUN 0007c4e0 and then tail-calls \
+revolution-window producer 000872d0."""
+note = [
+    """
+The pending flag is produced every third admitted current-cylinder event, \
+corresponding to one crankshaft revolution on the V6.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 21
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amethyst-chicken/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "efficient-caribou/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c494"
+name = "nebulous-toucanet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00021964"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c496"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "0007c4e0", "000872d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c49a"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "0007c4e0", "000872d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c49c"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "0007c4e0", "000872d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gentle-bat/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "black-kudu/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "efficient-caribou/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

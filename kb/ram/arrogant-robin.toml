@@ -1,0 +1,178 @@
+summary = """
+Mode byte of final timing-coordinate builder 0004dbe8. Bits 1..5 are \
+hysteresis flags that are clear inside the work-support timing window: bit 1 \
+for raw coolant ffff1079 (clears at 110, sets below 107), bit 2 for the low \
+RPM/25 bound of ffff11b3 (clears at ROM8[0x8897]=48, sets below 40), bit 3 \
+for the high RPM/25 bound (clears at 120 or below, sets above \
+ROM8[0x8896]=128), bit 4 for the low bound of Q7 normalized base fuel \
+schedule ffff1048 (clears at ROM8[0x8768]=64, sets below 60), and bit 5 for \
+its high bound (clears at 92 or below, sets above ROM8[0x8767]=96). FUN \
+0004dbe8 adds ffff564c only while all five bits are clear."""
+note = [
+    """
+Idle speed lies below the RPM window, so the timing adjustment has no effect \
+at the work-support condition IDLE CONDITION. Other bits are not \
+characterized.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 951
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "final_timing_coordinate_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-cassowary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "final_timing_coordinate_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff5b31"
+name = "arrogant-robin"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008767=0x60"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008768=0x40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008896"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008897"
+value = "0x30"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dc0e"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dc28"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dc96"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dca8"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcbe"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcc6"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004dcca"
+value = {named = ["00008767", "00008768", "00008896", "00008897", "0004dbe8", "ffff1048", "ffff1079", "ffff11b3", "ffff5b31"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "benign-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "coolant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,75 @@
+summary = """
+Ten-bit sample of the on-chip A/D result register at fffff82e. FUN 000280d8 \
+shifts the aligned conversion result right by six and writes this word on \
+every pass."""
+note = [
+    """
+FUN 0003e4cc subtracts the sample from 0x0400 into publication word \
+ffff2862, the same inversion it applies to ffff363c.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 846
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-chipmunk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff363a"
+name = "amorphous-mammoth"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028108"
+value = {named = ["000280d8", "0003e4cc", "ffff363a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e4dc"
+value = {named = ["000280d8", "0003e4cc", "ffff363a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr"
+
+[[link]]
+type = "reader"
+to = "tall-chipmunk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

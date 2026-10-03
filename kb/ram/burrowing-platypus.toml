@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2462"
+name = "burrowing-platypus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000386e0"

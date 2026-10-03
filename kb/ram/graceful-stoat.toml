@@ -1,0 +1,101 @@
+summary = """
+Number of response-byte sources in the volatile dynamic-local-identifier \
+pointer array at ffff9820. SID 0xac stores the parsed output count; SID 0x21 \
+uses it as the traversal bound."""
+note = [
+    """
+For a definition made only from arbitrary-address descriptor 0x83, the \
+maximum accepted count is 62.""",
+]
+level = "code"
+unit = "byte count"
+
+[[ledger]]
+registry = "vars"
+order = 655
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "olive-mandrill/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "illustrious-oriole/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9920"
+name = "graceful-stoat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000329fc"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032ad0"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032c18"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00033d60"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "illustrious-oriole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "olive-mandrill/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "quick-hawk/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

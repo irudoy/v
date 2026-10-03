@@ -1,3 +1,38 @@
+summary = """
+Eight-point table of a raw unsigned multiplier. The result interpolated by \
+byte ffff106f forms ffff1766 directly or after conditional normalization; \
+0006e490 uses this byte as a multiplier of ROM_u16[000093c8] in a \
+constrained fixed-point calculation for ffff1300, while 0006e442 uses it in \
+a division conversion with addition of 0x32 and saturation to 0xff for \
+ffff1f86."""
+note = [
+    """
+The physical subsystem and physical unit are unknown. When RAM[ffff244f]&2 \
+!= 0, the lookup result reaches ffff1766 directly. When the bit is zero and \
+RAM[ffff16b1] != 0, min(255, floor(lookup*RAM[ffff16ae]/RAM[ffff16b1])) is \
+written; when the divisor is zero, 255 is written regardless of the map. \
+0006e490 calculates min(65535, \
+(1250*min(4*ROM_u16[000093c8]*RAM_u8[ffff1766], 0x00346dc5)) >> 16) and \
+writes the result to ffff1300. The claim relies on associated sink \
+0006e3d8/ffff1766 rather than other accessor registers. Index: x = \
+uint8(RAM[ffff106f]); 8 implicit nodes 0,32,64,96,128,160,192,224; linear \
+interpolation of adjacent uint8 cells for x < 224, and cell 7 is returned \
+for x >= 224. Output trace: 0001296c -> site 0006e3ec -> 00026370 -> \
+(00026a80 -> 00026740 for x < 0xe0; 00012973 for x >= 0xe0) -> site 0006e3f2 \
+-> site 0006e440 -> RAM ffff1766 -> {0006e490 -> RAM ffff1300; 0006e442 -> \
+RAM ffff1f86}. Alternate normalization branch: 0001296c -> site 0006e40a -> \
+00026370 -> 00026a80 -> 00026740 -> site 0006e41a -> site 0006e426/00021bbc \
+-> site 0006e440 -> RAM ffff1766. Result disposition: consumer; Result \
+target: RAM ffff1766 at site 0006e440; consumers 0006e490 and 0006e442; \
+downstream RAM ffff1300 and ffff1f86.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
 category = "Internal Calculations"
@@ -7,10 +42,170 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 401
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cobalt-fossa/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "smoky-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "daring-mosquito/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nickel-adder/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olivine-corgi/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001296c"
 name = "scrupulous-yak"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a92"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3e8"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3ec"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e3f2"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e40a"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e41a"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e426"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006e440"
+value = {named = ["0001296c", "00021bbc", "00026370", "00026740", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "burgundy-hawk/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +238,38 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "burgundy-hawk/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "burrowing-peccary/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cobalt-fossa/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "smoky-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

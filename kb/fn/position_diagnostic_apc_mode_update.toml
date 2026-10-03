@@ -1,0 +1,138 @@
+title = "Update the P0335 P0340 P0345 fallback mode used by APC schedulers"
+summary = """
+Crank/cam position-diagnostic APC fallback-mode updater. It evaluates \
+runtime records 0x47/0x48 for P0340, 0x8a/0x8b for P0345, and 0x4a/0x4b for \
+P0335. The P0335-only combination can set ffff24cf.bit6; periodic dispatcher \
+00020dfe snapshots that bit to ffff24c9.bit6 for both APC schedulers."""
+note = [
+    """
+The exact JK08A descriptors map those six runtime indices to the stated \
+DTCs. Bit6 selects alternate scheduler behavior and is a mandatory \
+stock-pass-through gate for a late retard override.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 118
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 552
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_compare_scheduler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_record_byte1_bit7_predicate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-newt/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00099a48"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099aa8"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099ab0"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099ab8"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099ac0"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099ad6"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099c4c"
+value = {named = ["00020dfe", "00025e20", "0002a892", "0002acba", "00099a48", "ffff24cf"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "diagnostic_record_byte1_bit7_predicate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

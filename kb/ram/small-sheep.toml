@@ -1,0 +1,389 @@
+summary = """
+Multipurpose state byte whose bit 6 is computed START SIGNAL and whose bit 7 \
+is the debounced PLDR bit 4 input. FUN 00038d44 writes bit 6 and mirrors it \
+to ffff24ae.bit7 and ffff1164.bit1. Together with battery-voltage raw \
+ffff1188, bit 6 drives selected-temperature gate 0003967a; it also inhibits \
+AN1-derived running-min update FUN 0003d45c when set. FUN 00038618 clears \
+bit 7 in state 1 of debouncer ffff39c4 and sets it otherwise."""
+note = [
+    """
+The exact DID 0x1302 bit-1 chain and homologous diagnostic definition bind \
+bit 6 to computed START SIGNAL. The VQ35HR factory manual independently \
+states that this signal is computed from engine speed and battery voltage \
+and is OFF after engine start.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "start-signal-did-1302-bit1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-1302h-bit1-start-signal"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-1302h-bit1-start-signal-d3281df1"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+FUN 00038d44 writes computed state ffff4185.bit6 and mirrors it to \
+ffff24ae.bit7. FUN 0002e0d4 packs that bit into ffff3342.bit1, and the exact \
+JK08A service-0x22 table publishes ffff3342 as DID 0x1302 with support mask \
+0x3f. A structured Nissan profile names bit 1 START SIGNAL. The VQ35HR \
+factory manual independently defines START SIGNAL as ECM-computed from \
+engine speed and battery voltage and OFF after engine start."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_status_dids_1302_1306_pack/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00011e41"
+value = "0x3f"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229f0"
+value = "ffff3342"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229f4"
+value = "00011e41"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000229f0"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e146"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e14e"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002e162"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00039126"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00039134"
+value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "00038d44", "d3281df1", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "computed_start_signal_state_update/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "emerald-mouflon/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "organic-cow/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 7
+binding = "start-signal-did-1302-bit1"
+
+[[ledger]]
+registry = "vars"
+order = 295
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fabulous-leech/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radical-chimpanzee/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "start_low_voltage_temperature_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "encouraging-scallop/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "computed_start_signal_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "emerald-mouflon/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silver-turaco/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4185"
+name = "small-sheep"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038944"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003894c"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038958"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039126"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039128"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039134"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039146"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039682"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003968c"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d460"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d462"
+value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "emerald-mouflon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "silver-turaco/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "battery_voltage/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "encouraging-scallop/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "eager-beluga/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fabulous-leech/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "piquant-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "radical-chimpanzee/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

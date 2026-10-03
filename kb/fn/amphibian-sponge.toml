@@ -1,0 +1,209 @@
+summary = """
+Intake idle-source producer. It forms S from 000122ea over axis 00012f66 by \
+RPM/50 byte ffff11ae and W from 000122f2 by coolant index ffff106f, and \
+writes ffff1553 = clamp_u8(128 + trunc0((S-128)*W/128)). While ffff24a7 bit \
+1 is clear, it sets ffff247b bit 1 and reloads rise pair ffff1a1e/ffff25ee \
+from 00012efe when ROM8[00008616] bit 0 is set or from 00012f06 otherwise; \
+while the bit is set, it clears ffff247b bit 1 once ffff1553 is at or below \
+intake target ffff2326."""
+note = [
+    """
+While ffff24a7 bit 1 is set, FUN 000bdc66 continues from ffff1553 instead of \
+the coolant-selected map byte; FUN 000bd20a sets that bit only with CLSD THL \
+POS and a vehicle-speed byte of at most 2 (JK08A.cvtc.md). \
+tools/logs/cvtc_intake_state_audit.py replays ffff24a7 bit 1, intake \
+operating bit ffff246b bit 6, and the rise, and places the stationary and \
+moving cold-band targets that follow the replayed byte on the idle-source \
+path.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 288
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "daffy-skua/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "excellent-donkey/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "stoic-ladybug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thankful-woodlouse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gainful-tarsier/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bdb66"
+name = "amphibian-sponge"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb72"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb76"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb80"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb82"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb88"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb94"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbda"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbde"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe0"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe2"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe6"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc14"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc1e"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc2a"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

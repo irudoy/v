@@ -1,0 +1,31 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff17b8"
+name = "carmine-ape"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004ac78"
+
+[[link]]
+type = "lookup"
+to = "dramatic-foxhound/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "energetic-honeybee/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "meticulous-mongoose/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

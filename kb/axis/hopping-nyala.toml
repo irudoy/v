@@ -1,3 +1,23 @@
+note = [
+    """
+uint16 axis for map 000153A0. Both negative branches add 0x8000 to the \
+signed input and use 00015DB0; points decode to 0, 10, 20, 39, 78, 156, 391, \
+and 527. The physical input quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 23
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
 [[symbol]]
 layout = "7mfk"
 address = "00015db0"
@@ -7,6 +27,48 @@ name = "hopping-nyala"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006037e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00060370"
+value = {named = ["00015db0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00060374"
+value = {named = ["00015db0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006037c"
+value = {named = ["00015db0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000603e8"
+value = {named = ["00015db0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000603ee"
+value = {named = ["00015db0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000603f0"
+value = {named = ["00015db0"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"

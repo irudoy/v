@@ -1,0 +1,216 @@
+summary = """
+Unsigned Q8 new-value mixing weight: k -> ffff2ff8; new=u16(ffff2c80), \
+old=u8(ffff2c7e), b=floor((k*new+(256-k)*old)/256). If new > b and b == old, \
+b increments by 1; min(255,b) -> ffff2c7e. Physical meanings of the mixed \
+values are unresolved."""
+note = [
+    """
+Identity confidence: candidate. The map load and axes 00011a51/00011a45 bind \
+00009eca to 4x4 uint8 wrapper 00026084; 0007a278 zero-extends the result and \
+0007a27e stores the same coefficient byte. Region 0007a280..0007a2b4 \
+includes Q8 mixing, conditional progress, saturation, and the byte sink. \
+Stock coefficient 0 permits a +1 update when new > old; coefficient 1 with \
+new=1 and old=0 also produces 1. The regression gate executes \
+exact/end-point lookup and the mixing region, with upstream row and \
+new-value calculations outside it. Scale confidence: code. The coefficient \
+is k/256 with complement (256-k)/256; progress and saturation act on the \
+mixed result, not the coefficient.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "fraction (0..1), 256=1.0"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 51
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0]
+scale = [13, 14, 15, 16, 17, 18, 19, 20]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-capybara/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009eca"
+name = "intelligent-capybara"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+key = "test_09eca_q8_progress_and_saturation"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a268"
+value = {named = ["00009eca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a26a"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a26e"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a274"
+value = {named = ["00009eca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a27e"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a284"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a28c"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a29c"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a2a2"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a2a6"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a2ac"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a2b4"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a274"
+value = {named = ["00009eca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a278"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a280"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a28a"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a294"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a29a"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a2a8"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a2b2"
+value = {named = ["00009eca"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "intelligent-capybara/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

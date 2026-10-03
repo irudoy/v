@@ -1,0 +1,104 @@
+title = "Signed 32 by unsigned 16 fixed-point multiply with variable shift"
+summary = """
+Pure signed fixed-point multiplication helper. It multiplies the absolute \
+32-bit first argument by the unsigned 16-bit second argument, shifts the \
+48-bit product according to the signed byte third argument, and restores the \
+first argument's sign."""
+note = [
+    """
+The call-specific denominator follows from the helper's implicit 16-bit \
+product alignment and two-bit left shift for r6=-2.""",
+]
+level = "code"
+role = "service"
+contract = """
+For the fuel call (r4=v, r5=G, r6=-2), return \
+trunc_toward_zero(int32(v)*uint16(G)/16384). The helper has no memory \
+access; negative results are sign-restored after magnitude scaling."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 72
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 89
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+contract = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_pulse_precursor_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002657c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0002657c"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00026586"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0002659a"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000265ae"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000265ba"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000265be"
+value = {named = ["0004e974"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002657c"
+
+[[link]]
+type = "depends"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

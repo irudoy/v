@@ -1,6 +1,94 @@
+summary = """
+Word without a runtime producer. Startup initializer 00027c50 clears it \
+inside span [ffff1000,ffff261c); init routine 0002c648 writes neighbours \
+ffff1628, ffff162a, and ffff162c but not this word. Both service-0x22 \
+pointer tables return its high byte as DIDs 0x1131, 0x1132, 0x1133, and \
+0x113D."""
+note = [
+    """
+A whole-program p-code scan with computed-address candidates, a \
+constant-propagation sweep of every register-relative access, and the \
+block-copy groups of scheduler walkers 00020dfe and 000209d8 find no access; \
+the eight pointer-table words are the only references. The four DIDs \
+therefore publish a constant zero: all 143961 records of three 2026-09-17 \
+vehicle recordings stream 0. Public definitions name the DIDs fuel-injection \
+timing; the live end-of-injection angle is ffff192e.""",
+]
+level = "code"
 width = 16
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 910
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff162e"
 name = "spectacular-seahorse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022770"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022774"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022778"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000227a0"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00024d30"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00024d34"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00024d38"
+value = "ffff162e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00024d60"
+value = "ffff162e"
+
+[[link]]
+type = "writer"
+to = "cunning-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

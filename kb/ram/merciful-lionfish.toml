@@ -1,0 +1,90 @@
+summary = """
+Previous-cycle snapshot of ffff246a. Scheduler 00020dfe copies three bytes \
+from ffff246a..ffff246c to ffff246d..ffff246f; bit 7 selects the release \
+threshold 00008fde when the preceding accelerator-pedal high state was set \
+and activation threshold 00008fdc when it was clear."""
+note = [
+    """
+The current-to-previous copy closes exact activation/release hysteresis. \
+This byte is not a rev-limit mode selector.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 180
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "remarkable-lynx/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff246d"
+name = "merciful-lionfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021050"
+value = {named = ["00020dfe", "00022558", "00047a56", "ffff246d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021058"
+value = {named = ["00020dfe", "00022558", "00047a56", "ffff246d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002105a"
+value = {named = ["00020dfe", "00022558", "00047a56", "ffff246d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002105c"
+value = {named = ["00020dfe", "00022558", "00047a56", "ffff246d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

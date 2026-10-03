@@ -1,0 +1,73 @@
+summary = """
+Internal developer-immobilizer state-machine flags. Bits 1/2 contribute to \
+engine-inhibit generation in FUN_000bc9e4; FUN_000bbc88, FUN_000bc388, and \
+FUN_000bc82e update the state."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 333
+fields = ["semantics", "units", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cordial-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-buzzard/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-piculet/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3e28"
+name = "vague-fulmar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bc9fa"
+value = {named = ["000bbc88", "000bc82e", "000bc9e4", "ffff3e28"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "cordial-silkworm/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pink-buzzard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spry-piculet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

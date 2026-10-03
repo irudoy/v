@@ -1,0 +1,130 @@
+summary = """
+Per-bank judgement timer of the exhaust-VTC position-sensor monitors \
+(ffff43be + b). FUN 00090086 reloads it with ROM8[00008e23]=100 at 0009016a \
+and 0009017a while indicator ffff850d bit 6 + b is clear or its enable is \
+clear, reads it at 0009010e, and sets judged latch ffff3580 bit b at \
+0009011c when it has reached zero with the indicator set; FUN 0009018c \
+applies the same rules with ffff850d bit 4 + b and ffff3581."""
+note = [
+    """
+The timer lies in the 102.4 ms byte block ffff42d3..ffff43c6 of base-tick \
+handler 0002040c, so the reload of 100 is 10.24 s.""",
+]
+level = "code"
+unit = "102.4 ms counts"
+
+[[ledger]]
+registry = "vars"
+order = 830
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quartz-trogon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-robin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quartz-trogon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-myna/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff43be"
+name = "silent-elephant"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e23=100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009010e"
+value = {named = ["00008e23", "00090086", "0009018c", "ffff43be", "ffff850d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009011c"
+value = {named = ["00008e23", "00090086", "0009018c", "ffff43be", "ffff850d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009016a"
+value = {named = ["00008e23", "00090086", "0009018c", "ffff43be", "ffff850d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009017a"
+value = {named = ["00008e23", "00090086", "0009018c", "ffff43be", "ffff850d"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "chestnut-robin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "quartz-trogon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quartz-trogon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "satisfied-myna/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

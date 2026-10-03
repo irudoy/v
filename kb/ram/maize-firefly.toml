@@ -1,0 +1,71 @@
+summary = """
+Signed compensated pedal-request word written by 000753d4 and \
+normalized/inverse-converted by 00075540 to form ffff243c."""
+note = [
+    """
+Stock 0x89fb.bit5 selects the compensation branch; clearing it would copy \
+ffff19d0.""",
+]
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 679
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pedal_request_compensator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19d2"
+name = "maize-firefly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007552e"
+value = {named = ["000753d4", "00075540", "ffff19d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007554e"
+value = {named = ["000753d4", "00075540", "ffff19d2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pedal_request_compensator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

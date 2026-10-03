@@ -1,3 +1,21 @@
+summary = """
+Per-pass increment of dynamic speed threshold ffff1796 when its desired \
+value is higher and ffff84c3.bit7 is set. The result is capped at the \
+desired threshold."""
+note = [
+    """
+The stock zero value prevents upward movement. Passive target-CAN timing \
+establishes one call every 10.24 ms.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw threshold counts per pass"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Throttle Rev Limiter Threshold Up Rate"
 category = "Limiters / Rev Limit / Internal State"
@@ -8,7 +26,100 @@ fine = 1
 coarse = 16
 static_axis = ["up rate"]
 
+[[ledger]]
+registry = "findings"
+order = 32
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_runtime/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00009436"
 name = "agate-yak"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009436"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075980"
+value = {named = ["00009436", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075988"
+value = {named = ["00009436", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007598c"
+value = {named = ["00009436", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075994"
+value = {named = ["00009436", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

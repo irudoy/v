@@ -1,0 +1,38 @@
+summary = """
+Signed multiplication wrapper around 0x2657C for a negative multiplier; it \
+reads no tables. One of four non-table entries in the region, with 6 slots."""
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 60
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_fixed_point_multiply/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026014"
+name = "psychedelic-curassow"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "region-entries"
+
+[[link]]
+type = "depends"
+to = "signed_fixed_point_multiply/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

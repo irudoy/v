@@ -1,3 +1,20 @@
+summary = """
+On the A > B branch, interpolated uint8 output k is the multiplier in \
+product k*(A-C), passed in r1 as numerator to signed division 00021bbc by \
+denominator A-B; A=out(00012738), B=out(00012748), C=uint8(ffff16ab)."""
+note = [
+    """
+The physical purpose of the multiplier and final derived value is unknown. \
+The code claim ends when the product is passed into signed division. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
 category = "Internal Calculations"
@@ -7,7 +24,331 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 177
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "peach-basilisk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012930"
 name = "infrared-python"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a96"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a98"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a9a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a58"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a5e"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a62"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a66"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a68"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a6c"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a70"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a72"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a74"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a76"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a78"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a7a"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a7c"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a7e"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a80"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a82"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a84"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a86"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a88"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a8a"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a8c"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a8e"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a90"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a92"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a94"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a96"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a98"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a9c"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00044a9e"
+value = {named = ["00012930", "00021bbc", "00026388", "00026740", "00044910"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "peach-basilisk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,3 +1,114 @@
+summary = """
+Stable one-hot ASCD steering-switch code accepted by FUN 000cf020 after five \
+equal latched samples of decoded code ffff36d8. Exact diagnostic code maps \
+0x02 to CANCEL, 0x08 to SET/COAST, and 0x10 to RESUME/ACCEL. The MAIN switch \
+block copies bit 0 into ffff41ae bit 7."""
+note = [
+    """
+A decoded one-hot state, not simultaneous button bits. A CANCEL tap while \
+SET is held appears as a CANCEL run between SET runs. The archived \
+map_switching.ascd_main_vehicle_2026_09_21 record in \
+patches/hardware-results.toml attributes transmitted accepted code 0x01 to \
+physical MAIN presses and 0x20 to release during its stationary-idle \
+capture. Frame 0x239 byte 3 carries ffff36d8; the record does not directly \
+sample stable byte ffff2a85 or MAIN flag ffff41ae.bit7. Those RAM/flag \
+bindings are code-derived. The toggled state ffff4251.bit1 is carried by \
+frame 0x239 byte 2 bit 1. The record has no hardware_status=pass or physical \
+target_ecu provenance; it is retained as a bounded observation, not hardware \
+acceptance of the stable byte, the complete debounce state machine, ASCD, \
+the lamp, or the current runtime. Code 0x00 is unobserved and invalid to the \
+injected selector.""",
+]
+level = "code"
+unit = "one-hot switch code"
+
+[[diagnostic]]
+id = "ascd-steering-switch-state-p1564"
+kind = "monitor"
+label = "DtcCode"
+key = "P1564"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019948"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+The P1564 monitor uses mask 0x1A for the CANCEL, SET, and RESUME states and \
+mask 0xC0 for invalid upper codes. The state is one-hot and does not \
+represent simultaneous button bits."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "alluring-unicorn/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "button_state/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0009159e"
+value = {named = ["00019948", "000913d0", "ffff2a85"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000915a0"
+value = {named = ["00019948", "000913d0", "ffff2a85"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00091658"
+value = {named = ["00019948", "000913d0", "ffff2a85"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0009165a"
+value = {named = ["00019948", "000913d0", "ffff2a85"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 76
+binding = "ascd-steering-switch-state-p1564"
+
+[[ledger]]
+registry = "vars"
+order = 396
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alluring-unicorn/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flying-booby/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flying-booby/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe9b8f"
@@ -26,6 +137,48 @@ note = "Selector reads this button byte"
 layout = "7mfk"
 address = "ffff2a85"
 former = ["orthodox-ostrich/ram/7mfk-ffff2a85"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009159e"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00091658"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf1b2"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf236"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf246"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cf254"
+value = {named = ["000913d0", "000cf020", "ffff2a85"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -63,3 +216,29 @@ to = "7mfk:000cf1e4"
 count = 1
 value = 16
 note = "Selector reads this button byte"
+
+[[link]]
+type = "reader"
+to = "alluring-unicorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

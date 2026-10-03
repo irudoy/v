@@ -1,0 +1,103 @@
+summary = """
+Q0.16 weight for blending signed endpoints ffff18ec and ffff18ee. FUN \
+000760d2 changes it by 300 with saturation toward 0 or 65535 according to \
+ffff245c.bit2; FUN 00076108 consumes it."""
+note = ["The physical mode represented by the weight is unresolved."]
+level = "code"
+unit = "Q0.16 weight"
+
+[[ledger]]
+registry = "vars"
+order = 501
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "slick-chowchow/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wonderful-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "feathered-cobra/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2420"
+name = "topaz-eagle"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000090a0=0x012c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760de"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076102"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076128"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "feathered-cobra/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "slick-chowchow/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "wonderful-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "feathered-cobra/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

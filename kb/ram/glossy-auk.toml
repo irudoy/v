@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff35ce"
+name = "glossy-auk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b248"
+
+[[link]]
+type = "reader"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

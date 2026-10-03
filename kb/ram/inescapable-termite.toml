@@ -1,0 +1,184 @@
+summary = """
+Bank-1 learned rest edge of the exhaust cam. FUN 000bfad4 stores \
+clamp_u8(ROM8[0000831d] - ffff1376 + 128) at 000bfbf8, which equals \
+edge-phase snapshot ffff11c8 within the +/-40 band, when ffff2495 bit 3 is \
+clear, ffff24a8 bits 7 and 4 are set, and ffff246b bit 4 has just fallen or \
+is set with ffff2535 zero; it sets ffff2475 bit 1 at 000bfc20 with the \
+store. FUN 000bfc2e subtracts it from the three edge-phase snapshots at \
+000bfcaa, 000bfcd6, and 000bfd02 to form actual-position byte ffff2324."""
+note = [
+    """
+One unit is 0.5 crank degrees. The on-car value with the cam at its stop is \
+a RAM read that is not recorded.""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 821
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "honored-eel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "crimson-crane/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "jasper-leech/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "russet-crow/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tasteful-pogona/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elastic-locust/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff479b"
+name = "inescapable-termite"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfbf8"
+value = {named = ["0000831d", "000bfad4", "000bfc2e", "ffff1376", "ffff246b", "ffff2495", "ffff24a8", "ffff2535", "ffff479b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc20"
+value = {named = ["0000831d", "000bfad4", "000bfc2e", "ffff1376", "ffff246b", "ffff2495", "ffff24a8", "ffff2535", "ffff479b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfcaa"
+value = {named = ["0000831d", "000bfad4", "000bfc2e", "ffff1376", "ffff246b", "ffff2495", "ffff24a8", "ffff2535", "ffff479b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfcd6"
+value = {named = ["0000831d", "000bfad4", "000bfc2e", "ffff1376", "ffff246b", "ffff2495", "ffff24a8", "ffff2535", "ffff479b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfd02"
+value = {named = ["0000831d", "000bfad4", "000bfc2e", "ffff1376", "ffff246b", "ffff2495", "ffff24a8", "ffff2535", "ffff479b"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "honored-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "crimson-crane/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "jasper-leech/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "russet-crow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "tasteful-pogona/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "adamant-bullmastiff/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "elastic-locust/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

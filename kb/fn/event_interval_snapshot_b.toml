@@ -1,0 +1,129 @@
+summary = """
+Second event-interval snapshot. Under its gates it calculates a \
+wrap-corrected unsigned difference between current timestamp ffff185c and \
+previous timestamp ffff84d0, writes the difference shifted right by five to \
+ffff22d4, and updates ffff84d0. A fault gate writes 0xffffffff instead."""
+note = [
+    """
+Measure the second wrap-corrected event interval and publish the value \
+shifted right by five""",
+    """
+The shift and wrap arithmetic are exact. The physical timer frequency and \
+event-to-crank-angle conversion remain hardware-level unknowns.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 91
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 503
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "classy-bull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-bandicoot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-woodlouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jasper-bandicoot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00028b5c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b76"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b7c"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b7e"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b84"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b88"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b8c"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b90"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b92"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b9c"
+value = {named = ["00028b5c", "ffff185c", "ffff22d4", "ffff84d0"], span = 1}
+key = "reference"

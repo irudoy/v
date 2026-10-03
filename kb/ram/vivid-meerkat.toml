@@ -1,0 +1,156 @@
+summary = """
+Current publication byte for high8 of the filtered positive four-sample RPM \
+drop. FUN 0003e1da publishes it only through the 0001202e, ffff2459.bit5, \
+and ffff2451.bit7 gate; otherwise it writes zero."""
+note = ["Scheduler FUN 00020dfe copies this byte to ffff106a."]
+level = "code"
+unit = "RPM/12.5 drop counts"
+
+[[ledger]]
+registry = "vars"
+order = 7
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "turquoise-mushroom/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-macaque/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wisteria-sheep/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "phenomenal-cricket/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1072"
+name = "vivid-meerkat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cb8"
+value = {named = ["0001202e", "00020dfe", "0003e1da", "ffff1072", "ffff1e50", "ffff2451", "ffff2459"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f0"
+value = {named = ["0001202e", "00020dfe", "0003e1da", "ffff1072", "ffff1e50", "ffff2451", "ffff2459"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f8"
+value = {named = ["0001202e", "00020dfe", "0003e1da", "ffff1072", "ffff1e50", "ffff2451", "ffff2459"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2fe"
+value = {named = ["0001202e", "00020dfe", "0003e1da", "ffff1072", "ffff1e50", "ffff2451", "ffff2459"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e31a"
+value = {named = ["0001202e", "00020dfe", "0003e1da", "ffff1072", "ffff1e50", "ffff2451", "ffff2459"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "satisfied-macaque/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "turquoise-mushroom/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "wisteria-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

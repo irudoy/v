@@ -1,0 +1,172 @@
+summary = """
+Long-term fuel-trim diagnostic-word producer. For each bank it calculates \
+selected learned word ffff2306/ffff2308 + adjustment ffff5648/ffff564a - \
+0x6400. Under the normal limiting gate it clamps the result to \
+ROM8[0x8e5b]<<8 through ROM8[0x8e5a]<<8; fault and control gates force \
+neutral 0x6400. It writes ffff2302 for bank 1 or ffff2304 for bank 2."""
+note = [
+    """
+The stock calibrated normal-path range is 90 through 110 percent. UDS DIDs \
+0x1125/0x1126 return the high bytes; J1979 PIDs 0x07/0x09 convert the \
+complete words.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 342
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benevolent-anteater/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inquisitive-dormouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ltft_adjustment_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ltft_learned_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00057b26"
+name = "liberal-dormouse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e5a"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e5b"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b36"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b3a"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b6a"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057bd8"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057c22"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057c2a"
+value = {named = ["00008e5a", "00008e5b", "0003235c", "00035856", "00057b26", "0005911c", "ffff2302", "ffff2304", "ffff2306", "ffff2308", "ffff5648", "ffff564a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unique-aardwolf/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

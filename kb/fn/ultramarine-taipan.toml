@@ -1,0 +1,184 @@
+summary = """
+Accessor and state updater. The 1D-8 map 0x12a3a is indexed by uint8 \
+ffff1077 and written to ffff1f78. In a separate exact path, four times \
+unsigned ffff1062 forms a width around ROM8[0x8ad9]<<8 for comparisons with \
+ffff1026; the result updates ffff39d4 and bit 5 of ffff2461."""
+note = [
+    """
+The function has no caller sites in the exact image. The physical purposes \
+of map 0x12a3a, ffff1f78, ffff1062, and the state remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 319
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-quoll/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rapid-ocelot/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bfs/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a750"
+name = "ultramarine-taipan"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ad9"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a76c"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a76e"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a772"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a774"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a776"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a780"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a818"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a832"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a836"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a83e"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a856"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a85c"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a882"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a886"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a8a4"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a8c2"
+value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "tall-quoll/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,4 +1,6 @@
 import contextlib
+import copy
+import csv
 import io
 from pathlib import Path
 import tempfile
@@ -6,7 +8,8 @@ import tomllib
 import unittest
 from unittest import mock
 
-from kb import adapters, checks, cli, compile, match, names, repo, store, targets, vocab, write
+from kb import (adapters, checks, cli, compile, ledger_projection, match, names, repo,
+                store, targets, vocab, write)
 from kb.adapters import files as file_adapter
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
@@ -23,8 +26,8 @@ THROTTLE, THROTTLE_HOME, THROTTLE_JK78C = "throttle_runtime/ram", 0xFFFF1796, 0x
 INHIBIT, INHIBIT_HOME = "fuel_inhibit/ram", 0xFFFF2497
 # Named data whose status on 1ND records a search without matches and a note.
 FLOW, FLOW_HOME = "alpha_n_flow/ram", 0xFFFF1170
-# A curated function without a file, whose symbol on 7mfk the base gives a row
-# of kb/names.csv: the search from it finds one counterpart on JK78C.
+# A converted curated function: the search from its 7mfk symbol finds one
+# counterpart on JK78C.
 SELECTOR, SELECTOR_HOME, SELECTOR_JK78C = "accelerator_pedal_pair_selector/fn", 0x6EC68, 0x8D384
 SPEC = {"kind": "spec", "path": "tools/kb/SPEC.md", "note": "section 7.4"}
 
@@ -35,18 +38,24 @@ def bind(meaning, symbol, **keys):
 
 class PlanTest(unittest.TestCase):
     """Operations planned over the working tree with the files in memory; the
-    base is the tree before the binding of TABLE on JK00C, where the meaning has
-    no file and its 7mfk symbol takes its name from kb/names.csv, and the 7mfk
-    symbol of SELECTOR has a row of kb/names.csv."""
+    base has only the owned home symbol of TABLE and stored former references
+    of the home symbol of SELECTOR."""
 
     @classmethod
     def setUpClass(cls):
-        home = names.Row("7mfk", "tbl", TABLE_HOME, "astute-toad")
-        selector = names.Row("7mfk", "fn", SELECTOR_HOME, "probe-heron", ("probe-otter",))
-        rows = [row for row in names.read() if row.key not in (home.key, selector.key)]
-        rows += [home, selector]
-        cls.base = compile.build(repo.ROOT, {store.path_of("tbl", "astute-toad"): None,
-                                             names.PATH: names.render(rows)})
+        table_path = store.path_of("tbl", "astute-toad")
+        table = store.load(repo.ROOT, table_path)
+        table["symbol"] = [entry for entry in table["symbol"] if entry["layout"] == "7mfk"]
+        cls.table_home = copy.deepcopy(table["symbol"][0])
+        selector_path = store.path_of("fn", "accelerator_pedal_pair_selector")
+        selector = store.load(repo.ROOT, selector_path)
+        [home] = [entry for entry in selector["symbol"] if entry["layout"] == "7mfk"]
+        home["former"] = [*home.get("former", ()),
+                          f"probe-heron/fn/7mfk-{SELECTOR_HOME:08x}",
+                          f"probe-otter/fn/7mfk-{SELECTOR_HOME:08x}"]
+        cls.selector_home = copy.deepcopy(home)
+        cls.base = compile.build(repo.ROOT, {table_path: store.render("tbl", table),
+                                             selector_path: store.render("fn", selector)})
 
     def plan(self, *ops):
         return write.plan(list(ops), self.base, write.model_resolver(self.base))
@@ -57,23 +66,19 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, code, str(caught.exception))
         return str(caught.exception)
 
-    def row(self, layout, kind, address):
-        return next(row for row in self.base.names if row.key == (layout, kind, address))
-
-    def test_bind_starts_the_file_of_an_unnamed_meaning_with_its_home_symbol(self):
+    def test_bind_extends_an_unnamed_meaning_and_preserves_its_owned_home(self):
         change, texts, result = self.plan(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"))
         path = Path("kb/tbl/astute-toad.toml")
-        self.assertEqual(list(texts), [names.PATH, path])
+        self.assertEqual(list(texts), [path])
         document = tomllib.loads(texts[path])
         self.assertEqual(texts[path], store.render("tbl", document))
         home, bound = document["symbol"]
-        self.assertEqual(home, {"layout": "7mfk", "address": f"{TABLE_HOME:08x}",
-                                "name": "astute-toad"})
+        self.assertEqual(home, self.table_home)
         self.assertEqual(bound["address"], f"{TABLE_JK00C:08x}")
         self.assertRegex(bound["name"], vocab.GENERATED_NAME)
         self.assertEqual(bound["evidence"], [TABLE_EVIDENCE])
         self.assertNotIn(("7mfk", "tbl", TABLE_HOME),
-                         {row.key for row in names.parse(texts[names.PATH])})
+                         {row.key for row in result.names})
         key = SymbolKey("jk00c", "tbl", TABLE_JK00C)
         meaning = result.meaning_of(key)
         self.assertEqual(meaning.key, TABLE)
@@ -84,18 +89,16 @@ class PlanTest(unittest.TestCase):
             f"bind {bound['name']}/tbl/jk00c-{TABLE_JK00C:08x}: masked-match at jk00c:0004820a "
             "to 7mfk:00047282 count 1 value 40"])
 
-    def test_bind_of_a_named_meaning_keeps_the_row_names_as_former_references(self):
-        row = self.row("7mfk", "fn", SELECTOR_HOME)
+    def test_bind_of_a_named_meaning_keeps_the_owned_former_references(self):
         _, texts, result = self.plan(bind(SELECTOR, f"jk78c:{SELECTOR_JK78C:08x}", note="probe",
                                           level="candidate"))
         document = tomllib.loads(texts[store.path_of("fn", "accelerator_pedal_pair_selector")])
         home, bound = document["symbol"]
-        self.assertEqual(home, {"layout": "7mfk", "address": f"{SELECTOR_HOME:08x}", "former": [
-            f"{name}/fn/7mfk-{SELECTOR_HOME:08x}" for name in (row.name, *row.former)]})
+        self.assertEqual(home, self.selector_home)
         self.assertEqual((bound["level"], bound["note"]), ("candidate", "probe"))
         self.assertNotIn("name", bound)
         symbol = result.symbols[SymbolKey("7mfk", "fn", SELECTOR_HOME)]
-        self.assertEqual(symbol.former, (row.name, *row.former))
+        self.assertEqual(symbol.former, ("probe-heron", "probe-otter"))
         self.assertEqual(symbol.meaning.key, SELECTOR)
 
     def test_a_batch_writes_the_statuses_of_one_meaning_into_its_file(self):
@@ -497,11 +500,11 @@ class SetTest(unittest.TestCase):
 
     def test_set_writes_the_bits_of_a_meaning_and_the_override_of_a_symbol(self):
         change, texts, result = write.plan([
-            assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "code"}]}),
+            assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "pattern"}]}),
             assign(INHIBIT, {"bit": [{"bit": 6, "name": "active"}], "note": "probe"},
                    layout="jk00c")], self.base, write.model_resolver(self.base))
         document = tomllib.loads(texts[self.INHIBIT_FILE])
-        self.assertEqual(document["bit"], [{"bit": 2, "name": "active", "level": "code"}])
+        self.assertEqual(document["bit"], [{"bit": 2, "name": "active", "level": "pattern"}])
         entry = next(entry for entry in document["symbol"] if entry["layout"] == "jk00c")
         self.assertEqual((entry["bit"], entry["note"]), ([{"bit": 6, "name": "active"}], "probe"))
         overlay = {**self.base.overlay, **texts}
@@ -511,6 +514,13 @@ class SetTest(unittest.TestCase):
         self.assertEqual(symbol.value("bit"), [{"bit": 6, "name": "active"}])
         self.assertEqual(change.lines, [f"set {INHIBIT}: bit",
                                         f"set {self.INHIBIT_JK00C}: bit, note"])
+
+    def test_set_refuses_a_code_bit_without_its_own_evidence(self):
+        with self.assertRaises(KbError) as caught:
+            write.plan([assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "code"}]})],
+                       self.base, write.model_resolver(self.base))
+        self.assertEqual(caught.exception.code, 3)
+        self.assertIn("bit active: the bit level code lacks grounding", str(caught.exception))
 
     def test_tables_join_and_an_unset_key_leaves_no_empty_table(self):
         texts = self.change(assign(self.PROBE, {"basis": {"notes": "x", "maps": "native"}},
@@ -580,7 +590,7 @@ def link(meaning, type_, to, cmd="link", **keys):
 class LinkTest(unittest.TestCase):
     """`link` and `unlink` over a base whose file of RPM states its reader
     link to MACHINE and one to KERNEL by the generated name of the 1ND symbol
-    of KERNEL; defs/JK08A.funcs.csv states the reader link of RPM to BUILDER.
+    of KERNEL. RPM owns its reader link to BUILDER after the ledger conversion.
     The file of ALTERNATE states its axis link to AXIS in slot x and its
     reader link to ACCESSOR with the role accessor."""
 
@@ -616,22 +626,29 @@ class LinkTest(unittest.TestCase):
     def links(self, texts, to):
         return [item for item in tomllib.loads(texts[self.RPM_FILE])["link"] if item["to"] == to]
 
-    def test_link_starts_the_file_of_its_meaning_with_the_link(self):
-        change, texts, result = self.plan(link(SELECTOR, "depends", THROTTLE, keys={
-            "role": "input", "relies": "contract"}, evidence=[SPEC]))
+    def test_link_extends_the_converted_file_without_losing_its_facts(self):
         path = store.path_of("fn", "accelerator_pedal_pair_selector")
+        held = store.load(repo.ROOT, path)
+        change, texts, result = self.plan(link(SELECTOR, "depends", THROTTLE, keys={
+            "role": "input", "relies": "structure"}, evidence=[SPEC]))
         self.assertEqual(list(texts), [path])
-        self.assertEqual(tomllib.loads(texts[path]), {
-            "symbol": [{"layout": "7mfk", "address": f"{SELECTOR_HOME:08x}"}],
-            "link": [{"type": "depends", "to": THROTTLE, "relies": "contract", "role": "input",
-                      "evidence": [SPEC]}]})
+        wanted = {**held, "link": [*held.get("link", ()), {"type": "depends", "to": THROTTLE,
+                  "relies": "structure", "role": "input", "evidence": [SPEC]}]}
+        self.assertEqual(texts[path], store.render("fn", wanted))
         meaning = result.meaning_of(SymbolKey("7mfk", "fn", SELECTOR_HOME))
         [found] = [item for item in meaning.links
                    if item.type == "depends" and item.to.key == THROTTLE]
-        self.assertEqual(found.props.get("relies"), "contract")
+        self.assertEqual(found.props.get("relies"), "structure")
         self.assertIn(path.as_posix(), found.sources)
         self.assertEqual(change.lines, [f"link {SELECTOR} depends {THROTTLE}: spec path "
                                         "tools/kb/SPEC.md"])
+
+    def test_link_refuses_reliance_on_a_missing_contract(self):
+        with self.assertRaises(KbError) as caught:
+            self.plan(link(SELECTOR, "depends", THROTTLE, keys={
+                "role": "input", "relies": "contract"}, evidence=[SPEC]))
+        self.assertEqual(caught.exception.code, 3)
+        self.assertIn("which declares no contract_level", str(caught.exception))
 
     def test_link_joins_the_keys_and_the_evidence_of_the_held_link(self):
         change, texts, _ = self.plan(
@@ -668,6 +685,42 @@ class LinkTest(unittest.TestCase):
                       "slot = 'y'); slot or offset chooses one",
                       self.refused(axis, {**axis, "cmd": "unlink", "keys": {}}, code=4))
 
+    def test_unlink_withdraws_converted_dependency_tokens_at_both_claiming_ends(self):
+        before = ledger_projection.render(self.base)
+        _, _, result = self.plan(
+            link(self.RPM, "reader", self.BUILDER, cmd="unlink"),
+            link(self.RPM, "writer", "coherent_snapshot/fn", cmd="unlink"))
+        after = ledger_projection.render(result)
+        builder, _ = write.model_resolver(self.base)(self.BUILDER)
+        for registry, address, token in (
+                ("funcs", builder.symbols["7mfk"].address, "indexed_by:ffff11bc@structural"),
+                ("vars", self.RPM_HOME, "writes:00020dfe@structural"),
+                ("funcs", 0x20DFE, "writes:ffff11bc@structural")):
+            path = f"defs/JK08A.{registry}.csv"
+            old = {row["addr"]: row for row in csv.DictReader(io.StringIO(before[path]))}
+            new = {row["addr"]: row for row in csv.DictReader(io.StringIO(after[path]))}
+            key = f"{address:08x}"
+            with self.subTest(registry=registry, address=key):
+                self.assertIn(token, old[key]["evidence"])
+                self.assertNotIn(token, new[key]["evidence"])
+
+    def test_a_write_refuses_an_evidence_index_that_its_ledger_still_selects(self):
+        with self.assertRaises(KbError) as caught:
+            self.plan(assign(self.RPM, {"evidence": [SPEC]}, layout="7mfk"))
+        self.assertEqual(caught.exception.code, 3)
+        self.assertIn("ledgers:", str(caught.exception))
+        self.assertIn("invalid evidence selection", str(caught.exception))
+
+    def test_unlink_can_remove_a_word_base_relation_to_its_own_group(self):
+        word = self.base.symbols[SymbolKey("7mfk", "ram", 0xFFFF120E)]
+        _, _, result = self.plan(link(word.meaning.key, "base", word.meaning.key,
+                                     keys={"offset": 0x12}, cmd="unlink"))
+        found = result.meaning_of(word.key)
+        self.assertFalse(any(item.owner is found and item.to is found
+                             and item.type == "base" and item.offset == 0x12
+                             for item in result.links))
+        ledger_projection.render(result)
+
     def test_links_refuse_what_the_schema_or_the_files_contradict(self):
         machine = link(self.RPM, "reader", self.MACHINE)
         cases = [
@@ -685,9 +738,6 @@ class LinkTest(unittest.TestCase):
             ({**machine, "keys": {"via": "x"}}, 2, "via is an array"),
             ({**machine, "keys": {"title": "x"}}, 2, "a link takes no title here"),
             ({**machine, "keys": {"layouts": ["k9"]}}, 5, "unknown layout 'k9'"),
-            (link(self.RPM, "reader", self.BUILDER, cmd="unlink"), 3,
-             f"defs/JK08A.funcs.csv states the reader link of {self.RPM} to {self.BUILDER}; a "
-             "registry owns its facts until its conversion"),
             (link(self.RPM, "reader", self.ACCESSOR, cmd="unlink"), 5,
              f"{self.RPM} has no reader link to {self.ACCESSOR}"),
             ({**machine, "cmd": "unlink", "keys": {"role": "consumer"}}, 2,
@@ -826,13 +876,33 @@ class RenameMeaningTest(unittest.TestCase):
         self.assertRegex(change.lines[0],
                          rf"^rename {THROTTLE} to throttle_state/ram; \d+ references rewritten$")
 
+    def test_rename_of_a_converted_curated_function_projects_its_name_and_reserves_the_former(self):
+        before = ledger_projection.render(self.base)["tools/ghidra/symbols/7mfk.csv"]
+        _, _, result = self.plan(rename(SELECTOR, "probe_selector"))
+        after = ledger_projection.render(result)["tools/ghidra/symbols/7mfk.csv"]
+        self.assertEqual(after, before.replace(
+            f"{SELECTOR_HOME:08x},accelerator_pedal_pair_selector,",
+            f"{SELECTOR_HOME:08x},probe_selector,"))
+        meaning = result.meaning_of(SymbolKey("7mfk", "fn", SELECTOR_HOME))
+        self.assertEqual(meaning.key, "probe_selector/fn")
+        self.assertIn("accelerator_pedal_pair_selector",
+                      [name for name, _, _ in meaning.other_names])
+
+    def test_rename_preserves_a_word_base_relation_to_its_own_group(self):
+        word = self.base.symbols[SymbolKey("7mfk", "ram", 0xFFFF120E)]
+        before = ledger_projection.render(self.base)
+        _, _, result = self.plan(rename(word.meaning.key, "probe_base_word"))
+        found = result.meaning_of(word.key)
+        [base] = [item for item in result.links if item.owner is found and item.to is found
+                  and item.type == "base" and item.offset == 0x12]
+        self.assertEqual(base.offset, 0x12)
+        self.assertEqual(ledger_projection.render(result), before)
+
     def test_renames_refuse_the_names_that_the_model_holds(self):
         cases = [
             (rename(THROTTLE, "throttle_runtime"), 2, f"{THROTTLE} has the name throttle_runtime"),
             (rename(THROTTLE, "fuel_inhibit"), 3, f"{INHIBIT} exists"),
             (rename(THROTTLE, "Throttle"), 2, "'Throttle' is no semantic name"),
-            (rename(SELECTOR, "probe_selector"), 3, f"tools/ghidra/symbols/7mfk.csv names "
-             f"{SELECTOR}; a registry owns its facts until its conversion"),
             (rename("nothing/ram", "probe_cell"), 5, "no meaning 'nothing/ram'"),
         ]
         for op, code, message in cases:

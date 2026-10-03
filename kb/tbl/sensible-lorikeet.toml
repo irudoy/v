@@ -1,0 +1,173 @@
+summary = """
+The interpolated value serves as a nonzero enable condition for state 2: the \
+map result is stored in ffff25bf; while processing state 2, result != 0 \
+permits the subsequent test battery-voltage raw ffff1188 > 100, while zero \
+routes control to the branch that sets state 1. All map nodes are 26..60, so \
+a value obtained directly from the map is nonzero."""
+note = [
+    """
+Exact DID 0x1103 identifies ffff1188 as battery voltage. Under the \
+source-bound 0.08 V/count conversion, the enabled state-2 branch retains the \
+state only above 8.00 V. The physical meaning of input ffff27b5 and the \
+state itself remains unresolved. The zero branch cannot be treated as dead \
+because code tests a stored RAM byte rather than the direct result in the \
+same basic block; ffff25bf has no external readers.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 193
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pink-gharial/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012ae2"
+name = "sensible-lorikeet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "60,60,60,40,40,26,26,26"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038aae"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ab6"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038aba"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038ac4"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038af0"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038af2"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038af4"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038afc"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038afe"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b00"
+value = {named = ["00012ae2", "00012b02", "00026474", "00026740", "00026944", "00038618", "ffff1188"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "pink-gharial/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "battery_voltage/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

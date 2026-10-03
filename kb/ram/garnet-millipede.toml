@@ -1,0 +1,210 @@
+summary = """
+Bank-1 previous-pass snapshot of exhaust-cam edge phase byte ffff1200. \
+Scheduler 00020dfe copies it through the 0x38-byte block ffff11d4..ffff120b \
+-> ffff119c..ffff11d3 at 00020f6c. Monitor 0008f168 forms rest-position byte \
+ffff16ba = clamp_u8(ffff11c8 - ROM8[0000831d] + 128) from it at 0008f4ec, \
+FUN 000bfc2e reads it per bank at 000bfc78, FUN 00090bd2 at 00090c36, and \
+FUN 000bfad4 and FUN 00090884 read it directly. FUN 000bfad4 forms rest-edge \
+deviation ffff1376 = 128 + clamp(ROM8[0000831d] - ffff11c8, -40..40) from it \
+at 000bfb4a and learns rest edge ffff479b from that, and FUN 000bfc2e forms \
+deviation d0 = clamp_u8(ffff11c8 - ffff479b + 128) at 000bfcaa."""
+note = [
+    """
+One unit is 0.5 crank degrees: 000c2d76 forms the byte as 20*segment + \
+20*interval/ffff22bc, where ffff22bc is 10 crank degrees. The bank \
+assignment follows monitor index 0, which routes to descriptor 0xd2 (P0014, \
+bank 1).""",
+]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 793
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "elastic-locust/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loose-frigatebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "whimsical-quokka/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smooth-chicken/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11c8"
+name = "garnet-millipede"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008834=40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f4ec"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090c36"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfb4a"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc78"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfcaa"
+value = {named = ["0000831d", "00008834", "00020dfe", "0008f168", "00090884", "00090bd2", "000bfad4", "000bfc2e", "ffff11c8", "ffff1200"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "smooth-chicken/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "elastic-locust/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "loose-frigatebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "merciful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "whimsical-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

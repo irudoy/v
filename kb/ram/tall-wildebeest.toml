@@ -1,0 +1,61 @@
+summary = """
+State or countdown byte referenced by table-driven monitor entry 6 at ROM \
+0x23c14. FUN 000a6dc4 dispatches the entry's descriptor only when this byte \
+reaches zero after all table conditions pass."""
+note = [
+    """
+The path-B P0447 entry is skipped in stock JK08A before this state is \
+evaluated because ROM8[0x18700].bit0 is clear.""",
+]
+level = "code"
+unit = "countdown state"
+
+[[ledger]]
+registry = "vars"
+order = 423
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "festive-gopher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4348"
+name = "tall-wildebeest"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00023c24"
+value = "ffff4348"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6f72"
+value = {named = ["00023c24", "000a6dc4", "ffff4348"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6f7e"
+value = {named = ["00023c24", "000a6dc4", "ffff4348"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "festive-gopher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff4020"
+name = "subtle-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005ac80"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3d66"
+name = "rare-millipede"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00073c3a"

@@ -1,0 +1,116 @@
+summary = """
+Diagnostic service-0x30 IOLID-0x0c value byte. FUN 00030c4c stores the \
+requested Power Balance mask; FUN 00050a06 copies it to cache ffff2b2c while \
+the IOLID is active."""
+note = [
+    """
+A structured Nissan-family profile maps bits 1..32 to cylinders 1..6. Exact \
+electrical channel order remains a hardware boundary.""",
+]
+level = "code"
+unit = "six-channel bit mask"
+
+[[diagnostic]]
+id = "power-balance-mask-iolid-0c"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:iolid-0ch-power-balance-param"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:iolid-0ch-power-balance-param-c9761d97"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+Exact service-0x30 handling maps IOLID 0x0c to ffff992f. The structured \
+Nissan-family profile identifies it as Power Balance and maps bits 1..32 to \
+cylinders 1..6; the homologous VQ35HR factory ESM defines the test as \
+cutting one injector signal at a time."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "power_balance_mask_update/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "power_balance_mask_apply/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050a12"
+value = {named = ["00030c4c", "00050a06", "00050a34", "c9761d97", "ffff992f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050a46"
+value = {named = ["00030c4c", "00050a06", "00050a34", "c9761d97", "ffff992f"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "nissan_service_30_output_control/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 173
+binding = "power-balance-mask-iolid-0c"
+
+[[ledger]]
+registry = "vars"
+order = 641
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nissan_service_30_output_control/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff992f"
+name = "precious-ostrich"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050a12"
+value = {named = ["00030c4c", "00050a06", "ffff992f"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "nissan_service_30_output_control/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

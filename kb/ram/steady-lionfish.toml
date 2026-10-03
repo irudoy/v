@@ -1,0 +1,128 @@
+summary = """
+Signed timing-state byte written by 000493e8 as truncation toward zero of \
+int16(ffff121a)/256 and consumed directly by engine-event correction builder \
+0004d99c."""
+note = [
+    """
+For negative ffff121a the writer adds 0xff before extracting the upper byte, \
+so this is not an unconditional high-byte copy.""",
+]
+level = "code"
+unit = "signed state byte"
+
+[[ledger]]
+registry = "vars"
+order = 602
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_detonation_timing_state/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_octane_timing_state/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_timing_state/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_function/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22fa"
+name = "steady-lionfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000496d8"
+value = {named = ["00009a1a", "00009b1a", "000493e8", "0004d99c", "ffff121a", "ffff22fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d9e4"
+value = {named = ["00009a1a", "00009b1a", "000493e8", "0004d99c", "ffff121a", "ffff22fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004da00"
+value = {named = ["00009a1a", "00009b1a", "000493e8", "0004d99c", "ffff121a", "ffff22fa"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "knock_timing_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "high_detonation_timing_state/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "high_octane_timing_state/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

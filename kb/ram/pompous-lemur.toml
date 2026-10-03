@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff23a5"
+name = "pompous-lemur"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003e65e"

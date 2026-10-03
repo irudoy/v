@@ -1,0 +1,157 @@
+summary = """
+Bit 3 is the wide-open-throttle latch of stage 0005594a: set when \
+throttle-opening byte ffff3528, plus 8 while already set, is >= the flat 200 \
+of map 0001214e, which is 78.4 percent of throttle opening. While set, \
+0005594a and 000bfdc0 force 0xff onto the upper load axis instead of normal \
+source ffff102c (000bfdc0 additionally requires ffff5773 bit 0), and request \
+byte ffff1411 takes its wide-open branches. Bit 4 selects column 0 or 1 of \
+engine-speed fuel-cut table 0000934e in 0004f282."""
+note = [
+    """
+The percentage follows the code scale of axis 000155a0 through ffff40c6 and \
+00054eb8: byte 200 of 255 is 78.4 percent on the same gradient 0006f236 \
+publishes as J1979 PID 0x11. The public HR A2L catalog labels the two \
+fuel-cut columns Normal and Reverse; exact code proves the two-way selection \
+but not those physical mode labels.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 177
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-stork/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "notorious-ringtail/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "acrid-hound/tbl"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2468"
+name = "maroon-unicorn"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055982"
+value = {named = ["0001214e", "0004f282", "0005594a", "000bfdc0", "ffff2468", "ffff3528", "ffff5773"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055994"
+value = {named = ["0001214e", "0004f282", "0005594a", "000bfdc0", "ffff2468", "ffff3528", "ffff5773"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "artichoke-stork/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "notorious-ringtail/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "acrid-hound/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

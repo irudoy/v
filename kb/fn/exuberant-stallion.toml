@@ -1,0 +1,32 @@
+role = "service"
+contract = """
+Arithmetic signed right shift: r0 = (int32)r0 >> r1, dispatched through a \
+32-entry jump table. The count is compared as signed. It clobbers r1; r2 is \
+preserved on the stack. It is pure, with no RAM writes and no error branch."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 45
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "0002235c"
+name = "exuberant-stallion"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "0002231c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002235c"

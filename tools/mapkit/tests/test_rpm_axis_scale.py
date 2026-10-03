@@ -466,7 +466,7 @@ def test_source_revision_and_fragment_identity_are_pinned(source_claim):
 
 
 def test_compiled_axis_owners_bind_typed_scale_tests_and_ast():
-    from kb import checks, compile, match, repo
+    from kb import checks, compile, match, repo, store
     from kb.model import SymbolKey
 
     model = compile.cached(repo.ROOT)
@@ -476,7 +476,8 @@ def test_compiled_axis_owners_bind_typed_scale_tests_and_ast():
         symbol = model.symbols[SymbolKey("7mfk", "axis", axis["address"])]
         assert {key: symbol.value(key) for key in ("unit", "scale", "to_raw", "scale_level")} == {
             "unit": "RPM", "scale": "x*50", "to_raw": "x/50", "scale_level": "candidate"}
-        assert "defs/JK08A.axes.csv" in symbol.sources
+        assert symbol.sources == {store.path_of("axis", symbol.meaning.name).as_posix()}
+        assert checks._owned(model, symbol)
         [item] = [item for item in symbol.evidence if item.get("kind") == "test"
                   and item.get("path") == THIS_TEST]
         assert item == {"kind": "test", "supports": "scale", "path": THIS_TEST, "key": axis["key"]}
@@ -512,11 +513,13 @@ def test_editor_inverse_is_a_grid_inverse_not_a_physical_reconstruction():
 
 
 def test_current_rpm_word_note_preserves_quantization_and_sample_age(image):
-    from kb import compile, repo
+    from kb import checks, compile, repo, store
     from kb.model import SymbolKey
 
-    symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "ram", 0xFFFF11F4)]
-    assert "defs/JK08A.vars.csv" in symbol.sources
+    model = compile.cached(repo.ROOT)
+    symbol = model.symbols[SymbolKey("7mfk", "ram", 0xFFFF11F4)]
+    assert symbol.sources == {store.path_of("ram", "authentic-wasp").as_posix()}
+    assert checks._owned(model, symbol)
     [note] = symbol.value("note")
     for required in ("W = 4*B + ((U >> 6) & 3)", "nominal", "raw-value equality",
                      "different producer sample", "saturated byte ffff11b3"):

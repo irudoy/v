@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ae"
+name = "encouraging-zebu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00062d2e"
+
+[[link]]
+type = "lookup"
+to = "sensible-ringtail/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

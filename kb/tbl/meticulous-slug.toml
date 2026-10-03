@@ -1,0 +1,160 @@
+summary = """
+8x8 table whose zero-extended byte lookup result is used as a multiplicative \
+coefficient in 000526a0"""
+note = [
+    """
+At site 000526c2, base 00009eda is passed together with r5 as unsigned byte \
+ffff106f and r6 as unsigned byte ffff10f0. The return value is copied to r11 \
+and used directly as a multiplier at site 000526e6. This supports only \
+narrow operational coefficient semantics; the physical subsystem, X/Y order, \
+and input units are unknown. No axes are claimed because the artifact \
+identifies only implicit inputs for the map and contains no associated Axis \
+claim. RAM ffff15de is not treated as the target map's sink because there is \
+no direct binding and the MACL machine flow through 00026370 is not shown. \
+Index: implicit-2d. Output trace: 00009eda -> site:000526b8 (r4) -> \
+site:000526c2 (call 00026040) -> r0 -> site:000526c6 (extu.b r0,r11) -> \
+site:000526e6 (mul.l r11,r14). Result disposition: consumer; Result target: \
+site:000526e6. Evidence boundary: The body and contract of 00026040 are \
+absent. Site 000526c2 shows r4=00009eda being passed, but the artifact \
+contains no cell-read instruction or finisher linking the contents of \
+00009eda to r0. The link from the mul.l result at site 000526e6 to RAM is \
+also interrupted by the opaque call to 00026370 at site 000526ec before sts \
+macl at site 000526f0.""",
+]
+level = "candidate"
+role = "table"
+access = "implicit-2d"
+cols = 8
+rows = 8
+storage = "uint8"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 52
+fields = [
+    "family",
+    "width",
+    "height",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "natural-degu/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009eda"
+name = "meticulous-slug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526b4"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526b8"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526bc"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526be"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526c2"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526c4"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526c6"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000526e6"
+value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
+key = "body"
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "sapphire-leopard/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

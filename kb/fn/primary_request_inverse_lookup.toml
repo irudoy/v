@@ -1,0 +1,197 @@
+title = "Convert the shared signed request into inverse lookup coordinates"
+summary = """
+Primary RPM-row interpolation and inverse-coordinate lookup. It selects or \
+interpolates one 16-point offset-binary output row of 0000e98e over byte \
+axis 00011d0c, then searches that row with centered signed request ffff19c6 \
+or ffff243c plus 0x8000 and returns values from 00014114. Results are \
+written to ffff1984 and ffff198a."""
+note = [
+    """
+The operational transform is exact. Physical QH0/torque identity and \
+engineering scales remain catalog candidates. At site 000735ac the resolver \
+snapshot retains r5=0x8000 before delay-slot instruction 000735ae replaces \
+r5 with the local row pointer. Value 0x8000 is only the offset-binary bias \
+and is never dereferenced as an axis.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 134
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 222
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "able-bison/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "slim-gharial/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_request_bounded/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-binturong/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerated-whippet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sepia-cheetah/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00073432"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734a8"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734c8"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734ca"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734ce"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007350c"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073544"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007354c"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735a4"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735ac"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735bc"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735c0"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000735ca"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00021ce0", "000264f8", "00073432", "ffff1984", "ffff198a", "ffff19c6", "ffff243c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "slim-gharial/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

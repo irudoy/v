@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff44e"
+name = "capable-mamba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000271ce"
+
+[[link]]
+type = "reader"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

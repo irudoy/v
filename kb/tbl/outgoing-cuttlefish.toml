@@ -1,0 +1,157 @@
+summary = """
+Dimensionless raw/128 coefficient that scales a positive 32-bit Q16 quantity \
+on the positive branch of 000c1dec."""
+note = [
+    """
+The decompiled expression splits the positive Q16 quantity into high and low \
+16-bit words and calculates floor(value * factor / 128) exactly. Raw 128 \
+represents coefficient 1; map range 102..128 represents 0.796875..1. Limit \
+0x04000000 applies to the derived result and not to the map scale. ffff143a \
+stores a copy of the interpolated byte; a local copy is consumed inside \
+000c1dec.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "1"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 113
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+scale = [8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "little-marmot/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curious-perch/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001205a"
+name = "outgoing-cuttlefish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ecc"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ed0"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ed4"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ed8"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ee2"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c1ed8"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c1ee2"
+value = {named = ["0001205a", "00012850", "00026474", "00026740", "00026944", "000c1dec", "ffff143a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "little-marmot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+reverse_relies = "structure"
+reverse_supports = "identity"

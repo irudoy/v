@@ -1,0 +1,120 @@
+summary = """
+Descriptor-class status handler selected by common dispatcher 0007d8b8 when \
+descriptor byte 8 bit 6 is set. It always sets bits 0 and 1 in the \
+descriptor runtime record's third byte. With any ffff5b2b bit 4..6 set, it \
+calls FUN 0008c942, which sets record bits 3 and 6. With all three selector \
+bits clear, it sets record bit 5, calls FUN 0008c968 to set record bit 4, \
+and sets global ffff5b2c.bit3."""
+note = [
+    """
+The two branches are tied to reporter argument polarity through \
+ffff5b2b.bits4..6. Internal runtime-record bits are not assigned UDS status \
+names.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 418
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jumping-carp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "defiant-tiger/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007dc32"
+name = "ultraviolet-mushroom"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dc50"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dc5a"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dc60"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dca4"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dd74"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dd90"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dd9e"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007dda2"
+value = {named = ["0007dc32", "0008c942", "0008c968", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "provocative-vulture/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "cherry-wildcat/fn/7mfk"
+relies = "level"

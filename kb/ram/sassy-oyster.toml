@@ -1,0 +1,208 @@
+summary = """
+Previous-pass snapshot of engine-oil-temperature byte ffff2876, the DID \
+0x111f source. Scheduler 00020dfe copies it through the 0x104-byte block \
+ffff277e..ffff2881 -> ffff267a..ffff277d at 00020fcc. FUN 000c1dec reads it \
+at 000c1ece as the coordinate of exhaust-VTC gain curve 0001205a over axis \
+00012850, enable coordinator 000bf630 forms hysteresis flag ffff246c bit 3 \
+from it against ROM8[00008dff]=110 at 000bf73e, and FUN 000bfe88 with eleven \
+further functions read it. With ROM8[00008616] bit 0 set, as in stock JK08A, \
+FUN 0003eb84 publishes the converted oil-temperature sample in ffff2876, so \
+the coordinate follows the engine oil temperature and the gain is 102 up to \
+raw 100 (50 degC) and 128 from raw 135 (85 degC)."""
+note = [
+    """
+Readers: 000658a4, 00099efe, 0009a0d4, 000bd20a, 000bdb66, 000bdc66, \
+000be32a, 000be5bc, 000be8f8, 000bec52, 000befb0, 000bf630, 000bfe88, \
+000c1dec. The representation follows ffff2876: deg C = raw-50, established \
+by code on that row.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 772
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "outgoing-cuttlefish/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "little-marmot/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "oil_temperature_did_source/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2772"
+name = "sassy-oyster"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dff=110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fcc"
+value = {named = ["00008616", "00008dff", "0001205a", "00012850", "00020dfe", "000bf630", "000bfe88", "000c1dec", "ffff2772", "ffff2876"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ecae"
+value = {named = ["00008616", "00008dff", "0001205a", "00012850", "00020dfe", "000bf630", "000bfe88", "000c1dec", "ffff2772", "ffff2876"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf73e"
+value = {named = ["00008616", "00008dff", "0001205a", "00012850", "00020dfe", "000bf630", "000bfe88", "000c1dec", "ffff2772", "ffff2876"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ece"
+value = {named = ["00008616", "00008dff", "0001205a", "00012850", "00020dfe", "000bf630", "000bfe88", "000c1dec", "ffff2772", "ffff2876"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "little-marmot/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "oil_temperature_did_source/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "outgoing-cuttlefish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daft-herring/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

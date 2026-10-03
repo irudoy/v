@@ -1,0 +1,76 @@
+summary = """
+Bounded timing-state byte produced by 0004bdc2 in crank degrees. The normal \
+branch is \
+clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a), \
+which is base angle ffff23f1 plus (low7-64) plus (ffff1a7d-64) minus the \
+unsigned retard terms; the alternate branch is \
+clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64). FUN 0004c136 can latch it into \
+ffff2404."""
+note = [
+    """
+One count is one crank degree of the J1979 PID 0x0E coordinate ffff11d4; \
+every downstream coefficient is 1.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 597
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_latch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "timing_state_compositor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1830"
+name = "obedient-civet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bee2"
+value = {named = ["0004bdc2", "0004c136", "ffff1830"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c178"
+value = {named = ["0004bdc2", "0004c136", "ffff1830"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "timing_state_latch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

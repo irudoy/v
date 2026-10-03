@@ -1,0 +1,35 @@
+role = "service"
+contract = """
+Not a standalone function: count-7 leaf of left-shift ladder 000221bc and \
+also the base of its jump table. It computes r0 = r0 << 7, discarding bits \
+beyond bit 31 without saturation. Entry is only through the dispatcher's \
+jmp: rts restores r2 placed on the stack by prologue 000221bc, so a direct \
+call would misalign the stack."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 41
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "000221e6"
+name = "refreshing-seal"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "copper-crayfish/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000221e6"

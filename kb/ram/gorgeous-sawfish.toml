@@ -1,0 +1,110 @@
+summary = """
+Misfire attribution cylinder number 1..6 of the current interval sample. The \
+common tail of 00028ea2 writes ROM8[0002265c + ffff11de] on tooth 9 together \
+with interval ffff1dac; detection core 00085a70 and helper 00086b0c use \
+twice the value as the offset of the per-cylinder event counters."""
+note = [
+    """
+Event index c maps to cylinder c + 3 modulo six, the cylinder whose \
+expansion stroke fills the interval tested by the detection metrics. Counter \
+element 1 reports P0301 through 00084aa4 and 00084cd0, so event index \
+ffff11de is the cylinder number.""",
+]
+level = "code"
+unit = "cylinder number 1..6"
+
+[[ledger]]
+registry = "vars"
+order = 896
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lovely-koala/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4038"
+name = "gorgeous-sawfish"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0002265c=[0,4,5,6,1,2,3]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a222"
+value = {named = ["0002265c", "00028ea2", "00085a70", "00086b0c", "ffff11de", "ffff4038"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a228"
+value = {named = ["0002265c", "00028ea2", "00085a70", "00086b0c", "ffff11de", "ffff4038"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "lovely-koala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

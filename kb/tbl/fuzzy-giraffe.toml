@@ -1,3 +1,28 @@
+summary = """
+Positive-branch coefficient for a difference between two channels: when \
+s16[ffff288c+2*i]-s16[ffff4020+2*i]>=0, the lookup result multiplies this \
+difference, the product is divided by 100 as unsigned, and the quotient is \
+added to 500 before a 16-bit write to ffff40a4+2*i."""
+note = [
+    """
+The physical subsystem is not established by code. All four bytes equal 100, \
+so the current calibration gives coefficient 1 over the entire range. The \
+lookup result is also written at 0005ad58 to ffff409c+i; the artifact \
+contains no external readers of this indexed output. There is no explicit \
+ROM axis. The inverse scale is exact on the representable grid with step \
+0.01. Index: implicit 1D-4 uint8; c=min(255,2*max(u8[ffff3529+i]-104,0)), \
+i=0..1; for c<192, kernel 00026a7c interpolates adjacent uint8 cells through \
+Q0.16 finisher 00026740; for c>=192, wrapper 00026358 returns cell 3. Result \
+disposition: consumer (site 0005ad5c).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/100"
+to_raw = "x*100"
+scale_level = "code"
+
 [editor]
 name = "Positive Difference Coefficient /100 (0x12522)"
 category = "Internal Calculations"
@@ -7,7 +32,247 @@ format = "0.00"
 fine = 0.01
 coarse = 0.1
 
+[[ledger]]
+registry = "findings"
+order = 337
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13, 14, 15, 16, 17, 18, 19]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "meaty-pheasant/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "neon-groundhog/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "subtle-inchworm/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intelligent-mantis/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "modest-walrus/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012522"
 name = "fuzzy-giraffe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ac92"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ac98"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005aca6"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acac"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acb2"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4a"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4e"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad52"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad58"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad5c"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad66"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad78"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ad5a"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ad5c"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ad60"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005ad62"
+value = {named = ["00012522", "00021ce0", "00026740", "ffff288c", "ffff3529", "ffff4020", "ffff409c", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*100=100"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "100/100=1"
+
+[[link]]
+type = "index"
+to = "meaty-pheasant/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "independent-leopard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "selector"
+to = "neon-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "subtle-inchworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

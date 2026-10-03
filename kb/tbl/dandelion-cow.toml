@@ -1,0 +1,163 @@
+summary = """
+First channel of a paired 8x8 uint16 calculation with shared axes. The \
+interpolated result is stored in an internal RAM slot, participates in \
+summation with a converted result of map 000148fa, undergoes offsetting and \
+saturation, and is written to ffff29e2."""
+note = [
+    """
+Code confidence applies to first-channel arithmetic. The AFR Correction Map \
+identity and bank number remain candidate. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 80
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enlightened-orangutan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "brainy-rat/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "truthful-chupacabra/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ruddy-reindeer/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000c10e"
+name = "dandelion-cow"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x17fff"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0xffff8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ede4"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ede8"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003edf8"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003edfe"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee86"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee8a"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ee8e"
+value = {named = ["0000c10e", "00013d54", "00013d94", "00026270", "000264f8", "0003edb4", "ffff29e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nondescript-seagull/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "brainy-rat/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "truthful-chupacabra/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

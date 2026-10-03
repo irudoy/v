@@ -1,7 +1,191 @@
+summary = """
+Dimensionless table-derived scaling coefficient: interpolated uint8 x is \
+applied to the signed deviation of a byte from 0x80 as multiplier x/100 \
+before converting the result to centered Q8"""
+note = [
+    """
+The claim is limited to the mathematical role proven by code, without a \
+physical signal name. For target branch param_1=1, the direct uint8 result \
+is written to ffff128c+0x036a+1=ffff15f7 at 000c0dec. The same x multiplies \
+deviation RAM[ffff1240+param_1]-0x80; expression \
+trunc(delta*x*256/100)+0x8000 is limited to the uint16 range and, according \
+to pseudocode, written to ffff128c+0x086c+2=ffff1afa. The physical quantity \
+of the input byte and readers of these calculated RAM addresses are \
+unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/100"
+to_raw = "x*100"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 149
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012532"
 name = "foamy-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0db0"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0db6"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dc0"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dca"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0ddc"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0de4"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dee"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0df0"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0df2"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0df6"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0de4"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0dee"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0df0"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0df2"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0df6"
+value = {named = ["00012532", "00021bbc", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +216,17 @@ value = "0001487f"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

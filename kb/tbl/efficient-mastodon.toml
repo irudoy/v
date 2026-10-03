@@ -1,3 +1,20 @@
+summary = """
+Signed table-derived term. The interpolated byte is written to ffff1660, \
+read by the consumer as int8, and enters as a doubled second reference level \
+in a weighted fixed-point calculation before ffff1600 is formed \
+conditionally."""
+note = [
+    """
+Code confidence applies to the narrow operational semantics; the physical \
+quantity is unknown. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Signed Weighted Reference Term - raw u8 (0x1198E)"
 category = "Internal Calculations"
@@ -7,7 +24,115 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 94
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lush-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-malkoha/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vermilion-grouse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001198e"
 name = "efficient-mastodon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005323e"
+value = {named = ["0001198e", "00021bbc", "0002642c", "00026740", "000532ae", "ffff128c", "ffff1600", "ffff1660"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053242"
+value = {named = ["0001198e", "00021bbc", "0002642c", "00026740", "000532ae", "ffff128c", "ffff1600", "ffff1660"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005324a"
+value = {named = ["0001198e", "00021bbc", "0002642c", "00026740", "000532ae", "ffff128c", "ffff1600", "ffff1660"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005325a"
+value = {named = ["0001198e", "00021bbc", "0002642c", "00026740", "000532ae", "ffff128c", "ffff1600", "ffff1660"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053280"
+value = {named = ["0001198e", "00021bbc", "0002642c", "00026740", "000532ae", "ffff128c", "ffff1600", "ffff1660"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "realistic-cormorant/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "outstanding-marmot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "reader"
+to = "lush-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

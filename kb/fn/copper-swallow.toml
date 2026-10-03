@@ -1,0 +1,108 @@
+summary = """
+Change counter of ffff417e.bit6. It compares the bit with previous-pass copy \
+ffff4180 and increments saturating counter ffff2b72 on each change."""
+note = [
+    """
+No static writer changes ffff417f.bit6, the source of scheduler copy \
+ffff417e, so the count stays below the threshold of 3 that 000682f6 \
+requires.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 671
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "armored-sawfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flat-teal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hulking-tortoise/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "armored-chupacabra/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000682a2"
+name = "copper-swallow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682a4"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682ae"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682b8"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682c6"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682ce"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682da"
+value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "armored-sawfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

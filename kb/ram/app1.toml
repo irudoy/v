@@ -1,6 +1,83 @@
+summary = """
+Exact JK08A UDS DID 0x120D source and first accelerator-pedal sensor \
+diagnostic value. FUN 000a7040 accepts ROM16[0x8ffc]=60..ROM16[0x8ff8]=964 \
+counts and dispatches P2123/P2122 outside that window."""
+note = [
+    """
+The acceptance window is 0.30..4.82 V at 5 mV per count and brackets the \
+factory band of 0.5..1.0 V released and 4.2..4.8 V depressed. Target \
+recordings hold the released word near 151 counts and reach 940 counts at \
+full stroke. The diagnostic display unit is V at 5 mV per count; \
+JK08A.diagnostics.md derives that scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "accelerator-pedal-position-1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:22120d"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0122-l0122:source-row-extended-pids:parameter:0x120d-b6487c98"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x120D to ffff269e, which is \
+also the value monitored by the exact P2123/P2122 path. The homologous Z34 \
+definition supplies the Accelerator Pedal Position 1 name and raw/200 V \
+conversion. Near-adjacent target readings give stream raw 153 = 0.765 V and \
+diagnostic 0.76 V."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "olivine-hawk/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228d0"
+value = {named = ["0003235c", "000a7040", "b6487c98", "ffff269e"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 62
+binding = "accelerator-pedal-position-1"
+
+[[ledger]]
+registry = "vars"
+order = 217
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "olivine-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +109,52 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff269e"
 former = ["optimal-hoatzin/ram/7mfk-ffff269e"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ff8=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008ffc=60"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228d0"
+value = {named = ["00008ff8", "00008ffc", "0003235c", "000a7040", "ffff269e"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a704c"
+value = {named = ["00008ff8", "00008ffc", "0003235c", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a70c2"
+value = {named = ["00008ff8", "00008ffc", "0003235c", "000a7040", "ffff269e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "964-counts-4.82v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec427-app1-depressed-4.2-4.8v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec427-app1-released-0.5-1.0v"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +192,20 @@ to = "7mfk:00056ee0"
 count = 1
 value = 12
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "olivine-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

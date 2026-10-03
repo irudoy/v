@@ -1,0 +1,125 @@
+summary = """
+APC command remainder paired with decade ffff1558. FUN 00028e7c creates the \
+modulo-ten value; normal scheduling can add 10 or 20 while carrying complete \
+decades through later position events."""
+note = [
+    """
+The current fractional compare is floor(ffff22bc*remainder/10); physical \
+crank-angle units remain unverified.""",
+]
+level = "code"
+unit = "command remainder"
+
+[[ledger]]
+registry = "vars"
+order = 592
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_set_compare_continuation/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_command_phase_normalizer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "split_u8_by_ten/fn"
+type = "writer"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff155a"
+name = "peridot-pony"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a8ba"
+value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff155a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a910"
+value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff155a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a914"
+value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff155a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002abe6"
+value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff155a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "apc_command_phase_normalizer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "apc_set_compare_continuation/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "apc_command_phase_normalizer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "split_u8_by_ten/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

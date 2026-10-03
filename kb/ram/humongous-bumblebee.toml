@@ -1,0 +1,233 @@
+summary = """
+Bounded uint16 written and read within 00077892. The function derives a \
+gear-indexed value from ffff10e6 and table 0x15212, caps it at \
+ROM16[0x942c], floors it at ROM16[0x94b2], and subtracts four times \
+rotational-speed coordinate ffff11b6 before building signed candidate \
+ffff4162."""
+note = [
+    """
+The physical quantity is unresolved. The resulting signed candidate is \
+calculated every selected-path pass and bounds ffff19c6 while ffff41a6.bit3 \
+is set, during a gear change with TCM status 3 and the 307.2 ms hold after \
+it.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 261
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "automatic_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rev_limit_throttle_cut/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-rottweiler/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smiling-robin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "automatic_transmission_request_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "manipulative-coati/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff32ec"
+name = "humongous-bumblebee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094b2"
+value = "0x0500"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00015212"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077aa0"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077aa6"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ac0"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ac2"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ac6"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ace"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077ad2"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077aee"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077c20"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077c28"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077c30"
+value = {named = ["0000942c", "000094b2", "00015212", "00077892", "ffff1082", "ffff1083", "ffff10e6", "ffff32ec", "ffff4162"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "manipulative-coati/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "charming-rottweiler/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "smiling-robin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "wonderful-coua/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

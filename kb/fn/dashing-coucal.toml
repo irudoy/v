@@ -1,0 +1,847 @@
+summary = """
+Misfire detection core: builds thresholds ffff3100..3105 and ffff306e..3070 \
+from ffff314a/ffff314b through 000224f8, compares them in windows against \
+offset-binary metrics ffff3820/ffff3816 with 0x80 as zero, and fills \
+per-cylinder event registers. It also consumes five-state selector ffff2b4b, \
+adds ROM8[0x11A28 + state] to accumulators ffff36e8/ffff36ec, and requires \
+ffff4251.bit7 plus ffff41d2.bits0/1 for those accumulators and three counter \
+groups. It is the sole caller of five-channel accumulation helper 000867c4. \
+Helper 00086b0c forms the metrics from the interval history of 0003cf24: \
+ffff3816 from 6*T[n-7] - 5*T[n-8] - T[n-2], ffff381c from 3*(2*T[n-6] - \
+T[n-9] - T[n-3]), and ffff3822 from 3*(2*T[n-6] - T[n-12] - T[n]). A \
+detected event increments counter element 2*ffff4038 of the arrays at \
+ffff3806, ffff37f8, and ffff37dc next to total element 0."""
+note = [
+    """
+It is the only external consumer of ffff314a/ffff314b and ffff2b4b. Its six \
+per-cylinder counters feed coordinator 00082c8a, whose sole local reporter \
+00084cd0 dispatches exact P0300..P0306 descriptors. The physical role of the \
+five-channel helper output remains unresolved. The tested interval T[n-7] is \
+congruent to T[n-1] modulo six events. Interval T[n] is captured on tooth 9 \
+of event index c and spans 50..170 degrees after compression TDC of index c \
+- 2, so T[n-1] spans the expansion stroke of index c - 3, which is cylinder \
+number ROM8[0002265c + c]. The attribution is correct only when event index \
+ffff11de equals the cylinder number of the P0301..P0306 descriptors.""",
+]
+level = "code"
+role = "monitor"
+contract = """
+The main weighted-accumulator path retains and updates state only while \
+ffff4251.bit7 and both low readiness bits of ffff41d2 are set. A failed gate \
+clears the accumulators. The same common bit-7 state reaches the local \
+helper through its only call from this function."""
+contract_level = "code"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0300"
+kind = "monitor"
+label = "DtcCode"
+key = "P0300"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019420"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the event state consumed by coordinator 00082c8a; its \
+sole reporter dispatches exact P0300 for aggregate or unassigned-cylinder \
+results."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["00019420", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["00019420", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["00019420", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0301"
+kind = "monitor"
+label = "DtcCode"
+key = "P0301"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019414"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0301 for cylinder 1."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["00019414", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["00019414", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["00019414", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0302"
+kind = "monitor"
+label = "DtcCode"
+key = "P0302"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019408"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0302 for cylinder 2."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["00019408", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["00019408", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["00019408", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0303"
+kind = "monitor"
+label = "DtcCode"
+key = "P0303"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193fc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0303 for cylinder 3."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["000193fc", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["000193fc", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["000193fc", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0304"
+kind = "monitor"
+label = "DtcCode"
+key = "P0304"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193f0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0304 for cylinder 4."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["000193f0", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["000193f0", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["000193f0", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0305"
+kind = "monitor"
+label = "DtcCode"
+key = "P0305"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193e4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0305 for cylinder 5."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["000193e4", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["000193e4", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["000193e4", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-detection-core-p0306"
+kind = "monitor"
+label = "DtcCode"
+key = "P0306"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193d8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 00085a70 builds the per-cylinder misfire state consumed by coordinator \
+00082c8a; its sole reporter dispatches exact P0306 for cylinder 6."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086584"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086670"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00086756"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "00085a70", "ffff36e8", "ffff36ec", "ffff3806"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classy-hummingbird/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "gray-goat/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "clay-lizard/ram/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 159
+binding = "misfire-detection-core-p0306"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 160
+binding = "misfire-detection-core-p0305"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 161
+binding = "misfire-detection-core-p0304"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 162
+binding = "misfire-detection-core-p0303"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 163
+binding = "misfire-detection-core-p0302"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 164
+binding = "misfire-detection-core-p0301"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 165
+binding = "misfire-detection-core-p0300"
+
+[[ledger]]
+registry = "funcs"
+order = 263
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+contract = [14, 15, 16, 17, 18, 19, 20]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lovely-koala/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "portable-carp/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-ape/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cryptic-kudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "gorgeous-sawfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "heavenly-shrew/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "obedient-dingo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "alluring-skunk/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "loutish-puma/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amazing-pegasus/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "classy-hummingbird/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clay-lizard/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "evasive-manatee/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gray-goat/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mottled-bison/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00085a70"
+name = "dashing-coucal"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00011a28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000861dc"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000861e6"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008621c"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086222"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008622a"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086242"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086282"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008628c"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086584"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086670"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086756"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fat-buzzard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861dc"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861de"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861e6"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861e8"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861ec"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000861ee"
+value = {named = ["00011a28", "0003cf24", "00082c8a", "00084cd0", "00085a70", "000867c4", "00086b0c", "ffff1dac", "ffff2b4b", "ffff306e", "ffff3100", "ffff314a", "ffff314b", "ffff36e8", "ffff36ec", "ffff3806", "ffff4038", "ffff41c3", "ffff41d2", "ffff4218", "ffff4251"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "portable-carp/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "lovely-koala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "portable-carp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "alluring-skunk/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "loutish-puma/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

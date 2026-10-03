@@ -1,0 +1,699 @@
+title = "Critical P0603/P0605/P2119/P1238 qualified RPM fuel inhibit"
+summary = """
+Critical ECM/ETC fault RPM inhibit contributor. With qualification counter \
+ffff4b0e greater than four and the P0603/P0605/P2119/P1238 aggregate in \
+ffff41ea.bit5 set, it activates at 2525 RPM and retains through 2000 RPM."""
+note = [
+    """
+FUN 0007d856 produces the qualification counter from the aggregate plus \
+engine-running, temperature-difference, and coolant-warm latches.""",
+]
+level = "code"
+role = "accessor"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0603-72"
+kind = "monitor"
+label = "DtcCode"
+key = "P0603"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000198b8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x72 is P0603 ECM BACK UP/CIRCUIT and \
+participates in the qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000198b8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["000198b8", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c380"
+value = {named = ["000198b8", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0605-4e"
+kind = "monitor"
+label = "DtcCode"
+key = "P0605"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019708"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x4e is P0605 ECM and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019708"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["00019708", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c1f8"
+value = {named = ["00019708", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0605-51"
+kind = "monitor"
+label = "DtcCode"
+key = "P0605"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001972c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x51 is P0605 ECM and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001972c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["0001972c", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c1fe"
+value = {named = ["0001972c", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0605-73"
+kind = "monitor"
+label = "DtcCode"
+key = "P0605"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000198c4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x73 is P0605 ECM and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000198c4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["000198c4", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c386"
+value = {named = ["000198c4", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0605-77"
+kind = "monitor"
+label = "DtcCode"
+key = "P0605"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000198f4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x77 is P0605 ECM and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000198f4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["000198f4", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c38c"
+value = {named = ["000198f4", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p0605-79"
+kind = "monitor"
+label = "DtcCode"
+key = "P0605"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001990c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x79 is P0605 ECM and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001990c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["0001990c", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c392"
+value = {named = ["0001990c", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p1238-121"
+kind = "monitor"
+label = "DtcCode"
+key = "P1238"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001a0ec"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x121 is P1238 ETC ACTR-B2 and participates in \
+the qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001a0ec"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["0001a0ec", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c36c"
+value = {named = ["0001a0ec", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p1238-122"
+kind = "monitor"
+label = "DtcCode"
+key = "P1238"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001a0f8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x122 is P1238 ETC ACTR-B2 and participates in \
+the qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001a0f8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["0001a0f8", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c37a"
+value = {named = ["0001a0f8", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p2119-6f"
+kind = "monitor"
+label = "DtcCode"
+key = "P2119"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019894"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x6f is P2119 ETC ACTR-B1 and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019894"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["00019894", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c204"
+value = {named = ["00019894", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "critical-ecm-etc-rpm-inhibit-p2119-70"
+kind = "monitor"
+label = "DtcCode"
+key = "P2119"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000198a0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x70 is P2119 ETC ACTR-B1 and participates in the \
+qualified 2525/2000 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000198a0"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050920"
+value = {named = ["000198a0", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0007c372"
+value = {named = ["000198a0", "0004ed88", "0007c166", "0007c3b4", "0007d856"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_ecm_etc_fault_aggregate_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_record_predicate/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "critical_diagnostic_qualification_counter_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "curated"
+order = 41
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 193
+binding = "critical-ecm-etc-rpm-inhibit-p0605-4e"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 194
+binding = "critical-ecm-etc-rpm-inhibit-p0605-51"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 195
+binding = "critical-ecm-etc-rpm-inhibit-p2119-6f"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 196
+binding = "critical-ecm-etc-rpm-inhibit-p1238-121"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 197
+binding = "critical-ecm-etc-rpm-inhibit-p2119-70"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 198
+binding = "critical-ecm-etc-rpm-inhibit-p1238-122"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 199
+binding = "critical-ecm-etc-rpm-inhibit-p0603-72"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 200
+binding = "critical-ecm-etc-rpm-inhibit-p0605-73"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 201
+binding = "critical-ecm-etc-rpm-inhibit-p0605-77"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 202
+binding = "critical-ecm-etc-rpm-inhibit-p0605-79"
+
+[[ledger]]
+registry = "funcs"
+order = 535
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "agate-kingfisher/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eccentric-salmon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050920"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050920"
+value = {named = ["0004ed88", "ffff11b3", "ffff41ea", "ffff4b0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005092a"
+value = {named = ["0004ed88", "ffff11b3", "ffff41ea", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005092e"
+value = {named = ["0004ed88", "ffff11b3", "ffff41ea", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005095c"
+value = {named = ["0004ed88", "ffff11b3", "ffff41ea", "ffff4b0e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,195 @@
+summary = """
+Forward column coordinate of trustful surface 0x175c8: FUN 00073a44 \
+interpolates 00018fd6 over 00018e86 at ffff1ce0 while ffff1ce0 <= \
+ROM16[0x18ec4] = 45187, otherwise 00018f96 over 00018e46 at min(0xffff, \
+ffff1ce0>>4), and passes the result as the column input with row ffff1cca. \
+00091278 also reads it."""
+level = "code"
+unit = "raw 0x18ac6 coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 963
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sexy-agouti/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "caped-pelican/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dashing-mongrel/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "passionate-junglefowl/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "spicy-marmoset/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "naughty-sheep/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyber-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d0e"
+name = "burrowing-bison"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018ec4"
+value = "0xb083"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aa6"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aaa"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073aac"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ab4"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ab8"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ac4"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ace"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ad2"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073ade"
+value = {named = ["00018e46", "00018e86", "00018ec4", "00018f96", "00018fd6", "00073a44", "00091278", "ffff1ce0", "ffff1d0e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "caped-pelican/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "dashing-mongrel/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "naughty-sheep/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "passionate-junglefowl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spicy-marmoset/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sexy-agouti/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

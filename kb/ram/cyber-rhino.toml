@@ -1,0 +1,99 @@
+summary = """
+Signed fallback target used by inverse signed-surface evaluator 00076ad0 \
+when ROM8[000089fa].bit5 is clear and ROM8[00008b29].bit6 enables the \
+function. The evaluator adds 32768 and searches the dynamic slice of surface \
+0000de8e through identity table 00013d14."""
+note = [
+    """
+Stock ROM8[00008b29]=0x29 has bit6 clear, so this target path is disabled. \
+The producer, physical quantity, and engineering unit remain unresolved.""",
+]
+level = "code"
+unit = "signed raw target"
+
+[[ledger]]
+registry = "vars"
+order = 498
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pistachio-vole/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "hairy-lori/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangerine-rook/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3394"
+name = "cyber-rhino"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00076d42"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076ce6"
+value = {named = ["0000de8e", "00013d14", "00076ad0", "00076d42", "ffff3394"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076cea"
+value = {named = ["0000de8e", "00013d14", "00076ad0", "00076d42", "ffff3394"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076cf2"
+value = {named = ["0000de8e", "00013d14", "00076ad0", "00076d42", "ffff3394"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076cf8"
+value = {named = ["0000de8e", "00013d14", "00076ad0", "00076d42", "ffff3394"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "tangerine-rook/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pistachio-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

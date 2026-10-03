@@ -1,3 +1,26 @@
+summary = """
+Six-channel injection-pulse multiplier indexed directly by channel number \
+0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the \
+selected byte, shifts the product right by 7, saturates to uint16, and \
+writes the raw and transformed six-channel output arrays."""
+note = [
+    """
+All six stock cells are 128, so every channel uses multiplier 1.0. A set bit \
+in override mask ffff22e0 bypasses this multiplier and selects word \
+ffff2436. The trace proves channel indexing but does not establish the \
+physical cylinder order; presentation labels remain generic channel \
+numbers.""",
+]
+level = "code"
+role = "table"
+access = "direct-indexed"
+cols = 6
+storage = "uint8"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Injection Pulse Channel Multiplier"
 category = "Fuelling / Injection"
@@ -7,6 +30,50 @@ fine = 0.0078125
 coarse = 0.0625
 static_axis = [1, 2, 3, 4, 5, 6]
 static_axis_name = "Channel"
+
+[[ledger]]
+registry = "findings"
+order = 434
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "handsome-spaniel/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_0/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -40,6 +107,83 @@ layout = "7mfk"
 address = "000129c0"
 former = ["glittering-skunk/tbl/7mfk-000129c0"]
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec60"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec64"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec68"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec6c"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec9e"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ec64"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ec68"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ec6c"
+value = {named = ["000129c0", "000224f8", "0004eba2", "ffff23c8", "ffff23d4"], span = 6}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128/128=1"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014d45"
@@ -71,3 +215,13 @@ at = "jk78c:0006a9a0"
 to = "7mfk:0004ed78"
 value = "00013e86"
 note = "near-exact homologous accessor preserves the operand and six exact bytes"
+
+[[link]]
+type = "reader"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"

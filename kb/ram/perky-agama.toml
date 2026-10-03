@@ -1,0 +1,193 @@
+summary = """
+Periodic snapshot of Intake Air Temperature source byte ffff2837. Scheduler \
+FUN 00020dfe copies it through the 0x104-byte runtime block snapshot; P0128 \
+accessors consume the snapshot as their ambient/intake-temperature input."""
+note = [
+    """
+The exact copy offset is ffff2837-0x104=ffff2733. The homologous DID 0x1106 \
+conversion is deg C=raw-50; the physical input requires hardware validation \
+on JK08A.""",
+]
+level = "code"
+unit = "Intake Air Temperature raw"
+
+[[ledger]]
+registry = "vars"
+order = 531
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "curly-flounder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refined-goose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-armadillo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "iat/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2733"
+name = "perky-agama"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fcc"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6c8a"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cc6"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cda"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f6"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78fa"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78fc"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7900"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a68"
+value = {named = ["00020dfe", "00022558", "000b7768", "000b78da", "000b7a3c", "ffff2733", "ffff2837"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "iat/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "curly-flounder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

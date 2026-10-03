@@ -1,0 +1,72 @@
+summary = """
+Tooth count latched at gap resynchronization: the ICI0A handler prologue \
+stores the value of tooth counter ffff13b2 on the tooth after gap detection, \
+before it restarts the counter at zero. FUN 00028ea2 reads it at 00029aa2 \
+and compares it with ROM8[000083cf] = 10."""
+note = ["A complete 120-degree period latches 9."]
+level = "code"
+unit = "crank tooth count"
+
+[[ledger]]
+registry = "vars"
+order = 893
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pastel-yak/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13b4"
+name = "magic-pug"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083cf"
+value = "0x0a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028ff0"
+value = {named = ["000083cf", "00028ea2", "ffff13b4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029aa2"
+value = {named = ["000083cf", "00028ea2", "ffff13b4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

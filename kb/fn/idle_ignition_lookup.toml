@@ -1,9 +1,55 @@
+summary = """
+Implicit-axis primitive: 8 points, step 32, limit 224, uint8 element. The \
+busiest bank entry has 61 slots and 90 tables."""
+note = [
+    """
+All 107 sites set r5 in the delay slot, so backward-only backtracking would \
+recover no inputs. A slot is not a call: FUN_0005185c has one slot at \
+0x5197c and performs six lookups through it.""",
+]
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "implicit"
 kernel = "precise-koala/fn"
 offset = 0x20
 cols = 8
 step = 32
+
+[[ledger]]
+registry = "funcs"
+order = 75
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sly-chowchow/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stoic-dinosaur/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -48,6 +94,11 @@ at = "1nd:000287bc"
 layout = "7mfk"
 address = "00026370"
 former = ["rebel-cow/fn/7mfk-00026370"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -97,3 +148,27 @@ note = "Exact-byte target function serves both idle literal-pool hooks"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000281a0"
+
+[[link]]
+type = "depends"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

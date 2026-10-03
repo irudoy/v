@@ -1,0 +1,124 @@
+summary = """
+Second-channel Q15 crossfade weight scratch. FUN 0007a804 writes \
+interpolation result w from map 00016f48 here when ROM8[000083c1].bit7 is \
+clear, or substitutes ROM16[0001630c]=0x8000 otherwise. It immediately uses \
+w in floor((A*(32768-w)+B*w)/32768)."""
+note = [
+    """
+This word is the weight source-selection result, not the blended endpoint \
+output.""",
+]
+level = "code"
+unit = "Q15 fraction"
+
+[[ledger]]
+registry = "vars"
+order = 275
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "truthful-pronghorn/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crazy-toucan/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff35f4"
+name = "opal-fennec"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000083c1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001630c"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a854"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a858"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a85e"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a882"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a88c"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a890"
+value = {named = ["000083c1", "0001630c", "00016f48", "0007a804", "ffff35f4"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "truthful-pronghorn/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

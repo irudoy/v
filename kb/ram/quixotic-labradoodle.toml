@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff134b"
+name = "quixotic-labradoodle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004b43a"
+
+[[link]]
+type = "lookup"
+to = "outrageous-bustard/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,21 @@
+summary = """
+2D interpolation over words; entries 0x26270, 0x262A8, and 0x262E0. Both \
+operands are read unsigned with EXTU.W."""
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 101
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00026848"
+name = "amiable-bloodhound"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"

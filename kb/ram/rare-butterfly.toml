@@ -1,0 +1,80 @@
+summary = """
+Service-0x3b LID 3 value slot. While LID 3 is active and the status is \
+accepted, 000683cc copies it to ffff56ba."""
+note = ["The JK08A LID-0 support bitmap does not advertise LID 3."]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 932
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-bumblebee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-wildcat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-penguin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99de"
+name = "rare-butterfly"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685a6"
+value = {named = ["0002e81a", "00034194", "000683cc", "ffff99de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000685a8"
+value = {named = ["0002e81a", "00034194", "000683cc", "ffff99de"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amber-wildcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,137 @@
+summary = """
+Conditionally updated raw threshold indexed by uint8[ffff2244]: the result \
+is written to ffff2218 and participates in unsigned comparison \
+uint8[ffff11ea] > uint8[ffff2218]."""
+note = [
+    """
+The lookup result is conditionally written to ffff2218 rather than ffff2500. \
+The address is resolved at the write from base ffff1ff4 and offset 0x0224. \
+Later, uint8[ffff11ea] is compared unsigned with uint8[ffff2218]. The \
+threshold's physical quantity is unknown.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 156
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[symbol]]
+layout = "7mfk"
+address = "000125b2"
+name = "giga-alligator"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000418fc"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041902"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041908"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004190a"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004190c"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041910"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041912"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041914"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041918"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004198a"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004198e"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041990"
+value = {named = ["000125b2", "00026474", "00026740", "00026944", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"

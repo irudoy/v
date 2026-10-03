@@ -1,0 +1,79 @@
+summary = """
+Requested number of responses copied from the NRS byte of SID 0x21. \
+Transmit-complete interrupt 0002f12c compares it with ffff8213 only for mode \
+0x04."""
+note = [
+    """
+The byte is stored for mode 0x06 but does not limit continuous \
+transmission.""",
+]
+level = "code"
+unit = "response count"
+
+[[ledger]]
+registry = "vars"
+order = 651
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-coyote/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olive-mandrill/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8214"
+name = "humongous-deer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f18e"
+value = {named = ["0002f12c", "000328c0", "ffff8214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f194"
+value = {named = ["0002f12c", "000328c0", "ffff8214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000328ec"
+value = {named = ["0002f12c", "000328c0", "ffff8214"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "knowing-coyote/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "olive-mandrill/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,0 +1,121 @@
+summary = """
+Throttle opening-area input of QH0 byte ffff1170: when ffff4246 bit 6 is \
+clear, 0003b468 writes summed opening area ffff3a76; when it is set, it \
+writes ROM word 0x916c. FUN_0003b498 reads the result."""
+note = ["Eight component consumers confirm the loop."]
+level = "code"
+unit = "raw opening area"
+
+[[ledger]]
+registry = "vars"
+order = 133
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spiritual-rattlesnake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "illegal-civet/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "finicky-millipede/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "truthful-quail/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e60"
+name = "upbeat-stallion"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000916c=0x01bf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b470"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff3a76", "ffff4246"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b48e"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff3a76", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b490"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff3a76", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b496"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff3a76", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b4b0"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff3a76", "ffff4246"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "illegal-civet/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "spiritual-rattlesnake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "finicky-millipede/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "truthful-quail/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

@@ -1,0 +1,270 @@
+summary = """
+Multipurpose state byte. On the stock-selected transmission path, FUN \
+00077892 sets bit 1 exactly when ffff418f.bit4 is set, current gear index \
+ffff1082 differs from target gear index ffff1083, and aggregate inhibit \
+ffff4253.bit6 is clear; otherwise it clears bit 1. FUN 0007584e uses bit 1 \
+as a forced-neutral override after recovery selection: set writes 0x7fff to \
+ffff19d8 and copies shared signed request ffff19c6 into ramp ffff19da before \
+auxiliary-output evaluation."""
+note = [
+    """
+Stock ROM8[0x83c1].bit0 and ROM8[0x870c].bit7 select FUN 00077892. Bit 1 \
+requires ffff418f.bit4, the scheduler latch of TCM field ffff3a2e == 3 from \
+CAN 0x174 byte 4; the 2026-09-22 road captures carry that value in 4-3 and \
+3-2 downshifts, so bit 1 is set during those gear changes. Other bits and \
+consumers belong to independent state.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 324
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-rottweiler/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prehistoric-horse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-squid/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-dragonfly/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "throttle_request_bounded/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "automatic_transmission_request_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "snobbish-tapir/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "truthful-duck/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4252"
+name = "shrewd-manul"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bd6"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bd8"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bda"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075be2"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075be6"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bea"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779a2"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779aa"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779ac"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779b2"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779c8"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000779e0"
+value = {named = ["0007584e", "00077892", "ffff1082", "ffff1083", "ffff19c6", "ffff19d8", "ffff19da", "ffff418f", "ffff4252", "ffff4253"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "snobbish-tapir/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "truthful-duck/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "charming-rottweiler/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "prehistoric-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-squid/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ruddy-dragonfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_request_bounded/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "horned-frog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

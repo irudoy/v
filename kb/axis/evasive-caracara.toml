@@ -1,3 +1,22 @@
+note = [
+    """
+Axis for dual-channel deviation divisor 00012292. FUN 0003ef74 passes \
+high8(uint16[ffff4524]) directly to wrapper 000264a0. Stored points are 0, \
+5, 6, 25..225 in steps of 25, followed by four 255 endpoints. The physical \
+quantity and engineering scale of ffff4524 are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 54
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
 [[symbol]]
 layout = "7mfk"
 address = "00011b47"

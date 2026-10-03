@@ -1,7 +1,87 @@
+summary = """
+Unsigned additive correction to the output of map 00018c96 before saturation \
+to 0xffff and the upper cap ffff133e."""
+note = [
+    """
+Site 000723a6 reads 00018c76 over axis 000146da and stores the result in \
+ffff1cae. At 000723b8 it is added to the output of 00018c96, after which the \
+sum is saturated to 0xffff and capped by value ffff133e. All 00018c76 points \
+equal zero, so the current correction is neutral, but the read-and-add path \
+is live. The physical scale is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 318
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "zircon-copperhead/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "visionary-centipede/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018c76"
 name = "soft-rooster"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff1cae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723a6"
+value = {named = ["000146da", "00018c76", "00018c96", "ffff1cae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ae"
+value = {named = ["000146da", "00018c76", "00018c96", "ffff1cae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723b8"
+value = {named = ["000146da", "00018c76", "00018c96", "ffff1cae"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723be"
+value = {named = ["000146da", "00018c76", "00018c96", "ffff1cae"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ce"
+value = {named = ["000146da", "00018c76", "00018c96", "ffff1cae"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +114,26 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "visionary-centipede/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "zircon-copperhead/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "icy-copperhead/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,144 @@
+title = "Apply the scaled transient threshold and hysteresis to the state bit"
+summary = """
+Transient hysteresis-state updater. It compares max(u16(ffff10a6)-0x8000,0) \
+with threshold 32*ffff1393 and hysteresis 32*ROM8[0x8383], uses comparator \
+000259d0, and maintains ffff2478 bit 6. Subsequent branches in the same \
+function use that bit while updating ffff2474."""
+note = [
+    """
+No direct path from bit 6 to ffff11d4 or an APC compare is established. The \
+table has an operational threshold role without an assigned direct retard \
+quantity.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "curated"
+order = 117
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 516
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-labradoodle/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "green-pheasant/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "married-chowchow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "independent-chachalaca/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiked-bear/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007b7c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008383"
+value = "0x08"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7e0"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7e6"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7e8"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b7f8"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b818"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b81c"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b834"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b86e"
+value = {named = ["00008383", "000259d0", "0007b7c0", "ffff10a6", "ffff1393", "ffff2474", "ffff2478"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "knowing-labradoodle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

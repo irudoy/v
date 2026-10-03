@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff202e"
+name = "ginger-sheep"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041b96"
+
+[[link]]
+type = "lookup"
+to = "umber-fossa/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

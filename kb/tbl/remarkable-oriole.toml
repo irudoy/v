@@ -1,0 +1,154 @@
+summary = """
+Interpolated table upper limit: min(lookup(000126b8), lookup(000126b0)) \
+before weighted blending."""
+note = [
+    """
+The lookup by uint8 ffff11b2 forms a minimum with lookup 000126b8 and \
+thereby defines a table-based upper boundary before weighted blending. The \
+selected value enters ffff15df, which 000532ae reads. All cells equal zero, \
+but the threshold role follows from the min operation rather than the \
+content; the physical quantity is unknown.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 394
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lush-degu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "illegal-raptor/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "abstract-snake/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000126b0"
+name = "remarkable-oriole"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000531e6"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000531e8"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000531ec"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000531f4"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000531f8"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053216"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005321a"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005323a"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00053280"
+value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "illegal-raptor/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "succinct-pudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "lush-degu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

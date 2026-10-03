@@ -1,0 +1,96 @@
+summary = """
+Per-channel curve selector in FUN 000c0d90. For channel param_1, a set bit \
+in mask param_1+1 selects 00015ad0; a clear bit selects 00015b10."""
+note = [
+    """
+The two curves are byte-identical in stock JK08A, so the selector cannot \
+change the stock output. The condition that controls these bits is \
+unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 91
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sexy-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "refreshing-ibex/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangerine-beetle/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14c8"
+name = "hissing-toucanet"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1014"
+value = {named = ["00015ad0", "00015b10", "000c0d90", "ffff14c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1018"
+value = {named = ["00015ad0", "00015b10", "000c0d90", "ffff14c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1020"
+value = {named = ["00015ad0", "00015b10", "000c0d90", "ffff14c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c103a"
+value = {named = ["00015ad0", "00015b10", "000c0d90", "ffff14c8"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "refreshing-ibex/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tangerine-beetle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

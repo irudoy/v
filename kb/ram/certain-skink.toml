@@ -1,0 +1,33 @@
+summary = "Bit 3 enables the entire map block in 0007a090."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 315
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vagabond-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4208"
+name = "certain-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000210dc"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

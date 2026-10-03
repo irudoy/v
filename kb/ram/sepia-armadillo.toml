@@ -1,0 +1,159 @@
+summary = """
+Signed net engine torque of the parallel channel. FUN 00065860 runs FUN \
+000655b4, FUN 0006570c, and FUN 00065764, then writes \
+sat_i16(s16[ffff18d8]-u16[ffff2410]). Its scheduler latch ffff2382 feeds \
+word ffff3f98 of frame 0x160."""
+note = [
+    """
+The channel evaluates the spark-efficiency factor at latched timing-state \
+byte ffff2404 instead of live timing latch ffff11a2. In a vehicle capture it \
+stays level through gear changes while ffff240c dips.""",
+]
+level = "code"
+unit = "signed torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 868
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "alternate_transmission_request_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "congenial-mosquito/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-mushroom/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cobalt-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cunning-bird/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adorable-kudu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff240e"
+name = "sepia-armadillo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021318"
+value = {named = ["00020dfe", "00064cb2", "00065020", "00077dec", "00079e70", "ffff18d8", "ffff240e", "ffff2410"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065860"
+value = {named = ["00020dfe", "00064cb2", "00065020", "00077dec", "00079e70", "ffff18d8", "ffff240e", "ffff2410"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079f56"
+value = {named = ["00020dfe", "00064cb2", "00065020", "00077dec", "00079e70", "ffff18d8", "ffff240e", "ffff2410"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lyrical-pronghorn/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "cobalt-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "cunning-bird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "alternate_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "congenial-mosquito/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "adorable-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

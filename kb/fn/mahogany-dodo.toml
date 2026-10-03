@@ -1,0 +1,54 @@
+summary = """
+Sub-helper for cores 0x26944 and 0x26984: the second search stage that \
+computes the fractional part."""
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 114
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "uptight-tiger/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versatile-junglefowl/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026c78"
+name = "mahogany-dodo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026c78"
+
+[[link]]
+type = "depends"
+to = "uptight-tiger/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "versatile-junglefowl/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

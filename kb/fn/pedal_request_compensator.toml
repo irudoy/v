@@ -1,0 +1,191 @@
+title = "Apply the Q15 pedal and compensation coefficient to the signed request"
+summary = """
+Pedal-request compensation stage. With stock ROM8[0x89fb].bit5 set, it \
+normalizes ffff266e between ROM16[0x94e4]=0 and ROM16[0x94e8]=170 into Q15 \
+word ffff18c8, selects max(interp2d(0x10b0e),ffff18c8), records that \
+coefficient in ffff19be, caps the applied coefficient at 0xa000, and applies \
+the bounded signed adjustment to ffff19d0 before writing ffff19d2. With bit \
+5 clear it copies ffff19d0 to ffff19d2."""
+note = [
+    """
+The SH word displacement at 000753f0 is scaled, so base 0x94e4 plus encoded \
+displacement 2 reads 0x94e8. The operational transform is exact; the \
+physical TTEPTD identity and engineering units remain candidate semantics.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 142
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 231
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_inverse_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "esoteric-salmon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eager-pelican/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flat-caracal/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enchanted-tamarin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maize-firefly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "secret-lizard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000753d4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089fb"
+value = "0x20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094e4"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753e4"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000753fe"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075416"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075474"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000754d8"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000754f6"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007552e"
+value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "eager-pelican/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "flat-caracal/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

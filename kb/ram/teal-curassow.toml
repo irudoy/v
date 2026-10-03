@@ -1,0 +1,114 @@
+summary = """
+Preceding eight-byte snapshot of the current RPM-drop filter block. \
+Dispatcher FUN 000209d8 copies ffff1e50..ffff1e57 to ffff1e58..ffff1e5f \
+through block-copy helper 00022558."""
+note = [
+    """
+FUN 0003e1da uses this preceding snapshot as the 0.75 history term of its \
+stock filter.""",
+]
+level = "code"
+unit = "RPM/12.5 drop Q8"
+
+[[ledger]]
+registry = "vars"
+order = 11
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "phenomenal-cricket/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-macaque/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-kudu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e58"
+name = "teal-curassow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cd4"
+value = {named = ["000209d8", "00022558", "0003e1da", "ffff1e50", "ffff1e58"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cd6"
+value = {named = ["000209d8", "00022558", "0003e1da", "ffff1e50", "ffff1e58"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cdc"
+value = {named = ["000209d8", "00022558", "0003e1da", "ffff1e50", "ffff1e58"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e226"
+value = {named = ["000209d8", "00022558", "0003e1da", "ffff1e50", "ffff1e58"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e250"
+value = {named = ["000209d8", "00022558", "0003e1da", "ffff1e50", "ffff1e58"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "satisfied-macaque/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "phenomenal-cricket/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

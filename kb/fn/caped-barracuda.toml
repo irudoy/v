@@ -1,0 +1,338 @@
+summary = """
+EVAP negative-pressure leak-monitor state machine and calculation \
+coordinator. It assembles corrected and saturated raw coordinate ffff2c98, \
+maps it through 000152d6 into ffff3242, and calls FUN 000b2096 with \
+normalization parameter ffff2c86 and output pointer ffff301c. One branch \
+dispatches exact gross-leak descriptor index 0x30 for P0455 when ffff2c9c is \
+below ROM16[0x915e]=0x0600 and the calibrated operating gates pass. Other \
+branches call complementary updater FUN 000b4ef8 with index 0xd8 for P0456 \
+and index 0xda for P0442 while processing the high byte of ffff301c."""
+note = [
+    """
+No direct call to the common fault dispatcher with index 0xd8 was found in \
+the whole-program constant-call scan. The P0456 trace establishes exact \
+descriptor-aware complementary result handling rather than the fault \
+assertion branch. The physical scale of the two lookup coordinates and \
+ffff301c remains unresolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "evap-gross-leak-p0455"
+kind = "monitor"
+label = "DtcCode"
+key = "P0455"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000195a0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000b29b8 dispatches exact descriptor index 0x30 for P0455 when ffff2c9c \
+is below 0x0600 and the calibrated operating gates pass."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "naughty-oxpecker/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "orchid-worm/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0000915e"
+value = "0x0600"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b29f2"
+value = {named = ["0000915e", "000195a0", "0007d8b8", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2a42"
+value = {named = ["0000915e", "000195a0", "0007d8b8", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "evap-very-small-leak-result-p0456"
+kind = "monitor"
+label = "DtcCode"
+key = "P0456"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d80"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+FUN 000b29b8 calls the descriptor-aware complementary state updater with \
+exact index 0xD8 for P0456. No direct common fault-dispatch call with index \
+0xD8 was found, so the fault assertion branch remains unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "attractive-grasshopper/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "solid-jackdaw/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2d40"
+value = {named = ["00019d80", "000b29b8", "000b4ef8", "ffff301c"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b2ffa"
+value = {named = ["00019d80", "000b29b8", "000b4ef8", "ffff301c"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 121
+binding = "evap-gross-leak-p0455"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 130
+binding = "evap-very-small-leak-result-p0456"
+
+[[ledger]]
+registry = "funcs"
+order = 413
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "attractive-grasshopper/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "naughty-oxpecker/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-terrier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "orchid-worm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "solid-jackdaw/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "umber-bandicoot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-boa/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "umber-bandicoot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b29b8"
+name = "caped-barracuda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000915e"
+value = "0x0600"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b29f2"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2a42"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c62"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c66"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c6a"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c6e"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c70"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c74"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c76"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c80"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c86"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2c88"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2d40"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2f74"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2fc2"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b2ffa"
+value = {named = ["0000915e", "000152d6", "0007d8b8", "000b2096", "000b2838", "000b29b8", "000b4ef8", "ffff2c98", "ffff2c9c", "ffff301c", "ffff3242"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "classic-pelican/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "imposing-jaybird/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "attractive-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "naughty-oxpecker/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

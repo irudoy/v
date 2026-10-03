@@ -1,0 +1,46 @@
+summary = """
+Retained-region zero loop. It stores zero longwords from ROM32[0x22624] = \
+ffff4514 while the address lies below ROM32[0x22628] = ffff5cf2, which \
+zeroes ffff4514..ffff5cf3, including coolant latch byte ffff5b2c."""
+note = ["FUN 00026f08 is its only direct caller."]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 13
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "defiant-tiger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026f30"
+name = "mellow-crane"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022624"
+value = "ffff4514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022628"
+value = "ffff5cf2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026f3e"
+value = {named = ["00022624", "00022628", "00026f30", "ffff4514", "ffff5b2c", "ffff5cf2"], span = 1}
+key = "reference"

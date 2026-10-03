@@ -1,0 +1,207 @@
+summary = """
+Base of a two-byte bank-indexed catalyst-monitor metric array. FUN 000a2d66 \
+writes a saturated average of accumulated per-bank samples, and FUN 000a2f56 \
+compares it with calibrated limit ffff2b6f before the P0420/P0430 dispatch \
+branch."""
+note = [
+    """
+The exact arithmetic is established, but the physical efficiency quantity \
+and units remain unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "catalyst-metric-p0420"
+kind = "monitor"
+label = "DtcCode"
+key = "P0420"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001942c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bank element 0 is the averaged metric compared in the direct P0420 branch. \
+Its physical quantity and units remain unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2f88"
+value = {named = ["0001942c", "000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fd2"
+value = {named = ["0001942c", "000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "threshold"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "eccentric-sponge/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "catalyst-metric-p0430"
+kind = "monitor"
+label = "DtcCode"
+key = "P0430"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019438"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+Bank element 1 is the averaged metric compared in the direct P0430 branch. \
+Its physical quantity and units remain unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mauve-tuatara/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fbe"
+value = {named = ["00019438", "000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a301e"
+value = {named = ["00019438", "000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "threshold"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "eccentric-sponge/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 107
+binding = "catalyst-metric-p0420"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 108
+binding = "catalyst-metric-p0430"
+
+[[ledger]]
+registry = "vars"
+order = 407
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mauve-tuatara/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "venomous-dachshund/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "eccentric-sponge/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff314d"
+name = "unbiased-panda"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2e0e"
+value = {named = ["000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2e1a"
+value = {named = ["000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f88"
+value = {named = ["000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fbe"
+value = {named = ["000a2d66", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "mauve-tuatara/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "threshold"
+to = "venomous-dachshund/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "eccentric-sponge/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "violet-sparrow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,66 @@
+summary = """
+Calculates the crankshaft rotational-irregularity metric and is called only \
+by 00085a70. It runs only when six 16-bit coefficients at ffff55a2 lie \
+between 0x9452=32437 and 0x9454=33096, or within +-1% of 0x8000."""
+note = [
+    """
+The journal interprets six unity-normalized coefficients with +-1% tolerance \
+on a six-cylinder engine as crank trigger-wheel irregularity corrections. \
+This is inferred from arithmetic and cylinder count; the trace does not \
+reach their writers.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 266
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unyielding-stingray/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00086b0c"
+name = "lovely-koala"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009452"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009454"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00086b0c"
+
+[[link]]
+type = "depends"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

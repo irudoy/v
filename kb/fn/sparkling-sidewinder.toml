@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00070812"
+name = "sparkling-sidewinder"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070812"

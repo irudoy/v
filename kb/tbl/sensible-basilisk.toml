@@ -1,0 +1,170 @@
+summary = """
+Eight-point table of a condition for holding state 3: the lookup result by \
+unsigned byte ffff107f is written to ffff254c when state ffff39c8 is set to \
+3; on a subsequent state branch other than 0, 1, and 2, the result is tested \
+for zero. Zero changes ffff39c8 to 0, while a nonzero value leaves state 3 \
+active."""
+note = [
+    """
+The physical subsystem is unknown. Code confidence applies to the narrow \
+operational semantics of the zero test. All nodes equal 5 or 13, and the \
+finisher preserves a result between adjacent nodes, so the current \
+calibration always yields a nonzero result and does not select the \
+zero-reset branch. ffff107f is the previous-pass image of normalized coolant \
+index ffff1077, so the implicit nodes are -40,-20,...100 deg C. The value \
+still reaches an executed tst, so the map is not dead. Index: Implicit \
+eight-point index grid: u=uint8(ffff107f). For u<224: i=floor(u/32), \
+f=(u%32)/32, linear Q0.16 interpolation of map[i] and map[i+1]. For u>=224, \
+map[7] is returned. Nodes correspond to u=0,32,64,96,128,160,192,224. Output \
+trace: 00038b14 -> 00038b1a -> 00026370 -> 00026a80 -> 00026740 -> 00038b20 \
+(write ffff254c) -> 00038b64 (read ffff254c) -> 00038b66 (zero test) -> \
+00038b68 (zero branch). Result disposition: inline_comparison; Result \
+target: ffff254c -> 00038618@00038b66.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 411
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pearl-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rousing-jackal/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012aea"
+name = "sensible-basilisk"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b14"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b16"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b1a"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b20"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b3c"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b44"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b64"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b66"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038b68"
+value = {named = ["00012aea", "00026370", "00026740", "00038618", "ffff107f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "index"
+to = "rousing-jackal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,7 +1,119 @@
+summary = """
+Interpolated uint16 target T for Q12 accumulator ffff33a8. The normal path \
+adds or subtracts step S from map 000133d2 and clamps the accumulator to T \
+when it crosses the target."""
+note = [
+    """
+The output is saved at 000626be and becomes r7 at 00062732-00062734. Map \
+000131a2 determines direction: H < T selects addition, while H >= T selects \
+subtraction. The add path clamps when ffff33a8 >> 12 reaches or exceeds T; \
+the subtract path clamps when it falls below T. The physical quantity and \
+engineering scale are not assigned. Result disposition: inline_comparison. \
+Result target: Q12 accumulator ffff33a8 at 00062740, 00062752, and \
+00062768.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 234
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tan-toucan/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-mole/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00013182"
 name = "ochre-coua"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626b2"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626b6"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000626be"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062732"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062734"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006273e"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062748"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062750"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006275a"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00062768"
+value = {named = ["00013182", "00015ce0", "ffff33a8"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +146,18 @@ value = 9
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "tan-toucan/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "spirited-lion/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

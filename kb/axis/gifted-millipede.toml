@@ -1,3 +1,25 @@
+note = [
+    """
+Y axis for map 00009C5A. Code forms the key as min(uint16(ffff10bc) >> 3, \
+255), so points 156, 112, 75, and 38 correspond to original raw values 1248, \
+896, 600, and 304. The array is not increasing and therefore does not meet \
+the core's axis requirement, although code does establish its representation \
+scale.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x*8"
+to_raw = "x/8"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 29
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2]
+
 [[symbol]]
 layout = "7mfk"
 address = "000119b2"
@@ -7,6 +29,20 @@ name = "gifted-millipede"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0007a498"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a47e"
+value = {named = ["000119b2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a480"
+value = {named = ["000119b2"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"

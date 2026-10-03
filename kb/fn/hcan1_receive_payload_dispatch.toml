@@ -1,0 +1,155 @@
+summary = """
+Stock HCAN1 receive dispatcher. It matches software-table keys encoded as \
+STDID shifted left by five and calls payload handlers, including key 0x2e80 \
+for CAN 0x174 through FUN 000c47ea and key 0x2ee0 for CAN 0x177 through FUN \
+000c4ace. Invalid-message dispatch separately reaches their fallback \
+handlers."""
+note = [
+    """
+Dispatch HCAN1 payload handlers by the STDID shifted-left-five internal \
+key""",
+    """
+Stock mailbox records 0x9786 and 0x9782 independently encode standard IDs \
+0x174 and 0x177 with the same shift.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 67
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 589
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_174_invalid_fallback/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_174_transmission_payload_decoder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_177_invalid_fallback/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_177_transmission_payload_decoder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3b14"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c3c56"
+value = "0x2e80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c3c5a"
+value = "0x2ee0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3bea"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3bf8"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3c04"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3c90"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3d4e"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3d5c"
+value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "can_174_invalid_fallback/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "can_174_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "can_177_invalid_fallback/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "can_177_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

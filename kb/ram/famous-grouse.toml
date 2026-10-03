@@ -1,0 +1,136 @@
+summary = """
+Bank-1 companion of injection-pulse precursor ffff18c0. FUN 0004e974 uses \
+adjacent bank multiplier ffff40b8 and writes this word for FUN 0004ead4 to \
+form parity base ffff191e."""
+note = [
+    """
+Arithmetic mirrors ffff18c0. Physical bank-to-cylinder ordering is \
+unresolved.""",
+]
+level = "code"
+unit = "raw_u16"
+
+[[ledger]]
+registry = "vars"
+order = 549
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enigmatic-mouse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "giga-eel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versatile-bobcat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_pulse_precursor_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "0x636"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18c2"
+name = "famous-grouse"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0004ea52"
+value = 1590
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_injection_precursor_path"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea10"
+value = {named = ["000094e8", "0004e974", "0004ea52", "0004ead4", "ffff165e", "ffff18c2", "ffff2300", "ffff40b8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea62"
+value = {named = ["000094e8", "0004e974", "0004ea52", "0004ead4", "ffff165e", "ffff18c2", "ffff2300", "ffff40b8"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "enigmatic-mouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "giga-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "versatile-bobcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

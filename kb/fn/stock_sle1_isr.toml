@@ -1,3 +1,76 @@
+summary = """
+Stock HCAN1 SLE1 mailbox-empty interrupt handler. It checks only physical \
+mailbox 28, represented by bit 0x1000 in TXACK1 and ABACK1, clears the \
+acknowledged flag and IRR bit 8, marks ffffa56f, and calls 000c6b68 only \
+after successful transmission. It returns directly with RTE."""
+note = [
+    """
+A custom SLE1 target must preserve the complete mailbox-28 success and abort \
+behavior. Because the stock handler owns RTE, it cannot be called with JSR. \
+An indirect tail jump would consume a general register whose interrupted \
+entry value its prologue must preserve; the implemented telemetry layer uses \
+one combined save/body/restore/RTE handler instead.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 558
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "poetic-chipmunk/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-hoatzin/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fantastic-mongrel/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hissing-raptor/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "poetic-chipmunk/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "small-hoatzin/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "00127910"
@@ -24,6 +97,102 @@ note = "Vector target supplies the complete ISR tail-chain entry"
 layout = "7mfk"
 address = "000c7914"
 former = ["fearless-bandicoot/fn/7mfk-000c7914"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000203a0"
+value = "000c7914"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7930"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7934"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c793c"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7944"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7948"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c794c"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7954"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7958"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7962"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7968"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c796c"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c7980"
+value = {named = ["000203a0", "000c6b68", "000c7914", "ffffa56f", "ffffd808", "ffffd830", "ffffd838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "stock_isr_helper/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"

@@ -1,0 +1,120 @@
+summary = """
+Base of the decel/cut flag group and the flag cell itself: throttle-release \
+detection output byte[ffff24d2] is addressed as ffff24ce+4. The \
+angle-calculation range 0x82c8a..0x84436 contains none of the group's 59 \
+slots found across the ROM, ruling out a decel-gated branch in the angle \
+summation."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 209
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "writes"
+to = "garnet-binturong/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "proficient-sunfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-dogfish/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transient_hysteresis_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24ce"
+name = "greedy-rottweiler"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021346"
+
+[[link]]
+type = "reader"
+to = "composite_status_rpm_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "garnet-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "shapeless-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

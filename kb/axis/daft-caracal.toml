@@ -1,0 +1,28 @@
+note = [
+    """
+Uniform 16-point explicit axis for Q1.7 coefficient map 000124f2. On the \
+ffff420b.bit4-clear branch, FUN 00069374 passes uint8[ffff10f0] directly to \
+wrapper 000264a0. Stored points are 0..240 in steps of 16. The physical \
+quantity and engineering scale of the coordinate are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 52
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00023814"
+name = "daft-caracal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00069d3a"

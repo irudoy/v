@@ -1,0 +1,104 @@
+summary = """
+Interpolation output of the trio branch selected by ffff4217 bit 0: clear \
+selects map 0xB61A, set selects 0xB71A. It uses the same 0x80 sentinel."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 247
+fields = ["semantics", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x853"
+offset = 0x853
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "jolly-mule/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff314b"
+name = "obedient-dingo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832e0"
+value = {named = ["00082c8a", "00085a70", "ffff28f8", "ffff314b", "ffff4217"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000832fa"
+value = {named = ["00082c8a", "00085a70", "ffff28f8", "ffff314b", "ffff4217"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "bipedal-tortoise/ram"
+offset = 0x853
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "primitive-sawfish/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "jolly-mule/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

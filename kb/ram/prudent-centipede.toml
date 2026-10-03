@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff22fd"
+name = "prudent-centipede"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005079e"
+
+[[link]]
+type = "reader"
+to = "count_to_inhibit_mask/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

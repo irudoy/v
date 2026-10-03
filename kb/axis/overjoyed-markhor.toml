@@ -1,3 +1,22 @@
+note = [
+    """
+Axis for calculated-load secondary divisor 000129d2. FUN 000b997c passes \
+high8(uint16[ffff4524]) directly to wrapper 000264a0. Its 16 points are \
+byte-identical to axis 00011b47. The physical quantity and engineering scale \
+of ffff4524 are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 57
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
 [[symbol]]
 layout = "7mfk"
 address = "00011b7b"

@@ -1,0 +1,220 @@
+summary = """
+Paired-curve normalization branch. Let q=min(2*uint8[ffff22e4],255), \
+A=lookup_u8(00012798,q), B=lookup_u8(000127d8,q), \
+A128=lookup_u8(00012798,128), and B128=lookup_u8(000127d8,128). When A>B and \
+A128>B128, n=min(255,floor(256*(A-B)/(A128-B128))); otherwise n=0. With \
+ffff2451.bit1 clear, correction=floor(n*lookup_u8(00012704)/8); with the bit \
+set, correction=0. The branch writes \
+sat_u16(floor((correction+256*uint8[ffff22e4])/4)) to ffff11f2."""
+note = [
+    """
+The formulas and selector polarity are exact. The physical quantities of q, \
+n, correction, and ffff11f2 remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 130
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "adorable-llama/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "awesome-bobcat/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "loud-squid/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "efficient-toucan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "serious-cassowary/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "witty-tanuki/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000413cc"
+name = "cyan-pronghorn"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041608"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041622"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004162e"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041640"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041650"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041664"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041678"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004168a"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000416f6"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000416fa"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041706"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004170a"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041716"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004172e"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

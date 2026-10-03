@@ -1,0 +1,97 @@
+summary = """
+Stored work-support idle adjustment, the low byte of record 0x74. Startup \
+step 000686b8 restores it, and the idle latch of 00068040 copies ffff3168 \
+into it. FUN 000420b8 selects it for ffff56f6 when neither ffff41ef.bit3 nor \
+bit4 is set and it is at most 20."""
+note = [
+    """
+Record 0x74 holds stored timing adjustment ffff29c6 in its high byte and \
+this byte in its low byte.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 936
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "melodic-numbat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-jacamar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff316a"
+name = "khaki-bat"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000680b2"
+value = {named = ["000420b8", "00068040", "000686b8", "ffff316a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068104"
+value = {named = ["000420b8", "00068040", "000686b8", "ffff316a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686f2"
+value = {named = ["000420b8", "00068040", "000686b8", "ffff316a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "melodic-numbat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

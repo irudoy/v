@@ -1,3 +1,22 @@
+summary = """
+Q1.7 secondary divisor for the calculated-load byte. FUN 000b997c looks up K \
+by high8(uint16[ffff4524]) and writes ffff329f. When ROM8[0000870e].bit4 is \
+set, FUN 0008083c converts its intermediate q as floor((q<<7)/K), with K=0 \
+forcing 255."""
+note = [
+    """
+Stock ROM8[0000870e]=0x28 has bit4 clear, so this normalization is inactive \
+in stock JK08A. The physical meaning of ffff4524 is unresolved. Result \
+disposition: conditional consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
 [editor]
 name = "Calculated Load Secondary Divisor Q1.7 (0x129D2)"
 category = "Internal Calculations"
@@ -7,10 +26,176 @@ format = "0.0000"
 fine = 0.0078125
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 456
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+scale = [10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eminent-chamois/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-ammonite/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "overjoyed-markhor/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-jackrabbit/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adaptable-hamster/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000129d2"
 name = "mini-starfish"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b9984"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b998c"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "00011b7b", "000129d2", "000264a0", "00026740", "00026944", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1*128=128"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128/128=1"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +228,34 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "overjoyed-markhor/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "placid-jackrabbit/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "eminent-chamois/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "successful-ammonite/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

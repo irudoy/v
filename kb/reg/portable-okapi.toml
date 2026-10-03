@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "fffff4cc"
+name = "portable-okapi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000272c0"
+
+[[link]]
+type = "writer"
+to = "just-pelican/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

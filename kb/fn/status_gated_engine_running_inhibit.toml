@@ -1,0 +1,102 @@
+title = "Stock-inert lifecycle-zero-gated engine-running fuel-inhibit contributor"
+summary = """
+Status-gated engine-running fuel-inhibit contributor. With ffff2499.bit1 and \
+ffff2494.bit4 set and ffff244f.bit2 clear, it returns active whenever RPM is \
+nonzero."""
+note = [
+    """
+All 16 stock calibration bytes at 000126f4 are zero. Startup and both \
+recovery paths clear ffff2494; every runtime writer preserves bit 4, so the \
+prerequisite and contributor remain inactive in the proven stock \
+lifecycle.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 31
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 533
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eccentric-caterpillar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mauve-spoonbill/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stirring-mayfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stirring-mayfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004faac"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000126f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004faac"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

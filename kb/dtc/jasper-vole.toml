@@ -1,0 +1,36 @@
+title = "Cylinder 5 misfire detected"
+level = "code"
+code = "P0305"
+group = "misfire"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 1
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000193e4"
+name = "jasper-vole"
+index = 11
+attribute = "00016110"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00016110"
+value = "0030"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000193e4"
+value = "05040d000000030540000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a178"
+value = "00016110"

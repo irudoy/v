@@ -1,0 +1,185 @@
+summary = """
+Stock-resolved common signed MAF-correction producer. Let \
+A=(ROM8[0x86f9]&0x20)!=0, B=(ROM8[0x8b3f]&1)!=0, C=ROM8[0x8782], \
+U=uint8[ffff1e73], and S=int8[ffff56ba]. If !A&&!B it writes zero; if !A&&B \
+it writes floor(C*S/32); if A&&B it preserves the prior word; otherwise it \
+writes floor(C*(U-123)/32) for 5<=U<=122, floor(C*(U-133)/32) for \
+133<=U<=250, and zero outside both ranges. Stock A=false and B=false, so \
+every call writes zero."""
+note = [
+    """
+Five SH-2E arithmetic right shifts implement floor division by 32 for \
+negative products. The alternative mode's physical meaning and engineering \
+scale remain unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 441
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "artichoke-mantis/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "combined_maf_aggregate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nippy-wolf/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "paper-mouflon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mindful-goose/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b320"
+name = "therapeutic-elk"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086f9"
+value = "0xdc"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008782=0x0a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b3f"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b32c"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b332"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b33c"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b350"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b36c"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b3c8"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b3ce"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b3d8"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b3de"
+value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "artichoke-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "combined_maf_aggregate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

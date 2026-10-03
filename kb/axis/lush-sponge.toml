@@ -1,3 +1,32 @@
+note = [
+    """
+Axis of the high-detonation target multiplier 0x12552. Wrapper 00026474 \
+searches the byte core with current engine-speed byte ffff11ae, which FUN \
+000384fe forms as ffff1196>>8 and the scheduler copies, so one stored count \
+represents 50 RPM. The points span 0..5600 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 78
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011cd8"
@@ -7,6 +36,37 @@ name = "lush-sponge"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000559d0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000559cc"
+value = {named = ["00011cd8", "00020dfe", "00026474", "00026944", "000384fe", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "brilliant-ibis/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -52,3 +112,10 @@ target mixture stage 00071dfa passes this RPM axis with RPM/50 snapshot \
 ffff119d at the homologous multiplier lookup; scheduler 00020f1a copies it \
 from ffff11d1, which 0003b87e stores as min(255, ffff11d4 >> 5) like source \
 byte ffff11e6"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

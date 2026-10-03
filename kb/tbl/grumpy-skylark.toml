@@ -1,0 +1,237 @@
+summary = """
+Interpolated Base Fuel Schedule threshold for transition of ffff249f bit 0 \
+from 0 to 1: while the bit is clear, high byte ffff1024 below the map output \
+and ffff25b9 equal to zero allow the bit to be set."""
+note = [
+    """
+The result remains in r12 and is compared in place. Every map cell is zero, \
+so the below-threshold branch is unreachable for an unsigned Base Fuel \
+Schedule high byte, although lookup and comparison execute. Map 00012984 \
+handles the opposite state. Exact DID 0x1208 establishes the input identity; \
+x/8 ms is profile-derived and requires hardware validation. The purpose of \
+flag ffff249f remains unresolved.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 116
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+scale = [15]
+
+[[ledger.dependency]]
+role = "base"
+to = "kickass-mole/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nice-macaw/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cerise-turtle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "resolute-bullfinch/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012116"
+name = "grumpy-skylark"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f674"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f676"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f678"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f680"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f684"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f698"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f69a"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f69c"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f706"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f708"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f70e"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f710"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f712"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f716"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f718"
+value = {named = ["00011ce0", "00012116", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[link]]
+type = "depends"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "nice-macaw/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cerise-turtle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "resolute-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

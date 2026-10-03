@@ -1,0 +1,87 @@
+summary = """
+Raw state used by the P030 common-gate inhibit latch. When ffff84c3.bit6 is \
+set and unsigned ffff2b73 is at least stock ROM8[00008500] = 5, coordinator \
+00082c8a writes stock ROM8[00008c2e] = 0x32 to ffff436f."""
+note = [
+    "The producer, physical quantity, and unit of ffff2b73 remain unresolved.",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 231
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dainty-cheetah/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2b73"
+name = "tasteful-caiman"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008500"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c2e"
+value = "0x32"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fb6"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fb8"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fba"
+value = {named = ["00008500", "00008c2e", "00082c8a", "ffff2b73", "ffff84c3"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,87 @@
+summary = """
+Gate byte of the exhaust cam reference learning, bits 0 and 1. FUN 000907e8 \
+sets bit b while its enable is set, target ffff2327 is 0x80, duty word \
+ffff1aac + 2b is zero, timer ffff2568 + b has expired, and ffff14b8 bit b is \
+clear, and clears it otherwise; FUN 00090884 runs only with the bit set."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 926
+fields = ["semantics", "units", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "whimsical-quokka/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_duty_b1_word/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fortunate-mantis/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14f0"
+name = "holistic-silkworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000907e8"
+value = {named = ["00090884", "ffff14f0", "ffff1aac", "ffff2327"], span = 1}
+key = "linked"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_duty_b1_word/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "whimsical-quokka/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fortunate-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

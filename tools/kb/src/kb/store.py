@@ -84,6 +84,14 @@ CLAIM = Table(_plain("label", "id"), inline=True)
 DIAGNOSTIC = Table(_plain("id", "kind", "label", "key") + (("claim", CLAIM),)
                    + _plain("applicability", "scope", "priority", "level", "note")
                    + (("evidence", Array(EVIDENCE)),), sort=("id",))
+LEDGER_DEPENDENCY = Table(_plain("role", "to", "type", "end", "link_role", "relies", "supports",
+                                "offset_text") + (("offset", HEX),),
+                          sort=("supports", "role", "to", "relies", "offset"))
+LEDGER_OFFSET = Table(_plain("evidence", "text"), sort=("evidence",))
+LEDGER = Table(_plain("registry", "order", "binding", "fields", "notes", "storage_description", "identity",
+                      "contract", "scale", "title", "name")
+               + (("dependency", Array(LEDGER_DEPENDENCY)), ("offset", Array(LEDGER_OFFSET))),
+               sort=("registry",))
 BIT = Table(_plain("bit", "name", "summary", "level") + (("evidence", Array(EVIDENCE)),),
             sort=("bit",))
 VALUE = Table(_plain("value", "name", "summary", "reachable", "level")
@@ -115,7 +123,7 @@ KIND_KEYS = {
     "dtc": _plain("code", "group", "disabled"),
 }
 FEATURE_TABLES = (("editor", EDITOR), ("logparam", LOGPARAM),
-                  ("diagnostic", Array(DIAGNOSTIC)))
+                  ("diagnostic", Array(DIAGNOSTIC)), ("ledger", Array(LEDGER)))
 ARRAYS = (("symbol", Array(SYMBOL)), ("status", Array(STATUS)), ("link", Array(LINK)),
           ("analog", Array(ANALOG)))
 

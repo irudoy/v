@@ -1,0 +1,42 @@
+summary = """
+Multipurpose status byte. Bit 2 contains the NATS Lock state and is set by \
+FUN_0008d724 after a counter threshold."""
+note = ["Lock is not the 0xffff4198 bit 1 engine inhibit."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 337
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-yak/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4201"
+name = "smart-donkey"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008d7c8"
+value = {named = ["0008d724", "ffff4201"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "cherubic-yak/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

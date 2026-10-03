@@ -1,0 +1,75 @@
+summary = """
+Exact UDS DID 0x1311 runtime status byte. FUN 0002e2e8 stores it at 0002e404 \
+with bit 3 from ffff5b32 bit 3, the exhaust valve timing control learning \
+status, and bit 4 from ffff24cd bit 4; the DID record supplies support mask \
+0x18."""
+note = [
+    """
+A structured Nissan profile names bit 3 EXH V/T LEARN with 0 = DONE and 1 = \
+YET. The name of bit 4 is unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 921
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "monumental-ibex/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jovial-bird/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c58"
+name = "slim-mouse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a3b"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a68"
+value = "ffff2c58"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e404"
+value = {named = ["00011a3b", "00022a68", "0002e2e8", "ffff2c58", "ffff5b32"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "monumental-ibex/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "jovial-bird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

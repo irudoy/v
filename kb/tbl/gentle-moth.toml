@@ -1,3 +1,25 @@
+summary = """
+First table-derived multiplier in an internal weighted calculation: the \
+value from ffff1754 is multiplied in 00046fb2 by the centered output of map \
+00012a42, after which the product undergoes an arithmetic right shift by 6."""
+note = [
+    """
+The claim is limited to operational code semantics without an unproven \
+physical name. For calibration byte x, direct scale to ffff1754 is x*2 and \
+inverse scale is x/2; units are raw because no physical unit is traced. The \
+centered output of 00012a42 lies in 0..64, and 000224fa arithmetically \
+shifts the product right by 6. ffff1754 has no external readers, but read \
+00046fae and mul.l 00046fb2 prove internal consumption; the write is not \
+dead control flow. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x*2"
+to_raw = "x/2"
+scale_level = "code"
+
 [editor]
 name = "Weighted Calculation Multiplier A (0x12808)"
 category = "Internal Calculations"
@@ -7,7 +29,173 @@ format = "0"
 fine = 2
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 171
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "magenta-jellyfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lurking-monkey/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012808"
 name = "gentle-moth"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ec6"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ecc"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed6"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f80"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f8e"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f96"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fa8"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fae"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb2"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fbe"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fc0"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046ec6"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046ecc"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046ed0"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046ed4"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00046ed6"
+value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "magenta-jellyfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "unyielding-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

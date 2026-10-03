@@ -1,0 +1,93 @@
+summary = """
+Ten-bit sample of on-chip A/D channel AN10. FUN 0002862c obtains the aligned \
+conversion result from FUN 0002df5c, shifts it right by six, and writes this \
+word."""
+note = [
+    """
+Downstream range checks and exact P2122/P2123 diagnostics identify this \
+channel as the first accelerator-pedal sensor path.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 221
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_adc_sampler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff362c"
+name = "auburn-finch"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028630"
+value = {named = ["0002862c", "00072b68", "ffff362c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028638"
+value = {named = ["0002862c", "00072b68", "ffff362c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002863e"
+value = {named = ["0002862c", "00072b68", "ffff362c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028640"
+value = {named = ["0002862c", "00072b68", "ffff362c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072b76"
+value = {named = ["0002862c", "00072b68", "ffff362c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "accelerator_pedal_channel_0_adjuster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_adc_sampler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

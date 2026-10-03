@@ -1,0 +1,84 @@
+summary = """
+Previous-pass copy of bank-1 actual exhaust-cam timing byte ffff2324, made \
+by scheduler 00020dfe in the 6-byte block ffff2324..ffff2329 -> \
+ffff232a..ffff232f at 00021310. FUN 000bfc2e reads byte[ffff2324 + 6 + ch] \
+at 000bfd74 as the filter state of the new output."""
+note = ["ffff232b is the bank-2 copy of ffff2325 in the same block."]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 826
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff232a"
+name = "chestnut-pony"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021310"
+value = {named = ["00020dfe", "000bfc2e", "ffff2324", "ffff232a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfd74"
+value = {named = ["00020dfe", "000bfc2e", "ffff2324", "ffff232a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

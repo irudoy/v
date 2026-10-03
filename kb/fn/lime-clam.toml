@@ -1,0 +1,23 @@
+summary = """
+2D interpolation over 7 bits: element bit 7 is a pass-through flag. The low \
+7 bits are interpolated (AND R9,R2 with R9=0x7F); bit 7 comes from the base \
+cell and is returned in the result (TST R1,R2; OR R1,R0 with R1=0x80). Its \
+only entry is 0x26230."""
+level = "code"
+role = "finisher"
+
+[[ledger]]
+registry = "funcs"
+order = 100
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000267cc"
+name = "lime-clam"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"

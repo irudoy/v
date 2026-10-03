@@ -1,3 +1,31 @@
+summary = """
+One-dimensional eight-element uint8 table with an implicit index from RAM \
+byte ffff1077; the lookup result is linearly interpolated and written as a \
+byte to ffff1f78. The physical purpose is unknown."""
+note = [
+    """
+All eight cells equal 0, so the lookup result is 0 for every input, but flat \
+content does not by itself prove the purpose. The map has no separate \
+calibration axis. Index: implicit u8: x=RAM[ffff1077]; for x<224, i=x>>5 and \
+q=(x&31)*2048 in Q0.16, and the result is linear interpolation of map[i] and \
+map[i+1]; for x>=224, map[7] is selected. Output trace: \
+0003a76c[00012a3a->r4] -> 0003a76e/0003a774[RAM ffff1077->u8 r5] -> \
+0003a772[00026370] -> (x<224: 00026a80 -> 00026aac/00026aae -> 00026ab6 -> \
+00026740; x>=224: map[7] in 00026370) -> 0003a776[r0->r2] -> \
+0003a780[r2->RAM ffff1f78]; ffff1f78 has no readers. Result disposition: \
+writes; Result target: ffff1f78. Evidence boundary: At 0003a780, the result \
+is only written to ffff1f78; the artifact contains no read of ffff1f78, and \
+0003a750 is a root with no call sites. A machine trace from the sink to a \
+physical consumer is absent, so the purpose and physical units are not \
+established.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
 category = "Internal Calculations"
@@ -7,7 +35,118 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 405
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a3a"
 name = "rapid-ocelot"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a76c"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a76e"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a772"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a774"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a776"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a780"
+value = {named = ["00012a3a", "00026370", "00026740", "0003a750"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ultramarine-taipan/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "ultramarine-taipan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

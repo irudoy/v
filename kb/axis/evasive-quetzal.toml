@@ -1,3 +1,23 @@
+note = [
+    """
+Value table for trustful angle-to-opening-area conversion and search axis \
+for the inverse conversion through 000190d0. Its contents are byte-identical \
+to primary table 00013202. The unit and scale remain catalog candidates.""",
+]
+level = "code"
+quantity = "raw"
+unit = "Throttle Opening Area [cm^2]"
+scale = "x*0.0008"
+to_raw = "x/0.0008"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 37
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1]
+
 [[symbol]]
 layout = "7mfk"
 address = "00018766"
@@ -7,6 +27,11 @@ name = "evasive-quetzal"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0007241e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table (Trustful)|Opening Area (x*0.0008)"
 
 [[symbol]]
 layout = "jk00c"

@@ -1,0 +1,103 @@
+title = "Delayed zero-speed high-BFS high-RPM fuel inhibit"
+summary = """
+Zero-speed high-BFS/high-RPM fuel-inhibit contributor. At standstill it \
+returns true when RPM is at least 4800, the high byte of Base Fuel Schedule \
+is at least 0x48, and timer ffff253b has expired."""
+note = [
+    """
+A failed condition reloads the timer with 110 counts; its wall-clock \
+duration depends on the unresolved task timebase.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 21
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 525
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "divergent-robin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f14e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000088e3=0x60"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b5d=0x48"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f14e"
+value = {named = ["000088e3", "00008b5d", "0004ed88", "ffff1024", "ffff110e", "ffff11ae", "ffff253b"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

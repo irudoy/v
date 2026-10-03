@@ -1,0 +1,195 @@
+summary = """
+Base of a two-byte bank-indexed rear O2 path-A high-condition metric. FUN \
+00089d92 dispatches P0138/P0158 when the selected bank byte reaches \
+calibrated limit 0xff."""
+note = [
+    """
+The reset value is also 0xff, but enable state surrounds the comparison. A \
+whole-program p-code scan found no direct runtime producer outside \
+reset/initialization; the producer is pointer-mediated or unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "rear-o2-high-a-metric-p0138"
+kind = "monitor"
+label = "DtcCode"
+key = "P0138"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b4c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 0 is compared with 0xFF in the exact path-A P0138 dispatch \
+path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008abd"
+value = "0xff"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a0ee"
+value = {named = ["00008abd", "00019b4c", "00089d92", "ffff2724"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a13a"
+value = {named = ["00008abd", "00019b4c", "00089d92", "ffff2724"], span = 1}
+key = "body"
+
+[[diagnostic]]
+id = "rear-o2-high-a-metric-p0158"
+kind = "monitor"
+label = "DtcCode"
+key = "P0158"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019b58"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bank element 1 is compared with 0xFF in the exact path-A P0158 dispatch \
+path."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "aspiring-harrier/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008abd"
+value = "0xff"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a0ee"
+value = {named = ["00008abd", "00019b58", "00089d92", "ffff2724"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0008a150"
+value = {named = ["00008abd", "00019b58", "00089d92", "ffff2724"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 91
+binding = "rear-o2-high-a-metric-p0138"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 92
+binding = "rear-o2-high-a-metric-p0158"
+
+[[ledger]]
+registry = "vars"
+order = 403
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "aspiring-harrier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thundering-giraffe/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-flamingo/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2724"
+name = "platinum-mole"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008abd"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00089458"
+value = {named = ["00008abd", "00089310", "00089d92", "0008aa46", "ffff2724"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008a0ee"
+value = {named = ["00008abd", "00089310", "00089d92", "0008aa46", "ffff2724"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008ac8c"
+value = {named = ["00008abd", "00089310", "00089d92", "0008aa46", "ffff2724"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "aspiring-harrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "grumpy-dolphin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "thundering-giraffe/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-flamingo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

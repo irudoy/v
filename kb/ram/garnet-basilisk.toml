@@ -1,0 +1,68 @@
+summary = """
+Baseline byte used by path-A P0447 producer FUN 000aab54. The function forms \
+max(0, (ffff2e91 << 8) - ffff10c4), then compares its high byte with \
+ROM8[0x836d]=0x18."""
+note = [
+    """
+The baseline producer, physical scale, and valve-state interpretation remain \
+unresolved.""",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[ledger]]
+registry = "vars"
+order = 417
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "overjoyed-buffalo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2e91"
+name = "garnet-basilisk"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000836d"
+value = "0x18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aabe8"
+value = {named = ["0000836d", "000aab54", "ffff2e91"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aabf2"
+value = {named = ["0000836d", "000aab54", "ffff2e91"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aac0e"
+value = {named = ["0000836d", "000aab54", "ffff2e91"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "overjoyed-buffalo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

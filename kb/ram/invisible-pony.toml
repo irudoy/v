@@ -1,0 +1,61 @@
+summary = """
+Software-indexed byte read at 000a77ba by FUN 000a773a while ffff4184 bit 7 \
+is set. Its address is GBR ffff267a + 0xd5 + uint8(index); caller indices 0 \
+and 1 select ffff274f and ffff2750. The software lookup argument is min(255, \
+2 * uint8(value))."""
+note = [
+    """
+The physical interpretation of this byte is unresolved; the helper result \
+and producer are not established by this placement claim.""",
+]
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 3
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [1, 2, 0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "frisky-swine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff274f"
+name = "invisible-pony"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_throttle_correlation_indexed_inputs.py"
+key = "test_throttle_correlation_input_byte_placement"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a7838"
+value = "ffff267a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a77ba"
+value = {named = ["000a773a", "000a7838", "ffff267a", "ffff274f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "frisky-swine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,91 @@
+summary = """
+Bank-indexed MAF working-value refresh. It copies transfer outputs \
+ffff1054/ffff1056 to ffff1058/ffff105a before the per-bank filter and \
+total-MAF calculations."""
+note = ["Caller 0003a904 invokes exactly indices 0 and 1."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 437
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "opalescent-pronghorn/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vague-pony/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-hippo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precious-adder/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a982"
+name = "brass-ammonite"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a990"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a998"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a9a0"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

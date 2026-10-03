@@ -1,3 +1,37 @@
+summary = """
+Standstill exhaust-VTC override target. While ffff246c bit 1 is set \
+(operational enable, engine speed between ROM8[0x8e3b] and ROM8[0x8e3a], \
+coarse vehicle speed at or below ROM8[0x8e3c], P/N position switch ON in \
+ffff244f bit 2) and latch ffff2478 bit 4 is clear, FUN 000bfe88 writes \
+clamp_u8(ROM8[0x8e36]+128) to ffff137e at 000c01f4 in place of the \
+coolant-selected map byte; the demand flag, both bank enables, and the duty \
+controller then follow it. Once both banks have tracked the target within \
+ROM8[0x8e16]=6 counts for 0.512 s the latch sets and the byte returns to 128 \
+until the operational enable falls. The stroke is the actuation of the \
+exhaust valve timing control learning, whose tail in the same function \
+captures the integrator of error stage 000c1152 on a clean bank release. Raw \
+0 commands the neutral byte 128, which still replaces the map byte and can \
+set the latch; the stroke is removed through ROM8[0x8e3b]=255."""
+note = [
+    """
+Stock value 40 is +20 degCA of exhaust retard. The byte is added to the 128 \
+center in the same raw units as surface 0000b33a and target ffff2327, so it \
+carries the code-proven 0.5 crank degrees per count of the actual bytes that \
+monitor 0008f168 compares with the target. It is single-copy and not a Map \
+Switching family, so a change applies to every map slot. The 2026-09-17 \
+captures of a Map 3 image with neutral surfaces show the override as eight \
+excursions to raw 168 starting as the engine passed 1800 RPM at rest.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+storage = "uint8"
+unit = "degCA"
+scale = "x*0.5"
+to_raw = "x/0.5"
+scale_level = "code"
+
 [editor]
 name = "Exhaust CVTC Target - Standstill Override"
 category = "Variable Valve Timing / Exhaust Cam"
@@ -8,10 +42,183 @@ fine = 0.5
 coarse = 2.0
 static_axis = ["Target"]
 
+[[ledger]]
+registry = "findings"
+order = 464
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fantastic-shark/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "independent-chachalaca/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lovely-hyrax/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "exhaust_cvtc_target/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00008e36"
 name = "umber-bull"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e36"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c019e"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01a4"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01aa"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01f4"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Exhaust Cam Timing Map | Degrees | (x-128)*0.5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0002283c"
+value = "ffff2324"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f496"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f4bc"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfdae"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c01a4"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c01aa"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c01f4"
+value = {named = ["00008e36", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfe88", "ffff137e", "ffff2324", "ffff2327", "ffff246c", "ffff2478"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "40*0.5=20"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "black-vulture/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -100,3 +307,40 @@ value = "370200000000002100000000380306000000045200000000"
 note = """
 the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
 P0014 and P0024 have no record"""
+
+[[link]]
+type = "depends"
+to = "exhaust_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "fantastic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "independent-chachalaca/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "accessor"

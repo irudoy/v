@@ -1,0 +1,728 @@
+summary = """
+Periodic-table index-27 six-channel fuel-output inhibit coordinator. It \
+converts the OR of exactly 15 global Boolean contributors to G=00 or 3f \
+through 0004fb5e; calls 0004f758 and 0004f7e0 only for side effects; forms \
+P=G|DFCO_mask_000503e0|count_mask_0005079c; applies service-0x30 Power \
+Balance replacement through 00050a06/00050a34; ORs the P2119/P1238 ETC \
+auxiliary mask 0005096c after replacement; limits the result to six bits \
+through 00050a4c; and writes ffff22e0."""
+note = [
+    """
+Aggregate exactly 15 global Boolean conditions with DFCO count Power Balance \
+and ETC masks""",
+    """
+A full global mask absorbs partial DFCO/count masks before Power Balance. \
+Power Balance can substitute those bits, while the ETC auxiliary mask is \
+applied afterward and cannot be cleared by that replacement. The 0000942c \
+request limiter is outside this formula.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 19
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 158
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boolean_to_six_channel_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "composite_status_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "count_to_inhibit_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_cut_request/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_entry_delay_select/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_exit_delay_select/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_restore_classify/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_fault_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "engine_overtemperature_fuel_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_actuator_fault_inhibit_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_bfs_rpm_latch_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_rpm_exposure_accumulator_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "low_speed_sustained_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "merge_six_channel_masks/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_apply/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "power_balance_mask_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shared_status_bit1_fuel_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "status_gated_engine_running_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_inhibit_mask/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-snail/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versatile-whale/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004ed88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219dc"
+value = "0004ed88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edba"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edbe"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edc2"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edc6"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edca"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edce"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edd2"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edd6"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edda"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ede0"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ede4"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edea"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edf0"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edf8"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004edfc"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee00"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee06"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee16"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee44"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee64"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee88"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee8e"
+value = {named = ["00020dfe", "000219dc", "0004ed88", "0004f14e", "0004f19c", "0004f282", "0004f324", "0004f494", "0004f662", "0004f736", "0004f758", "0004f7e0", "0004f958", "0004f9c4", "0004faa0", "0004faac", "0004fb5e", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "0005079c", "000507ce", "00050920", "0005096c", "00050a06", "00050a34", "00050a4c", "00050a60", "00050b3c", "ffff14bd", "ffff14be", "ffff22e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "boolean_to_six_channel_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "composite_status_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "count_to_inhibit_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dfco_cut_request/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dfco_entry_delay_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dfco_exit_delay_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dfco_restore_classify/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "engine_overtemperature_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "intake_valve_timing_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "low_speed_rpm_exposure_accumulator_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "low_speed_sustained_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "merge_six_channel_masks/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "power_balance_mask_apply/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "power_balance_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "shared_status_bit1_fuel_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "status_gated_engine_running_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "transition_window_low_speed_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "zero_speed_high_bfs_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,169 @@
+summary = """
+Unsigned recursive speed-filter state in FUN 0007584e. First use stores \
+min(65535,4*ffff11b6); later calls store \
+min(65535,ffff11b6+floor(3*entry/4)). The blend calculation retains the \
+entry value in a register while request-rate calculations reread the newly \
+stored value."""
+note = [
+    """
+Stable input converges to 4*N. Passive target-CAN timing establishes a 10.24 \
+ms update period, giving a 35.6 ms exponential time constant. The x*0.78125 \
+RPM interpretation of this expanded coordinate remains candidate evidence.""",
+]
+level = "code"
+unit = "raw speed x4"
+
+[[ledger]]
+registry = "vars"
+order = 106
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_container/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "laughing-goshawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "white-dove/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1794"
+name = "porcelain-boobook"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007589c"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758ac"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000758cc"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759b6"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a4e"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a96"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b04"
+value = {named = ["00009424", "0007584e", "ffff11b6", "ffff1794", "ffff1798", "ffff2485"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "white-dove/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "private-sloth/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "laughing-goshawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

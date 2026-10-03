@@ -1,0 +1,129 @@
+summary = """
+Engine-event scheduler pending flags. FUN 000208f8 sets bit 7 on every \
+admitted current-cylinder event and bit 6 after each third event. Dispatcher \
+000209d8 uses bit 7 for the six-entry table at 00021948 and bit 6 for the \
+three-entry table at 00021960, whose second entry is misfire \
+revolution-phase dispatcher 0007c494, then clears each serviced bit."""
+note = [
+    """
+The modulo-3 event relation corresponds to one crankshaft revolution on the \
+V6 and closes the physical cadence of FUN 000872d0.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 349
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nebulous-toucanet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gentle-bat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84ba"
+name = "antique-hawk"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00021964"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020928"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002092c"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002093c"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020c02"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020c42"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020d44"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020d82"
+value = {named = ["000208f8", "000209d8", "00021964", "0007c494", "ffff84ba"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "nebulous-toucanet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gentle-bat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

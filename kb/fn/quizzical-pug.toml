@@ -1,0 +1,34 @@
+summary = """
+Second accessor for the same 0x12e3a/0x12e32 pair, redirected to the twin by \
+the same bit 0 of ROM configuration byte 0x8616."""
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 291
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "olivine-bug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bec52"
+name = "quizzical-pug"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008616"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bec52"

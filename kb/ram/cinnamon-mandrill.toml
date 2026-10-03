@@ -1,0 +1,146 @@
+summary = """
+Derived quarter-coordinate opening monitor written by 0003e548 as the \
+coordinate of the averaged opening area of both throttle-position channels, \
+divided by four. FUN 0006f236 subtracts idle base ffff28f8, applies gradient \
+0x505b and publishes the saturated byte as absolute throttle ffff1075."""
+note = [
+    """
+It shares the quarter-coordinate domain of ffff40c6 and ffff28f8, so one \
+count is 137140/1114112 percent of throttle opening. ROM byte 0x8b2c is \
+0x02, so this image takes the branch that subtracts the idle base; the \
+alternative branch applies the same gradient to the word alone.""",
+]
+level = "code"
+unit = "raw opening coordinate"
+
+[[ledger]]
+registry = "vars"
+order = 684
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "determined-lynx/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sly-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "muscular-leech/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "glistening-gecko/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3f7c"
+name = "cinnamon-mandrill"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0006f2ae"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e610"
+value = {named = ["00013202", "000155a0", "0003e548", "0006f1fa", "0006f236", "0006f2ae", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f292"
+value = {named = ["00013202", "000155a0", "0003e548", "0006f1fa", "0006f236", "0006f2ae", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f2be"
+value = {named = ["00013202", "000155a0", "0003e548", "0006f1fa", "0006f236", "0006f2ae", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "bipedal-tortoise/ram"
+offset = 0x0
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "monumental-snake/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "muscular-leech/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "determined-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sly-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "glistening-gecko/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

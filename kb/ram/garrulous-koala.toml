@@ -1,0 +1,223 @@
+summary = """
+EVAP pressure-sensor circuit result byte. FUN 000ac934 sets bit 6 for the \
+P0452 low branch and bit 5 for the P0453 high branch; FUN 000abca2 applies \
+configuration gates, dispatches descriptor indices 0xd4 and 0xd5, and clears \
+the bits."""
+note = [
+    """
+The low/high identities follow the exact descriptor catalog. The stock \
+configuration skips the pressure-circuit producer and both exact dispatch \
+branches. Sensor voltage conversion remains unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "evap-pressure-high-state-p0453"
+kind = "monitor"
+label = "DtcCode"
+key = "P0453"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d5c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 5 is set when ffff2fd6 is at or above 0xFE under the common gates. The \
+producer and exact P0453 branch are configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008552"
+value = "0xfe"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000abf86"
+value = {named = ["00008552", "00018700", "00019d5c", "000abca2", "000ac934", "ffff247e"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ac98a"
+value = {named = ["00008552", "00018700", "00019d5c", "000abca2", "000ac934", "ffff247e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "peculiar-bear/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "evap-pressure-low-state-p0452"
+kind = "monitor"
+label = "DtcCode"
+key = "P0452"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d50"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 6 is set when ffff2fd6 is below 0x16 under the common gates. The \
+producer and exact P0452 branch are configuration-disabled in stock JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "mindful-malamute/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008553"
+value = "0x16"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000abf64"
+value = {named = ["00008553", "00018700", "00019d50", "000abca2", "000ac934", "ffff247e"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000ac966"
+value = {named = ["00008553", "00018700", "00019d50", "000abca2", "000ac934", "ffff247e"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "peculiar-bear/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 139
+binding = "evap-pressure-low-state-p0452"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 140
+binding = "evap-pressure-high-state-p0453"
+
+[[ledger]]
+registry = "vars"
+order = 414
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mindful-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "peculiar-bear/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stereotyped-binturong/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff247e"
+name = "garrulous-koala"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186ce"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000abf64"
+value = {named = ["000186ce", "00018700", "000abca2", "000ac934", "000ac994", "ffff247e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000abf86"
+value = {named = ["000186ce", "00018700", "000abca2", "000ac934", "000ac994", "ffff247e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac966"
+value = {named = ["000186ce", "00018700", "000abca2", "000ac934", "000ac994", "ffff247e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac98a"
+value = {named = ["000186ce", "00018700", "000abca2", "000ac934", "000ac994", "ffff247e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "mindful-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "peculiar-bear/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stereotyped-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

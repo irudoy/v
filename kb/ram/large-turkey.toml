@@ -1,0 +1,165 @@
+summary = """
+Unsigned vehicle-speed-selected temperature-difference term in the P0128 \
+model. FUN 000b78da applies inverse weight \
+255-min(lookup_u16(00014cca),255), two calibrated divisions, and the nonzero \
+ffff35a0 parameter before writing this uint32 word. FUN 000b6b5a is the only \
+reader and adds it to ffff3228 with uint32 saturation into ffff3224."""
+note = [
+    """
+The whole-program exact xref projection has one writer and one reader. Both \
+speed-selected stock coefficients are zero, so this term is always zero in \
+stock JK03A and JK08A even though map 00014cca supplies full inverse \
+weight.""",
+]
+level = "code"
+unit = "P0128 model raw"
+
+[[ledger]]
+registry = "vars"
+order = 535
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "polite-echidna/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curvy-mandrill/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perky-agama/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "refined-goose/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2f98"
+name = "large-turkey"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086d2"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086d3"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce6"
+value = {named = ["000086d2", "000086d3", "00014cca", "000b6b5a", "000b78da", "ffff110e", "ffff2733", "ffff2f98", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a2e"
+value = {named = ["000086d2", "000086d3", "00014cca", "000b6b5a", "000b78da", "ffff110e", "ffff2733", "ffff2f98", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "curvy-mandrill/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "perky-agama/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "ruddy-anaconda/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "polite-echidna/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

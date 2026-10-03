@@ -1,0 +1,109 @@
+summary = """
+Base of the volatile dynamic-local-identifier source-pointer array. SID 0xac \
+writes one 32-bit pointer per output byte, and SID 0x21 traverses the array \
+in index order and byte-dereferences each selected source."""
+note = [
+    """
+The storage span to ffff9920 permits 64 pointer slots, while the 0xac parser \
+guard limits a pure 0x83 definition to 62 output bytes. The array is not an \
+atomic snapshot buffer.""",
+]
+level = "code"
+unit = "32-bit source pointers"
+
+[[ledger]]
+registry = "vars"
+order = 654
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "olive-mandrill/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "graceful-stoat/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-hawk/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9820"
+name = "illustrious-oriole"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032a14"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032bbc"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032c06"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000338e8"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00033d34"
+value = {named = ["000328c0", "00033810", "ffff9820", "ffff9920"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "graceful-stoat/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "olive-mandrill/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "quick-hawk/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

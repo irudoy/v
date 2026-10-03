@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from kb import adapters, checks, compile, derive, levels, match, names, repo, tokens, vocab
-from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
+from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Builder, Ref, SymbolKey
 from kb.repo import KbError
@@ -65,14 +65,14 @@ class LedgerAdapterTest(unittest.TestCase):
 
     def test_curated_names_name_their_meanings(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x2040C))
-        self.assertEqual((meaning.key, meaning.tier), ("periodic_tick_isr/fn", "curated"))
+        self.assertEqual((meaning.key, meaning.tier), ("periodic_tick_isr/fn", "file"))
 
     def test_the_file_of_a_meaning_wins_over_a_curated_name(self):
         # The conversion of the address profiles named the file by the symbol
         # key, which wins over the curated name.
         meaning = model().meaning_of(SymbolKey("7mfk", "fn", 0x20DFE))
         self.assertEqual((meaning.key, meaning.tier), ("coherent_snapshot/fn", "file"))
-        self.assertIn(("periodic_snapshot_dispatch", "curated", "tools/ghidra/symbols/7mfk.csv"),
+        self.assertIn(("periodic_snapshot_dispatch", "former", "kb/fn/coherent_snapshot.toml"),
                       meaning.other_names)
         self.assertEqual(model().meaning_of(SymbolKey("1nd", "fn", 0x11363C)).name, "hcan1_init")
 
@@ -102,7 +102,8 @@ class ExplicitLedgerTokenTest(unittest.TestCase):
     def declare(self, ledger, column, text):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
         row = {**self.ROWS[ledger], column: text}
-        with patch.object(ledgers, "rows", side_effect=lambda _, name: [row] if name == ledger else ()), \
+        with patch.object(ledgers, "rows", side_effect=lambda _, name, overlay=None: [row] if name == ledger else ()), \
+                patch.object(curated, "declare_layout"), \
                 patch.object(native, "census_call", return_value=None):
             ledgers.declare(b, repo.ROOT)
         m = b.finish()
@@ -184,35 +185,29 @@ class RamStructureEvidenceTest(unittest.TestCase):
                 {"kind": "test", "supports": "identity", "path": self.PATH, "key": key}]
 
     def assert_pair(self, address, items):
-        self.assertEqual([item for item in items if "legacy" not in item],
+        self.assertEqual([item for item in items if item["kind"] in ("indirect", "test")],
                          self.expected_items(address))
 
     def declare(self, row):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
-        with patch.object(ledgers, "rows", side_effect=lambda _, name: [row] if name == "vars" else ()):
+        with patch.object(ledgers, "rows", side_effect=lambda _, name, overlay=None: [row] if name == "vars" else ()), \
+                patch.object(curated, "declare_layout"):
             ledgers.declare(b, repo.ROOT)
         m = b.finish()
         m.root, m.config = repo.ROOT, repo.config()
         self.assertEqual(m.issues, [])
         return m.symbols[SymbolKey("7mfk", "ram", int(row["addr"], 16))]
 
-    def test_eight_real_ledger_symbols_have_the_exact_typed_pair_and_legacy_neighbors(self):
+    def test_eight_real_owned_symbols_keep_the_exact_base_and_test_pair(self):
         m = model()
         self.assertEqual(set(self.rows), set(self.EXPECTED))
         for address, row in self.rows.items():
             with self.subTest(address=f"{address:08x}"):
                 symbol = m.symbols[SymbolKey("7mfk", "ram", address)]
                 self.assert_pair(address, symbol.evidence)
-                self.assertFalse(checks._owned(m, symbol))
-                self.assertIn("defs/JK08A.vars.csv", symbol.sources)
-                old = [token for token in tokens.parse(row["evidence"])
-                       if token.role in tokens.TERMINAL and token.role not in tokens.TYPED_TERMINAL]
-                manual = m.config.get("tokens", {}).get("manual", ())
-                expected = [{"supports": "identity", **item, "legacy": token.text}
-                            for token in old
-                            for item in [tokens.evidence(token, "7mfk", manual)]
-                            if item is not None]
-                self.assertEqual([item for item in symbol.evidence if "legacy" in item], expected)
+                self.assertTrue(checks._owned(m, symbol))
+                self.assertTrue(any(src.startswith("kb/ram/") for src in symbol.sources))
+                self.assertFalse(any("legacy" in item for item in symbol.evidence))
                 for item in self.expected_items(address):
                     self.assertIsNone(match.verify(m, symbol, item))
 
@@ -330,7 +325,8 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
     def test_actual_ratio_has_reviewed_base_test_and_handler_access_roles(self):
         m = model()
         symbol = m.symbols[SymbolKey("7mfk", "ram", 0xFFFF196C)]
-        self.assertEqual([e for e in symbol.evidence if "legacy" not in e], [self.BASE, self.TEST])
+        self.assertEqual([e for e in symbol.evidence if e["kind"] in ("indirect", "test")],
+                         [self.BASE, self.TEST])
         self.assertIsNone(match.verify(m, symbol, self.BASE))
         self.assertIsNone(match.verify(m, symbol, self.TEST))
         owner = SymbolKey("7mfk", "fn", 0x28EA2)
@@ -394,7 +390,8 @@ class DtcLedgerAdapterTest(unittest.TestCase):
 
     def declare(self, rows, root=repo.ROOT):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())
-        with patch.object(ledgers, "rows", side_effect=lambda _, name: rows if name == "dtc" else ()):
+        with patch.object(ledgers, "rows", side_effect=lambda _, name, overlay=None: rows if name == "dtc" else ()), \
+                patch.object(curated, "declare_layout"):
             ledgers.declare(b, root)
         m = b.finish()
         m.root, m.config = repo.ROOT, repo.config()
@@ -410,16 +407,17 @@ class DtcLedgerAdapterTest(unittest.TestCase):
             symbol = m.symbols[key]
             spans = dtc_projection.canonical_evidence(row, self.tables, len(self.image))
             with self.subTest(index=row["index"]):
-                self.assertEqual(symbol.evidence, [
+                self.assertCountEqual(symbol.evidence, [
                     {"kind": "rom-bytes", "supports": "identity", "at": f"7mfk:{address:08x}",
                      "value": raw.hex()} for address, raw in spans])
                 self.assertNotIn("images", symbol.props)
                 self.assertGreaterEqual(grounded[key][0], vocab.LEVEL_RANK["code"])
                 self.assertTrue(all(match.verify(m, symbol, item) is None
                                     for item in symbol.evidence))
-        # Other ledgers retain their token evidence unchanged.
+        # The other converted ledgers also own typed evidence.
         table = m.symbols[SymbolKey("7mfk", "tbl", 0xA4AA)]
-        self.assertTrue(any("legacy" in item for item in table.evidence))
+        self.assertFalse(any("legacy" in item for item in table.evidence))
+        self.assertTrue(any(item["kind"] == "l0-context" for item in table.evidence))
 
     def test_row_mismatches_fail_the_schema_instead_of_creating_a_symbol(self):
         row = next(row for row in self.rows if row["index"] == "17")
@@ -460,7 +458,9 @@ class DtcLedgerAdapterTest(unittest.TestCase):
             self.assertEqual(sorted(meaning.symbols["7mfk"].props["index"]
                                     for meaning in m.meanings if meaning.props["code"] == code), indices)
         nats = m.symbols[SymbolKey("7mfk", "dtc", 0x19540)]
-        self.assertEqual(nats.evidence[2]["value"], "0000")
+        attribute = next(item for item in nats.evidence
+                         if item["at"] == "7mfk:" + nats.props["attribute"])
+        self.assertEqual(attribute["value"], "0000")
 
     def test_image_bytes_are_read_with_the_compiler_root(self):
         root = repo.ROOT / "tmp/issue63/root-probe"
@@ -621,8 +621,7 @@ class ProfileAdapterTest(unittest.TestCase):
                          [(src, "7mfk-00009000/tbl",
                            "token rom_const:1 gives rom-bytes evidence without at")
                           for src in ("one.csv", "two.csv")])
-        self.assertEqual({issue.path.count(";")
-                          for issue in checks.audit(model(), ("untyped",))["untyped"]}, {0})
+        self.assertEqual(checks.audit(model(), ("untyped",))["untyped"], [])
 
     def test_an_unsupported_map_row_gives_way_to_a_target_specific_surface(self):
         meaning = model().meaning_of(SymbolKey("7mfk", "tbl", 0x00009A1A))

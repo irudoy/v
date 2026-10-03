@@ -1,7 +1,168 @@
+summary = """
+A disabled calibration branch performs a 1D-8 lookup of a uint8 map by \
+ffff106f and subsequently processes the result arithmetically. \
+ROM[00008d92]=0x7a with bit 3 set bypasses the base load, lookup, and \
+potential downstream path."""
+note = [
+    """
+ROM[00008d92]=0x7a; bit 3 is set, so 0x7a & 0x08 = 0x08. 00051710 mov.l \
+loads a pointer to 00008d92 into r12. 00051712 mov.b @r12,r0 loads current \
+byte 0x7a. 00051714 and #0x08 gives r0=0x08. 00051716 tst r0,r0 sets T=0 for \
+the nonzero result. 00051718 bf/s 000517a8 branches specifically when T=0, \
+so the branch is taken; delay slot 0005171a executes mov r0,r14 and stores \
+0x08. The destination is 000517a8, so sequential code 0005171c..000517a6 is \
+skipped entirely, including loading base 00012206 and lookup at 00051724. At \
+the destination, instructions 000517a8 extu.b r14,r14 and 000517aa tst \
+r14,r14 again produce T=0, so 000517ac bt 0005183e is not taken and the \
+alternate branch for set bit 3 executes without lookup of 00012206. Index: \
+Disabled 1D-8 lookup of a uint8 array: r4=00012206, r5=zero-extended \
+RAM[ffff106f]; wrapper 00026370 routes the index to kernel 00026a80 and \
+finisher 00026740 or returns the last element at the upper threshold. Output \
+trace: 0005171e loads base 00012206 specifically, 00051720 loads a byte \
+index from ffff106f, and 00051724 calls lookup; 00051728 would store its \
+result in a stack byte. All these sites are in statically skipped interval \
+0005171c..000517a6. In the current ROM, the target map produces no value, \
+reaches no RAM write, and has no executable downstream consumer; readers of \
+accessor outputs listed in the artifact do not prove consumption of \
+00012206. Result disposition: dead_control_flow; Result target: none in the \
+current ROM because lookup 00051724 and the potential output of its branch \
+0005171c..000517a6 do not execute.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 121
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012206"
 name = "myrtle-shrimp"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051710"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051712"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051714"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051716"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051718"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005171a"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005171e"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051720"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051724"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051728"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517a6"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517a8"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517aa"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000517ac"
+value = {named = ["00012206", "00051700", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "stoic-dinosaur/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +195,17 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,28 @@
+role = "service"
+contract = """
+Arithmetic right shift by 6: r0 = (int32)r0 >> 6, signed division by 64 \
+rounded down. The body is six shar instructions and rts. It is pure, with no \
+memory access, and does not touch the stack or PR. Side output is T = input \
+bit 5."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 48
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000224fa"
+name = "illustrious-vulture"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000224fa"

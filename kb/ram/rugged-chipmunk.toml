@@ -1,0 +1,165 @@
+summary = """
+Ramped commanded-mixture word of stage 0005594a, Q14, addressed as ffff120e \
++ 0x2c. With ffff84c3 bit 7 set the stage forms a down step of \
+ROM8[0000849b] * 8 = 304 toward 0x4000 and an up step of ROM8[0000849c] * 8 \
+= 384 toward ffff15eb << 7 from previous-pass snapshot ffff1278, with \
+kick-off ROM8[00008b9c] << 7 = 0x4100 and floor ROM16[0000929c] = 0x4000 on \
+band entry. State byte ffff1410 selects the branch: 1 writes 0x4000, 4 and 5 \
+write the target directly, 2, 3, and 6 ramp until ffff2485 bit 5 reports the \
+target reached. The result is capped at ffff15eb << 7 and ffff2485 bit 5 = \
+(word == ffff15eb << 7). Scheduler 00020dfe copies it to ffff1278."""
+level = "code"
+unit = "ratio_q14"
+
+[[ledger]]
+registry = "vars"
+order = 746
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ethereal-piculet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inquisitive-crow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cornflower-whippet/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "laughing-goshawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff123a"
+name = "rugged-chipmunk"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000849b=38"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000849c=48"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9c=130"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000929c"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564a8"
+value = {named = ["0000849b", "0000849c", "00008b9c", "0000929c", "0005594a", "000593ac", "ffff123a", "ffff1278", "ffff1410", "ffff15eb", "ffff2485", "ffff84c3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564ac"
+value = {named = ["0000849b", "0000849c", "00008b9c", "0000929c", "0005594a", "000593ac", "ffff123a", "ffff1278", "ffff1410", "ffff15eb", "ffff2485", "ffff84c3"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "ethereal-piculet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "inquisitive-crow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cornflower-whippet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "laughing-goshawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

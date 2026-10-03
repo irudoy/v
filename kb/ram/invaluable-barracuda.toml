@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1350"
+name = "invaluable-barracuda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00059500"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

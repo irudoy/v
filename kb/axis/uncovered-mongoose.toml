@@ -1,3 +1,23 @@
+note = [
+    """
+uint16 axis for map 00015306. Before the search, code adds 0x8000 to the \
+signed input and keeps the low 16 bits; points decode to 0, 78, 117, 156, \
+176, 195, 234, and 527. The physical input quantity is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 22
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3]
+
 [[symbol]]
 layout = "7mfk"
 address = "00015da0"
@@ -7,6 +27,27 @@ name = "uncovered-mongoose"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00060348"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006033c"
+value = {named = ["00015da0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00060340"
+value = {named = ["00015da0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00060346"
+value = {named = ["00015da0"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"

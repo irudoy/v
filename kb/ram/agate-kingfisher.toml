@@ -1,0 +1,400 @@
+summary = """
+Multipurpose diagnostic status byte in the fuel-inhibit family. FUN 0007c166 \
+recomputes bit 5 as the critical P0603/P0605/P2119/P1238 aggregate; FUN \
+00050920 stores the qualified 2525/2000 RPM inhibit state in bit 6. Bit 7 is \
+the stock-inert lifecycle-zero direct subpath of composite contributor \
+000507ce."""
+note = [
+    """
+Normal startup clears the byte inside [ffff261c,ffff4514), and both recovery \
+paths clear it inside [ffff1000,ffff5cf4). A 2315-function p-code census \
+found no unresolved writer. Runtime writers 0007c166, 00050920, and 0007f870 \
+all preserve bit 7, and recovered DMAC destinations do not overlap the byte, \
+so bit 7 remains zero in the proven stock lifecycle.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 635
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "composite_status_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "critical_ecm_etc_fault_aggregate_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_status_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fractal-dragon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41ea"
+name = "agate-kingfisher"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fc98"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050818"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005092e"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005095c"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c1ee"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c398"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c3a8"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d85a"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f89e"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f8f6"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f930"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f944"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f988"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f996"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f99a"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007f9b8"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa02"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa2c"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa40"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa4e"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa60"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007fa94"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007faa0"
+value = {named = ["00027ac0", "0002fc24", "00034b70", "0004ed88", "000507ce", "00050920", "0007c166", "0007d856", "0007f870", "ffff41ea"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "composite_status_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "critical_ecm_etc_fault_aggregate_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diagnostic_status_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fractal-dragon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nostalgic-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rigorous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

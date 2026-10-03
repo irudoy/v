@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00043b54"
+name = "quantum-anteater"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00043b54"

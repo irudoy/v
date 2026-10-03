@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff357d"
+name = "subtle-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a6836"
+
+[[link]]
+type = "writer"
+to = "curly-axolotl/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

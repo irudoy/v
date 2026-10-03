@@ -1,7 +1,321 @@
+summary = """
+Dimensionless coefficient on the param_1=0 branch of function 000c0d90: two \
+centered uint8 quantities form a difference scaled as trunc0((A-B)*x/100)."""
+note = [
+    """
+With param_1=0, 000123f2 is selected. Two bytes loaded at 000c0db6 and \
+000c0dc4 are centered by subtracting 128; code calculates (r14-r12)*x/100. \
+Raw x is written to ffff128c+0x34a+0, or ffff15d6. The derived result is \
+returned to center 128 and saturated to uint8. All cells are zero; the \
+physical domain of the quantities is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "1"
+scale = "x/100"
+to_raw = "x*100"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 137
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+scale = [22, 23, 24, 25, 26, 27, 28, 29, 30]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garrulous-nautilus/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "000123f2"
 name = "strange-salmon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dac"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0db6"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dbe"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dc4"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dc6"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0dcc"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0ea8"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0eaa"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0eb0"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0eb2"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0eb4"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0eb6"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f0a"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f12"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f1a"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f1c"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f1e"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f20"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f22"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f28"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c0f30"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "electric-lemur/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f1c"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f1e"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f20"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f22"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f24"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f26"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f28"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000c0f2a"
+value = {named = ["00011beb", "000123f2", "00021bbc", "000c21e6", "ffff11ae", "ffff128c"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -32,3 +346,40 @@ value = "0001470f"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "garrulous-nautilus/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "outstanding-marmot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

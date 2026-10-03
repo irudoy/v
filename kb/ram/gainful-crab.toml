@@ -1,0 +1,203 @@
+summary = """
+Four-state runtime selector written by FUN 00048400 with values 0 through 3. \
+FUN 00048754 compares and snapshots the selector, while FUN 000b6b5a passes \
+it to FUN 000b7a3c, which selects one of four P0128 term coefficients."""
+note = [
+    """
+The writer's reachable assignments are exactly 0, 1, 2, and 3. Code proves \
+the bounded selector and its operational use but does not identify the \
+physical subsystem represented by the four states.""",
+]
+level = "code"
+unit = "runtime state 0..3"
+
+[[ledger]]
+registry = "vars"
+order = 537
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "beige-turkey/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "viridian-armadillo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "impossible-ringtail/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff178e"
+name = "gainful-crab"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004871c"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00048720"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00048724"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004872a"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004872e"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00048732"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004873a"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00048740"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000487f8"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00048802"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cbc"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cc6"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b2c"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b36"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b42"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b4c"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7b58"
+value = {named = ["00048400", "00048754", "000b6b5a", "000b7a3c", "ffff178e"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "beige-turkey/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "viridian-armadillo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "impossible-ringtail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

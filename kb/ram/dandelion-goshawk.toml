@@ -1,0 +1,79 @@
+summary = """
+Bank-2 learned rest edge of the exhaust cam. FUN 000bfad4 stores \
+clamp_u8(ROM8[0000831e] - ffff1377 + 128) at 000bfc1c under the same gate as \
+ffff479b, and FUN 000bfc2e subtracts it from the bank-2 edge-phase snapshots \
+through the channel-indexed sites to form actual-position byte ffff2325."""
+note = ["One unit is 0.5 crank degrees."]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 822
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "strict-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elastic-locust/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff479c"
+name = "dandelion-goshawk"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831e=88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfc1c"
+value = {named = ["0000831e", "000bfad4", "000bfc2e", "ffff1377", "ffff479c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "strict-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-vulture/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "elastic-locust/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

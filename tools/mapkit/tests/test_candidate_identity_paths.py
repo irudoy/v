@@ -660,6 +660,6 @@ def test_candidate_identity_owners_name_their_regression_paths() -> None:
         with (ROOT / "defs" / name).open(newline="") as source:
             rows[name] = {row["addr"]: row for row in csv.DictReader(source)}
     for name, address, test, site in OWNERS:
-        evidence = set(rows[name][address]["evidence"].split(";"))
+        evidence = {item.strip() for item in rows[name][address]["evidence"].split(";")}
         assert site in evidence
         assert f"test:{THIS_TEST}#{test}" in evidence

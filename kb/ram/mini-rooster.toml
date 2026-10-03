@@ -1,0 +1,70 @@
+summary = """
+Multipurpose diagnostic status byte. Bit 7 is a prerequisite of the P030 \
+common readiness gate in coordinator 00082c8a; a clear bit routes directly \
+to clearing ffff4251.bits6/7."""
+note = [
+    """
+The producer and physical diagnostic meaning of bit 7 remain unresolved. \
+Uses of other bits and other monitor families are not assigned here.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 305
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41c8"
+name = "mini-rooster"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fea"
+value = {named = ["00082c8a", "ffff41c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fec"
+value = {named = ["00082c8a", "ffff41c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082fee"
+value = {named = ["00082c8a", "ffff41c8"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

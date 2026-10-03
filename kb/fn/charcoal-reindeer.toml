@@ -1,0 +1,51 @@
+role = "service"
+contract = """
+Unsigned 32/32 remainder: r0 = r1 % r0, strictly less than the divisor by \
+construction. The quotient is computed and discarded. It clobbers r1. On \
+division by zero it writes 0x0000044E to 0xFFFF9818 and returns 0. It is the \
+canonical pair of 00021ce0: same convention and operands, remainder instead \
+of quotient."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 34
+fields = ["role", "contract", "contract_conf"]
+contract = [0, 1]
+
+[[ledger.dependency]]
+role = "homolog"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "homolog"
+relies = "contract"
+supports = "contract"
+
+[[symbol]]
+layout = "7mfk"
+address = "00021f40"
+name = "charcoal-reindeer"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "contract"
+value = "00022030"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00021f40"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "contract"
+role = "homolog"

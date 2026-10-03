@@ -1,0 +1,97 @@
+summary = """
+Two-bank first-order MAF filter. For indices 0 and 1 it writes \
+ffff1df0/ffff1df2 from working curve values ffff1058/ffff105a. A mode bit \
+selects direct copy or weighted update and code applies a one-count \
+anti-stall correction when truncation would leave a changing value \
+unchanged."""
+note = [
+    """
+Caller 0003a904 invokes exactly indices 0 and 1. The filter coefficient's \
+physical time constant remains unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 438
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dancing-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-adder/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiked-dalmatian/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vegan-polecat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a9aa"
+name = "sandy-chameleon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a9ce"
+value = {named = ["0003a904", "0003a9aa", "ffff1058", "ffff105a", "ffff1df0", "ffff1df2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa06"
+value = {named = ["0003a904", "0003a9aa", "ffff1058", "ffff105a", "ffff1df0", "ffff1df2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa0a"
+value = {named = ["0003a904", "0003a9aa", "ffff1058", "ffff105a", "ffff1df0", "ffff1df2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

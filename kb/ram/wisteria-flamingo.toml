@@ -1,0 +1,143 @@
+summary = """
+Scheduler snapshot of AN1-derived source byte ffff283a. The 0x104-byte FUN \
+00022558 call copies ffff277e..ffff2881 to ffff267a..ffff277d, so source \
+offset 0xbc maps ffff283a to ffff2736. P030 counting readiness requires \
+ffff2736 >= ROM8[00008b50] = 40; this is equivalent to ffff3f4c >= 40 on the \
+zero-offset branch and ffff3f4c >= 55 on the 15-count branch."""
+note = [
+    """
+A whole-program exact-address scan found 28 reads and no direct write; the \
+block-copy contract resolves its producer. AN1 is exact at the MCU, but the \
+ECM terminal, physical signal, and engineering scale remain unresolved.""",
+]
+level = "code"
+unit = "derived transfer-code snapshot"
+
+[[ledger]]
+registry = "vars"
+order = 455
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "olive-yak/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shapeless-raven/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2736"
+name = "wisteria-flamingo"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b50"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fb2"
+value = {named = ["00008b50", "00020dfe", "00022558", "00082c8a", "ffff2736", "ffff283a", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fca"
+value = {named = ["00008b50", "00020dfe", "00022558", "00082c8a", "ffff2736", "ffff283a", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fcc"
+value = {named = ["00008b50", "00020dfe", "00022558", "00082c8a", "ffff2736", "ffff283a", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083966"
+value = {named = ["00008b50", "00020dfe", "00022558", "00082c8a", "ffff2736", "ffff283a", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008396a"
+value = {named = ["00008b50", "00020dfe", "00022558", "00082c8a", "ffff2736", "ffff283a", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "olive-yak/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "shapeless-raven/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "peculiar-bear/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

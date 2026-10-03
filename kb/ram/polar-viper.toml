@@ -1,0 +1,138 @@
+summary = """
+Nonnegative combined MAF quantity written by 0003b252 immediately before \
+Base Fuel Schedule producer 0003b75c executes in the same seven-entry task \
+table. Exact formula is max(0, int32[ffff1df8] + int32[ffff1dfc] + \
+int16[ffff1e2a] + uint16[ffff2368]); stock configuration makes ffff1e2a zero \
+on every producer call."""
+note = [
+    """
+The exact AN4/AN15 and DID 0x1204/0x1205 paths establish the MAF identity. \
+With the source-derived A2L scale, F*Q*0.0001 kg/hr is the physical airflow \
+represented by aggregate Q and MAF Factor F. The physical meaning of \
+ffff2368 remains unresolved. J1979 Mode 01 PID 0x10 declares \
+ROM8[0x83ec]/25600 g/s per count of the offset-corrected total ffff105c, and \
+the 2026-09-17 recordings reproduce the Base Fuel Schedule from A+B, so the \
+aggregate shares that unit: 0.01477 kg/hr per count with stock 105 against \
+F*0.0001 = 0.0109 from the A2L scale of F.""",
+]
+level = "code"
+unit = "MAF Factor input counts"
+
+[[ledger]]
+registry = "vars"
+order = 255
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "imposing-auk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-walrus/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "combined_maf_aggregate/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e38"
+name = "polar-viper"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b258"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b25e"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b262"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b268"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b278"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b802"
+value = {named = ["0003b252", "0003b75c", "ffff1df8", "ffff1dfc", "ffff1e38"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "imposing-auk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "jasper-walrus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "combined_maf_aggregate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

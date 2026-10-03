@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000584ca"
+name = "stalwart-swallow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000584ca"

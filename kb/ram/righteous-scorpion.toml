@@ -1,0 +1,180 @@
+summary = """
+Delayed injection-start angle inside the engine event, 4 crank degrees per \
+count. FUN 000521a8 forms the start delay 2*uint16[ffff192e] minus the pulse \
+angle in crank degrees, subtracts ROM8[000083ea] = 30 while P0335 fallback \
+snapshot ffff24c9.bit5 is set, divides by 120, clamps the remainder to \
+4..116, and stores remainder/4 here. Scheduler copier 00020dfe snapshots the \
+byte to ffff2333, which sequencer 00054a44 multiplies by four for \
+delayed-start programmer 0002b64a."""
+note = [
+    """
+The pulse angle is the longest of the six transformed pulse words, so the \
+start is exact for that channel. The crank angle of the reference event \
+relative to TDC of the scheduled cylinder remains unresolved.""",
+]
+level = "code"
+unit = "4 degCA"
+
+[[ledger]]
+registry = "vars"
+order = 566
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amigurumi-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "devout-swift/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "handsome-spaniel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "injection_end_angle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transformed_pulse_maximum/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff23bf"
+name = "righteous-scorpion"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083ea"
+value = "0x1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000522a8"
+value = "0000c49b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000521e2"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000521f2"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052212"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052226"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052252"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005225e"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052276"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bcc"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bd6"
+value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "devout-swift/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "handsome-spaniel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "injection_end_angle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

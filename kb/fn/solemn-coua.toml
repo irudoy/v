@@ -1,0 +1,45 @@
+role = "service"
+contract = """
+Logical unsigned right shift: r0 = r0 >> r1 with zero fill. A jump table \
+dispatches into a chain of fixed shifts: SH-2E has no SHLD/SHAD, so variable \
+shift is unrolled by count. It clobbers r1; r2 is preserved on the stack. It \
+is pure, writes no memory, and has no diagnostic channel."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 42
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[ledger.dependency]]
+role = "homolog"
+to = "copper-crayfish/fn"
+type = "depends"
+end = "owner"
+link_role = "homolog"
+relies = "contract"
+supports = "contract"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002227c"
+name = "solemn-coua"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002227c"
+
+[[link]]
+type = "depends"
+to = "copper-crayfish/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "contract"
+role = "homolog"

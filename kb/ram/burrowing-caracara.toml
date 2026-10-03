@@ -1,0 +1,107 @@
+summary = """
+Ten-bit meter CAN payload field used by the fuel-level monitor. FUN 000c456c \
+assembles it from payload byte 1 and the top two bits of byte 2; FUN \
+0003dac6 scales it by 39680/1024 before filtering and map 00014bca."""
+note = [
+    """
+Exact P0460/P0461 result-state gates and the homologous factory M&A-to-ECM \
+CAN path establish the fuel-level context. The voltage, percentage, and \
+tank-volume conversions remain unresolved.""",
+]
+level = "code"
+unit = "fuel-level CAN raw"
+
+[[ledger]]
+registry = "vars"
+order = 539
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-parakeet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastoral-nyala/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3e24"
+name = "burrowing-caracara"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009220"
+value = "0x9b00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003db22"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003db28"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45d8"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45e6"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45ec"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c45f0"
+value = {named = ["00009220", "0003dac6", "000c456c", "ffff3e24"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "tall-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pastoral-nyala/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,80 @@
+summary = """
+Exhaust-VTC diagnostic coordinator. It compares common exhaust target \
+ffff2327 with bank-specific actual exhaust bytes ffff2324/ffff2325 and \
+routes failures through descriptor indices 0x84..0x87 and 0xd2..0xd3."""
+note = [
+    """
+The exact JK08A descriptor registry maps indices 0x84..0x87 to P1078/P1084 \
+exhaust-timing-sensor records and 0xd2/0xd3 to P0014/P0024 \
+exhaust-VTC-control records. This provides an independent subsystem binding \
+for the three centered bytes.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 592
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b2/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008f168"
+name = "paper-hippo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f38c"
+value = {named = ["0008f168", "ffff2324", "ffff2325", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f3ba"
+value = {named = ["0008f168", "ffff2324", "ffff2325", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f442"
+value = {named = ["0008f168", "ffff2324", "ffff2325", "ffff2327"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008f79c"
+value = {named = ["0008f168", "ffff2324", "ffff2325", "ffff2327"], span = 1}
+key = "reference"

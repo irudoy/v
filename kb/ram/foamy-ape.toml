@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41db"
+name = "foamy-ape"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00077e68"
+
+[[link]]
+type = "writer"
+to = "amiable-porcupine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

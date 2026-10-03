@@ -1,0 +1,104 @@
+summary = """
+Root accessor for uint16 map 00015330. The lookup is converted as \
+min(x*256,65535), written to ffff32b8, and its high byte is written to \
+ffff413f. An alternate path reduces ffff32b8 with saturation toward zero."""
+note = ["The physical subsystem of the internal state is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 326
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "honored-duck/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00066186"
+name = "abiding-badger"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661a2"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661a6"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661b8"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661be"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c0"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c2"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661c6"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661ce"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661d6"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661f4"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000661fc"
+value = {named = ["00015330", "00066186"], span = 1}
+key = "body"

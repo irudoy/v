@@ -1,3 +1,22 @@
+summary = """
+Eight-point uint8 table over RAM ffff106f; the interpolated result is \
+multiplied by max(0, 8192 + (lookup(000121ae) - 64) * u8(RAM ffff10bf)), \
+arithmetically shifted right by 13, capped at 255, and written to RAM \
+ffff1534."""
+note = [
+    """
+The lookup by uint8 ffff106f is multiplied by \
+max(0,8192+(lookup(000121ae)-64)*uint8[ffff10bf]), shifted right by 13, \
+saturated to 255, and written to ffff1534. Implicit 1D-8 indexing is \
+confirmed; the physical subsystem is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
 category = "Internal Calculations"
@@ -7,10 +26,87 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 376
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 [[symbol]]
 layout = "7mfk"
 address = "0001220e"
 name = "wondrous-kestrel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051872"
+value = {named = ["0001220e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051874"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051878"
+value = {named = ["0001220e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005187c"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518ac"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518b2"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518c4"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518c8"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518ce"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518d6"
+value = {named = ["0001220e"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +139,10 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "sly-chowchow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,123 @@
+summary = """
+Base-Fuel-Schedule-dependent subtraction term in the engine-torque \
+calculation. FUN 00065c26 writes \
+min(65535,floor(u16[ffff1024]*ROM16[000092ac]/ROM16[00009534])) here and \
+subtracts it from lookup 000154a0."""
+note = [
+    """
+The physical interpretation of coefficient 0x00b9 remains unresolved. Direct \
+subtraction proves the shared internal raw domain.""",
+]
+level = "code"
+unit = "unsigned torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 525
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nocturnal-mammoth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nocturnal-mammoth/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18de"
+name = "sepia-bear"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000092ac=0x00b9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c5a"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c66"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c6c"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c92"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cac"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cb0"
+value = {named = ["000092ac", "00009534", "00065c26", "ffff1024", "ffff18de"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

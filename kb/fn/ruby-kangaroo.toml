@@ -1,0 +1,144 @@
+summary = """
+Composite diagnostic-record gate used by the P030 common readiness path. It \
+returns nonzero when any checked runtime record has bit 5 or bit 6 set in \
+its third byte."""
+note = [
+    """
+The exact record set is code-proven. Its physical grouping name remains \
+unresolved.""",
+]
+level = "code"
+role = "service"
+contract = """
+It returns 1 when FUN 000259e4 returns 1 for any index in {0x14, 0x47..0x4c, \
+0x8a..0x8c}; otherwise it returns 0. The two calls with index -1 are inert \
+because FUN 000259e4(-1) always returns 0."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 59
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0]
+contract = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00025a12"
+name = "ruby-kangaroo"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a14"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a24"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a2c"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a34"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a3c"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a44"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a4c"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a54"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a60"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a6c"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a78"
+value = {named = ["000259e4", "00025a12", "00082c8a", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "contract"
+to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

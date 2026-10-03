@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff8e08"
+name = "bouncy-dolphin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006a60c"

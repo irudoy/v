@@ -1,0 +1,105 @@
+summary = "Unidentified mode-selected 8-bit table value"
+note = [
+    """
+Code proves conditional map selection, the interpolation path, and the \
+result write to ffff3373. All 8 cells equal 0. The physical quantity cannot \
+be established: the shape matches several unrelated catalog classes, and \
+aggregated consumers of the shared RAM register do not provide proven \
+semantics for the target map.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 197
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fine-cockatoo/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rough-panther/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012b3a"
+name = "accelerated-hyrax"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064332"
+value = {named = ["00012b3a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006433e"
+value = {named = ["00012b3a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064344"
+value = {named = ["00012b3a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064346"
+value = {named = ["00012b3a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "fine-cockatoo/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

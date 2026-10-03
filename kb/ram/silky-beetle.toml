@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15de"
+name = "silky-beetle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004e5b4"
+
+[[link]]
+type = "lookup"
+to = "kind-kittiwake/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "steady-turtle/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

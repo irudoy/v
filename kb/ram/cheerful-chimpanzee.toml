@@ -1,0 +1,33 @@
+summary = "Mask 0x2 gates map recalculation in 0004d99c."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 208
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24cc"
+name = "cheerful-chimpanzee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002b836"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

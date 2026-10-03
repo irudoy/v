@@ -1,0 +1,219 @@
+title = "Publish dual-bank MAF diagnostics and record-0x129 summary state"
+summary = """
+Dual-bank MAF diagnostic coordinator referenced by scheduler table 0x217f8. \
+It publishes DID 0x1204/0x1205 words through two calls to 0003c408, \
+snapshots both raw ADC samples through 0003c45c, writes combined MASS \
+AIRFLOW word ffff3852=min(65535,floor(ROM8[0x83ec]*ffff105c/256)), and \
+publishes extension-record-0x129 byte1.bit7 to ffff2449.bit7."""
+note = [
+    """
+Record 0x129 byte1 is the OR of exact P0101/P0102/P0103 and \
+P010B/P010C/P010D runtime-record byte1 values. Stock factor 0x69 is 105. \
+Engineering conversions require hardware validation.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 17
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 445
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_fault_rpm_inhibit/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amaranth-leech/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tourmaline-jackal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_total/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "slick-bullfinch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003c3ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083ec"
+value = "0x69"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000217f8"
+value = "0003c3ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3b6"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3ba"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3ca"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3d6"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3d8"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3de"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3fc"
+value = {named = ["000083ec", "000217f8", "000228ac", "000228b0", "000228c0", "00025e20", "0003235c", "0003c3ac", "0003c408", "0003c45c", "0004f736", "00097eb4", "ffff101c", "ffff101e", "ffff105c", "ffff2449", "ffff3852", "ffff5a93"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "outstanding-penguin/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "active-snail/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_fault_rpm_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

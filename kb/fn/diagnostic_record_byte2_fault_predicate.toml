@@ -1,0 +1,150 @@
+summary = """
+Diagnostic runtime-record result-state predicate. It addresses the \
+three-byte record array at ffff5718 + 3*index and tests bits 5 and 6 of the \
+third byte."""
+note = [
+    """
+Test runtime diagnostic record byte 2 bits 5 or 6 with minus-one sentinel \
+support""",
+    """
+The record bits are kept as operational result-state bits; no UDS status \
+names are assigned.""",
+]
+level = "code"
+role = "service"
+contract = """
+Input r4 is interpreted as a signed 16-bit record index. Index -1 returns 0 \
+without reading RAM. Every other index returns 1 when either bit 5 or bit 6 \
+is set in byte 2 of ffff5718 + 3*index, and returns 0 when both bits are \
+clear."""
+contract_level = "code"
+
+[[ledger]]
+registry = "curated"
+order = 14
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 58
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [1]
+identity = [0]
+contract = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ruby-kangaroo/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000259e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00025b98"
+value = "ffff5718"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259e6"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259e8"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259f2"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259f6"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259f8"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259fe"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a02"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a04"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00025a0c"
+value = {named = ["000259e4", "00025a12", "00025b98", "00082c8a", "ffff5718"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "ruby-kangaroo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

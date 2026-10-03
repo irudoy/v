@@ -1,0 +1,234 @@
+title = "P0011 or P0021 qualified RPM fuel inhibit"
+summary = """
+P0011/P0021 intake-valve-timing fault RPM inhibit contributor. After \
+qualification and a ten-count fault phase it activates at 3000 RPM and \
+retains through 2800 RPM."""
+note = [
+    """
+Exact DTC descriptor indices 208 and 209 are P0011 and P0021. U1001, U1000, \
+and U1010 predicates are prerequisites rather than output DTCs.""",
+]
+level = "code"
+role = "monitor"
+
+[[diagnostic]]
+id = "intake-valve-timing-fault-inhibit-p0011"
+kind = "monitor"
+label = "DtcCode"
+key = "P0011"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d20"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 208 is P0011. After qualification and \
+confirmation it participates in the 3000/2800 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "unselfish-tanuki/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019d20"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050be6"
+value = {named = ["00019d20", "000259e4", "0004ed88", "00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050c3a"
+value = {named = ["00019d20", "000259e4", "0004ed88", "00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "efficient-toad/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic]]
+id = "intake-valve-timing-fault-inhibit-p0021"
+kind = "monitor"
+label = "DtcCode"
+key = "P0021"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019d2c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 209 is P0021. After qualification and \
+confirmation it participates in the 3000/2800 RPM global fuel inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "unselfish-tanuki/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019d2c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050be6"
+value = {named = ["00019d2c", "000259e4", "0004ed88", "00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00050c3a"
+value = {named = ["00019d2c", "000259e4", "0004ed88", "00050b3c", "ffff1946", "ffff2486"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "efficient-toad/ram/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "curated"
+order = 49
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 177
+binding = "intake-valve-timing-fault-inhibit-p0011"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 178
+binding = "intake-valve-timing-fault-inhibit-p0021"
+
+[[ledger]]
+registry = "funcs"
+order = 539
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_record_byte2_fault_predicate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "efficient-toad/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unselfish-tanuki/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wonderful-teal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00050b3c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019d20"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019d2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050b3c"
+value = {named = ["00019d20", "00019d2c", "000259e4", "0004ed88", "ffff11b3", "ffff1946", "ffff245c", "ffff2486"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "diagnostic_record_byte2_fault_predicate/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

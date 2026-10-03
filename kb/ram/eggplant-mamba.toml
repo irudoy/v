@@ -1,0 +1,82 @@
+summary = """
+Saturating byte timer used by path-A P0447 producer FUN 000aab54. The path \
+sets ffff247a bit 6 when this value is greater than ROM8[0x8370]=0x50 under \
+its sample-difference gates."""
+note = [
+    """
+The increment cadence and physical time represented by one count remain \
+unresolved.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 416
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "overjoyed-buffalo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "overjoyed-buffalo/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2d30"
+name = "eggplant-mamba"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008370"
+value = "0x50"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aabce"
+value = {named = ["00008370", "000aab54", "ffff2d30"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aabe0"
+value = {named = ["00008370", "000aab54", "ffff2d30"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000aac06"
+value = {named = ["00008370", "000aab54", "ffff2d30"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "overjoyed-buffalo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "overjoyed-buffalo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

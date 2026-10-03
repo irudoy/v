@@ -621,6 +621,9 @@ A link is stored at one end and read in both directions.
 | `did-table` | The DID's slot in the service pointer table of the image | `at`, `value` | `code` |
 | `byte-identical` | Identical bytes over a range: the exact hash of two functions, or the storage of two data symbols on every image | `at`, `to`, `sha256` | `code` |
 | `rom-bytes` | Bytes of every image of the layout at `at` | `at`, `value` | `code` |
+| `unbound-constant` | A retained legacy constant without a verified address and byte binding | `value` | none |
+| `unverified-site` | A retained legacy site whose code relationship is not reproduced | `at` | none |
+| `l0-context` | A reviewed site's reproducible structured context: `key` is `reference`, `body`, `pointer`, or `linked`, and `value` holds the subject's `span` and optional `named` addresses | `at`, `key`, `value` | `code` |
 | `trace` | The claim follows through the contract or behavior of a function | `to`, `relies` | `code` |
 | `indirect` | An access that L0 does not attribute directly; mode `base` verifies only that the instruction or pool literal at `at` references the symbol's address minus `value`, not the complete indexing or copy path | `at`, `mode` | `code` |
 | `spec` | A narrow specification of the repository, a decoding rule, or a published standard | `path` or `key` | `code` |
@@ -657,6 +660,12 @@ A link is stored at one end and read in both directions.
   that VBR bases, else at the first instruction that touches the nearest
   address below the symbol, within `[match] base` bytes, as a literal, an
   access, or a census operand.
+- An `l0-context` item reproduces the relation of section 20.7 on current L0
+  and image bytes. Its span is positive and does not exceed the table's
+  storage, or is one byte for another kind. The footprint grants no physical
+  unit or conversion; every supported claim requires the recorded
+  classification to hold. `unbound-constant` and `unverified-site` items
+  retain source assertions without grounding a level.
 
 ### 7.7 Analogs
 
@@ -682,11 +691,27 @@ describe, so a rename or a move carries them:
 | `[[editor.view]]` | `tbl`, `const` | A masked view: `name`, `category`, `mask`, `unit`, `scale`, `to_raw`, `format`, `fine`, `coarse` |
 | `[logparam]` | `ram`, `reg` | RomRaider logger parameter: `id`, `unit`, `scale`, `static_axis_name` |
 | `[[diagnostic]]` | any meaning | Diagnostic binding: `id`, `kind`, `label`, `key`, `claim` (an inline table of `label` and `id`), `applicability`, `scope` (image or layout ids), `priority`, `level`, `note`, and `[[diagnostic.evidence]]` |
+| `[[ledger]]` | a meaning with a legacy row | View selectors: `registry`, `order`, selected `fields`, `notes` indices, evidence indices for `identity`, `contract`, and `scale`; optional diagnostic `binding`, curated `title` or former `name`, and `storage_description` |
+| `[[ledger.dependency]]` | a ledger view | A selected canonical link: token `role`, meaning `to`, link `type`, claiming `end`, optional `link_role`, `relies`, `supports`, and optional numeric `offset` with its `offset_text` spelling |
+| `[[ledger.offset]]` | a ledger view | The selected indirect `evidence` index and its numeric offset spelling in `text` |
 
 `editor.name` is the name the editors show; it is not the name of the
 meaning. `editor.static_axis_operand` is a reference to the `ram` or `reg`
 meaning whose value the static axis labels. The generators of the editor definitions, the RomRaider files, and
 the diagnostic bindings read these tables.
+
+Ledger selectors reproduce column presence and row order without owning a
+second copy of semantic facts. Dependencies require the selected type,
+direction, layout, offset, role, and claim to hold; evidence and note indices
+are unique nonnegative integers. An offset spelling must equal the selected
+numeric value. A curated name selects the current or a former name, and a
+storage description does not supply a semantic unit.
+
+`kb unlink` removes the dependency selectors of the removed link at both
+claiming ends and the accessor column when it removes that accessor. The
+`ledgers` check rejects selectors whose facts or indices no longer hold,
+including in a planned write. New evidence, columns, and notes enter a view
+when its selectors explicitly select them.
 
 ### 7.9 Designed entities
 
@@ -1289,7 +1314,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <to> --legacy-reservation [--dry-run]` | Preserves one generated-name reservation after an accepted registered legacy/L0 entry repair, without entity adoption | 4 |
-| `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 5 |
+| `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 11 |
 | `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) | 9 |
 | `kb apply <batch> [--dry-run]` | A batch of the operations above as one change | 3 |
 | `kb fmt [<path>...]` | Rewrites entity files in canonical form after a merge | 3 |
@@ -1297,6 +1322,12 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb sync [--full]` | Compiles and loads the graph | 2 |
 | `kb instance up\|down\|status\|prune` | [Instances](#11-instances) | 2 |
 | `kb mcp` | Serves the read commands and `kb apply` over MCP ([MCP](#126-mcp)) | 2 |
+
+`kb retire` belongs to final retirement in stage 11 (#56). Its contract
+defines the inactive representation, incoming references, generated views,
+and permanent reservation of semantic and generated names before the command
+is implemented. Ledger conversion in stage 5 preserves active meanings and
+does not retire them.
 
 Every write:
 
@@ -1523,6 +1554,7 @@ gates keep running until the stage that replaces them.
 | `symbols` | At most one symbol per layout, kind, and address; at most one symbol or status per meaning and layout; every address lies in the address space of its kind on the MCU of the layout; every `fn` symbol is a function entry of L0 | 2 |
 | `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol | 3 |
 | `levels` | No declared level exceeds its effective level; `candidate` claims carry evidence, and `code` and `silicon` claims grounding; every `hardware` key names a record whose `hardware_status` is `pass`; every `arithmetic` equation holds ([Levels](#71-levels)) | Reported by `kb audit` from 3; a gate from 5 |
+| `ledgers` | Every owned ledger view selects existing evidence and notes and a canonical dependency with the selected direction, layout, offset, role, and claim; the selected curated name is current or former | 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source: on every layout that a feature requiring an `ecu_ram` field targets, the symbol that the field reads states a width of at least the bits of the field, and the allocation of a field of another origin holds at least its bytes | Fields from 4; symbols from 8 |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
@@ -1565,10 +1597,10 @@ including the files that current generators already produce:
 
 ```toml
 [[projection]]
-path = "defs/JK08A.funcs.csv"
-generator = "kb.project.ledgers:funcs"
+path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
+generator = "kb.ledger_projection:registries"
 stage = 5
-inputs = ["kb/fn/", "l0/7mfk/"]
+inputs = ["kb/", "l0/7mfk/", "tools/kb/src/kb/ledger_projection.py"]
 consumers = ["tools/maps/build_tracker.py"]
 read = "guarded"
 ```
@@ -2217,6 +2249,7 @@ below its baseline.
 | 10 | The state of the knowledge base | `kb brief` | 2000 | 2 |
 | 11 | Why telemetry fields are unavailable on a layout | `kb gaps --feature can_telemetry --layout 1me3b` | 1000 | 3 |
 | 12 | The block and chain steps of a function | `kb show 7mfk:0003deec` | 1200 | 6 |
+| 13 | The reviewed function facts of a JK08A ledger address | `kb show 7mfk:0003c3ac` | 2400 | 5 |
 
 - `tools/kb/bench.toml` becomes the owner of the budgets and stages in stage
   2, and the single-source gate reads this table against it.
@@ -2337,11 +2370,20 @@ that no registry states.
 Stage 5. Before the conversion, one commit rewrites every evidence cell in
 the canonical token order of the projection: complete token texts in lexical
 order, separated by `; `. The normalization retains every token and compares
-all model facts before writing. The regenerated ledgers then
-equal the originals except for removed `wave` tokens and for `site` tokens,
-which the projection emits from L0 for every relation that L0 verifies. The
-stage lists both differences, and the consumers of the ledgers pass their
-tests on the regenerated files.
+all model facts before writing. The regenerated ledgers equal the originals
+except for removed `wave` and `arg` process tokens. A reproduced `site`
+becomes a typed `l0-context` item whose checked footprint projects the same
+token; an unreproduced site becomes `unverified-site`. A constant without a
+verified byte binding becomes `unbound-constant`. Those unverified items
+ground no level. The converter records every classification and removed
+process token, and the consumers pass their tests on the regenerated files.
+
+The meaning files retain `[[ledger]]` view selectors of section 7.8. Each
+adopted symbol has an independently verified identity anchor from L0 or a
+verified indirect base item. Curated aliases that lose to a file name become
+former names and remain selectable by the curated-name view. The six CSV
+ledgers and `tools/ghidra/symbols/7mfk.csv` are generated from the entity
+files; the compiler does not read them.
 
 `defs/JK08A.funcs.csv`:
 
@@ -2349,7 +2391,7 @@ tests on the regenerated files.
 |---|---|
 | `addr` | `fn` symbol on `7mfk` |
 | `role` | `role` |
-| `semantics` | `summary`, verbatim; the conversion proposes `title` from its first sentence |
+| `semantics` | `summary`, verbatim |
 | `contract` | `contract` |
 | `contract_conf` | `contract_level` |
 | `contract_evidence` | Links and evidence with `supports = "contract"` |
@@ -2362,8 +2404,8 @@ tests on the regenerated files.
 | Column | Target |
 |---|---|
 | `addr` | `ram` symbol, or `reg` symbol for an address in the peripheral space of the MCU |
-| `semantics` | `summary`; proposed `title` |
-| `units` | `unit`, unless the meaning is the source of an `ecu_ram` field and its file states the unit |
+| `semantics` | `summary` |
+| `units` | `unit`, except that a numeric `ecu_ram` source owns its unit, including its absence; a differing legacy label is a view's `storage_description` |
 | `confidence` | `level` |
 | `evidence` | Links and evidence with `supports = "identity"` |
 | `note` | `note` |
@@ -2380,7 +2422,7 @@ tests on the regenerated files.
 | `confidence` | `level` |
 | `evidence` | Links and evidence with `supports = "identity"` |
 | `role` | `role` |
-| `semantics` | `summary`; proposed `title` |
+| `semantics` | `summary` |
 | `units` | `unit` |
 | `scale_expr`, `to_byte` | `scale`, `to_raw` |
 | `scale_conf` | `scale_level` |
@@ -3012,8 +3054,8 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | `base:<a>+<offset>` | `ram` | `ram` | `base` link with `offset` |
 | `homolog:<a>`, `match:<a>`, and every other combination | any | any | `depends` link with the token role |
 | `trace:<a>` | any | `fn` | `trace` evidence |
-| `rom_const:<a>=<value>` | any | ROM | `rom-bytes` evidence |
-| `site:<a>` | any | code | `l0` evidence, removed once L0 reproduces the relation it supports |
+| `rom_const:<a>=<value>` | any | ROM | `rom-bytes` evidence when the complete binding verifies; `unbound-constant` otherwise |
+| `site:<a>` | any | code | `l0-context` evidence when L0 reproduces its structured footprint; `unverified-site` otherwise; the view emits the selected site token |
 | `indirect_base:<site>+<offset>` | any | code | Typed `indirect` evidence with `mode = "base"`, `at` on the row's layout, and integer `value` equal to the offset |
 | `test:<path>#<function>` | any | | Typed `test` evidence with `path` and `key` |
 | `spec:<equation>` | any | | `arithmetic` evidence |
@@ -3119,7 +3161,7 @@ evidence column by its role, the kind of the row, and the kind of the target:
 | 2. Read path | The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb` | The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds |
 | 3. Feature symbols | `patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`, `kb unlink`, `kb merge`, `kb rename`, and `kb move`; named bits of bit fields; the writer gate over L0; `kb audit` reports the `levels` check | The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets |
 | 4. Features on L2 | Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix | Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green |
-| 5. JK08A ledgers | Ledger rows convert into meanings with `fn`, `ram`, `reg`, `tbl`, and `axis` symbols; evidence becomes typed links at one end, and duplicate pairs collapse; `site:` tokens that L0 reproduces are removed after a check of each; prose becomes the summary and the note; the `levels` check becomes a gate | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
+| 5. JK08A ledgers | Ledger rows and curated names convert into meanings with `fn`, `ram`, `reg`, `tbl`, `axis`, and `dtc` symbols; evidence becomes typed items and canonical links with both claiming ends; reproduced sites hold checked L0 contexts, and unverified sites and constants ground no level; prose becomes the summary and the note; view selectors retain the CSV columns and order; the `levels` check becomes a gate | The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger |
 | 6. Architecture | Stages, blocks, endpoints, and chains become entities, and a step note keeps only its arithmetic; romviz reads the graph and builds the atlas from the symbols of each layout; the atlas searches symbols by name and shows the symbols of a meaning across layouts, statuses, and analogs; block candidates for unplaced functions come from communities over the call graph and shared RAM | The numbers of `architecture.py check` reproduce; every layout with symbols has an atlas |
 | 7. Graph readers | `mapkit/emit_def.py` with its gate `validate_map_switching.py`, `mapkit/show.py`, `maps/build_tracker.py`, `diagnostics/query.py`, `memgraph/provenance_report.py`, and their tests read the graph through the `kb` API with the fingerprint check; the loaders of `tools/memgraph/` move into the compiler; `make setup` starts Memgraph and loads the graph from git in one command | No tool reads the graph without the fingerprint check; a fresh clone passes `make verify` after `make setup`; the graph is rebuilt from git without a backup |
 | 8. Code reconciliation | Declared links are checked against L0; writers without an L0 reference are resolved by indirect access kind: pointer, GBR, the `FFFF128C` window, block copy, each with its own evidence kind; ROM symbols are checked against image bytes | Zero unexplained differences; every exception carries a reason |

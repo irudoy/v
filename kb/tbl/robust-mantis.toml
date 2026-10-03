@@ -1,7 +1,157 @@
+summary = """
+Interpolated dimensionless Q0.7 coefficient for scaling the result of map \
+000153a0 on branches where the corresponding signed input is negative"""
+note = [
+    """
+Code establishes operational semantics but not a physical signal name. \
+Instruction 00060326 is the delay slot of call 00060324 and stores the \
+adjacent-map 00012a1a result in ffff8c3d. The target-map result appears \
+after return and is written by instruction 0006032c to ffff8c3c. On negative \
+branches, it multiplies the result of 000153a0; the product is divided by \
+128 and, when exceeding 0x007fff80, saturated to 0xffff. All eight \
+target-map bytes are zero. The physical purpose of downstream outputs is \
+unknown because accessor registers have no external readers.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 190
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11, 12, 13, 14, 15]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a7a"
 name = "robust-mantis"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006031c"
+value = {named = ["00012a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060324"
+value = {named = ["00012a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006032c"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603b2"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603b4"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603ec"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603f2"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000603fa"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060400"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00060386"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006038a"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006038c"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006039a"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006039c"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006039e"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000603a0"
+value = {named = ["00012a7a"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +184,10 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "massive-dingo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

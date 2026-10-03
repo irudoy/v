@@ -1,0 +1,60 @@
+summary = """
+Per-channel throttle-target upper bound written by 0006f48c. The dynamic \
+branch stores clamp(raw(0x12daa)*13,908,2908); the fixed branch stores \
+2908."""
+note = ["The catalog TVO unit and scale remain candidate."]
+level = "code"
+unit = "raw target bound"
+
+[[ledger]]
+registry = "vars"
+order = 691
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "flat-fennec/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "channel_throttle_target_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3508"
+name = "fantastic-armadillo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f5e6"
+value = {named = ["00012daa", "0006f48c", "ffff3508"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "flat-fennec/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "channel_throttle_target_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

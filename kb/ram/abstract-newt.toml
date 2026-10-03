@@ -1,0 +1,119 @@
+summary = """
+Exact UDS DID 0x130D ASCD status byte. FUN 000cf020 packs output bit 3 from \
+stable switch code bit 3, bit 2 from code bit 4, bit 1 from code bit 1, and \
+bit 0 from ffff41ae bit 7."""
+note = [
+    """
+Homologous measured diagnostics identify bits 3, 2, 1, and 0 as SET, RESUME, \
+CANCEL, and the MAIN (cruise on/off) switch. Bit 0 follows the MAIN switch \
+while it is pressed, as the factory data monitor item MAIN SW does. Other \
+packed bits are not assigned a physical name here.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "ascd-steering-switch-did-130d"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:22130d"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0211-l0211:source-row-extended-pids:parameter:0x130d-fe7f28f0"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 table maps DID 0x130D to ffff2a83 with support \
+mask ffff2a81. FUN 000cf020 packs the SET, RESUME, CANCEL, and MAIN switch \
+bits; homologous measured diagnostic data supplies those physical names, and \
+the MAIN bit is set only while the MAIN switch is pressed."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a48"
+value = "ffff2a83"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022a4c"
+value = "ffff2a81"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000d0254"
+value = {named = ["00022a48", "00022a4c", "0003235c", "000cf020", "fe7f28f0", "ffff2a81", "ffff2a83"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "flying-booby/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 73
+binding = "ascd-steering-switch-did-130d"
+
+[[ledger]]
+registry = "vars"
+order = 394
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flying-booby/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2a83"
+name = "abstract-newt"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a48"
+value = "ffff2a83"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d0254"
+value = {named = ["00022a48", "0003235c", "000cf020", "ffff2a83"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "flying-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

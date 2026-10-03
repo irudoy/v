@@ -1,0 +1,96 @@
+summary = """
+Bit 0 selects a threshold-trio branch in accessor 00082c8a: clear selects \
+map 0xB61A, set selects 0xB71A. Addressed relative to gbr, with gbr=ffff4184 \
+and offset 0x93. Bit 1 is the inverse park/neutral position input: FUN \
+00038618 sets it while PHDR bit 4 is clear and clears it while the port bit \
+is set, and FUN 0002e0d4 publishes its inverse as DID 0x1302 bit 2."""
+note = ["A structured Nissan profile names DID 0x1302 bit 2 P/N POSI SW."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 317
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "futuristic-chinchilla/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "0x93"
+offset = 0x93
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4217"
+name = "jolly-mule"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038636"
+value = {named = ["0002e0d4", "00038618", "00082c8a", "ffff4184", "ffff4217"], span = 1}
+key = "body"
+
+[[link]]
+type = "base"
+to = "futuristic-chinchilla/ram"
+offset = 0x93
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pearl-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

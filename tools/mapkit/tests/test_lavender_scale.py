@@ -450,7 +450,7 @@ def test_independently_executed_signedness_mutants_change_register_and_q12_domai
 
 
 def test_compiled_owner_binds_candidate_scale_evidence_and_ast() -> None:
-    from kb import checks, compile, match, repo
+    from kb import checks, compile, match, repo, store
     from kb.model import SymbolKey
 
     model = compile.cached(repo.ROOT)
@@ -462,7 +462,8 @@ def test_compiled_owner_binds_candidate_scale_evidence_and_ast() -> None:
         "code", "threshold", "centered ffff8d6c channel counts", "x*10-73500", "(x+73500)/10", "candidate")
     assert row["scale_evidence"] == f"test:{THIS_TEST}#{SCALE_KEY}"
     symbol = model.symbols[SymbolKey("7mfk", "tbl", 0x131A2)]
-    assert OWNER in symbol.sources
+    assert symbol.sources == {store.path_of("tbl", "lavender-butterfly").as_posix()}
+    assert checks._owned(model, symbol)
     assert {name: symbol.value(name) for name in ("unit", "scale", "to_raw", "scale_level")} == {
         "unit": row["units"], "scale": row["scale_expr"], "to_raw": row["to_byte"], "scale_level": "candidate"}
     [item] = [item for item in symbol.evidence if item.get("kind") == "test" and item.get("path") == THIS_TEST]

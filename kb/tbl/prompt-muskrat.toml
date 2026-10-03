@@ -1,0 +1,51 @@
+summary = "Cranking Base Fuel Schedule Table"
+note = [
+    """
+The only catalog entry with 1D-8 shape and uint16 elements is named Cranking \
+Base Fuel Schedule Table. Matching shape and type provides candidate \
+confidence only. Code links the map to an axis and result write at \
+site:000c1222 but does not trace the quantity to a semantic consumer. Result \
+disposition: writes. Blocking condition: At 000c1222, the target-map result \
+trace ends at a write through a calculated address; no durable RAM binding \
+exists, so no reader can be associated with this map. The shown consumer \
+000bfe88 reads only ffff1c7f and ffff1c8e, which belong to other writes of \
+accessor 000c1152.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "BFS"
+scale = "x*0.000488"
+to_raw = "x/0.000488"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 263
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00014a3a"
+name = "prompt-muskrat"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "Cranking Base Fuel Schedule Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table x*0.000488 BFS"

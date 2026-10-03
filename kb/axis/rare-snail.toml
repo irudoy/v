@@ -1,3 +1,23 @@
+note = [
+    """
+Shared 16-point axis for offset-binary additive curves 00015ad0 and \
+00015b10. FUN 000c0d90 passes uint8[ffff11ae] directly to explicit-axis \
+uint16 wrapper 000264f8. Stored points are 8..128 in steps of 8. Code proves \
+the raw coordinate and axis role; the physical quantity and engineering \
+scale are unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 50
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
 [[symbol]]
 layout = "7mfk"
 address = "000149ca"

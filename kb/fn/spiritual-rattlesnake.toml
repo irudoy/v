@@ -1,0 +1,170 @@
+summary = """
+Accessor for the electronic-throttle and airflow calculation subsystem, with \
+20 maps and 22 accessors. Its structural backbone consists of reciprocal \
+1D-32 pairs through wrapper 00026524: 00013202/000155a0 is the primary \
+target-throttle angle/opening-area conversion, while 00015500/00015690 and \
+00015540/000156d0 form an unresolved piecewise conversion."""
+note = [
+    """
+Code establishes the reciprocal topology and paired throttle-feedback use of \
+00013202/000155a0, and it establishes the coordinate scale of 000155a0 \
+through the absolute-throttle publication of 0006f236. Its physical Target \
+Throttle Valve Opening identity, the opening-area scale x*0.0008 cm^2, and \
+the catalog degree scale x*0.0275 remain candidates. The other two \
+reciprocal pairs remain physically unresolved. Maps \
+00014cea/00015082/00015062 are live unless a disabling branch is \
+demonstrated.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 124
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "determined-lynx/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hulking-eel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_model_byte_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rustling-ibis/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "solid-leech/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spirited-avocet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "xanthic-wildcat/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "muscular-leech/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b498"
+name = "spiritual-rattlesnake"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003b498"
+
+[[link]]
+type = "depends"
+to = "determined-lynx/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "hulking-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "maf_range_model_byte_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "rustling-ibis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "solid-leech/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "spirited-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "xanthic-wildcat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

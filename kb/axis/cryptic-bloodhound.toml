@@ -1,3 +1,62 @@
+note = [
+    """
+Shared column axis for ignition maps 0x991A/0x9A1A/0x9B1A. FUN 0003b75c \
+forms live byte ffff1048 as min(255,floor(BFS*128/ROM16[00009534])), and FUN \
+00020dfe snapshots it to runtime coordinate ffff102c. Therefore one raw axis \
+count is exactly 100/128=0.78125 percent of the fixed BFS reference. The \
+terminal cell at 00011ecd is raw 128, or exactly 100 percent, and FUN \
+0004bbee reuses that cell as a bounded-ramp upper coordinate without \
+interpolating the axis. The HR catalog calls this ratio Cylinder Filling; \
+that physical name remains a candidate.""",
+]
+level = "code"
+quantity = "load"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 7
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013716"
@@ -35,6 +94,61 @@ name = "cryptic-bloodhound"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000495fa"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Axis Percentage (x*0.78125)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cold Ignition Timing Map (16x16)"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00020f18"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bd1c"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bd5a"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bce0"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -82,3 +196,33 @@ value = "000135b8"
 note = """
 target ignition accessor preserves the load-axis operand and 16-point \
 geometry"""
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

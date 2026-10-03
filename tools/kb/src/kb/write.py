@@ -772,7 +772,28 @@ class Change:
             raise KbError(f"{meaning.key} has {len(found)} {type_} links to {to.key} ({choices}); "
                           "slot or offset chooses one", code=4)
         document["link"] = [link for link in links if link is not found[0]]
+        self._unselect_link(meaning, to, found[0])
         self.lines.append(f"unlink {meaning.key} {type_} {to.key}")
+
+    def _unselect_link(self, meaning, to, removed):
+        """Remove ledger selectors of this relation at both claiming ends."""
+        type_ = removed["type"]
+        offset = removed.get("offset", 0) if type_ == "base" else None
+        for subject, other, end in ((meaning, to, "owner"), (to, meaning, "to")):
+            document = self._held(subject)
+            if document is None:
+                continue
+            for marker in document.get("ledger", ()):
+                marker["dependency"] = [
+                    item for item in marker.get("dependency", ())
+                    if not (item.get("end") == end
+                            and self._same_link(item, {"type": type_}, other, keys=())
+                            and (item.get("offset", 0) if type_ == "base" else None)
+                            == offset)]
+                if (subject is meaning and type_ == "reader"
+                        and removed.get("role") == "accessor"):
+                    marker["fields"] = [field for field in marker.get("fields", ())
+                                        if field != "accessor"]
 
     def _ends(self, op):
         """(meaning, to, type) of a link operation."""
@@ -782,7 +803,7 @@ class Change:
         if type_ not in vocab.LINK_TYPES:
             raise KbError(f"link type {type_!r}; the types are {', '.join(vocab.LINK_TYPES)}",
                           code=2)
-        if to is meaning:
+        if to is meaning and type_ != "base":
             raise KbError(f"{op['meaning']} and {op['to']} name {meaning.key}; a link joins two "
                           "meanings", code=2)
         self._gate(meaning)
@@ -1027,7 +1048,7 @@ class Change:
     def _rename(self, others, kind, target, own):
         """Rewrite the references of the entity files to a name of `others` of
         `kind` as references to `target`, join the links that the rewrite
-        makes equal, and drop the links of the file `own` to its own meaning;
+        makes equal, and drop non-base links of `own` to its own meaning;
         returns the count of rewritten references."""
         paths = {path for _, _, path in store.files(self.root, self.model.overlay)}
         total = 0
@@ -1040,7 +1061,8 @@ class Change:
             if path == own:
                 document["link"] = [
                     link for link in document.get("link", ())
-                    if not ((found := REFERENCE.fullmatch(str(link.get("to"))))
+                    if link.get("type") == "base" or not (
+                            (found := REFERENCE.fullmatch(str(link.get("to"))))
                             and found.group("name") == target and found.group("kind") == kind)]
             if count or path == own:
                 document["link"] = joined_links(document.get("link", ()))

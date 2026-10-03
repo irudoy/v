@@ -1,0 +1,23 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3993"
+name = "hysterical-kagu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002d92a"
+
+[[link]]
+type = "lookup"
+to = "fluorescent-jellyfish/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "writer"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

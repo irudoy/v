@@ -1,0 +1,97 @@
+summary = """
+Per-bank rear O2 heater command-state observer called by FUN 000a38dc. It \
+tests ffff2377 bit 0 for bank 1 or bit 1 for bank 2, updates the \
+corresponding ffff3298 latch bit, and clears ffff4295[bank] to \
+ROM8[0x8ab1]=0 when the command bit is inactive."""
+note = [
+    """
+The command-state bit names come from the exact DID 0x130b packing path and \
+a homologous structured Nissan profile. No direct writer for ffff2377 or \
+physical output driver is resolved.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 400
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delicate-peccary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "porcelain-shrimp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "succinct-chameleon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a25fa"
+name = "nippy-wildcat"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008ab1"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2600"
+value = {named = ["00008ab1", "000a25fa", "000a38dc", "ffff2377", "ffff3298", "ffff4295"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2610"
+value = {named = ["00008ab1", "000a25fa", "000a38dc", "ffff2377", "ffff3298", "ffff4295"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2622"
+value = {named = ["00008ab1", "000a25fa", "000a38dc", "ffff2377", "ffff3298", "ffff4295"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2634"
+value = {named = ["00008ab1", "000a25fa", "000a38dc", "ffff2377", "ffff3298", "ffff4295"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a263e"
+value = {named = ["00008ab1", "000a25fa", "000a38dc", "ffff2377", "ffff3298", "ffff4295"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nifty-ape/fn/7mfk"
+relies = "level"

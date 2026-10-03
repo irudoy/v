@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff107a"
+name = "mauve-cicada"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00038a6e"
+
+[[link]]
+type = "writer"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

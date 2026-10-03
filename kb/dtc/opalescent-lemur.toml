@@ -1,0 +1,36 @@
+title = "High voltage path A bank 1 sensor 2"
+level = "code"
+code = "P0138"
+group = "rear_o2"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 24
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019b4c"
+name = "opalescent-lemur"
+index = 169
+attribute = "0001613e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001613e"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019b4c"
+value = "320503000000013810000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a3f0"
+value = "0001613e"

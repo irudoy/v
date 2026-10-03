@@ -1,0 +1,119 @@
+summary = """
+Signed endpoint pair ffff1cfc/ffff1cfe written by FUN 00074028. Maps \
+000171c8 and 00016fc8 are interpolated with common runtime coordinates and \
+decoded as raw-32768 before the stores. FUN 000740e2 blends the pair with \
+Q0.16 weight ffff1d0c."""
+note = [
+    """
+The endpoints are equal for every stock coordinate because the two surfaces \
+and axes are byte-identical. The physical quantity is unresolved.""",
+]
+level = "code"
+unit = "signed raw endpoints"
+
+[[ledger]]
+registry = "vars"
+order = 490
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dark-earthworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rare-baboon/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rigorous-shrimp/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "devout-cougar/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1cfc"
+name = "sly-zebra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074082"
+value = {named = ["00016fc8", "000171c8", "00074028", "000740e2", "ffff1cfc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074098"
+value = {named = ["00016fc8", "000171c8", "00074028", "000740e2", "ffff1cfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000740fa"
+value = {named = ["00016fc8", "000171c8", "00074028", "000740e2", "ffff1cfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074108"
+value = {named = ["00016fc8", "000171c8", "00074028", "000740e2", "ffff1cfc"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "rigorous-shrimp/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rare-baboon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dark-earthworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "devout-cougar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

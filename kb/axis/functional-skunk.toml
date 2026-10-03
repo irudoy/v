@@ -1,0 +1,33 @@
+note = [
+    """
+Axis for EVAP fuel-level coordinate/sentinel curve 00014bca. FUN 000c456c \
+decodes a 10-bit meter CAN payload field into ffff3e24. FUN 0003dac6 scales \
+it as min(65535,floor(39680*x/1024)), conditionally updates ffff3e26, \
+low-pass filters that word into ffff27fc with coefficient 1/256, and passes \
+ffff27fc or zero directly to the lookup. Stored points are 0, 3642, 3643, \
+10307, 14918, 19878, 24335, 28558, 32085, 34642, 36580, 38400, 44800, 51200, \
+57600, and 64000. P0460/P0461 result-state gates establish the fuel-level \
+monitor context; voltage, percentage, and tank-volume conversions remain \
+unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "fuel-level monitor coordinate"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "axes"
+order = 75
+fields = ["kind", "units", "scale_expr", "to_byte"]
+notes = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013ac8"
+name = "functional-skunk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003dc18"

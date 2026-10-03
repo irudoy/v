@@ -1,0 +1,159 @@
+title = "Initialize trim and offset-neutral bank correction words"
+summary = """
+Control-state and fuel-trim initialization path. It writes 0x4000 to feature \
+lifecycle word ffff2318, neutral Q8.8-percent value 0x6400 to STFT words \
+ffff22dc/ffff22de and LTFT words ffff2302/ffff2304, and offset-neutral value \
+0x8000 to bank correction words ffff2310/ffff2312 during broader \
+initialization called from FUN 0002c648."""
+note = [
+    """
+A whole-application p-code census found no other writer for ffff2318 and no \
+later writer for ffff2310/ffff2312. The fixed ffff2318 value makes the \
+strict less-than-0x4000 feature-map condition in 0004afdc false. Runtime \
+producers replace the diagnostic trim words.""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "curated"
+order = 88
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 346
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "writes"
+to = "axiomatic-squirrel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cordial-seagull/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "provocative-cat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000593ac"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0x8000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "100"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593da"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593e6"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593ea"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000593f0"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000594f2"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000594f6"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000594fa"
+value = {named = ["0002c648", "000593ac", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff2310", "ffff2312", "ffff2318"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "startup_initializer/fn/7mfk"
+relies = "structure"

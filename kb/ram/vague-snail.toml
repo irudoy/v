@@ -1,0 +1,86 @@
+summary = """
+Selected DFCO stage-1 entry-delay byte. Coordinator 0004ed88 copies the high \
+byte returned by 0004fe9c here before passing the complete word to state \
+machine 000503e0."""
+note = [
+    """
+The normal stock branches select 40, 60, or 75 counts. Passive target-CAN \
+timestamps establish 409.6, 614.4, or 768.0 ms.""",
+]
+level = "code"
+unit = "DFCO scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 543
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "attentive-axolotl/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14bd"
+name = "vague-snail"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ee3a"
+value = {named = ["000120f6", "0004ed88", "000503e0", "ffff14bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050496"
+value = {named = ["000120f6", "0004ed88", "000503e0", "ffff14bd"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "attentive-axolotl/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

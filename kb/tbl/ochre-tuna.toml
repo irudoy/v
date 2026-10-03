@@ -1,0 +1,102 @@
+summary = """
+Unidentified 1D calibration; the interpolated uint16 value is used inside \
+0006062c as divisor r0 of unsigned division 00021ce0."""
+note = [
+    """
+The map contains 8 uint16 values 140, 170, 201, 232, 255, 337, 463, 590. The \
+interpolation result is written to ffff4036 at 00060678 and read only inside \
+the same accessor at 000607aa. There is no direct inline comparison, \
+returned value, external reader, or proven unreachable branch. Under \
+register contract 00021ce0, the value is an unsigned 32/32 divisor, but the \
+map's physical meaning is unknown. Result disposition: consumer. Blocking \
+condition: At 000607aa, after loading ffff4036 into r0, the trace reaches \
+the divisor input of 00021ce0, but the artifact has no physically named \
+consumer of the division result; contract 00021ce0 proves the operation \
+rather than map semantics.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 281
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014f52"
+name = "ochre-tuna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006066e"
+value = {named = ["00014f52", "00021ce0", "000264cc", "00026740", "00026984"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060672"
+value = {named = ["00014f52", "00021ce0", "000264cc", "00026740", "00026984"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00060678"
+value = {named = ["00014f52", "00021ce0", "000264cc", "00026740", "00026984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000607aa"
+value = {named = ["00014f52", "00021ce0", "000264cc", "00026740", "00026984"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "fine-gopher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

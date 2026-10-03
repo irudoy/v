@@ -1,6 +1,185 @@
+summary = """
+Commanded mixture word: Q14 fuel-multiplier command against the \
+stoichiometric base schedule, 0x4000 = closed-loop stoichiometric target, \
+commanded equivalence ratio = x/16384. Stage 0005594a of coordinator \
+00057608 is the sole stock runtime writer: it takes max(ffff123a, ffff123c), \
+forces 0x4000 while engine-speed byte ffff2700 < 32 or countdown ffff2531 is \
+nonzero, and caps the word at ROM16[000094ec] when ffff4252 bit 1 is set. \
+FUN 000556ec scales min(65535, ffff231a + ffff240a) by this word over 16384, \
+and 0004ead4 selects the open-loop branch when published product ffff22e6 \
+exceeds 0x4000. Alternate writer 00055596 is excluded by stock \
+ROM8[00008b42] bit 0 = 0 and ROM8[00008b34] bit 4 = 0. The exact \
+service-0x22 table publishes the high byte as DID 0x1134."""
+note = [
+    """
+Three 2026-08-26 vehicle recordings agree with the code: the streamed word \
+is always a multiple of 128 within 16384..19072, settled values match the \
+0000a9aa lookup in 98.3..100 percent of records, and both STFT words stay at \
+neutral 0x6400 in every record with a command above 0x4000. Commanded lambda \
+= 16384/x. The gasoline AFR scale 1881.6/(x/128) of the public HR A2L is a \
+candidate.""",
+]
+level = "code"
 width = 16
 unit = "ratio"
 scale = "x/16384"
+
+[[diagnostic]]
+id = "air-fuel-ratio-factor-did-1134"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221134"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0051-l0051:source-row-extended-pids:parameter:0x1134-81fb5ae1"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x1134 to the high byte of Q14 \
+fuel-multiplier factor ffff22e8. Homologous measured diagnostics name the \
+DID Air/Fuel Ratio, while exact code proves a fuel-factor role rather than a \
+physical AFR or lambda conversion. This binding must not be interpreted as a \
+verified target-lambda channel."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_multiplier_publisher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0002277c"
+value = "ffff22e8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0002277c"
+value = {named = ["0003235c", "00055596", "000556ec", "0005594a", "81fb5ae1", "ffff22e8"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00055644"
+value = {named = ["0003235c", "00055596", "000556ec", "0005594a", "81fb5ae1", "ffff22e8"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00056508"
+value = {named = ["0003235c", "00055596", "000556ec", "0005594a", "81fb5ae1", "ffff22e8"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "denim-gazelle/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "large-tamarin/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 19
+binding = "air-fuel-ratio-factor-did-1134"
+
+[[ledger]]
+registry = "vars"
+order = 551
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "ratio_q14"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "efficient-skylark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rugged-chipmunk/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "heavy-poodle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shrewd-manul/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "whispering-wolf/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "denim-gazelle/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +211,65 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff22e8"
 former = ["vengeful-potoo/ram/7mfk-ffff22e8"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b34"
+value = "0x81"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b42"
+value = "0xe0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000094ec"
+value = "0xffff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002277c"
+value = "ffff22e8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002277c"
+value = {named = ["00008b34", "00008b42", "000094ec", "0003235c", "0004ead4", "00055596", "000556ec", "0005594a", "ffff123a", "ffff123c", "ffff22e8", "ffff2531", "ffff2700", "ffff4252"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004eb12"
+value = {named = ["00008b34", "00008b42", "000094ec", "0003235c", "0004ead4", "00055596", "000556ec", "0005594a", "ffff123a", "ffff123c", "ffff22e8", "ffff2531", "ffff2700", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055644"
+value = {named = ["00008b34", "00008b42", "000094ec", "0003235c", "0004ead4", "00055596", "000556ec", "0005594a", "ffff123a", "ffff123c", "ffff22e8", "ffff2531", "ffff2700", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055710"
+value = {named = ["00008b34", "00008b42", "000094ec", "0003235c", "0004ead4", "00055596", "000556ec", "0005594a", "ffff123a", "ffff123c", "ffff22e8", "ffff2531", "ffff2700", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056508"
+value = {named = ["00008b34", "00008b42", "000094ec", "0003235c", "0004ead4", "00055596", "000556ec", "0005594a", "ffff123a", "ffff123c", "ffff22e8", "ffff2531", "ffff2700", "ffff4252"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +307,80 @@ to = "7mfk:0004eb00"
 count = 1
 value = 32
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "efficient-skylark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "rugged-chipmunk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "heavy-poodle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "whispering-wolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "denim-gazelle/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

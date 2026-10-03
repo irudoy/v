@@ -1,0 +1,120 @@
+summary = """
+Bank-1 exhaust-cam edge count of the current capture window. IMI4D handler \
+000c2de0 increments it with saturation at 000c2e8e while arm byte ffff4120 \
+bit 0 or ffff4121 bit 0 is set; edge-count monitor 000c22dc judges it while \
+cylinder index ffff11de is 2, 4, or 6 (one edge is normal, zero or two or \
+more raise ffff850c bit 5) and zeroes it at 000c24aa outside that window and \
+at 000c2374 on reset request."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 810
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enormous-limpet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rose-mastodon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clay-wasp/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fat-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4072"
+name = "primitive-earthworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2374"
+value = {named = ["000c22dc", "000c2de0", "ffff11de", "ffff4072", "ffff4120", "ffff4121"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c24aa"
+value = {named = ["000c22dc", "000c2de0", "ffff11de", "ffff4072", "ffff4120", "ffff4121"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2e8e"
+value = {named = ["000c22dc", "000c2de0", "ffff11de", "ffff4072", "ffff4120", "ffff4121"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enormous-limpet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "rose-mastodon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "clay-wasp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fat-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

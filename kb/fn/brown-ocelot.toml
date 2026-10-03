@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000ae5a4"
+name = "brown-ocelot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000ae5a4"

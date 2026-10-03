@@ -1,0 +1,83 @@
+summary = """
+Base of the first two-word normalized throttle-feedback candidate array \
+written by 0003ea9a. Elements are ffff2660 and ffff2662."""
+note = ["The transform uses a 0x2000 center and saturates to uint16."]
+level = "code"
+unit = "centered feedback array"
+
+[[ledger]]
+registry = "vars"
+order = 695
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_plausibility_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_feedback_normalizer_a/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2660"
+name = "black-gazelle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ead2"
+value = {named = ["0003ea9a", "000cafbc", "ffff2660"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cafea"
+value = {named = ["0003ea9a", "000cafbc", "ffff2660"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_plausibility_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_regulator_coefficient_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_target_error_scaler/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_feedback_normalizer_a/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

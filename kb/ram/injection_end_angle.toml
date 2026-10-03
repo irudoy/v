@@ -1,13 +1,74 @@
-note = """
+summary = """
+Injection-end delay after the reference engine event of the scheduled \
+cylinder, 2 crank degrees per count. FUN 00056bd0 writes 2*min(y, 209) from \
+table 00012302 plus add-on ffff340c or from table 0001230a, and FUN 00056e70 \
+writes the alternate value. FUN 000521a8 is the only reader found: it \
+subtracts the pulse angle and splits the result into lead ffff23f0 and start \
+angle ffff23bf."""
+note = [
+    """
 Sequencer 00054a44 places the reference tooth of the scheduled channel 130 \
 crank degrees after intake TDC of the injected cylinder, so the pulse ends \
 x*2 - 590 crank degrees after the following intake TDC. The channel order \
 rests on the Power Balance bit assignment of the Nissan-family diagnostic \
 profile, and the offset between the crank sensor and the signal plate \
-remains a hardware boundary."""
+remains a hardware boundary.""",
+    """
+A whole-ROM scan finds window offset 0x06a2 only in 000521a8, 00056bd0, and \
+00056e70. The stock base table gives 266 counts, 532 crank degrees.""",
+]
+level = "code"
 width = 16
 unit = "degCA"
 scale = "x*2-590"
+
+[[ledger]]
+registry = "vars"
+order = 888
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "2 degCA"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transformed_pulse_maximum/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "crouching-orca/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangible-gharial/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enthusiastic-salmon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spirited-labrador/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -41,6 +102,47 @@ clamp to this word"""
 layout = "7mfk"
 address = "ffff192e"
 former = ["nifty-meerkat/ram/7mfk-ffff192e"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000522a8"
+value = "0000c49b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052212"
+value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052216"
+value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052222"
+value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052226"
+value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5c"
+value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -80,3 +182,47 @@ value = 78
 note = """
 Homologous end-of-injection stage 000730cc stores the doubled 209-count \
 clamp to this word"""
+
+[[link]]
+type = "lookup"
+to = "crouching-orca/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "scale"
+
+[[link]]
+type = "lookup"
+to = "tangible-gharial/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "scale"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "spirited-labrador/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,142 @@
+summary = """
+Doubled trustful opening area: FUN 00073a44 writes min(0xffff, 2*area), \
+where area interpolates 00018766 over 000190d0 at min(0xffff, 4*ffff1332). \
+00073824 also reads it."""
+level = "code"
+unit = "raw opening area*2"
+
+[[ledger]]
+registry = "vars"
+order = 961
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "impressive-scorpion/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "discreet-mayfly/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "organic-inchworm/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "conscious-caracal/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyber-ocelot/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ca8"
+name = "paper-quoll"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a52"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a5a"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a62"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a64"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a6e"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073a82"
+value = {named = ["00018766", "000190d0", "00026714", "00073824", "00073a44", "ffff1332", "ffff1ca8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "inescapable-dachshund/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "conscious-caracal/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "discreet-mayfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "organic-inchworm/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "impressive-scorpion/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

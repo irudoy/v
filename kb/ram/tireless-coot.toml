@@ -1,0 +1,111 @@
+summary = """
+Prior-invocation uint16 coefficient for map 0000c78e. FUN 000a5a06 reads it \
+unsigned in the current/prior-cycle signed-product term and replaces it with \
+ffff3080 after completing the calculation."""
+note = ["The physical quantity and fixed-point scale are unresolved."]
+level = "code"
+unit = "raw coefficient"
+
+[[ledger]]
+registry = "vars"
+order = 520
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "urban-marmot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "impetuous-giraffe/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enigmatic-okapi/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "urban-marmot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9ab0"
+name = "tireless-coot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5de4"
+value = {named = ["0000c78e", "000a5a06", "ffff3080", "ffff9ab0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a5dec"
+value = {named = ["0000c78e", "000a5a06", "ffff3080", "ffff9ab0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6328"
+value = {named = ["0000c78e", "000a5a06", "ffff3080", "ffff9ab0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a632a"
+value = {named = ["0000c78e", "000a5a06", "ffff3080", "ffff9ab0"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "enigmatic-okapi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "impetuous-giraffe/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

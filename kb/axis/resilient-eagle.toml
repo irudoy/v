@@ -1,0 +1,120 @@
+note = [
+    """
+X axis for the b61a/b71a/b81a trio, passed in r5 at \
+000832b6/000832d6/000832f2; byte input ffff11ae. The bounded conversion \
+chain forms W=u16(ffff1196)>>6 and Q=u16(ffff1196)>>8, then copies Q through \
+the real 56-byte scheduler ladder to ffff11ae. The PID 0x0c publisher emits \
+min(65535,50*W), high byte first. The independently pinned community PID \
+formula gives 12.5*W RPM and the nominal 50*Q RPM grid, with same-source \
+residual 0/12.5/25/37.5 RPM. The x/50 inverse is an editor-grid inverse, not \
+a reconstruction of arbitrary physical RPM. Scale confidence remains \
+candidate; the measuring producer of U and hardware correspondence are \
+outside this placement/conversion proof.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 2
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00011b6b"
+name = "resilient-eagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000832b6"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = "tools/mapkit/tests/test_rpm_axis_scale.py"
+key = "test_resilient_eagle_nominal_rpm_scale"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00020f6e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:0002213e"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00022144"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026328"
+value = {named = ["00011b6b"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026946"
+value = {named = ["00011b6b"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00035d0c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00035d12"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00037ade"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:0003850c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:0003856c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:0003858a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000832b2"
+value = {named = ["00011b6b"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000832b6"
+value = {named = ["00011b6b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "defs/JK08A.rpm-axis-scale.md"

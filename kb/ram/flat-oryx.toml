@@ -1,0 +1,189 @@
+summary = """
+Bank-2 exhaust-VTC controller state longword at window offset 0x81c of base \
+ffff128c. FUN 000c1dec stores it at 000c1ff4 with bank index 1; FUN 000c2040 \
+reads it at 000c205e to form duty request ffff1c72."""
+note = [
+    """
+Same arithmetic as ffff1aa4 with the bank-2 error word ffff1b1a and \
+coefficient ROM16[00009214].""",
+]
+level = "code"
+unit = "fixed-point raw"
+
+[[ledger]]
+registry = "vars"
+order = 770
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 2, 3, 4, 5, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2076"
+offset = 0x81c
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "outgoing-cuttlefish/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curious-perch/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elastic-frog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "maize-chinchilla/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-groundhog/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orange-hamster/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "0x81c"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1aa8"
+name = "flat-oryx"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000c1dfa"
+value = 2076
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_indexed_state_longword_path"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008615"
+value = "0xab"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009214"
+value = "0x22a2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1ff4"
+value = {named = ["00008615", "00009214", "0001205a", "000c1dec", "000c1dfa", "000c2040", "ffff1108", "ffff128c", "ffff143a", "ffff1aa8", "ffff1b1a", "ffff1b1d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c205e"
+value = {named = ["00008615", "00009214", "0001205a", "000c1dec", "000c1dfa", "000c2040", "ffff1108", "ffff128c", "ffff143a", "ffff1aa8", "ffff1b1a", "ffff1b1d"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x81c
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "curious-perch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "elastic-frog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "maize-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "outgoing-cuttlefish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "private-groundhog/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

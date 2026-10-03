@@ -19,7 +19,7 @@ from pathlib import Path
 import sys
 
 from kb import derive, tokens, vocab
-from kb.adapters import native
+from kb.adapters import curated, native
 
 DTC_DECODER = Path("tools/mapkit/dtc_projection.py")
 
@@ -48,7 +48,8 @@ def _dtc_decoder(root):
 
 def inputs(root):
     return [path.as_posix()
-            for path in (*PATHS.values(), DTC_DECODER, _dtc_decoder(root).LAYOUTS)]
+            for path in (*PATHS.values(), curated.DIRECTORY / "7mfk.csv",
+                         DTC_DECODER, _dtc_decoder(root).LAYOUTS)]
 
 
 def rows(root, name, overlay=None):
@@ -72,6 +73,7 @@ def _level(text):
 
 
 def declare(b, root):
+    curated.declare_layout(b, root, LAYOUT)
     pending = b.stash.setdefault(__name__, [])
     manual = b.config.get("tokens", {}).get("manual", ())
 
@@ -268,46 +270,52 @@ def relate_token(b, row, token, supports, src):
                 f"{token.text}: no symbol of kind {'/'.join(tokens.TARGET_KINDS[role])} "
                 f"at {row.layout}:{token.address:08x}")
         return
-    props = {"relies": token.relies, "supports": supports}
-    legacy = {"legacy": token.text}
-
-    def link(owner, type_, target, stated="owner", **extra):
-        b.link(owner, type_, target, src, props={**props, **extra}, stated=stated)
-
-    rk, tk = row.kind, to.kind
     if role == "trace":
         b.symbol(row.layout, row.kind, row.address, src, evidence=[
             {"kind": "trace", "supports": supports, "to": to, "relies": token.relies,
-             **legacy}])
-    elif role == "writes" and rk in ("ram", "reg") and tk == "fn":
-        link(row, "writer", to)
+             "legacy": token.text}])
+        return
+    owner, type_, target, stated, props = dependency(row, to, token, supports, b.row_tokens)
+    b.link(owner, type_, target, src, props=props, stated=stated)
+
+
+def dependency(row, to, token, supports, row_tokens):
+    """The canonical link and claiming end selected by one legacy token."""
+    props = {"relies": token.relies, "supports": supports}
+
+    def link(owner, type_, target, stated="owner", **extra):
+        return owner, type_, target, stated, {**props, **extra}
+
+    role, rk, tk = token.role, row.kind, to.kind
+    if role == "writes" and rk in ("ram", "reg") and tk == "fn":
+        return link(row, "writer", to)
     elif role == "writes" and rk == "fn" and tk in ("ram", "reg"):
-        link(to, "writer", row, stated="to")
+        return link(to, "writer", row, stated="to")
     elif role == "writes" and rk in ("tbl", "axis") and tk in ("ram", "reg"):
-        link(to, "lookup", row, stated="to")
+        return link(to, "lookup", row, stated="to")
     elif role == "consumer" and rk in DATUM and tk == "fn":
-        link(row, "reader", to)
+        return link(row, "reader", to)
     elif role == "indexed_by" and rk in ("tbl", "axis") and tk in ("ram", "reg"):
-        link(row, "index", to)
+        return link(row, "index", to)
     elif role == "indexed_by" and rk in ("ram", "reg") and tk in DATUM:
-        link(row, "input", to)
+        return link(row, "input", to)
     elif role == "indexed_by" and rk == "fn" and tk in ("ram", "reg"):
-        link(to, "reader", row, stated="to", role="indexed_by")
+        return link(to, "reader", row, stated="to", role="indexed_by")
     elif role == "from_map" and rk in ("ram", "reg") and tk in ("tbl", "axis"):
-        table_tokens = b.row_tokens.get((to.layout, to.address), set())
+        table_tokens = row_tokens.get((to.layout, to.address), set())
         if ("indexed_by", row.address) in table_tokens:
-            link(to, "index", row, stated="to")
+            return link(to, "index", row, stated="to")
         elif ("writes", row.address) in table_tokens:
-            link(row, "lookup", to)
+            return link(row, "lookup", to)
         else:
-            link(row, "input", to)
+            return link(row, "input", to)
     elif role == "from_map" and rk == "fn" and tk in ("tbl", "axis"):
-        link(to, "reader", row, stated="to")
+        return link(to, "reader", row, stated="to")
     elif role == "selector" and tk in DATUM:
-        link(row, "selector", to)
+        return link(row, "selector", to)
     elif role == "threshold" and tk in vocab.LINK_TYPES["threshold"][1]:
-        link(row, "threshold", to)
+        return link(row, "threshold", to)
     elif role == "base" and rk == "ram" and tk == "ram":
-        link(row, "base", to, offset=token.offset or 0)
+        return link(row, "base", to, offset=token.offset or 0)
     else:
-        link(row, "depends", to, role=role)
+        return link(row, "depends", to, role=role)

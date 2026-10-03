@@ -1,0 +1,121 @@
+summary = """
+Component whose map-read path is selected by ffff2451 and ffff4185. On the \
+00012332 path, lookup by uint8 ffff1077 writes the raw byte to ffff1f24 and \
+its x<<8 representation to ffff1e54."""
+note = [
+    """
+The physical roles of states ffff1f24 and ffff1e54 are unresolved; x<<8 is \
+an internal representation rather than a map scale.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 120
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "statuesque-binturong/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "small-sheep/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "big-dodo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "impartial-stork/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002c59c"
+name = "radical-chimpanzee"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c5a6"
+value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c5ac"
+value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c5b0"
+value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c5b4"
+value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c5b6"
+value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "small-sheep/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,79 @@
+title = "Normalize the first throttle-feedback candidate"
+summary = """
+First throttle-feedback normalizer. For each channel it writes \
+clamp_u16(ffff38a8[channel]-64*ffff454e[channel]+0x2000) to \
+ffff2660[channel]."""
+note = ["Array elements use a two-byte stride."]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 152
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 572
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "holistic-cougar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pistachio-manatee/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-gazelle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003ea9a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eaa6"
+value = {named = ["0003ea9a", "ffff2660", "ffff38a8", "ffff454e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eab0"
+value = {named = ["0003ea9a", "ffff2660", "ffff38a8", "ffff454e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003eab6"
+value = {named = ["0003ea9a", "ffff2660", "ffff38a8", "ffff454e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ead2"
+value = {named = ["0003ea9a", "ffff2660", "ffff38a8", "ffff454e"], span = 1}
+key = "body"

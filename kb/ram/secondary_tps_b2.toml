@@ -1,6 +1,102 @@
+summary = """
+Exact UDS DID 0x124c runtime word written by paired-sensor conditioning FUN \
+0003e4cc as 0x0400 minus ten-bit sample ffff363c. Reviewed Nissan \
+diagnostics identify the parameter as TP SEN 2-B2 voltage."""
+note = [
+    """
+The complement inverts the sensor about the 1024-count full scale, which is \
+5.12 V at 5 mV per count; the factory criteria for the paired sensors, more \
+than 0.36 V on one and less than 4.75 V on the other, span the same 5.11 V. \
+The diagnostic display unit is V at 5 mV per count; JK08A.diagnostics.md \
+derives that scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "throttle-position-sensor-2-bank-2"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:tp-sen-2-b2"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0119:data_monitor:tp-sen-2-b2-f5e1a401"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 98
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x124c to ffff2864, and FUN \
+0003e4cc writes that word in the paired-sensor conditioning path. Reviewed \
+Nissan diagnostic profiles identify the DID as TP SEN 2-B2, and the factory \
+VQ35HR manual defines it as internally converted throttle-position sensor \
+voltage."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000229cc"
+value = "ffff2864"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032452"
+value = {named = ["000229cc", "0003235c", "0003e4cc", "f5e1a401", "ffff2864"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003e512"
+value = {named = ["000229cc", "0003235c", "0003e4cc", "f5e1a401", "ffff2864"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "tall-chipmunk/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 71
+binding = "throttle-position-sensor-2-bank-2"
+
+[[ledger]]
+registry = "vars"
+order = 386
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "attractive-magpie/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-chipmunk/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +128,43 @@ note = "Aligned diagnostic pointer table preserves the bank-relative field"
 layout = "7mfk"
 address = "ffff2864"
 former = ["accelerated-parakeet/ram/7mfk-ffff2864"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000229cc"
+value = "ffff2864"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["000229cc", "0003235c", "0003e4cc", "ffff2864", "ffff363c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e50a"
+value = {named = ["000229cc", "0003235c", "0003e4cc", "ffff2864", "ffff363c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e512"
+value = {named = ["000229cc", "0003235c", "0003e4cc", "ffff2864", "ffff363c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "1024-counts-5.12v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec179-tp2-released-lt-4.75v"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +201,26 @@ at = "jk78c:ffff27b4"
 to = "7mfk:ffff2864"
 sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = "Aligned diagnostic pointer table preserves the bank-relative field"
+
+[[link]]
+type = "input"
+to = "attractive-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tall-chipmunk/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

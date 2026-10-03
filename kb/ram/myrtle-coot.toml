@@ -1,0 +1,155 @@
+summary = """
+Selected raw-temperature byte, the engine coolant temperature latched at \
+engine start. FUN 000394b8 writes raw coolant ffff1079 while selector \
+0003967a returns 1 and previous-pass image ffff107e while it returns 0, \
+which holds the last selection; scheduler 00020dfe snapshots it to ffff106e. \
+FUN 0003d702 also uses it in its offset-selection condition."""
+note = [
+    """
+RAM initialization clears transition latch ffff24be.bit6, so the first pass \
+after it selects coolant once. A computed START SIGNAL interval with battery \
+voltage below 8.00 V tracks coolant and ends with one more selection. The \
+scale is raw coolant deg C = raw-50.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 449
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rapid-snake/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amiable-mule/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "start_low_voltage_temperature_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "selector"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_temperature_pair_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1076"
+name = "myrtle-coot"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "0003d702", "ffff1076", "ffff107e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039510"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "0003d702", "ffff1076", "ffff107e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003951a"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "0003d702", "ffff1076", "ffff107e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d712"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "0003d702", "ffff1076", "ffff107e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
+type = "input"
+to = "amiable-mule/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "rapid-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,358 @@
+summary = """
+2D Q15 blend weight between two 1D curves: w=interp(00016f48), output = \
+mapB*w + mapA*(1-w) >>15 (0007a888); flat 0/0x8000 values select one curve \
+directly."""
+note = [
+    """
+2D Q15 blend weight between two 1D curves: w=interp(00016f48), output = \
+mapB*w + mapA*(1-w) >>15 (0007a888); flat 0/0x8000 values select one curve \
+directly. Result disposition: consumer. Result target: 0007a890-0007a8b6 in \
+FUN_0007a804: Q15 blending of two 1D interpolation results A and B. Machine \
+trace: 00016f48 -> 0007a872(r4=target map base) -> 0007a882(call 000265f0 \
+with axes 00018a96/00018a86) -> 0007a886(r0 -> r5=T) -> 0007a88c(T -> \
+ffff35f4) -> 0007a890/0007a892((0x8000-T)*A, A in r13) + 0007a898(T*B, B in \
+r14) -> 0007a89c-0007a8a8(guard branch; for proven A,B=0..842 and T=0..32768 \
+it preserves the sum, and for a zero sum it produces the same zero) -> \
+0007a8aa(sum) -> 0007a8ae-0007a8b6(logical shift by 15) -> \
+0007a8b8-0007a8c0(uint16 saturation) -> 0007a8c8(write to ffff35ca). Branch \
+0007a858-0007a864 bypasses the map call when bit 0x80 is set and substitutes \
+a value from 0001630c; it does not blend an adjacent quantity with the map \
+output but is a separate T-source-selection mode. Scale confidence: code. \
+Scale: x/32768; inverse encoding: x*32768; units: Q15 fraction. Scale trace: \
+On the branch with bit 0x80 clear at 0007a858-0007a85c, target map address \
+00016f48 is loaded into r4 at 0007a872; axes 00018a96 and 00018a86 and raw \
+inputs from ffff10bc and ffff2c71 are passed to 2D interpolation by call \
+0007a882. The uint16 result is returned in r0 and copied to r5 at 0007a886 \
+as T. The branch with bit 0x80 set instead loads a separate value from \
+0001630c at 0007a85e-0007a864, so it does not mix the target map output with \
+adjacent quantities. On the target branch, T is written to RAM ffff35f4 at \
+0007a88c and consumed immediately: 0007a88a loads 0x8000, 0007a890 forms \
+0x8000-T, 0007a892 multiplies this weight by separate output A in r13, and \
+0007a898 multiplies T by separate output B in r14. Checks 0007a89c-0007a8a4 \
+lead either to addition of the products at 0007a8aa or to a zero result at \
+0007a8a6-0007a8a8. For actual bounds T=0..32768 and A,B=0..842, the sum does \
+not exceed 32768*842=27590656 and follows the normal branch. Sequence \
+0007a8ae, 0007a8b0, 0007a8b2, 0007a8b4, 0007a8b6 performs a total logical \
+right shift of 15 bits. The result is ((32768-T)*A+T*B)>>15, so T is the \
+dimensionless Q15 weight T/32768.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Q15 fraction"
+scale = "x/32768"
+to_raw = "x*32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 316
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+scale = [
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+]
+
+[[symbol]]
+layout = "7mfk"
+address = "00016f48"
+name = "truthful-pronghorn"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0007a9e0"
+value = "00008000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a858"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a862"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a872"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a882"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a886"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a88c"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a890"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a892"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a898"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a89c"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8a2"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8a6"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8aa"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8ae"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8b6"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8b8"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8c8"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0007a9e0"
+value = "00008000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a858"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a85a"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a872"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a882"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a886"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a88c"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a890"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a898"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a89c"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a89e"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8a2"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8a4"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8a6"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8aa"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8ae"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8b0"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8b2"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8b4"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8b6"
+value = {named = ["00008000", "00016f48", "0007a9e0"], span = 1}
+key = "linked"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

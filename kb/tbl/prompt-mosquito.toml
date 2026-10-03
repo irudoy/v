@@ -1,3 +1,30 @@
+summary = """
+Unsigned 16-bit 1D table of a common addition. After the lookup, when \
+(ffff41a5 & 4)==0 the result is lower-capped at 46, written to ffff2eba, and \
+separately added with saturation to 65535 to ffff2c4e and ffff2c50, forming \
+ffff303c and ffff303e."""
+note = [
+    """
+The physical quantity, unit of input ffff40c6, and physical output scale are \
+unknown. The shape match with catalogs is ambiguous. The conditional lower \
+limit 46 and downstream saturation process the result and are not scale \
+claims. Index: implicit 1D-8. Input min(uint16(ffff40c6)*128,65535): for \
+value <57344, implicit interpolation of 8 uint16 elements is performed \
+through 00026a60/00026740; for value >=57344, element 7 at address \
+00023824+14 is returned. Output trace: site 0006f918 (000263d8: 00023824 -> \
+00026a60 -> 00026740; for input>=57344, direct read of 00023824+14) -> site \
+0006f91e -> (site 0006f920/site 0006f922/site 0006f924; site 0006f926/site \
+0006f928/site 0006f92c conditionally) -> site 0006f936 -> ffff2eba -> \
+0006f938 -> ffff303c; ffff2eba -> 0006fe6e -> ffff303e. Result disposition: \
+writes; Result target: RAM ffff2eba.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
 category = "Internal Calculations"
@@ -7,7 +34,137 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 433
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "meticulous-mouflon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00023824"
 name = "prompt-mosquito"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "46"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "57344"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "65535"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f8fe"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f906"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f918"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f91e"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f920"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f924"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f926"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f92c"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f936"
+value = {named = ["00023824", "000263d8", "00026740", "00026a60", "0006f8fa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0006f944"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:0006f94c"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "meticulous-mouflon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

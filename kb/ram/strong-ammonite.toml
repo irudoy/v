@@ -1,0 +1,127 @@
+summary = """
+Base of the two-byte transfer-code pair written by FUN 0003d2dc. Stock JK08A \
+converts uint8(ffff2832[index] >> 2) through shared table 00012dea; an \
+alternate configuration branch writes fixed code 75. FUN 0003d45c \
+conditionally folds these bytes into running minima ffff3f4c/ffff3f4d."""
+note = [
+    """
+The table is shared with the exact coolant path, but reuse does not assign \
+coolant identity or the coolant engineering scale to this AN1-derived \
+pair.""",
+]
+level = "code"
+unit = "transfer code"
+
+[[ledger]]
+registry = "vars"
+order = 464
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "piquant-echidna/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "upbeat-silkworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "persimmon-raven/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2838"
+name = "strong-ammonite"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d30e"
+value = {named = ["00012dea", "0003d2dc", "0003d45c", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d322"
+value = {named = ["00012dea", "0003d2dc", "0003d45c", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d32e"
+value = {named = ["00012dea", "0003d2dc", "0003d45c", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d336"
+value = {named = ["00012dea", "0003d2dc", "0003d45c", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d48c"
+value = {named = ["00012dea", "0003d2dc", "0003d45c", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "upbeat-silkworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "piquant-echidna/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "persimmon-raven/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

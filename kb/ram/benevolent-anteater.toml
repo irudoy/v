@@ -1,0 +1,92 @@
+summary = """
+Bank 2 companion of adjustment term ffff5648. It is maintained by the same \
+bank-indexed function and combined with selected learned cell ffff2308 when \
+forming ffff2304."""
+note = ["The arithmetic and neutral behavior mirror bank 1."]
+level = "code"
+unit = "percent*256"
+
+[[ledger]]
+registry = "vars"
+order = 153
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "liberal-dormouse/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pretty-mongrel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff564a"
+name = "benevolent-anteater"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b3a"
+value = {named = ["00057b26", "00058168", "ffff2304", "ffff564a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00058186"
+value = {named = ["00057b26", "00058168", "ffff2304", "ffff564a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005848e"
+value = {named = ["00057b26", "00058168", "ffff2304", "ffff564a"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "ltft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "pretty-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

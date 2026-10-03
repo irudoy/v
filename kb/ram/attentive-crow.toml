@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff84fd"
+name = "attentive-crow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008e66e"

@@ -1,3 +1,9 @@
+summary = """
+Explicit-axis 4x4 wrapper over the byte core; geometry is in the entry \
+registry."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "uptight-tiger/fn"
@@ -6,6 +12,21 @@ rows = 4
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 64
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "careful-terrier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +49,11 @@ at = "1nd:000284d6"
 layout = "7mfk"
 address = "00026100"
 name = "amusing-ara"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +105,11 @@ key = "00026100"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00027eba"
+
+[[link]]
+type = "depends"
+to = "careful-terrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

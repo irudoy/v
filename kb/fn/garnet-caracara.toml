@@ -1,3 +1,15 @@
+summary = """
+Third explicit-axis word core; six wrappers serve 22 tables. Sub-helper is \
+0x26BC0."""
+level = "code"
+role = "kernel"
+
+[[ledger]]
+registry = "funcs"
+order = 111
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
 [[symbol]]
 layout = "1nd"
 address = "00028fc8"
@@ -14,6 +26,18 @@ key = "00026b84"
 layout = "7mfk"
 address = "00026b84"
 name = "garnet-caracara"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026b84"
+value = {span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"

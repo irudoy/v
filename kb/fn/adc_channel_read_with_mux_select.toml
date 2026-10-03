@@ -1,0 +1,155 @@
+title = "Read an ADC channel with optional PF13 through PF15 mux selection"
+summary = """
+Direct ADC channel reader with optional PF13..PF15 external-mux selection. \
+For channel 0, argument 0 selects mux code 000 before reading ADDR0; \
+argument 0xe000 selects code 111. The caller 0002c4f8 uses those exact \
+combinations for coolant and fuel-temperature acquisition respectively."""
+note = [
+    """
+Together with cyclic sampler 000280d8, these calls prove that AN0 is an \
+external-multiplexer node rather than a dedicated single-signal input. Mux \
+positions other than the diagnostic-bound coolant, battery-voltage, and \
+fuel-temperature paths remain unnamed.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 4
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 559
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "blue-condor/reg"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-porpoise/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00028668"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002c644"
+value = "0xe000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028692"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000286a6"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000286ac"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000286ae"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000287b6"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000287bc"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c510"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c528"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c532"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c548"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c54c"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c554"
+value = {named = ["00028668", "0002c4f8", "0002c644", "fffff74e", "fffff800"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr0"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-pfdr"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "heavenly-jaguar/fn/7mfk"
+relies = "structure"

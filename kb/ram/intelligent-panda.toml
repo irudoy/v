@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff33b4"
+name = "intelligent-panda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00061aa2"
+
+[[link]]
+type = "lookup"
+to = "denim-quokka/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]

@@ -1,0 +1,209 @@
+title = "Convert the bounded shared request to the stock opening-area request"
+summary = """
+Periodic-table index-22 request-to-area coordinator. It calls 00073432 after \
+ffff19c6 publication, forms local threshold ffff1734 from lookups 0x15062 \
+and 0x15082, arbitrates inverse request coordinates with ffff1980 and state \
+bits, converts the selected coordinate through 0x15500/0x15690 or \
+0x15540/0x156d0, applies ffff1702 and ROM8[0x8d8f], and clamps the result \
+through the first 0x13202 value before writing unsigned area-domain request \
+ffff183e. The direct ffff1984 branch is guarded by ROM8[0x870c].bit7 and is \
+disabled by stock value 0x44; the stock-active path uses already-arbitrated \
+ffff198a."""
+note = [
+    """
+The request-to-area role and stock branch selection are exact. \
+Requested-torque, airflow, opening-area units, and their catalog scales \
+remain candidate physical semantics.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 133
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 325
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-jackrabbit/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-goldfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ivory-dormouse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ruddy-harrier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "snobbish-swan/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "translucent-cormorant/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "accelerated-whippet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sepia-cheetah/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "papaya-swallow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rugged-cormorant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000730fc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870c"
+value = "0x44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c8"
+value = "000730fc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073112"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000731c8"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073246"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007324e"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073396"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000733b6"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000733c4"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073420"
+value = {named = ["0000870c", "00015062", "00015082", "00015500", "00015540", "00015690", "000156d0", "00020dfe", "000219c8", "000730fc", "00073432", "ffff1734", "ffff183e", "ffff1984", "ffff198a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

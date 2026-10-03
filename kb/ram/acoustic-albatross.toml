@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3600"
+name = "acoustic-albatross"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000730ac"
+
+[[link]]
+type = "reader"
+to = "giga-avocet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

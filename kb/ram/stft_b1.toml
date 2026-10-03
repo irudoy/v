@@ -1,6 +1,156 @@
+summary = """
+Bank 1 short-term fuel-trim word in Q8.8 percent representation. FUN \
+0005c910 normally copies working word ffff40ac here; an alternate control \
+path forces a whole-percent value. UDS DID 0x1123 returns the high byte, \
+while J1979 PID 0x06 returns min(255, floor(ffff22dc/200))."""
+note = [
+    """
+Neutral is 0x6400 = 100 percent. The UDS community conversion raw-100 \
+exposes signed correction percent from the high byte; fractional content is \
+not returned by DID 0x1123.""",
+]
+level = "code"
 width = 16
 unit = "percent"
 scale = "x/256-100"
+
+[[diagnostic]]
+id = "short-term-fuel-trim-bank-1-did-1123"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221123"
+claim = {label = "ParameterDefinition", id = "obd2tools-d27c9a2:pids-nissan-py:l0027-l0027:entry-0013:parameter:stft-b1-221123-be623b82"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service 0x22 table maps DID 0x1123 to the high byte of \
+Q8.8-percent word ffff22dc. Exact Mode 01 code maps the same word to \
+standard PID 0x06 as min(255, floor(word/200)), proving short-term fuel trim \
+bank 1 and the internal percent*256 representation. The community display \
+formula raw-100 therefore has neutral raw 100, matching the 0x6400 \
+initialization."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022738"
+value = "ffff22dc"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00035c22"
+value = {named = ["00021bbc", "00022738", "0002f928", "0003235c", "00035856", "000593ac", "0005c910", "0005cbec", "be623b82", "ffff22dc"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0005ca48"
+value = {named = ["00021bbc", "00022738", "0002f928", "0003235c", "00035856", "000593ac", "0005c910", "0005cbec", "be623b82", "ffff22dc"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ultra-gecko/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_trim_init/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "strong-tarsier/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "divergent-grasshopper/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 39
+binding = "short-term-fuel-trim-bank-1-did-1123"
+
+[[ledger]]
+registry = "vars"
+order = 136
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "percent*256"
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rousing-rhino/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benevolent-bird/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "divergent-grasshopper/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +182,33 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff22dc"
 former = ["ultramarine-fox/ram/7mfk-ffff22dc"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022738"
+value = "ffff22dc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035c22"
+value = {named = ["00022738", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22dc", "ffff40ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca38"
+value = {named = ["00022738", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22dc", "ffff40ac"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca48"
+value = {named = ["00022738", "0003235c", "00035856", "00057d1e", "000593ac", "0005c910", "ffff22dc", "ffff40ac"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +246,60 @@ to = "7mfk:0003c4e6"
 count = 1
 value = 0
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "input"
+to = "benevolent-bird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

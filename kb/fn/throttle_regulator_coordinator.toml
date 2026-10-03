@@ -1,0 +1,259 @@
+title = "Run the ordered regulator stages for both channels"
+summary = """
+Ordered dual-channel throttle-regulator coordinator. For channels 0 and 1 it \
+calls 000cafbc, 000cb078, 000cb140, 000cb1ca, 000cb224, 000cb2b6, 000cb354, \
+000cb41c, and 000cb614, then calls 000cc5f0 and 000cc6a2 for both channels."""
+note = ["The ROM pointer table fixes the exact regulator-stage order."]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 165
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 585
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_direction_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_effort_to_duty/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_error_encoder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_fault_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_feedback_plausibility_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_regulator_coefficient_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_error_encoder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_error_scaler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_fault_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_scaler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cc720"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000cc7dc"
+value = "000cafbc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000cc7fc"
+value = "000cb614"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc72a"
+value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc74e"
+value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc78a"
+value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc796"
+value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc79e"
+value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "throttle_direction_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_effort_to_duty/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_feedback_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_feedback_fault_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_feedback_plausibility_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_regulator_coefficient_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_target_error_encoder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_target_error_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_target_fault_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

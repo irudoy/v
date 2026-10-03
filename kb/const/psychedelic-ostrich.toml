@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000237f4"
+name = "psychedelic-ostrich"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000696c2"

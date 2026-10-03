@@ -1,0 +1,187 @@
+title = "Apply the saturating affine floor to a compensated pulse word"
+summary = """
+Pure saturating affine-floor transform applied to each injection-pulse word. \
+With stock words C0=13656, C1=16384, D0=4250, and D1=0 at 0x91da, it returns \
+max(x, sat_u16(floor((x*C0+100*D0)/16384)), \
+sat_u16(floor((x*C1+100*D1)/16384))). FUN 0004eba2 applies it between \
+ffff23c8 and ffff23d4, and FUN 00051a98 between ffff155c and ffff1568."""
+note = [
+    """
+The stock second affine branch equals x, so the result simplifies to max(x, \
+sat_u16(floor((13656*x+425000)/16384))). It is the last minimum-pulse floor \
+before the hardware: on the 10 us duration scale it holds a 0.26 ms minimum \
+and stops acting at 1.56 ms.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 89
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 501
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "discerning-snake/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005b7ec"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000091da=0x3558"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000091dc"
+value = "0x4000"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000091de=0x109a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000091e0"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b7f6"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b7fe"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b800"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b810"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b812"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b818"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b834"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b83a"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b83c"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b848"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b84a"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b850"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b86a"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005b874"
+value = {named = ["000091da", "000091dc", "000091de", "000091e0", "0004eba2", "00051a98", "0005b7ec"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

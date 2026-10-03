@@ -1,0 +1,36 @@
+title = "Heater control low bank 2 sensor 2"
+level = "code"
+code = "P0057"
+group = "rear_o2_heater"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 33
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00019bb8"
+name = "humongous-vole"
+index = 178
+attribute = "0001618c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001618c"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019bb8"
+value = "330404000000005700000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a414"
+value = "0001618c"

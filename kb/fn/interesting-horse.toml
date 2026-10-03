@@ -1,3 +1,10 @@
+summary = """
+Mixed 16x16 wrapper over core 0x26B84: r5 axis is byte-based through 0x26BC4 \
+and r6 axis is word-based, with clamps 15 and 30. The second of two mixed \
+wrappers in the catalog."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "explicit"
 kernel = "garnet-caracara/fn"
@@ -6,6 +13,30 @@ rows = 16
 storage = "uint16"
 x_storage = "uint8"
 y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 93
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "banana-koala/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "certain-cassowary/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -28,6 +59,11 @@ at = "1nd:00028abe"
 layout = "7mfk"
 address = "00026660"
 name = "interesting-horse"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -79,3 +115,19 @@ key = "00026660"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000284a2"
+
+[[link]]
+type = "depends"
+to = "banana-koala/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "certain-cassowary/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,110 @@
+summary = """
+Derived AN1 transfer-code byte written by FUN 0003d702 as max(ffff283c - \
+offset, 0), where stock offset is either 0 or 15. Scheduler 00020dfe \
+snapshots this byte to ffff2736 through a 0x104-byte block copy."""
+note = [
+    """
+FUN 0003d7b4 transiently copies ffff2837 here before calling FUN 0003d702, \
+which overwrites it in the same invocation. The final byte is therefore not \
+assigned intake-air-temperature semantics.""",
+]
+level = "code"
+unit = "derived transfer code"
+
+[[ledger]]
+registry = "vars"
+order = 456
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cheerful-barnacle/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rapid-snake/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff283a"
+name = "olive-yak"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fcc"
+value = {named = ["00012dea", "00020dfe", "0003d702", "ffff283a", "ffff283c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d762"
+value = {named = ["00012dea", "00020dfe", "0003d702", "ffff283a", "ffff283c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "cheerful-barnacle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "rapid-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vehement-sawfly/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

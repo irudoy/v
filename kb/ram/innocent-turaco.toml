@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f62"
+name = "innocent-turaco"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041dee"
+
+[[link]]
+type = "reader"
+to = "cooperative-tench/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

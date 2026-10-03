@@ -1,0 +1,189 @@
+summary = """
+Bank-indexed learned-fuel-trim cell selector. It selects one of 64 \
+Q8.8-percent cells from RAM grid ffff4b90 for bank 1 or ffff4b10 for bank 2. \
+The 8x8 index uses current Base Fuel Schedule word ffff1024 against ROM byte \
+thresholds 0x12592 and engine-speed byte ffff11ae against thresholds \
+0x126dc, with hysteresis around the prior packed index in ffff130a/ffff130b. \
+The selected cell is written to ffff2306 or ffff2308."""
+note = [
+    """
+The RPM thresholds correspond to 0, 1000, 1500, 2200, 3400, 4400, 5400, and \
+6400 RPM through the established rpm/50 scale of ffff11ae. Exact DID 0x1208 \
+establishes the ffff1024 coordinate as Base Fuel Schedule. An invalid \
+selected cell, a fault flag, or a control gate resets all 64 cells of the \
+affected bank to neutral 0x6400.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 341
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "delectable-vole/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diligent-bat/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "liberal-dormouse/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "inquisitive-dormouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_learned_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005796c"
+name = "successful-tarantula"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9e"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a9f"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00012592"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000126dc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057982"
+value = {named = ["00008a9e", "00008a9f", "00012592", "000126dc", "0005796c", "00057b26", "00058092", "000580e8", "0005911c", "ffff1024", "ffff11ae", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000579f6"
+value = {named = ["00008a9e", "00008a9f", "00012592", "000126dc", "0005796c", "00057b26", "00058092", "000580e8", "0005911c", "ffff1024", "ffff11ae", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057a86"
+value = {named = ["00008a9e", "00008a9f", "00012592", "000126dc", "0005796c", "00057b26", "00058092", "000580e8", "0005911c", "ffff1024", "ffff11ae", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057a8e"
+value = {named = ["00008a9e", "00008a9f", "00012592", "000126dc", "0005796c", "00057b26", "00058092", "000580e8", "0005911c", "ffff1024", "ffff11ae", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057b0c"
+value = {named = ["00008a9e", "00008a9f", "00012592", "000126dc", "0005796c", "00057b26", "00058092", "000580e8", "0005911c", "ffff1024", "ffff11ae", "ffff2306", "ffff2308", "ffff4b10", "ffff4b90"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nice-toad/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "wisteria-tarantula/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unique-aardwolf/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "delectable-vole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "diligent-bat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "liberal-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

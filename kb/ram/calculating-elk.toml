@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff245f"
+name = "calculating-elk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000744c4"

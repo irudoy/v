@@ -1,0 +1,315 @@
+summary = """
+Interpolated uint16 M forms threshold 64*M for an unsigned comparison with \
+param_3; the comparison result selects setting flag ffff928b or ffff928a."""
+note = [
+    """
+Code proves the operational threshold role but not its physical meaning. The \
+interpolation result is extended to uint16, multiplied by 64 with three \
+shll2 instructions, and compared with param_3; the condition sets ffff928b \
+when param_3 is below the threshold or ffff928a otherwise. All eight cells \
+equal 65535, so the current calibration yields a constant threshold, but \
+flat content does not identify its purpose. Multiplication by 64 is a \
+conversion before comparison, not a physical-scale claim without a known \
+param_3 unit. Result disposition: inline_comparison. No physical quantity is \
+asserted beyond narrow operational semantics.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x*64"
+to_raw = "x/64"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 312
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+scale = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "speedy-chital/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "copper-elk/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000157d0"
+name = "rough-shellfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b820"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b824"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b82a"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b84a"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b84c"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b84e"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b850"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b854"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b856"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b858"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b85a"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b85c"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b85e"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b860"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b862"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b864"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009b866"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b84a"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b850"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b854"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b856"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b858"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b85a"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0009b85c"
+value = {named = ["00013c98", "000157d0", "000264cc", "00026740", "00026984", "00026c78", "0009b816"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "copper-elk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "speedy-chital/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

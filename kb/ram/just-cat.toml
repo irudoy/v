@@ -1,0 +1,76 @@
+summary = """
+DFCO rotating-release scheduler countdown. State machine 000503e0 loads it \
+from class table 0001269d and uses 0xff as an inactive sentinel."""
+note = ["The first three stock class delays are 0, 5, and 2 counts."]
+level = "code"
+unit = "DFCO scheduler counts"
+
+[[ledger]]
+registry = "vars"
+order = 577
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dfco_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff193a"
+name = "just-cat"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0001269d"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050580"
+value = {named = ["0001269d", "000503e0", "ffff193a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000505c6"
+value = {named = ["0001269d", "000503e0", "ffff193a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000505dc"
+value = {named = ["0001269d", "000503e0", "ffff193a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

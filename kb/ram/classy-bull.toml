@@ -1,0 +1,25 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff185c"
+name = "classy-bull"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00028b16"
+
+[[link]]
+type = "reader"
+to = "event_interval_snapshot_a/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "event_interval_snapshot_b/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

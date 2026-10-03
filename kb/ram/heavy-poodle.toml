@@ -1,0 +1,85 @@
+summary = """
+Stoichiometric hold countdown of stage 0005594a: reloaded with \
+ROM8[000087d6] = 2 while engine-speed byte ffff2700 < 32 (400 rpm), \
+decremented once per pass otherwise; while nonzero the commanded mixture \
+ffff22e8 is forced to 0x4000. Initialization path 000593ac also writes it."""
+level = "code"
+unit = "passes"
+
+[[ledger]]
+registry = "vars"
+order = 753
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "selector"
+to = "whispering-wolf/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuel_trim_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2531"
+name = "heavy-poodle"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087d6"
+value = "2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564d8"
+value = {named = ["000087d6", "0005594a", "000593ac", "ffff2531", "ffff2700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000564e2"
+value = {named = ["000087d6", "0005594a", "000593ac", "ffff2531", "ffff2700"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "whispering-wolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,177 @@
+summary = """
+Base Fuel Schedule boundary between states 2 and 3 of selector ffff2b4b: the \
+lookup result is the inclusive lower bound of state 2 and exclusive upper \
+bound of state 3 when compared with high byte ffff1024."""
+note = [
+    """
+All 16 cells equal 253, so the threshold does not depend on the index. The \
+result is captured in r10 at 000835e8 and compared in place. Exact DID \
+0x1208 establishes the Base Fuel Schedule input identity; x/8 ms is \
+profile-derived and requires hardware validation. Index: implicit 1D-16 with \
+q=min(2*max(u8[ffff11ae]-8,0),255), interpolation below 240, and cell 15 at \
+or above 240. Result disposition: inline_comparison; target sites 0008367e \
+and 0008368a.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "BFS ms"
+scale = "x/8"
+to_raw = "x*8"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 161
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+scale = [11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "heavenly-shrew/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "kickass-mole/ram"
+type = "threshold"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001267a"
+name = "friendly-raven"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "253"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835da"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835de"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835e8"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000835ec"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008365a"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008367e"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083688"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008368a"
+value = {named = ["0001267a", "00026388", "00026740", "00082c8a", "ffff1024", "ffff2b4b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "253/8=31.625"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "31.625*8=253"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "heavenly-shrew/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

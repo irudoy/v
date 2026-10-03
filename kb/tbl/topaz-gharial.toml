@@ -1,0 +1,131 @@
+summary = """
+Endpoint B curve for the ffff249f.bit1-clear branch of the Q15 crossfade in \
+FUN 0007a804. Its interpolated uint16 result is multiplied by weight w from \
+00016f48, while endpoint A 00018cf6 is multiplied by 32768-w."""
+note = [
+    """
+The shared input is ffff2698 and the breakpoint axis is 00018f76. The \
+weighted sum forms ffff35ca after a right shift by 15 and uint16 saturation. \
+This curve is byte-identical to first-channel endpoint 0001482a. The \
+physical quantity and engineering unit are unresolved. Result disposition: \
+consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 17
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crazy-toucan/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-koala/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "resolute-bullfinch/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018d16"
+name = "topaz-gharial"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a848"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a850"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a856"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a898"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8aa"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8c8"
+value = {named = ["00018d16", "000266e8", "00026b84", "0007a804", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "crimson-dalmatian/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "garnet-caracara/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "ruddy-koala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "resolute-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

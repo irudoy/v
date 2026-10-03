@@ -1,0 +1,230 @@
+summary = """
+Input-source and mode selector byte in 0004c1e4; serves as the base of gbr \
+addressing (ffff4217 = +0x93). Scheduler 00020dfe copies ffff4185 here \
+before its periodic loop, so bit 6 is computed START SIGNAL and bit 7 is the \
+debounced PLDR bit 4 of 00038618. Bit 6 participates in the generic ffff42a8 \
+refresh and ffff41d2.bit1 conditions. Stock ROM8[00008afc].bit3 is set, so \
+while ffff244f.bit5 is set the latch is retained and bit 1 does not depend \
+on ffff4184.bit6."""
+note = [
+    """
+The wave 2 claim that bit 6 selects the base mode in 00055098 is refuted: \
+code establishes the switching mechanism, but the 'enrichment curves' label \
+is P6. Work-support statuses 0xa2 and 0xa6 read bits 6 and 7.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 294
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_offset_source_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "khaki-guppy/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pistachio-octopus/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-bumblebee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "silky-jacamar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "victorious-oriole/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-sheep/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4184"
+name = "futuristic-chinchilla"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008afc"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002108c"
+value = {named = ["00008afc", "00020dfe", "00034fe4", "0004c1e4", "00068040", "000683b6", "000683cc", "000685f2", "00082c8a", "ffff4184", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021092"
+value = {named = ["00008afc", "00020dfe", "00034fe4", "0004c1e4", "00068040", "000683b6", "000683cc", "000685f2", "00082c8a", "ffff4184", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008388a"
+value = {named = ["00008afc", "00020dfe", "00034fe4", "0004c1e4", "00068040", "000683b6", "000683cc", "000685f2", "00082c8a", "ffff4184", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000838c4"
+value = {named = ["00008afc", "00020dfe", "00034fe4", "0004c1e4", "00068040", "000683b6", "000683cc", "000685f2", "00082c8a", "ffff4184", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083902"
+value = {named = ["00008afc", "00020dfe", "00034fe4", "0004c1e4", "00068040", "000683b6", "000683cc", "000685f2", "00082c8a", "ffff4184", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "small-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dfco_upstream_aux_gate/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "khaki-guppy/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pistachio-octopus/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "silky-jacamar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "victorious-oriole/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

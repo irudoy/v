@@ -1,0 +1,215 @@
+summary = """
+First-channel Q12 multiplier: interpolated uint16 M multiplies a signed \
+intermediate value; the derivative is saturated to signed16 or divided by \
+4096 and written to ffff33b2."""
+note = [
+    """
+Code proves the operational role: the uint16 interpolation result is \
+multiplied by a signed first-channel intermediate value, and the product is \
+saturated and divided by 4096 with an arithmetic shift. This establishes a \
+Q12 multiplier but not the channel's physical function. Identical map \
+00015590 belongs to the second channel and is used only as structural \
+context. Result disposition: consumer. No physical quantity is asserted \
+beyond narrow operational semantics.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/4096"
+to_raw = "x*4096"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 306
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tactful-corgi/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pragmatic-hare/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "manipulative-copperhead/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015580"
+name = "lurking-owl"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061940"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061944"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006194a"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006194e"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061950"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006195c"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006196c"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006197a"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061986"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061a6c"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061aa2"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-woodlouse/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061944"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006194a"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006194e"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061950"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006197a"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061986"
+value = {named = ["00015580", "00015d50", "00022530", "000617ea", "ffff33b2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "optimistic-woodlouse/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "pragmatic-hare/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tactful-corgi/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

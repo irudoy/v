@@ -1,0 +1,64 @@
+summary = """
+Attribute-bit-10 stored-fault projection. It reads event byte ffff48e0 at \
+0008c27e and writes ffff41d1 at 0008c28c as (old & 0x7a), ORed with 0x85 \
+while the event byte is nonzero."""
+note = ["The only caller is 0008bff0."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 646
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-worm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "merciful-bobcat/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008c272"
+name = "famous-platypus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c27e"
+value = {named = ["0008c272", "ffff41d1", "ffff48e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c288"
+value = {named = ["0008c272", "ffff41d1", "ffff48e0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c28a"
+value = {named = ["0008c272", "ffff41d1", "ffff48e0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c28c"
+value = {named = ["0008c272", "ffff41d1", "ffff48e0"], span = 1}
+key = "reference"

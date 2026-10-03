@@ -1,0 +1,164 @@
+summary = """
+Warm/main intake-cam target byte. FUN 000bda64 writes the output of 0000b43a \
+or clamp_u8(output_0000b43a-output_0000ab5a+128) when ffff2466.bit6 is set. \
+FUN 000bdc66 selects or blends this value by coolant before the target \
+enters ffff2326."""
+note = [
+    """
+The centered representation and intake CVTC target path are exact. The \
+engineering conversion raw*0.5-64 crank degrees follows the intake \
+edge-phase unit of the actual bytes ffff2442/ffff2443 that the target is \
+compared with.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 123
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "humongous-skunk/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intake_cvtc_target/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "victorious-catfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c5c"
+name = "golden-rhino"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d71a"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb08"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb32"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb52"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdda4"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddf4"
+value = {named = ["0000ab5a", "0000b43a", "0004d2a6", "000bda64", "000bdc66", "ffff1c5c", "ffff2466"], span = 1}
+key = "reference"
+
+[[link]]
+type = "lookup"
+to = "humongous-skunk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "intake_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "victorious-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

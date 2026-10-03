@@ -1,3 +1,37 @@
+note = [
+    """
+Column axis for trustful requested-torque surface 000175c8 and the \
+returned-value table for its inverse lookup in FUN 00073628. It is \
+byte-identical to primary coordinate table 00014114. FUN 00073a44 passes \
+column ffff1d0e, which it forms over row ffff1cca from the byte-identical \
+copies of the primary conversion tables, to wrapper 00026660 at 00073ade; \
+its word core 00026b84 compares each stored point with that word directly, \
+so one stored count is one coordinate count. 000749bc evaluates the last \
+column, and 00074728 and 0007acb4 columns they form through the lower \
+segment. The physical name and scale are catalog candidates.""",
+]
+level = "code"
+quantity = "load"
+unit = "QH0 Flow Potential [%]"
+scale = "x*0.00152588"
+to_raw = "x/0.00152588"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 33
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "burrowing-bison/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "0001b588"
@@ -34,6 +68,43 @@ name = "pretty-numbat"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000737ce"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map Trustful|Axis Percentage (x*0.00152588)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073ad2"
+value = {named = ["00018ac6", "00026660", "00026b84", "00073a44", "00152588", "ffff1d0e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073ade"
+value = {named = ["00018ac6", "00026660", "00026b84", "00073a44", "00152588", "ffff1d0e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "interesting-horse/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "garnet-caracara/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "cyber-ocelot/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -80,3 +151,10 @@ to = "7mfk:000737ce"
 count = 1
 value = 2
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "burrowing-bison/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

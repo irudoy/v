@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff48de"
+name = "cheerful-tamarin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008c07c"
+
+[[link]]
+type = "writer"
+to = "prehistoric-skua/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

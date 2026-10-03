@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1fa4"
+name = "weightless-hippo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000392a6"
+
+[[link]]
+type = "reader"
+to = "nostalgic-sturgeon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

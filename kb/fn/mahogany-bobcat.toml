@@ -1,0 +1,29 @@
+role = "service"
+contract = """
+Not arithmetic: bytewise block copy. It copies r0 bytes from [r2] to [r1] in \
+ascending address order. The loop is unrolled by four bytes, but the bound \
+is checked after every byte, so an arbitrary-length tail is copied exactly. \
+It returns no result; r2, r3, and r4 are preserved on the stack. It writes \
+only the destination block and touches no fixed RAM addresses."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 53
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022558"
+name = "mahogany-bobcat"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022558"

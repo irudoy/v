@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0003e04e"
+name = "delightful-inchworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003e04e"

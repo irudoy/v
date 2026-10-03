@@ -1,7 +1,148 @@
+summary = """
+The interpolated uint8 map value defines threshold T=100*x for comparison T \
+< *(uint16*)0xffff34e2."""
+note = [
+    """
+The interpolated uint8 map value defines threshold T=100*x for comparison T \
+< *(uint16*)0xffff34e2. Result disposition: inline_comparison. Result \
+target: uint16 RAM 0xffff34e2 in comparison FUN_0005d6ae. Machine trace: \
+Target uint8-map base 00012312 is loaded into r4 at 0005d74c, axis 00012f9e \
+into r5, and wrapper 000264a0 is called at 0005d758. The wrapper performs \
+selection and interpolation through kernel 00026944 and finisher 00026c78; \
+the result returns in r0. At 0005d75c, the result is narrowed without sign \
+to uint8 and extended into r2; 0005d760 loads 100 into r6; 0005d762 executes \
+unsigned mulu.w; and 0005d76a moves product T=100*x from MACL to r7. In \
+FUN_0005d6ae, this value is compared as (ushort)T < uVar1, where uVar1 is \
+read as ushort at DAT_0005d9f0 + DAT_0005d86c = 0xffff34e2; the comparison \
+result is stored as a control boolean. The map output is not written to a \
+separate RAM sink and is consumed in place. For map range x=4..30, \
+T=400..3000, so mulu.w, MACL, and the later ushort conversion do not \
+overflow. Scale confidence: code. Scale: x*100; inverse encoding: x/100; \
+units: uint16 RAM ffff34e2 counts. Scale trace: 00012312 (1D-16, uint8; \
+values 4..30) -> wrapper 000264a0 call at site 0005d758 -> result r0 -> \
+extu.b at 0005d75c, so x is limited to 0..255 -> immediate 0x64 loaded at \
+0005d760 -> mulu.w at 0005d762 -> MACL -> r7 at 0005d76a; the product is in \
+0..25500 and fits uint16. In 0005d6ae, without further conversion, this \
+value participates as (ushort)((x & 0xff)*100) in an unsigned comparison \
+with uVar1 read as ushort from RAM 0xffff34e2. The path executes in the \
+active branch after testing flag 0x80; the initialization branch does not \
+read the map and defines no alternate scale. 0xffff34e2 is the read \
+comparison operand rather than a RAM sink of the map result; the result is \
+consumed in place. Second accessor 00088bba stores the raw byte without \
+conversion and does not contradict the scale of consumer 0005d6ae.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "uint16 RAM ffff34e2 counts"
+scale = "x*100"
+to_raw = "x/100"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 129
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9, 10, 11]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012312"
 name = "celadon-dalmatian"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d6ae"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d74c"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d758"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d75c"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d762"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005d76a"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d6ae"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d758"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d75c"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d760"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d762"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005d76a"
+value = {named = ["00012312", "ffff34e2"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +175,17 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-gecko/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

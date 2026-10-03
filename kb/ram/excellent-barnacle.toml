@@ -1,0 +1,179 @@
+summary = """
+Restored 0..800 first-channel coordinate published by FUN 00076ad0. The \
+admitted inverse path selects ffff1f60 or blended ffff1f5e, calculates \
+min(800,floor(value*800/727)), and stores the result here. The disabled or \
+direct-fallback path copies ffff2a7a."""
+note = [
+    """
+FUN 000d16c2 converts this word into the 0..727 domain with \
+floor(value*727/800) before downstream state and bounds logic. Stock \
+ROM8[000089fa].bit5 and ROM8[00008b29].bit6 are clear, so the direct copy \
+path executes. The physical quantity is unresolved.""",
+]
+level = "code"
+unit = "first-channel raw"
+
+[[ledger]]
+registry = "vars"
+order = 497
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-teal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "auspicious-earthworm/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "phenomenal-aardwolf/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unselfish-tamarin/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-vole/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2816"
+name = "excellent-barnacle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076fb2"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076fba"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076fdc"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076fe4"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077038"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00077042"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007704e"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007705c"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000d1714"
+value = {named = ["00021bbc", "00076ad0", "000d16c2", "ffff1f5e", "ffff1f60", "ffff2816", "ffff2a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "auspicious-earthworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "phenomenal-aardwolf/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "unselfish-tamarin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "hairy-lori/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "successful-teal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pistachio-vole/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

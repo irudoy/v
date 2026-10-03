@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff12a2"
+name = "gigantic-cockle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006e4da"
+
+[[link]]
+type = "reader"
+to = "bouncy-barracuda/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

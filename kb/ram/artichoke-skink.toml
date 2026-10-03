@@ -1,0 +1,35 @@
+summary = "Upper bound of the override clamp for output ffff2c6c in 0007b2c8."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 290
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hulking-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4138"
+name = "artichoke-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002dab6"
+
+[[link]]
+type = "reader"
+to = "hulking-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"

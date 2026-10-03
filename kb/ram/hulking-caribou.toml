@@ -1,0 +1,118 @@
+summary = """
+Current coarse vehicle-speed byte written by FUN 0003a254 as min(255, \
+ffff115e/20) and copied by scheduler 00020dfe to ffff110e. FUN 00035856 \
+returns min(255, 2*ffff118e) for J1979 Mode 01 PID 0x0D at 00035d44."""
+note = [
+    """
+J1979 defines PID 0x0D as km/h, so one count is 2 km/h. The exact firmware \
+source is CAN 0x280 bytes 4 and 5 through ffff113c and ffff115e: the receive \
+path divides the km/h*100 word by 10, the filter keeps km/h*10, and this \
+producer divides by 20. Homologous Z34 CAN data identifies the field as \
+vehicle speed.""",
+]
+level = "code"
+unit = "km/h/2"
+
+[[ledger]]
+registry = "vars"
+order = 68
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "daring-mongoose/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff118e"
+name = "hulking-caribou"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f50"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f56"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d44"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035d4a"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a262"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a27e"
+value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "daring-mongoose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

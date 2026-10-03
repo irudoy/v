@@ -1,0 +1,34 @@
+summary = """
+Saturating pass-event counter whose increment is enabled by ffff41da bit 4."""
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 344
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "selector"
+to = "rainbow-labrador/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff54ea"
+name = "steadfast-chicken"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b59cc"
+
+[[link]]
+type = "selector"
+to = "rainbow-labrador/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

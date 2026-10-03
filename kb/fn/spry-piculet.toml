@@ -1,0 +1,60 @@
+summary = """
+Developer-immobilizer state normalizer. When bit 0 of ROM 0x8725 is 0, it \
+bypasses state-machine transitions and clears bit 2 of 0xffff55e4 before \
+forming the engine inhibit."""
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 357
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "funky-mink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magnificent-sponge/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-fulmar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bc82e"
+name = "spry-piculet"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008725"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bc83c"
+value = {named = ["00008725", "000bc82e", "ffff3e28", "ffff4230", "ffff55e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bc9ce"
+value = {named = ["00008725", "000bc82e", "ffff3e28", "ffff4230", "ffff55e4"], span = 1}
+key = "body"

@@ -1,7 +1,134 @@
+summary = """
+Unsigned 16-bit threshold for saturating subtraction: ffff2ff0 = \
+max(uint16(ffff2ff0) - lookup, 0); a separate copy of the lookup is stored \
+in ffff1406."""
+note = [
+    """
+The physical name and unit are unknown. The lookup result is converted to \
+uint16, written as a separate copy to ffff1406, and immediately used as the \
+same value in comparison and saturating subtraction from ffff2ff0. ffff1406 \
+has no external readers. Index: implicit 1D-8: q = uint8(RAM[ffff1070]) * \
+256; q < 0xe000 is processed by kernel 00026a60, while q >= 0xe000 selects \
+uint16(map+0x0e). Output trace: 0005519c -> 000551a8 -> 000263d8 -> 00026a60 \
+-> 00026740 -> 000551ac; 000551ac -> 000551b0(ffff1406); 000551ac -> \
+000551b4(ffff2ff0) -> 000551b8 -> [000551be | 000551c0 -> 000551c2] -> \
+000551c8(ffff2ff0). Result disposition: inline_comparison; Result target: \
+FUN_00055098: comparison 000551b8, branch to zero at 000551be or subtraction \
+at 000551c0; the result is written to RAM ffff2ff0 at 000551c8.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 425
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adaptable-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "golden-tench/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "energetic-slug/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "golden-tench/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014a2a"
 name = "arrogant-beetle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005519c"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551a8"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551ac"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551b0"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551b4"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551b8"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551be"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551c0"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551c8"
+value = {named = ["00014a2a", "00055098", "ffff1406", "ffff2ff0"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +161,17 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "golden-tench/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

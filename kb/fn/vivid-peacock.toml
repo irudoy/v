@@ -1,0 +1,209 @@
+summary = """
+Curve-form and branch selector. Let x=uint8[ffff22e4]. ROM8[00008710].bit3 \
+set selects explicit-axis lookup over 00012778; clear selects implicit \
+lookup at q=min(2*x,255). ffff244f.bit1 clear selects curve A (000127a8 \
+explicit or 00012798 implicit), while bit1 set selects curve B (000127e8 \
+explicit or 000127d8 implicit). The function writes 4*lookup to uint16 \
+ffff1752."""
+note = [
+    """
+Stock ROM8[00008710]=0x7c has bit3 set, so the explicit maps are active in \
+this function. The physical curve quantity is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 134
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "adorable-llama/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "complex-condor/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "garrulous-civet/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "loud-squid/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hopeful-turtle/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "silky-parakeet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004569c"
+name = "vivid-peacock"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008710"
+value = "0x7c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456ac"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456b0"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456b6"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456c4"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456da"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456f2"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000456f4"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045704"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045712"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045718"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004571a"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00045726"
+value = {named = ["00008710", "00012778", "00012798", "000127a8", "000127d8", "000127e8", "00026388", "000264a0", "0004569c", "ffff1752", "ffff22e4", "ffff244f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "hopeful-turtle/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

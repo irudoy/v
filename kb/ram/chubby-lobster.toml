@@ -1,0 +1,126 @@
+summary = """
+Map-derived APC reset-offset candidate written by 0004c1e4 after a capped \
+product of lookup outputs from 0x1208e and 0x12096. The same function limits \
+it to uint8 and compares it with ffff1874."""
+note = [
+    """
+The exact physical quantity and map engineering scales remain unresolved.""",
+]
+level = "code"
+unit = "raw command count"
+
+[[ledger]]
+registry = "vars"
+order = 644
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_reset_offset_source_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "huge-pelican/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prophetic-jacamar/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_offset_source_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1875"
+name = "chubby-lobster"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c312"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c326"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c34c"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c356"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c36c"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c374"
+value = {named = ["0001208e", "00012096", "0004c1e4", "ffff1875"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "huge-pelican/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "prophetic-jacamar/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

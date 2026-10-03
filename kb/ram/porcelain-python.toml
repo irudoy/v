@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff25e3"
+name = "porcelain-python"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c8b2"
+
+[[link]]
+type = "writer"
+to = "frisky-swine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

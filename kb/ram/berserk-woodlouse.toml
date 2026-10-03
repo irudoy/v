@@ -1,0 +1,194 @@
+summary = """
+Second wrap-corrected engine-event interval divided by 32, in 3.2 us counts. \
+00028b5c computes it from the same capture ffff185c under the same gates as \
+00028af8 computes ffff11fc, with previous-capture cells ffff84d0 and \
+ffff84cc that only these two samplers update, and 0002b768, 0002c648, and \
+00099a48 store one value to both words. The word therefore equals ffff11fc, \
+6250000/RPM counts over 120 crank degrees. FUN 000385bc divides 12000000 by \
+three times the word."""
+note = ["One count is 3.2 us (phi'/32 with PSCR1 = 1)."]
+level = "code"
+unit = "normalized timer counts"
+
+[[ledger]]
+registry = "vars"
+order = 601
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tentacled-prawn/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "capture_interval_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "event_interval_snapshot_b/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "position_diagnostic_apc_mode_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22d4"
+name = "berserk-woodlouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b76"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b7c"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b7e"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b92"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028b9c"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b80a"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b812"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c994"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002ca44"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099bb0"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00099bb6"
+value = {named = ["0002718a", "000274ac", "00028b5c", "0002b768", "0002c648", "000385bc", "00099a48", "ffff22d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "just-pelican/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "atu2_prescaler_init/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "reader"
+to = "tentacled-prawn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "event_interval_snapshot_b/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "position_diagnostic_apc_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

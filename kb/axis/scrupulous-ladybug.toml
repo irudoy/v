@@ -1,3 +1,31 @@
+note = [
+    """
+Row axis for warm/main intake-cam target surface 0000b43a. FUN 000bda64 \
+passes current RPM/50 byte ffff11ae directly to the 16x16 interpolator. \
+Stored points 16..128 represent 800..6400 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 64
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012f3e"
@@ -7,6 +35,50 @@ name = "scrupulous-ladybug"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bdb08"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdb00"
+value = {named = ["00012f3e", "000261b8", "00026944", "000bd170", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdb02"
+value = {named = ["00012f3e", "000261b8", "00026944", "000bd170", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bdb08"
+value = {named = ["00012f3e", "000261b8", "00026944", "000bd170", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "exhaust_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "grinning-duck/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -31,3 +103,10 @@ supports = "identity"
 at = "jk00d:000c3674"
 note = """
 engine-speed axis operand at the warm intake-target interpolation callsite"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

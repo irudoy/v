@@ -1,0 +1,143 @@
+summary = """
+Selected normalized-temperature byte, the normalized coolant index latched \
+at engine start. FUN 000394b8 writes normalized coolant ffff1077 while \
+selector 0003967a returns 1 and previous-pass image ffff1080 while it \
+returns 0, which holds the last selection; scheduler 00020dfe snapshots it \
+to ffff1070."""
+note = [
+    """
+The byte follows the selection and hold transitions of raw byte ffff1076 on \
+the normalized coolant scale.""",
+]
+level = "code"
+unit = "normalized coolant index"
+
+[[ledger]]
+registry = "vars"
+order = 450
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "black-kudu/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "meaty-orca/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "start_low_voltage_temperature_selector/fn"
+type = "depends"
+end = "owner"
+link_role = "selector"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "selected_temperature_pair_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1078"
+name = "quantum-fennec"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "ffff1078", "ffff1080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f32"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "ffff1078", "ffff1080"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039514"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "ffff1078", "ffff1080"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039520"
+value = {named = ["000209d8", "00020dfe", "000394b8", "0003967a", "ffff1078", "ffff1080"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "start_low_voltage_temperature_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
+type = "input"
+to = "meaty-orca/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

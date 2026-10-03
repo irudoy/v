@@ -14,7 +14,7 @@ TITLE = 72
 
 def inputs(root):
     return [path.relative_to(root).as_posix()
-            for path in sorted((root / DIRECTORY).glob("*.csv"))]
+            for path in sorted((root / DIRECTORY).glob("*.csv")) if path.stem != "7mfk"]
 
 
 def rows(root, layout):
@@ -27,13 +27,20 @@ def rows(root, layout):
 
 def declare(b, root):
     for layout in b.layouts:
-        src = (DIRECTORY / f"{layout}.csv").as_posix()
-        for row in rows(root, layout):
-            key = b.symbol(layout, "fn", int(row["addr"], 16), src)
-            b.name(key, row["name"], "curated", src)
-            note = row.get("note", "").strip()
-            if note:
-                b.props(key, {"title" if len(note) <= TITLE else "note": note}, src)
+        if layout == "7mfk":
+            continue
+        declare_layout(b, root, layout)
+
+
+def declare_layout(b, root, layout):
+    """Names of one layout, including the stage 5 ledger conversion."""
+    src = (DIRECTORY / f"{layout}.csv").as_posix()
+    for row in rows(root, layout):
+        key = b.symbol(layout, "fn", int(row["addr"], 16), src)
+        b.name(key, row["name"], "curated", src)
+        note = row.get("note", "").strip()
+        if note:
+            b.props(key, {"title" if len(note) <= TITLE else "note": note}, src)
 
 
 def relate(b, root):

@@ -1,6 +1,128 @@
+summary = """
+Manifold-pressure word. FUN 00035856 returns floor((uint16[ffff16d2]*118 + \
+98304)/65536) for J1979 Mode 01 PID 0x0B at 00035cfc, and exact service-0x22 \
+DID 0x112a returns the high byte. Homologous measured diagnostics identify \
+the DID as manifold absolute pressure."""
+note = [
+    """
+J1979 defines PID 0x0B as kPa, so the word represents kPa*65536/118 above \
+1.5 kPa and the DID byte about 0.461 kPa per count plus 1.5. The producer \
+and the distinction from DID 0x1116 remain unresolved.""",
+]
+level = "code"
 width = 8
+unit = "(kPa-1.5)*65536/118"
+
+[[diagnostic]]
+id = "manifold-pressure-did-112a"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:22112a"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0043-l0043:source-row-extended-pids:parameter:0x112a-6437a32f"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x112A to response byte \
+ffff16d2. Homologous measured diagnostics identify the DID as manifold \
+absolute pressure. Its relationship to DID 0x1116, physical source, and \
+engineering conversion remain unresolved for JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022754"
+value = "ffff16d2"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022754"
+value = {named = ["0003235c", "6437a32f", "ffff16d2"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 6
+binding = "manifold-pressure-did-112a"
+
+[[ledger]]
+registry = "vars"
+order = 554
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff16d2"
 name = "daffodil-ape"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022754"
+value = "ffff16d2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022754"
+value = {named = ["0003235c", "00035856", "ffff16d2"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035cec"
+value = {named = ["0003235c", "00035856", "ffff16d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035cf2"
+value = {named = ["0003235c", "00035856", "ffff16d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035cfc"
+value = {named = ["0003235c", "00035856", "ffff16d2"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

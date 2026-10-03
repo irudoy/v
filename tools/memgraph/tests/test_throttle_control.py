@@ -192,7 +192,7 @@ class ThrottleControlContractTest(unittest.TestCase):
         self.assertEqual(row["scale_conf"], "silicon")
         self.assertIn(
             "spec:hardware-results:throttle_rev_limiter.vehicle_2026_09_21",
-            row["scale_evidence"].split(";"),
+            [token.strip() for token in row["scale_evidence"].split(";")],
         )
         self.assertEqual(result["hardware_status"], "pass")
         self.assertEqual(result["scale_expr"], row["scale_expr"])

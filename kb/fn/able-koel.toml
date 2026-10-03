@@ -1,0 +1,184 @@
+summary = """
+Dual-channel interpolator with two distinct offset-binary branches: 0x14C9A \
+is indexed by axis 0x15D60 in nonnegative branches and forms \
+ffff8c08/ffff8c0a; 0x14CBA is indexed by axis 0x15D70 in negative branches \
+and forms ffff8c04/ffff8c06 after multiplication and limiting."""
+note = [
+    """
+Axes 0x15D60 and 0x15D70 have code-level x-32768 scaling. Map 0x14CBA is \
+confirmed as the multiplier for negative branches; 0x14C9A retains candidate \
+semantics because no physically named consumer is present.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 190
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "hopping-chachalaca/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "lumpy-weasel/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "uber-turtle/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dexterous-caribou/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fabulous-bonobo/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "skinny-wallaby/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005fdb0"
+name = "able-koel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fe92"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fea0"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fec2"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fed2"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fee2"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff10"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff54"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff5e"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff80"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ffca"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ffd6"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fffe"
+value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dexterous-caribou/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "fabulous-bonobo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "skinny-wallaby/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

@@ -1,3 +1,31 @@
+note = [
+    """
+Shared row axis for ignition maps 0x991A/0x9A1A/0x9B1A. The core compares \
+each raw point after multiplication by four against RPM/12.5 word ffff11bc, \
+so one stored axis count represents 50 RPM. The points span 400..7400 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 8
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013726"
@@ -35,6 +63,42 @@ name = "able-butterfly"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000495fa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004e250"
+value = {named = ["00011ece", "00020dfe", "00026230", "000269c4", "000384fe", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4*12.5=50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "literate-hornet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -81,3 +145,10 @@ to = "7mfk:00011ece"
 note = """
 target ignition accessor preserves the RPM-axis operand and 16-point \
 geometry"""
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

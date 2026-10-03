@@ -1,0 +1,159 @@
+summary = """
+ATU-II channel 1A GR1E capture handler for the bank-2 intake cam. It stores \
+interval ffff22ca = GR1E - ffff158a, forms running edge phase ffff22d3 = \
+20*ffff13b2 + floor(20*interval/ffff22bc) - 60 (selector below 8) or - 20 \
+(selector 8 and above) through signed divider 00021bbc, clamped at zero, and \
+copies it to ffff22cd while event state ffff13c8 is 1, 3, or 5, after \
+shifting ffff22cd into ffff22cf and ffff22d1. The pass requires ffff84ff bit \
+7 set, ffff8504 bit 7 clear, and edge count ffff1390 equal to 1."""
+note = [
+    """
+The SH7059 hardware manual identifies 0xfffff44c as GR1E. One count of the \
+edge phase is 0.5 crank degrees, the same unit as the bank-1 handler \
+0002a5cc and the exhaust edge handlers.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 363
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-dugong/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-pheasant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curly-herring/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dazzling-llama/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "portable-dachshund/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "psychedelic-dalmatian/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002a36a"
+name = "lovely-cuttlefish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a40e"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a41e"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a442"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a462"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a464"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a47e"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a496"
+value = {named = ["00021bbc", "0002a36a", "ffff13b2", "ffff13c8", "ffff158a", "ffff22bc", "ffff22ca", "ffff22cd", "ffff22cf", "ffff22d1", "ffff22d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"

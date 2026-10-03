@@ -1,3 +1,25 @@
+summary = """
+Unidentified 1D uint8 table: an interpolated raw byte indexed by an \
+unidentified input quantity from ffff10ca and written to ffff15f1"""
+note = [
+    """
+Shape, range 26..255, and decreasing profile confirm only a calibration \
+table. There is no explicit ROM axis. The catalog contains several \
+incompatible variants with the same shape, and the ffff15f1 binding has no \
+consumer, so no name, physical units, or nontrivial scale are claimed. \
+Blocking condition: The trace stops at instruction 0005678c, where the \
+result is written unconditionally to RAM ffff15f1; ffff15f1 has no external \
+readers, the value does not participate in an inline comparison after the \
+write, and FUN_00056714 returns void. The physical purpose therefore cannot \
+be established. Result disposition: writes.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Unidentified Output to ffff15f1 - raw u8 (0x124E2)"
 category = "Unidentified Calibrations"
@@ -7,7 +29,107 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 147
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-sawfly/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gray-fox/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000124e2"
 name = "quaint-platypus"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056764"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005676c"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005676e"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005677a"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005677e"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056784"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005678c"
+value = {named = ["000124e2", "00026388", "ffff10ca", "ffff15f1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "rare-sawfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

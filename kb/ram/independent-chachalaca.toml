@@ -1,0 +1,207 @@
+summary = """
+Multipurpose transient-state byte. FUN 0007b7c0 maintains bit 6 through a \
+hysteresis comparison using scaled threshold ffff1393. Bit 4 is the cancel \
+latch of the standstill exhaust override in FUN 000bfe88: set at 000c01c8 \
+when ffff24d3 bit 4 is set while ffff246c bit 1 requests the override, \
+cleared at 000c018c while ffff248b bit 2 is clear; while the latch is set \
+the conditioner writes 128 during the predicate and then holds the previous \
+ffff137e instead of the map target, so the override is a single stroke per \
+pedal application. Service 0x31 routine 0x0c clears the latch at 000340cc."""
+note = [
+    """
+No direct connection from bit 6 to the final timing coordinate or APC \
+registers is established. Other consumers may use different bits.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 607
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_hysteresis_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fantastic-shark/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sticky-limpet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gorgeous-adder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transient_hysteresis_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2478"
+name = "independent-chachalaca"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000340cc"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b80a"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b822"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b834"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b86e"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c018c"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c019c"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01c8"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c01dc"
+value = {named = ["00033f78", "0007b7c0", "000bfe88", "ffff246c", "ffff2478", "ffff24d3"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "fantastic-shark/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "sticky-limpet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "myrtle-cougar/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "gorgeous-adder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

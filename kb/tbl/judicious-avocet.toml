@@ -1,3 +1,27 @@
+summary = """
+Byte table for control selector ffff23ed: the lookup result defines a \
+zero/nonzero gate; 0 selects calculated consumer branches, including \
+stepwise convergence at 0004355c, while !=0 selects a direct bypass path."""
+note = [
+    """
+The physical subsystem is unknown. Direct confirmed path 0002cd82 -> \
+ffff23ed is sufficient for operational semantics; 000420b8 additionally \
+retains the lookup result in a local value. All eight cells equal 0, so the \
+current ROM content always selects the zero branch, but the role is \
+established from the RAM trace and consumers rather than from the flat \
+shape. Index: 1D-8 uint8 with an implicit uniform axis over 8-bit input r5: \
+for x < 224, wrapper 00026370 directs the lookup to kernel 00026a80, which \
+reads adjacent bytes and passes them to linear finisher 00026740; for x >= \
+224, map+7 is returned. Sources of x: ffff1077 at 0002cd82 and ffff106f at \
+00042114. Result disposition: writes (ffff23ed).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Control Selector ffff23ed - raw u8 (0x1218E)"
 category = "Internal Calculations"
@@ -7,7 +31,167 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 365
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyan-pronghorn/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sceptical-groundhog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "groovy-coyote/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001218e"
 name = "judicious-avocet"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd7c"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd82"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd88"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cd8e"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042110"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042114"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042120"
+value = {named = ["0001218e", "00026370", "00026740", "000413cc", "0004355c", "ffff106f", "ffff1077", "ffff23ed"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "index"
+to = "coolant_index/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cyan-pronghorn/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sceptical-groundhog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

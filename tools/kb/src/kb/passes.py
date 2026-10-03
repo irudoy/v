@@ -14,7 +14,7 @@ digest differs from the recorded one.
 
 import json
 
-from kb import fingerprint, l0, match, project, repo, sites
+from kb import fingerprint, l0, levels, match, project, repo, sites
 
 RECORD = repo.STATE / "cache" / "checks.json"
 KB = "tools/kb"
@@ -36,11 +36,16 @@ def _projections(root):
     return set(project.tracked(root)) | model(root)
 
 
+def _levels(root):
+    return model(root) | {levels.HARDWARE.as_posix()}
+
+
 # The files that a check reads, other than those of `kb` itself; a check
 # that is not listed reads the model.
 INPUTS = {
     "l0": l0.inputs,
     "sites": sites.inputs,
+    "levels": _levels,
     "projections": _projections,
     "guard": project.tracked,
 }

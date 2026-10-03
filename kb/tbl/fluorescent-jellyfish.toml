@@ -1,7 +1,194 @@
+summary = """
+Conditional Q8 multiplier of an internal state for param_1=0/1: a fresh \
+lookup is written to ffff3993+param_1 and used in formula floor(x*U/256)."""
+note = [
+    """
+For param_1=0/1, a fresh lookup is written to ffff3993+param_1 and used as a \
+dimensionless Q8 multiplier of internal state according to floor(x*U/256). \
+Scale x/256 has inverse pair x*256; the state's physical purpose is \
+unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 206
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "base"
+to = "pearl-mouflon/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "kind-millipede/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hysterical-kagu/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "kind-millipede/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hysterical-kagu/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012c4a"
 name = "fluorescent-jellyfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acbe"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ad54"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ad58"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ad5e"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ad62"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ad6e"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dual_bank_maf_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "kind-millipede/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003ad54"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003ad5e"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003ad62"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003ad6e"
+value = {named = ["00012c4a", "00026474", "00026740", "00026944", "00026c78", "0003a904", "0003aa12", "ffff3968", "ffff3993"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "kind-millipede/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +221,20 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "pearl-mouflon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "reader"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+reverse_relies = "structure"
+reverse_supports = "identity"

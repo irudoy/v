@@ -1,4 +1,21 @@
+summary = """
+Fuel Compensation Map: the unsigned output is a multiplicative fuel \
+correction with raw 128 = 100% as neutral. The result participates in \
+calculating fuel-delivery duration and undergoes uint16 saturation."""
+note = [
+    """
+The machine trace establishes the multiplicative role, while A2L and homolog \
+EV18A 0xa2f6 establish the physical name and scale with the shared layout \
+offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.""",
+]
+level = "code"
+role = "table"
 former = ["fuel_compensation_main_default"]
+access = "explicit"
+unit = "%"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "candidate"
 
 [editor]
 name = "Fuel Compensation - Main"
@@ -8,6 +25,30 @@ emit = true
 format = "0.00"
 fine = 0.78125
 coarse = 3.125
+
+[[ledger]]
+registry = "findings"
+order = 55
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "startup_initializer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -42,6 +83,52 @@ layout = "7mfk"
 address = "0000a29a"
 former = ["ambitious-coot/tbl/7mfk-0000a29a"]
 
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000090ee=0x020c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cc9c"
+value = {named = ["000090ee", "0000a29a", "000261f0", "00026740", "00026770", "00026944", "0002c648"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fuel_compensation_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Fuel Compensation Map (16x16)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Percentage (x*0.78125)"
+
 [[symbol]]
 layout = "jk00c"
 address = "0000a3de"
@@ -74,3 +161,19 @@ to = "7mfk:0000a29a"
 note = """
 mutual-best accessor preserves geometry axes and lookup role on the default \
 arm of the target state selector"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

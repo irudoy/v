@@ -1,0 +1,209 @@
+summary = """
+Common quarter-BFS fixed-point source inside 0003b75c. The fallback writes \
+floor(M/4) for Base Fuel Schedule raw value M from map 0x15630. In the \
+primary branch, Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], \
+E=ROM8[0x88fb], and selected engine-speed count N produce \
+fixed=min(floor(floor(F*K*Q/256)/(E*N)),0x726f9), followed by \
+ffff1e40=floor(fixed*9163/65536)."""
+note = [
+    """
+The limit 0x726f9 maps to 65535 after multiplication by 9163 and the right \
+shift, proving an intentional uint16 saturation boundary. A2L identifies F \
+as MAF Factor with x*0.0001 kg/hr and K as K-Value with ms/kg. Combined with \
+N at 1.5625 RPM/count, the firmware coefficient differs from the quarter-BFS \
+raw/2048 dimensional coefficient by only 43.994 ppm. Engineering units \
+remain source-derived pending hardware validation.""",
+]
+level = "code"
+unit = "quarter BFS raw"
+
+[[ledger]]
+registry = "vars"
+order = 256
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "active-caracal/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "nice-coucal/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "spectral-corgi/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "polar-viper/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-horse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_initializer/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e40"
+name = "voracious-oarfish"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088fb"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008a27=0x6d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009284"
+value = "0x68b6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b824"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b858"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8aa"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8ac"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8b0"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8b6"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b8d8"
+value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "nice-coucal/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "polar-viper/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vigorous-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "active-caracal/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "spectral-corgi/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

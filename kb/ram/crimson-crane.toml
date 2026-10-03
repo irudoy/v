@@ -1,0 +1,173 @@
+summary = """
+Bit 6 is the intake-CVTC operating bit that FUN 000bd20a writes at 000bd9d6: \
+it holds with intake electrical enable ffff248b bit 1, the pedal off its \
+idle position, 900 RPM, and the coolant ceiling and latch-selected floor, \
+and whenever idle-source bit ffff24a7 bit 1 is set. While it is clear, FUN \
+000bdc66 writes neutral 0x80 to intake target ffff2326 unless ffff248b bit 1 \
+and IOLID 0x19 active-test bit ffff41fa bit 0 are both set. Bit 6 also \
+selects the centered two-bank multiplier path in FUN 00055098. Set uses \
+lookup 00012ede indexed by min(u8[ffff2442],u8[ffff2443]); clear substitutes \
+raw 64 in the same factor slot."""
+note = ["Code proves the producer and both consumers."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 179
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adaptable-eel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "radiant-cuckoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "caped-mammoth/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tomato-trout/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff246b"
+name = "crimson-crane"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551de"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551e0"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055202"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005520a"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd9d6"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdcde"
+value = {named = ["00012ede", "00055098", "000bd20a", "000bdc66", "ffff2442", "ffff2443", "ffff246b"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "caped-mammoth/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "adaptable-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tomato-trout/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "urban-galago/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

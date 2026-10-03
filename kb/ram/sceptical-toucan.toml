@@ -1,6 +1,112 @@
+summary = """
+Unused slot of the four-slot exhaust-VTC duty word array at ffff1aac. FUN \
+000c2040 is the only writer of that array and indexes it with the bank \
+argument in r4; dispatcher 000c2220 is its only caller and passes 0 and 1. \
+No ROM code reads or writes this word."""
+note = [
+    """
+The service-0x22 pointer table publishes the slot as DID 0x122e, named VTC \
+DTY IN B2 by structured Nissan diagnostics, so the DID returns the RAM \
+initialization value for the life of the image. The live intake duty command \
+is ffff23b4/ffff23b5 and its diagnostic companion pair is \
+ffff2440/ffff2441.""",
+]
+level = "code"
 width = 16
+unit = "unused"
+
+[[diagnostic]]
+id = "intake-vtc-duty-bank-2-did-122e"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:cid-122eh-vtc-dty-in-b2"
+claim = {label = "ParameterDefinition", id = "ecudocs-p32m-997c5a9:data:cid-122eh-vtc-dty-in-b2-e55167f4"}
+applicability = "nissan_family_candidate"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A service-0x22 table maps DID 0x122E to big-endian word \
+ffff1ab2. Structured Nissan diagnostics identify it as bank-2 intake-VTC \
+duty and define percent = raw*100/1024. The source and bank identity are \
+exact; the physical conversion remains homologous."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00022954"
+value = "ffff1ab2"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00022954"
+value = {named = ["0003235c", "e55167f4", "ffff1ab2"], span = 1}
+key = "pointer"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 36
+binding = "intake-vtc-duty-bank-2-did-122e"
+
+[[ledger]]
+registry = "vars"
+order = 119
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "base"
+to = "exhaust_cvtc_duty_b1_word/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "6"
+offset = 0x6
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "7mfk"
 address = "ffff1ab2"
 name = "sceptical-toucan"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022954"
+value = "ffff1ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022954"
+value = {named = ["0003235c", "ffff1aac", "ffff1ab2"], span = 1}
+key = "pointer"
+
+[[link]]
+type = "base"
+to = "exhaust_cvtc_duty_b1_word/ram"
+offset = 0x6
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

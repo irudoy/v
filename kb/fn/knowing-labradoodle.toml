@@ -1,0 +1,130 @@
+summary = """
+Signed comparator with an optional subtractive hysteresis offset. FUN \
+0004d2a6 uses it to maintain ffff24a9.bit6 from raw coolant snapshot \
+ffff1071, ROM8[00008e00]=170, and offset 3."""
+note = [
+    """
+With bit 6 clear, the caller sets it while ffff1071<=170. With bit 6 set, \
+subtracting 3 retains it through ffff1071=173 and clears it at \
+ffff1071>=174. The comparator contract is exact; the physical coolant \
+conversion remains separate.""",
+]
+level = "code"
+role = "service"
+contract = """
+It returns uint8 1 iff int32(r4 - (uint8(r7) != 0 ? r6 : 0)) <= int32(r5); \
+otherwise it returns 0. It reads and writes no memory."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 57
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+contract = [4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000259d0"
+name = "knowing-labradoodle"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008e00"
+value = "0xaa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2e6"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d2fc"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d308"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259d0"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259d2"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259d4"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259d8"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259da"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259dc"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259de"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000259e2"
+value = {named = ["00008e00", "0004d2a6"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

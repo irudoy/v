@@ -1,3 +1,16 @@
+summary = """
+Word-axis interpolation core: same body as 0x26944, with downward-search \
+stride ADD #-2,R4. Seven wrappers serve 107 tables; sub-helper 0x26C78 \
+computes the fractional part."""
+level = "code"
+role = "kernel"
+
+[[ledger]]
+registry = "funcs"
+order = 104
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
 [[symbol]]
 layout = "1nd"
 address = "00028dc8"
@@ -14,6 +27,18 @@ key = "00026984"
 layout = "7mfk"
 address = "00026984"
 name = "versatile-junglefowl"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026984"
+value = {span = 1}
+key = "body"
 
 [[symbol]]
 layout = "jk00c"

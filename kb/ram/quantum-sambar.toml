@@ -1,0 +1,163 @@
+summary = """
+Diagnostic scratch copy of the coolant-selected intake-cam target. FUN \
+000bdc66 writes cold target ffff1c5e at raw coolant <=106, warm/main target \
+ffff1c5c above 131, or their signed linear blend with division truncated \
+toward zero between the thresholds."""
+note = [
+    """
+The same selected value continues in a register and stack slot through later \
+conditioning; no external reader of ffff1bee is present. The exact DID \
+raw-50 conversion maps the raw thresholds to 56 and 81 degC.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 122
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cunning-jackrabbit/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "humongous-skunk/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intake_cvtc_target/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "radiant-cuckoo/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1bee"
+name = "quantum-sambar"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d2d"
+value = "0x83"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d2e"
+value = "0x6a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdd80"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdd90"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdda4"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddaa"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddf4"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bddfa"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bde04"
+value = {named = ["00008d2d", "00008d2e", "0000ab5a", "0000b43a", "0000b53a", "000bdc66", "ffff1071", "ffff1bee"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cunning-jackrabbit/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "humongous-skunk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "radiant-cuckoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

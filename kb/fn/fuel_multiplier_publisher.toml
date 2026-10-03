@@ -1,0 +1,153 @@
+title = "Rate-limit the fuel multiplier and force zero under full inhibit"
+summary = """
+Fuel-multiplier target, limiter, and publisher. It starts with \
+sum=min(65535,ffff231a+ffff240a) and target=floor(sum*ffff22e8/16384), then \
+applies mode gates, bounds, and rate limits into working word ffff18e4. If \
+aggregate inhibit mask ffff22e0 equals 0x3f it publishes zero to ffff22e6; \
+otherwise it publishes ffff18e4."""
+note = [
+    """
+The exact full-inhibit publication rule directly suppresses the multiplier \
+consumed later by 0004e974. Other physical mode names remain unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 86
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 499
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "af_state_factor/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "happy-curassow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mega-kudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dazzling-sawfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vigorous-chihuahua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000556ec"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000556fa"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055702"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055710"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055716"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055728"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055780"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055930"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055932"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055938"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005593c"
+value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
+key = "reference"

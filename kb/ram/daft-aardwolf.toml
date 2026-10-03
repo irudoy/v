@@ -1,0 +1,69 @@
+summary = """
+Base of two uint32 previous-pass throttle-regulator state snapshots copied \
+from ffff2628/ffff262c and consumed by 000cb614."""
+note = ["Elements are ffff2630 and ffff2634."]
+level = "code"
+unit = "fixed-point state array"
+
+[[ledger]]
+registry = "vars"
+order = 710
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_fixed_point_regulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-kudu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2630"
+name = "daft-aardwolf"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020ae2"
+value = {named = ["000209d8", "000cb614", "ffff2630"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cb650"
+value = {named = ["000209d8", "000cb614", "ffff2630"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc588"
+value = {named = ["000209d8", "000cb614", "ffff2630"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "throttle_fixed_point_regulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

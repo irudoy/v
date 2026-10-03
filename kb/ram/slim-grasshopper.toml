@@ -1,0 +1,42 @@
+summary = """
+Multipurpose status byte. Bit 6 contains NATS registered channel 1 and is \
+managed by FUN_000937dc."""
+note = ["Registered state is not an engine inhibit."]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 336
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "writes"
+to = "sincere-asp/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41c2"
+name = "slim-grasshopper"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000938a4"
+value = {named = ["000937dc", "ffff41c2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "sincere-asp/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

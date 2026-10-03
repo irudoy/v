@@ -1,0 +1,153 @@
+summary = """
+Second-bank paired-sensor conditioning stage. It subtracts two acquisition \
+words ffff363a/ffff363c from 0x0400, writes publication words \
+ffff2862/ffff2864, subtracts learned offsets ffff561a/ffff561c, clamps \
+signed corrected values, and writes ffff285e/ffff2860."""
+note = [
+    """
+Exact UDS DID 0x124c and reviewed Nissan diagnostics identify ffff2864 as TP \
+SEN 2-B2, whose signal the factory documentation states is converted inside \
+the ECM. The 0x0400 complement inverts the sensor about the ten-bit full \
+scale, which is 5.12 V at 5 mV per count.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "funcs"
+order = 336
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "weightless-piculet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amorphous-mammoth/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "attractive-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-spoonbill/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "grinning-prawn/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grumpy-barnacle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "invaluable-wasp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "secondary_tps_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "super-bloodhound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003e4cc"
+name = "tall-chipmunk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e4dc"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e4e4"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e508"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e50a"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e512"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e530"
+value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "weightless-piculet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

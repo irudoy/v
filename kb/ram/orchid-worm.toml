@@ -1,0 +1,101 @@
+summary = """
+Unsigned word gate in the exact P0455 gross-leak dispatch branch of FUN \
+000b29b8. The branch requires this value to be below ROM16[0x915e]=0x0600 in \
+addition to its calibrated operating-range gates."""
+note = [
+    "Its upstream producer, physical quantity, and units remain unresolved.",
+]
+level = "code"
+unit = "diagnostic raw"
+
+[[diagnostic]]
+id = "evap-gross-leak-metric-p0455"
+kind = "monitor"
+label = "DtcCode"
+key = "P0455"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000195a0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 95
+level = "code"
+note = """
+This unsigned word is the exact below-0x0600 gate in the P0455 dispatch \
+branch; its physical quantity remains unresolved."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "caped-barracuda/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0000915e"
+value = "0x0600"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b29f2"
+value = {named = ["0000915e", "000195a0", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000b29f4"
+value = {named = ["0000915e", "000195a0", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 134
+binding = "evap-gross-leak-metric-p0455"
+
+[[ledger]]
+registry = "vars"
+order = 419
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "caped-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c9c"
+name = "orchid-worm"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000915e"
+value = "0x0600"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b29f2"
+value = {named = ["0000915e", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b29f4"
+value = {named = ["0000915e", "000b29b8", "ffff2c9c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "caped-barracuda/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

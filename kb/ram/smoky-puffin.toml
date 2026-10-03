@@ -1,0 +1,137 @@
+summary = """
+Base of two phase-specific 10-bit AN1 samples: FUN 000280d8 writes ADDR1>>6 \
+to ffff1d58 on internal phase 1 and to ffff1d5a on phase 3. FUN 0003d258 \
+consumes the pair as indices 0 and 1."""
+note = [
+    """
+A whole-program p-code pass found exactly the two direct writes and no \
+computed-address writer candidates in ffff1d58..ffff1d5b. Phase-dependent \
+external selection is not visible at the MCU input; the ECM terminal and \
+physical signal remain unresolved. J1979 Mode 01 PID 0x0F publishes the \
+00012dea transfer code of lane 0 through ffff3f42 and ffff3f41 as intake air \
+temperature, which declares the lane as the intake-air-temperature input.""",
+]
+level = "code"
+unit = "ADC counts"
+
+[[ledger]]
+registry = "vars"
+order = 462
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "abstract-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "foamy-pony/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-pig/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1d58"
+name = "smoky-puffin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002816c"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002817a"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000282a0"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000282ac"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d284"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4b8"
+value = {named = ["000280d8", "0003d258", "0003d4a8", "ffff1d58", "fffff802"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "tunneling-pig/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "abstract-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "foamy-pony/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

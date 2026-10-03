@@ -1,6 +1,69 @@
+summary = """
+Current engine-speed word in RPM/12.5 representation. FUN 000384fe writes \
+source ffff11f4 = ffff1196>>6, and scheduler 00020dfe copies it here through \
+the 56-byte snapshot block. Fuel-cut state machine 0004f282 compares it with \
+calibrated activation/release words; misfire reporter 00084cd0 retains it in \
+three operating-point snapshots, and matcher 000847dc applies a -30/+30 \
+count window."""
+note = [
+    """
+The source word and destination word occupy matching offsets in the exact \
+snapshot-copy blocks. The matcher tolerance of 30 counts corresponds to 375 \
+RPM.""",
+]
+level = "code"
+unit = "rpm/12.5"
+
 [logparam]
 id = "X_VQ_Engine_Speed"
 unit = "RPM"
+
+[[ledger]]
+registry = "vars"
+order = 77
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "main_rpm_fuel_cut_state_machine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "authentic-wasp/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -49,6 +112,82 @@ layout = "7mfk"
 address = "ffff11bc"
 former = ["daffy-gopher/ram/7mfk-ffff11bc"]
 
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f60"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6a"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f6c"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2de"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2e2"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f2ee"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008480c"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d06"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d52"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d84"
+value = {named = ["00020dfe", "000384fe", "0004f282", "000847dc", "00084cd0", "ffff11bc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff11ca"
@@ -92,6 +231,99 @@ supports = "identity"
 at = "jk78c:0006af24"
 
 [[link]]
+type = "input"
+to = "authentic-wasp/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "augmented-limpet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cherubic-piculet/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "devout-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "energetic-honeybee/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_opening_area_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "reader"
 to = "rev_fuel_cut_state_machine/fn"
 
@@ -104,3 +336,44 @@ at = "1nd:00076cb0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b338"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "uptight-duck/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "urban-marmot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

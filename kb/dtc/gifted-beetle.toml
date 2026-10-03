@@ -1,0 +1,36 @@
+title = "Exhaust valve timing control position sensor path B bank 1"
+level = "code"
+code = "P1078"
+group = "exhaust_vtc"
+disabled = "0000"
+
+[[ledger]]
+registry = "dtc"
+order = 20
+fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "000199a8"
+name = "gifted-beetle"
+index = 134
+attribute = "000162ca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162ca"
+value = "02a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000199a8"
+value = "290500000000107800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001a364"
+value = "000162ca"

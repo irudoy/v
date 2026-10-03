@@ -1,3 +1,34 @@
+note = [
+    """
+Row axis for Fuel Compensation Map 0xA29A. FUN 0002c648 at 0002cc9c and FUN \
+0003bd74 at 0003c292 pass RPM/12.5 word ffff11f4 as the row input of wrapper \
+000261f0. Its byte core 000269c4 compares each raw point after \
+multiplication by four against that word, so one stored axis count \
+represents 50 RPM. A2L and homologous EV18A map 0xA2F6 carry the same x*50 \
+scale.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 5
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "authentic-wasp/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013d06"
@@ -35,6 +66,95 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0002cc9c"
 
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Axis RPM (x*50)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Fuel Compensation Map (16x16)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc92"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc96"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc9c"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0002cc9e"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c0c8"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c28a"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c28c"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003c292"
+value = {named = ["00011cf0", "000261f0", "000269c4", "000384fe", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "4*12.5=50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "fuel_compensation_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "literate-hornet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
+
 [[symbol]]
 layout = "jk00c"
 address = "00013fb5"
@@ -68,3 +188,10 @@ supports = "homology"
 at = "jk78c:0002fcf8"
 to = "7mfk:00011cf0"
 note = "both target compensation accessors share the reviewed 16-point X axis"
+
+[[link]]
+type = "index"
+to = "authentic-wasp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

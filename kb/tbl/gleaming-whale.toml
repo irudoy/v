@@ -1,0 +1,137 @@
+summary = """
+The interpolated unsigned byte map output is a threshold in a compound \
+condition: the high byte of RAM_ffff1024 is compared with it directly as \
+uVar1 < (uVar12 & 0xff)."""
+note = [
+    """
+The interpolated unsigned byte map output is a threshold in a compound \
+condition: the high byte of RAM_ffff1024 is compared with it directly as \
+uVar1 < (uVar12 & 0xff). Result disposition: inline_comparison. Result \
+target: FUN_00082c8a @ 00082c8a, compound branch with condition uVar1 < \
+(uVar12 & 0xff) after calling map 00012cbe. Machine trace: \
+000839d4:r4=00012cbe, 000839d6:r5=0001264a, 000839d8:r6=uint8[ffff11ae] -> \
+000839da:000264a0 -> 00026944:axis interval search -> 00026c78:Q16 fraction \
+-> 00026740:interpolate adjacent uint8 values -> 000839de:zero-extend r0 \
+into r9/uVar12 -> 000839e6/000839ee/000839f2:zero-extend uint16[ffff1024] \
+and >>8 -> 00082c8a:uVar1<(uVar12&0xff).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 210
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gleaming-whale/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dashing-whippet/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012cbe"
+name = "gleaming-whale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839d4"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839d6"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839d8"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839da"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839de"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839e6"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839ee"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000839f2"
+value = {named = ["0001264a", "00012cbe", "00082c8a"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dashing-whippet/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "gleaming-whale/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

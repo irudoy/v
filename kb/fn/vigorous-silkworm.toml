@@ -1,0 +1,126 @@
+summary = """
+Reciprocal-pair component where each table is the other's axis: \
+{00018e86,00018fd6} for the low range and {00018e46,00018f96} for the high \
+range with input >>4. Branching selects the pair. FUN 00073824 looks up the \
+same pairs with table and axis exchanged, from ffff1d10 to ffff1ce4. \
+Downstream consumers use trustful QH0/torque surface 000175c8 and subtract \
+0x8000 from its output."""
+note = [
+    """
+Code establishes the reciprocal wide-range conversion and signed centering \
+of the surface output. The QH0/torque identity of 000175c8 follows from its \
+exact primary/trustful table family and remains candidate. The physical \
+quantity and unit of the preceding piecewise pairs remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 221
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "agate-turkey/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyber-ocelot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spirited-avocet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "horned-hedgehog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "passionate-junglefowl/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "functional-spider/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rousing-caracara/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00072f1e"
+name = "vigorous-silkworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007386c"
+value = {named = ["000175c8", "00018e86", "00072f1e", "00073824", "00073a44", "00074728", "000749bc", "ffff1d08", "ffff1d10"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "impressive-scorpion/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "agate-turkey/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "cyber-ocelot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "spirited-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

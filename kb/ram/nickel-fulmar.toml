@@ -1,0 +1,90 @@
+summary = """
+Service-0x3b LID 1 value slot, the requested work-support timing adjustment. \
+Handler 00034194 writes request VALUE here for controls 0x00 and 0x55 and \
+zeroes it for control 0xff. While ffff424c.bit4 is set, 0004aad0 writes \
+clamp_s8(ffff99dc, -5, 0) to ffff56b2."""
+note = [
+    """
+The value slot of LID n is ffff99db+n. One count is one crank degree of the \
+final timing coordinate inside the ffff5b31 window.""",
+]
+level = "code"
+unit = "deg"
+
+[[ledger]]
+registry = "vars"
+order = 930
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bounded_mode_state_source/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-wildcat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-penguin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99dc"
+name = "nickel-fulmar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e84a"
+value = {named = ["0002e81a", "00034194", "0004aad0", "ffff99dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003439c"
+value = {named = ["0002e81a", "00034194", "0004aad0", "ffff99dc"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "bounded_mode_state_source/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amber-wildcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

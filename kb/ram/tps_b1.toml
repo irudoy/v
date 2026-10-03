@@ -1,6 +1,82 @@
+summary = """
+Exact UDS DID 0x120f runtime word and bank 1 throttle-position sensor 1 \
+value. Pointer table 0x2289c maps the DID to this address; FUN 000a7418 \
+accepts ROM16[0x9550]=60..ROM16[0x954e]=964 counts and dispatches \
+P0223/P0222 outside that window."""
+note = [
+    """
+The acceptance window is 0.30..4.82 V at 5 mV per count and brackets the \
+factory terminal criteria of more than 0.36 V released and less than 4.75 V \
+depressed. The diagnostic display unit is V at 5 mV per count; \
+JK08A.diagnostics.md derives that scale.""",
+]
+level = "code"
 width = 16
 unit = "V"
 scale = "x/200"
+
+[[diagnostic]]
+id = "throttle-position-sensor-1-bank-1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:tp-sen-1-b1"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0117:data_monitor:tp-sen-1-b1-a315861b"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 98
+level = "code"
+note = """
+Exact JK08A service 0x22 pointer data maps DID 0x120f to ffff2756. Reviewed \
+Nissan diagnostic profiles identify the DID as TP SEN 1-B1, and the factory \
+VQ35HR manual defines it as throttle-position sensor voltage. Near-adjacent \
+target readings give stream raw 151 / 200 = 0.755 V and diagnostic 0.77 V, \
+supporting raw/200 V as a candidate conversion."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228d8"
+value = "ffff2756"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032452"
+value = {named = ["000228d8", "0003235c", "a315861b", "ffff2756"], span = 1}
+key = "body"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 68
+binding = "throttle-position-sensor-1-bank-1"
+
+[[ledger]]
+registry = "vars"
+order = 383
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "V*200"
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cinnamon-zebra/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +108,53 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2756"
 former = ["evasive-goose/ram/7mfk-ffff2756"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000954e=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009550=60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228d8"
+value = "ffff2756"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["0000954e", "00009550", "000228d8", "0003235c", "000a7418", "ffff2756"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a74d0"
+value = {named = ["0000954e", "00009550", "000228d8", "0003235c", "000a7418", "ffff2756"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a74f8"
+value = {named = ["0000954e", "00009550", "000228d8", "0003235c", "000a7418", "ffff2756"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec179-tp1-depressed-lt-4.75v"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-ec179-tp1-released-gt-0.36v"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +192,20 @@ to = "7mfk:000a8c76"
 count = 1
 value = 47
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "cinnamon-zebra/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

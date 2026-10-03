@@ -1,3 +1,21 @@
+summary = """
+The low byte returned by calling 00026388 with base 00012768 is written to \
+ffff16b1. Code calculates min(255, (U8(out) * U8(ffff23f3)) >> 7) and writes \
+the resulting byte to ffff16ac."""
+note = [
+    """
+The map is not declared a Q7 coefficient because normalization may belong to \
+ffff23f3. RPM scale x*12.5 remains a catalog-based candidate. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "candidate"
+
 [editor]
 name = "Consumer Multiplier Curve - catalog RPM scale (0x12768)"
 category = "Internal Calculations"
@@ -7,7 +25,182 @@ format = "0.0"
 fine = 12.5
 coarse = 50
 
+[[ledger]]
+registry = "findings"
+order = 168
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+scale = [18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "quirky-silkworm/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "convivial-ibex/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "practical-snake/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012768"
 name = "victorious-capybara"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426e0"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426e4"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426e8"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426ec"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426ee"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426f2"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426f6"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426f8"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426fa"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000426fc"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042700"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042704"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042706"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00042708"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004270e"
+value = {named = ["00012768", "000224f8", "00026388", "00026740", "000420b8", "ffff16ac", "ffff16b1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Idle RPM Table scale x*12.5"
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

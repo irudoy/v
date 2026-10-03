@@ -1,0 +1,57 @@
+summary = """
+PSCR1, the ATU-II prescaler register serving channels 0 to 5, 8, and 11. \
+Prescaler initialization 000274ac writes 1, so the prescaler output is phi' \
+= Pphi/2."""
+note = [
+    """
+The written value is exact. Pphi = 20 MHz follows from the base scheduler \
+cadence 204800/Pphi measured against passive target-CAN timestamps.""",
+]
+level = "code"
+unit = "count"
+
+[[ledger]]
+registry = "vars"
+order = 859
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "atu2_prescaler_init/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff404"
+name = "stoic-lori"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000274b2=0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000274b4"
+value = {named = ["000274ac", "000274b2", "fffff404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-pscr1"
+
+[[link]]
+type = "writer"
+to = "atu2_prescaler_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

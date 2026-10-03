@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000c2040"
+name = "grinning-fulmar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c2040"

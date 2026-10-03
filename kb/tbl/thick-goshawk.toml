@@ -1,0 +1,90 @@
+summary = """
+Two-channel 1D table of an unsigned interpolated addition. On selector == 2 \
+branches, the map result is written to ffff97a4/ffff97a6 and then added to \
+signed 16-bit channel value ffff45a0/ffff45a2; the unsigned down step in \
+ffff97a0/ffff97a2, which adjacent map 0001463a supplies on selector == 2 \
+branches, is then subtracted, and the result is limited to signed 16-bit \
+range and bounded to -500..500 by signed min/max."""
+note = [
+    """
+Two-channel 1D table of an unsigned interpolated addition. On selector == 2 \
+branches, the map result is written to ffff97a4/ffff97a6 and then added to \
+signed 16-bit channel value ffff45a0/ffff45a2; the unsigned down step in \
+ffff97a0/ffff97a2, which adjacent map 0001463a supplies on selector == 2 \
+branches, is then subtracted, and the result is limited to signed 16-bit \
+range and bounded to -500..500 by signed min/max. Result disposition: \
+writes. Result target: JK08A:Map:0001462a -> RAM ffff97a4, ffff97a6 on \
+selector == 2 branches. Machine trace: 000a1410/000a144a: r4=0001462a, \
+r5=00015d00, raw r6=uint16 from ffff2a92/ffff2a94 -> 000264cc -> 00026984 -> \
+00026c78 within interval search -> 00026740 -> r0 -> 000a141a/000a1454 -> \
+ffff97a4/ffff97a6; ffff97a4 -> 000a16b4 -> extu.w -> add signed16 ffff45a0 \
+-> subtract uint16 ffff97a0 -> saturation to signed16 and subsequent \
+min/max; pseudocode 000a0ee8 shows symmetric channel ffff97a6 + signed16 \
+ffff45a2 - uint16 ffff97a2.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 247
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thick-goshawk/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001462a"
+name = "thick-goshawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1410"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a144a"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a16b4"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diamond-dragonfly/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "thick-goshawk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,66 @@
+summary = """
+Signed Q8 knock-state accumulator maintained by 000493e8. On one branch a \
+quiet interval adds ROM16[0x8eaa]=13 and an interval with latched events \
+subtracts ROM16[0x8eae]=307 multiplied by ffff2142, with signed 16-bit \
+saturation."""
+note = [
+    "Other coordinator branches can copy, force, filter, or zero this state.",
+]
+level = "code"
+unit = "signed Q8 state"
+
+[[ledger]]
+registry = "vars"
+order = 720
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_count/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_function/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1258"
+name = "thick-dalmatian"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008eaa"
+value = "0x000d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008eae"
+value = "0x0133"
+
+[[link]]
+type = "input"
+to = "knock_count/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

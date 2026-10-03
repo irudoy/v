@@ -1,0 +1,249 @@
+summary = """
+Multipurpose diagnostic state byte. Within reporter 00084cd0, bit 7 selects \
+exact descriptor index 0x0a for P0306 and bit 6 forces the exact P0300 \
+descriptor index 0x10. Coordinator 00082c8a builds, tests, and clears these \
+bits."""
+note = [
+    """
+The claim is limited to bits 6 and 7 in the misfire component. Other bits \
+and external uses remain unassigned.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[diagnostic]]
+id = "misfire-aggregate-select-p0300"
+kind = "monitor"
+label = "DtcCode"
+key = "P0300"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019420"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 6 forces aggregate descriptor index 0x10 for P0300; the same index is \
+also the fallback when no individual-cylinder selector is active."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084e9a"
+value = {named = ["00019420", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084ff6"
+value = {named = ["00019420", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00085006"
+value = {named = ["00019420", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[diagnostic]]
+id = "misfire-cylinder-select-p0306"
+kind = "monitor"
+label = "DtcCode"
+key = "P0306"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193d8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+Bit 7 is the exact cylinder-6 selector consumed before descriptor index 0x0A \
+is dispatched for P0306."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "berserk-sturgeon/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084e9a"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fac"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193d8", "00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "marvellous-malamute/fn/7mfk"
+relies = "level"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 166
+binding = "misfire-cylinder-select-p0306"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 172
+binding = "misfire-aggregate-select-p0300"
+
+[[ledger]]
+registry = "vars"
+order = 428
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "berserk-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "marvellous-malamute/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4200"
+name = "tricky-basilisk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082f7c"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082f94"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084184"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084230"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084546"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084796"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084e9a"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fac"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084ff6"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085006"
+value = {named = ["00082c8a", "00084cd0", "ffff4200"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cornflower-wolverine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

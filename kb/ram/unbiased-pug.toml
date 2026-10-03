@@ -1,0 +1,153 @@
+summary = """
+Signed net engine-torque state. FUN 00065cd8 writes \
+sat_i16(trunc0(s16[ffff18ce]*(6-n)/6)-u16[ffff2408]-u16[ffff14e2]), where n \
+is the byte returned by FUN 00065d42 and stored at ffff16a2."""
+note = [
+    """
+FUN 00065d42 returns 6 when fuel-output inhibit mask ffff22e0 equals 0x3f \
+and at least 3 when it equals 0x15, so n counts inhibited cylinders and \
+(6-n)/6 is the contributing fraction. Subtracting base term ffff2408 and \
+correction ffff14e2 converts the map-side state to a net value.""",
+]
+level = "code"
+unit = "signed torque raw"
+
+[[ledger]]
+registry = "vars"
+order = 864
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flashy-clam/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chubby-snake/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pink-vulture/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "swinging-whale/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "voracious-stingray/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "messy-perch/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18d0"
+name = "unbiased-pug"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cf8"
+value = {named = ["00021bbc", "00065cd8", "00065d42", "00065de4", "ffff14e2", "ffff16a2", "ffff18ce", "ffff18d0", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065d16"
+value = {named = ["00021bbc", "00065cd8", "00065d42", "00065de4", "ffff14e2", "ffff16a2", "ffff18ce", "ffff18d0", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065d36"
+value = {named = ["00021bbc", "00065cd8", "00065d42", "00065de4", "ffff14e2", "ffff16a2", "ffff18ce", "ffff18d0", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "rigorous-catfish/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "input"
+to = "chubby-snake/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "pink-vulture/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "swinging-whale/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "voracious-stingray/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "flashy-clam/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "messy-perch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

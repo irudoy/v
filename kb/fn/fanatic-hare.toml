@@ -1,0 +1,97 @@
+summary = """
+Coolant snapshot-byte producer. It converts ffff1186 through the same \
+00012dea lookup used for raw coolant response ffff1079, subtracts 10 from \
+the unsigned result with lower saturation at zero, and writes ffff3fa4."""
+note = [
+    """
+Because ffff1079 is the exact UDS DID 0x1101 source with deg C = raw-50, \
+ffff3fa4 code 0 represents at most -40 deg C and each positive code \
+represents deg C = code-40.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 351
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adventurous-mushroom/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "solid-guppy/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008092e"
+name = "fanatic-hare"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080934"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080936"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080938"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008093a"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080940"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080952"
+value = {named = ["00012dea", "000263a0", "0008092e", "ffff1186", "ffff3fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "prudent-loon/fn/7mfk"
+relies = "structure"

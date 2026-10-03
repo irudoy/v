@@ -1,3 +1,24 @@
+summary = """
+First 8-bit calibrated component of a total normalized reduction fraction: \
+the interpolated output is added to the output of 000129f2, the sum is \
+saturated to 255, and it forms multiplier (256-sum)/256 for an intermediate \
+quantity."""
+note = [
+    """
+Code proves the computational role but not a physical signal or subsystem. \
+Scale x/256 applies to the fraction contributed by this map's output before \
+saturation of the total sum; the final multiplier also depends on 000129f2 \
+and equals (256 - min(255, x + y))/256. Result disposition: \
+inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "fraction"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
 [editor]
 name = "Normalized Reduction Share A Q0.8 (0x129E2)"
 category = "Internal Calculations"
@@ -7,7 +28,173 @@ format = "0.0000"
 fine = 0.00390625
 coarse = 0.0625
 
+[[ledger]]
+registry = "findings"
+order = 183
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+scale = [14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "greedy-sunfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000129e2"
 name = "married-whippet"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537aa"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537b0"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537b4"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537ba"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537d4"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537da"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537dc"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537de"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000537f8"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fuel_common_gain_builder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000537fa"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000537fc"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000537fe"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00053800"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00053808"
+value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "greedy-sunfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "fuel_common_gain_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

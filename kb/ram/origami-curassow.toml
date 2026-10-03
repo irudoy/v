@@ -1,0 +1,170 @@
+summary = """
+Second normalized output of FUN 0007af78. It equals 800 when endpoint span \
+max(0,U-L) is zero; otherwise it is \
+min(800,floor(max(0,32768+int16[ffff338e]-L)*800/span))."""
+note = [
+    """
+Both stock endpoint curves are zero, so span is zero and this word is \
+exactly 800. FUN 0007ae80 applies it as another lower bound of ffff2a7a.""",
+]
+level = "code"
+unit = "normalized raw 0..800"
+
+[[ledger]]
+registry = "vars"
+order = 19
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "malachite-ferret/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cooperative-elk/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "glaring-chachalaca/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "notorious-falcon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aromatic-coua/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff347a"
+name = "origami-curassow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007aeba"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afc6"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afc8"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afca"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007afcc"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b006"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b024"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b034"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b03c"
+value = {named = ["000154c0", "000154e0", "0007ae80", "0007af78", "ffff338e", "ffff347a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "notorious-falcon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "cooperative-elk/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "glaring-chachalaca/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "malachite-ferret/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "aromatic-coua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

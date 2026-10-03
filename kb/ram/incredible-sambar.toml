@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff39b0"
+name = "incredible-sambar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00039b14"
+
+[[link]]
+type = "reader"
+to = "throttle_effort_to_duty/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

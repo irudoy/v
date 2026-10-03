@@ -1,0 +1,85 @@
+summary = """
+4x4 interpolation weight 0x9eca: bVar9*RAM(ffff2c80) + \
+(0x100-bVar9)*RAM(ffff2c7e) >>8, so code establishes x/256 scaling. The \
+branch is gated by bit 1 of ffff41b7, and the entire map block is gated by \
+bit 3 of ffff4208."""
+note = [
+    """
+Section 6 conflict: the 4x4 catalog gives x*0.78125 with unity=128, while \
+code gives unity=256. The trace using 0x100-bVar9 and >>8 takes \
+precedence.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 242
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intelligent-capybara/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tangerine-rat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "white-chupacabra/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "certain-skink/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "tangible-puffin/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007a090"
+name = "vagabond-lyrebird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a090"
+
+[[link]]
+type = "selector"
+to = "certain-skink/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "tangible-puffin/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

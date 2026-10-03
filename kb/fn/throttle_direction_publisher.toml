@@ -1,0 +1,89 @@
+title = "Translate regulator direction into complementary-pair masks"
+summary = """
+Per-channel throttle-direction publisher. It translates regulator direction \
+ffff369a/ffff369b values -0x10 and 0x0f into channel bits in ffff36dc and \
+ffff385e, with controller-disabled fallback gating."""
+note = [
+    """
+The two masks select which member of each complementary ATU-II PWM pair \
+receives duty. Opening polarity remains unverified.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 164
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 584
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "important-chital/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fantastic-rhino/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spirited-rottweiler/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cc6a2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc6b8"
+value = {named = ["000cc6a2", "ffff369a", "ffff36dc", "ffff385e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc6be"
+value = {named = ["000cc6a2", "ffff369a", "ffff36dc", "ffff385e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc6cc"
+value = {named = ["000cc6a2", "ffff369a", "ffff36dc", "ffff385e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc6e8"
+value = {named = ["000cc6a2", "ffff369a", "ffff36dc", "ffff385e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc716"
+value = {named = ["000cc6a2", "ffff369a", "ffff36dc", "ffff385e"], span = 1}
+key = "reference"

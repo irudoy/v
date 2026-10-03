@@ -1,0 +1,108 @@
+summary = """
+Paired-channel forward-average-inverse conversion through 00013202/000155a0. \
+Bits 0/1 of ffff23a6 select two sources; each source is multiplied by four \
+and converted through 00013202, the opening-area-domain results are \
+averaged, and inverse lookup through 000155a0 returns a coordinate that is \
+divided by four and written to ffff3f7c."""
+note = [
+    """
+Code proves the transform. FUN 0006f236 publishes quarter coordinate \
+ffff3f7c as the J1979 PID 0x11 absolute-throttle byte, which fixes one \
+coordinate count of 000155a0 at 34285/1114112 percent of throttle opening. \
+The opening-area scale and the catalog degree scale remain candidates.""",
+]
+level = "code"
+role = "wrapper"
+
+[[ledger]]
+registry = "funcs"
+order = 128
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "monumental-snake/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "muscular-leech/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "slick-scorpion/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cinnamon-mandrill/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003e548"
+name = "glistening-gecko"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e5e6"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e5f0"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e5f8"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e600"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e604"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e610"
+value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "selector"
+to = "slick-scorpion/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

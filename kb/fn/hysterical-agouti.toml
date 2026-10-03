@@ -1,0 +1,102 @@
+summary = """
+Accessor for threshold map 0x12032: the lookup is written to ffff140f; a \
+direct comparison with ffff110e or call to 000259be updates bit 3 of \
+ffff247b."""
+note = ["The physical purpose of the threshold is unresolved."]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 305
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "lime-kittiwake/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "brilliant-harrier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "feathered-jellyfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "outrageous-cat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000638b4"
+name = "hysterical-agouti"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b1c"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b24"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b3a"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b3e"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b42"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063b4a"
+value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "lime-kittiwake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

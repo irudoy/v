@@ -1,0 +1,106 @@
+note = [
+    """
+Row axis for P0128 balance surface 0000d40e. FUN 000b7b98 receives current \
+engine-speed word ffff11bc and passes it directly as the coordinate paired \
+with this axis. All 16 stock points are zero; the x*12.5 RPM representation \
+follows from the code-proven producer of ffff11bc.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 70
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "origami-hare/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00013d74"
+name = "eminent-turtle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b7bb6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b6bb6"
+value = {named = ["0000d40e", "00013d74", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:000b6bbc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b7ba6"
+value = {named = ["0000d40e", "00013d74", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b7bb0"
+value = {named = ["0000d40e", "00013d74", "000262a8", "ffff11bc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b7bb6"
+value = {named = ["0000d40e", "00013d74", "000262a8", "ffff11bc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0*12.5=0"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "elegant-dragon/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "origami-hare/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

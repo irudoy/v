@@ -1,0 +1,94 @@
+summary = """
+SH7058 A/D data register 0 (ADDR0), containing the left-aligned 10-bit \
+conversion result for analog channel AN0. JK08A connects this MCU input to \
+an external analog multiplexer selected through PFDR bits PF13..PF15."""
+note = [
+    """
+The hardware manual maps AN0 to MCU pin 86/H17. Exact firmware and \
+diagnostic paths bind mux codes 000, 001, and 111 to coolant, battery \
+voltage, and fuel temperature respectively; the ECM-side mux circuit and \
+remaining positions are not assigned.""",
+]
+level = "code"
+unit = "aligned ADC register"
+
+[[ledger]]
+registry = "vars"
+order = 667
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "adc_channel_read_with_mux_select/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff800"
+name = "blue-condor"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028140"
+value = {named = ["000280d8", "00028668", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281f0"
+value = {named = ["000280d8", "00028668", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028562"
+value = {named = ["000280d8", "00028668", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000287bc"
+value = {named = ["000280d8", "00028668", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-addr0"
+
+[[link]]
+type = "reader"
+to = "adc_channel_read_with_mux_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

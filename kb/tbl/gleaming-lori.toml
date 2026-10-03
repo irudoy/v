@@ -1,3 +1,35 @@
+summary = """
+Implicit 1D-8 table of an unsigned byte over normalized coolant ffff1077. \
+The result is stored in ffff1fab and ffff24e1; in computed START SIGNAL \
+coordinator 00038d44, saved ffff24e1 is tested for zero while ffff4185.bit6 \
+is set, and a true test is one condition for setting ffff24bc.bit1."""
+note = [
+    """
+The consumer belongs to the computed START SIGNAL state machine, but the \
+physical quantity and engineering scale of this table remain unresolved. The \
+map is updated while START SIGNAL is clear, while the zero test of the saved \
+byte acts when START SIGNAL is set, so the dependence crosses calls through \
+RAM. All eight cells equal 90: the stock lookup always yields 90, and target \
+disjunct ffff24e1 == 0 is false after the map write. This does not prove \
+that the entire branch is unreachable because the bit-setting condition has \
+other disjuncts. Index: Implicit uniform eight-point axis over x = u8 RAM \
+ffff1077: for x < 224, index i = floor(x/32), fraction = (x-i*32)/32, and \
+map[i]..map[i+1] are linearly interpolated; for x >= 224, map[7] is \
+selected. Output trace: 00012a9a -> 00038e6e -> 00038e74 -> 00026370 -> \
+(00026a80 -> 00026740 for x < 224; map[7] for x >= 224) -> 00038e78 -> \
+00038e84 -> ffff24e1 -> FUN_00038d44: (ffff4185 & 0x40) != 0 && ffff24e1 == \
+0 -> ffff24bc |= 0x02. The same RAM copy is populated by path 00012a9a -> \
+0002cfc0 -> 0002cfd2 -> ffff24e1. Result disposition: inline_comparison; \
+Result target: RAM ffff24e1 in FUN_00038d44. A mirrored result write is in \
+RAM ffff1fab.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "State Gate Byte Table - raw u8 (0x12A9A)"
 category = "Internal Calculations"
@@ -7,7 +39,157 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 407
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "computed_start_signal_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "brilliant-hamster/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "didactic-carp/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a9a"
 name = "gleaming-lori"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "90"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cfc0"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002cfd2"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e6e"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e70"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e74"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e78"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e80"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038e84"
+value = {named = ["00012a9a", "00026370", "00026740", "00038d44", "ffff1077", "ffff1fab", "ffff24e1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "index"
+to = "coolant_index/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff283e"
+name = "wooden-saluki"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c4c7a"
+
+[[link]]
+type = "writer"
+to = "can_177_transmission_payload_decoder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

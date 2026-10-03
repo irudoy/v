@@ -1,0 +1,124 @@
+summary = """
+SH7058 Port F data register (PFDR). JK08A uses bits PF13..PF15 as the \
+three-bit selector for the external analog multiplexer feeding AN0."""
+note = [
+    """
+The cyclic sampler advances selector codes 000 through 111 and resets to \
+000. The direct reader replaces the same three bits with its caller-supplied \
+selector.""",
+]
+level = "code"
+unit = "port data register"
+
+[[ledger]]
+registry = "vars"
+order = 668
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "writes"
+to = "adc_channel_read_with_mux_select/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cyclic_adc_mux_scan_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff74e"
+name = "dancing-porpoise"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281d8"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000281dc"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00028276"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002827a"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000285ce"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000285d4"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000286a6"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000286ae"
+value = {named = ["000280d8", "00028668", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-pfdr"
+
+[[link]]
+type = "reader"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "adc_channel_read_with_mux_select/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cyclic_adc_mux_scan_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

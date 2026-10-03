@@ -1,0 +1,72 @@
+summary = """
+Finite diagnostic response counter maintained by transmit-complete interrupt \
+0002f12c for mode 0x04. It increments after each completed transmission and \
+is cleared when it reaches requested count ffff8214."""
+note = ["Mode 0x06 bypasses this counter."]
+level = "code"
+unit = "response count"
+
+[[ledger]]
+registry = "vars"
+order = 650
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "humongous-deer/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knowing-coyote/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8213"
+name = "rigorous-goshawk"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f184"
+value = {named = ["0002f12c", "ffff8213", "ffff8214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f18c"
+value = {named = ["0002f12c", "ffff8213", "ffff8214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1aa"
+value = {named = ["0002f12c", "ffff8213", "ffff8214"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "humongous-deer/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knowing-coyote/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

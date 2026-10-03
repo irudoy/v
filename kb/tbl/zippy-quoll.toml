@@ -1,0 +1,56 @@
+summary = "Lower bound of a window on (u16 ffff1024) >> 8; paired with 00012e52"
+note = [
+    """
+Lower bound of a window on (u16 ffff1024) >> 8; paired with 00012e52. Result \
+disposition: inline_comparison. Result target: 000a6aa0 and 000a6854: \
+uint8@ffff357d <= (uint16@ffff1024 >> 8). Machine trace: 000a6828: \
+r4=00012e62, r6=uint8@ffff11b3, delay-slot extu.b r6,r5 -> 00026388; when \
+r5<0xf0, branch into 00026a84, where adjacent uint8 map cells are selected \
+and zero-extended, then 00026740 performs unsigned linear interpolation; \
+when r5>=0xf0, the wrapper takes map[15]. Both paths return the map value in \
+r0 -> 000a682c:r2=r0 -> 000a6836:mov.b r2,@ffff357d. 000a6854 and 000a6aa0 \
+read uint8@ffff357d and require uint8@ffff357d <= (uint16@ffff1024 >> 8), \
+while also requiring (uint16@ffff1024 >> 8) < uint8@ffff357c.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 229
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[symbol]]
+layout = "7mfk"
+address = "00012e62"
+name = "zippy-quoll"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6828"
+value = {named = ["00012e62"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6854"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000a6aa0"
+
+[[link]]
+type = "reader"
+to = "curly-axolotl/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

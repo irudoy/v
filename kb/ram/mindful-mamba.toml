@@ -1,0 +1,84 @@
+summary = """
+Saturating unsigned aggregate written by FUN 000468b0 from ffff1752 and six \
+other signed or unsigned terms. FUN 000474a4 uses it in the air/throttle \
+target calculation before a lower-bound selection."""
+note = [
+    """
+The aggregate's arithmetic is exact. Its engineering unit and the individual \
+physical role of ffff1752 are unresolved.""",
+]
+level = "code"
+unit = "raw aggregate"
+
+[[ledger]]
+registry = "vars"
+order = 506
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "astonishing-macaw/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-parakeet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thick-lionfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff173a"
+name = "mindful-mamba"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046912"
+value = {named = ["000468b0", "000474a4", "ffff173a", "ffff1752"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000474bc"
+value = {named = ["000468b0", "000474a4", "ffff173a", "ffff1752"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "silky-parakeet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "astonishing-macaw/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,222 @@
+title = "Run the ordered periodic timing calculation stages"
+summary = """
+Periodic timing coordinator. Its relevant fixed order is 0004aad0, 0004af38, \
+0004ba48, 0004bbac, 0004d2a6, 0004afdc, 0004bdc2, 0004bf6c, 0004c02e, \
+0004c136, then 0004c1e4."""
+note = [
+    """
+This function is periodic table index 71. Map selection 0004e1c0, knock \
+coordinator 000493e8, and transition coordinator 00065434 precede it at \
+indices 64, 65, and 66.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 107
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 511
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bounded_mode_state_source/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "charming-warthog/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pretty-rhino/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_timing_state_terms/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_latch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004d888"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d88e"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d8bc"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d8e0"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d8f0"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d8fc"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d900"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d906"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d918"
+value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "bounded_mode_state_source/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "charming-warthog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pretty-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "timing_state_latch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

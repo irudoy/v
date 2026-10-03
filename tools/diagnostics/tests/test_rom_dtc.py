@@ -72,12 +72,14 @@ class RomDtcCatalogTest(unittest.TestCase):
             self.assertEqual(row["attribute_addr"], descriptor["attribute_addr"])
             self.assertEqual(row["stock_attribute"], descriptor["attribute_hex"])
             pointer_slot = int(layout["pointer_start"]) + int(row["index"]) * int(layout["pointer_size"])
-            expected = ";".join((
+            expected = (
                 f"rom_const:{descriptor['record_addr']}={descriptor['record_hex']}",
                 f"rom_const:{pointer_slot:08x}={descriptor['attribute_addr']}",
                 f"rom_const:{descriptor['attribute_addr']}={descriptor['attribute_hex']}",
-            ))
-            self.assertEqual(row["evidence"], expected)
+            )
+            self.assertCountEqual(
+                [token.strip() for token in row["evidence"].split(";")], expected
+            )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,55 @@
+summary = "Threshold latch in 0005525a under master gate ffff2458."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 188
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-potoo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2492"
+name = "honest-seagull"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004bf76"
+
+[[link]]
+type = "reader"
+to = "knowing-potoo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knowing-potoo/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

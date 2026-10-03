@@ -1,0 +1,118 @@
+summary = """
+Multipurpose status byte whose bit 7 mirrors computed START SIGNAL \
+ffff4185.bit6. FUN 00038d44 writes the mirror and diagnostic status packer \
+0002e0d4 maps it to ffff3342.bit1."""
+note = [
+    """
+The exact DID 0x1302 response path identifies the destination bit as START \
+SIGNAL. Other bits in this byte are outside this claim.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 671
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-sheep/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "computed_start_signal_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "organic-cow/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24ae"
+name = "emerald-mouflon"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e146"
+value = {named = ["0002e0d4", "00038d44", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e14e"
+value = {named = ["0002e0d4", "00038d44", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039134"
+value = {named = ["0002e0d4", "00038d44", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039146"
+value = {named = ["0002e0d4", "00038d44", "ffff24ae", "ffff3342", "ffff4185"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "organic-cow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "input"
+to = "small-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "diagnostic_status_dids_1302_1306_pack/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "computed_start_signal_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

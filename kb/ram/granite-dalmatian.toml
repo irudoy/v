@@ -1,0 +1,121 @@
+summary = """
+Previous-pass image of start-latched fuel-temperature byte ffff1073. After \
+the 69 entries of periodic table 00021834, dispatcher FUN 000209d8 copies \
+ffff1072..ffff1079 to ffff107a..ffff1081 through block-copy helper 00022558 \
+at 00020cba. FUN 00039788 reads it at 000397d4 on the hold branch of gate \
+00039902. Startup initializer FUN 00027c50 and clear services FUN 0002fc24 \
+and FUN 00034b70 zero the byte inside their RAM spans."""
+note = [
+    """
+The helper writes through its destination pointer, so the byte has no \
+literal-address store. The zero of RAM initialization is replaced at the end \
+of the first pass.""",
+]
+level = "code"
+unit = "degC+50"
+
+[[ledger]]
+registry = "vars"
+order = 877
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "venomous-sturgeon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-caterpillar/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "black-kudu/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff107b"
+name = "granite-dalmatian"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020e6c"
+value = "ffff107a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020e74"
+value = "ffff1072"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cae"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00039788", "ffff1072", "ffff1073", "ffff107a", "ffff107b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cb8"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00039788", "ffff1072", "ffff1073", "ffff107a", "ffff107b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020cba"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00039788", "ffff1072", "ffff1073", "ffff107a", "ffff107b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397d4"
+value = {named = ["000209d8", "00020e6c", "00020e74", "00022558", "00039788", "ffff1072", "ffff1073", "ffff107a", "ffff107b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "tough-caterpillar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "venomous-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

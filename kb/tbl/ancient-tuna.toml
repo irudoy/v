@@ -1,3 +1,46 @@
+summary = """
+Interpolated 8x8 uint8 table with output in the range 4..37. Its output is a \
+separate correction term: uint8 from ffff1071 is added, the sum is centered \
+by subtracting 0x32, and the result is multiplied by uint8 from ffff3502. \
+ffff3502 carries the output of adjacent map 0000b23a, which contains only \
+value 27, rather than the target map's output. The resulting product \
+conditionally participates in updating 32-bit ffff2d20; code does not \
+establish a physical name or unit."""
+note = [
+    """
+Interpolated 8x8 uint8 table with output in the range 4..37. Its output is a \
+separate correction term: uint8 from ffff1071 is added, the sum is centered \
+by subtracting 0x32, and the result is multiplied by uint8 from ffff3502. \
+ffff3502 carries the output of adjacent map 0000b23a, which contains only \
+value 27, rather than the target map's output. The resulting product \
+conditionally participates in updating 32-bit ffff2d20; code does not \
+establish a physical name or unit. Result disposition: consumer. Result \
+target: FUN_000befb0@000befb0: when bit 3 in ffff41bc is set and \
+uint8@ffff3502 is nonzero, expression (uint8@ffff1071 + map_output - 0x32) * \
+uint8@ffff3502 participates through sign-dependent arithmetic in forming the \
+32-bit value written to ffff2d20. Machine trace: 0000ab0a (8x8 uint8, values \
+4..37) -> base load into r4 at 000befe0, axes 000120ae/000120b6 and raw \
+inputs from the high byte of ffff1024 and byte ffff11ae -> call 00026140 at \
+000beff4 -> kernel passes 00026944 and raw-cell selection in 00026770 -> \
+unsigned linear interpolation 00026740, which keeps the result between \
+adjacent uint8 values -> r0 -> r6 -> byte write to ffff3219 at 000beffe. \
+This result remains separate from the previous call's result: the previous \
+call interpolates adjacent map 0000b23a and writes its output to ffff3502. \
+Then, when (ffff41bc & 8) != 0, code reads ffff3502 at 000bf024 and, if it \
+is nonzero after the check at 000bf02a, calculates (uint8@ffff1071 + \
+map_output - 0x32) * uint8@ffff3502. The resulting term is combined with a \
+quantity derived from ffff2d24 relative to 0x32000000, including signed \
+branches and bounds, and the result is written to ffff2d20. When bit 3 is \
+clear, only initialization of ffff2d20 from ffff106e occurs; when ffff3502 \
+is zero, the arithmetic branch is skipped.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Filter Target Additive Correction (0xAB0A)"
 category = "Internal Calculations"
@@ -5,7 +48,98 @@ order = 32
 emit = false
 coarse = 4
 
+[[ledger]]
+registry = "findings"
+order = 61
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dangerous-goat/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "ancient-tuna/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "original-nightingale/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000ab0a"
 name = "ancient-tuna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000befe0"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beff4"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000beffe"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf024"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf02a"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf032"
+value = {named = ["0000ab0a", "000befb0", "ffff3219"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "ancient-tuna/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "dangerous-goat/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

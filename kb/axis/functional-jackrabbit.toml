@@ -1,3 +1,36 @@
+note = [
+    """
+Row axis for Engine Torque Map 00010b8e. FUN 00065928 passes \
+rotational-speed coordinate ffff11b6 to wrapper 000262a8, whose word core \
+00026984 compares each stored point with it directly. FUN 000384fe writes \
+source word ffff11ee = ffff1196>>4, and scheduler 00020dfe copies it to \
+ffff11b6; with ffff1196 = RPM*5.12, one count is 16/5.12 = 3.125 RPM, the \
+count that the 2026-09-21 throttle-rev limiter comparison confirms at \
+ffff11b6. Stored points decode to 400, 800, 1200, 1600, 2000, 2400, 2800, \
+3200, 3600, 4000, 4400, 4800, 5200, 6000, 6800, and 7600 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 61
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "000162b4"
@@ -35,6 +68,92 @@ name = "functional-jackrabbit"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006598e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Engine Torque Map|Static Y Axis Engine Speed"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00020f6a"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00020f6c"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003854c"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00065986"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006598a"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0006598e"
+value = {named = ["00014b4a", "00020dfe", "000262a8", "00026984", "000384fe", "ffff11b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128*3.125=400"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16/5.12=3.125"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "2432*3.125=7600"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "elegant-dragon/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -81,3 +200,10 @@ to = "7mfk:0006598e"
 count = 1
 value = 2
 note = "unique structural axis pair preserves normalized geometry"
+
+[[link]]
+type = "index"
+to = "private-sloth/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

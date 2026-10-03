@@ -1,0 +1,27 @@
+role = "service"
+contract = """
+Arithmetic right shift by 13: r0 = (int32)r0 >> 13, signed division by 8192 \
+rounded down. It is pure; its only memory access spills r1 to the stack. It \
+has no branches or special cases."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 52
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022544"
+name = "diligent-goose"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022544"

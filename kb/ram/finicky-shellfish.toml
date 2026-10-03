@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1657"
+name = "finicky-shellfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004ba64"
+
+[[link]]
+type = "reader"
+to = "clever-woodlouse/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "charming-warthog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

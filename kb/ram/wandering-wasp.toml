@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff55b0"
+name = "wandering-wasp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00027030"
+
+[[link]]
+type = "reader"
+to = "throttle_feedback_normalizer_b/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

@@ -1,3 +1,24 @@
+summary = """
+Unidentified 1D calibration table with constant raw value 6250, calculated \
+for two channels and written through dynamic RAM sinks."""
+note = [
+    """
+The map is called for two channels. The first result also participates in \
+selecting a maximum at site:00061df6, but this operation does not establish \
+a physical quantity. The 1D-8 catalog contains 22 different classes and no \
+match for a documented default. Result disposition: writes. Blocking \
+condition: The trace stops at site:00061de6 and site:00061dee because the \
+final RAM address is in r2 and unresolved, and accessor writes have no \
+external readers. The physical consumer and quantity semantics are \
+unknown.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Two-channel Constant Calibration (0x14E82)"
 category = "Internal Calculations"
@@ -7,7 +28,117 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 276
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spirited-kestrel/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014e82"
 name = "speedy-sheep"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "6250"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061d80"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061d96"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061d9a"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061db8"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061dce"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061dda"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061de6"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00061dee"
+value = {named = ["00013a68", "00014e82", "000264cc", "00026984", "00026c78"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "spirited-kestrel/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tactful-corgi/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

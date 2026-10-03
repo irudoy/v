@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff84c8"
+name = "holistic-wolverine"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00027572"
+
+[[link]]
+type = "writer"
+to = "zealous-oriole/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,101 @@
+note = [
+    """
+Column axis for P0128 balance surface 0000d40e. FUN 000b7b98 receives \
+current Base Fuel Schedule word ffff1024 and passes it directly as the \
+coordinate paired with this axis. All 16 stock points are zero. Exact DID \
+0x1208 binds the source word to Base Fuel Schedule; the x/2048 ms conversion \
+comes from a homologous structured diagnostic profile and requires hardware \
+validation.""",
+]
+level = "code"
+quantity = "load"
+unit = "Base Fuel Schedule (ms)"
+scale = "x/2048"
+to_raw = "x*2048"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "axes"
+order = 71
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "origami-hare/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00013db4"
+name = "arrogant-bear"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b7bb6"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b6baa"
+value = {named = ["0000d40e", "00013db4", "000262a8", "ffff1024"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:000b6bbc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b7baa"
+value = {named = ["0000d40e", "00013db4", "000262a8", "ffff1024"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000b7bb6"
+value = {named = ["0000d40e", "00013db4", "000262a8", "ffff1024"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "elegant-dragon/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "origami-hare/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

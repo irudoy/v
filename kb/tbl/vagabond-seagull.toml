@@ -1,7 +1,92 @@
+summary = """
+Upper reference curve of a range relative to 00018e06; the centered range \
+width serves as the divisor in a downstream calculation."""
+note = [
+    """
+The output of 00018de6 is reduced by 32768 to form the upper reference; the \
+output of 00018e06 forms the lower reference in the same way. Their \
+difference is tested for zero and passed as the divisor to 00021bbc. The \
+physical range quantity is unknown, so map identity remains candidate. All \
+points of both maps equal zero.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 322
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1]
+scale = [2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "flawless-dragon/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018de6"
 name = "vagabond-seagull"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0f4"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0fc"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "32768"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0f8"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0fc"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +119,18 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "flawless-dragon/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

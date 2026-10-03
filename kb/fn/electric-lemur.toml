@@ -1,0 +1,243 @@
+summary = """
+Two-bank exhaust-VTC control coordinator. It runs target-surface accessor \
+000bfdc0 and target conditioner 000bfe88, then executes the selected \
+per-bank calculation, state machine, and bounded-output stages for banks 0 \
+and 1."""
+note = [
+    """
+The exhaust identity rests on exact DID and DTC bindings for the target and \
+feedback bytes, not on coordinator graph structure alone.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 593
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "neon-beaver/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nice-chihuahua/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "precise-angelfish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sexy-tamarin/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c21e6"
+name = "electric-lemur"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008615"
+value = "0xab"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2216"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c221c"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2222"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c222a"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2244"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2248"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c224e"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2254"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c226e"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2272"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c2276"
+value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "neon-beaver/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "nice-chihuahua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "precise-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

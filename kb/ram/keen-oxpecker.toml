@@ -1,0 +1,98 @@
+summary = """
+First admitted-revolution counter in the misfire monitor. FUN 000872d0 \
+compares it with 200*ROM8[00008354], which is 200 in stock JK08A, resets it \
+on completion, and sets ffff4241 bit 5. It increments with ffff40a0 when the \
+common readiness gates pass and ffff444d is zero."""
+note = [
+    """
+Failure of ffff4251.bit7 or ffff41d2.bits0/1 resets the counter. Qualified \
+rotational-reference sample count ffff3834 below 31 and nonzero ffff444d \
+freeze it.""",
+]
+level = "code"
+unit = "engine revolutions"
+
+[[ledger]]
+registry = "vars"
+order = 145
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "amethyst-chicken/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amethyst-chicken/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff409e"
+name = "keen-oxpecker"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008354"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000872e4"
+value = {named = ["00008354", "000872d0", "ffff409e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000872f0"
+value = {named = ["00008354", "000872d0", "ffff409e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000872f8"
+value = {named = ["00008354", "000872d0", "ffff409e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008736e"
+value = {named = ["00008354", "000872d0", "ffff409e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087374"
+value = {named = ["00008354", "000872d0", "ffff409e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amethyst-chicken/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

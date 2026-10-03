@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff13f7"
+name = "fluffy-marmot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00045584"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

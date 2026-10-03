@@ -1,3 +1,31 @@
+summary = """
+Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 \
+bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to \
+ffff1054, and copies it to working value ffff1058. The same value enters \
+total-MAF producer 0003b27e and the paired contribution calculation in \
+0003b520."""
+note = [
+    """
+Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, \
+preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID \
+0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by \
+16 input counts per cell; homologous profiles convert one count to 0.005 V, \
+yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs \
+are strictly positive, so the contribution denominator A+B is nonzero. This \
+branch does not produce ffff3a76. Result disposition: consumer. One count of \
+the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into \
+ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as \
+g/s*100 with the stock factor 105; a changed factor changes the declared \
+conversion.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "g/s"
+scale = "x*0.0041015625"
+to_raw = "x/0.0041015625"
+scale_level = "code"
+
 [editor]
 name = "MAF Sensor Transfer - Bank 1"
 category = "Fuelling / MAF Scaling"
@@ -74,6 +102,172 @@ static_axis = [
 ]
 static_axis_name = "MAF Sensor Voltage [V, cand]"
 
+[[diagnostic]]
+id = "maf-transfer-bank-1"
+kind = "calibration_context"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221204"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0114-l0114:source-row-extended-pids:parameter:0x1204-c6fcc9b6"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+Exact code traces DID 0x1204 bank-1 channel ffff101c through preprocessed \
+input ffff1e48, this 64-point transfer curve, and combined MASS AIRFLOW DID \
+0x1209. The map identity and bank assignment are code-proven; the voltage \
+and output engineering scales remain source-derived pending hardware \
+validation."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "wealthy-woodlouse/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ginger-stingray/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003a930"
+value = {named = ["00014274", "000228ac", "0003a904", "0003ae8a", "0003b27e", "0003b520", "c6fcc9b6", "ffff101c", "ffff1e48"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003a938"
+value = {named = ["00014274", "000228ac", "0003a904", "0003ae8a", "0003b27e", "0003b520", "c6fcc9b6", "ffff101c", "ffff1e48"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003b296"
+value = {named = ["00014274", "000228ac", "0003a904", "0003ae8a", "0003b27e", "0003b520", "c6fcc9b6", "ffff101c", "ffff1e48"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "enchanted-cricket/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "wondrous-camel/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "helpful-swine/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 26
+binding = "maf-transfer-bank-1"
+
+[[ledger]]
+registry = "findings"
+order = 343
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+scale = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "helpful-swine/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wondrous-camel/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ginger-stingray/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precious-adder/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-pony/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00015996"
@@ -104,6 +298,211 @@ note = "unique structural pair preserves interpolation-call order"
 layout = "7mfk"
 address = "00014274"
 name = "wealthy-woodlouse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a924"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a926"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a930"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a938"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b53c"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b544"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b546"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b54e"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b550"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b558"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b600"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b604"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b61c"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "xanthic-kagu/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dual_bank_maf_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "enchanted-cricket/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "000083ec=105"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:000093ce"
+value = "0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035db8"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035dba"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035dc2"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035dca"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00035dd2"
+value = {named = ["000083ec", "000093ce", "00014274", "00021bbc", "000228ac", "00026410", "00035856", "0003a904", "0003ae8a", "0003b27e", "0003b520", "0003c3ac", "ffff101c", "ffff1054", "ffff1058", "ffff1e48"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "105/25600=0.0041015625"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "J1979 PID 0x10 (256A+B)/100 g/s"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "dual_bank_maf_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "wondrous-camel/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -149,3 +548,42 @@ at = "jk78c:0003f0dc"
 to = "7mfk:0003ab60"
 value = "0001561c"
 note = "unique structural pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "ginger-stingray/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wondrous-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

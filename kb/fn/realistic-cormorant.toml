@@ -1,8 +1,30 @@
+summary = """
+Implicit-axis primitive: 16 points, step 16, limit 240. Its output differs \
+from the bank: DAT_0002646C = 128 is subtracted from the result, so values \
+use offset-binary with 128 as zero, forming a signed correction map."""
+level = "code"
+role = "wrapper"
+
 [interp]
 access = "implicit"
 kernel = "didactic-civet/fn"
 cols = 16
 step = 16
+
+[[ledger]]
+registry = "funcs"
+order = 82
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "didactic-civet/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
 
 [[symbol]]
 layout = "1nd"
@@ -25,6 +47,11 @@ at = "1nd:00028898"
 layout = "7mfk"
 address = "0002642c"
 name = "realistic-cormorant"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"
@@ -76,3 +103,11 @@ key = "0002642c"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002827c"
+
+[[link]]
+type = "depends"
+to = "didactic-civet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

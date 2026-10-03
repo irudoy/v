@@ -1,0 +1,133 @@
+summary = """
+Branch-selected Q1.7 coefficient written by FUN 00069374. With ffff420b.bit4 \
+clear it is lookup_u8(000124f2,ffff10f0); with the bit set it is \
+min(lookup_u16(00014e22,ffff31dc),255). The byte scales a downstream \
+unsigned product by division through 128."""
+note = [
+    """
+The fixed-point role is exact. The physical subsystem and quantity are \
+unresolved.""",
+]
+level = "code"
+unit = "Q1.7 coefficient"
+
+[[ledger]]
+registry = "vars"
+order = 507
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stoic-dogfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "devout-chicken/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meteoric-wildebeest/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "whispering-urchin/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-dogfish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff90d0"
+name = "lemon-wasp"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069d2c"
+value = {named = ["000124f2", "00014e22", "00069374", "ffff420b", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00069d40"
+value = {named = ["000124f2", "00014e22", "00069374", "ffff420b", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6b0"
+value = {named = ["000124f2", "00014e22", "00069374", "ffff420b", "ffff90d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006b6c0"
+value = {named = ["000124f2", "00014e22", "00069374", "ffff420b", "ffff90d0"], span = 1}
+key = "body"
+
+[[link]]
+type = "lookup"
+to = "devout-chicken/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "meteoric-wildebeest/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "whispering-urchin/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

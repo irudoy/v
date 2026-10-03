@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff33b2"
+name = "manipulative-copperhead"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00061986"
+
+[[link]]
+type = "lookup"
+to = "lurking-owl/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,292 @@
+summary = """
+Multipurpose state byte. FUN 00050a60 uses bit 7 for the CAN-derived \
+requested-RPM-ceiling hysteresis state. Bit 6 is the exhaust-VTC active-test \
+request: FUN 0002e466 sets it at 0002e5ec while service-0x30 Output Control \
+IOLID 0x1d active flag ffff99c7 bit 4, ffff248b bit 0, and ffff244f bit 1 \
+are set, vehicle-speed byte ffff110e is at most ROM8[000089f1]=2, and raw \
+coolant ffff1071 lies in ROM8[000089f3]=110..ROM8[000089f2]=170, storing the \
+requested offset ffff1706 = clamp(int8(ffff9940), \
+ROM8[0000873e]=-20..ROM8[0000873f]=20) at 0002e612; it clears the bit at \
+0002e61c otherwise. Enable coordinator 000bf630 reads it at 000bf8dc as the \
+bypass of the coolant-window term of ffff248b bit 2, and FUN 000bfe88 reads \
+it at 000c04ca to add ffff1706 to the exhaust target."""
+note = [
+    """
+Other bits belong to independent state machines. ffff9940 is the IOLID 0x1d \
+value byte of service-0x30 handler 00030c4c (ffff9923 + n) and ffff99c7 bit \
+4 its active flag (array ffff99c4, bit n-1).""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 625
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chocolate-civet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "miniature-dove/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "friendly-hawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "muscular-lizard/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff249c"
+name = "jovial-buzzard"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000873e"
+value = "0xec"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000873f=20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000089f1"
+value = "2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089f2=170"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000089f3=110"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e5ec"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e612"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e61c"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050aea"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050af6"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf8dc"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c04ca"
+value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "chocolate-civet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "miniature-dove/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "friendly-hawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "muscular-lizard/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

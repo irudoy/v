@@ -1,0 +1,220 @@
+summary = """
+Per-bank reset of catalyst-monitor state for bank r4 (0 or 1). It clears \
+mask r4+1 in flag bytes ffff34a8, ffff32f0, ffff32f2, ffff2fee, ffff32f5, \
+ffff2b51, ffff328b, ffff2bac, and ffff2bab; zeroes the bank elements of \
+ffff335c, ffff3300, ffff3187, metric ffff314d, limit ffff2b6f, word array \
+ffff3336, and longword arrays ffff4008 and ffff332c; zeroes ffff47db, \
+ffff2ebe, and ffff2ebf; and writes ROM8[0000848e] to ffff426c[bank], 0xff to \
+test-value record ffff491e[bank], the interpolation of 00011fb6 at \
+engine-speed byte ffff11b2 to limit record ffff492e[bank], and 0x80 to \
+ffff2c84[bank]."""
+note = [
+    """
+000a3ea0, which diagnostic periodic dispatcher 0007bfc4 calls, calls \
+000a3a14 and then this function for banks 0 and 1 while ROM8[000186ce] bit 6 \
+and ffff424f bit 2 are set. Stock ROM8[000186ce] is 0x80, so stock JK08A \
+does not execute it. Catalyst-monitor branch 000a2f56 compares \
+ffff314d[bank] with ffff2b6f[bank] and records both in ffff491e[bank] and \
+ffff492e[bank].""",
+]
+level = "code"
+role = "init"
+
+[[ledger]]
+registry = "funcs"
+order = 694
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mauve-tuatara/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "whispering-uakari/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aromatic-kagu/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accurate-sambar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ambitious-seagull/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intrepid-lemming/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "platinum-cat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "unbiased-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "venomous-dachshund/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a3c00"
+name = "violet-sparrow"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000848e"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186ce"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c1a"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c3e"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c6a"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c78"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c8a"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c8e"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c94"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3c98"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3ca4"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3cca"
+value = {named = ["0000848e", "00011fb6", "000186ce", "00026370", "000362d2", "000a2f56", "000a3c00", "ffff11b2", "ffff2b6f", "ffff2c84", "ffff314d", "ffff426c", "ffff491e", "ffff492e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "mauve-tuatara/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "whispering-uakari/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

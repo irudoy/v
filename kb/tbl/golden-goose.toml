@@ -1,3 +1,27 @@
+summary = """
+Shared RPM-dependent raw factor in the paired P0101/P010B MAF \
+range-performance monitor. It enters a composite per-bank model threshold \
+and the diagnostic event snapshot."""
+note = [
+    """
+Both accessors interpolate the table by RPM/50 byte ffff11ae over axis \
+0001238a and store the result in ffff15be. The result is multiplied by \
+lookup factors from 00012ac2 and 00012868, divided by 16384, combined with \
+per-bank opening-area weights, multiplied by ROM8[000082ba]=128, and written \
+to ffff12eb/ffff12ec. Stock ROM8[00008d92]=0x7a has bit 5 set, so both \
+monitors bypass the comparison model_byte < threshold. The only stock \
+terminal effect is capture of the derived bytes in P0101/P010B event context \
+at ffff4566/ffff4567. Result disposition: diagnostic_snapshot; the table \
+does not feed fuel, ignition, air command, throttle actuation, or stock \
+fault-decision logic.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "MAF Range-Performance RPM Factor (0x1236A)"
 category = "Diagnostics / MAF"
@@ -26,7 +50,378 @@ static_axis = [
 ]
 static_axis_name = "Engine Speed [RPM]"
 
+[[diagnostic]]
+id = "maf-range-rpm-factor-p0101"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P0101"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c18"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+The shared RPM factor enters the first-bank P0101 model threshold and \
+captured event context. Stock 00008d92 bit 5 bypasses its comparison \
+effect."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "golden-goose/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019c18"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080fb8"
+value = {named = ["0001236a", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081722"
+value = {named = ["0001236a", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081728"
+value = {named = ["0001236a", "00019c18", "00080f82", "0008152a"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_dispatch/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "maf_range_performance_bank_1_monitor/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "maf-range-rpm-factor-p010b"
+kind = "monitor_calibration"
+label = "DtcCode"
+key = "P010B"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193b4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+The shared RPM factor enters the second-bank P010B model threshold and \
+captured event context. Stock 00008d92 bit 5 bypasses its comparison \
+effect."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "golden-goose/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193b4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00080fde"
+value = {named = ["0001236a", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081f54"
+value = {named = ["0001236a", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00081f5a"
+value = {named = ["0001236a", "000193b4", "00080f82", "00081d74"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_dispatch/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "maf_range_performance_bank_2_monitor/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 187
+binding = "maf-range-rpm-factor-p0101"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 188
+binding = "maf-range-rpm-factor-p010b"
+
+[[ledger]]
+registry = "findings"
+order = 132
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_1_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aboriginal-porpoise/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clay-dugong/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elegant-guan/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "0001236a"
 name = "golden-goose"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000082ba"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081720"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081722"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081724"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081728"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081732"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000817ec"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081942"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081c62"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f52"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f54"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f56"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f5a"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00081f64"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00082034"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008216a"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000824b4"
+value = {named = ["000082ba", "00008d92", "0001236a", "000264a0", "00026944", "00080f82", "0008152a", "00081d74", "ffff11ae", "ffff12eb", "ffff12ec", "ffff15be"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

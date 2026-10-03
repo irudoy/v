@@ -1,0 +1,151 @@
+summary = """
+Lower threshold for a raw difference of two bytes: 00056d0e tests \
+int(uint8(ffff1071) - uint8(ffff106e)) >= int(lookup(00012c12, \
+uint8(ffff106e))). This is the second term in the condition that sets bit 0 \
+at ffff4205."""
+note = [
+    """
+All 8 cells equal 0, so in this image the comparison reduces to \
+int(uint8(ffff1071) - uint8(ffff106e)) >= 0 and subsequent test uVar10 == 0 \
+is true. ffff340b has no external readers, but after the write the same \
+value remains live in r2 and is consumed inside the accessor. It is not \
+returned from 00056bd0; no evidence proves the path unreachable. The \
+physical quantity is unknown, so only exact code semantics in a raw \
+representation are claimed.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 203
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enthusiastic-salmon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c12"
+name = "boisterous-mustang"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd0"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd2"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd4"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd8"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cdc"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ce2"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cf8"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d06"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d0c"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d0e"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d10"
+value = {named = ["00012c12", "00026474", "00026740", "00026944", "00026c78", "00056bd0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

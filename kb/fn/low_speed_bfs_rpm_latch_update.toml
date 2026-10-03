@@ -1,0 +1,162 @@
+title = "Update low-speed BFS-derived RPM eligibility latch with discarded return"
+summary = """
+Side-effect-only low-speed BFS/RPM latch update. It looks up 00012086 from \
+high-byte Base Fuel Schedule, writes threshold ffff143e, and can set \
+ffff41d4.bit0 after coarse speed <=2, RPM/25 at or above the threshold, \
+status gates, and timer ffff255b expiry. Its return is discarded by \
+0004ed88."""
+note = [
+    """
+The latch blocks later low-speed RPM protection branches. Its physical mode \
+name remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "curated"
+order = 26
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 306
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "eminent-bug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beneficial-gecko/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enigmatic-bullfinch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "judicious-mouflon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f758"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008c07"
+value = "0x14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f786"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f78a"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f79c"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7a8"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7b4"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7c2"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7cc"
+value = {named = ["00008c07", "00012086", "0004ed88", "0004f758", "ffff1024", "ffff110e", "ffff11b3", "ffff143e", "ffff255b", "ffff41d4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

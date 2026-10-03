@@ -1,0 +1,197 @@
+summary = """
+Trustful twin of torque-ratio lookup 00075174 over row coordinate ffff1cca. \
+While ffff1cca is nonzero it writes ffff1cda=min(0xffff, \
+floor(61440*min(ffff10d6, ffff1582)/floor(25*ffff1cca/8))), otherwise \
+0xffff; it scales ffff1cda by ROM16[000162f2]/32768 with saturation into \
+ffff1cc8 and writes lookup(00019190, ffff1cc8) to ffff1d16."""
+note = [
+    """
+Entry 14 of the 124-entry periodic table at 0002196c calls it; L0 records no \
+direct caller. In stock JK08A ROM16[000162f2] equals primary \
+ROM16[0000920e], and 00019190 holds the sixteen values of 00015770. 00074478 \
+uses ffff1d16 as a multiplier. The physical quantities are unresolved, as \
+for 00075174.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 690
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "persimmon-binturong/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "towering-newt/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "famous-skink/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fragrant-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wild-chinchilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "proficient-turkey/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "subtle-hedgehog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "versatile-pigeon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000743c4"
+name = "nifty-partridge"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000162f2=0x9719"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219a4"
+value = "000743c4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000743d0"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000743dc"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000743e2"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074406"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074420"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074422"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007443c"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074440"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074442"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007444a"
+value = {named = ["000162f2", "00019190", "000219a4", "00021ce0", "000266a0", "000743c4", "00074478", "ffff10d6", "ffff1582", "ffff1cc8", "ffff1cca", "ffff1cda", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-chital/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "persimmon-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

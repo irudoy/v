@@ -1,0 +1,207 @@
+title = "Per-channel injector event handler and DFCO release-history update"
+summary = """
+ATU-II IMI1A compare-match handler, vector 96 at 00020184, for the delayed \
+injection start programmed by FUN 0002b64a, and per-channel injector-event \
+handler. It clears IMF1A in TSR1A and pending flag ffff84ec.bit7, copies \
+pending mask ffff2228 to current one-hot event mask ffff1936, removes that \
+bit from DFCO fallback history ffff1935, and, while active rotating count \
+ffff1937 and aggregate mask ffff22e0 are nonzero, decrements the count and \
+adds the current bit back to history before invoking masked one-shot \
+scheduler 0002c13c. It refills scheduled-duration array ffff224e through FUN \
+00054d3e before that call."""
+note = [
+    """
+The path proves that the DFCO rotating-release tail advances on injector \
+events. Physical channel-to-cylinder order remains unresolved.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "curated"
+order = 11
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 484
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_inhibit_mask/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "portable-gecko/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "uber-deer/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "provocative-anteater/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quantum-tiger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thundering-newt/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wealthy-toad/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002be40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020184"
+value = "0002be40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002be6a"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002be70"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002be90"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002be98"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002beac"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002beca"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bece"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bed2"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bed6"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002beec"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bef0"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002bef8"
+value = {named = ["00020184", "0002be40", "0002c13c", "00054d3e", "ffff1935", "ffff1936", "ffff1937", "ffff2228", "ffff224e", "ffff22e0", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "bulky-hound/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

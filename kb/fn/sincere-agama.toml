@@ -1,0 +1,108 @@
+summary = """
+Adjacent calibrated limiter branch. It subtracts unsigned input ffff10e2 \
+from ROM16[0x9476], applies calibrated rates and bounds from 0x946a..0x9478, \
+and writes signed candidate ffff19de, which enters the same minimum arbiter \
+00071508 as the 0x942c branch."""
+note = [
+    """
+EV18A places Speed Limiter at 0x94c2; JK08A 0x9476 preserves the same -0x4c \
+layout offset as the throttle-rev pair 0x9478/0x942c. The speed-limiter \
+physical label and x*0.1 km/h conversion are catalog/homology evidence \
+rather than code confidence.""",
+]
+level = "code"
+role = "monitor"
+
+[[ledger]]
+registry = "funcs"
+order = 232
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_limit_arbiter/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "meteoric-mouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "glossy-tody/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075798"
+name = "sincere-agama"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009476"
+value = "0x0708"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000757a4"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000757ac"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000757b8"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000757c0"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000757fc"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007582e"
+value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "signed_request_limit_arbiter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

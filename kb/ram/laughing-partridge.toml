@@ -1,0 +1,217 @@
+summary = """
+Bit 7 is a coalescing pending flag for an interval between consecutive \
+tooth-9 ICR0A captures. When ffff13b2 equals stock ROM8[00008bdc] = 9 and \
+ffff84f1.bit7 is set, FUN 00028ea2 stores abs(ICR0A - ffff84d4) at ffff1dac \
+and sets this bit. The same invocation refreshes ffff84d4 because \
+ROM8[00008bdd] also equals 9. FUN 0003cf24 clears the bit after consuming \
+and shifting the sample."""
+note = [
+    """
+Stock JK03A and JK08A both use tooth bytes 9/9. The tooth-9 capture occurs \
+once per 120 crank degrees, three times per crankshaft revolution.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 352
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fat-buzzard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "abstract-pudu/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-ape/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cute-oyster/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff84f2"
+name = "laughing-partridge"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdc"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008bdd"
+value = "0x09"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a1f4"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a202"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a20c"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a21e"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a22c"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a230"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a232"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a240"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a244"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cf3c"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003cf4e"
+value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "ffff13b2", "ffff1dac", "ffff84f1", "ffff84f2", "fffff434"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "abstract-pudu/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "capable-ape/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "cute-oyster/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

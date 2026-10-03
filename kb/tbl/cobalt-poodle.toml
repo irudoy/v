@@ -1,7 +1,111 @@
+summary = """
+Physically unidentified 1D uint8 table on explicit axis 00011bdb; the \
+interpolated raw byte is written to RAM ffff1a7c"""
+note = [
+    """
+The map contains 103, 106, 110, 112, 112, 114, 114, 115. The interpolated \
+byte is written to ffff1a7c. The accessor does not return a value, branch \
+unreachability has not been proven, and there is no direct inline comparison \
+of the sink. Subsequent saturating arithmetic to ffff1aa0 operates on the \
+retained register copy and does not identify the physical quantity. Result \
+disposition: writes. Blocking condition: The sink trace stops at 000be7e8, \
+where the result is written to RAM ffff1a7c; ffff1a7c has no external reads. \
+Code 000be7ea..000be804 uses a register copy of the result rather than \
+reading the sink and does not reveal the map's physical semantics.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 231
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "translucent-aardwolf/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bright-oriole/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012e8a"
 name = "cobalt-poodle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be7c4"
+value = {named = ["00011bdb", "00012e8a", "00026474", "00026740", "00026944", "00026c78", "000be5bc", "ffff1a7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be7cc"
+value = {named = ["00011bdb", "00012e8a", "00026474", "00026740", "00026944", "00026c78", "000be5bc", "ffff1a7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be7e2"
+value = {named = ["00011bdb", "00012e8a", "00026474", "00026740", "00026944", "00026c78", "000be5bc", "ffff1a7c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000be7e8"
+value = {named = ["00011bdb", "00012e8a", "00026474", "00026740", "00026944", "00026c78", "000be5bc", "ffff1a7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-armadillo/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +138,11 @@ value = 4
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "translucent-aardwolf/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

@@ -1,0 +1,116 @@
+summary = """
+Main-loop coordinator for the every-tenth-interrupt scheduler. It enables \
+interrupts before waiting for ffff84b9 bit 2, calls FUN 00020dfe indirectly \
+through literal 00028090, and then reaches FUN 00027aa2 before the next loop \
+iteration. FUN 00020dfe returns with interrupts masked, making the point \
+immediately after the indirect call a coherent but interrupt-disabled \
+capture boundary."""
+note = [
+    """
+A wrapper substituted through literal 00028090 must call the displaced stock \
+function first and must preserve the interrupt state expected by the main \
+loop. Any additional copy extends an existing interrupt-disabled interval.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 553
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "selector"
+to = "illustrious-narwhal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00027e24"
+name = "devious-mastodon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00028090"
+value = "00020dfe"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ee8"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027eec"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ef4"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ef6"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027f02"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027f04"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027f08"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027f0c"
+value = {named = ["00020dfe", "00027aa2", "00027e24", "00028090", "ffff84b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "grumpy-bobcat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "selector"
+to = "illustrious-narwhal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

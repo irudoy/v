@@ -1,3 +1,46 @@
+summary = """
+Interpolated uint16 output is written to ffff1910 and serves as a reference \
+operand in branch-dependent blending with output of map 0000e98e inside \
+FUN_00075c48."""
+note = [
+    """
+Physical semantics are unknown. All 16 cells equal 0xffff, but constancy \
+does not prove purpose. After the write to ffff1910, the value conditionally \
+participates in blending with result 0000e98e; contract 00021bbc confirms \
+only signed division. Offset 0x8000, conditional blending, and saturation \
+define no exact invertible physical scale. The axis is implicit and has no \
+separate Axis claim. Blocking condition: The external trace stops at site \
+00075d28, which writes the result to ffff1910; ffff1910 has no external \
+readers. The internal trace in 00075c48 reaches only conditional arithmetic \
+and function 00021bbc, which reveal no physical quantity or units. Promotion \
+rejected: Exact write attribution in \
+/private/tmp/claude-501/-Users-isrudoy-src-docs-vq/d31db600-b7d4-488a-b83b-86388fed907c/scratchpad/sweep-p260-289/map-00014cea.md \
+is confirmed: 00075d1a loads base 00014cea, 00075d1e calls wrapper 000263f4, \
+00075d22 moves r0 to r2, and 00075d28 writes the low word to ffff1910. The \
+second call is separately bound to 0000e98e at 00075d26 and 00075d38. The \
+1D-16 uint16 shape and adjacent-word reads at 00026aa0 and 00026aa2 confirm \
+role=table. Local read/write consumption of ffff1910 inside FUN_00075c48 \
+confirms disposition=consumer; absence of external readers does not \
+contradict this. Code confidence and stated arithmetic nevertheless lack a \
+complete machine trace. The unannotated kernel 00026a64 listing ends at \
+00026aa2 immediately after reading two cells, without interpolation, a \
+finisher, construction of r0, or return. The consumer listing ends at \
+00075d76 before the actual read of ffff1910, register preparation, call to \
+00021bbc, and final blend. Contract 00021bbc confirms only signed division \
+r1/r0; without the missing region, it does not link operands to the two map \
+outputs. C pseudocode does not replace a machine trace, especially under the \
+helper calling convention described in the artifact. The wrapper also has a \
+separate endpoint path for input >= 0xf000, so 'interpolated' is not proven \
+on every branch. No separate scale or scale evidence is claimed. Result \
+disposition: consumer.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Conditional Blend Reference - raw u16 (0x14CEA)"
 category = "Unidentified Calibrations"
@@ -7,7 +50,193 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 273
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+
 [[symbol]]
 layout = "7mfk"
 address = "00014cea"
 name = "yellow-caracal"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d1a"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d1e"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d20"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d22"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d24"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d26"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d28"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d38"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d3a"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d3c"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d42"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d54"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d56"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d60"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d6e"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d70"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d72"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d74"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075d76"
+value = {named = ["00014cea", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

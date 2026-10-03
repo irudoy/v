@@ -1,0 +1,106 @@
+summary = """
+Normalized fuel-temperature index producer. It reads ffff1074 and writes \
+ffff117a at 000398f8: 0 below raw 10, floor(240*(raw-10)/150) through \
+unsigned divider 00021bbc for raw 10..169, and 0xff from raw 170."""
+note = [
+    """
+The transform equals coolant normalizer 00039634. Under deg C+50 the linear \
+range maps -40 through 110 deg C to 0 through 240 in steps of 1.6 counts per \
+deg C, and values from 120 deg C saturate to 255.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 636
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spiffy-horse/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuel_temperature_did_source/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bright-bulldog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000398b0"
+name = "impressive-wrasse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398bc"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398c0"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398cc"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398d0"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398e6"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000398f8"
+value = {named = ["00021bbc", "000398b0", "00039936", "ffff1074", "ffff117a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "spiffy-horse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

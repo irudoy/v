@@ -1,3 +1,26 @@
+summary = """
+Intermediate 1D table of an unsigned multiplier for two branches of one \
+calculation: the interpolated uint16 result is multiplied by a separate \
+uint8 result and normalized by a right shift of 7; the multiplier's physical \
+quantity is unknown."""
+note = [
+    """
+All eight cells equal 32768. After interpolation, code multiplies the result \
+by a separate quantity, applies conditional saturation, and shifts right by \
+7. This chain combines two maps and defines no separate invertible scale for \
+00014c9a, so raw identity is retained. Result disposition: writes. Blocking \
+condition: At 0005feae and 0005ff6c, only multiplication of the target-map \
+result by an anonymous uint8 result is proven. Direct RAM bindings at \
+0005fea4 and 0005ff62 lead to ffff8bee and ffff8bec, which have no external \
+readers. The physical consumer and quantity unit are unknown.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Unsigned Branch Multiplier (0x14C9A)"
 category = "Internal Calculations"
@@ -7,10 +30,143 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 270
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
 [[symbol]]
 layout = "7mfk"
 address = "00014c9a"
 name = "lumpy-weasel"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fe92"
+value = {named = ["00014c9a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fea0"
+value = {named = ["00014c9a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fea4"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fea6"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005feae"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005febc"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005febe"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fec0"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005fec2"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff54"
+value = {named = ["00014c9a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff5e"
+value = {named = ["00014c9a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff62"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff64"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff6c"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff7a"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff7c"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff7e"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ff80"
+value = {named = ["00014c9a"], span = 1}
+key = "linked"
 
 [[symbol]]
 layout = "jk00c"
@@ -43,3 +199,10 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "able-koel/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

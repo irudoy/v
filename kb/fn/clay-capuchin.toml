@@ -1,0 +1,29 @@
+role = "service"
+contract = """
+Signed 32-bit absolute value: r0 = abs(r4). The argument is passed in r4 \
+rather than r0 or r1, unlike the rest of the library convention. r4 also \
+holds the result on exit because neg r4,r4 overwrites a negative argument. \
+The body has five register instructions, no memory access, and one acyclic \
+branch."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 56
+fields = ["role", "contract", "contract_conf"]
+contract = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "00022590"
+name = "clay-capuchin"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00022590"

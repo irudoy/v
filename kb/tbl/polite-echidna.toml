@@ -1,3 +1,31 @@
+summary = """
+Inverse-weight curve for a vehicle-speed-selected temperature-difference \
+term in the P0128 thermostat model. FUN 000b78da converts lookup raw x to \
+w=255-min(x,255), combines it with nonnegative model-temperature-minus-IAT \
+difference d, a low/high-speed byte coefficient, and nonzero upstream \
+parameter P, then writes floor(P*floor(min(floor(d*c/2),65535)*w/255)/250) \
+to ffff2f98."""
+note = [
+    """
+Exact inputs are \
+d=clamp(trunc0(ffff3348/20000)-50*uint8[ffff2733]+2500,0,32767), \
+c=ROM8[000086d2] when coarse speed ffff110e<=2 and ROM8[000086d3] otherwise, \
+and P from curve 00015bf0 with zero replaced by one. The map coordinate is \
+max(0,65535-floor(20*ROM16[00009292]*ROM8[00008819]/P)). FUN 000b6b5a adds \
+ffff2f98 to ffff3228 with uint32 saturation before placing the sum on the \
+subtractive side of the P0128 balance. All map and axis cells are zero, \
+making w=255. Both speed-selected coefficients and both coordinate constants \
+are also zero, so ffff2f98 is always zero in stock JK03A and JK08A while the \
+caller remains live. The physical heat-transfer interpretation and the \
+engineering meaning of P remain unresolved. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "P0128 Inverse-Weight Curve - raw u16 (0x14CCA)"
 category = "Diagnostics / Internal Calculations"
@@ -7,7 +35,1045 @@ format = "0"
 fine = 1
 coarse = 256
 
+[[ledger]]
+registry = "findings"
+order = 461
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refined-goose/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "zealous-dalmatian/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "prehistoric-boa/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curvy-mandrill/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perky-agama/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pumpkin-hoatzin/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fuzzy-honeybee/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-turkey/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "00014cca"
 name = "polite-echidna"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086d2"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086d3"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008819"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009292"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7952"
+value = "0x4e20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7954"
+value = "0x763b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7956"
+value = "0x7fff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7958"
+value = "0x09c4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b79a0"
+value = "0xffff763c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b79a8"
+value = "0x0001fffe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7afa"
+value = "0xff01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000b7c04"
+value = "0xffff0001"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cd0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cd4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cd8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cda"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cdc"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ec"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78ee"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78f8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78fa"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b78fc"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7900"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7902"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7904"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7908"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b790e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7910"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7914"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7918"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b791a"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b791c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b791e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7920"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7924"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7928"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b792c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b792e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7930"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7934"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7936"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b793a"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b793c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b793e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7940"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7944"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7948"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b794a"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ac"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79b0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79b2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79b4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79b6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79b8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ba"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79bc"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79be"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79c0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79c2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79c4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79c6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79c8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ca"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79cc"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79d0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79d2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79d4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79d6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79d8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79de"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79e0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79e2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79e4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79e6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79e8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ea"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ec"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79ee"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79f0"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79f2"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79f4"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79f6"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79f8"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79fa"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b79fc"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a00"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a02"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a04"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a06"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a08"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a0a"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a0c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a0e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a14"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a16"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a18"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a1a"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a1c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a20"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a22"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a24"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a26"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a28"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a2c"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b7a2e"
+value = {named = ["000086d2", "000086d3", "00008819", "00009292", "00013b38", "00014cca", "00015bf0", "00021bbc", "00021ce0", "000264f8", "000b5908", "000b6b5a", "000b78da", "000b7952", "000b7954", "000b7956", "000b7958", "000b79a0", "000b79a8", "000b7afa", "000b7c04", "ffff110e", "ffff2733", "ffff2f98", "ffff3224", "ffff3348", "ffff35a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "wakeful-mushroom/fn/7mfk"
+relies = "level"
+
+[[link]]
+type = "depends"
+to = "prehistoric-boa/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "pumpkin-hoatzin/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "curvy-mandrill/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "perky-agama/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "ruddy-anaconda/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "refined-goose/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "zealous-dalmatian/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

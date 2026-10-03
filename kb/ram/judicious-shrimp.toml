@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff41a5"
+name = "judicious-shrimp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000210a4"
+
+[[link]]
+type = "reader"
+to = "dfco_upstream_aux_gate/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

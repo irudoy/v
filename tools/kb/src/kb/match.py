@@ -555,6 +555,41 @@ def _verify_l0(ctx):
     return f"L0 of {layout} holds no reference to {symbol.address:08x} at {site:08x}"
 
 
+def _verify_l0_context(ctx):
+    """Reproduce a reviewed ledger site's explicit structured footprint.
+
+    The footprint describes a code relationship and supplies no physical
+    unit or conversion. Its recorded classification must hold on current L0.
+    """
+    failure = _own(ctx)
+    if failure:
+        return failure
+    footprint = ctx.item.get("value")
+    if (not isinstance(footprint, dict) or "span" not in footprint
+            or set(footprint) - {"span", "named"}):
+        return "value is not a site footprint with span and named addresses"
+    span, named = footprint["span"], footprint.get("named", [])
+    if isinstance(span, bool) or not isinstance(span, int) or span < 1:
+        return "the site footprint has no positive storage span"
+    maximum = (storage_size(ctx.symbol) or 1) if ctx.symbol.kind == "tbl" else 1
+    if span > maximum:
+        return "the site footprint exceeds the symbol's storage span"
+    if not isinstance(named, list) or any(not isinstance(address, str)
+                                         or not vocab.ADDRESS.fullmatch(address)
+                                         for address in named):
+        return "the site footprint names no list of addresses"
+    layout, site = ctx.at
+    found = sites.classify(site, ctx.symbol.address, span,
+                           {int(address, 16) for address in named},
+                           sites.references(layout, ctx.model.root),
+                           sites.owners(layout, ctx.model.root),
+                           ctx.code("at").data,
+                           sites.linkers(layout, ctx.model.root))
+    if found != ctx.item.get("key") or found is None:
+        return f"L0 reproduces {found or 'no relation'}, not {ctx.item.get('key')}"
+    return None
+
+
 def _hex_bytes(value):
     text = str(value).strip().lower().removeprefix("0x")
     return bytes.fromhex(("0" if len(text) % 2 else "") + text)
@@ -919,6 +954,7 @@ def _verify_test(ctx):
 
 VERIFIERS = {
     "l0": _verify_l0,
+    "l0-context": _verify_l0_context,
     "rom-bytes": _verify_rom_bytes,
     "did-table": _verify_did_table,
     "function-match": _verify_function_match,

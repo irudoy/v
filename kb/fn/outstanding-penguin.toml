@@ -1,0 +1,111 @@
+summary = """
+Bank-indexed MAF diagnostic-word publisher. It reads ten-bit AN4/AN15 \
+samples ffff1d62/ffff1d64, invokes 000671d8 to apply shared Q1.15 \
+coefficient ffff4970 with uint16 saturation, adds one when the raw sample is \
+full-scale 0x03ff, and writes ffff101c/ffff101e."""
+note = [
+    """
+FUN 0003c3ac is the complete caller and invokes indices 0 and 1. A \
+whole-program p-code scan found no other writer candidates for \
+ffff101c/ffff101e. The full-scale increment makes the published span 0..1024 \
+counts rather than 0..1023, so the saturated reading is one count above the \
+last converted value.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 443
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enthusiastic-pillbug/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hairy-dalmatian/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "maf_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003c408"
+name = "outstanding-penguin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c420"
+value = {named = ["0003c3ac", "0003c408", "00067188", "000671d8", "ffff101c", "ffff101e", "ffff1d62", "ffff1d64"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c42c"
+value = {named = ["0003c3ac", "0003c408", "00067188", "000671d8", "ffff101c", "ffff101e", "ffff1d62", "ffff1d64"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c450"
+value = {named = ["0003c3ac", "0003c408", "00067188", "000671d8", "ffff101c", "ffff101e", "ffff1d62", "ffff1d64"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "horned-frog/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "optimistic-bobcat/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

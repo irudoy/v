@@ -1,6 +1,129 @@
+summary = """
+First word of the six-channel compensated injection-pulse output written by \
+FUN_0004eba2. UDS DID 0x1206 returns this word in big-endian order. Each \
+element also passes through FUN_0005b7ec into transformed array ffff23d4, \
+which reaches the ATU-II one-shot outputs through scheduler snapshot \
+ffff2348 and duration array ffff224e."""
+note = [
+    """
+The VQ35HR factory manual identifies the corresponding monitor as actual \
+compensated injection pulse width for bank 1. One count is 10 us: scheduler \
+0002c13c adds 800*raw/256 steps to a channel-8 down-counter clocked at \
+Pphi/64, so ms = raw/100 and full scale is 655.35 ms.""",
+]
+level = "code"
 width = 16
 unit = "ms"
 scale = "x/100"
+
+[[diagnostic]]
+id = "injection-pulse-bank-1"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:semantic:inj-pulse-b1"
+claim = {label = "ParameterDefinition", id = "nissan-esm-2007-g35-sedan-v1:engine-control-system:p0118:data_monitor:inj-pulse-b1-d14ca0c3"}
+applicability = "homologous_vq35hr"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+Exact code maps UDS DID 0x1206 to the first word of the six-channel \
+compensated injection-pulse output at ffff23c8. FUN 0004eba2 writes the \
+value through Q1.7 channel multiplier 000129c0. The factory VQ35HR manual \
+defines INJ PULSE-B1 as actual compensated injection pulse width, and the \
+ATU-II one-shot programming in 0002c13c establishes the raw/100 ms scale in \
+code, matching the homologous structured profile."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "over_run_channel_multiplier/tbl/7mfk"
+relies = "structure"
+note = "from_map"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032452"
+value = {named = ["000129c0", "0002f928", "0003235c", "0004eba2", "d14ca0c3", "ffff23c8"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00032458"
+value = {named = ["000129c0", "0002f928", "0003235c", "0004eba2", "d14ca0c3", "ffff23c8"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003252e"
+value = {named = ["000129c0", "0002f928", "0003235c", "0004eba2", "d14ca0c3", "ffff23c8"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003253a"
+value = {named = ["000129c0", "0002f928", "0003235c", "0004eba2", "d14ca0c3", "ffff23c8"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004ec9e"
+value = {named = ["000129c0", "0002f928", "0003235c", "0004eba2", "d14ca0c3", "ffff23c8"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "ultra-gecko/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "injector_channel_pulse_builder/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 43
+binding = "injection-pulse-bank-1"
+
+[[ledger]]
+registry = "vars"
+order = 160
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "ms*100"
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "over_run_channel_multiplier/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injector_channel_pulse_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +155,47 @@ note = "Aligned diagnostic pointer table and channel-array producer agree"
 layout = "7mfk"
 address = "ffff23c8"
 former = ["chocolate-hound/ram/7mfk-ffff23c8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["000129c0", "0003235c", "0004eba2", "0005b7ec", "ffff23c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032458"
+value = {named = ["000129c0", "0003235c", "0004eba2", "0005b7ec", "ffff23c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003252e"
+value = {named = ["000129c0", "0003235c", "0004eba2", "0005b7ec", "ffff23c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003253a"
+value = {named = ["000129c0", "0003235c", "0004eba2", "0005b7ec", "ffff23c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ec9e"
+value = {named = ["000129c0", "0003235c", "0004eba2", "0005b7ec", "ffff23c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pulse_affine_floor_transform/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +233,28 @@ to = "7mfk:0004ec9c"
 count = 1
 value = 79
 note = "Aligned diagnostic pointer table and channel-array producer agree"
+
+[[link]]
+type = "lookup"
+to = "over_run_channel_multiplier/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

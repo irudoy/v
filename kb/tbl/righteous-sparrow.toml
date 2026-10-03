@@ -1,3 +1,27 @@
+summary = """
+Conditional subtractive correction of the warm/main exhaust-CVTC target. \
+When ffff2466 bit 6 is set, ffff1c5d = clamp_u8(out_b33a - out_ab4a + 128); \
+otherwise ffff1c5d = out_b33a. Raw 128 is zero correction."""
+note = [
+    """
+Code proves centered subtractive arithmetic and the exact 4x4 lookup. The \
+correction is subtracted from the 0000b33a output in the same centered raw \
+units before coolant selection, so it shares the exhaust-target conversion \
+of 0.5 crank degrees per count relative to the learned rest edge, which \
+monitor 0008f168 fixes by comparing target ffff2327 with the actual bytes \
+ffff2324/ffff2325 of FUN 000bfc2e. The subsystem identity follows from the \
+downstream ffff2327 binding to exhaust-target DID 0x1166 and exhaust-VTC \
+control and DTC consumers. The homologous HR A2L uses the same 0.5 degCA per \
+centered count for cam-timing maps. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "degCA"
+scale = "(x-128)*0.5"
+to_raw = "x*2+128"
+scale_level = "code"
+
 [editor]
 name = "Exhaust CVTC Target Correction - High-Detonation State"
 category = "Variable Valve Timing / Exhaust Cam"
@@ -7,10 +31,298 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[[ledger]]
+registry = "findings"
+order = 62
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "exhaust_cvtc_target/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "righteous-sparrow/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "illegal-husky/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "exhaust_cvtc_target/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "righteous-sparrow/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "0000ab4a"
 name = "righteous-sparrow"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe22"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe28"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe2a"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe2e"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe42"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe4c"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe50"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe52"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe54"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe56"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe58"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe68"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe6c"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Exhaust Cam Timing Map | Degrees | (x-128)*0.5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:0002283c"
+value = "ffff2324"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f496"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0008f4bc"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfdae"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe4c"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe50"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe52"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe54"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe56"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe58"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe68"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe6c"
+value = {named = ["0000ab4a", "0000b33a", "0002283c", "00022844", "0008f168", "000bfc2e", "000bfdc0", "000bfe88", "ffff1c5d", "ffff2324", "ffff2327", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "(148-128)*0.5=10"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "black-vulture/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -92,3 +404,57 @@ value = "370200000000002100000000380306000000045200000000"
 note = """
 the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
 P0014 and P0024 have no record"""
+
+[[link]]
+type = "depends"
+to = "exhaust_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "righteous-sparrow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "righteous-sparrow/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

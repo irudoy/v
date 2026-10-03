@@ -1,3 +1,37 @@
+note = [
+    """
+Row axis for primary requested-torque surface 0000e98e. FUN 0003de4c writes \
+row coordinate ffff1702 = max(32, ffff11b6) in RPM/3.125 counts, and every \
+forward lookup except 0007584e passes it to wrapper 000262e0, whose byte \
+core 00026a0c multiplies each stored point by 16; inverse lookup 00073432, \
+which 000730fc calls with the same word, multiplies each point by 16 as \
+well. One stored count is therefore 16*3.125 = 50 RPM, and the points decode \
+to 800 through 6400 RPM in 400 RPM steps and 7200 RPM. Throttle-rev limiter \
+0007584e passes ffff11b6 directly, which differs from ffff1702 only below \
+100 RPM. The A2L carries the same x*50 scale.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 30
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "khaki-antelope/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "1me3b"
 address = "00013561"
@@ -34,6 +68,99 @@ name = "slim-gharial"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00070328"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map|Axis RPM (x*50)"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026a12"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026a14"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073114"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073454"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00073458"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000739dc"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000739e4"
+value = {named = ["00011d0c", "000262e0", "00026a0c", "0003de4c", "00073432", "ffff1702"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "144*50=7200"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16*3.125=50"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16*50=800"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "bald-dachshund/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "azure-skink/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "fuzzy-pogona/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "primary_request_inverse_lookup/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -80,3 +207,10 @@ to = "7mfk:000754ac"
 count = 1
 value = 4
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "index"
+to = "khaki-antelope/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

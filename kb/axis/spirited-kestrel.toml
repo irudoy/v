@@ -1,0 +1,58 @@
+note = [
+    """
+uint16 axis for map 00014e82 in 000617ea. The key for both channels is \
+formed as 0x8000+(param_4[i]>>8), so code establishes offset-binary storage \
+and the x-32768/x+32768 pair. The physical quantity of param_4 is \
+unresolved.""",
+]
+level = "code"
+quantity = "raw"
+unit = "raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 24
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4]
+
+[[symbol]]
+layout = "7mfk"
+address = "00013a68"
+name = "spirited-kestrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00061d96"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061d90"
+value = {named = ["00013a68"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061d92"
+value = {named = ["00013a68"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061dc8"
+value = {named = ["00013a68"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00061dca"
+value = {named = ["00013a68"], span = 1}
+key = "linked"

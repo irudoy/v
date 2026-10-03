@@ -1,0 +1,123 @@
+summary = """
+Offset-corrected total MAF quantity written by FUN 0003b27e as max(ffff1df4 \
+- ROM16[0x93ce], 0). FUN 0003c3ac converts it to the exact DID 0x1209 \
+response word. J1979 Mode 01 PID 0x10 in FUN 00035856 declares \
+ROM8[0x83ec]*ffff105c/256 as g/s*100."""
+note = [
+    """
+With the stock factor ROM8[0x83ec]=105 one count is 105/25600 g/s; a changed \
+factor changes the declared conversion of this quantity and of the \
+transfer-curve outputs behind it.""",
+]
+level = "code"
+unit = "g/s*25600/105"
+
+[[ledger]]
+registry = "vars"
+order = 485
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fluffy-avocet/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wondrous-camel/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff105c"
+name = "amaranth-leech"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000093ce=0x0140"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035db8"
+value = {named = ["000093ce", "00035856", "0003b27e", "0003c3ac", "ffff105c", "ffff1df4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035dc2"
+value = {named = ["000093ce", "00035856", "0003b27e", "0003c3ac", "ffff105c", "ffff1df4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b312"
+value = {named = ["000093ce", "00035856", "0003b27e", "0003c3ac", "ffff105c", "ffff1df4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3de"
+value = {named = ["000093ce", "00035856", "0003b27e", "0003c3ac", "ffff105c", "ffff1df4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "fluffy-avocet/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "wondrous-camel/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

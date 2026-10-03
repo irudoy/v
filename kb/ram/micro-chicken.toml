@@ -1,0 +1,103 @@
+summary = """
+Previous Base Fuel Schedule sample. Scheduler 00020dfe copies ffff1024 here \
+immediately before refreshing ffff1024 from ffff1026. In the \
+ROM8[00008d92].bit3-clear branch of 00051a98, current minus previous is \
+compared with ROM8[000087fd]<<3."""
+note = [
+    """
+Stock JK08A has ROM8[00008d92].bit3 set, so the positive Base Fuel Schedule \
+delta comparison and its ffff1220 writer do not execute. The raw/2048 ms \
+conversion remains a hardware-validation target.""",
+]
+level = "code"
+unit = "ms*2048"
+
+[[ledger]]
+registry = "vars"
+order = 43
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "discerning-snake/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1028"
+name = "micro-chicken"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f04"
+value = {named = ["00020dfe", "00051a98", "ffff1024", "ffff1028"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f06"
+value = {named = ["00020dfe", "00051a98", "ffff1024", "ffff1028"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f08"
+value = {named = ["00020dfe", "00051a98", "ffff1024", "ffff1028"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f0c"
+value = {named = ["00020dfe", "00051a98", "ffff1024", "ffff1028"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "discerning-snake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

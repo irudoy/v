@@ -1,7 +1,230 @@
+summary = "Hysteretic engine-speed threshold compared with RPM/12.5 word ffff11bc"
+note = [
+    """
+Hysteretic engine-speed threshold compared with RPM/12.5 word ffff11bc. The \
+accessor doubles each raw map byte before comparison, so one stored count \
+represents 25 RPM. Result disposition: inline_comparison. Result target: \
+000508b4 (cmp/hs r6,r13: ffff11bc with a conditional correction is compared \
+with the threshold from ffff17ca). Machine trace: 00012a32 -> 00050886 -> \
+0005088a/00026370 -> {index < 0x00e0: 00026a80 -> 00026740; index >= 0x00e0: \
+direct read map[7] in 00026370} -> 0005088e -> 00050894 -> 00050896/ffff17ca \
+-> 0005089a/ffff11bc -> {bit 0x04 ffff249f set: 000508a4/00009462 -> \
+000508aa; otherwise no correction} -> 000508b0/ffff17ca -> 000508b4 -> \
+000508b6. Scale confidence: code. Scale: x*25; inverse encoding: x/25; \
+units: RPM.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "RPM"
+scale = "x*25"
+to_raw = "x/25"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 187
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+scale = [14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dark-sawfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dark-sawfish/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012a32"
 name = "dark-sawfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050876"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005087a"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050884"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050886"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005088a"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005088e"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050894"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00050896"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005089a"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000508a0"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000508a4"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000508aa"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000508b4"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000508b6"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00050886"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005088a"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0005088e"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00050894"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00050896"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000508b0"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000508b2"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000508b4"
+value = {named = ["00012a32", "00020dfe", "000384fe"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +257,19 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "depends"
+to = "dark-sawfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "dark-sawfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"

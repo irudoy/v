@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff438d"
+name = "steadfast-chital"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007f122"
+
+[[link]]
+type = "writer"
+to = "cryptic-mushroom/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

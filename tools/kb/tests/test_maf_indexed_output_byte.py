@@ -2,7 +2,7 @@
 
 import pytest
 
-from kb import checks, compile, levels, match, repo, sh2, sites
+from kb import checks, compile, levels, match, repo, sh2, sites, store
 from kb.model import SymbolKey
 
 
@@ -26,11 +26,13 @@ SPANS = (
 )
 EVIDENCE = [
     {"kind": "rom-bytes", "supports": "identity", "at": "7mfk:0003ab7c",
-     "value": "ffff3968", "legacy": "rom_const:0003ab7c=ffff3968"},
-    {"kind": "l0", "supports": "identity", "at": "7mfk:0003acb0",
-     "legacy": "site:0003acb0"},
-    {"kind": "l0", "supports": "identity", "at": "7mfk:0003acb8",
-     "legacy": "site:0003acb8"},
+     "value": "ffff3968"},
+    {"kind": "l0-context", "supports": "identity", "at": "7mfk:0003acb0",
+     "key": "reference", "value": {"span": 1, "named": [
+         "0003aa12", "0003ab7c", "ffff3968", "ffff3979"]}},
+    {"kind": "l0-context", "supports": "identity", "at": "7mfk:0003acb8",
+     "key": "reference", "value": {"span": 1, "named": [
+         "0003aa12", "0003ab7c", "ffff3968", "ffff3979"]}},
     {"kind": "test", "supports": "identity", "path": PATH, "key": KEY},
 ]
 
@@ -112,10 +114,10 @@ def verify_indexed_byte(data, symbol):
 def compiled_placement():
     model = compile.cached(repo.ROOT)
     symbol = model.symbols[SymbolKey("7mfk", "ram", ADDRESS)]
-    assert "defs/JK08A.vars.csv" in symbol.sources
+    assert symbol.sources == {store.path_of("ram", symbol.meaning.name).as_posix()}
     assert symbol.value("level") == "code" and symbol.value("unit") == "raw"
-    assert symbol.evidence == EVIDENCE
-    assert not checks._owned(model, symbol)
+    assert len(symbol.evidence) == len(EVIDENCE) and all(item in symbol.evidence for item in EVIDENCE)
+    assert checks._owned(model, symbol)
     assert levels.held(model, symbol)
     # Actual derived L0 references already hold this byte. An invented
     # indirect base item is neither necessary nor part of the declaration.

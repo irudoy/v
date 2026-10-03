@@ -1,5 +1,37 @@
+note = [
+    """
+Static TVO axis for trustful opening-area table 00018766 and the \
+returned-value table for its inverse conversion. Its contents are \
+byte-identical to primary axis 000155a0 and it carries that axis's percent \
+gradient. Coordinates ffff1cea and ffff35c8 have no reader in the program, \
+so the publication chain that establishes the gradient runs through 000155a0 \
+alone.""",
+]
+level = "code"
+quantity = "raw"
+unit = "Throttle Valve Opening [%]"
+scale = "x*34285/1114112"
+to_raw = "x*1114112/34285"
+scale_level = "candidate"
+
 [editor]
 format = "0.0"
+
+[[ledger]]
+registry = "axes"
+order = 35
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "discreet-mayfly/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
 
 [[symbol]]
 layout = "1me3b"
@@ -36,6 +68,11 @@ name = "neat-galago"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0007241e"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Target Throttle Valve Opening Table (Trustful)|Degrees (x*0.0275)"
 
 [[symbol]]
 layout = "jk00c"
@@ -82,3 +119,11 @@ to = "7mfk:0007241e"
 count = 1
 value = 0
 note = "unique structural axis pair preserves interpolation-call order"
+
+[[link]]
+type = "depends"
+to = "discreet-mayfly/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"

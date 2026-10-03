@@ -1,7 +1,90 @@
+summary = """
+Unidentified 1D calibration of an intermediate 8-bit value in FUN_0003aa12; \
+the interpolation result is stored per channel and participates in a \
+subsequent calculation, while the physical quantity is unknown."""
+note = [
+    """
+Code proves only the role of an intermediate interpolated value. Range \
+20..255, saturation at 255, and a catalog of 22 different classes with the \
+same shape do not identify physical meaning. Adjacent map 00012c4a is used \
+later in the same calculation but does not define target-map semantics. \
+Result disposition: writes. Blocking condition: At 0003acd0, the direct \
+result trace ends with a write to RAM[ffff3968+0x2d+param_1], meaning \
+ffff3995 or ffff3996; the artifact contains no proven reader of this field \
+associated with the target map. Local mul.l at 0003acf4 does not reveal the \
+physical quantity.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 218
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
 [[symbol]]
 layout = "7mfk"
 address = "00012d82"
 name = "mighty-earthworm"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acba"
+value = {named = ["00012d82", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acbc"
+value = {named = ["00012d82", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acc0"
+value = {named = ["00012d82", "00026474", "00026740", "00026944"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acc4"
+value = {named = ["00012d82", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003acf4"
+value = {named = ["00012d82", "00026474", "00026740", "00026944"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -34,3 +117,10 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "kind-millipede/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,109 @@
+summary = """
+Staging byte copied from AN1-derived running-min accumulator ffff3f4c by FUN \
+0003d832 and consumed by FUN 0003d702 as the minuend for derived byte \
+ffff283a."""
+note = [
+    """
+The operational source is exact. The ECM terminal, physical signal, and \
+engineering scale remain unresolved.""",
+]
+level = "code"
+unit = "transfer code"
+
+[[ledger]]
+registry = "vars"
+order = 457
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rapid-snake/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shapeless-raven/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "romantic-caiman/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff283c"
+name = "cheerful-barnacle"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d73c"
+value = {named = ["00012dea", "0003d702", "0003d832", "ffff283c", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d74c"
+value = {named = ["00012dea", "0003d702", "0003d832", "ffff283c", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d89c"
+value = {named = ["00012dea", "0003d702", "0003d832", "ffff283c", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "cautious-iguana/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "shapeless-raven/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rapid-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "romantic-caiman/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

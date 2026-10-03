@@ -1,0 +1,105 @@
+title = "Conditionally scale the signed pedal-request precursor"
+summary = """
+Conditional signed pedal-request scaler. When ffff19a2 and ffff23fc are \
+nonzero, it scales ffff18f2 by ROM16[0x944e], divides through both runtime \
+words with x32 staging, clamps to signed 16-bit range, and writes ffff19d4; \
+otherwise it writes zero."""
+note = [
+    """
+The signed arithmetic is exact; its physical requested-torque scale remains \
+unresolved.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 140
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 563
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "arcane-cuscus/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-tarantula/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "thick-weasel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aloof-chameleon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075306"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000944e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007530e"
+value = {named = ["0000944e", "00075306", "ffff18f2", "ffff19a2", "ffff19d4", "ffff23fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075320"
+value = {named = ["0000944e", "00075306", "ffff18f2", "ffff19a2", "ffff19d4", "ffff23fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075364"
+value = {named = ["0000944e", "00075306", "ffff18f2", "ffff19a2", "ffff19d4", "ffff23fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007538c"
+value = {named = ["0000944e", "00075306", "ffff18f2", "ffff19a2", "ffff19d4", "ffff23fc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075394"
+value = {named = ["0000944e", "00075306", "ffff18f2", "ffff19a2", "ffff19d4", "ffff23fc"], span = 1}
+key = "reference"

@@ -1,0 +1,177 @@
+summary = """
+Bank-1 exhaust-VTC control-mode byte at window offset 0x890 of base \
+ffff128c. FUN 000c1dec moves it between 0 (off), 1 (active), and 2 \
+(ramp-down) under ffff248b bits 0/2 and bit 0 of ffff1246; FUN 000c2040 \
+selects the duty output by it. Mode 2 returns to 0 when published duty word \
+ffff1aac reaches zero or ffff248b bit 0 clears."""
+note = [
+    """
+Mode 0 forces controller state ffff1aa4 to zero; mode 2 ramps the published \
+duty word down by ROM8[00008de1]/256 of the previous word per pass.""",
+]
+level = "code"
+unit = "mode"
+
+[[ledger]]
+registry = "vars"
+order = 759
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2192"
+offset = 0x890
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-fulmar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "orange-hamster/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_duty_b1_word/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "ambitious-condor/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orange-hamster/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1b1c"
+name = "godlike-markhor"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e06"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e32"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e66"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1e92"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c1eb4"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c20e4"
+value = {named = ["000c1dec", "000c2040", "ffff1246", "ffff128c", "ffff1aac", "ffff1b1c", "ffff248b"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x890
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_duty_b1_word/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "ambitious-condor/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "orange-hamster/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

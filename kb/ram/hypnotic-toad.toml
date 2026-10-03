@@ -1,0 +1,63 @@
+summary = """
+Service-0x3b status of LIDs 4..20, written by 00034fe4: 0xff when \
+ffff41b9.bit0 is clear and ffff4184.bit7 is set, otherwise 0xa1 when \
+ffff41b9.bit0 is set and 0xa6 when it is clear."""
+level = "code"
+unit = "raw"
+
+[[ledger]]
+registry = "vars"
+order = 943
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "khaki-guppy/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff416a"
+name = "hypnotic-toad"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003500e"
+value = {named = ["00020dfe", "00034fe4", "ffff416a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003502c"
+value = {named = ["00020dfe", "00034fe4", "ffff416a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "khaki-guppy/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

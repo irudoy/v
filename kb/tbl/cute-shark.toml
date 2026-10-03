@@ -1,0 +1,289 @@
+summary = """
+Blend weight (Q16) between 16x16 maps 0001050e (A) and 0001070e (B): \
+w=interp(0001488a), output = A*(0x10000-w) + B*w >>16 in accessor 00070e4c; \
+counterpart 000720c4 reuses the same weight"""
+note = [
+    """
+Blend weight (Q16) between 16x16 maps 0001050e (A) and 0001070e (B): \
+w=interp(0001488a), output = A*(0x10000-w) + B*w >>16 in accessor 00070e4c; \
+counterpart 000720c4 reuses the same weight. Result disposition: consumer. \
+Result target: 000720c4: read ffff190e as unsigned coefficient w in \
+(A*(65536-w)+B*w)>>16. Machine trace: 00070e9c-00070eaa: branch on bit 0x08 \
+conditionally updates ffff1a78 from ffff10d2; 00070eb0 loads raw from \
+ffff1a78 into r7; 00070eae/00070eb2 loads target-map base 0001488a and axis \
+00014c7a into r4/r5; 00070eb8 with delay slot 00070eba calls 1D \
+interpolation 000264f8 with extu.w raw; 000264f8 -> 00026984/00026c78 -> \
+00026740 selects uint16 cells and performs linear interpolation; 00070ebc \
+zero-extends result r0 into r6, so w is 0..65535; 00070ec2 writes low 16 \
+bits of r6 to ffff190e; 00070ec0-00070ee2 directly uses the same r6 as w to \
+calculate 65536-w, A*(65536-w), B*w, their sum, and shift by 16; sole reader \
+000720c4 reads ffff190e as ushort and repeats (A*(65536-w)+B*w)>>16. \
+Branching after blending changes subsequent result selection and limiting \
+but not interpretation of w. Scale confidence: code. Scale: x/65536; inverse \
+encoding: x*65536; units: Q16 fraction (0..1). Scale trace: 0001488a is \
+loaded into r4 at 00070eae, axis 00014c7a into r5 at 00070eb2, then 00070eb8 \
+calls wrapper 000264f8. Chain 000264f8 -> 00026984/00026c78 -> 00026740 \
+selects and interpolates uint16 map cells; the returned value at 00070ebc is \
+extended as an unsigned word into r6, limiting raw to 0..65535. At 00070ec2, \
+the same r6 is written without conversion to ffff190e. In direct \
+consumption, 00070ec0/00070eca forms 65536, 00070ecc calculates 65536-raw, \
+00070ed2 multiplies the first adjacent value by this weight, 00070edc \
+multiplies the second by raw, 00070ee0 adds the products, and 00070ee2 \
+shifts the sum logically by 16. This gives \
+floor((a*(65536-raw)+b*raw)/65536). Sole RAM reader 000720c4 reuses this \
+uint16 as raw weight in the same formula. Branching before the call changes \
+the axis sample input but not result interpretation; the write and both \
+multiplication operations execute without branching between them.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Q16 fraction (0..1)"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 254
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+scale = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tuscan-vulture/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cute-shark/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "papaya-cuttlefish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cute-shark/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "papaya-cuttlefish/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001488a"
+name = "cute-shark"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070eae"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070eb0"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070eb2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070eb8"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ebc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ec0"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ec2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ecc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ed2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070edc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070ee2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070eae"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070eb8"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ebc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ec0"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ec2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070eca"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ecc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ed2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070edc"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00070ee2"
+value = {named = ["0001488a", "ffff190e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:000720c4"
+
+[[link]]
+type = "depends"
+to = "cute-shark/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "cute-shark/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "eminent-moth/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tuscan-vulture/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

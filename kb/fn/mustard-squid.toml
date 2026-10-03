@@ -1,0 +1,120 @@
+summary = """
+Stateful per-bank MAF contribution producer. For indices 0 and 1 it reads \
+filtered quantities ffff1df0/ffff1df2, applies bounded corrections, and \
+writes signed 32-bit contributions ffff1df8/ffff1dfc consumed by \
+combined-MAF producer 0003b252."""
+note = [
+    """
+The per-bank MAF role is exact. The physical meanings of the stateful \
+correction terms remain unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 439
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "combined_maf_aggregate/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spiked-dalmatian/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vegan-polecat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "imposing-auk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jasper-walrus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003af42"
+name = "mustard-squid"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af68"
+value = {named = ["0003a904", "0003af42", "0003b252", "ffff1df0", "ffff1df2", "ffff1df8", "ffff1dfc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b170"
+value = {named = ["0003a904", "0003af42", "0003b252", "ffff1df0", "ffff1df2", "ffff1df8", "ffff1dfc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b190"
+value = {named = ["0003a904", "0003af42", "0003b252", "ffff1df0", "ffff1df2", "ffff1df8", "ffff1dfc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b202"
+value = {named = ["0003a904", "0003af42", "0003b252", "ffff1df0", "ffff1df2", "ffff1df8", "ffff1dfc"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "combined_maf_aggregate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff143e"
+name = "enigmatic-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004f79c"
+
+[[link]]
+type = "writer"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,146 @@
+summary = """
+Bank-0 injection-pulse precursor written by FUN 0004e974. It applies bank \
+multiplier ffff40b6 over 0x6400 to the selected BFS-derived term, adds \
+signed transient word ffff2300, applies Q14 gain ffff165e, clamps to uint16, \
+and lower-bounds the result at 170. FUN 0004ead4 consumes it for parity base \
+ffff191c."""
+note = [
+    """
+The unit is inherited from the pulse words it feeds: one count is 10 us, so \
+the ROM16[000094e8] floor of 170 is 1.70 ms. The code proves bank indexing \
+but not physical bank-to-cylinder ordering.""",
+]
+level = "code"
+unit = "ms*100"
+
+[[ledger]]
+registry = "vars"
+order = 548
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank_base_pulse_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "diligent-flamingo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enigmatic-mouse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versatile-bobcat/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_pulse_precursor_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18c0"
+name = "dainty-oriole"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea10"
+value = {named = ["000094e8", "0004e974", "0004ead4", "ffff165e", "ffff18c0", "ffff2300", "ffff40b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea1c"
+value = {named = ["000094e8", "0004e974", "0004ead4", "ffff165e", "ffff18c0", "ffff2300", "ffff40b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea2a"
+value = {named = ["000094e8", "0004e974", "0004ead4", "ffff165e", "ffff18c0", "ffff2300", "ffff40b6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea30"
+value = {named = ["000094e8", "0004e974", "0004ead4", "ffff165e", "ffff18c0", "ffff2300", "ffff40b6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ea62"
+value = {named = ["000094e8", "0004e974", "0004ead4", "ffff165e", "ffff18c0", "ffff2300", "ffff40b6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "diligent-flamingo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "enigmatic-mouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "versatile-bobcat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "injection_pulse_precursor_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

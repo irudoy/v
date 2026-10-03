@@ -1,3 +1,25 @@
+summary = """
+Primary QH0/torque conversion surface. Forward lookups convert RPM and a QH0 \
+coordinate into offset-binary requested torque; FUN 00073432 interpolates a \
+complete row at current RPM and reverses the relation to recover the QH0 \
+coordinate from a centered signed request."""
+note = [
+    """
+All forward consumers subtract 0x8000 from the uint16 result before signed \
+arithmetic. The stock 16x16 contents, RPM axis, and QH0 coordinate table are \
+byte-identical to trustful family 000175c8/00018716/00018ac6. The exact \
+duplicate pair and bidirectional code topology select the A2L \
+primary/trustful concept; the physical units and multiplier require hardware \
+validation. Result disposition: consumer and inverse coordinate source.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Requested Torque [Nm]"
+scale = "x*0.1-3276.8"
+to_raw = "x/0.1+32768"
+scale_level = "candidate"
+
 [editor]
 name = "Requested Torque Conversion by QH0 - Primary"
 category = "Electronic Throttle Control / Requested Torque"
@@ -5,6 +27,56 @@ order = 120
 format = "0.0"
 fine = 1
 coarse = 10
+
+[[ledger]]
+registry = "findings"
+order = 435
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+scale = [5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primary_request_inverse_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versed-reindeer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rampant-poodle/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "slim-gharial/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -37,6 +109,44 @@ note = "unique structural accessor pair preserves interpolation-call order"
 layout = "7mfk"
 address = "0000e98e"
 name = "arcane-griffin"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "QH0/ Torque Conversion Map"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007031e"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00073432", "00073948"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000734ce"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00073432", "00073948"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007350c"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00073432", "00073948"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d0"
+value = {named = ["0000e98e", "00011d0c", "00014114", "00073432", "00073948"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "QH0/ Torque Conversion Map|Requested Torque (x*0.1)-3276.8"
 
 [[symbol]]
 layout = "jk00c"
@@ -85,3 +195,65 @@ value = 4
 note = """
 unique structural accessor pair and exact storage anchor preserve \
 interpolation-call order"""
+
+[[link]]
+type = "depends"
+to = "rampant-poodle/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "slim-gharial/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pedal_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "primary_request_inverse_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "versed-reindeer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "voracious-rhino/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

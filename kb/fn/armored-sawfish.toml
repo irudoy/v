@@ -1,0 +1,145 @@
+summary = """
+Work-support periodic coordinator at scheduler pointer 0x21a80. It calls \
+00068270, 000682a2, 000682e0, 000682f6, 0006836e, 000683b6, and 000683cc in \
+this order and branches to 000685f2."""
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "funcs"
+order = 677
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00068670"
+name = "armored-sawfish"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00021a80"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068672"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068676"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006867a"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006867e"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068682"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068686"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006868a"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006868e"
+value = {named = ["00020dfe", "00068270", "000682a2", "000682e0", "000682f6", "0006836e", "000683b6", "000683cc", "000685f2", "00068670"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "famous-kingfisher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "copper-swallow/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "adventurous-octopus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "hypersonic-chicken/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "curvy-barracuda/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pistachio-octopus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "screeching-bumblebee/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "victorious-oriole/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

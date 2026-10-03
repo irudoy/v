@@ -1,0 +1,102 @@
+summary = """
+Active diagnostic response transmission mode copied from the TXM byte of SID \
+0x21. The service accepts only 0x04 and 0x06. The transmit-complete \
+interrupt counts finite mode 0x04 and routes continuous mode 0x06 through \
+the response-completion state-machine path."""
+note = [
+    """
+Mode 0x06 remains active across responses; its NRS byte does not terminate \
+the stream.""",
+]
+level = "code"
+unit = "diagnostic mode"
+
+[[ledger]]
+registry = "vars"
+order = 649
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-coyote/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "refreshing-dinosaur/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olive-mandrill/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8212"
+name = "refreshing-grouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002eb46"
+value = {named = ["0002ea0a", "0002f12c", "000328c0", "ffff8212"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f160"
+value = {named = ["0002ea0a", "0002f12c", "000328c0", "ffff8212"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f16c"
+value = {named = ["0002ea0a", "0002f12c", "000328c0", "ffff8212"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000328ea"
+value = {named = ["0002ea0a", "0002f12c", "000328c0", "ffff8212"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "knowing-coyote/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "refreshing-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "olive-mandrill/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

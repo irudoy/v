@@ -1,0 +1,67 @@
+summary = """
+Coarse vehicle-speed snapshot captured by DFCO state machine 000503e0 when \
+its output mask first becomes nonzero and cleared when the mask becomes \
+zero."""
+note = [
+    """
+Combined producer analysis gives approximately 2 km/h per count; the exact \
+engineering conversion remains candidate.""",
+]
+level = "code"
+unit = "coarse vehicle speed"
+
+[[ledger]]
+registry = "vars"
+order = 570
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dfco_state_machine/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff14c4"
+name = "shapeless-mosquito"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000506ac"
+value = {named = ["000503e0", "ffff110e", "ffff14c4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005070e"
+value = {named = ["000503e0", "ffff110e", "ffff14c4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dfco_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

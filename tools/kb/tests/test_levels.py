@@ -246,7 +246,7 @@ class InterpolationIdentityTest(unittest.TestCase):
         for symbol in self.homes:
             with self.subTest(address=symbol.address):
                 self.assertIn(symbol.address, self.model.functions["7mfk"])
-                self.assertTrue(any(item.get("kind") == "l0"
+                self.assertTrue(any(item.get("kind") in ("l0", "l0-context")
                                     and item.get("supports") == "identity"
                                     and item.get("at") == f"7mfk:{symbol.address:08x}"
                                     for item in symbol.evidence))
@@ -263,9 +263,14 @@ class InterpolationIdentityTest(unittest.TestCase):
         for home in self.homes:
             symbol = broken.symbols[home.key]
             symbol.evidence[:] = [item for item in symbol.evidence
-                                  if not (item.get("kind") == "l0"
-                                          and item.get("supports") == "identity"
-                                          and item.get("at") == f"7mfk:{home.address:08x}")]
+                                  if item.get("supports", "identity") != "identity"]
+        # Ledger links supply independent structural identity routes. The
+        # negative fixture retains only the interpolation contract route.
+        homes = {broken.symbols[home.key].meaning for home in self.homes}
+        links = [link for link in broken.links if link.owner not in homes and link.to not in homes]
+        broken.links[:] = links
+        for meaning in broken.meanings:
+            meaning.links[:] = [link for link in meaning.links if link in links]
         subjects = {f"{home.meaning.name}/fn" for home in self.homes}
         subjects.update(symbol.key.key for symbol in self.symbols
                         if symbol.layout != "7mfk")
@@ -321,6 +326,12 @@ class MailboxIdentityTest(unittest.TestCase):
 
 
 class AuditTest(unittest.TestCase):
+    def test_levels_are_a_mandatory_model_gate(self):
+        model = model_of(lambda b: datum(b, RAM, "candidate", evidence=()))
+        self.assertIn("levels", checks.CHECKS)
+        self.assertEqual(checks.CHECKS["levels"](model), levels.check(model))
+        self.assertTrue(checks.CHECKS["levels"](model))
+
     def test_the_audit_computes_the_sections_it_is_asked_for(self):
         model = model_of(lambda b: datum(b, RAM, "candidate", evidence=()))
         self.assertEqual(list(checks.audit(model)), list(checks.AUDIT_SECTIONS))

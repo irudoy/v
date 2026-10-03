@@ -1,0 +1,51 @@
+summary = "Result of comparing the output of map 0x12362 in 00060fb4."
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 356
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "radical-capuchin/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "banana-marten/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8cb4"
+name = "sage-chamois"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006162e"
+
+[[link]]
+type = "lookup"
+to = "radical-capuchin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "banana-marten/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

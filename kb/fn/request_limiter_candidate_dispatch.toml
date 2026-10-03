@@ -1,0 +1,60 @@
+title = "Dispatch the rotational-speed request-limit candidate calculation"
+summary = """
+Request-limiter candidate dispatcher reached by periodic source coordinator \
+000769c0. It invokes rotational-speed request limiter 0007584e, which \
+publishes candidate ffff19d8."""
+note = [
+    """
+The dispatcher belongs to the signed request path and does not enter fuel \
+mask ffff22e0.""",
+]
+level = "code"
+role = "dispatch"
+
+[[ledger]]
+registry = "curated"
+order = 123
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 518
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "snobbish-tapir/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00075e9e"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_limit_source_dispatch/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

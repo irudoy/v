@@ -1,0 +1,126 @@
+title = "Publish saturated base accumulator ffff231a"
+summary = """
+Saturated fuel-base accumulator. It writes \
+ffff231a=clamp_u16(int32(ffff15f8)+0x4000+uint16(ffff230c)+uint16(ffff15da))."""
+note = [
+    """
+Coordinator 00057608 calls this before 000554f8 and final publisher \
+000556ec. Physical units remain unresolved.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 84
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 498
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adept-bumblebee/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "beneficial-ringtail/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "competent-pillbug/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "happy-curassow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000554ae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554bc"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554be"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554c0"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554ca"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554d2"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554d4"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554e2"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554e8"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000554ea"
+value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
+key = "reference"

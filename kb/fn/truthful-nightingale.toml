@@ -1,0 +1,127 @@
+summary = """
+Pure arithmetic-shift helper used by fuel, misfire, and diagnostic \
+calculations."""
+note = [
+    """
+FUN 00056fc0 passes a signed product directly, so negative values retain \
+floor-rounding before its explicit lower clamp.""",
+]
+level = "code"
+role = "service"
+contract = """
+Arithmetic right shift by 7: r0 = (int32)r0 >> 7, equivalent to signed \
+division by 128 rounded down toward negative infinity. The body is seven \
+consecutive shar instructions followed by rts; the seventh shift occupies \
+the return delay slot. It has no memory access and preserves PR and r1-r15. \
+Side output is T = input bit 6."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 47
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+contract = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dashing-coucal/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_override_word/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "loud-caribou/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000224f8"
+name = "truthful-nightingale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000224f8"
+value = {named = ["00056fc0", "00085a70", "00094f26"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:000224fa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:000224fc"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:000224fe"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:00022500"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:00022502"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "contract"
+at = "7mfk:00022506"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "sh2-decode"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000224f8"
+
+[[link]]
+type = "depends"
+to = "dashing-coucal/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_output_override_word/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "loud-caribou/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

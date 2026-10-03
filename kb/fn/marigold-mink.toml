@@ -1,0 +1,79 @@
+summary = """
+Oxygen-sensor PID helper called by FUN 00035856. It answers negatively \
+unless the PID mask in r4 matches sensor-present byte ROM8[0x8936]; \
+otherwise it emits the value byte, doubled with saturation at 255 for every \
+PID except 0x14, followed by the short-term trim byte min(255, \
+floor(word/200)) or 0xff for the rear-sensor masks 0x02 and 0x20."""
+note = [
+    """
+Stock ROM8[0x8936]=0 makes every call answer negatively, so the doubling \
+rule for PIDs 0x15, 0x18, and 0x19 is inactive in JK08A.""",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "funcs"
+order = 340
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "000357dc"
+name = "marigold-mink"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008936"
+value = "0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000357e8"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000357f8"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035812"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003582e"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035840"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003584a"
+value = {named = ["00008936", "000357dc", "00035856"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dazzling-ladybug/fn/7mfk"
+relies = "structure"

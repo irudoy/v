@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff507f"
+name = "cerise-chicken"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00080a4e"
+
+[[link]]
+type = "writer"
+to = "provocative-vulture/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,193 @@
+title = "Select and publish the signed limiter or controller result"
+summary = """
+Final selector in periodic-table index-20 scheduler 000702a0. When ffff2490 \
+bit 1 is clear it selects limiter aggregate ffff243a. When the bit is set it \
+selects controller result ffff19c0 and, while ffff25d6 is zero, takes the \
+signed minimum with ffff243a. It writes the selected value to both ffff2438 \
+and ffff19c2."""
+note = [
+    """
+The duplicated result provides the exact bridge from the 0x942c limiter \
+aggregate to periodic-table index-21 boundary FUN 00079030.""",
+]
+level = "code"
+role = "driver"
+
+[[ledger]]
+registry = "curated"
+order = 126
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 210
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bizarre-flamingo/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "complex-ara/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exotic-bird/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "shapeless-cricket/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_request_boundary/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adorable-shrew/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elegant-marmoset/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00070d82"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000219c0"
+value = "000702a0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d88"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d8e"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d9a"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070da2"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070da4"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070db6"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070dbc"
+value = {named = ["000219c0", "000702a0", "00070d82", "00079030", "ffff19c0", "ffff19c2", "ffff2438", "ffff243a", "ffff2490", "ffff25d6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_controller_dispatch/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "bizarre-flamingo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "complex-ara/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "exotic-bird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "shapeless-cricket/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "signed_request_boundary/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

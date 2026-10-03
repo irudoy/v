@@ -1,0 +1,158 @@
+summary = """
+SCI transmit-complete interrupt handler for diagnostic responses. With mode \
+ffff8212=0x04 it increments response counter ffff8213, compares it with \
+requested response count ffff8214, and either invokes 0002f866 for another \
+transmission or clears the counter and mode. With mode 0x06 it bypasses the \
+response-count comparison and sets ffff82e4.bit7 so the diagnostic state \
+machine can redispatch the service."""
+note = [
+    """
+Mode 0x04 repeats on the interrupt path without calling SID 0x21 again, so \
+this code does not establish a fresh list dereference between its finite \
+responses. Mode 0x06 takes the redispatch path that rebuilds each \
+response.""",
+]
+level = "code"
+role = "handler"
+
+[[ledger]]
+registry = "funcs"
+order = 329
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "humongous-deer/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "refreshing-grouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "friendly-jaybird/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rigorous-goshawk/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002f12c"
+name = "knowing-coyote"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f160"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f162"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f184"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f18c"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f18e"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f194"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f198"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1a8"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1aa"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1ae"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1b0"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f1b2"
+value = {named = ["0002ea0a", "0002f12c", "0002f866", "ffff8212", "ffff8213", "ffff8214", "ffff82e4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "refreshing-dinosaur/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "private-sawfish/fn/7mfk"
+relies = "structure"

@@ -1,0 +1,172 @@
+summary = """
+Coolant-selected exhaust-VTC target byte before conditioning. FUN 000bfe88 \
+writes it at 000c055c from the cold/fallback and warm/main bytes ffff1c5f \
+and ffff1c5d and compares it with ROM8[00008dcb]+128 to form demand flag \
+ffff24a7 bit 3. Initializer FUN 000bced0 writes its reset value."""
+note = [
+    """
+Stock entry threshold is 142 counts, with hysteresis 2 while the demand flag \
+is set. The slew stage at 000c045a..000c04b4 bounds the increase of the \
+conditioned byte over the previous ffff1c90 to ROM8[0000830a]=4 times \
+ffff11c0 while ffff2482 bit 1 marks a byte at or above previous-pass value \
+ffff125a, and to ROM8[000084f3]=20 times ffff11c0 otherwise; the step is \
+stored to ffff1995. Captured override ramps of 4 counts per tick correspond \
+to ffff11c0=1.""",
+]
+level = "code"
+unit = "centered_u8"
+
+[[ledger]]
+registry = "vars"
+order = 763
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "base"
+end = "owner"
+relies = "structure"
+supports = "identity"
+offset_text = "2564"
+offset = 0xa04
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wild-taipan/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cornflower-millipede/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "illegal-husky/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "auspicious-mussel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wild-taipan/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1c90"
+name = "voracious-cougar"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000830a"
+value = "4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000084f3=20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000086f4"
+value = "2"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dcb=14"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c049c"
+value = {named = ["0000830a", "000084f3", "000086f4", "00008dcb", "000bced0", "000bfe88", "ffff128c", "ffff1c5d", "ffff1c5f", "ffff1c90"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c04a6"
+value = {named = ["0000830a", "000084f3", "000086f4", "00008dcb", "000bced0", "000bfe88", "ffff128c", "ffff1c5d", "ffff1c5f", "ffff1c90"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c04b4"
+value = {named = ["0000830a", "000084f3", "000086f4", "00008dcb", "000bced0", "000bfe88", "ffff128c", "ffff1c5d", "ffff1c5f", "ffff1c90"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c055c"
+value = {named = ["0000830a", "000084f3", "000086f4", "00008dcb", "000bced0", "000bfe88", "ffff128c", "ffff1c5d", "ffff1c5f", "ffff1c90"], span = 1}
+key = "reference"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0xa04
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "cornflower-millipede/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "illegal-husky/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "auspicious-mussel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "wild-taipan/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

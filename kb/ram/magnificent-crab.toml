@@ -1,0 +1,66 @@
+summary = """
+Signed Q8 state used by one high-detonation selector hysteresis branch in \
+000493e8. The branch sets ffff2466.bit6 at or below -1792 and clears it only \
+above 8192."""
+note = ["Other gates can force either selector state."]
+level = "code"
+unit = "signed Q8 selector state"
+
+[[ledger]]
+registry = "vars"
+order = 722
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_function/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_surface_state/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1382"
+name = "magnificent-crab"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f00"
+value = "0x2000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f02"
+value = "0xf900"
+
+[[link]]
+type = "depends"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

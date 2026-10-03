@@ -1,0 +1,106 @@
+summary = """
+Multipurpose state byte. FUN 0004a238 writes bit 6 as the current \
+selected-channel knock-threshold comparison result; set means the calculated \
+uint32 metric exceeds the selected uint16 threshold. Other bits and \
+consumers belong to independent calculations."""
+note = [
+    """
+Bit 6 describes the current evaluator result and is not an interval-latched \
+event flag.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 206
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_evaluator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-tiger/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_slice_evaluator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24c2"
+name = "military-flamingo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a32c"
+value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a330"
+value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a334"
+value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a410"
+value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004a418"
+value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tall-tiger/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

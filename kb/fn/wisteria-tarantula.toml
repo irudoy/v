@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000580e8"
+name = "wisteria-tarantula"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000580e8"

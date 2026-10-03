@@ -1,0 +1,78 @@
+summary = """
+Bank 2 throttle-position sensor 2 runtime word. FUN 000a75c0 monitors it as \
+channel index 1 against ROM16[0x9550]=60..ROM16[0x954e]=964 counts."""
+note = [
+    """
+The exact ROM descriptor catalog resolves dispatcher indices 0x113 and 0x114 \
+to P0228 and P0227, throttle-position sensor 2 bank 2 high and low input. \
+The word shares the count domain and the scale of ffff275e.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 845
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "opalescent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2760"
+name = "melodic-gorilla"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000954e=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009550=60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a7796"
+value = "0x0113"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76c6"
+value = {named = ["0000954e", "00009550", "000a75c0", "000a7796", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76ee"
+value = {named = ["0000954e", "00009550", "000a75c0", "000a7796", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76fc"
+value = {named = ["0000954e", "00009550", "000a75c0", "000a7796", "ffff2760"], span = 1}
+key = "body"
+
+[[link]]
+type = "reader"
+to = "opalescent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

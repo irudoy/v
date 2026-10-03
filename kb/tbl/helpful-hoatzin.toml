@@ -1,0 +1,191 @@
+summary = """
+Interpolated unsigned lower threshold for raw coolant snapshot ffff1071 in \
+the P030 counting-readiness condition. The lookup coordinate is derived from \
+start-latched normalized coolant snapshot ffff1070; the comparison \
+contributes to ffff41d2.bit0."""
+note = [
+    """
+The full unsigned condition is ffff1071 < ROM8[0x8cff] = 150, ffff1071 >= \
+lookup(0x12de2,min(2*ffff1070,255)), ffff106e >= ROM8[0x8d01] = 40, and \
+ffff2736 >= ROM8[0x8b50] = 40. ffff106e/ffff1070 are raw/normalized coolant \
+latched at engine start. A start temperature of at least -10 deg C gives q \
+>= 96, where stock cells ff ff ff 2b 2b 2b 2b 2b return 43, so the first \
+three conditions reduce exactly to start coolant of at least -10 deg C and \
+current raw coolant 43..149, or -7 <= coolant deg C < 100. Below a start \
+temperature of -20 deg C the lookup returns 255 and the threshold cannot be \
+met. The separate ffff2736 derived-source gate has no assigned engineering \
+scale. The lookup result is consumed once at 00083950 and is not written to \
+RAM. Index: q=min(2*uint8(RAM[ffff1070]),255); implicit nodes q=32*k for \
+k=0..7, linear interpolation between adjacent cells for q<224, q>=224 \
+selects cell[7]. Output trace: 00012de2 -> 00083934 -> 00083936 -> 00026370 \
+-> (q<224: 00026a80 -> 00026aac/00026aae -> 00026ab6 -> 00026740; q>=224: \
+cell[7] in 00026370) -> 0008393c -> 00083950 -> 00083952 -> \
+00083972/00083976 -> 00083978 -> ffff41d2. Result disposition: \
+inline_comparison; Result target: site:00083950.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 223
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-galago/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fuzzy-mouse/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wisteria-flamingo/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "raspberry-dragon/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loutish-puma/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012de2"
+name = "helpful-hoatzin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008391e"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083934"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008393c"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083950"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083956"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083966"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008397a"
+value = {named = ["00012de2", "00026370", "00026740", "00082c8a", "ffff106e", "ffff1070", "ffff1071", "ffff2736", "ffff41d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "index"
+to = "ambitious-galago/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "fuzzy-mouse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "wisteria-flamingo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "raspberry-dragon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

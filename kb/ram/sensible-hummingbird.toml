@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff39a4"
+name = "sensible-hummingbird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020ce2"
+
+[[link]]
+type = "reader"
+to = "black-kudu/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

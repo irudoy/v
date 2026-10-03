@@ -1,0 +1,162 @@
+summary = """
+Second signed-state channel using forward nonlinear table 00011d24. When \
+ROM8[00008710].bit5 is clear, it forms bounded x0 and x1 from \
+s8[ffff23f1]-s8[ffff2404], channel byte ffff11c1, and unsigned corrections \
+ffff12df/ffff15ea, then calculates \
+trunc0(s16[ffff18cc]*(256-F(x1))/(256-F(x0))). When bit5 is set, it \
+calculates \
+trunc0(s16[ffff18cc]*(256-F(clamp_u8(s8[ffff23f1]-s8[ffff11a2])))/256). The \
+saturated signed result is written to ffff18ce."""
+note = [
+    """
+F(z)=interp_u8(00011d24,axis 0001199e,z). Denominators are nonzero because \
+the table maximum is 179, so 256-F(x)>=77. The exact channel arithmetic is \
+established; the physical state and units are unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 458
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "carmine-potoo/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dexterous-marmoset/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "engine_torque_state/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "functional-corgi/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "silky-agama/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tacky-bulldog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unique-loon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "xanthic-wren/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "chubby-snake/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00065b08"
+name = "silky-vulture"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065b18"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065b5c"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065b90"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065bae"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065bde"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c16"
+value = {named = ["00011d24", "00021bbc", "000264a0", "00065b08", "ffff11a2", "ffff11c1", "ffff12df", "ffff15ea", "ffff18cc", "ffff18ce", "ffff23f1", "ffff2404"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"

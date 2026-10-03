@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff32ea"
+name = "observant-terrier"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00077c1e"
+
+[[link]]
+type = "writer"
+to = "automatic_transmission_request_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,6 +1,24 @@
-note = """
+summary = """
+Scheduler snapshot of the Q7 normalized Base Fuel Schedule byte ffff1048. \
+FUN 00020dfe copies ffff1048..ffff1063 to ffff102c..ffff1047 before periodic \
+tasks produce the next values. The exact representation is \
+min(255,floor(uint16[ffff1026]*128/ROM16[00009534])), with stock reference \
+0x6a5a; normalized percentage is raw*100/128. It is the column coordinate \
+for ignition and intake-cam target maps, the shifted coordinate and \
+threshold input in FUN 0004d2a6, and the normal Y input for exhaust-CVTC \
+target accessor 000bfdc0."""
+note = [
+    """
 The percentage is relative to the Base Fuel Schedule reference and saturates \
-at raw 255."""
+at raw 255.""",
+    """
+The fixed-reference ratio, Q7 encoding, snapshot direction, and operational \
+consumers are exact. The HR catalog calls the ratio Cylinder Filling Up \
+Efficiency; that physical name remains a candidate and is not required for \
+the normalized-BFS percentage. J1979 Calculated Load ffff413e uses a \
+different RPM-dependent denominator and 100*A/255 encoding.""",
+]
+level = "code"
 width = 8
 unit = "percent"
 scale = "x*100/128"
@@ -9,10 +27,237 @@ scale = "x*100/128"
 id = "X_VQ_Engine_Load"
 unit = "Normalized BFS [%]"
 
+[[ledger]]
+registry = "vars"
+order = 44
+fields = ["semantics", "units", "confidence"]
+notes = [1]
+storage_description = "normalized BFS Q7"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cold_hot_timing_map_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "divergent-mongrel/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fanatic-snail/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "frisky-beluga/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-potoo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "meticulous-mongoose/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transient_fuel_term_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "true-fennec/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "victorious-catfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aspiring-chupacabra/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "marigold-pheasant/tbl"
+type = "index"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "pretty-gecko/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-cassowary/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "notorious-ringtail/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff102c"
 former = ["inquisitive-spoonbill/ram/7mfk-ffff102c"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f0a"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f16"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f18"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020f1a"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d462"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d46a"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d57e"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d584"
+value = {named = ["00009534", "00009f1a", "0000a4aa", "000124b2", "00020dfe", "00022104", "0004ac60", "0004ac7a", "0004d2a6", "0004e1c0", "000528be", "00052f00", "00054ee0", "0005525a", "0005594a", "0005651c", "000bda64", "000bfdc0", "ffff102c", "ffff1048", "ffff2468", "ffff5773"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "certain-sloth/fn/7mfk"
+relies = "contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -75,3 +320,149 @@ note = """
 No normalized load snapshot is established because the 32-instruction JK08A \
 producer at 0003bd1c has no match in the target with PC-relative \
 displacements masked"""
+
+[[link]]
+type = "input"
+to = "benign-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "pretty-gecko/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "precise-nuthatch/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "cold_hot_timing_map_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "competent-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "divergent-mongrel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "knowing-potoo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "meticulous-mongoose/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "true-fennec/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "victorious-catfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "notorious-ringtail/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

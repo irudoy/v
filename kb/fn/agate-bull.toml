@@ -1,0 +1,57 @@
+summary = "Component where ffff24a0 is a mode selector and override."
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 187
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "selector"
+to = "delectable-shrimp/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00056ea6"
+name = "agate-bull"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ebe"
+value = {named = ["00056ea6", "ffff24a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f0a"
+value = {named = ["00056ea6", "ffff24a0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f0e"
+value = {named = ["00056ea6", "ffff24a0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056f10"
+value = {named = ["00056ea6", "ffff24a0"], span = 1}
+key = "body"
+
+[[link]]
+type = "selector"
+to = "delectable-shrimp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

@@ -1,0 +1,51 @@
+summary = """
+Output of 0007b2c8, forced by ffff41fb bits 4/5 to limits ffff413a (lower) \
+and ffff4138 (upper)."""
+level = "code"
+
+[[ledger]]
+registry = "vars"
+order = 235
+fields = ["semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "selector"
+to = "fluffy-salamander/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hulking-eel/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2c6c"
+name = "icy-orangutan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000715b6"
+
+[[link]]
+type = "selector"
+to = "fluffy-salamander/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "hulking-eel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"

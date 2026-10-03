@@ -1,0 +1,151 @@
+summary = """
+Stateful selected-temperature gate. While computed START SIGNAL \
+ffff4185.bit6 is set and battery-voltage raw ffff1188 is below 100, it \
+clears ffff24be.bit6 and returns 1 for coolant. Outside that condition, a \
+clear latch is set and coolant is returned once; subsequent calls with the \
+latch set return 0, the hold branch of coordinator 000394b8."""
+note = [
+    """
+Select coolant during low-voltage START SIGNAL and manage the transition \
+latch""",
+    """
+The state transition and strict raw comparison are exact. DID identities \
+bind ffff4185.bit6 to computed START SIGNAL and ffff1188 to battery voltage. \
+At 0.08 V per count the strict raw threshold is battery voltage below 8.00 \
+V; JK08A.diagnostics.md derives that scale from the ROM limits of the DTC \
+monitors.""",
+]
+level = "code"
+role = "selector"
+
+[[ledger]]
+registry = "curated"
+order = 9
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "funcs"
+order = 425
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_temperature_pair_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "acrid-weasel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "small-sheep/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "acrid-weasel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003967a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003967c"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039682"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003968c"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003968e"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039690"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039694"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003969c"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000396a4"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000396aa"
+value = {named = ["000394b8", "0003967a", "ffff1188", "ffff24be", "ffff4185"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

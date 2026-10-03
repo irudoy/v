@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "0004efe0"
+name = "nifty-bittern"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004efe0"

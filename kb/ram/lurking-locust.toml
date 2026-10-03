@@ -1,0 +1,48 @@
+summary = "Bit 4 selects special path 0x1230a in 00056bd0."
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 184
+fields = ["semantics", "units", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enthusiastic-salmon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "crouching-orca/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2484"
+name = "lurking-locust"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000431e8"
+
+[[link]]
+type = "input"
+to = "crouching-orca/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

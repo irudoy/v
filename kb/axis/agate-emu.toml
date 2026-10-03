@@ -1,3 +1,31 @@
+note = [
+    """
+Row axis for conditional exhaust-CVTC target correction 0000ab4a. FUN \
+000bfdc0 passes current RPM/50 byte ffff11ae directly to the 4x4 \
+interpolator. Stored points represent 900, 1000, 1600, and 2400 RPM.""",
+]
+level = "code"
+quantity = "rpm"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 20
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "level"
+supports = "scale"
+
 [[symbol]]
 layout = "7mfk"
 address = "00012f96"
@@ -7,6 +35,43 @@ name = "agate-emu"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bfe4c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe44"
+value = {named = ["00012f96", "00026084", "00026944", "000bfdc0", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bfe4c"
+value = {named = ["00012f96", "00026084", "00026944", "000bfdc0", "ffff11ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+key = "axis-rpm-x50"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "divergent-mongrel/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -31,3 +96,10 @@ supports = "identity"
 at = "jk00d:000c5b1a"
 note = """
 engine-speed axis operand at the exhaust-correction interpolation callsite"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

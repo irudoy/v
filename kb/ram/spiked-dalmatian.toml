@@ -1,0 +1,112 @@
+summary = """
+Filtered bank 2 MAF quantity written by FUN 0003a9aa from working curve \
+output ffff105a. It is the indexed companion of ffff1df0 and enters the same \
+downstream per-bank calculation."""
+level = "code"
+unit = "raw MAF quantity"
+
+[[ledger]]
+registry = "vars"
+order = 477
+fields = ["semantics", "units", "confidence"]
+identity = [0, 2, 3, 4, 5, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "mustard-squid/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dancing-hippo/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sandy-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.offset]]
+evidence = 0
+text = "6"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1df2"
+name = "spiked-dalmatian"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0003a9ae"
+value = 6
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_ram_structure.py"
+key = "test_maf_indexed_state_path"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a9ce"
+value = {named = ["0003a9aa", "0003a9ae", "0003af42", "ffff105a", "ffff1df2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa06"
+value = {named = ["0003a9aa", "0003a9ae", "0003af42", "ffff105a", "ffff1df2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003aa0a"
+value = {named = ["0003a9aa", "0003a9ae", "0003af42", "ffff105a", "ffff1df2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003af68"
+value = {named = ["0003a9aa", "0003a9ae", "0003af42", "ffff105a", "ffff1df2"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "dancing-hippo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "sandy-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

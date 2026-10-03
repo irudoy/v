@@ -1,3 +1,27 @@
+summary = """
+Two-word activation/release hysteresis for a normalized dual-channel \
+accelerator-pedal analog quantity. FUN 00047a56 compares current sample \
+ffff266e with cell 0 when previous-cycle state ffff246d bit 7 is clear and \
+with cell 1 when that state is set, then writes current state ffff246a bit \
+7. Scheduler 00020dfe copies ffff246a to ffff246d once per cycle."""
+note = [
+    """
+The stock activation and release thresholds are 610 and 528 counts. The \
+input is produced from on-chip A/D channels AN10 and AN17 through \
+dual-channel adjustment and minimum selection. Exact JK08A diagnostic paths \
+expose the paired accelerator-pedal sensors as DID 0x120D/0x120E and monitor \
+them through P2122/P2123/P2127/P2128. The operational high-state role is \
+proven; a narrower WOT or kickdown interpretation is not asserted.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 2
+storage = "uint16"
+unit = "normalized ADC counts"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Accelerator Pedal High-State Hysteresis"
 category = "Electronic Throttle Control / Accelerator Pedal / Thresholds"
@@ -6,6 +30,48 @@ format = "0"
 fine = 1
 coarse = 8
 static_axis = ["activate", "release"]
+
+[[ledger]]
+registry = "findings"
+order = 22
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "merciful-lionfish/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mini-kiwi/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -39,6 +105,94 @@ note = "homologous pedal-state consumer preserves the 610 and 528 threshold pair
 layout = "7mfk"
 address = "00008fdc"
 name = "aloof-swine"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008fdc"
+value = "0x0262"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008fde"
+value = "0x0210"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8a"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8e"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b94"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b96"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b9a"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba2"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba4"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba6"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bae"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bb2"
+value = {named = ["00008fdc", "00008fde", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 4}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
 
 [[symbol]]
 layout = "jk00c"
@@ -82,3 +236,25 @@ value = "00008d28"
 note = """
 aligned homologous consumer preserves the scalar operand role and stock \
 value"""
+
+[[link]]
+type = "index"
+to = "capable-cassowary/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "remarkable-lynx/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "merciful-lionfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

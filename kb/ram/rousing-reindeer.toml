@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff9f1c"
+name = "rousing-reindeer"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00020434"
+
+[[link]]
+type = "writer"
+to = "periodic_tick_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

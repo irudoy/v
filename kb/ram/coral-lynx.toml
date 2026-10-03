@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff117b"
+name = "coral-lynx"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003ebd6"
+
+[[link]]
+type = "writer"
+to = "denim-taipan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

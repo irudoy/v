@@ -1,0 +1,91 @@
+summary = """
+Multipurpose diagnostic summary byte. In FUN 0008042c, bit 3 summarizes the \
+ordered P0306..P0300 runtime-record scan. It is set when the first \
+encountered record with either third-byte bit 5 or bit 6 reaches the \
+terminator and is cleared while records contain neither bit. Third-byte bit \
+6 has priority over bit 5 because it is tested first."""
+note = [
+    """
+The summary rule is exact; its external diagnostic presentation and physical \
+phase name remain unresolved.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 446
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "writes"
+to = "scarlet-nautilus/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2461"
+name = "satisfied-bulldog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008047c"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080486"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008049e"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000804a2"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000804a8"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000804b4"
+value = {named = ["0008042c", "ffff2461"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "scarlet-nautilus/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

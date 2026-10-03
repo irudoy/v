@@ -1,0 +1,75 @@
+summary = """
+Publication word written by FUN 0003e4cc as 0x0400 minus ten-bit sample \
+ffff363a. The dynamic local-identifier table at 0x24e9c is its only other \
+reference."""
+note = [
+    """
+No service 0x22 identifier maps to this word. It shares the transform and \
+the scale of ffff2864.""",
+]
+level = "code"
+unit = "V*200"
+
+[[ledger]]
+registry = "vars"
+order = 848
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amorphous-mammoth/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-chipmunk/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2862"
+name = "super-bloodhound"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00024e9c"
+value = "ffff2862"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e4dc"
+value = {named = ["00024e9c", "0003e4cc", "ffff2862", "ffff363a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e4e4"
+value = {named = ["00024e9c", "0003e4cc", "ffff2862", "ffff363a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "amorphous-mammoth/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tall-chipmunk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

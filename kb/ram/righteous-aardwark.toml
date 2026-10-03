@@ -1,0 +1,30 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff17f8"
+name = "righteous-aardwark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074b94"
+
+[[link]]
+type = "lookup"
+to = "opal-camel/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "origami-kangaroo/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "vengeful-wildebeest/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

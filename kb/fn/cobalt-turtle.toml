@@ -1,0 +1,73 @@
+summary = """
+Bank-2 A/F sensor diagnostic-word producer. It mirrors 00059d9a for the \
+second channel and writes the saturated result to ffff2782 for exact DID \
+0x1226."""
+note = [
+    """
+The exact arithmetic and bank-2 publication are proven. Public sources \
+disagree on the physical conversion.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 274
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "front_af_sensor_b2_word/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00059e7c"
+name = "cobalt-turtle"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f6a"
+value = "0x01cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f6c"
+value = "0x01b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f98"
+value = "0x0370"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00059f66"
+value = {named = ["00008f6a", "00008f6c", "00008f98", "0003235c", "00059e7c", "ffff2782"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

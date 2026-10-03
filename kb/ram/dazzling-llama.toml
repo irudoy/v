@@ -1,0 +1,92 @@
+summary = """
+Bank-2 intake-cam edge interval word. Capture handler 0002a36a stores GR1E \
+capture fffff44c minus crank reference count ffff158a at 0002a41e and \
+divides 20 times the same difference by ffff22bc for running phase \
+ffff22d3."""
+note = [
+    """
+Channel 1A counts phi'/32 = 3.2 us, so the word is a time between the crank \
+reference and the intake-cam edge.""",
+]
+level = "code"
+unit = "timer count"
+
+[[ledger]]
+registry = "vars"
+order = 368
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inescapable-bullfinch/reg"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lovely-cuttlefish/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ca"
+name = "dazzling-llama"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a40e"
+value = {named = ["0002a36a", "ffff158a", "ffff22ca", "fffff44c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a418"
+value = {named = ["0002a36a", "ffff158a", "ffff22ca", "fffff44c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a41e"
+value = {named = ["0002a36a", "ffff158a", "ffff22ca", "fffff44c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "inescapable-bullfinch/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lovely-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

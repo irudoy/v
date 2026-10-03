@@ -1,0 +1,114 @@
+summary = """
+Implicit-axis 2D entry outside both enumerated models: calls 0x26AE0 for \
+each axis and passes the result to 2D finisher 0x26770 with row stride 8. \
+The two 8x8 maps are 0xA8EA and 0x9EDA; inputs are byte[ffff106f] and \
+byte[ffff10f0]."""
+note = [
+    """
+The region's 35th table entry is not recovered by the resolver; findings.csv \
+declares both maps in the manual layer.""",
+]
+level = "code"
+role = "wrapper"
+
+[[ledger]]
+registry = "funcs"
+order = 61
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "careful-terrier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "natural-degu/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vivacious-cheetah/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sensible-dugong/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026040"
+name = "gabby-vole"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026040"
+
+[[link]]
+type = "depends"
+to = "careful-terrier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sensible-dugong/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "vivacious-cheetah/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

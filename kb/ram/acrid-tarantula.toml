@@ -1,0 +1,83 @@
+summary = """
+Base of two uint16 throttle duty commands written by 000cc5f0: channel 0 at \
+ffff374c and channel 1 at ffff374e. Each value is capped at the stock \
+literal 490 before 000407c0 scales it to ATU-II timer counts."""
+note = [
+    "This is the last RAM magnitude before the hardware-register publisher.",
+]
+level = "code"
+unit = "duty command 0..490"
+
+[[ledger]]
+registry = "vars"
+order = 711
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "atu2_throttle_pwm_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_effort_to_duty/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff374c"
+name = "acrid-tarantula"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000cc71c"
+value = "0x01ea"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004090e"
+value = {named = ["000407c0", "000cc5f0", "000cc71c", "ffff374c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00040936"
+value = {named = ["000407c0", "000cc5f0", "000cc71c", "ffff374c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cc694"
+value = {named = ["000407c0", "000cc5f0", "000cc71c", "ffff374c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "atu2_throttle_pwm_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "throttle_effort_to_duty/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,272 @@
+summary = """
+Centered cam-coordinate correction written by FUN 0004d2a6. Its normal value \
+combines response-curve terms derived from intake target-minus-actual errors \
+and target-versus-actual intake-plus-exhaust coordinates. Ignition-angle \
+functions 0004afdc, 0004bdc2, and 00062fa4 consume the byte as value-64 or \
+an algebraically equivalent centered term."""
+note = [
+    """
+Code proves the centered cam-coordinate and ignition-angle path: 0004bdc2 \
+subtracts 64 in the alternate branch and 128 for this term together with the \
+low-seven map field in the normal branch, so the neutral value is 64 and one \
+count is one crank degree of the final coordinate. The exact high-level \
+calibration name remains unresolved.""",
+]
+level = "code"
+unit = "deg+64"
+
+[[ledger]]
+registry = "vars"
+order = 121
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rustling-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_timing_state_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aspiring-chupacabra/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "marigold-pheasant/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thoughtful-whale/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b1/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_actual_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "intake_cvtc_target/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blazing-gibbon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1a7d"
+name = "just-dog"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b33a"
+value = {named = ["00009f1a", "0000a4aa", "000125ca", "0004afdc", "0004bdc2", "0004d2a6", "00062fa4", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bdfe"
+value = {named = ["00009f1a", "0000a4aa", "000125ca", "0004afdc", "0004bdc2", "0004d2a6", "00062fa4", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004beb4"
+value = {named = ["00009f1a", "0000a4aa", "000125ca", "0004afdc", "0004bdc2", "0004d2a6", "00062fa4", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d7fc"
+value = {named = ["00009f1a", "0000a4aa", "000125ca", "0004afdc", "0004bdc2", "0004d2a6", "00062fa4", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063220"
+value = {named = ["00009f1a", "0000a4aa", "000125ca", "0004afdc", "0004bdc2", "0004d2a6", "00062fa4", "ffff1a7d", "ffff2324", "ffff2325", "ffff2326", "ffff2327", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_actual_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "aspiring-chupacabra/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "marigold-pheasant/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "thoughtful-whale/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rustling-hippo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

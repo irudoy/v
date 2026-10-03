@@ -1,0 +1,149 @@
+summary = """
+Base of three retained misfire calculated-load snapshot bytes: group 0 at \
+ffff4a45, group 1 at ffff4a46, and group 2 at ffff4a47. Reporter 00084cd0 \
+copies current PID 0x04 source ffff413e into the selected group; coordinator \
+00082c8a passes each byte to matcher 000847dc."""
+note = [
+    """
+Physical percent is 100*A/255. The three diagnostic groups remain numbered \
+because code provides no phase names.""",
+]
+level = "code"
+unit = "calculated-load code array"
+
+[[ledger]]
+registry = "vars"
+order = 440
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "devout-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "marvellous-malamute/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "calculated_load/ram"
+type = "input"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-sturgeon/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4a45"
+name = "rampant-lobster"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000836f6"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00083748"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008379a"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d1c"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d62"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d8e"
+value = {named = ["00082c8a", "000847dc", "00084cd0", "ffff413e", "ffff4a45"], span = 1}
+key = "body"
+
+[[link]]
+type = "input"
+to = "calculated_load/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "devout-avocet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-sturgeon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "classy-seahorse/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "impartial-bettong/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "persimmon-giraffe/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"

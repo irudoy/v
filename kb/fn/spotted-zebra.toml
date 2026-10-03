@@ -1,0 +1,208 @@
+summary = """
+Multimode accessor for maps 0x0B5FA and 0x11FE6. Interpolated uint8 M from \
+the selected map is multiplied by uint8 ffff3373; the product is written to \
+ffff13dc and used as a zero-saturating decrement step for uint16 ffff1866."""
+note = [
+    """
+The physical purpose of state ffff1866 is unresolved. Map 0x11FE6 contains \
+only zeros in the current ROM.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 197
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strange-mushroom/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "dramatic-warthog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "sturdy-baboon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "banana-hog/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "skinny-sambar/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stalwart-polecat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000647e8"
+name = "spotted-zebra"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064860"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064876"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006487a"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006487e"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064884"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649c8"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649ce"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649ec"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f0"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f4"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649f8"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fc"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000649fe"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064a04"
+value = {named = ["0000b5fa", "00011fde", "00011fe2", "00011fe6", "00026084", "00026770", "000647e8", "00064cb2", "ffff13dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "gleaming-walrus/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-terrier/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "banana-hog/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "skinny-sambar/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,6 +1,133 @@
+summary = """
+Combined mass-airflow diagnostic word written by FUN 0003c3ac as min(65535, \
+floor(ROM8[0x83ec]*ffff105c/256)); stock ROM8[0x83ec]=105. Exact UDS DID \
+0x1209 returns the word in big-endian order. FUN 00035856 emits the same \
+product ROM8[0x83ec]*ffff105c >> 8 as the two bytes of J1979 Mode 01 PID \
+0x10 at 00035dca and 00035dd2."""
+note = [
+    """
+J1979 defines PID 0x10 as (256A+B)/100 g/s, so the word is the airflow the \
+ECU declares in g/s*100 and the community raw/100 g/s conversion is that \
+declaration; a structured profile stating raw*1 g/s is inconsistent with the \
+PID path. The declared airflow is the ECU's own model rather than a hardware \
+measurement: the 2026-09-17 recordings put it near 5.8 g/s at idle and at a \
+volumetric efficiency above 1.2 near 5200 RPM.""",
+]
+level = "code"
 width = 16
 unit = "g/s"
 scale = "x/100"
+
+[[diagnostic]]
+id = "mass-airflow-rate-did-1209"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221209"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0119-l0119:source-row-extended-pids:parameter:0x1209-dd1a85b0"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 100
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1209 to big-endian word ffff3852. FUN \
+0003c3ac derives it as min(65535, floor(105*ffff105c/256)) from the combined \
+output of both MAF transfer curves. The community-measured raw/100 g/s \
+conversion is retained as a hardware-validation candidate. The conflicting \
+raw*1 structured-profile conversion would imply about 26,800 g/s at the \
+exact producer's reachable ceiling, while raw/100 gives a plausible ceiling \
+near 268 g/s; the independent MAF Factor dimensional closure supports \
+raw/100."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "amaranth-leech/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000083ec"
+value = "0x69"
+
+[[diagnostic.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228c0"
+value = {named = ["000083ec", "0003235c", "0003c3ac", "dd1a85b0", "ffff105c", "ffff3852"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003c3de"
+value = {named = ["000083ec", "0003235c", "0003c3ac", "dd1a85b0", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003c3fc"
+value = {named = ["000083ec", "0003235c", "0003c3ac", "dd1a85b0", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 16
+binding = "mass-airflow-rate-did-1209"
+
+[[ledger]]
+registry = "vars"
+order = 486
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+storage_description = "g/s*100"
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dazzling-ladybug/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amaranth-leech/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
 
 [[symbol]]
 layout = "1me3b"
@@ -32,6 +159,74 @@ note = "Aligned diagnostic pointer table preserves the field position"
 layout = "7mfk"
 address = "ffff3852"
 former = ["hasty-hippo/ram/7mfk-ffff3852"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083ec"
+value = "0x69"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228c0"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035db8"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035dba"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035dc2"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035dca"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035dd2"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3de"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003c3fc"
+value = {named = ["000083ec", "0003235c", "00035856", "0003c3ac", "ffff105c", "ffff3852"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "jk00c"
@@ -69,3 +264,33 @@ to = "7mfk:0003c3e0"
 count = 1
 value = 15
 note = "Aligned diagnostic pointer table preserves the field position"
+
+[[link]]
+type = "input"
+to = "amaranth-leech/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "dazzling-ladybug/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

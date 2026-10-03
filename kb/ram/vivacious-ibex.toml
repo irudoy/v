@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f88"
+name = "vivacious-ibex"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003994c"

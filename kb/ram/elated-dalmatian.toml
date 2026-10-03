@@ -1,0 +1,106 @@
+summary = """
+Reset-edge command offset produced by 0004e080. Source ffff237a is bounded \
+to 0..114 and stock optional subtraction ROM8[0x8649] is zero, proving a \
+stock offset range of 6..120. APC scheduler 0002a892 also uses the byte in \
+mode gating."""
+note = [
+    """
+An override target at most 117 yields a newly constructed secondary command \
+at most 237. The physical dwell interpretation and scale require hardware \
+validation.""",
+]
+level = "code"
+unit = "raw command offset"
+
+[[ledger]]
+registry = "vars"
+order = 598
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stock_ignition_consumer/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aloof-stork/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apc_reset_command_builder/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2230"
+name = "elated-dalmatian"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008649"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a99a"
+value = {named = ["00008649", "0002a892", "0004e080", "ffff2230", "ffff237a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e086"
+value = {named = ["00008649", "0002a892", "0004e080", "ffff2230", "ffff237a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e096"
+value = {named = ["00008649", "0002a892", "0004e080", "ffff2230", "ffff237a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0b0"
+value = {named = ["00008649", "0002a892", "0004e080", "ffff2230", "ffff237a"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "aloof-stork/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "apc_reset_command_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

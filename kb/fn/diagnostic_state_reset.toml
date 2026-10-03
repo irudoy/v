@@ -1,0 +1,88 @@
+title = "Reset runtime diagnostic records and readiness latches"
+summary = """
+Diagnostic state reset service. Among its record and state clears it clears \
+ffff422e.bit7 and ffff422f.bits4/5, resetting the three readiness latches \
+used by 0007d856."""
+note = [
+    "Other masks in the same service clear independent diagnostic state bits.",
+]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 58
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 546
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "critical_diagnostic_qualification_counter_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cream-nautilus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mega-warthog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00080b54"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d20"
+value = {named = ["0007d856", "00080b54", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d28"
+value = {named = ["0007d856", "00080b54", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d44"
+value = {named = ["0007d856", "00080b54", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080d4c"
+value = {named = ["0007d856", "00080b54", "ffff422e", "ffff422f"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "critical_diagnostic_qualification_counter_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

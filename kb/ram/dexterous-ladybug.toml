@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff34e6"
+name = "dexterous-ladybug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0008c430"
+
+[[link]]
+type = "reader"
+to = "dfco_upstream_aux_gate/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

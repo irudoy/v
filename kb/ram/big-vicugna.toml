@@ -1,0 +1,124 @@
+summary = """
+Bank-1 intake-cam running edge phase byte. Capture handler 0002a5cc writes \
+it at 0002a746 on every processed GR1F capture as 20*ffff13b2 + \
+floor(20*ffff22c8 / ffff22bc) - 60 (selector below 8) or - 20 (selector 8 \
+and above), clamped at zero, and copies it to ffff22cc at 0002a75e only \
+while event state ffff13c8 is 2, 4, or 6."""
+note = ["One count is 0.5 crank degrees; see ffff22cc."]
+level = "code"
+unit = "edge phase raw"
+
+[[ledger]]
+registry = "vars"
+order = 373
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "greedy-horse/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tunneling-doberman/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quick-mantis/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22d2"
+name = "big-vicugna"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a6f4"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff22bc", "ffff22c8", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a714"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff22bc", "ffff22c8", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a72c"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff22bc", "ffff22c8", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a746"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff22bc", "ffff22c8", "ffff22d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a75e"
+value = {named = ["00021bbc", "0002a5cc", "ffff13b2", "ffff22bc", "ffff22c8", "ffff22d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "input"
+to = "greedy-horse/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tunneling-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "quick-mantis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

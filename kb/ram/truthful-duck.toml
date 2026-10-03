@@ -1,0 +1,232 @@
+summary = """
+Signed ramp state of rotational-speed request limiter 0007584e. The active \
+branch applies fast coefficient 0x9428 while ffff25b0 is nonzero and \
+ffff24a3.bit2 is clear, or normal coefficient 0x9426 otherwise, then \
+enforces the current-RPM first-column baseline from 0xe98e and upper \
+saturation. The inactive branch copies APP request ffff243c when previous \
+ffff19d8 is below neutral. A restrictive recovery envelope rolls this state \
+back to its entry value; ffff4252.bit1 synchronizes it from ffff19c6."""
+note = [
+    """
+Fast mode normally operates while the ramp is positive; a nonpositive entry \
+value sets the latch before rate selection. The physical signed-request \
+scale remains unresolved.""",
+]
+level = "code"
+unit = "signed raw"
+
+[[ledger]]
+registry = "vars"
+order = 113
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "arcane-griffin/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "khaki-aardwolf/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "poetic-stallion/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vigorous-binturong/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "adorable-rhino/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shrewd-manul/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "spirited-taipan/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rotational_speed_request_limiter/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff19da"
+name = "truthful-duck"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000759e2"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a5e"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a82"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075aa4"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075ac2"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075ade"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075b88"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075bea"
+value = {named = ["00009426", "00009428", "0000e98e", "0007584e", "ffff19da", "ffff243c", "ffff24a3", "ffff25b0", "ffff4252"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "arcane-griffin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "vigorous-binturong/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "khaki-aardwolf/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "poetic-stallion/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "rev_limit_throttle_cut/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "adorable-rhino/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "spirited-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

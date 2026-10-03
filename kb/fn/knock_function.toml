@@ -1,3 +1,158 @@
+summary = """
+Periodic-table index-65 knock and high-detonation timing-state coordinator. \
+It consumes and clears threshold-exceedance count ffff2142; maintains signed \
+Q8 state ffff1258 with a +13 quiet step or -307*count event step on one \
+branch; updates selector ffff2466.bit6; and independently looks up the low \
+seven bits of 0x9A1A and 0x9B1A. When ffff2469.bit7 is clear and \
+ffff2467.bit6 is set it writes \
+ffff121a=int16(ffff1380+((high_octane-high_detonation)<<8)); alternate \
+branches slew-limit another Q8 state. It publishes ffff22fa as signed \
+division by 256 truncated toward zero for consumer 0004d99c."""
+note = [
+    """
+Update knock and high-detonation timing state and publish the hot-map term""",
+    """
+The direct map-difference formula is conditional. Other branches can copy, \
+force, filter, or zero state, and the selector has additional gates. The \
+count is cleared before the end-of-FUN-00020dfe snapshot boundary.""",
+]
+level = "code"
+role = "accessor"
+former = ["knock_timing_state_coordinator"]
+
+[[ledger]]
+registry = "curated"
+order = 98
+fields = ["name"]
+notes = [0]
+name = "knock_timing_state_coordinator"
+
+[[ledger]]
+registry = "funcs"
+order = 142
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "event_timing_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_detonation_timing_state/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "high_octane_timing_state/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "curious-mustang/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glorious-spider/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_count/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "magnificent-crab/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "masked-inchworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-weasel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_count/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_surface_state/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knock_timing_state/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "steady-lionfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thick-dalmatian/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "1me3b"
 address = "00071d64"
@@ -23,6 +178,98 @@ and clears it at 0x6df4a"""
 [[symbol]]
 layout = "7mfk"
 address = "000493e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008eaa"
+value = "0x000d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008eae"
+value = "0x0133"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f00"
+value = "0x2000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f02"
+value = "0xf900"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021a70"
+value = "000493e8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004946e"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004952c"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00049580"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000495d6"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000495e2"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000495f2"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00049656"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000496d8"
+value = {named = ["00008eaa", "00008eae", "00008f00", "00008f02", "00009a1a", "00009b1a", "00021a70", "00026230", "000493e8", "0004d99c", "ffff121a", "ffff1258", "ffff1380", "ffff1382", "ffff160f", "ffff2142", "ffff22fa", "ffff2466", "ffff2467", "ffff2469"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
 
 [[symbol]]
 layout = "jk00c"
@@ -57,3 +304,11 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00062780"
 note = "Target event path preserves bit tracking and saturating count behavior"
+
+[[link]]
+type = "depends"
+to = "event_timing_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

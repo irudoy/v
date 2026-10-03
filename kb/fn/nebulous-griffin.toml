@@ -1,0 +1,161 @@
+summary = """
+Paired accessor for 0x14FD2/0x14FE2. Value 0x14FD2 is limited to 10..5000 \
+and its low byte is written to ffff8b18. Value 0x14FE2 independently \
+participates in two local comparisons and is stored in a stack slot after \
+bound selection."""
+note = [
+    """
+The physical purpose of both calibrations is unresolved. The semantics of \
+0x14FE2 remain candidate because downstream consumption of the stack value \
+is unresolved.""",
+]
+level = "code"
+role = "accessor"
+
+[[ledger]]
+registry = "funcs"
+order = 188
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "liberal-ape/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "obedient-terrier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bulky-penguin/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005e278"
+name = "nebulous-griffin"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e74c"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e756"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e75a"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e760"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e766"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e76a"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e772"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e778"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e782"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e78c"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e790"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e7a4"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005e7aa"
+value = {named = ["00013bc8", "00014fd2", "00014fe2", "000264cc", "00026740", "0005e278"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "bulky-penguin/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

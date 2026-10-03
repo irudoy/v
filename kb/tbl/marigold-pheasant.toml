@@ -1,0 +1,259 @@
+summary = """
+Dimensionless coefficient K for the high-ffff102c fallback branch of the \
+intake-cam-deviation correction. Code calculates \
+d0=max(0,64+trunc0(K*(u8[ffff1a8d]-128)/256)) and \
+d1=max(0,64+trunc0(K*(u8[ffff1a8c]-128)/256)); min(d0,d1,64) enters centered \
+output ffff1a7d."""
+note = [
+    """
+FUN 0004d2a6 evaluates the 16x16 map by RPM/50 and uint8[ffff102c]>>3. The \
+interpolated byte is stored at ffff15ef but remains live in r6 and r3 until \
+both multiplications. Negative products add 255 before the arithmetic right \
+shift by 8, proving signed division by 256 rounded toward zero. This branch \
+is used when ffff2458.bit5 is clear and uint8[ffff102c] exceeds threshold \
+map 000124b2. Code proves the narrow operational role in a centered \
+intake-cam-deviation correction consumed by ignition-angle calculations; the \
+engineering degree scale is unresolved. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless coefficient"
+scale = "x/256"
+to_raw = "x*256"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 53
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "blazing-gibbon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "pretty-gecko/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "asparagus-cockle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "just-dog/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009f1a"
+name = "marigold-pheasant"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d480"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d48a"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d48c"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d48e"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d492"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d498"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d59e"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d5d2"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "exhaust_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d492"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d59e"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5a2"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5a8"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5ac"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5d2"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5d6"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5da"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004d5de"
+value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "pretty-gecko/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "blazing-gibbon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "asparagus-cockle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

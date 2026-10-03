@@ -1,0 +1,24 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff259c"
+name = "military-dogfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00050612"
+
+[[link]]
+type = "reader"
+to = "dfco_upstream_mode_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amiable-porcupine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,118 @@
+summary = """
+Current output of EVAP fuel-level coordinate/sentinel curve 00014bca. FUN \
+0003dac6 writes the two lookup paths here; scheduler FUN 00020dfe copies \
+this word to previous-cycle snapshot ffff272a within the 0x104-byte runtime \
+block."""
+note = [
+    """
+Every stock map cell is 0xffff, so this word is always 0xffff in JK03A and \
+JK08A. Exact-address p-code has two writes and no direct readers; liveness \
+continues through the block snapshot.""",
+]
+level = "code"
+unit = "EVAP fuel-level sentinel raw"
+
+[[ledger]]
+registry = "vars"
+order = 541
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rigorous-parakeet/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cerise-monkey/ram"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-parakeet/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff282e"
+name = "married-dodo"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00020fca"
+value = {named = ["00014bca", "00020dfe", "00022558", "0003dac6", "ffff272a", "ffff282e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dc1c"
+value = {named = ["00014bca", "00020dfe", "00022558", "0003dac6", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dd9a"
+value = {named = ["00014bca", "00020dfe", "00022558", "0003dac6", "ffff272a", "ffff282e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "contract"
+
+[[link]]
+type = "depends"
+to = "cerise-monkey/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "writes"
+
+[[link]]
+type = "lookup"
+to = "rigorous-parakeet/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "tall-parakeet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

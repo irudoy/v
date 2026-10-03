@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff449c"
+name = "feathered-flounder"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007f136"
+
+[[link]]
+type = "writer"
+to = "excellent-ferret/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

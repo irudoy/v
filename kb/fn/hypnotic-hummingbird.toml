@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "000cc94e"
+name = "hypnotic-hummingbird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000cc94e"

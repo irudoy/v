@@ -1,0 +1,17 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff269c"
+name = "horned-turtle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000a71c0"
+
+[[link]]
+type = "reader"
+to = "boisterous-meerkat/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

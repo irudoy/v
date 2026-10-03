@@ -1,10 +1,198 @@
+summary = """
+Current engine-speed word in RPM/12.5 representation. FUN 000384fe writes \
+ffff1196>>6 here. It is returned by UDS DID 0x1201 and is also an \
+interpolation input for Fuel Compensation Map 0xA29A and the per-cylinder \
+Knock Slice Map accessor 0x1108E."""
+note = [
+    """
+For one U = uint16[ffff1196], W = uint16[ffff11f4] = U >> 6 and B = \
+uint8[ffff11e6] = U >> 8 satisfy W = 4*B + ((U >> 6) & 3). The nominal 12.5 \
+RPM/count word and 50 RPM/count byte scales do not imply exact raw-value \
+equality. Scheduler-latched ffff11ae can represent a different producer \
+sample; no exact current-word reconstruction or raw-value ratio to saturated \
+byte ffff11b3 is asserted.""",
+]
+level = "code"
 width = 16
+unit = "rpm/12.5"
 
 [logparam]
 id = "X_VQ_Engine_Speed"
 unit = "RPM"
 
+[[diagnostic]]
+id = "engine-speed-did-1201"
+kind = "runtime_value"
+label = "DiagnosticParameter"
+key = "diagnostic-parameter:request:221201"
+claim = {label = "ParameterDefinition", id = "370z-can-logger-2025-07-05:candata-extended-pids-csv:l0112-l0112:source-row-extended-pids:parameter:0x1201-26b840c1"}
+applicability = "homologous_community"
+scope = "exact-code"
+priority = 95
+level = "code"
+note = """
+The exact JK08A UDS table maps DID 0x1201 to word ffff11f4. FUN 000384fe \
+writes ffff1196>>6. The same producer forms RPM/25 ffff11b3 with a shift of \
+7 and RPM/50 ffff11ae with a shift of 8, proving x*12.5 RPM for ffff11f4. \
+This exact relation resolves the conflicting x*10 and x*12.5 community \
+formulas in favor of x*12.5 for JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "married-moth/fn/7mfk"
+relies = "level"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "classic-caracal/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000228a0"
+value = {named = ["0003235c", "000384fe", "26b840c1", "ffff1196", "ffff11f4"], span = 1}
+key = "pointer"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00038548"
+value = {named = ["0003235c", "000384fe", "26b840c1", "ffff1196", "ffff11f4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0003856c"
+value = {named = ["0003235c", "000384fe", "26b840c1", "ffff1196", "ffff11f4"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "pearl-waxbill/fn/7mfk"
+relies = "structure"
+note = "writes"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 1
+binding = "engine-speed-did-1201"
+
+[[ledger]]
+registry = "vars"
+order = 81
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knock_slice_threshold_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "married-moth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "startup_initializer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pearl-waxbill/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff11f4"
 name = "authentic-wasp"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038548"
+value = {named = ["0002c648", "0003235c", "000384fe", "00049ffc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003854c"
+value = {named = ["0002c648", "0003235c", "000384fe", "00049ffc", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003856c"
+value = {named = ["0002c648", "0003235c", "000384fe", "00049ffc", "ffff11f4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "knock_slice_threshold_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "married-moth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "natural-roadrunner/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pearl-waxbill/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

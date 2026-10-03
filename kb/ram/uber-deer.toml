@@ -1,0 +1,149 @@
+summary = """
+Pending one-hot channel mask of the delayed injection start. Sequencer \
+00054a44 writes ROM8[00022695 + slot] for the slot accepted on the current \
+engine event and zero when no slot is accepted; engine-event driver 00028ea2 \
+seeds it during the start phase. Compare-match handler 0002be40 fires it \
+through one-shot scheduler 0002c13c, and the sequencer fires it on the next \
+event when ffff84ec.bit7 is still set."""
+note = [
+    """
+Slot masks at 00022695 are 02 04 08 10 20 01. Channel bit k drives the \
+injector of cylinder k + 1: Power Balance service 0x30 IOLID 0x0c replaces \
+the same six-channel mask bit for bit and the Nissan-family profile assigns \
+bits 1..32 to cylinders 1..6. The assignment is not measured electrically.""",
+]
+level = "code"
+unit = "six-channel bit mask"
+
+[[ledger]]
+registry = "vars"
+order = 889
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_event_isr/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-dormouse/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pastel-yak/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2228"
+name = "uber-deer"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022695"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00029756"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002a170"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b6e"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054be2"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c14"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054cec"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d0a"
+value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "injector_event_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -1,0 +1,66 @@
+title = "Add a full ETC fault mask under the low-speed status gate"
+summary = """
+ETC-fault low-speed full-mask helper. It returns 3f when coarse speed is <=2 \
+and ffff10e4.bit2 is set, otherwise zero."""
+note = ["This mask is ORed with the staged RPM mask."]
+level = "code"
+role = "service"
+
+[[ledger]]
+registry = "curated"
+order = 44
+fields = ["name"]
+title = true
+
+[[ledger]]
+registry = "funcs"
+order = 537
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "etc_actuator_fault_inhibit_mask/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "stoic-numbat/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000509ea"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000509ea"
+value = {named = ["0005096c", "ffff10e4", "ffff110e"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "etc_actuator_fault_inhibit_mask/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

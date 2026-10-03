@@ -1,0 +1,115 @@
+summary = """
+Result bits of the P0014/P0024 target-tracking pair. FUN 000904c2 sets the \
+bank bit at 000905fc together with ffff3583; FUN 0008f168 sets the stored \
+fault of index 0xd2 or 0xd3 through 0008c2d2 while the bit is set and clears \
+it through 0008c348 otherwise. A latched pass instead clears the stored \
+fault directly from FUN 000904c2."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 790
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "paper-hippo/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "prehistoric-skua/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tough-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cooperative-alligator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "weightless-coati/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff358c"
+name = "eminent-boar"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008fb3e"
+value = {named = ["0008c2d2", "0008c348", "0008f168", "0008fc6a", "000904c2", "ffff358c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008fb9c"
+value = {named = ["0008c2d2", "0008c348", "0008f168", "0008fc6a", "000904c2", "ffff358c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000905fc"
+value = {named = ["0008c2d2", "0008c348", "0008f168", "0008fc6a", "000904c2", "ffff358c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "paper-hippo/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "prehistoric-skua/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tough-avocet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "cooperative-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "weightless-coati/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

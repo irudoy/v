@@ -1,0 +1,168 @@
+summary = """
+Service-0x3b flag byte of LIDs 1..4. For each LID the even bit is the apply \
+bit and the next odd bit is the store bit: bits 0 and 1 for LID 1, 2 and 3 \
+for LID 2, 4 and 5 for LID 3, and 6 and 7 for LID 4. Handler 00034194 writes \
+the bits, and diagnostic-state reset 0002e81a zeroes the byte with flag \
+bytes ffff99f5..ffff99f9."""
+note = [
+    """
+Flag bytes ffff99f5..ffff99f8 hold LIDs 5..20 in the same layout; \
+ROM16[0x22e32+2*LID] gives the byte offset and the apply mask.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 929
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "curvy-barracuda/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "khaki-guppy/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "screeching-bumblebee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amber-wildcat/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "passionate-penguin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff99f4"
+name = "ruby-mouse"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022e34"
+value = "0x0001"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002e836"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003428a"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003429a"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000342c2"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000342c8"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000342e8"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000683e4"
+value = {named = ["00022e34", "0002e81a", "00034194", "00034fe4", "0006836e", "000683cc", "ffff99f4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "curvy-barracuda/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "khaki-guppy/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "screeching-bumblebee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amber-wildcat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "passionate-penguin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

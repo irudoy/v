@@ -1,0 +1,72 @@
+summary = """
+Signed accelerator-request precursor written by 00075590 after combining the \
+normalized pedal contribution with bounded offsets, corrections, and \
+mode-controlled limits."""
+note = [
+    """
+This word is not a pure pedal percentage because its producer adds \
+independent terms.""",
+]
+level = "code"
+unit = "signed internal request"
+
+[[ledger]]
+registry = "vars"
+order = 674
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerator_pedal_request_preprocessor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff18f2"
+name = "arcane-cuscus"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007575a"
+value = {named = ["00075306", "00075590", "ffff18f2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075778"
+value = {named = ["00075306", "00075590", "ffff18f2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "pedal_request_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "accelerator_pedal_request_preprocessor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

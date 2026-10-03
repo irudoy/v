@@ -1,0 +1,163 @@
+summary = """
+Commanded-mixture request byte of stage 0005594a: 8 while the warm gate \
+ffff24a4 bit 5 is clear (coolant ffff1071 with 3-count hysteresis below \
+ROM8[00008cf8] = 115), 1 when target byte ffff15eb equals 128, otherwise \
+2..7 from the engine-speed band flags of ffff2493 (ffff11ae against \
+ROM8[000087d4] = 44 and ROM8[000087d3] = 72, i.e. 2200 and 3600 rpm, with \
+4-count hysteresis and the ROM8[000087d7]/ROM8[000087d8] pair), wide-open \
+latch ffff2468 bit 3, and ffff2485 bit 6 (ffff10be >= ROM8[000087d5] = \
+254)."""
+level = "code"
+unit = "state"
+
+[[ledger]]
+registry = "vars"
+order = 751
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inquisitive-crow/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "cerise-skink/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "glittering-salmon/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "laughing-goshawk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1411"
+name = "passionate-malkoha"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087d3=72"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087d4=44"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000087d5=254"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008cf8=115"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055bd2"
+value = {named = ["000087d3", "000087d4", "000087d5", "00008cf8", "0005594a", "ffff1411", "ffff15eb", "ffff2468", "ffff2485", "ffff2493", "ffff24a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055c80"
+value = {named = ["000087d3", "000087d4", "000087d5", "00008cf8", "0005594a", "ffff1411", "ffff15eb", "ffff2468", "ffff2485", "ffff2493", "ffff24a4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "inquisitive-crow/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cerise-skink/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "glittering-salmon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "laughing-goshawk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

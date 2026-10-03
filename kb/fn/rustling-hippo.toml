@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00062fa4"
+name = "rustling-hippo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00062fa4"

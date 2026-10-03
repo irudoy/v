@@ -1,0 +1,46 @@
+summary = """
+HCAN1 physical mailbox 26 control-field base. The standard identifier \
+occupies the word at +0, the extended-identifier low word is at +2, and \
+MBC/DLC control is at +4."""
+note = [
+    "Stock record 25 is 05 00 00 00 and configures this mailbox inactive.",
+]
+level = "code"
+unit = "peripheral mailbox"
+
+[[ledger]]
+registry = "vars"
+order = 665
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "granite-chameleon/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffffdc40"
+name = "solemn-heron"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000097be"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.1"
+
+[[link]]
+type = "writer"
+to = "granite-chameleon/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

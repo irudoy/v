@@ -1,3 +1,22 @@
+summary = """
+Raw eight-point uint8 table whose interpolated result is extended to uint16 \
+in ffff1230 and used as an addend in a saturating sum and accumulators, an \
+equality operand, and a byte source after local division by 4."""
+note = [
+    """
+The lookup by uint8 ffff1077 is extended to uint16 and written to ffff1230. \
+Consumers use ffff1230 as an addend in saturating sums and accumulators, an \
+equality operand, and a byte source after local division by 4. All cells \
+equal 170; this does not establish a physical quantity. The implicit RAM \
+axis is not emitted separately.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
 [editor]
 name = "Shared Additive Base Term - raw u8 (0x122E2)"
 category = "Internal Calculations"
@@ -7,7 +26,184 @@ format = "0"
 fine = 1
 coarse = 16
 
+[[ledger]]
+registry = "findings"
+order = 377
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cheerful-hornet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "hissing-jaguar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "honest-pheasant/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tacky-crab/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "thick-lionfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "thundering-sambar/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "coolant_index/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mahogany-otter/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
 [[symbol]]
 layout = "7mfk"
 address = "000122e2"
 name = "kind-mouse"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c62a"
+value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c630"
+value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c636"
+value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002c63c"
+value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
+key = "reference"
+
+[[link]]
+type = "index"
+to = "coolant_index/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "able-crow/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "cheerful-hornet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "hissing-jaguar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "honest-pheasant/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "tacky-crab/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "thick-lionfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "thundering-sambar/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

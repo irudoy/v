@@ -1,0 +1,508 @@
+summary = """
+Dual-bank MAF fault RPM inhibit contributor. It returns true while the \
+snapshotted OR of P0101/P0102/P0103 and P010B/P010C/P010D runtime-record \
+byte1.bit7 is set and RPM is at least 2400."""
+note = [
+    """
+Dual-bank P0101/P0102/P0103 and P010B/P010C/P010D summary RPM fuel inhibit""",
+    """
+Extension record 0x129 is a live six-DTC group summary produced after \
+diagnostic runtime-record initialization; it is not a seventh ROM \
+descriptor.""",
+]
+level = "code"
+role = "accessor"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p0101"
+kind = "monitor"
+label = "DtcCode"
+key = "P0101"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c18"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0xba is P0101 MAF SEN/CIRCUIT-B1. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019c18"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["00019c18", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097ec8"
+value = {named = ["00019c18", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097ee2"
+value = {named = ["00019c18", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p0102"
+kind = "monitor"
+label = "DtcCode"
+key = "P0102"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c24"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0xbb is P0102 MAF SEN/CIRCUIT-B1. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019c24"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["00019c24", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f20"
+value = {named = ["00019c24", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f22"
+value = {named = ["00019c24", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p0103"
+kind = "monitor"
+label = "DtcCode"
+key = "P0103"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019c30"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0xbc is P0103 MAF SEN/CIRCUIT-B1. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019c30"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["00019c30", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f56"
+value = {named = ["00019c30", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f68"
+value = {named = ["00019c30", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p010b"
+kind = "monitor"
+label = "DtcCode"
+key = "P010B"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193b4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x07 is P010B MAF SEN/CIRCUIT-B2. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193b4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["000193b4", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f00"
+value = {named = ["000193b4", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f02"
+value = {named = ["000193b4", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p010c"
+kind = "monitor"
+label = "DtcCode"
+key = "P010C"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193c0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x08 is P010C MAF SEN/CIRCUIT-B2. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193c0"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["000193c0", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f40"
+value = {named = ["000193c0", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f42"
+value = {named = ["000193c0", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic]]
+id = "dual-bank-maf-fault-inhibit-p010d"
+kind = "monitor"
+label = "DtcCode"
+key = "P010D"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193cc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+Exact runtime-record index 0x09 is P010D MAF SEN/CIRCUIT-B2. Its status is \
+ORed into extension record 0x129 and can request the 2400 RPM global fuel \
+inhibit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "fuel_output_inhibit_coordinator/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193cc"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:0004f736"
+value = {named = ["000193cc", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f86"
+value = {named = ["000193cc", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00097f88"
+value = {named = ["000193cc", "00025e20", "0003c3ac", "0004ed88", "00097eb4"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+note = "trace"
+
+[[ledger]]
+registry = "curated"
+order = 25
+fields = ["name"]
+notes = [0]
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 179
+binding = "dual-bank-maf-fault-inhibit-p0101"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 180
+binding = "dual-bank-maf-fault-inhibit-p0102"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 181
+binding = "dual-bank-maf-fault-inhibit-p0103"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 182
+binding = "dual-bank-maf-fault-inhibit-p010b"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 183
+binding = "dual-bank-maf-fault-inhibit-p010c"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 184
+binding = "dual-bank-maf-fault-inhibit-p010d"
+
+[[ledger]]
+registry = "funcs"
+order = 528
+fields = ["role", "semantics", "confidence"]
+notes = [1]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "resourceful-scorpion/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004f736"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f736"
+value = {named = ["00025e20", "0003c3ac", "0004ed88", "00097eb4", "ffff11b2", "ffff2448"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f73a"
+value = {named = ["00025e20", "0003c3ac", "0004ed88", "00097eb4", "ffff11b2", "ffff2448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f742"
+value = {named = ["00025e20", "0003c3ac", "0004ed88", "00097eb4", "ffff11b2", "ffff2448"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f74a"
+value = {named = ["00025e20", "0003c3ac", "0004ed88", "00097eb4", "ffff11b2", "ffff2448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dual_bank_maf_diagnostic_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_group_summary_update/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,72 @@
+summary = """
+Bit 7 is the enrichment latch of stage 0005594a: set when the target mixture \
+byte, plus ROM8[00008b9b] - ROM8[00008b9f] = 1 while already set, is >= \
+ROM8[00008b9b] = 130; while clear, ffff15eb is forced to 128, the \
+closed-loop stoichiometric target."""
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 197
+fields = ["semantics", "units", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "large-tamarin/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "large-tamarin/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24a2"
+name = "big-junglefowl"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9b=130"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b9f=129"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055a26"
+value = {named = ["00008b9b", "00008b9f", "0005594a", "ffff24a2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055a40"
+value = {named = ["00008b9b", "00008b9f", "0005594a", "ffff24a2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "large-tamarin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

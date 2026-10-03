@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "7mfk"
+address = "00097018"
+name = "divergent-spoonbill"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00097018"

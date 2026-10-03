@@ -1,0 +1,16 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff15ee"
+name = "acoustic-moth"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004bc30"
+
+[[link]]
+type = "lookup"
+to = "gentle-macaque/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

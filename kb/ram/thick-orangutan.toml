@@ -1,0 +1,89 @@
+summary = """
+Compensation disable/fault latch in two components, bit 3 in 000473ac and \
+bit 1 in 00056bd0: when set, the accessor writes neutral 0x80 instead of \
+interpolation from map 0x1233a or special path 0x1230a."""
+note = [
+    """
+Bit 0 is an inhibit term of exhaust-VTC operating enable ffff248b bit 2 in \
+000bf630; no instruction in the image sets it, so the term is inert. Bits 4 \
+and 5 are written by 000a40f4 and 000a454e, bit 6 by 000a2094, 000a2254, and \
+000a3ba8, and bit 7 by 000a3f96 and 000a407a.""",
+]
+level = "code"
+unit = "bitfield"
+
+[[ledger]]
+registry = "vars"
+order = 306
+fields = ["semantics", "units", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "boisterous-cuttlefish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "enthusiastic-salmon/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "evasive-ibis/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "archetypal-herring/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41d0"
+name = "thick-orangutan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00041868"
+
+[[link]]
+type = "input"
+to = "archetypal-herring/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "boisterous-cuttlefish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "evasive-ibis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
