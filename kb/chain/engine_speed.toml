@@ -15,14 +15,12 @@ home = "7mfk"
 order = 2
 
 [[step]]
-from = "abstract-pudu/reg"
+from = "atu1_osbr1/reg"
 to = "soft-seagull/ram"
 effect = "stores"
 sign = "none"
 via = ["pastel-yak/fn"]
-note = """
-On every crank tooth the ICI0A prologue 00028ea2 stores OSBR1 at 00028f22 as \
-crank reference capture ffff158a, in 3.2 us counts."""
+note = "prev = ffff158a; ffff158a = fffff456"
 
 [[step]]
 from = "soft-seagull/ram"
@@ -30,9 +28,7 @@ to = "pistachio-porcupine/ram"
 effect = "subtracts"
 sign = "none"
 via = ["pastel-yak/fn"]
-note = """
-Timestamp difference: ffff22ba = current minus previous ffff158a, 0xffff on \
-the first capture; it spans 10 crank degrees, 30 on tooth 8."""
+note = "ffff22ba = uint16(ffff158a - prev)"
 
 [[step]]
 from = "pistachio-porcupine/ram"

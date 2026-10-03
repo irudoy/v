@@ -1635,14 +1635,12 @@ specs = [
 ]
 
 [[chain.step]]
-from = "fffff434"
+from = "fffff456"
 to = "ffff158a"
 effect = "stores"
 sign = "none"
 via = ["00028ea2"]
-note = """
-On every crank tooth the ICI0A prologue 00028ea2 stores OSBR1 at 00028f22 as \
-crank reference capture ffff158a, in 3.2 us counts."""
+note = "prev = ffff158a; ffff158a = fffff456"
 
 [[chain.step]]
 from = "ffff158a"
@@ -1650,9 +1648,7 @@ to = "ffff22ba"
 effect = "subtracts"
 sign = "none"
 via = ["00028ea2"]
-note = """
-Timestamp difference: ffff22ba = current minus previous ffff158a, 0xffff on \
-the first capture; it spans 10 crank degrees, 30 on tooth 8."""
+note = "ffff22ba = uint16(ffff158a - prev)"
 
 [[chain.step]]
 from = "ffff22ba"

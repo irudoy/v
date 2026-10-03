@@ -1,0 +1,74 @@
+summary = """
+Shared status byte whose reviewed bit 6 selects initialized crank-reference \
+history in the normal ICI0A prologue. Bit 6 clear publishes 0xffff to both \
+period words and sets the bit while preserving the others; bit 6 set permits \
+the modulo-65536 difference of consecutive OSBR1 captures."""
+width = 8
+signed = false
+unit = "flags"
+
+[[bit]]
+bit = 6
+name = "initialized"
+summary = "Stored crank capture is available for the tooth-period difference."
+level = "code"
+
+[[bit.evidence]]
+kind = "l0"
+at = "7mfk:00028f28"
+
+[[bit.evidence]]
+kind = "test"
+at = "7mfk:00028f28"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24c1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00028f28"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Read the byte before testing bit 6 for initialized capture history."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028f28"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "The first-capture branch ORs bit 6 and preserves every other bit."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028f46"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"

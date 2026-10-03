@@ -1,0 +1,54 @@
+summary = """
+ATU-II channel-1 offset base register OSBR1. This read-only 16-bit capture \
+register uses the TI0A trigger also used by channel-0 ICR0A and captures the \
+channel-1 counter. The normal ICI0A prologue reads its word through the \
+signed base fffff440 plus 0x16 and stores it in ffff158a before computing \
+the tooth-period difference. The separate 32-bit ICR0A root is fffff434."""
+width = 16
+signed = false
+unit = "timer counts"
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff456"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00028f1c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-osbr1"
+note = """
+Renesas SH7058/SH7059 hardware manual, section 11.2.21 and channel-1 \
+register table."""
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+note = """
+Normal ICI0A mode reads the word at fffff440+0x16; this is OSBR1, not the \
+separate ICR0A longword."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028f1c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"

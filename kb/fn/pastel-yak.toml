@@ -11,9 +11,9 @@ least ROM8[00008c81] = 8, a ratio above ROM8[00008c89] = 118 and a count of \
 at least ROM8[00008c81] = 8 before sync or ROM8[00008c82] = 8 after it set \
 gap flag ffff84e9.bit7; the next tooth latches the count in ffff13b4, \
 restarts ffff13b2 at zero, sets sync flag ffff8501.bit7, and clears the gap \
-flag. With sync set, tooth 8 stores one third of its interval in ffff22bc. \
-The body dispatches tooth numbers 0, 4, 6, 7, 8, and 9. Tooth 7, the last \
-tooth before the two-missing-teeth gap, is the engine event: with \
+flag. With sync set, tooth 8 stores floor(21845*uint16(ffff22ba)/65536) in \
+ffff22bc. The body dispatches tooth numbers 0, 4, 6, 7, 8, and 9. Tooth 7, \
+the last tooth before the two-missing-teeth gap, is the engine event: with \
 ffff8501.bit7 set it copies identified cylinder ffff13c8 to event index \
 ffff11de, forms spark mask ffff13bd = 1 << (index - 1) through 000221bc, and \
 calls scheduler feeder 000208f8. Tooth 4 identifies the cylinder from the \
@@ -38,16 +38,16 @@ note = [
 The crank signal plate carries ten teeth at 10-degree pitch per 120 crank \
 degrees with two missing teeth between tooth 7 and tooth 8. The gap ratio 64 \
 * 3 = 192 appears on tooth 9, the tooth after it becomes tooth 0, and the \
-divide-by-three normalization at tooth 8 (multiplier 0x5555 >> 16) matches \
-the three-pitch interval from tooth 7 to tooth 8. Relative to tooth 7, teeth \
-8, 9, 0, 1, 2, 3, 4, 5, 6, and 7 follow at 30, 40, 50, 60, 70, 80, 90, 100, \
-110, and 120 degrees. Entry 00028ea2 owns the prologue, the crank-tooth \
-continuation at 00029588, and the common restore tail ending in RTE at \
-0002a2ba. The bounded ratio-cell action and its hardware exclusions are \
-specified in defs/JK08A.ici0a-ratio.md. The first tooth-9 capture seeds the \
-misfire reference and every later one produces an interval over 120 crank \
-degrees. The mechanical offset between the sensor and the plate remains a \
-hardware boundary.""",
+fixed-point one-third approximation at tooth 8 (multiplier 0x5555 >> 16) \
+matches the three-pitch interval from tooth 7 to tooth 8. Relative to tooth \
+7, teeth 8, 9, 0, 1, 2, 3, 4, 5, 6, and 7 follow at 30, 40, 50, 60, 70, 80, \
+90, 100, 110, and 120 degrees. Entry 00028ea2 owns the prologue, the \
+crank-tooth continuation at 00029588, and the common restore tail ending in \
+RTE at 0002a2ba. The bounded ratio-cell action and its hardware exclusions \
+are specified in defs/JK08A.ici0a-ratio.md. The first tooth-9 capture seeds \
+the misfire reference and every later one produces an interval over 120 \
+crank degrees. The mechanical offset between the sensor and the plate \
+remains a hardware boundary.""",
 ]
 level = "code"
 role = "driver"
@@ -165,6 +165,15 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "acrid-bonobo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "atu1_osbr1/reg"
 type = "reader"
 end = "to"
 link_role = "indexed_by"

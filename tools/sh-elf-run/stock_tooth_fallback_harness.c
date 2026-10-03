@@ -61,7 +61,7 @@ static int run_case(const struct stock_case *test)
     size_t index, window_index;
     uint32_t result;
     struct crank_period_context context = {
-        0, 0, (uint32_t)(uintptr_t)ram_pointer(CORE_BASE), 0, test->interval, 0,
+        0, 0, (uint32_t)(uintptr_t)ram_pointer(CORE_BASE), 0, test->interval, 0, 0,
     };
     for (window_index = 0; window_index < ARRAY_SIZE(windows); ++window_index) {
         struct window *window = &windows[window_index];

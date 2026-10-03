@@ -62,7 +62,7 @@ static int run_case(const struct stock_case *test)
     struct crank_period_context context = {
         (uint32_t)(uintptr_t)ram_pointer(CRANK_BASE),
         (uint32_t)(uintptr_t)ram_pointer(CORE_BASE),
-        0, test->reference, 0, test->sync & SYNC_MASK,
+        0, test->reference, 0, test->sync & SYNC_MASK, 0,
     };
     for (index = 0; index < sizeof(before); ++index) {
         ram_pointer(0xffff2280U)[index] = (uint8_t)(19U * index + 7U);

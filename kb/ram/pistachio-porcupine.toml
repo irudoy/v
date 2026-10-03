@@ -3,13 +3,21 @@ Crank tooth interval. On the normal path the ICI0A handler prologue writes \
 the difference between consecutive OSBR1 captures ffff158a on every tooth, \
 0xffff on the first capture; the previous value is the numerator of gap \
 ratio ffff196c. In P0335 fallback 0002b768 writes the quotient \
-floor(event_interval/12)."""
+uint16(floor(event_interval/12))."""
 note = [
     """
 One count is 3.2 us. The interval spans 10 crank degrees, and 30 degrees on \
 tooth 8.""",
+    """
+With ffff24c9.bit6 clear and ffff24c1.bit6 set, both ffff2294 and ffff22ba \
+receive uint16(current OSBR1 minus the previous stored capture). Bit 6 clear \
+selects 0xffff in both words, sets that bit, and still refreshes ffff158a. \
+The former ffff22ba word is loaded into R12 for later gap-ratio \
+processing.""",
 ]
 level = "code"
+width = 16
+signed = false
 unit = "timer count per tooth interval"
 
 [[ledger]]
@@ -53,6 +61,70 @@ supports = "identity"
 at = "7mfk:0002b81e"
 value = {named = ["00028ea2", "0002b768", "ffff22ba"], span = 1}
 key = "reference"
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Use the new capture and the previous word retained before its replacement to \
+form the modulo-65536 difference."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028f32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit6"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 6 clear selects the normal capture-difference and first-sample branches. \
+Set diverts to the cam-based handler; its reviewed quotient stores retain \
+uint16(floor(ffff11fc/12))."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028eec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link]]
+type = "selector"
+to = "crank_capture_state/ram"
+slot = "bit6"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+In normal ICI0A mode, bit 6 set selects the modulo-65536 capture difference. \
+Clear selects 0xffff in both ffff2294 and ffff22ba, sets bit 6 with other \
+bits preserved, and still refreshes the capture."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028f2a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_crank_capture.py"
+key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
 
 [[link]]
 type = "writer"

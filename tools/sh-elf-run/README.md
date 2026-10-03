@@ -122,7 +122,14 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A tooth-period fixtures reconstruct
+   (`verify_stock_code.py`). The JK08A crank-capture fixture reconstructs
+   the word read of OSBR1, capture-history update, initialization branches,
+   and both period stores. The earlier MMIO-base load and its signed pool
+   word stay bound outside the executable slice; the harness supplies the
+   mapped base in R11. Cases check the first-sample sentinel, preserved flag
+   bits, zero intervals, unsigned word wrap, both signed-word transitions,
+   the read-only MMIO window, and neighboring RAM.
+   The JK08A tooth-period fixtures reconstruct
    the conditional normalization and ordinary copy as separate instruction
    spans, with their original pool data between them. The harness supplies
    the base registers, current interval, and masked synchronization snapshot

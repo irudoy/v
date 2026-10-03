@@ -97,6 +97,26 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-crank-capture",
+        rom="JK08A",
+        source="stock_jk08a_crank_capture.s",
+        harness="stock_crank_capture_harness.c",
+        start=0x00028F16,
+        end=0x00028F4E,
+        pools=((0x0002900C, 10), (0x0002903C, 4)),
+        ram_literals=(0x0002903C,),
+        cases=16,
+        symbols=(
+            ("OSBR1", "atu1_osbr1/reg"),
+            ("CRANK_CAPTURE", "soft-seagull/ram"),
+            ("RAW_PERIOD", "pistachio-porcupine/ram"),
+            ("CAPTURE_FLAGS", "crank_capture_state/ram"),
+        ),
+        bits=(("INIT_MASK", "crank_capture_state/ram", "initialized"),),
+        constants=(("CRANK_BASE", 0xFFFF128C), ("CORE_BASE", 0xFFFF1FF4),
+                   ("MMIO_BASE", 0xFFFFF440), ("REFERENCE_PERIOD", 0xFFFF2294)),
+    ),
+    Region(
         key="jk08a-tooth-normalization",
         rom="JK08A",
         source="stock_jk08a_tooth_normalization.s",

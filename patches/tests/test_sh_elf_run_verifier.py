@@ -631,6 +631,18 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-crank-capture": {
+                "REGION_ENTRY": 0x00028F16,
+                "CRANK_BASE": 0xFFFF128C,
+                "CORE_BASE": 0xFFFF1FF4,
+                "MMIO_BASE": 0xFFFFF440,
+                "REFERENCE_PERIOD": 0xFFFF2294,
+                "INIT_MASK": 0x40,
+                "OSBR1": 0xFFFFF456,
+                "CRANK_CAPTURE": 0xFFFF158A,
+                "RAW_PERIOD": 0xFFFF22BA,
+                "CAPTURE_FLAGS": 0xFFFF24C1,
+            },
             "jk08a-tooth-normalization": {
                 "REGION_ENTRY": 0x0002915C,
                 "NORMALIZATION_ENTRY": 0x0002911C,
