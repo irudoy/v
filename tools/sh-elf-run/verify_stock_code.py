@@ -92,6 +92,30 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-rpm-median",
+        rom="JK08A",
+        source="stock_jk08a_rpm_median.s",
+        harness="stock_rpm_median_harness.c",
+        start=0x0003DF2C,
+        end=0x0003DFC6,
+        pools=((0x00021CD8, 8), (0x0003E018, 8), (0x0003E148, 0x1C)),
+        ram_literals=(0x00021CD8, 0x0003E148, 0x0003E14C,
+                      0x0003E158, 0x0003E15C, 0x0003E160),
+        cases=35,
+        boundary=False,
+        symbols=(
+            ("MODE_FLAGS", "apc_mode/ram"),
+            ("TOOTH_PERIOD", "spry-koel/ram"),
+            ("MEDIAN_OUTPUT", "statuesque-husky/ram"),
+            ("LIVE_SPEED", "angelic-shark/ram"),
+            ("HISTORY_NEWEST", "meek-iguana/ram"),
+            ("DIVIDER_ENTRY", "pompous-firefly/fn"),
+        ),
+        constants=(("FAULT_POINTER", 0x00021CD8), ("FAULT_VALUE", 0x00021CDC),
+                   ("HISTORY_PREVIOUS", 0xFFFF3E35), ("HISTORY_OLDER", 0xFFFF3E36)),
+        callees=((0x00021BBC, 0x00021CD6),),
+    ),
+    Region(
         key="jk08a-rpm-division",
         rom="JK08A",
         source="stock_jk08a_rpm_division.s",

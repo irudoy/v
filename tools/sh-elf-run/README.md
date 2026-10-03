@@ -122,7 +122,18 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A primary RPM producer
+   (`verify_stock_code.py`). The JK08A median producer
+   `0x0003df2c..0x0003dfc5` and its signed divider
+   `0x00021bbc..0x00021cd5` share an independent reconstruction at their
+   stock addresses. The harness checks every strict order and ties of
+   three unsigned samples, history shifting, quotient truncation and byte
+   saturation, a zero period with a nonzero retained median, and diagnostic
+   copying without a history update. Direct divider entries cover positive
+   and negative operands, short and long divisors, and zero recording.
+   Only declared RAM pool words are aliased; both functions retain their
+   stock returns. The history and output windows retain all other bytes,
+   and the mode, source, and period inputs remain unchanged.
+   The JK08A primary RPM producer
    `0x00038272..0x0003829d` and its unsigned divider
    `0x00021ce0..0x00021dc5` share an independent reconstruction at their
    stock addresses. The harness takes the mode flags, event interval,

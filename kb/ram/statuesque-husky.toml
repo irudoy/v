@@ -1,15 +1,17 @@
 summary = """
-Interval-derived engine-speed byte. FUN 0003df2c divides 41666 by interval \
-quotient ffff22bc through signed divider 00021bbc, saturates the quotient to \
-255, keeps the last three results in ffff3e34..ffff3e36, and publishes their \
-median; when diagnostic-mode snapshot ffff24c9 bit 5 is set it copies \
-saturated engine-speed byte ffff11ea instead. The substitute fixes the \
-representation as rpm/12.5; the dividend corresponds to 120-degree crank \
-events on a 3.2 us timer tick. Scheduler 00020dfe copies it to ffff2700."""
+Interval-derived engine-speed byte. With ffff24c9.bit5 clear, FUN 0003df2c \
+shifts ffff3e34 into ffff3e35 and ffff3e35 into ffff3e36 before inserting \
+min(255,floor(41666/ffff22bc)) at ffff3e34. The 16-bit unsigned input \
+ffff22bc is a 10-degree tooth period; the call uses signed divider 00021bbc \
+with positive operands. A zero period inserts zero and records 0x44e at \
+ffff9818; the median can remain nonzero. The producer publishes \
+median(ffff3e34,ffff3e35,ffff3e36) at ffff2804. Bit 5 set copies ffff11ea \
+and preserves history. Scheduler 00020dfe copies the result to ffff2700."""
 note = [
     """
-The rpm/12.5 representation is code through the ffff11ea substitute; the \
-timer tick and event angle are the consistent candidate.""",
+The ffff11ea substitute binds the byte representation to rpm/12.5. For a \
+10-degree period on a nominal 3.2 us tick, 60/(36*3.2e-6*12.5) is \
+41666.666..., whose integer numerator is ROM32[0003e150]=41666.""",
 ]
 level = "code"
 unit = "rpm/12.5"
@@ -109,11 +111,51 @@ value = {named = ["00038d44", "0003b75c", "0003df2c", "0003dfc6", "0003e150", "f
 key = "reference"
 
 [[link]]
+type = "copy"
+to = "angelic-shark/ram"
+via = ["tidy-tiger/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ffff24c9.bit5 set, copy the live saturated RPM/12.5 byte without \
+updating the three median samples."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df46"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_median.py"
+key = "test_rpm_median_history_modes_and_zero_period_match_stock"
+
+[[link]]
 type = "input"
 to = "angelic-shark/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "input"
+to = "meek-iguana/ram"
+via = ["tidy-tiger/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ffff24c9.bit5 clear, publish the median of the inserted sample ffff3e34 \
+and the shifted preceding samples ffff3e35 and ffff3e36."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df7a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_median.py"
+key = "test_rpm_median_history_modes_and_zero_period_match_stock"
 
 [[link]]
 type = "input"
@@ -146,9 +188,23 @@ supports = "identity"
 [[link]]
 type = "selector"
 to = "apc_mode/ram"
+slot = "bit5"
+via = ["tidy-tiger/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Bit 5 set copies ffff11ea without shifting history or calling the divider; \
+clear selects the interval-derived median."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_median.py"
+key = "test_rpm_median_history_modes_and_zero_period_match_stock"
 
 [[link]]
 type = "writer"

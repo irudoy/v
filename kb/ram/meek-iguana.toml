@@ -1,7 +1,9 @@
 summary = """
-Newest of the three interval-derived engine-speed samples ffff3e34..ffff3e36 \
-shifted by FUN 0003df2c before each new quotient; the median of the three is \
-published as ffff2804."""
+Newest byte of the median RPM/12.5 history ffff3e34..ffff3e36. With \
+ffff24c9.bit5 clear, FUN 0003df2c shifts the two preceding samples before \
+inserting min(255,floor(41666/ffff22bc)); a zero 16-bit tooth period inserts \
+zero and records 0x44e at ffff9818. Bit 5 set preserves all three history \
+bytes. Their median is published at ffff2804."""
 level = "code"
 unit = "rpm/12.5"
 
@@ -52,6 +54,47 @@ to = "tidy-tiger/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit5"
+via = ["tidy-tiger/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 5 set preserves history; clear shifts the two preceding samples before \
+inserting the period-derived sample."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_median.py"
+key = "test_rpm_median_history_modes_and_zero_period_match_stock"
+
+[[link]]
+type = "selector"
+to = "spry-koel/ram"
+via = ["tidy-tiger/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ffff24c9.bit5 clear, a zero period inserts zero and records 0x44e at \
+ffff9818; a nonzero period inserts the saturated quotient."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003df60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_median.py"
+key = "test_rpm_median_history_modes_and_zero_period_match_stock"
 
 [[link]]
 type = "writer"

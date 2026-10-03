@@ -1679,8 +1679,8 @@ effect = "converts"
 sign = "negative"
 via = ["0003df2c"]
 note = """
-ffff2804 = median of the last three min(255, 41666/ffff22bc) samples in \
-RPM/12.5; ffff24c9.bit5 substitutes ffff11ea."""
+ffff3e36 = ffff3e35; ffff3e35 = ffff3e34; ffff3e34 = min(255, floor(0xA2C2 / \
+ffff22bc)); ffff2804 = median(ffff3e34, ffff3e35, ffff3e36)"""
 
 [[chain.step]]
 from = "ffff114a"

@@ -630,6 +630,19 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-rpm-median": {
+                "REGION_ENTRY": 0x0003DF2C,
+                "MODE_FLAGS": 0xFFFF24C9,
+                "TOOTH_PERIOD": 0xFFFF22BC,
+                "MEDIAN_OUTPUT": 0xFFFF2804,
+                "LIVE_SPEED": 0xFFFF11EA,
+                "HISTORY_NEWEST": 0xFFFF3E34,
+                "DIVIDER_ENTRY": 0x00021BBC,
+                "FAULT_POINTER": 0x00021CD8,
+                "FAULT_VALUE": 0x00021CDC,
+                "HISTORY_PREVIOUS": 0xFFFF3E35,
+                "HISTORY_OLDER": 0xFFFF3E36,
+            },
             "jk08a-rpm-division": {
                 "REGION_ENTRY": 0x00038272,
                 "MODE_FLAGS": 0xFFFF417F,
