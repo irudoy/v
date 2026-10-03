@@ -266,6 +266,68 @@ class NewTest(unittest.TestCase):
         self.assertEqual((symbol.meaning.key, symbol.former),
                          ("probe_cell/ram", ("probe-heron", "probe-otter")))
 
+    def test_a_batch_sets_and_links_a_new_meaning_without_mutating_its_source(self):
+        key = SymbolKey("7mfk", "ram", self.FREE)
+        before = len(self.base.meanings), set(self.base.symbols), len(self.base.links)
+        _, texts, result = self.plan(
+            new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]),
+            new("ram", f"7mfk:{self.FREE + 2:08x}", name="probe_gate", evidence=[SPEC]),
+            assign("probe_cell/ram", {"summary": "A counter of the probe.", "unit": "counts"}),
+            {"cmd": "link", "meaning": "probe_gate/ram", "type": "selector", "to": "probe_cell/ram",
+             "keys": {"layouts": ["7mfk"], "relies": "structure"}},
+            {"cmd": "link", "meaning": "probe_cell/ram", "type": "input", "to": FLOW,
+             "keys": {"layouts": ["7mfk"], "relies": "structure"}},
+        )
+        probe = result.meaning_of(key)
+        self.assertEqual(probe.props["summary"], "A counter of the probe.")
+        self.assertTrue(any(link.type == "input" and link.to.key == FLOW for link in probe.links))
+        gate = result.meaning_of(SymbolKey("7mfk", "ram", self.FREE + 2))
+        self.assertTrue(any(link.type == "selector" and link.to is probe for link in gate.links))
+        self.assertIn(store.path_of("ram", "probe_cell"), texts)
+        self.assertEqual((len(self.base.meanings), set(self.base.symbols), len(self.base.links)), before)
+        self.assertNotIn(key, self.base.symbols)
+
+    def test_a_new_meaning_resolves_its_current_symbols_and_former_names(self):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        change.run(new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]))
+        for reference in ("probe_cell/ram", "probe_cell", "probe-heron/ram", "probe-otter/ram",
+                          self.LOCATION, f"{self.FREE:08x}"):
+            with self.subTest(reference=reference):
+                self.assertEqual(change.resolve(reference)[0].key, "probe_cell/ram")
+        change.run(bind("probe_cell/ram", "jk00d:ffff0ff2", evidence=[SPEC]))
+        for reference in ("jk00d:ffff0ff2", "probe_cell/ram/jk00d",
+                          "probe_cell/ram/jk00d-ffff0ff2"):
+            with self.subTest(reference=reference):
+                meaning, symbol = change.resolve(reference)
+                self.assertEqual(meaning.key, "probe_cell/ram")
+                self.assertEqual(symbol.key, SymbolKey("jk00d", "ram", 0xffff0ff2))
+        change.run(assign("probe_cell/ram/jk00d", {"width": 2}))
+        self.assertEqual(change.resolve("jk00d:ffff0ff2")[1].props["width"], 2)
+
+    def test_a_new_location_does_not_shadow_an_existing_kind(self):
+        change = write.Change(self.base, write.model_resolver(self.base))
+        location = f"7mfk:{TABLE_HOME:08x}"
+        change.run(new("const", location, name="probe_literal", evidence=[SPEC]))
+        with self.assertRaises(KbError) as caught:
+            change.resolve(location)
+        self.assertEqual(caught.exception.code, 4)
+        self.assertIn("names 2 entities", str(caught.exception))
+
+    def test_a_failed_batch_with_a_new_meaning_writes_no_files_or_graph(self):
+        with mock.patch.object(write.lock, "held", return_value=contextlib.nullcontext()), \
+                mock.patch.object(write.graph, "fresh", return_value=contextlib.nullcontext()), \
+                mock.patch.object(write.compile, "build", return_value=self.base), \
+                mock.patch.object(write, "graph_resolver", return_value=write.model_resolver(self.base)), \
+                mock.patch.object(write.store, "write") as files, \
+                mock.patch.object(write.graph, "sync_held") as graph:
+            with self.assertRaises(KbError) as caught:
+                write.apply([new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]),
+                             assign("probe_cell/ram", {"not_a_key": 1})])
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("op 2", str(caught.exception))
+            files.assert_not_called()
+            graph.assert_not_called()
+
     def test_a_symbol_without_a_row_draws_its_generated_name(self):
         held = {key.address for key in self.base.symbols
                 if (key.layout, key.kind) == ("7mfk", "fn")}

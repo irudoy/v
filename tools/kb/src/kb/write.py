@@ -75,7 +75,7 @@ import weakref
 
 from kb import checks, compile, graph, lock, match, names, refs, repo, store, vocab
 from kb.adapters import files as file_adapter
-from kb.model import MEANING_REF, SymbolKey
+from kb.model import MEANING_REF, Meaning, Symbol, SymbolKey
 from kb.repo import KbError
 
 # The keys of each operation of a batch besides `cmd`, and those it requires.
@@ -448,7 +448,7 @@ class Change:
     and one line per operation."""
 
     def __init__(self, model, resolve, root=repo.ROOT):
-        self.model, self.resolve, self.root = model, resolve, root
+        self.model, self._resolve, self.root = model, resolve, root
         self.documents = {}
         self.removed = set()
         self.rows = {row.key: row for row in model.names}
@@ -461,8 +461,86 @@ class Change:
         # contradicts it.
         self.renamed = {}
         self.created, self.started = set(), set()
+        # Private objects for meanings created in the change. The source
+        # model stays intact until the complete rendered change is checked.
+        self.new_meanings = {}
         self.expected = []
         self._taken = self._domain = None
+
+    def resolve(self, text):
+        """Resolve new meanings against their documents and existing ones
+        through the source resolver, refusing ambiguous references."""
+        text = str(text).strip()
+        pending = self._new_references(text)
+        if not pending:
+            return self._resolve(text)
+        try:
+            existing = self._resolve(text)
+        except KbError as error:
+            if error.code != 5:
+                raise
+        else:
+            # A named reference takes precedence over a bare hexadecimal
+            # address, including when that address was created in the batch.
+            if refs.ADDRESS.fullmatch(text) and text in self._reference_names(existing[0]) \
+                    and not any(text in self._reference_names(meaning) for meaning, _ in pending):
+                return existing
+            pending.append(existing)
+        if len(pending) != 1:
+            raise KbError(f"{text!r} names {len(pending)} entities", code=4)
+        return pending[0]
+
+    def _new_references(self, text):
+        """Meaning and symbol references among the pending documents."""
+        full = refs.FULL.fullmatch(text)
+        location = refs.LOCATION.fullmatch(text)
+        named = refs.NAMED.fullmatch(text)
+        address = refs.ADDRESS.fullmatch(text)
+        found, addressed = [], []
+        for meaning in self.new_meanings.values():
+            path = store.path_of(meaning.kind, meaning.name)
+            if path not in self.documents:
+                continue
+            document = self.documents[path]
+            meaning.props = {key: value for key, value in document.items()
+                             if key not in {name for name, _ in store.ARRAYS}}
+            meaning.symbols = {}
+            for entry in document.get("symbol", ()):
+                key = SymbolKey(entry["layout"], meaning.kind, int(entry["address"], 16))
+                symbol = Symbol(key, props={key: value for key, value in entry.items()
+                                           if key not in ENTRY}, evidence=entry.get("evidence", []),
+                                sources={path.as_posix()}, implicit=False,
+                                name=entry.get("name") or meaning.name,
+                                generated=entry.get("name"), former=tuple(entry.get("former", ())),
+                                meaning=meaning)
+                meaning.symbols[symbol.layout] = symbol
+            if full:
+                found.extend((meaning, symbol) for symbol in meaning.symbols.values()
+                             if text == self._ref(symbol) or text in symbol.former)
+                continue
+            if location or address:
+                match = location or address
+                addressed.extend((meaning, symbol) for symbol in meaning.symbols.values()
+                                 if symbol.address == int(match.group("address"), 16)
+                                 and (location is None or symbol.layout == location.group("layout")))
+            if named:
+                name, second, third = named.group("name", "second", "third")
+                kind = second if second in vocab.KINDS else None
+                layout = third if kind else second
+                aliases = self._reference_names(meaning)
+                if name not in aliases or (kind is not None and kind != meaning.kind):
+                    continue
+                if layout is None:
+                    found.append((meaning, None))
+                elif layout in meaning.symbols:
+                    found.append((meaning, meaning.symbols[layout]))
+        return found or addressed
+
+    @staticmethod
+    def _reference_names(meaning):
+        return Change._names(meaning) | {
+            former.partition("/")[0] for symbol in meaning.symbols.values()
+            for former in symbol.former}
 
     # Operations ------------------------------------------------------------
 
@@ -540,6 +618,10 @@ class Change:
         entry.update({"level": level, "note": op.get("note"), "evidence": evidence})
         self.documents[path] = {"symbol": [entry]}
         self.created.add(key)
+        meaning = Meaning(kind, name, semantic=op.get("name") is not None,
+                          sources={path.as_posix()},
+                          name_sources=(path.as_posix(),) if op.get("name") is not None else ())
+        self.new_meanings[meaning.key] = meaning
         self.lines.append(f"new {name}/{kind}/{layout}-{address:08x}: "
                           f"{'; '.join(summary(item) for item in evidence)}")
 
@@ -1382,6 +1464,8 @@ class Change:
 
     def _path(self, meaning):
         """The file of a meaning: the file of its name, or else its only file."""
+        if self.new_meanings.get(meaning.key) is meaning:
+            return store.path_of(meaning.kind, meaning.name)
         held = self.model.files.get((meaning.kind, meaning.name))
         if held is not None and held[0] is meaning:
             return Path(held[1])

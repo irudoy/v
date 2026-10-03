@@ -1479,10 +1479,13 @@ location for `new`, `slug`, `name` as a semantic name, `ref`, `layout`,
 `type`, `to`, `keys` as a table for `set`, `link`, and `unlink`, `unset` as
 an array of dotted keys for `set`, `evidence` as an array of tables, `from`,
 `level`, `method`, `target`, `count`, and `note`. `kb apply` applies all
-operations or none. Each operation resolves its references and searches on
-the working tree, not on the result of an earlier operation of the batch,
-and edits the files as the earlier operations leave them; `set` also names
-a designed entity that an earlier `new` of the batch starts. An operation
+operations or none. Each operation resolves existing references and searches
+on the working tree, and edits the files as the earlier operations leave
+them. References to a meaning that an earlier `new` starts use its pending
+document, including symbols that a later `bind` adds; they remain ambiguous
+when they also name an existing entity. The source model stays intact, and
+the complete rendered result passes every check before file or graph writes.
+`set` also names a designed entity that an earlier `new` starts. An operation
 that names a file that an earlier one removes is refused, and so is an
 operation on a meaning that an earlier one renames, since a batch renames a
 meaning after its other operations. Subagents write only through batches,
