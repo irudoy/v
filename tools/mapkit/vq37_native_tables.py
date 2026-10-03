@@ -22,6 +22,7 @@ SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"})
 TARGET_FIELDS = frozenset({"stock_sha256", "table"})
 OPTIONAL_TARGET_FIELDS = frozenset({"axis", "absent"})
 AXIS_KINDS = frozenset({"rpm", "load", "temp", "raw"})
+SCALE_FIELDS = frozenset({"units", "scale_conf", "scale_expr", "to_byte"})
 REQUIRED_TABLE_FIELDS = frozenset({
     "id",
     "address",
@@ -36,15 +37,11 @@ REQUIRED_TABLE_FIELDS = frozenset({
     "format",
     "fine",
     "coarse",
-    "units",
     "confidence",
-    "scale_conf",
-    "scale_expr",
-    "to_byte",
     "semantics",
     "note",
 })
-OPTIONAL_TABLE_FIELDS = frozenset({
+OPTIONAL_TABLE_FIELDS = SCALE_FIELDS | frozenset({
     "axis_x",
     "axis_y",
     "mask",
@@ -63,11 +60,7 @@ REQUIRED_AXIS_FIELDS = frozenset({
     "format",
     "fine",
     "coarse",
-    "units",
     "confidence",
-    "scale_conf",
-    "scale_expr",
-    "to_byte",
     "note",
 })
 POINTER_FIELDS = frozenset({"site", "accessor"})
@@ -102,11 +95,11 @@ class NativeTable:
     format: str
     fine: float
     coarse: float
-    units: str
+    units: str | None
     confidence: str
-    scale_conf: str
-    scale_expr: str
-    to_byte: str
+    scale_conf: str | None
+    scale_expr: str | None
+    to_byte: str | None
     static_axis_name: str
     static_axis: tuple[int, ...]
     mask: str
@@ -127,11 +120,11 @@ class NativeAxis:
     format: str
     fine: float
     coarse: float
-    units: str
+    units: str | None
     confidence: str
-    scale_conf: str
-    scale_expr: str
-    to_byte: str
+    scale_conf: str | None
+    scale_expr: str | None
+    to_byte: str | None
     note: str
 
 
@@ -165,6 +158,51 @@ def _evidence(value, context):
             f"{context} must be one of {sorted(EVIDENCE_LEVELS)}"
         )
     return value
+
+
+def _scale(row, context):
+    """Keep an absent conversion distinct from a complete scale claim."""
+    present = SCALE_FIELDS & row.keys()
+    if not present:
+        return {key: None for key in SCALE_FIELDS}
+    if present != SCALE_FIELDS:
+        raise NativeTableError(f"{context}: engineering conversion is incomplete")
+    level = row["scale_conf"]
+    if level not in EVIDENCE_LEVELS | {"unknown", "pattern"}:
+        raise NativeTableError(f"{context}.scale_conf is unsupported")
+    return {
+        "units": _text(row["units"], f"{context}.units"),
+        "scale_expr": _text(row["scale_expr"], f"{context}.scale_expr"),
+        "to_byte": _text(row["to_byte"], f"{context}.to_byte"),
+        "scale_conf": level,
+    }
+
+
+def _stored_count(entity):
+    return entity.scale_conf not in EVIDENCE_LEVELS
+
+
+def _editor_scale(entity):
+    """Render storage without asserting an engineering unit or evidence level."""
+    if _stored_count(entity):
+        return {
+            "units": "Stored count", "scale_expr": "x", "to_byte": "x",
+            "scale_conf": None, "stored_count": True,
+        }
+    return {key: getattr(entity, key) for key in SCALE_FIELDS}
+
+
+def _editor_presentation(entity):
+    if _stored_count(entity):
+        name = re.sub(r"\s*\[[^\]]*\]", "", entity.name)
+        return {"name": f"{name} [stored count]", "format": "0", "fine": 1, "coarse": 10}
+    return {key: getattr(entity, key) for key in ("name", "format", "fine", "coarse")}
+
+
+def _editor_note(entity, note):
+    if _stored_count(entity):
+        return note + " Editor values are stored counts; no engineering conversion is established."
+    return note
 
 
 def _number(value, context):
@@ -319,11 +357,8 @@ def _parse_table(row, context):
         format=_text(row["format"], f"{context}.format"),
         fine=_number(row["fine"], f"{context}.fine"),
         coarse=_number(row["coarse"], f"{context}.coarse"),
-        units=_text(row["units"], f"{context}.units"),
         confidence=_evidence(row["confidence"], f"{context}.confidence"),
-        scale_conf=_evidence(row["scale_conf"], f"{context}.scale_conf"),
-        scale_expr=_text(row["scale_expr"], f"{context}.scale_expr"),
-        to_byte=_text(row["to_byte"], f"{context}.to_byte"),
+        **_scale(row, context),
         static_axis_name=static_axis_name,
         static_axis=static_axis,
         mask=mask,
@@ -333,7 +368,7 @@ def _parse_table(row, context):
 
 
 def _parse_axis(row, context):
-    _fields(row, context, REQUIRED_AXIS_FIELDS, frozenset())
+    _fields(row, context, REQUIRED_AXIS_FIELDS, SCALE_FIELDS)
     identifier = _identifier(row, context)
     context = f"{context} {identifier}"
     length = row["length"]
@@ -354,11 +389,8 @@ def _parse_axis(row, context):
         format=_text(row["format"], f"{context}.format"),
         fine=_number(row["fine"], f"{context}.fine"),
         coarse=_number(row["coarse"], f"{context}.coarse"),
-        units=_text(row["units"], f"{context}.units"),
         confidence=_evidence(row["confidence"], f"{context}.confidence"),
-        scale_conf=_evidence(row["scale_conf"], f"{context}.scale_conf"),
-        scale_expr=_text(row["scale_expr"], f"{context}.scale_expr"),
-        to_byte=_text(row["to_byte"], f"{context}.to_byte"),
+        **_scale(row, context),
         note=_text(row["note"], f"{context}.note"),
     )
 
@@ -482,11 +514,8 @@ def _model(table, note):
         "confidence": table.confidence,
         "role": "table",
         "semantics": table.semantics,
-        "units": table.units,
-        "scale_expr": table.scale_expr,
-        "to_byte": table.to_byte,
-        "scale_conf": table.scale_conf,
-        "note": note,
+        **_editor_scale(table),
+        "note": _editor_note(table, note),
         "wrappers": [],
         "kernels": [],
         "steps": [],
@@ -504,15 +533,12 @@ def _axis_model(axis, values, note):
     return {
         "addr": _address_key(axis.address),
         "kind": axis.kind,
-        "units": axis.units,
-        "scale_expr": axis.scale_expr,
-        "to_byte": axis.to_byte,
-        "scale_conf": axis.scale_conf,
-        "scale_evidence": "registry:target-native",
+        **_editor_scale(axis),
+        "scale_evidence": "" if _stored_count(axis) else "registry:target-native",
         "storagetype": axis.storagetype,
         "len": axis.length,
         "confidence": axis.confidence,
-        "note": note,
+        "note": _editor_note(axis, note),
         "values": list(values),
         "monotonic": True,
     }
@@ -520,13 +546,10 @@ def _axis_model(axis, values, note):
 
 def _presentation(table):
     override = {
-        "name": table.name,
+        **_editor_presentation(table),
         "category": table.category,
         "order": table.order,
         "emit": True,
-        "format": table.format,
-        "fine": table.fine,
-        "coarse": table.coarse,
     }
     if table.static_axis:
         override["static_axis_name"] = table.static_axis_name
@@ -537,12 +560,7 @@ def _presentation(table):
 
 
 def _axis_presentation(axis):
-    return {
-        "name": axis.name,
-        "format": axis.format,
-        "fine": axis.fine,
-        "coarse": axis.coarse,
-    }
+    return _editor_presentation(axis)
 
 
 def _sorted_bindings(bindings):
@@ -656,11 +674,12 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
     }
     for table in target.tables:
         key = _address_key(table.address)
-        if table.name in names:
+        presentation = _presentation(table)
+        if presentation["name"] in names:
             raise NativeTableError(
                 f"{rom}: native table {key} repeats the table name {table.name!r}"
             )
-        names.add(table.name)
+        names.add(presentation["name"])
         _verify_block(
             rom, image, key, table.address, table.width * table.height,
             table.storagetype, table.values_sha256,
@@ -680,7 +699,7 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
             table,
             _describe_bindings(rom, "table", table.address, table.pointer_bindings, table.note),
         )
-        tables[key] = _presentation(table)
+        tables[key] = presentation
     if not axis_overrides:
         result_overrides.pop("axis")
     return result_maps, result_axes, result_overrides

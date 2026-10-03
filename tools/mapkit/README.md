@@ -45,6 +45,15 @@ verifies every address, geometry, stock value block, and accessor
 literal-pool binding of the native registries against the exact stock image
 before the entity reaches a definition.
 
+A native table or axis may omit its engineering conversion as a complete
+group: `units`, `scale_expr`, `to_byte`, and `scale_conf`. A partial group is
+invalid. Absent conversions and explicit `unknown` or `pattern` scale levels
+use an editor view labelled `Stored count`, with identity expressions,
+integer formatting, and increments of 1 and 10 counts. This storage view
+asserts no semantic scale or scale evidence. Exact image, value bytes,
+geometry, role, pointer, and layout checks remain mandatory. The retained
+scale hypothesis and its limitations belong in the owning meaning's note.
+
 ## Paired editor definitions
 
 Generate every registered RomRaider XML and TunerPro XDF pair:
