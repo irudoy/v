@@ -87,7 +87,7 @@ def relate_architecture(b, document, src):
                 "title": item["name"], "lane": item["lane"], "summary": item["summary"],
                 "order": order})
     blocks = set()
-    for item in document.get("block", ()):
+    for order, item in enumerate(document.get("block", ()), start=1):
         if not _keys(b, src, "block", item, BLOCK_KEYS,
                      {"id", "name", "stage", "summary", "functions"}):
             continue
@@ -101,13 +101,14 @@ def relate_architecture(b, document, src):
             b.issue("references", src, subject, f"stage {item['stage']!r} is no stage")
         b.entity("block", name, src, props={
             "title": item["name"], "summary": item["summary"], "specs": item.get("specs"),
-            "generic": item.get("generic") or None, "home": CANONICAL}, refs=refs)
+            "generic": item.get("generic") or None, "home": CANONICAL,
+            "order": order}, refs=refs)
         for field, kinds in BLOCK_LISTS.items():
             for text in item.get(field, ()):
                 key = _listed(b, src, f"{subject}.{field}", text, kinds)
                 if key is not None:
                     b.props(key, {"block": f"{name}/block"}, src)
-    for item in document.get("endpoint", ()):
+    for order, item in enumerate(document.get("endpoint", ()), start=1):
         if not _keys(b, src, "endpoint", item, ENDPOINT_KEYS,
                      {"id", "name", "direction", "block", "peripheral", "summary"}):
             continue
@@ -122,10 +123,11 @@ def relate_architecture(b, document, src):
         b.entity("endpoint", slug(item["id"]), src, props={
             "title": item["name"], "direction": item["direction"],
             "peripheral": item["peripheral"], "summary": item["summary"],
-            "specs": item.get("specs")}, refs={name: keys for name, keys in refs.items() if keys})
-    for item in document.get("chain", ()):
+            "specs": item.get("specs"), "order": order},
+            refs={name: keys for name, keys in refs.items() if keys})
+    for order, item in enumerate(document.get("chain", ()), start=1):
         if _keys(b, src, "chain", item, CHAIN_KEYS, CHAIN_KEYS - {"specs"}):
-            _chain(b, src, item)
+            _chain(b, src, item, order)
 
 
 def _keys(b, src, kind, item, known, required):
@@ -140,13 +142,13 @@ def _keys(b, src, kind, item, known, required):
     return True
 
 
-def _chain(b, src, item):
+def _chain(b, src, item, order=1):
     name = slug(item["id"])
     subject = f"chain.{item['id']}"
     output = _reference(b, src, f"{subject}.output", item["output"], CHAIN_KINDS)
     entity = b.entity("chain", name, src, props={
         "title": item["name"], "summary": item["summary"], "quantity": item["quantity"],
-        "specs": item.get("specs"), "home": CANONICAL},
+        "specs": item.get("specs"), "home": CANONICAL, "order": order},
         refs={"output": [output]} if output else None)
     for order, step in enumerate(item["step"], start=1):
         where = f"{subject}.step.{order}"
@@ -182,7 +184,7 @@ def _prefixed(b, src, subject, text, prefix, address, kinds):
         b.issue("references", src, subject, f"{text} names a {kind}; the list holds "
                 f"{'/'.join(kinds)}")
         return None
-    if SymbolKey(CANONICAL, kind, address) not in b.symbols:
+    if SymbolKey(CANONICAL, kind, address) not in b.at(CANONICAL, address):
         b.issue("references", src, subject, f"no {kind} symbol of {CANONICAL} at {address:08x}")
         return None
     return b.symbol(CANONICAL, kind, address, src)

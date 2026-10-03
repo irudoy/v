@@ -134,10 +134,10 @@ DASHBOARD = Table(_plain("label", "digits", "unit", "hexadecimal", "group", "pan
                          "panel_label", "order", "description") + (("feed", FEED),))
 DESIGNED = {
     "stage": Table(_plain("title", "lane", "order", "summary")),
-    "block": Table(_plain("title", "stage", "summary", "generic", "specs", "home")),
+    "block": Table(_plain("title", "stage", "summary", "generic", "specs", "home", "order")),
     "endpoint": Table(_plain("title", "direction", "block", "peripheral", "summary",
-                             "registers", "functions", "specs")),
-    "chain": Table(_plain("title", "summary", "quantity", "output", "specs", "home")
+                             "registers", "functions", "specs", "order")),
+    "chain": Table(_plain("title", "summary", "quantity", "output", "specs", "home", "order")
                    + (("step", Array(STEP)),)),
     "signal": Table(_plain("title", "domain", "priority", "coverage", "basis", "observes",
                            "note")),

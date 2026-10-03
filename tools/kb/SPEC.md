@@ -718,14 +718,17 @@ when its selectors explicitly select them.
 | Kind | Keys |
 |---|---|
 | `stage` | `title`, `lane` (`flow` or `support`), `order`, `summary` |
-| `block` | `title`, `stage`, `summary`, `generic` (a service block that no single stage owns), `specs`, `home` |
-| `endpoint` | `title`, `direction` (`input`, `output`, or `bidirectional`), `block`, `peripheral`, `summary`, `registers` (`reg` references), `functions` (`fn` references), `specs` |
-| `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, and `[[step]]` |
+| `block` | `title`, `stage`, `summary`, `generic` (a service block that no single stage owns), `specs`, `home`, `order` |
+| `endpoint` | `title`, `direction` (`input`, `output`, or `bidirectional`), `block`, `peripheral`, `summary`, `registers` (`reg` references), `functions` (`fn` references), `specs`, `order` |
+| `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, `order`, and `[[step]]` |
 | `signal` | `title`, `domain`, `priority`, `coverage`, `basis`, `observes`, `note` |
 | `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position`, and `[dashboard]` |
 | `feature` | `title`, `summary`, `specs`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
 
 `specs` is an array of repository paths of narrow specifications.
+
+Architecture entities retain their array position from 1 as `order`. It
+preserves block voting and display order; stage order places the columns.
 
 Blocks:
 
@@ -3043,6 +3046,8 @@ Stage 6. `defs/JK08A.architecture.toml`:
   conversion keeps the arithmetic of each note and lists the conditions for
   review as links of the destination meaning
   ([A JK08A chain step](#172-a-jk08a-chain-step)).
+- Blocks, endpoints, and chains retain their array position from 1 as
+  `order`, preserving the block voting and display order in the projection.
 - An address may carry a prefix: `function`, `map`, `axis`, `signal`, and
   `register` name the `fn`, `tbl`, `axis`, `ram`, and `reg` symbol at the
   address. Without a prefix, an entry of a block or endpoint list names a
