@@ -380,6 +380,10 @@ def links(model):
                 "links", ";".join(sorted(link.sources)), _subject(link.owner),
                 f"{link.type} link from a {link.owner.kind} to {_subject(link.to)}; "
                 f"the type joins {'/'.join(owners)} to {'/'.join(targets)}"))
+        if link.type == "selector" and link.to.kind == "fn" and link.slot is not None:
+            issues.append(Issue(
+                "links", ";".join(sorted(link.sources)), _subject(link.owner),
+                "a function-result selector has no bit or axis slot"))
     return issues
 
 

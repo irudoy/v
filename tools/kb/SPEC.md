@@ -571,7 +571,7 @@ A link is stored at one end and read in both directions.
 | `index` | `tbl`, `axis` | `ram`, `reg` | `to` is the coordinate `slot` of the lookup | L0: the accessor census |
 | `axis` | `tbl` | `axis` | `to` is the axis of `slot` | L0: the accessor census or the lookup header |
 | `lookup` | `ram`, `reg` | `tbl` | The datum is the output of a lookup of `to` | Evidence |
-| `selector` | datum or `fn` | datum | `to` selects between alternatives | Evidence |
+| `selector` | datum or `fn` | datum or `fn` | The value of `to`, or its function result, selects between alternatives | Evidence |
 | `threshold` | datum or `fn` | `tbl`, `ram` | The datum or function compares with `to` | Evidence |
 | `base` | `ram` | `ram` | The datum is addressed at `offset` from `to` | `indirect` evidence |
 | `target` | `hook` | `fn`, `tbl`, `const` | The stock word points at `to`, plus `offset` | Image bytes of every image of the layout |
@@ -581,6 +581,8 @@ A link is stored at one end and read in both directions.
 
 - A link claims every layout where both ends have symbols, unless `layouts`
   restricts it.
+- A `selector` whose `to` is a function states the result condition in its
+  note and has no `slot`; bit slots describe a datum, not a return register.
 - On each claimed layout a link holds when its verifier reproduces it, when
   an `indirect` evidence item of that layout explains the access, or, for a
   type that evidence verifies, when evidence of that layout supports it or

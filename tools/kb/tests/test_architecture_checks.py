@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from kb import checks, compile, repo
-from kb.model import Builder, SymbolKey
+from kb.model import Builder, Link, SymbolKey
 
 
 @pytest.fixture
@@ -48,6 +48,21 @@ def chain(model):
 def test_a_placed_function_and_logical_ram_endpoint_pass(model):
     assert checks.blocks(model) == []
     assert checks.chains(model) == []
+
+
+def test_a_function_result_can_select_an_arithmetic_alternative(model):
+    output = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff102c))
+    predicate = model.meaning_of(SymbolKey('7mfk', 'fn', 0x26740))
+    model.links.append(Link(output, 'selector', predicate, None, None))
+    assert checks.links(model) == []
+
+
+@pytest.mark.parametrize('slot', ['bit5', 'x'])
+def test_a_function_result_selector_has_no_bit_or_axis_slot(model, slot):
+    output = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff102c))
+    predicate = model.meaning_of(SymbolKey('7mfk', 'fn', 0x26740))
+    model.links.append(Link(output, 'selector', predicate, slot, None))
+    assert 'function-result selector has no bit or axis slot' in messages(checks.links, model)
 
 
 @pytest.mark.parametrize(('kind', 'slug', 'field'), [

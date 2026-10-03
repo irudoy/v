@@ -1,11 +1,15 @@
 summary = """
-Current Q8 filtered positive four-sample RPM drop written by FUN 0003e1da. \
-On the normal path it is \
-min(65535,64*max(uint16[ffff1f76]-uint16[ffff114a],0)+floor(192*uint16[ffff1e58]/256))."""
+Current Q8 filtered four-sample engine-speed drop written by FUN 0003e1da. \
+On the enabled non-fault path, rising current speed resets the word to zero; \
+equal or falling speed gives \
+min(65535,64*(uint16[ffff1f76]-uint16[ffff114a])+floor(192*uint16[ffff1e58]/256))."""
 note = [
     """
-Separate initialization and disabled branches write 0xff00 or zero. Its high \
-byte is the publication candidate for ffff1072.""",
+A nonzero crank/cam fault predicate 00025e4e selects ROM8[0x84a3]<<8, stock \
+0xff00. With a zero predicate result and ffff24b8.bit6 clear, the producer \
+writes zero. Both mode paths initialize the current sample and four \
+preceding history words to current engine speed. Its high byte is the \
+publication candidate for ffff1072.""",
 ]
 level = "code"
 unit = "RPM/12.5 drop Q8"
@@ -155,6 +159,67 @@ to = "phenomenal-cricket/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "cinnamon-crayfish/ram"
+via = ["phenomenal-cricket/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+On the normal filter path, a four-sample-old speed below current ffff114a \
+selects zero independently of previous filter ffff1e58. Equal or higher \
+history selects the non-rising recurrence."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003e1fe"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_drop.py"
+key = "test_rpm_drop_modes_rising_branch_and_operands_match_stock"
+
+[[link]]
+type = "selector"
+to = "glaring-cuckoo/fn"
+via = ["phenomenal-cricket/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+A nonzero result selects ROM8[0x84a3]<<8 and initializes the current sample \
+and all four history words to current speed. A zero result proceeds to the \
+enable bit."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003e1ea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_drop.py"
+key = "test_rpm_drop_modes_rising_branch_and_operands_match_stock"
+
+[[link]]
+type = "selector"
+to = "splendid-cheetah/ram"
+slot = "bit6"
+via = ["phenomenal-cricket/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+With a zero crank/cam fault predicate result, bit 6 clear selects zero and \
+initializes all history words to current speed; bit 6 set selects the normal \
+filter path."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003e1f4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_drop.py"
+key = "test_rpm_drop_modes_rising_branch_and_operands_match_stock"
 
 [[link]]
 type = "writer"

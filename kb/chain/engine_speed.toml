@@ -69,8 +69,7 @@ effect = "filters"
 sign = "negative"
 via = ["phenomenal-cricket/fn"]
 note = """
-ffff1e50 = min(65535, 64*max(ffff1f76 - ffff114a, 0) + \
-floor(192*ffff1e58/256)), the Q8 filtered positive four-sample RPM drop."""
+ffff1e50 = min(65535, 64*(ffff1f76 - ffff114a) + floor(192*ffff1e58/256))"""
 
 [[step]]
 from = "abstract-pudu/reg"

@@ -28,24 +28,44 @@ Another runtime gate writes zero instead.
 
 ## Positive RPM-drop filter
 
-`FUN_0003E1DA` maintains four samples at
-`0xFFFF1F6E..0xFFFF1F76`. On the normal filter path, let:
+`FUN_0003E1DA` maintains the current sample and four preceding samples at
+`0xFFFF1F6E..0xFFFF1F76`. On the enabled non-fault filter path, let:
 
 ```text
 R   = current uint16[0xFFFF114A]
 H4  = four-sample-old uint16[0xFFFF1F76]
-D   = max(H4 - R, 0)
 P   = uint16[0xFFFF1E58]
 K   = ROM8[0x84A4] = 64
-F   = min(65535, K*D + floor((256-K)*P/256))
+
+if H4 < R:
+    F = 0
+else:
+    D = H4 - R
+    F = min(65535, K*D + floor((256-K)*P/256))
 ```
 
 The function writes `F` to `0xFFFF1E50`. Dispatcher `FUN_000209D8` copies the
 eight-byte block `0xFFFF1E50..0xFFFF1E57` to
 `0xFFFF1E58..0xFFFF1E5F`, so `P` is the preceding filter snapshot. In Q8
-terms, the stock recurrence is a 0.25 input and 0.75 history filter over the
-positive four-sample RPM drop. Separate initialization and disabled branches
-write `0xFF00` or zero and initialize the RPM history.
+terms, the non-rising recurrence is a 0.25 input and 0.75 history filter over
+the four-sample RPM drop. Rising speed writes zero independently of `P`;
+equal speed retains the truncated history term. `0003e20a..0003e20c`
+compares the zero-extended samples and branches to the zero store at
+`0003e268..0003e26a` when `H4 < R`.
+
+The crank/cam fault predicate `FUN_00025E4E` returning nonzero selects
+`ROM8[0x84A3]<<8`, stock `0xFF00`. With a zero result and
+`0xFFFF24B8.bit6` clear, the producer writes zero. Both mode paths initialize
+the current sample and all four history words to `R`; a zero predicate result
+with bit 6 set selects the filter path and shifts the history after the store.
+
+`tools/kb/tests/test_engine_speed_drop.py` binds the mode tests, comparison,
+branches, operands, and coefficients to fixed stock bytes. The GNU SH-2E
+region `jk08a-rpm-drop-arithmetic` independently assembles and executes
+`0003e1fe..0003e26b`, including the rising zero branch, equal-speed history,
+falling-speed recurrence, truncation, and saturation. Its boundary return is
+outside the region; mode selection, history shifting, and publication are
+outside this executable slice.
 
 ## Calibration 0x1202E
 

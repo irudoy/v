@@ -85,6 +85,24 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-rpm-drop-arithmetic",
+        rom="JK08A",
+        source="stock_jk08a_rpm_drop.s",
+        harness="stock_rpm_drop_harness.c",
+        start=0x0003E1FE,
+        end=0x0003E26C,
+        pools=((0x0003E3CC, 4), (0x0003E3DC, 4)),
+        ram_literals=(0x0003E3CC,),
+        cases=14,
+        symbols=(
+            ("DROP_WORD", "satisfied-macaque/ram"),
+            ("CURRENT_SPEED", "sophisticated-magpie/ram"),
+            ("HISTORY_SPEED", "cinnamon-crayfish/ram"),
+            ("PREVIOUS_DROP", "teal-curassow/ram"),
+        ),
+        constants=(("DROP_COEFFICIENT", 0x000084A4),),
+    ),
+    Region(
         key="jk78c-ascd-main",
         rom="JK78C",
         source="stock_jk78c_ascd_main.s",
@@ -180,15 +198,18 @@ def base_register(region, image):
 
 
 def require_reconstruction(region, image, build_dir):
-    """Link the reconstruction at the region start and require the image
-    bytes of the region and of its pool words."""
+    """Link on the four-byte boundary at or before the region and require
+    the image bytes of the region and of its pool words. A two-byte-aligned
+    entry has two padding bytes before its reconstruction, outside the region.
+    This preserves the alignment of PC-relative longword loads."""
+    origin = region.start & ~3
     stem = build_dir / region.key
     base_verifier.run_command([
         base_verifier.AS, "--big", "--isa=sh2e",
         "-o", stem.with_suffix(".o"), TOOL_DIR / region.source,
     ])
     base_verifier.run_command([
-        base_verifier.LD, "-EB", f"-Ttext={region.start:#x}",
+        base_verifier.LD, "-EB", f"-Ttext={origin:#x}",
         f"--entry={region.start:#x}",
         "-o", stem.with_suffix(".elf"), stem.with_suffix(".o"),
     ])
@@ -202,7 +223,7 @@ def require_reconstruction(region, image, build_dir):
         *((address, address + size) for address, size in region.pools),
     )
     for start, end in spans:
-        actual = raw[start - region.start : end - region.start]
+        actual = raw[start - origin : end - origin]
         if actual != image[start:end]:
             raise VerificationError(
                 f"{region.key}: the reconstruction of {start:#010x}.."

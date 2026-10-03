@@ -27,7 +27,7 @@ LINK_TYPES = {
     "index": (("tbl", "axis"), ("ram", "reg")),
     "axis": (("tbl",), ("axis",)),
     "lookup": (("ram", "reg"), ("tbl",)),
-    "selector": (DATUM + ("fn",), DATUM),
+    "selector": (DATUM + ("fn",), DATUM + ("fn",)),
     "threshold": (DATUM + ("fn",), ("tbl", "ram")),
     "base": (("ram",), ("ram",)),
     "target": (("hook",), ("fn", "tbl", "const")),

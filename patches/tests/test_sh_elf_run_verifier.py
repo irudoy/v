@@ -5,6 +5,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_layout as layout_model
@@ -631,6 +632,14 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-rpm-drop-arithmetic": {
+                "REGION_ENTRY": 0x0003E1FE,
+                "DROP_WORD": 0xFFFF1E50,
+                "CURRENT_SPEED": 0xFFFF114A,
+                "HISTORY_SPEED": 0xFFFF1F76,
+                "PREVIOUS_DROP": 0xFFFF1E58,
+                "DROP_COEFFICIENT": 0x000084A4,
+            },
             "jk78c-ascd-main": {
                 "REGION_ENTRY": 0x000FCBB0,
                 "ASCD_FLAGS": 0xFFFF450B,
@@ -708,6 +717,51 @@ mov #0x5,r1
                 self.assertEqual(defines["CUT_CONFIG"], word(pool + 4))
                 self.assertEqual(defines["FUEL_CUT_TABLE"], word(pool + 8))
                 self.assertEqual(defines["CUT_DELAY"], word(pool + 12))
+
+    def test_rpm_drop_region_binds_its_inputs_and_non_rising_boundary(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-rpm-drop-arithmetic")
+        image = STOCK_VERIFIER.stock_image(region.rom)
+        defines = STOCK_VERIFIER.harness_defines(region, image)
+        speed_base = int.from_bytes(image[0x3E3CC:0x3E3D0], "big")
+        coefficient = int.from_bytes(image[0x3E3DC:0x3E3E0], "big")
+        self.assertEqual(defines["CURRENT_SPEED"], speed_base + 0x36)
+        self.assertEqual(defines["HISTORY_SPEED"], defines["DROP_WORD"] + 0x126)
+        self.assertEqual(defines["PREVIOUS_DROP"], defines["DROP_WORD"] + 8)
+        self.assertEqual(defines["DROP_COEFFICIENT"], coefficient + 1)
+        self.assertEqual(image[region.end - 4:region.end], bytes.fromhex("e000c100"))
+
+    def test_two_byte_stock_entry_preserves_pc_relative_pool_alignment(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-rpm-drop-arithmetic")
+        image = STOCK_VERIFIER.stock_image(region.rom)
+        origin = region.start & ~3
+        calls = []
+        with tempfile.TemporaryDirectory() as directory:
+            build = Path(directory)
+
+            def reconstruct(command):
+                calls.append(command)
+                if command[0] == VERIFIER.OBJCOPY:
+                    Path(command[-1]).write_bytes(image[origin:])
+
+            with patch.object(STOCK_VERIFIER.base_verifier, "run_command", reconstruct):
+                self.assertEqual(STOCK_VERIFIER.require_reconstruction(region, image, build), 55)
+            self.assertIn("-Ttext=0x3e1fc", calls[1])
+            self.assertIn("--entry=0x3e1fe", calls[1])
+
+            for address in (region.start, 0x3E20C, 0x3E3CC, 0x3E3DC):
+                changed = bytearray(image)
+                changed[address] ^= 1
+
+                def mismatched(command):
+                    if command[0] == VERIFIER.OBJCOPY:
+                        Path(command[-1]).write_bytes(changed[origin:])
+
+                with self.subTest(address=address), patch.object(
+                    STOCK_VERIFIER.base_verifier, "run_command", mismatched
+                ), self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "differs"):
+                    STOCK_VERIFIER.require_reconstruction(region, image, build)
 
     def test_top_level_gate_registers_stock_code(self):
         source = MODULE_PATH.read_text(encoding="utf-8")

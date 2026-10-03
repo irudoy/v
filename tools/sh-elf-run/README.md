@@ -122,7 +122,19 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK78C region `0x000fcbb0..0x000fcbed` of the
+   (`verify_stock_code.py`). The JK08A region `0x0003e1fe..0x0003e26b`
+   contains the enabled non-fault arithmetic of the RPM-drop producer.
+   Its GNU reconstruction links on `0x0003e1fc`, with two padding bytes
+   outside the region, to preserve PC-relative longword alignment.
+   `stock_invoke_gbr` supplies the aliased `satisfied-macaque/ram` address
+   as GBR. The harness takes current speed, four-sample-old speed, and the
+   preceding filter snapshot from the meaning addresses. Reviewed expected
+   literals distinguish rising speed with nonzero history, equal speed,
+   falling speed, truncation, and saturation; every neighboring byte stays
+   unchanged. The only simulator changes are the high-RAM pool word and the
+   RTS/NOP boundary at `0x0003e26c`; the arithmetic instructions stay stock.
+   Mode selection, history shifting, and publication are outside this slice.
+   The JK78C region `0x000fcbb0..0x000fcbed` of the
    ASCD task `0x000fb9c0` holds the coolant flag and the MAIN switch block.
    The verifier links its GNU reconstruction `stock_jk78c_ascd_main.s` at the
    region start and requires byte identity with the stock image for the region
