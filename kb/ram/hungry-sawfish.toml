@@ -1,3 +1,10 @@
+note = [
+    """
+The pre-snapshot engine-speed word uses RPM/3.125 counts. CAN serializer \
+000c577a transmits sat_u16(x*25), representing RPM*8, in bytes 0 and 1 of \
+identifier 0x180.""",
+]
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff11ee"

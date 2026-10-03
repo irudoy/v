@@ -1,3 +1,5 @@
+note = ["The pre-snapshot engine-speed byte uses RPM/50 counts."]
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff11e6"

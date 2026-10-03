@@ -120,6 +120,25 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "copy"
+to = "liberal-falcon/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+note = """
+The scheduler copies the same offset of the 56-byte block from ffff11d4 to \
+ffff119c through 000220f8."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f6c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_scaling.py"
+key = "test_rpm_snapshot_dispatch_and_all_fourteen_words_match_stock"
+
+[[link]]
 type = "input"
 to = "liberal-falcon/ram"
 layouts = ["7mfk"]

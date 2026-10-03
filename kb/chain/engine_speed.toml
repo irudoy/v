@@ -98,9 +98,7 @@ to = "vigorous-horse/ram"
 effect = "scales"
 sign = "positive"
 via = ["pearl-waxbill/fn"]
-note = """
-ffff11e8 = ffff1196 >> 3 in RPM/1.5625, denominator N of the primary MAF \
-calculation in 0003b75c."""
+note = "ffff11e8 = ffff1196 >> 3"
 
 [[step]]
 from = "classic-caracal/ram"
@@ -108,9 +106,7 @@ to = "hungry-sawfish/ram"
 effect = "scales"
 sign = "positive"
 via = ["pearl-waxbill/fn"]
-note = """
-ffff11ee = ffff1196 >> 4 in RPM/3.125; serializer 000c577a sends \
-sat_u16(ffff11ee*25) = RPM*8 in 0x180 bytes 0 and 1."""
+note = "ffff11ee = ffff1196 >> 4"
 
 [[step]]
 from = "classic-caracal/ram"
@@ -118,8 +114,7 @@ to = "authentic-wasp/ram"
 effect = "scales"
 sign = "positive"
 via = ["pearl-waxbill/fn"]
-note = """
-ffff11f4 = ffff1196 >> 6 in RPM/12.5, the word that UDS DID 0x1201 returns."""
+note = "ffff11f4 = ffff1196 >> 6"
 
 [[step]]
 from = "classic-caracal/ram"
@@ -127,7 +122,7 @@ to = "aquamarine-spaniel/ram"
 effect = "scales"
 sign = "positive"
 via = ["pearl-waxbill/fn"]
-note = "ffff11e6 = min(255, ffff1196 >> 8) in RPM/50."
+note = "ffff11e6 = min(255, ffff1196 >> 8)"
 
 [[step]]
 from = "vigorous-horse/ram"
@@ -135,7 +130,7 @@ to = "liberal-falcon/ram"
 effect = "scales"
 sign = "positive"
 via = ["perfect-agouti/fn"]
-note = "ffff11eb = min(255, ffff11e8 >> 4) = min(255, ffff1196 >> 7) in RPM/25."
+note = "ffff11eb = min(255, ffff11e8 >> 4) = min(255, ffff1196 >> 7)"
 
 [[step]]
 from = "vigorous-horse/ram"
@@ -143,9 +138,7 @@ to = "angelic-shark/ram"
 effect = "scales"
 sign = "positive"
 via = ["hypersonic-seagull/fn"]
-note = """
-ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6), the saturated \
-RPM/12.5 byte."""
+note = "ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6)"
 
 [[step]]
 from = "hungry-sawfish/ram"
@@ -153,9 +146,7 @@ to = "private-sloth/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-Scheduler 00020dfe copies ffff11d4..ffff120b to ffff119c..ffff11d3, so \
-ffff11b6 is the RPM/3.125 snapshot of ffff11ee."""
+note = "ffff11b6 = ffff11ee"
 
 [[step]]
 from = "authentic-wasp/ram"
@@ -163,9 +154,7 @@ to = "rpm/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-ffff11bc is the RPM/12.5 snapshot of ffff11f4; fuel-cut state machine \
-0004f282 compares it with its activation and release words."""
+note = "ffff11bc = ffff11f4"
 
 [[step]]
 from = "aquamarine-spaniel/ram"
@@ -173,9 +162,7 @@ to = "tough-earwig/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-ffff11ae is the RPM/50 snapshot of ffff11e6, the speed input of the intake \
-and exhaust CVTC target surfaces."""
+note = "ffff11ae = ffff11e6"
 
 [[step]]
 from = "liberal-falcon/ram"
@@ -183,9 +170,7 @@ to = "daffodil-gibbon/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-ffff11b3 is the RPM/25 snapshot of ffff11eb; 0004fbe2 and 00050018 compare \
-it with the Over Run Fuel Cut and Restore table outputs."""
+note = "ffff11b3 = ffff11eb"
 
 [[step]]
 from = "angelic-shark/ram"
@@ -193,9 +178,7 @@ to = "succinct-pudu/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-ffff11b2 is the saturated RPM/12.5 snapshot of ffff11ea; it indexes \
-implicit-axis maps and the P030 speed gate of 0007c4e0."""
+note = "ffff11b2 = ffff11ea"
 
 [[step]]
 from = "authentic-wasp/ram"
