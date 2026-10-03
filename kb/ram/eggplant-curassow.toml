@@ -1,4 +1,7 @@
-summary = "Source of a calibration limit in 00062c68 together with ffff24c2."
+summary = """
+Source of a calibration limit in 00062c68 together with ffff24c2. Producer \
+00028af8 sets bit 5 when it publishes a measured event interval; diagnostic \
+mode and nonzero holdoff preserve that bit and all other bits."""
 level = "code"
 
 [[ledger]]
@@ -30,3 +33,23 @@ to = "tall-tiger/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "event_interval_snapshot_a/fn"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Set bit 5 only when diagnostic bit 5 is clear and holdoff is zero, \
+preserving all other marker bits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"

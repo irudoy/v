@@ -1,16 +1,28 @@
 summary = """
-Wrap-corrected engine-event interval divided by 32, in 3.2 us counts of the \
-phi'/32 ATU-II clock. Producers 00028af8 and 0002b768 update it; APC paths \
-use it as event-timing state, and FUN 00038272 publishes ffff1196 = 32000000 \
-/ ffff11fc at 00038282, the RPM*5.12 engine-speed word, so the interval is \
-6250000/RPM counts and spans 120 crank degrees (three engine events per \
-revolution)."""
+120-degree engine-event interval in 3.2 us counts. With ffff24c9.bit5 clear \
+and ffff25ff zero, 00028af8 subtracts previous 32-bit capture ffff84cc from \
+ffff185c, subtracts one more when the current capture is below the previous \
+capture, shifts the unsigned result right by five, and sets ffff2465.bit5. A \
+nonzero holdoff selects 0xffffffff without changing that marker. Both \
+enabled branches refresh ffff84cc from ffff185c; diagnostic bit 5 set \
+preserves the interval, previous capture, and marker. Producer 0002b768 \
+supplies the fallback interval. Consumer 00038272 forms the saturated \
+primary RPM*5.12 word through unsigned division."""
 note = [
     """
 The 3.2 us count follows PSCR1 = 1 (phi' = Pphi/2 = 10 MHz with Pphi = 20 \
 MHz from CAN timestamps) and TCR1A = 5 (phi'/32); the 120-degree span \
 follows the RPM/50 identity of ffff11e6 = ffff1196 >> 8 confirmed against \
 the CAN engine speed on the car.""",
+    """
+The normal ICI0A tooth-7 path calls event feeder 000208f8 at 0002983a; the \
+feeder calls 00028af8 at 0002090a before decrementing the holdoff counters. \
+The arithmetic equation applies to the enabled zero-holdoff nonwrapping \
+branch. The wrapping branch uses uint32(ffff185c-ffff84cc-1)>>5.""",
+    """
+In the measured operating range, the nominal interval is 6250000/RPM counts \
+and spans 120 crank degrees, corresponding to three engine events per \
+revolution. APC paths use it as event-timing state.""",
 ]
 level = "code"
 unit = "normalized timer counts"
@@ -128,6 +140,44 @@ to = "atu2_prescaler_init/fn/7mfk"
 relies = "level"
 
 [[link]]
+type = "input"
+to = "busy-horse/ram"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Read the previous 32-bit capture before the refresh."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b18"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "input"
+to = "classy-bull/ram"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Read the current 32-bit capture for the subtraction and previous-capture \
+refresh."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b16"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
 type = "reader"
 to = "apc_reset_compare_scheduler/fn"
 layouts = ["7mfk"]
@@ -150,6 +200,68 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit5"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 5 set preserves the interval, previous capture, and marker; clear \
+selects the holdoff or measurement path."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028afc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "selector"
+to = "busy-horse/ram"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With diagnostic bit 5 clear and holdoff zero, current capture below the \
+previous capture selects uint32(ffff185c-ffff84cc-1)>>5; otherwise select \
+uint32(ffff185c-ffff84cc)>>5."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b1a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "selector"
+to = "event_interval_holdoff/ram"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With diagnostic bit 5 clear, nonzero selects 0xffffffff and zero selects \
+measurement; both refresh the previous capture."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
 
 [[link]]
 type = "writer"

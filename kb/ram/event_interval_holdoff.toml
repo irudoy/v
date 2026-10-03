@@ -1,0 +1,77 @@
+summary = """
+Event-interval holdoff byte. Startup 0002c648 writes 1 at 0002c934. Event \
+feeder 000208f8 decrements nonzero bytes in ffff25fb..ffff2601 after calling \
+both interval producers. While ffff24c9.bit5 is clear and this byte is \
+nonzero, 00028af8 publishes ffff11fc=0xffffffff and refreshes the previous \
+capture without setting ffff2465.bit5."""
+unit = "events"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff25ff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00028b04"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "reader"
+to = "event_interval_snapshot_a/fn"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Read the byte to select the invalid interval or the measurement branch."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "writer"
+to = "gentle-bat/fn"
+via = ["gentle-bat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Decrement the byte if nonzero within the seven-byte counter loop after \
+calling the interval producers."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020956"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
+type = "writer"
+to = "startup_initializer/fn"
+via = ["startup_initializer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Initialize the holdoff byte to one."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002c934"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"

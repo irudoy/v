@@ -630,6 +630,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-event-interval": {
+                "REGION_ENTRY": 0x00028AFA,
+                "MODE_FLAGS": 0xFFFF24C9,
+                "CURRENT_CAPTURE": 0xFFFF185C,
+                "PREVIOUS_CAPTURE": 0xFFFF84CC,
+                "EVENT_INTERVAL": 0xFFFF11FC,
+                "PUBLISHED_FLAGS": 0xFFFF2465,
+                "HOLDOFF": 0xFFFF25FF,
+            },
             "jk08a-rpm-median": {
                 "REGION_ENTRY": 0x0003DF2C,
                 "MODE_FLAGS": 0xFFFF24C9,

@@ -1,3 +1,8 @@
+summary = """
+Current 32-bit event capture read by 00028af8 from ffff128c+0x5d0. With \
+ffff24c9.bit5 clear, the producer uses it for the interval and refreshes \
+previous capture ffff84cc from it."""
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff185c"

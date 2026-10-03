@@ -77,9 +77,7 @@ to = "imported-kudu/ram"
 effect = "schedules"
 sign = "none"
 via = ["pastel-yak/fn", "gentle-bat/fn", "event_interval_snapshot_a/fn"]
-note = """
-Tooth 7 with sync calls feeder 000208f8; 00028af8 writes ffff11fc = \
-wrap-corrected (ffff185c - ffff84cc) >> 5, the 120-degree event interval."""
+note = "ffff11fc = uint32(ffff185c - ffff84cc) >> 5; ffff84cc = ffff185c"
 
 [[step]]
 from = "imported-kudu/ram"

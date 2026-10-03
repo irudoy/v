@@ -56,8 +56,8 @@ class Region:
     # Pool words that hold high-RAM addresses.
     ram_literals: tuple[int, ...]
     cases: int
-    # A block returns through the RTS/NOP pair that the fixture places at
-    # `end`; a whole function returns through its own RTS.
+    # A region without a stock return uses the RTS/NOP pair that the fixture
+    # places at `end`; another region returns through its own instructions.
     boundary: bool = True
     # The stock MOV.L @(disp,PC),R12 that loads the base register before a
     # block that reads it on entry.
@@ -91,6 +91,27 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(
+        key="jk08a-event-interval",
+        rom="JK08A",
+        source="stock_jk08a_event_interval.s",
+        harness="stock_event_interval_harness.c",
+        start=0x00028AFA,
+        end=0x00028B42,
+        pools=((0x00028B42, 4), (0x00028B48, 0x14)),
+        ram_literals=(0x00028B48, 0x00028B4C, 0x00028B50,
+                      0x00028B54, 0x00028B58),
+        cases=18,
+        boundary=False,
+        symbols=(
+            ("MODE_FLAGS", "apc_mode/ram"),
+            ("CURRENT_CAPTURE", "classy-bull/ram"),
+            ("PREVIOUS_CAPTURE", "busy-horse/ram"),
+            ("EVENT_INTERVAL", "imported-kudu/ram"),
+            ("PUBLISHED_FLAGS", "eggplant-curassow/ram"),
+            ("HOLDOFF", "event_interval_holdoff/ram"),
+        ),
+    ),
     Region(
         key="jk08a-rpm-median",
         rom="JK08A",

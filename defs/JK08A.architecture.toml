@@ -1697,9 +1697,7 @@ to = "ffff11fc"
 effect = "schedules"
 sign = "none"
 via = ["00028ea2", "000208f8", "00028af8"]
-note = """
-Tooth 7 with sync calls feeder 000208f8; 00028af8 writes ffff11fc = \
-wrap-corrected (ffff185c - ffff84cc) >> 5, the 120-degree event interval."""
+note = "ffff11fc = uint32(ffff185c - ffff84cc) >> 5; ffff84cc = ffff185c"
 
 [[chain.step]]
 from = "ffff11fc"

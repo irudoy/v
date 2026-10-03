@@ -1,3 +1,9 @@
+summary = """
+Previous 32-bit event capture for 00028af8. With ffff24c9.bit5 clear, the \
+producer refreshes it from ffff185c after either publishing the measured \
+interval or selecting 0xffffffff for nonzero holdoff. Diagnostic bit 5 set \
+preserves this capture."""
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff84cc"
@@ -9,12 +15,53 @@ supports = "identity"
 at = "7mfk:00028af8"
 
 [[link]]
+type = "copy"
+to = "classy-bull/ram"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ffff24c9.bit5 clear, refresh the previous capture after either \
+measurement or the holdoff path."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028b3c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
+
+[[link]]
 type = "reader"
 to = "event_interval_snapshot_a/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit5"
+via = ["event_interval_snapshot_a/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 5 set preserves the previous capture; clear copies the current capture \
+after either interval branch."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028afc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_event_interval.py"
+key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
 
 [[link]]
 type = "writer"

@@ -122,7 +122,18 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A median producer
+   (`verify_stock_code.py`). The JK08A event-interval slice
+   `0x00028afa..0x00028b41` retains the producer's mode, holdoff,
+   subtraction, unsigned wrap adjustment, divide-by-32 publication, marker,
+   previous-capture refresh, and returns. Its harness supplies the mapped
+   previous-capture pointer in R1; the preceding MOV.W pointer load at
+   `0x00028af8` lies outside the executable slice. Its original pointer word
+   remains in the reconstruction. The fixture changes only declared
+   high-RAM longword pools and preserves all instruction bytes in the slice.
+   Expected cases cover both sides of each selector, wrapping and
+   nonwrapping differences, equal captures, count boundaries, input and
+   window preservation, marker bits, and both stock return paths.
+   The JK08A median producer
    `0x0003df2c..0x0003dfc5` and its signed divider
    `0x00021bbc..0x00021cd5` share an independent reconstruction at their
    stock addresses. The harness checks every strict order and ties of
