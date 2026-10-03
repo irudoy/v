@@ -1648,7 +1648,8 @@ class ArchitectureAdapterTest(unittest.TestCase):
                          {"from": SymbolKey("7mfk", "ram", 0xFFFF22BC),
                           "to": SymbolKey("7mfk", "ram", 0xFFFF114A), "effect": "converts",
                           "sign": "negative", "via": [SymbolKey("7mfk", "fn", 0x0003DEEC)]})
-        self.assertTrue(step["note"].startswith("ffff114a = floor(0xA2C2/ffff22bc)"))
+        self.assertEqual(step["note"], source["step"][3]["note"])
+        self.assertRegex(step["note"], r"\Affff114a\s*=\s*floor\(0xA2C2\s*/\s*ffff22bc\)\Z")
 
     def test_a_prefix_selects_the_kind_and_a_reference_without_a_symbol_fails(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {"7mfk": {0x00030000}},
