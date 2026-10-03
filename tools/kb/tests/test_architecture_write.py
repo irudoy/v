@@ -7,7 +7,7 @@ from unittest import mock
 
 import pytest
 
-from kb import compile, repo, store, write
+from kb import checks, compile, repo, store, write
 from kb.repo import KbError
 
 
@@ -23,6 +23,16 @@ def model():
 @pytest.fixture
 def document():
     return copy.deepcopy(store.load(repo.ROOT, CHAIN_FILE))
+
+
+@pytest.fixture(scope='module')
+def held_prose():
+    document = copy.deepcopy(store.load(repo.ROOT, CHAIN_FILE))
+    document['step'][0]['note'] = 'Copy the capture while a mode is selected.'
+    model = compile.build(repo.ROOT, {CHAIN_FILE: store.render('chain', document)})
+    assert any(issue.subject == 'engine_speed/chain step 1'
+               for issue in checks.chain_notes(model))
+    return model, document
 
 
 def assign(keys, ref=CHAIN):
@@ -205,13 +215,15 @@ def test_new_prose_and_malformed_arithmetic_refuse_the_complete_batch(model, doc
     synced.assert_not_called()
 
 
-def test_held_prose_remains_reported_without_blocking_an_unrelated_metadata_edit(model):
+def test_held_prose_remains_reported_without_blocking_an_unrelated_metadata_edit(held_prose):
+    model, document = held_prose
     _, texts, result = plan(model, assign({'summary': 'A checked description of engine speed.'}))
-    assert tomllib.loads(texts[CHAIN_FILE])['step'] == store.load(repo.ROOT, CHAIN_FILE)['step']
+    assert tomllib.loads(texts[CHAIN_FILE])['step'] == document['step']
     assert not write.refusals(model, result)
 
 
-def test_a_changed_step_cannot_reuse_a_held_prose_rejection(model, document):
+def test_a_changed_step_cannot_reuse_a_held_prose_rejection(held_prose):
+    model, document = held_prose
     steps = copy.deepcopy(document['step'])
     steps[0]['via'] = document['step'][3]['via']
     with pytest.raises(KbError) as refused:
