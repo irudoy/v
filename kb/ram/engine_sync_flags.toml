@@ -1,0 +1,95 @@
+summary = """
+Engine synchronization byte. Reviewed bit 7 is set by the normal ICI0A \
+prologue at 00028ffc and by the cam-based fallback at 0002b8ca. The prologue \
+masks it with 0x80 and saves it at SP+4 before selecting the tooth-period \
+normalization path."""
+width = 8
+signed = false
+unit = "flags"
+
+[[bit]]
+bit = 7
+name = "synchronized"
+summary = "Synchronization state selected by the tooth-period normalizer."
+level = "code"
+
+[[bit.evidence]]
+kind = "l0"
+at = "7mfk:00029060"
+
+[[bit.evidence]]
+kind = "test"
+at = "7mfk:00029060"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8501"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00029060"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Mask bit 7 with 0x80 and save the snapshot at SP+4 for normalization."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00029060"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Set bit 7 at the common cam-based fallback path, preserving the other bits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b8ca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Set bit 7 after restarting the crank tooth count at zero, preserving the \
+other bits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028ffc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"

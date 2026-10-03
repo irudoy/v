@@ -1660,9 +1660,7 @@ to = "ffff22bc"
 effect = "copies"
 sign = "positive"
 via = ["00028ea2"]
-note = """
-The prologue copies ffff22ba to 10-degree time ffff22bc; with sync, tooth 8 \
-stores one third. P0335 fallback 0002b768 writes floor(ffff11fc/12)."""
+note = "ffff22bc = ffff22ba"
 
 [[chain.step]]
 from = "ffff22bc"

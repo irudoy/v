@@ -41,3 +41,48 @@ _stock_invoke_r1:
     bra _stock_invoke
     nop
     .size _stock_invoke_r1,.-_stock_invoke_r1
+
+! stock_invoke_crank_period(entry, context): supply R8, R9, R10, R13,
+! R6, and the masked synchronization byte at SP+4 from six context words.
+! SP+0 is scratch space for the fallback caller; SP+8 holds the fixture's
+! return continuation for a boundary that follows a stock JSR. Preserve the nonvolatile
+! registers that either period slice changes, GBR, and PR for the harness.
+    .global _stock_invoke_crank_period
+    .type _stock_invoke_crank_period,@function
+_stock_invoke_crank_period:
+    sts.l pr,@-r15
+    stc.l gbr,@-r15
+    mov.l r13,@-r15
+    mov.l r12,@-r15
+    mov.l r10,@-r15
+    mov.l r9,@-r15
+    mov.l r8,@-r15
+    add #-12,r15
+    mov.l @r5,r8
+    mov.l @(4,r5),r9
+    mov.l @(8,r5),r10
+    mov.l @(12,r5),r13
+    mov.l @(16,r5),r6
+    mov.l @(20,r5),r0
+    mov.b r0,@(4,r15)
+    mov.l crank_period_return_pointer,r0
+    mov.l r0,@(8,r15)
+    mov #0,r7
+    ldc r7,gbr
+    jsr @r4
+    nop
+crank_period_return:
+    add #12,r15
+    mov.l @r15+,r8
+    mov.l @r15+,r9
+    mov.l @r15+,r10
+    mov.l @r15+,r12
+    mov.l @r15+,r13
+    ldc.l @r15+,gbr
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_crank_period,.-_stock_invoke_crank_period
+    .balign 4
+crank_period_return_pointer:
+    .long crank_period_return

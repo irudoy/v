@@ -122,7 +122,21 @@ The gate performs these checks:
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 7. Execute the stock instruction regions whose behavior the entity files state
-   (`verify_stock_code.py`). The JK08A event-interval slice
+   (`verify_stock_code.py`). The JK08A tooth-period fixtures reconstruct
+   the conditional normalization and ordinary copy as separate instruction
+   spans, with their original pool data between them. The harness supplies
+   the base registers, current interval, and masked synchronization snapshot
+   from the prologue's entry state. It checks the fixed-point approximation
+   on positive multiples of three, unsigned word boundaries, independent
+   reference and tooth intervals, and unchanged input windows.
+   The fallback quotient fixture reconstructs the stock caller and unsigned
+   divider, checks the newly published interval rather than the preceding
+   interval, and checks both word stores across quotient overflow. Its
+   simulator boundary restores PR from a prepared stack slot after the
+   stock JSR replaces it; the restoration and return lie outside all tested
+   instructions. The boundary refuses misaligned or unsupported stack
+   offsets, overlap with pool data, and use with a natural stock return.
+   The JK08A event-interval slice
    `0x00028afa..0x00028b41` retains the producer's mode, holdoff,
    subtraction, unsigned wrap adjustment, divide-by-32 publication, marker,
    previous-capture refresh, and returns. Its harness supplies the mapped

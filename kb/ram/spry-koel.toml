@@ -1,18 +1,27 @@
 summary = """
-Time of 10 crank degrees, one tooth of the crank signal plate. On the normal \
-path the ICI0A handler prologue copies tooth interval ffff22ba into it and, \
-with sync set, stores one third of the three-pitch interval on tooth 8. In \
-P0335 fallback 0002b768 writes the quotient floor(event_interval/12) of the \
-120-degree event interval ffff11fc. Compare schedulers multiply it by the \
-command remainder over ten to form compare offsets; capture handlers \
-000c2de0 and 000c2c58 read it at 000c2dfa and 000c2cc6 and divide 20 times \
-the cam edge interval by it to form the 0.5-degree phase bytes ffff1200 and \
-ffff1201."""
+Time of 10 crank degrees, one tooth of the crank signal plate. With \
+ffff24c9.bit6 clear, the normal ICI0A prologue copies the 16-bit tooth \
+interval ffff22ba; synchronized tooth 8 instead writes \
+floor(21845*uint16(ffff22ba)/65536) through the fixed-point multiplier \
+0x5555 and a 16-bit right shift. In the reviewed cam-based fallback quotient \
+path, a count of at least two and previous capture other than 0xffffffff \
+permit unsigned division of the new 120-degree interval by twelve. The \
+stores at 0002b81a and 0002b81e keep the low 16 bits of that quotient in \
+ffff22bc and ffff22ba. Compare schedulers multiply it by the command \
+remainder over ten to form compare offsets; capture handlers 000c2de0 and \
+000c2c58 read it at 000c2dfa and 000c2cc6 and divide 20 times the cam edge \
+interval by it to form the 0.5-degree phase bytes ffff1200 and ffff1201."""
 note = [
     """
 The 10-degree scale follows the 3.2 us clock of the ATU-II captures (TCR1A = \
 5 in 0002718a, PSCR1 = 1 in 000274ac), the RPM identity ffff1196 = 32000000 \
 / ffff11fc of 00038272, and the tooth-8 multiplier 0x5555 >> 16.""",
+    """
+The gap normalization approximates one third: a positive multiple of three, \
+including 3, produces one count less than exact integer division. The \
+ordinary step equation applies to the normal nonsynchronized or non-tooth-8 \
+branch. The fallback word boundary is uint16(floor(ffff11fc/12)); the \
+quotient uses the new capture interval, not the preceding stored interval.""",
 ]
 level = "code"
 unit = "timer count per 10 degCA"
@@ -142,6 +151,26 @@ value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "0
 key = "reference"
 
 [[link]]
+type = "copy"
+to = "pistachio-porcupine/ram"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With normal ICI0A mode selected, copy the tooth-period word when the saved \
+synchronization bit is clear or the tooth counter is not eight."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00029166"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
 type = "input"
 to = "imported-kudu/ram"
 layouts = ["7mfk"]
@@ -235,6 +264,113 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit6"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 6 clear selects the normal ICI0A prologue; set diverts it through \
+00028ef2 to the cam-based handler 0002a294. The reviewed valid-history \
+quotient path of 0002b768 publishes uint16(floor(ffff11fc/12))."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00028eec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "selector"
+to = "cam_fallback_event_count/ram"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+In the cam-based fallback, a count below two branches to 0002bc9a; a count \
+of at least two permits the previous-capture test before the \
+measured-interval quotient."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b7e0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "selector"
+to = "cam_fallback_previous_capture/ram"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+In the cam-based fallback with event count at least two, 0xffffffff branches \
+to 0002b8c0 and skips the reviewed quotient; another value permits the \
+measured-interval quotient path."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b7ec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "selector"
+to = "engine_sync_flags/ram"
+slot = "bit7"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With normal ICI0A mode selected, saved bit 7 set and tooth counter eight \
+select floor(21845*uint16(ffff22ba)/65536); bit 7 clear selects the word \
+copy."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00029120"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "selector"
+to = "tunneling-doberman/ram"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With normal ICI0A mode and synchronization set, counter eight selects \
+floor(21845*uint16(ffff22ba)/65536); another counter value selects the word \
+copy."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00029126"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 
 [[link]]
 type = "writer"

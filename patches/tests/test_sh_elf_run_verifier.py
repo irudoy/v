@@ -1,4 +1,5 @@
 import importlib.util
+from dataclasses import replace
 import re
 from pathlib import Path
 import sys
@@ -603,7 +604,7 @@ mov #0x5,r1
                     enumerate(zip(fixture, image)) if actual != stock
                 }
                 allowed = (
-                    set(range(region.end, region.end + 4))
+                    set(range(region.end, region.end + len(STOCK_VERIFIER.return_stub(region))))
                     if region.boundary else set()
                 )
                 for address in region.ram_literals:
@@ -617,9 +618,9 @@ mov #0x5,r1
                 for start, end in region.code_spans:
                     self.assertEqual(fixture[start:end], image[start:end])
                 self.assertEqual(
-                    fixture[region.end:region.end + 4],
-                    STOCK_VERIFIER.RETURN_STUB if region.boundary
-                    else image[region.end:region.end + 4],
+                    fixture[region.end:region.end + len(STOCK_VERIFIER.return_stub(region))],
+                    STOCK_VERIFIER.return_stub(region) if region.boundary
+                    else image[region.end:region.end + len(STOCK_VERIFIER.return_stub(region))],
                 )
 
     def test_stock_harness_takes_the_symbols_of_the_entity_files(self):
@@ -630,6 +631,25 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-tooth-normalization": {
+                "REGION_ENTRY": 0x0002915C,
+                "NORMALIZATION_ENTRY": 0x0002911C,
+                "REFERENCE_PERIOD": 0xFFFF2296,
+                "CRANK_BASE": 0xFFFF128C,
+                "CORE_BASE": 0xFFFF1FF4,
+                "SYNC_MASK": 0x80,
+                "TOOTH_COUNTER": 0xFFFF13B2,
+                "RAW_PERIOD": 0xFFFF22BA,
+                "NORMALIZED_PERIOD": 0xFFFF22BC,
+            },
+            "jk08a-tooth-fallback": {
+                "REGION_ENTRY": 0x0002B800,
+                "CORE_BASE": 0xFFFF1FF4,
+                "EVENT_INTERVAL": 0xFFFF11FC,
+                "RAW_PERIOD": 0xFFFF22BA,
+                "NORMALIZED_PERIOD": 0xFFFF22BC,
+                "CAM_INTERVAL": 0xFFFF22D4,
+            },
             "jk08a-event-interval": {
                 "REGION_ENTRY": 0x00028AFA,
                 "MODE_FLAGS": 0xFFFF24C9,
@@ -719,6 +739,24 @@ mov #0x5,r1
                 region, image[:region.base_load] + b"\x00\x09"
                 + image[region.base_load + 2:]
             )
+
+    def test_a_calling_slice_restores_pr_only_at_its_simulator_boundary(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-tooth-fallback")
+        image = STOCK_VERIFIER.stock_image(region.rom)
+        fixture = STOCK_VERIFIER.build_fixture(region, image)
+        self.assertEqual(fixture[region.end:region.end + 8], bytes.fromhex("55f2452a000b0009"))
+        for start, end in region.code_spans:
+            self.assertEqual(fixture[start:end], image[start:end])
+        for invalid in (True, -4, 2, 64, "8"):
+            with self.subTest(offset=invalid), self.assertRaisesRegex(
+                    STOCK_VERIFIER.VerificationError, "return address offset"):
+                STOCK_VERIFIER.build_fixture(replace(region, return_address_offset=invalid), image)
+        with self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "natural stock return"):
+            STOCK_VERIFIER.build_fixture(replace(region, boundary=False), image)
+        with self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "overlaps a pool"):
+            STOCK_VERIFIER.build_fixture(
+                replace(region, pools=(*region.pools, (region.end, 4))), image)
 
     def test_fuel_cut_regions_address_the_symbols_through_their_pools(self):
         # The state machine points GBR at its first pool word and stores the

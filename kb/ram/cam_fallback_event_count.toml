@@ -1,0 +1,60 @@
+summary = """
+Cam-based fallback event count. Function 0002b768 increments the byte with \
+saturation at 255 and writes it at 0002b7c2. At 0002b7e0 a count of at least \
+two permits the previous-capture test and quotient path; a smaller count \
+branches to 0002bc9a."""
+width = 8
+signed = false
+unit = "events"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff22ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b7a6"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "reader"
+to = "capture_interval_update/fn"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Read the unsigned byte before incrementing it and comparing the updated \
+count with two."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b7a6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "writer"
+to = "capture_interval_update/fn"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Store the byte incremented with saturation at 255."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b7c2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"

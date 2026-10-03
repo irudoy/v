@@ -6,9 +6,10 @@ addresses: a whole function, or a block inside one. The verifier links the
 GNU reconstruction of the region and of the pool words it loads at the same
 addresses and requires byte identity with the image. It then builds a
 simulator-only fixture from the image: the pool words that hold high-RAM
-addresses point into simulator test RAM, and for a block an RTS/NOP pair
-replaces the two instruction words that follow it, outside the region; a
-whole function returns through its own RTS. The harness seeds the RAM and
+addresses point into simulator test RAM. A block returns through a boundary
+outside the tested instructions: RTS/NOP normally, or a stack-held PR restore
+followed by RTS/NOP after a stock call replaces PR. A whole function returns
+through its own RTS. The harness seeds the RAM and
 calibration inputs, calls the region with the registers that it reads on
 entry, and checks every store and the return value against the symbols and
 the named bits of the entity files, which the verifier passes to it with the
@@ -59,6 +60,10 @@ class Region:
     # A region without a stock return uses the RTS/NOP pair that the fixture
     # places at `end`; another region returns through its own instructions.
     boundary: bool = True
+    # The stack offset of a simulator return continuation for a block whose
+    # stock calls replace PR. The boundary restores PR outside all tested
+    # instructions; None uses the ordinary RTS/NOP boundary.
+    return_address_offset: int | None = None
     # The stock MOV.L @(disp,PC),R12 that loads the base register before a
     # block that reads it on entry.
     base_load: int | None = None
@@ -71,8 +76,8 @@ class Region:
     # Harness definitions of the addresses inside the region that no entity
     # file names, as (definition, value).
     constants: tuple[tuple[str, int], ...] = ()
-    # Additional stock instruction spans executed by this region, with
-    # their independently assembled callees at the original addresses.
+    # Additional stock instruction spans executed by this region, including
+    # callees or a selection path separated by pool data, at stock addresses.
     callees: tuple[tuple[int, int], ...] = ()
 
     @property
@@ -91,6 +96,48 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(
+        key="jk08a-tooth-normalization",
+        rom="JK08A",
+        source="stock_jk08a_tooth_normalization.s",
+        harness="stock_tooth_normalization_harness.c",
+        start=0x0002915C,
+        end=0x00029168,
+        pools=((0x0002914A, 0x12), (0x0002920E, 6)),
+        ram_literals=(),
+        cases=20,
+        symbols=(
+            ("TOOTH_COUNTER", "tunneling-doberman/ram"),
+            ("RAW_PERIOD", "pistachio-porcupine/ram"),
+            ("NORMALIZED_PERIOD", "spry-koel/ram"),
+        ),
+        bits=(("SYNC_MASK", "engine_sync_flags/ram", "synchronized"),),
+        constants=(("NORMALIZATION_ENTRY", 0x0002911C), ("REFERENCE_PERIOD", 0xFFFF2296),
+                   ("CRANK_BASE", 0xFFFF128C), ("CORE_BASE", 0xFFFF1FF4)),
+        # The selection path enters before its pool words and branches to
+        # the ordinary copy or to the return boundary after both paths.
+        callees=((0x0002911C, 0x0002914A),),
+    ),
+    Region(
+        key="jk08a-tooth-fallback",
+        rom="JK08A",
+        source="stock_jk08a_tooth_fallback.s",
+        harness="stock_tooth_fallback_harness.c",
+        start=0x0002B800,
+        end=0x0002B820,
+        pools=((0x00021DC8, 8), (0x0002B85E, 6), (0x0002B878, 12)),
+        ram_literals=(0x00021DC8, 0x0002B878, 0x0002B880),
+        cases=13,
+        return_address_offset=8,
+        symbols=(
+            ("EVENT_INTERVAL", "imported-kudu/ram"),
+            ("RAW_PERIOD", "pistachio-porcupine/ram"),
+            ("NORMALIZED_PERIOD", "spry-koel/ram"),
+            ("CAM_INTERVAL", "berserk-woodlouse/ram"),
+        ),
+        constants=(("CORE_BASE", 0xFFFF1FF4),),
+        callees=((0x00021CE0, 0x00021DC6),),
+    ),
     Region(
         key="jk08a-event-interval",
         rom="JK08A",
@@ -306,6 +353,18 @@ def require_reconstruction(region, image, build_dir):
     return sum((end - start) // 2 for start, end in region.code_spans)
 
 
+def return_stub(region):
+    """The simulator boundary, with an optional stack-held return address."""
+    offset = region.return_address_offset
+    if offset is None:
+        return RETURN_STUB
+    if type(offset) is not int or not 0 <= offset <= 60 or offset % 4:
+        raise VerificationError(f"{region.key}: return address offset is a multiple of four in 0..60")
+    # MOV.L @(offset,R15),R5; LDS R5,PR; RTS; NOP. R0 remains the result.
+    return b''.join(word.to_bytes(2, 'big')
+                    for word in (0x55F0 | (offset // 4), 0x452A, 0x000B, 0x0009))
+
+
 def build_fixture(region, image):
     """The simulator-only fixture of a region; the region bytes stay stock."""
     fixture = bytearray(image)
@@ -320,7 +379,14 @@ def build_fixture(region, image):
             value
         ).to_bytes(4, "big")
     if region.boundary:
-        fixture[region.end : region.end + len(RETURN_STUB)] = RETURN_STUB
+        boundary = return_stub(region)
+        end = region.end + len(boundary)
+        if end > len(fixture) or any(region.end < address + size and address < end
+                                     for address, size in region.pools):
+            raise VerificationError(f"{region.key}: return boundary overlaps a pool or leaves the image")
+        fixture[region.end : end] = boundary
+    elif region.return_address_offset is not None:
+        raise VerificationError(f"{region.key}: a natural stock return takes no boundary return address")
     for start, end in region.code_spans:
         if fixture[start:end] != image[start:end]:
             raise VerificationError(f"{region.key}: the fixture alters the region")

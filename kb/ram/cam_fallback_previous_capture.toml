@@ -1,0 +1,40 @@
+summary = """
+Previous 32-bit capture read by the cam-based fallback at 0002b7ea. Value \
+0xffffffff selects 0002b8c0 and skips the reviewed quotient path; another \
+value permits interval subtraction when the event count is at least two."""
+width = 32
+signed = false
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff200c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b7ea"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link]]
+type = "reader"
+to = "capture_interval_update/fn"
+via = ["capture_interval_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Read the full word and compare it with 0xffffffff before measured interval \
+subtraction."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b7ea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
+key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
