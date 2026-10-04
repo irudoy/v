@@ -1,6 +1,13 @@
 summary = """
 Bit 2 is an init-once latch for the one-time read of flat maps \
 0x120be/0x12c3a in 0003995a (tst 0x4 / or 0x4)."""
+note = [
+    """
+On 7mfk, bit 3 inhibits the active per-bank MAF contribution, writes 3 to \
+the selected fallback latch, and selects the fallback longword calculation. \
+The producer preserves this flag byte; its other documented bits remain \
+independent.""",
+]
 level = "code"
 unit = "bitfield"
 

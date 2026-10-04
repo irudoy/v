@@ -191,6 +191,23 @@ The gate performs these checks:
    time constant. Three declared RAM pool words alone are aliased. All stock
    instructions, coefficient data, natural returns, input words, flag bits,
    sibling-bank values, MACL, GBR, saved registers, and neighbors are checked.
+   The per-bank contribution fixture reconstructs 345 instructions across
+   the complete MAF producer and its six-shift signed division helper.
+   Both banks execute active correction and fallback modes, byte-truncated
+   bank arguments, all inhibitor combinations, nonzero latches, unsigned
+   word inputs, signed correction histories, word clamps, and residual signs.
+   Literal cases distinguish truncation toward zero at /8, /512, and /256
+   from floor at the final /64. Fallback cases distinguish low-32-bit
+   multiplication before logical shifts from an unbounded weighted sum.
+   Wide reference inputs and fixture-only weight variants cover software
+   boundaries without asserting live reachability. Explicit post-base entry
+   at `0x0003b042` supplies a complete saved stock frame and local state to
+   execute otherwise unreachable signed 24-bit residual bounds and the
+   active output cap; all tested instructions and natural returns stay stock.
+   Repeated calls keep external references fixed and exercise producer-owned
+   correction state; they establish no scheduler cadence or physical scale.
+   Five declared RAM pool words alone are aliased. MACL, GBR, saved registers,
+   inputs, sibling state, mode bytes, calibration, and neighbors are checked.
    The combined-MAF fixture reconstructs the complete 22-instruction sum.
    It executes signed bank contributions, sign-extended correction words,
    unsigned auxiliary words, 32-bit wrap at every addition, and the signed

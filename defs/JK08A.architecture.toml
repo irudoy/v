@@ -226,7 +226,23 @@ functions = [
     "00068724",
 ]
 maps = []
-signals = []
+signals = [
+    "ffff1e00",
+    "ffff1e02",
+    "ffff1e08",
+    "ffff1e0a",
+    "ffff1e10",
+    "ffff1e14",
+    "ffff1e18",
+    "ffff1e1a",
+    "ffff1e1c",
+    "ffff1e1e",
+    "ffff1e30",
+    "ffff1e32",
+    "ffff1e34",
+    "ffff43ca",
+    "ffff43cb",
+]
 
 [[block]]
 id = "temperatures"
@@ -1962,8 +1978,13 @@ effect = "converts"
 sign = "positive"
 via = ["0003af42"]
 note = """
-Signed 32-bit bank-1 contribution with bounded stateful corrections; fuel.md \
-reproduces BFS from Q = A + B, which fixes the sign."""
+a = \
+uint16(ffff1e08)+trunc0(ROM8[0x000082bd]*(uint16(ffff1df0)-uint16(ffff1e08))/8); \
+b = clamp(a,0,65535); ffff1e00 = b; e = \
+clamp((2*(ffff1e34&1)-1)*uint16(ffff1e30)+a-b,-0xffffff,0xffffff); d = \
+clamp(trunc0(ROM8[0x000082b7]*(b-uint16(ffff1e18))/512)+trunc0(ROM8[0x000082b8]*int16(ffff1e1c)/256),-32768,32767); \
+ffff1e1c = d; v = b+floor((ROM8[0x000082b6]*max(0,d)+64*min(0,d))/64); \
+ffff1df8 = clamp(v+e,0,0xffffff)"""
 
 [[chain.step]]
 from = "ffff1df2"
@@ -1972,8 +1993,13 @@ effect = "converts"
 sign = "positive"
 via = ["0003af42"]
 note = """
-Signed 32-bit bank-2 contribution; the correction terms of 0003af42 are \
-unresolved."""
+a = \
+uint16(ffff1e0a)+trunc0(ROM8[0x000082bd]*(uint16(ffff1df2)-uint16(ffff1e0a))/8); \
+b = clamp(a,0,65535); ffff1e02 = b; e = \
+clamp((2*((ffff1e34&2)>>1)-1)*uint16(ffff1e32)+a-b,-0xffffff,0xffffff); d = \
+clamp(trunc0(ROM8[0x000082b7]*(b-uint16(ffff1e1a))/512)+trunc0(ROM8[0x000082b8]*int16(ffff1e1e)/256),-32768,32767); \
+ffff1e1e = d; v = b+floor((ROM8[0x000082b6]*max(0,d)+64*min(0,d))/64); \
+ffff1dfc = clamp(v+e,0,0xffffff)"""
 
 [[chain.step]]
 from = "ffff1df8"

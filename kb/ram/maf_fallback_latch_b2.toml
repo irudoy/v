@@ -1,0 +1,66 @@
+summary = """
+Bank 2 fallback latch byte on 7mfk. The per-bank contribution producer \
+writes 3 when ffff2449.bit7 or ffff24b8.bit3 is set. Any nonzero latch \
+selects fallback; the function does not decrement or clear it. The external \
+writer lifecycle remains unverified."""
+block = "airflow_load/block"
+unit = "raw mode state"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff43cb"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bank 2 fallback latch byte on 7mfk. The per-bank contribution producer \
+writes 3 when ffff2449.bit7 or ffff24b8.bit3 is set. Any nonzero latch \
+selects fallback; the function does not decrement or clear it. The external \
+writer lifecycle remains unverified."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af82"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bank 2 fallback latch byte on 7mfk. The per-bank contribution producer \
+writes 3 when ffff2449.bit7 or ffff24b8.bit3 is set. Any nonzero latch \
+selects fallback; the function does not decrement or clear it. The external \
+writer lifecycle remains unverified."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af82"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

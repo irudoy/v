@@ -1,0 +1,70 @@
+summary = """
+On 7mfk, bit 0 gives the nonnegative sign of bank 1 residual magnitude and \
+bit 1 gives that of bank 2. Active mode clears the selected bit for a \
+negative residual and sets it for zero or positive residual. The sibling and \
+other bits are preserved; fallback mode preserves the entire byte."""
+block = "airflow_load/block"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e34"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b1ae"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, bit 0 gives the nonnegative sign of bank 1 residual magnitude and \
+bit 1 gives that of bank 2. Active mode clears the selected bit for a \
+negative residual and sets it for zero or positive residual. The sibling and \
+other bits are preserved; fallback mode preserves the entire byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b1ae"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, bit 0 gives the nonnegative sign of bank 1 residual magnitude and \
+bit 1 gives that of bank 2. Active mode clears the selected bit for a \
+negative residual and sets it for zero or positive residual. The sibling and \
+other bits are preserved; fallback mode preserves the entire byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b1ae"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

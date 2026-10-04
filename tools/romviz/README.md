@@ -67,6 +67,10 @@ their address references describe that layout rather than the selected one.
 `tools/romviz/architecture.py` gate binds every step either to a relation of
 the generated ledgers or to a specification the step names. `make check`
 reproduces the canonical inventory and rebuilds the atlas.
+The command-line inventory includes explicitly placed home-layout owners
+whose facts have no legacy ledger row. Their node metadata identifies the
+native `kb` source. An unowned address or a symbol on another layout cannot
+enter that inventory through a placement in the generated view.
 
 The view opens on the system map: input endpoints, the block columns of every
 stage, output endpoints, and the support lane below them. Opening a block shows

@@ -1,11 +1,25 @@
 summary = """
-Signed 32-bit bank 1 MAF contribution written by FUN 0003af42 from filtered \
-bank-1 quantity ffff1df0 and stateful corrections. FUN 0003b252 includes it \
-in combined MAF aggregate ffff1e38."""
+Bank 1 MAF contribution longword ffff1df8 on 7mfk. Active mode stores a \
+nonnegative result capped at 0xffffff from unsigned filtered input ffff1df0, \
+a clamped word base, signed correction state, and carried residual. Fallback \
+mode uses a low-32-bit weighted product of reference ffff1e10, publishes a \
+capped contribution and base word, and preserves correction and residual \
+states. The combined-MAF consumer interprets the longword as signed."""
 note = [
     """
 The MAF and bank identity are code-proven; the individual correction terms \
 and engineering scale remain unresolved.""",
+    """
+The active formula in the chain applies with ffff2462.bit0 set, both \
+inhibitor bits clear, selected latch zero, and base plus scaled correction \
+v>=0. If v<0 the output is zero even when v+e is positive; otherwise a \
+negative v+e also selects zero. Those zero paths carry v+e as the residual. \
+A nonnegative v+e clears the residual even if the output is capped. The \
+final magnitude is capped at 65535, with zero represented as nonnegative. \
+Intermediate signed 24-bit clamps and the active output cap execute through \
+explicit post-base contexts, not a claim that ordinary word inputs reach \
+them. Full-entry wide fallback references and changed fixture weights \
+similarly establish software boundaries without live reachability.""",
 ]
 level = "code"
 unit = "raw MAF contribution"
@@ -78,10 +92,139 @@ key = "reference"
 
 [[link]]
 type = "input"
+to = "maf_base_reference_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = "Active base reference R; trunc0(45*(input-R)/8) may exceed word bounds."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003afbe"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
+to = "maf_correction_state_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = """
+Signed prior correction word with weight 255/256 and truncation toward \
+zero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b0b8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
+to = "maf_delta_reference_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = "Unsigned H in the active signed correction difference."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b080"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
+to = "maf_fallback_reference_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = "Fallback reference P; low-32-bit multiplication precedes logical shifts."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b1d4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
+to = "maf_residual_magnitude_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = "Unsigned residual magnitude, signed by the selected bank bit."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003afd8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
+to = "maf_residual_signs/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = """
+Selected residual sign bit; zero and positive are represented by a set bit."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003aff6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "input"
 to = "vegan-polecat/ram"
+via = ["mustard-squid/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = "Unsigned filtered input read before either mode."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af68"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
 [[link]]
 type = "reader"
@@ -100,6 +243,93 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "burrowing-platypus/ram"
+slot = "bit0"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 0 clear selects fallback; set permits active calculation only if both \
+inhibitors are clear and the selected latch is zero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af88"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "selector"
+to = "maf_fallback_latch_b1/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = """
+Any nonzero selected latch selects fallback. The producer does not decrement \
+or clear the byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003afac"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "selector"
+to = "slick-bullfinch/ram"
+slot = "bit7"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 7 set selects fallback and writes 3 to the selected latch. Its clear \
+state permits active calculation under the other conditions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "selector"
+to = "splendid-cheetah/ram"
+slot = "bit3"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 3 set selects fallback and writes 3 to the selected latch. Other bits \
+are preserved and do not select this condition."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af76"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
 [[link]]
 type = "writer"

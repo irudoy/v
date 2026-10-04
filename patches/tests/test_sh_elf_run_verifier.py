@@ -631,6 +631,22 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-maf-contribution": {
+                "REGION_ENTRY": 0x0003AF42,
+                "MAF_INPUT_B1": 0xFFFF1DF0, "MAF_INPUT_B2": 0xFFFF1DF2,
+                "MAF_OUTPUT_B1": 0xFFFF1DF8, "MAF_OUTPUT_B2": 0xFFFF1DFC,
+                "ENABLE_FLAGS": 0xFFFF2462, "DIAGNOSTIC_FLAGS": 0xFFFF2449,
+                "INHIBIT_FLAGS": 0xFFFF24B8,
+                "TAIL_ENTRY": 0x0003B042, "CONTRIBUTION_BASE": 0xFFFF1DEC,
+                "COEFFICIENT_ADDRESS": 0x000082B6, "FALLBACK_WEIGHT_ADDRESS": 0x00008AC3,
+                "BASE_B1": 0xFFFF1E00, "BASE_B2": 0xFFFF1E02,
+                "REFERENCE_B1": 0xFFFF1E08, "REFERENCE_B2": 0xFFFF1E0A,
+                "FALLBACK_B1": 0xFFFF1E10, "FALLBACK_B2": 0xFFFF1E14,
+                "DELTA_B1": 0xFFFF1E18, "DELTA_B2": 0xFFFF1E1A,
+                "CORRECTION_B1": 0xFFFF1E1C, "CORRECTION_B2": 0xFFFF1E1E,
+                "MAGNITUDE_B1": 0xFFFF1E30, "MAGNITUDE_B2": 0xFFFF1E32,
+                "SIGN_FLAGS": 0xFFFF1E34, "LATCH_B1": 0xFFFF43CA, "LATCH_B2": 0xFFFF43CB,
+            },
             "jk08a-load-snapshot": {
                 "REGION_ENTRY": 0x00020F04,
                 "BFS_NEWEST": 0xFFFF1026,
@@ -869,7 +885,8 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter"):
+                if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
+                               "jk08a-maf-contribution"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
                 # Bank vectors execute additional entries and repeated calls.
                 # The executable gate binds their emitted invocation count.
@@ -895,6 +912,13 @@ mov #0x5,r1
                 self.assertIsNotNone(match)
                 region = regions[key]
                 self.assertEqual(int(match.group(1)), (region.end - region.start) // 2)
+
+    def test_published_maf_contribution_instruction_count_matches_all_executed_spans(self):
+        readme = (ROOT / "tools/sh-elf-run/README.md").read_text(encoding="utf-8")
+        match = re.search(r"per-bank contribution fixture reconstructs (\d+) instructions", readme)
+        self.assertIsNotNone(match)
+        region = next(item for item in STOCK_VERIFIER.REGIONS if item.key == "jk08a-maf-contribution")
+        self.assertEqual(int(match.group(1)), sum((end-start)//2 for start,end in region.code_spans))
 
     def test_a_calling_slice_restores_pr_only_at_its_simulator_boundary(self):
         region = next(item for item in STOCK_VERIFIER.REGIONS

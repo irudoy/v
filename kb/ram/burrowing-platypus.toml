@@ -1,7 +1,22 @@
+summary = """
+On 7mfk, bit 0 permits the active per-bank MAF contribution only when \
+ffff2449.bit7 and ffff24b8.bit3 are clear and the selected fallback latch is \
+zero. A clear bit selects fallback. The physical mode and other bits are \
+unresolved."""
+note = [
+    """
+The full producer reads this byte without changing it. The active state \
+arithmetic and fallback selectors execute independently; this association \
+does not identify the external flag writer or physical mode.""",
+]
+unit = "bitfield"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff2462"
 name = "burrowing-platypus"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"

@@ -3,7 +3,8 @@
 
 `defs/JK08A.architecture.toml` projects the owned architecture entities. This
 module validates that view against the ledger projections and supplies node
-and edge helpers. The view places reviewed functions, declares peripheral
+and edge helpers. Placed native meanings extend the reviewed inventory when
+they have no legacy ledger row. The view places reviewed functions, declares peripheral
 endpoints, and binds calculation chains with effects and signs. Layout
 atlases read actual symbols and relations from kb through `graph_atlas.py`.
 """
@@ -25,6 +26,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.memgraph import provenance
+from kb import compile, repo
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -352,6 +354,7 @@ class Architecture:
         self.edges = {}
         self._spec_cache = {}
         self._load_nodes()
+        self._load_native_nodes()
         self._load_edges()
         self._index_edges()
         self.stages = self._load_stages()
@@ -525,6 +528,41 @@ class Architecture:
             if node_id in self.nodes:
                 return node_id
         return None
+
+    def _load_native_nodes(self):
+        """Placed canonical owners without a legacy row remain reviewed.
+
+        Legacy rows retain their node metadata and relation contract. A native
+        placement must resolve to an owned home-layout symbol, rather than an
+        address appearing only in a literal, L0, or another layout.
+        """
+        knowledge = compile.cached(repo.ROOT)
+        kinds = {"fn": "function", "tbl": "map", "axis": "axis",
+                 "ram": "signal", "reg": "register"}
+        for meaning in sorted(knowledge.meanings, key=lambda item: item.key):
+            if not meaning.props.get("block") or meaning.kind not in kinds:
+                continue
+            symbol = meaning.symbols.get("7mfk")
+            if symbol is None:
+                continue
+            owners = sorted(source for source in meaning.sources
+                            if source.startswith("kb/"))
+            if not owners:
+                continue
+            kind, addr = kinds[meaning.kind], f"{symbol.address:08x}"
+            node_id = f"{kind}:{addr}"
+            if node_id in self.nodes:
+                continue
+            summary = symbol.value("summary") or ""
+            self._add_node(Node(
+                id=node_id, kind=kind, addr=addr,
+                label=first_sentence(summary, meaning.name or addr),
+                text=summary, note="\n".join(symbol.value("note") or ()),
+                confidence=symbol.value("level") or "",
+                role=symbol.value("role") or "", units=symbol.value("unit") or "",
+                source=";".join(owners),
+                meta={"meaning": meaning.key, "layout": "7mfk", "origin": "kb"},
+            ))
 
     def _unreviewed(self, addr):
         kind = address_kind(addr)

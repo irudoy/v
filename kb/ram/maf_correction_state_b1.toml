@@ -1,0 +1,73 @@
+summary = """
+Bank 1 on 7mfk. Signed word state of the active MAF correction. It stores \
+clamp(trunc0(12*(base-H)/512)+trunc0(255*previous/256),-32768,32767). The \
+final correction scales nonnegative state by 77/64 with floor and leaves \
+negative state unchanged."""
+note = [
+    """
+The software arithmetic and access width are independently executed. \
+Physical identity, engineering scale, scheduler cadence, and live-state \
+reachability remain unverified.""",
+]
+block = "airflow_load/block"
+unit = "raw MAF state"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e1c"
+level = "code"
+width = 16
+signed = true
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b13a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Active mode reads the selected previous state before replacing it. Fallback \
+mode neither reads nor writes this correction or residual state."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b13a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete stock per-bank producer uses this state only for the selected \
+byte-truncated bank index 0 or 1; the sibling state and surrounding bytes \
+remain unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b13a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

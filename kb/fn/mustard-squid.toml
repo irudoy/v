@@ -1,12 +1,28 @@
 summary = """
-Stateful per-bank MAF contribution producer. For indices 0 and 1 it reads \
-filtered quantities ffff1df0/ffff1df2, applies bounded corrections, and \
-writes signed 32-bit contributions ffff1df8/ffff1dfc consumed by \
-combined-MAF producer 0003b252."""
+Complete bank-indexed MAF contribution producer on 7mfk. Byte-truncated \
+indices 0 and 1 select input words, base and correction state, residual, \
+latch, and output longword. ffff2462.bit0 permits active correction only \
+with ffff2449.bit7 and ffff24b8.bit3 clear and selected latch zero; either \
+inhibitor writes latch 3. Active arithmetic distinguishes truncation toward \
+zero at /8, /512, and /256 from floor at the final /64. Fallback multiplies \
+the longword reference modulo 32 bits before logical shifts. Both modes cap \
+the nonnegative output at 0xffffff and preserve all sibling-bank state."""
 note = [
     """
 The per-bank MAF role is exact. The physical meanings of the stateful \
 correction terms remain unresolved.""",
+    """
+Independent GNU execution covers the complete producer, all natural return \
+instructions and delay slots, and the called six-shift signed /64 helper. \
+Only five declared RAM pool words are aliased after byte identity. Explicit \
+0003b042 post-base contexts execute otherwise unreachable 24-bit residual \
+and active output caps with the complete saved stock frame; wide fallback \
+references and fixture-only weight variants have no live reachability claim. \
+Five active calls with fixed filtered input 1000, zero references, and \
+initial correction zero publish 5782,5939,6094,6249,6403 while only the \
+producer-owned correction changes. This sequence does not execute reference \
+refreshers or reproduce scheduler cadence. Physical correction identities \
+and scales remain unresolved.""",
 ]
 level = "code"
 role = "service"
@@ -119,3 +135,55 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "imposing-auk/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Active mode clamps base to unsigned word, intermediate residual to \
++/-0xffffff, correction to signed word, output to 0..0xffffff, and final \
+residual magnitude to unsigned word. If v=base+scaled correction is \
+negative, output is zero and residual=v+e even when that residual is \
+positive. Fallback mode caps output and base but preserves correction, \
+magnitude, and sign. Explicit intermediate contexts execute the signed \
+24-bit bounds without asserting normal reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b15e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "jasper-walrus/ram"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Active mode clamps base to unsigned word, intermediate residual to \
++/-0xffffff, correction to signed word, output to 0..0xffffff, and final \
+residual magnitude to unsigned word. If v=base+scaled correction is \
+negative, output is zero and residual=v+e even when that residual is \
+positive. Fallback mode caps output and base but preserves correction, \
+magnitude, and sign. Explicit intermediate contexts execute the signed \
+24-bit bounds without asserting normal reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b15e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

@@ -1,0 +1,47 @@
+summary = """
+Bank 2 on 7mfk. Clamped unsigned base word of the per-bank MAF contribution. \
+Active mode clamps the extrapolated word to 0..65535; fallback mode stores \
+the word cap of the low-32-bit weighted longword result."""
+note = [
+    """
+The software arithmetic and access width are independently executed. \
+Physical identity, engineering scale, scheduler cadence, and live-state \
+reachability remain unverified.""",
+]
+block = "airflow_load/block"
+unit = "raw MAF state"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e02"
+level = "code"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete stock per-bank producer uses this state only for the selected \
+byte-truncated bank index 0 or 1; the sibling state and surrounding bytes \
+remain unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b02e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

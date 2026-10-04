@@ -1,0 +1,73 @@
+summary = """
+Bank 1 on 7mfk. Unsigned word magnitude of the carried per-bank MAF \
+residual. Active mode combines its signed value with base-clamp excess, \
+clamps the intermediate residual to +/-0xffffff, and stores \
+min(65535,abs(final residual)). Fallback mode preserves the word."""
+note = [
+    """
+The software arithmetic and access width are independently executed. \
+Physical identity, engineering scale, scheduler cadence, and live-state \
+reachability remain unverified.""",
+]
+block = "airflow_load/block"
+unit = "raw MAF state"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e30"
+level = "code"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b1c2"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "reader"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Active mode reads the selected previous state before replacing it. Fallback \
+mode neither reads nor writes this correction or residual state."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b1c2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
+
+[[link]]
+type = "writer"
+to = "mustard-squid/fn"
+via = ["mustard-squid/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete stock per-bank producer uses this state only for the selected \
+byte-truncated bank index 0 or 1; the sibling state and surrounding bytes \
+remain unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b1c2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_contribution.py"
+key = """
+test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""

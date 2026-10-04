@@ -589,3 +589,64 @@ normalization_seed_gbr:
     .long 0x13572468
 normalization_return_pointer:
     .long normalization_return
+
+! The contribution tail receives mapped GBR, signed residual, base word, and
+! MACL after base clamping. A complete stock frame lets its natural epilogue
+! restore GBR, MACL, PR, R14, and R13. These artificial contexts execute the
+! otherwise unreachable signed 24-bit residual and output bounds.
+    .global _stock_invoke_contribution_tail
+    .type _stock_invoke_contribution_tail,@function
+_stock_invoke_contribution_tail:
+    mov.l r8,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r3
+    mov r6,r7
+    mov.l contribution_saved_r12,r12
+    mov.l contribution_saved_r13,r13
+    mov.l contribution_saved_r14,r14
+    mov.l @(12,r7),r0
+    lds r0,macl
+    mov.l contribution_saved_gbr,r0
+    ldc r0,gbr
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    mov.l contribution_return_pointer,r0
+    mov.l r0,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    add #-28,r15
+    extu.b r5,r13
+    mov r13,r14
+    shll r13
+    shll2 r14
+    add #1,r5
+    mov.b r5,@r15
+    mov.l @(4,r7),r0
+    mov.l r0,@(4,r15)
+    mov.l @(8,r7),r0
+    mov.w r0,@(8,r15)
+    mov.l @r7,r0
+    ldc r0,gbr
+    jmp @r3
+    nop
+contribution_return:
+    bra compensation_record
+    nop
+    .size _stock_invoke_contribution_tail,.-_stock_invoke_contribution_tail
+    .balign 4
+contribution_saved_r12:
+    .long 0x10203040
+contribution_saved_r13:
+    .long 0x13579bdf
+contribution_saved_r14:
+    .long 0x2468ace0
+contribution_saved_gbr:
+    .long 0x13572468
+contribution_return_pointer:
+    .long contribution_return

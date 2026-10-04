@@ -122,6 +122,24 @@ def test_every_reviewed_function_is_placed_once(tracked):
     assert set(placed) == reviewed
 
 
+def test_native_placed_maf_states_without_legacy_rows_are_reviewed(tracked):
+    addresses = ("ffff1e00", "ffff1e02", "ffff1e08", "ffff1e0a", "ffff1e10",
+                 "ffff1e14", "ffff1e18", "ffff1e1a", "ffff1e1c", "ffff1e1e",
+                 "ffff1e30", "ffff1e32", "ffff1e34", "ffff43ca", "ffff43cb")
+    for address in addresses:
+        assert address not in tracked.ledgers.variables
+        node = tracked.nodes["signal:" + address]
+        assert node.reviewed and node.block == "airflow-load"
+        assert node.meta["origin"] == "kb" and node.meta["layout"] == "7mfk"
+        assert node.source.startswith("kb/ram/") and node.confidence == "code"
+
+
+def test_native_placement_does_not_admit_an_unowned_signal(tmp_path):
+    text = _source_text().replace('"ffff1e00"', '"ffffdead"', 1)
+    broken = _rewritten(tmp_path, text)
+    assert any("ffffdead is not a reviewed" in item for item in broken.errors)
+
+
 def test_a_function_without_a_block_fails_the_gate(tmp_path, tracked):
     text = _source_text()
     addr = _singly_named_function(tracked, text)

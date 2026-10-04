@@ -24,7 +24,7 @@ presentation and generated output.
 | `JK08A.vars.csv` | RAM and peripheral semantics and evidence | no, `kb` projection |
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | no, `kb` projection |
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | no, `kb` projection |
-| `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | yes |
+| `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | no, `kb` projection |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | no, `kb` projection |
 | `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | no, `kb` projection |
@@ -41,6 +41,9 @@ presentation and generated output.
 The exact ROM supplies every map and axis value during ingestion. Handwritten
 files must not duplicate image values. The graph is a reproducible relationship
 projection and does not replace these tracked sources.
+
+The architecture view is generated from the stage, block, endpoint, and chain
+entities of `kb`. Edit their owners with `kb`, then regenerate the view.
 
 The six JK08A ledgers and the curated function names in
 `tools/ghidra/symbols/7mfk.csv` are views of the meanings in `kb/` from stage 5
