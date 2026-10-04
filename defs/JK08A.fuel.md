@@ -160,8 +160,41 @@ discrepancy is recorded at the finding.
 At `0x3C284..0x3C29C`, the active lookup path uses wrapper `0x261F0` with row
 axis `0x11CF0` over RPM/12.5 word `0xFFFF11F4` and column axis `0x11D4C` over
 byte `0xFFFF1170`, then writes the uint8 result to `0xFFFF1160`. Runtime
-gates can select a bounded bypass value instead of the map result; the common
-destination is unchanged.
+gates select the surface when `ROM8[0x8B42].bit5` is set,
+`ROM8[0x8B34].bit4` is clear, or `ROM8[0x8B42].bit0` is clear and
+`ROM8[0x8B34].bit1` is set. Otherwise the selected unsigned bypass byte is:
+
+| Condition | Source |
+|---|---|
+| `0x8B42.bit0` set, `0x86F9.bit1` set | `ROM8[0x851A]` |
+| `0x8B42.bit0` set, `0x86F9.bit1` clear | `RAM8[0xFFFF5625]` |
+| `0x8B42.bit0` clear | `RAM8[0xFFFF2836]` |
+
+The bypass clamps its byte to `64..192` and publishes the same destination,
+without invoking the surface. The fixed control bytes are calibration inputs;
+their physical mode identities and the preceding bypass-state writers are
+separate verification items.
+
+Each axis clamps below its first point and from its last point upward. Within
+a cell, the kernel returns the unsigned truncated Q0.16 fraction
+`floor((coordinate-a)*65536/(b-a))`. Row points are multiplied by four before
+this calculation; column points are direct bytes. The byte finisher applies
+the following directional interpolation to columns of each active row, then
+to those row results:
+
+```text
+L(a,b,f) = a + floor(max(0,b-a)*f/65536) - floor(max(0,a-b)*f/65536)
+```
+
+A zero fraction uses the exact cell without reading its next neighbor. When
+both fractions are zero, the natural wrapper can sign-extend the byte; the
+coordinator's byte store publishes its unsigned low eight bits. Descending
+increments and the column-first order distinguish this contract from flooring
+a weighted average. The row input is the coherent cached unsigned word loaded
+from `0xFFFF11F4`, rather than a fresh read at the lookup. The executable gate
+binds this cache association statically, executes both selector arms, the axes,
+divider, finisher, and store, and checks input, calibration, MACL, and GBR
+preservation. It does not execute preceding state writers.
 
 Byte core `0x269C4` compares each row point after multiplication by four with
 the RPM/12.5 word, so one row-axis count is 50 RPM. Byte core `0x26944`

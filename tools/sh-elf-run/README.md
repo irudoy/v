@@ -417,6 +417,34 @@ change with:
 make runtime-targets-generate
 ```
 
+## Main fuel compensation
+
+The JK08A main-compensation region reconstructs 301 instructions and 962 bound
+bytes at their stock addresses. Its 3494 cases cover the full surface/bypass
+selector, all column bytes, every row-axis breakpoint and adjacent coordinates,
+endpoint clamps, four distinct surfaces, directional rounding, column-first
+interpolation, the three bounded bypass sources, and exact byte publication.
+Direct wrapper calls cover word/byte argument truncation and sign-extended
+exact-cell returns; direct unsigned-divider calls include a zero denominator.
+The static contract additionally binds the preceding input-base and cached-RPM
+loads, for 996 bytes whose individual corruptions are rejected.
+
+The tested slice begins at `0003c1c0`, joins the surface at `0003c284`, and ends
+after the `ffff1160` byte store at `0003c29c`. Byte row-axis points are multiplied
+by four; column-axis points are direct bytes. The two axis kernels return a cell
+and truncated Q0.16 fraction. The byte finisher interpolates columns in each
+active row before rows, with separately truncated ascending and descending
+increments. Both zero fractions permit a sign-extended exact-cell return; the
+coordinator publishes its unsigned low byte.
+
+The simulator aliases only the three declared RAM pool words after exact byte
+comparison. An external return continuation at SP+4 leaves the column argument
+byte at SP+3 intact and restores PR beyond the tested instructions. The table,
+axes, control bytes, source RAM, neighboring bytes, cached RPM, input base, MACL,
+and GBR are checked for preservation. Explicit surface/control patterns are
+simulator input contexts. Preceding writers and physical mode identities are
+outside the executable slice; engineering scales retain their existing levels.
+
 ## External npkern gate
 
 Run the external gate separately:

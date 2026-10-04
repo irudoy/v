@@ -7,6 +7,24 @@ note = [
     """
 Raw 128 is neutral 1.0 or 100 percent. Runtime gates can bypass the lookup, \
 so not every write is necessarily a table result.""",
+    """
+The 7mfk main-surface arm uses coherent cached unsigned RPM/12.5 from \
+ffff11f4 and byte ffff1170. Byte row-axis points are multiplied by four; \
+column-axis points are direct bytes. Both kernels clamp outside their \
+endpoint range and derive Q0.16 fractions by unsigned truncating division. \
+The unsigned byte finisher interpolates columns in each active row before \
+interpolating the rows, with separately truncated directional increments. An \
+exact cell can return sign-extended; byte publication makes it unsigned. The \
+chain interpolate expression denotes this specific column-first contract, \
+not a weighted-average or floating-point interpolation.""",
+    """
+The lookup arm is selected when mode-A bit 5 is set, mode-B bit 4 is clear, \
+or mode-A bit 0 is clear and mode-B bit 1 is set. Otherwise mode-A bit 0 \
+selects the first bypass: source-mode bit 1 selects ROM8[0000851a] or \
+RAM8[ffff5625]. The second bypass uses RAM8[ffff2836]. Each bypass clamps to \
+64..192 and bypasses the surface. The independent slice executes these \
+selectors and byte publication; preceding state writers and physical mode \
+identities remain separate.""",
 ]
 level = "code"
 unit = "ratio_q7"
@@ -102,10 +120,136 @@ key = "reference"
 
 [[link]]
 type = "input"
+to = "alpha_n_flow/ram"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The surface column coordinate is uint8(ffff1170), passed through the byte at \
+SP+3 and compared directly with byte axis points."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c288"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "authentic-wasp/ram"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The surface row coordinate is coherent cached uint16(ffff11f4), with byte \
+row-axis points multiplied by four."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c28a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "fuel_compensation_bypass_first/ram"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The first bypass uses this unsigned byte when mode-A bit 0 is set and \
+source-mode bit 1 is clear; clamp it to 64..192."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1fa"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "fuel_compensation_bypass_scalar/tbl"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The first bypass uses this unsigned ROM byte when source-mode bit 1 is set; \
+clamp it to 64..192."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1f4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "fuel_compensation_bypass_second/ram"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The second bypass uses this unsigned byte under its three clear-bit and one \
+set-bit conditions; clamp it to 64..192."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c21a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "input"
 to = "fuel_compensation_main/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "fuel_compensation_main/tbl"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The selected main surface is 16x16 unsigned byte cells, with column-first \
+directional interpolation and final byte publication."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c292"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
 [[link]]
 type = "reader"
@@ -126,6 +270,114 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "fuel_compensation_mode_a/tbl"
+slot = "bit0"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With the direct surface gates false, bit 0 set selects the first bypass. \
+With bit 0 clear, mode-B bit 1 set selects the surface or a clear bit \
+selects the second bypass."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1d6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "fuel_compensation_mode_a/tbl"
+slot = "bit5"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+A set bit 5 selects the main surface independently of other selector arms."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1c6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "fuel_compensation_mode_b/tbl"
+slot = "bit1"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode-A bits 5 and 0 clear and mode-B bit 4 set, bit 1 set selects the \
+surface and bit 1 clear selects the second bypass."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1e0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "fuel_compensation_mode_b/tbl"
+slot = "bit4"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "A clear bit 4 selects the main surface when mode-A bit 5 is clear."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1d0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "fuel_compensation_source_mode/tbl"
+slot = "bit1"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On the first bypass arm, bit 1 set selects the ROM scalar and bit 1 clear \
+selects RAM8[ffff5625]."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1ec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
 [[link]]
 type = "writer"

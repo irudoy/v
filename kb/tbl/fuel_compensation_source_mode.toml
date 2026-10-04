@@ -1,0 +1,45 @@
+summary = """
+Fixed-address 7mfk first-bypass source selector byte. On the mode-A bit0 \
+arm, bit 1 selects the unsigned ROM scalar at 0000851a when set or unsigned \
+RAM byte ffff5625 when clear. The selected byte is clamped to 64..192."""
+block = "airflow_load/block"
+access = "direct-scalar"
+storage = "uint8"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "000086f9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003c1ea"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Fixed-address 7mfk first-bypass source selector byte. On the mode-A bit0 \
+arm, bit 1 selects the unsigned ROM scalar at 0000851a when set or unsigned \
+RAM byte ffff5625 when clear. The selected byte is clamped to 64..192."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1ea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""

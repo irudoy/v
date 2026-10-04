@@ -1,0 +1,47 @@
+summary = """
+Unsigned 7mfk RAM byte used by the second compensation bypass when mode-A \
+bits 5 and 0 and mode-B bit 1 are clear while mode-B bit 4 is set. The \
+coordinator clamps it to 64..192 before ffff1160. Its preceding writer and \
+physical identity are not established by this slice."""
+block = "airflow_load/block"
+unit = "raw compensation byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2836"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003c21a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned 7mfk RAM byte used by the second compensation bypass when mode-A \
+bits 5 and 0 and mode-B bit 1 are clear while mode-B bit 4 is set. The \
+coordinator clamps it to 64..192 before ffff1160. Its preceding writer and \
+physical identity are not established by this slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c21a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""

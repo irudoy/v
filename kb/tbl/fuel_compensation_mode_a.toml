@@ -1,0 +1,47 @@
+summary = """
+Fixed-address 7mfk compensation selection byte. Bit 5 selects the main \
+surface directly. With bit 5 clear and the other mode byte bit 4 set, bit 0 \
+selects the first bounded bypass source; with bit 0 clear, the other mode \
+byte bit 1 selects the surface or the second bounded bypass source."""
+block = "airflow_load/block"
+access = "direct-scalar"
+storage = "uint8"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008b42"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003c1c2"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Fixed-address 7mfk compensation selection byte. Bit 5 selects the main \
+surface directly. With bit 5 clear and the other mode byte bit 4 set, bit 0 \
+selects the first bounded bypass source; with bit 0 clear, the other mode \
+byte bit 1 selects the surface or the second bounded bypass source."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1c2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""

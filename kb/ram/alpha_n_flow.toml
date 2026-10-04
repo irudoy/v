@@ -112,6 +112,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1170"
 former = ["military-puffin/ram/7mfk-ffff1170"]
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

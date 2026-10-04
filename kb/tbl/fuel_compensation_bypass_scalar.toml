@@ -1,0 +1,45 @@
+summary = """
+Unsigned 7mfk ROM byte used by the first compensation bypass when the \
+source-mode bit 1 is set. The coordinator clamps the selected byte to \
+64..192 and publishes ffff1160 without surface interpolation."""
+block = "airflow_load/block"
+access = "direct-scalar"
+storage = "uint8"
+unit = "raw compensation byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000851a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003c1f4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned 7mfk ROM byte used by the first compensation bypass when the \
+source-mode bit 1 is set. The coordinator clamps the selected byte to \
+64..192 and publishes ffff1160 without surface interpolation."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c1f4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""

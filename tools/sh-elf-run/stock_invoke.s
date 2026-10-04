@@ -762,3 +762,86 @@ bfs_limit_return:
     .balign 4
 bfs_limit_return_pointer:
     .long bfs_limit_return
+
+! The coordinator slice receives a coherent R10 base and unsigned RPM in R12.
+! SP+0 is the byte-wrapper argument slot; SP+4 holds the return continuation.
+    .global _stock_invoke_fuel_compensation
+    .type _stock_invoke_fuel_compensation,@function
+_stock_invoke_fuel_compensation:
+    sts.l pr,@-r15
+    stc.l gbr,@-r15
+    sts.l macl,@-r15
+    mov.l r8,@-r15
+    mov.l r10,@-r15
+    mov.l r12,@-r15
+    add #-8,r15
+    mov r6,r8
+    mov r4,r2
+    mov.l @r5,r10
+    mov.l @(4,r5),r12
+    mov.l @(8,r5),r0
+    lds r0,macl
+    mov.l @(12,r5),r0
+    ldc r0,gbr
+    mov.l compensation_return_pointer,r0
+    mov.l r0,@(4,r15)
+    jsr @r2
+    nop
+compensation_return:
+    sts macl,r1
+    mov.l r1,@r8
+    stc gbr,r1
+    mov.l r1,@(4,r8)
+    mov.l r10,@(8,r8)
+    mov.l r12,@(12,r8)
+    mov.l r2,@(16,r8)
+    add #8,r15
+    mov.l @r15+,r12
+    mov.l @r15+,r10
+    mov.l @r15+,r8
+    lds.l @r15+,macl
+    ldc.l @r15+,gbr
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_fuel_compensation,.-_stock_invoke_fuel_compensation
+    .balign 4
+compensation_return_pointer:
+    .long compensation_return
+
+! Supply table and two axes in registers and the column byte at SP+3.
+! Stack arguments are the row word, column byte, and recorded MACL pointer.
+    .global _stock_invoke_surface
+    .type _stock_invoke_surface,@function
+_stock_invoke_surface:
+    mov.l r8,@-r15
+    mov.l @(4,r15),r0
+    mov.l @(8,r15),r1
+    mov.l @(12,r15),r8
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    add #-4,r15
+    mov r0,r3
+    mov r1,r0
+    mov.b r0,@(3,r15)
+    mov r4,r2
+    mov r5,r4
+    mov r6,r5
+    mov r7,r6
+    mov r3,r7
+    mov.l surface_macl_seed,r0
+    lds r0,macl
+    jsr @r2
+    nop
+    sts macl,r1
+    mov.l r1,@r8
+    add #4,r15
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_surface,.-_stock_invoke_surface
+    .balign 4
+surface_macl_seed:
+    .long 0x12345678

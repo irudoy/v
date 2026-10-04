@@ -225,7 +225,7 @@ functions = [
     "0006635c",
     "00068724",
 ]
-maps = ["00008d92"]
+maps = ["0000851a", "000086f9", "00008b34", "00008b42", "00008d92"]
 signals = [
     "ffff11dc",
     "ffff1e00",
@@ -243,8 +243,10 @@ signals = [
     "ffff1e34",
     "ffff1e46",
     "ffff24b1",
+    "ffff2836",
     "ffff43ca",
     "ffff43cb",
+    "ffff5625",
 ]
 
 [[block]]
@@ -2091,8 +2093,8 @@ effect = "looks-up"
 sign = "positive"
 via = ["0003bd74"]
 note = """
-Fuel Compensation Main, Q7 with 128 = 100 percent, on RPM/12.5 ffff11f4 and \
-alpha-N byte ffff1170; runtime gates can write a bounded bypass."""
+ffff1160 = \
+uint8(interpolate(ROM8[0x0000a29a],uint16(ffff11f4),uint8(ffff1170)))"""
 
 [[chain.step]]
 from = "ffff1160"

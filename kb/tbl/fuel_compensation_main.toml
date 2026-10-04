@@ -163,6 +163,50 @@ mutual-best accessor preserves geometry axes and lookup role on the default \
 arm of the target state selector"""
 
 [[link]]
+type = "axis"
+to = "fascinating-hog/axis"
+slot = "y"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The row axis contains 16 unsigned bytes multiplied by four before comparison \
+with cached uint16(ffff11f4)."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c28c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
+type = "axis"
+to = "mellow-turtle/axis"
+slot = "x"
+via = ["fuel_compensation_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The column axis contains 16 unsigned bytes compared directly with \
+uint8(ffff1170)."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c28e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+key = """
+test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
+
+[[link]]
 type = "reader"
 to = "fuel_compensation_coordinator/fn"
 layouts = ["7mfk"]
