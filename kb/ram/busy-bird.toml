@@ -2,11 +2,41 @@
 layout = "7mfk"
 address = "ffff24bd"
 name = "busy-bird"
+level = "code"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00037c2a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The rate stage reads bit2: set is required for signed correction, while \
+clear is required for weighted blending."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003baca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "writer"

@@ -1,8 +1,11 @@
 summary = """
-Current unblended Base Fuel Schedule working word produced in 0003b75c from \
-the common schedule value, multiplier ffff115c, product \
-uint16[ffff1f30]*uint16[ffff1e06], and ROM8[0x8d92].bit4-selected sum or \
-nonnegative-difference branch."""
+Unsigned unblended BFS working word produced by the 7mfk rate stage. Cached \
+unsigned ffff24b1.bit4 selects the saturated sum branch when clear or the \
+nonnegative-difference branch when set. Shifted candidates use a logical \
+15-bit shift and unsigned word cap; sum overflow bypasses the shifts and \
+caps to 65535. The sum arm increments once when its capped candidate equals \
+the previous working word and remains below min(65535,4*Q), with Q \
+coherently cached from ffff1062."""
 level = "code"
 unit = "ms*2048"
 
@@ -84,19 +87,159 @@ at = "7mfk:0003b9de"
 value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "input"
-to = "flashy-elk/ram"
+to = "bfs_rate_coefficient/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = "Unsigned coefficient C combines with previous unsigned H as P=C*H."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b924"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "fanatic-marten/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned multiplier S supplies T=min(0xffffffff,4*Q*S)."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b90a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "flashy-elk/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned previous working word H supplies P=C*H; it also bounds the later \
+latch and correction."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b928"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "tall-quoll/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Coherent cached Q=uint16(ffff1062) supplies the saturated four-times product \
+and the sum-arm one-count target."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b90e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The sum arm reads the previous unsigned working word for its one-count \
+anti-stall comparison; later correction and blend arms read the published \
+word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b964"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_state_flags/ram"
+slot = "bit4"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Cached bit4 clear selects the sum candidate sat_u16((P+T)>>15); set selects \
+sat_u16(max(0,P-T)>>15). Sum overflow bypasses the stock shifts and caps to \
+65535. The cached unsigned byte is bound to its pre-Q7 load and coherent \
+published state."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b930"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "tall-quoll/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only the sum arm increments its capped candidate once when candidate < \
+min(65535,4*Q) and candidate equals the previous ffff1dee word read before \
+publication. The increment remains within 65535."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b960"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "writer"

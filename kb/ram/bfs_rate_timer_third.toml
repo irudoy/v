@@ -1,0 +1,113 @@
+summary = """
+Unsigned third BFS rate-stage hold counter. ROM mode bit3 enables its \
+query-controlled update. A zero return decrements the byte to zero and a \
+nonzero return selects 4; the stock signed-word -1 query argument returns \
+zero. With mode bit3 clear the byte is unchanged."""
+block = "airflow_load/block"
+unit = "raw timer count"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e4c"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ba74"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned third BFS rate-stage hold counter. ROM mode bit3 enables its \
+query-controlled update. A zero return decrements the byte to zero and a \
+nonzero return selects 4; the stock signed-word -1 query argument returns \
+zero. With mode bit3 clear the byte is unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba74"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_mode_flags/tbl"
+slot = "bit3"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit3 set enables query-controlled update; clear preserves the complete \
+previous timer byte without query or monitor update."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "diagnostic_record_byte2_fault_predicate/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit3 set, a zero result selects max(0,uint8(previous)-1) and a \
+nonzero result selects 4. The stock caller delay slot passes R4=-1, whose \
+signed-word natural predicate returns zero; the refresh arm is exercised \
+only as an artificial post-call context, without a reachable-stock claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba6a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The 7mfk BFS rate stage updates this unsigned byte only along the declared \
+selector arms, preserving unrelated state and neighboring bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba8c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

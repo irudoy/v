@@ -1,0 +1,156 @@
+summary = """
+Unsigned multipurpose monitor byte. Under ROM mode bit3, the BFS rate stage \
+sets bit7 when any of its three updated hold counters is nonzero and clears \
+bit7 when all are zero. It preserves unrelated bits; with mode bit3 clear it \
+preserves the entire byte."""
+block = "airflow_load/block"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff244e"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ba96"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "bfs_rate_timer_first/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Under mode bit3, any nonzero updated first, second, or third timer sets \
+monitor bit7 and all zero timers clear it. Other monitor bits are \
+preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba8e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "bfs_rate_timer_second/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Under mode bit3, any nonzero updated first, second, or third timer sets \
+monitor bit7 and all zero timers clear it. Other monitor bits are \
+preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba9c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "bfs_rate_timer_third/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Under mode bit3, any nonzero updated first, second, or third timer sets \
+monitor bit7 and all zero timers clear it. Other monitor bits are \
+preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003baa2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned multipurpose monitor byte. Under ROM mode bit3, the BFS rate stage \
+sets bit7 when any of its three updated hold counters is nonzero and clears \
+bit7 when all are zero. It preserves unrelated bits; with mode bit3 clear it \
+preserves the entire byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba96"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_mode_flags/tbl"
+slot = "bit3"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit3 set enables monitor bit7 update from the three updated timers; clear \
+preserves the entire monitor byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The 7mfk BFS rate stage updates this unsigned byte only along the declared \
+selector arms, preserving unrelated state and neighboring bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bab6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

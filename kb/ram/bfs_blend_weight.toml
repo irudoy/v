@@ -1,0 +1,47 @@
+summary = """
+Unsigned byte weight A of the 7mfk selected working-word blend. The active \
+blend combines A times the current unblended word and (256-A) times the \
+previous selected word, then shifts logically by eight. Its preceding writer \
+and physical identity are outside this slice."""
+block = "airflow_load/block"
+unit = "raw_u8"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1ee1"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003bb60"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte weight A of the 7mfk selected working-word blend. The active \
+blend combines A times the current unblended word and (256-A) times the \
+previous selected word, then shifts logically by eight. Its preceding writer \
+and physical identity are outside this slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

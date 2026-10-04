@@ -1,8 +1,11 @@
 summary = """
-Signed schedule-rate correction produced by 0003b75c. Under its enable gates \
-it is clamp_s16(arithmetic_shift7(160*(ffff1dee-ffff1e06))); otherwise it is \
-zero. The selected current schedule word receives this correction before the \
-Base Fuel Schedule upper limit."""
+Signed BFS rate correction produced by the 7mfk Base Fuel Schedule producer. \
+Under its combined enable, diagnostic, latch, and timer conditions it is \
+sat_s16(floor((uint16(ffff1dee)-uint16(ffff1e06))*ROM8[0000865a]/64)); \
+otherwise it is zero. The natural helper performs six arithmetic right \
+shifts, including its return delay slot. The producer stores the correction \
+word and retains it in R7 for the following limiter; the limiter \
+sign-extends the cached word and does not reread ffff1060."""
 level = "code"
 unit = "BFS delta raw"
 
@@ -91,19 +94,74 @@ supports = "identity"
 to = "illustrious-vulture/fn/7mfk"
 relies = "contract"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "input"
-to = "elite-dormouse/ram"
+to = "bfs_correction_gain/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The active correction is sat_s16(floor((W-H)*ROM8[0000865a]/64)). The \
+natural six-SHAR helper returns with its instruction bytes intact. Repeated \
+stock calls are statically bound; this evidence does not assert directly \
+observed invocation counts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003baea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "elite-dormouse/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active path subtracts unsigned previous H from unsigned current working \
+W before unsigned-byte multiplication and signed floor division by 64."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bae2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "input"
 to = "flashy-elk/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = "Unsigned previous unblended H supplies signed difference W-H."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bae8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "reader"
@@ -113,10 +171,136 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "bfs_rate_timer_first/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active signed correction requires the updated first counter zero. A \
+nonzero byte stores zero correction; this condition reads the coherently \
+cached/reloaded counter."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bad8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_rate_timer_second/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active signed correction requires the updated second counter zero. A \
+nonzero byte stores zero correction."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bade"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_state_flags/ram"
+slot = "bit7"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active signed correction requires the refreshed latch bit7 clear; a set \
+latch stores zero. The other correction conditions remain required."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bad2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "burrowing-platypus/ram"
+slot = "bit0"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active signed correction requires bit0 set together with diagnostic bit2 \
+set, latch bit7 clear, and updated first/second counters zero. A failed \
+condition stores zero and caches zero in R7."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003baba"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "busy-bird/ram"
+slot = "bit2"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The active signed correction requires bit2 set together with enable bit0 \
+set, latch bit7 clear, and first/second counters zero; bit2 clear stores \
+zero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bacc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
 type = "writer"
 to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The active path caps the signed helper result to -32768..32767 and stores it \
+as a word; every inactive path stores zero. The matching value remains \
+cached in R7 for subsequent limiting, without a RAM reread."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb2e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

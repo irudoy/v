@@ -1,0 +1,88 @@
+summary = """
+Unsigned first BFS rate-stage hold counter. The producer stores 4 when \
+ffff2449.bit7 is set; otherwise it decrements the previous byte to zero. Its \
+raw count has no asserted duration."""
+block = "airflow_load/block"
+unit = "raw timer count"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e20"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ba1e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned first BFS rate-stage hold counter. The producer stores 4 when \
+ffff2449.bit7 is set; otherwise it decrements the previous byte to zero. Its \
+raw count has no asserted duration."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "slick-bullfinch/ram"
+slot = "bit7"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit7 set selects 4; clear selects max(0,uint8(previous)-1). The first \
+updated counter is used by the monitor and correction gates."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba14"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The 7mfk BFS rate stage updates this unsigned byte only along the declared \
+selector arms, preserving unrelated state and neighboring bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba38"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

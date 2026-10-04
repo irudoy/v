@@ -15,6 +15,7 @@ unit = "bitfield"
 layout = "7mfk"
 address = "ffff2462"
 name = "burrowing-platypus"
+level = "code"
 width = 8
 signed = false
 
@@ -22,3 +23,30 @@ signed = false
 kind = "l0"
 supports = "identity"
 at = "7mfk:000386e0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The rate stage reads bit0 as the combined correction and blend enable \
+selector; preceding writers and physical mode meanings are not established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bab8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

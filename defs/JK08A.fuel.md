@@ -264,22 +264,67 @@ T = sat_u32(4 * f * uint16[0xFFFF115C])
 P = uint16[0xFFFF1F30] * uint16[0xFFFF1E06]
 ```
 
-Stock `ROM8[0x8D92] = 0x7A` has bit 4 set, selecting:
+The cached unsigned byte `RAM8[0xFFFF24B1]` selects the rate arm. With bit 4 set:
 
 ```text
-0xFFFF1DEE = min(65535, max(P - T, 0) >> 13)
+0xFFFF1DEE = min(65535, max(P - T, 0) >> 15)
 ```
 
-The opposite configuration branch uses the saturated `(P + T) >> 13` result.
+With bit 4 clear, the candidate is `min(65535, (P + T) >> 15)`. The stock
+overflow test selects `0xFFFFFFFF` before the word cap when `T >= ~P`;
+that path bypasses the shifts and also publishes 65535. A candidate below
+`min(65535, 4*f)` advances by one only when it equals the previous working
+word. The difference arm has no such increment. The two 15-bit sequences
+include the sum's final shift in a delay slot. `ROM8[0x8D92].bit4` controls
+the subsequent blended publication rather than this rate selection.
 `FUN_0003BD74` also publishes `0xFFFF115C`; its selected source can be a
 calculated word, a parallel working word, or stock constant
 `ROM16[0x90EE] = 0x020C` according to runtime state. `0xFFFF115C` is therefore
 not the `0xA29A` result and must not be merged with `0xFFFF1160` in a definition
 or patch.
 
-The corrected schedule is rate-adjusted and optionally blended with the prior
-sample. RPM curve `0x12C9E` normally caps the result before it is written to
-`0xFFFF1026`; an alternate mode uses direct grid `0x974E`.
+The alpha-N byte `0xFFFF1170` sets `0xFFFF24B1.bit7` when it is at least the
+upper calibration byte and `uint16[0xFFFF1E06] >= 4*f`. Otherwise a byte below
+the lower calibration clears bit 7; intermediate contexts retain it. Other
+bits are preserved. JK08A holds 202 and 200 at `0x8319` and `0x831A`.
+
+Timers `0xFFFF1E20` and `0xFFFF1E47` select four under `0xFFFF2449.bit7`
+and `0xFFFF4250.bit6`, respectively, or decrement toward zero. Mode bit 3
+of `0x8D92` enables the query/timer arm. The call at `0x0003BA66` passes
+signed word -1, for which the natural diagnostic predicate at `0x000259E4`
+returns zero. The third timer `0xFFFF1E4C` therefore decrements; its
+refresh-to-four arm requires an artificial nonzero query result in the
+bounded executable fixture. Any active updated timer sets `0xFFFF244E.bit7`;
+all zero timers clear it. Mode bit 3 clear preserves the third timer and
+the entire monitor byte.
+
+Signed correction requires `0xFFFF2462.bit0`, `0xFFFF24BD.bit2`, clear
+`0xFFFF24B1.bit7`, and zero first/second timers:
+
+```text
+R7 = clamp(floor((uint16[0xFFFF1DEE] - uint16[0xFFFF1E06]) *
+                 ROM8[0x865A] / 64), -32768, 32767)
+0xFFFF1060 = int16(R7)
+```
+
+Other contexts publish zero. The natural helper at `0x000224FA` performs
+six arithmetic right shifts, including its return delay slot, so negative
+division rounds down. JK08A holds gain 160. The limiter consumes cached R7
+after the word publication, without rereading that RAM cell in this slice.
+
+Mode bit 4 enables `0xFFFF1DEC` publication. Enable bit 0, clear diagnostic
+bit 2, and set latch bit 7 select:
+
+```text
+A = uint8[0xFFFF1EE1]
+0xFFFF1DEC = (A * uint16[0xFFFF1DEE] +
+              (256 - A) * uint16[0xFFFF1E04]) >> 8
+```
+
+Other enabled contexts copy `0xFFFF1DEE`; mode bit 4 clear preserves the
+previous blended word. This publication does not add the signed correction.
+RPM curve `0x12C9E` normally caps the selected, signed-corrected result before
+it is written to `0xFFFF1026`; an alternate mode uses direct grid `0x974E`.
 
 With `0xFFFF2449.bit7` clear, the limiting slice uses unsigned blended word
 `0xFFFF1DEC` when `ROM8[0x8D92].bit4` is set, or unsigned unblended word

@@ -11,7 +11,7 @@ The bit operations and predicate polarities are exact. Internal status bits \
 are not assigned UDS status-bit names.""",
 ]
 level = "code"
-unit = "diagnostic status array"
+unit = "diagnostic record byte"
 
 [[ledger]]
 registry = "vars"
@@ -157,6 +157,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff5718"
 name = "hallowed-malkoha"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -298,6 +300,12 @@ at = "7mfk:00097faa"
 value = {named = ["000259e4", "00025a12", "00025e20", "0007c3b4", "0007c57a", "0007cf14", "0007dc32", "0007ebec", "0008042c", "00082c8a", "00084cd0", "0008c942", "0008c968", "00097eb4", "ffff5718"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "reader"
 to = "berserk-sturgeon/fn"
@@ -347,12 +355,27 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "diagnostic_record_byte2_fault_predicate/fn"
+via = ["diagnostic_record_byte2_fault_predicate/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The predicate uses the byte-storage base plus 3*int16(index) and tests byte2 \
+bits5 and6. Signed-word index -1 returns zero without a record read. No \
+array extent or engineering scale is asserted by this slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000259f6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "reader"

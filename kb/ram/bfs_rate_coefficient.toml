@@ -1,0 +1,47 @@
+summary = """
+Unsigned coefficient word multiplied by the previous unblended working word \
+in the 7mfk BFS rate stage. The product is combined with the saturated \
+Q7-derived term before word capping. Its preceding writer and physical \
+identity are outside this slice."""
+block = "airflow_load/block"
+unit = "raw_u16"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1f30"
+level = "code"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b924"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned coefficient word multiplied by the previous unblended working word \
+in the 7mfk BFS rate stage. The product is combined with the saturated \
+Q7-derived term before word capping. Its preceding writer and physical \
+identity are outside this slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b924"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

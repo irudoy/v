@@ -1,16 +1,18 @@
 summary = """
-Fixed-address JK08A BFS mode byte ROM8[0x8d92]=0x7a. Its bit 4 selects the \
-blended working word ffff1dec for corrected normal-mode publication; a clear \
-bit selects unblended ffff1dee. The pre-entry load and mask are statically \
-bound, while selected contexts independently execute both word-source \
-paths."""
+Fixed-address JK08A BFS mode byte ROM8[0x8d92]=0x7a. Bit3 enables the \
+diagnostic-query timer and monitor updates. Bit4 enables selected \
+working-word publication and selects that word for corrected normal-mode \
+limiting; a clear bit4 selects the unblended word in the limiter and \
+preserves the selected word. The rate and limit slices bind its stock reads \
+and exercise explicit alternative calibration contexts."""
 note = [
     """
 The symbol and exact byte evidence apply to JK08A. JK00A shares layout 7mfk \
 but holds 0x7e at this address; its value and other bits are not inherited \
-from this record. The full producer, preceding blending and correction \
-writers, and physical mode meanings are outside the independent limiting \
-slice.""",
+from this record. The independent rate and limiting slices cover the \
+specified timer, monitor, correction, blend, and limiting selectors. They do \
+not execute the complete producer, preceding state writers, scheduler, or \
+hardware behavior.""",
 ]
 block = "airflow_load/block"
 access = "direct-scalar"
@@ -38,6 +40,12 @@ path = "tools/kb/tests/test_airflow_bfs_limit.py"
 key = """
 test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
@@ -46,8 +54,9 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 note = """
-The unchanged pre-entry code reads this fixed-address byte through the \
-recorded R13 pool and masks bit 4 before the selected limiting slice."""
+The rate slice reads bit3 before query/timer/monitor updates and rereads \
+bit4 before blended-word publication. The following limiting slice selects \
+its source using that bit4 value."""
 
 [[link.evidence]]
 kind = "l0"
@@ -58,3 +67,13 @@ kind = "test"
 path = "tools/kb/tests/test_airflow_bfs_limit.py"
 key = """
 test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba5e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

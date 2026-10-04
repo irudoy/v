@@ -1,0 +1,47 @@
+summary = """
+Fixed-address unsigned scalar byte multiplying the difference between \
+current and previous unblended BFS working words. The active signed \
+correction divides the product by 64 with floor rounding and caps it to a \
+signed word."""
+block = "airflow_load/block"
+access = "direct-scalar"
+storage = "uint8"
+unit = "raw_u8"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000865a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003baea"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Fixed-address unsigned scalar byte multiplying the difference between \
+current and previous unblended BFS working words. The active signed \
+correction divides the product by 64 with floor rounding and caps it to a \
+signed word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003baea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

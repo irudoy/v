@@ -631,6 +631,24 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-bfs-rate": {
+                "REGION_ENTRY": 0x0003BB24, "PRIMARY_ENTRY": 0x0003B908,
+                "CORRECTION_ENTRY": 0x0003BAB8, "BLEND_ENTRY": 0x0003BB3C,
+                "POST_QUERY_ENTRY": 0x0003BA6A, "QUERY_ENTRY": 0x000259E4,
+                "PRIMARY_BASE": 0xFFFF1114, "MODE_BASE": 0xFFFF2460,
+                "Q7_SOURCE": 0xFFFF1062, "SELECTED_SOURCE": 0xFFFF115C,
+                "COEFFICIENT": 0xFFFF1F30, "REFERENCE": 0xFFFF1E06,
+                "WORKING": 0xFFFF1DEE, "BLENDED": 0xFFFF1DEC,
+                "CORRECTION": 0xFFFF1060, "FLAGS": 0xFFFF24B1,
+                "ALPHA": 0xFFFF1170, "ENABLE": 0xFFFF2462,
+                "DIAGNOSTIC": 0xFFFF24BD, "WEIGHT": 0xFFFF1EE1,
+                "BLEND_PRIOR": 0xFFFF1E04, "TIMER_FIRST": 0xFFFF1E20,
+                "TIMER_SECOND": 0xFFFF1E47, "TIMER_THIRD": 0xFFFF1E4C,
+                "SOURCE_FIRST": 0xFFFF2449, "SOURCE_SECOND": 0xFFFF4250,
+                "MONITOR": 0xFFFF244E, "MODE": 0x00008D92,
+                "CORRECTION_GAIN": 0x0000865A, "LATCH_SET": 0x00008319,
+                "LATCH_CLEAR": 0x0000831A, "QUERY_RECORDS": 0xFFFF5718,
+            },
             "jk08a-fuel-compensation": {
                 "REGION_ENTRY": 0x0003C284, "SELECTOR_ENTRY": 0x0003C1C0,
                 "PRIMARY_BASE": 0xFFFF1114, "WRAPPER_ENTRY": 0x000261F0,
@@ -918,9 +936,9 @@ mov #0x5,r1
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
                 if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
-                               "jk08a-maf-contribution", "jk08a-fuel-compensation"):
+                               "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
-                # Bank vectors and surface harness loops execute additional entries.
+                # Vector tables and harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.
         region = regions["jk78c-ascd-main"]
         image = STOCK_VERIFIER.stock_image(region.rom)
@@ -1004,6 +1022,44 @@ mov #0x5,r1
         self.assertIsNotNone(bound_static)
         self.assertEqual(int(bound_static.group(1)),
                          sum(int(end,16)-int(start,16) for start,end in spans))
+
+    def test_a_stock_boundary_preserves_the_cached_word_with_a_declared_scratch_register(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-tooth-fallback")
+        image = STOCK_VERIFIER.stock_image(region.rom)
+        changed = replace(region, return_address_offset=24, return_register=1)
+        fixture = STOCK_VERIFIER.build_fixture(changed, image)
+        self.assertEqual(fixture[region.end:region.end + 8], bytes.fromhex("51f6412a000b0009"))
+        for start, end in region.code_spans:
+            self.assertEqual(fixture[start:end], image[start:end])
+        for invalid in (True, 0, 15, -1, "1"):
+            with self.subTest(register=invalid), self.assertRaisesRegex(
+                    STOCK_VERIFIER.VerificationError, "return register"):
+                STOCK_VERIFIER.build_fixture(replace(changed, return_register=invalid), image)
+
+    def test_stock_execution_rejects_decimal_prefixes_and_modified_pass_lines(self):
+        region = next(item for item in STOCK_VERIFIER.REGIONS
+                      if item.key == "jk08a-fuel-compensation")
+        marker = f"VQ_SH_ELF_STOCK_CODE status=PASS region={region.key} cases={region.cases}"
+        with tempfile.TemporaryDirectory() as directory:
+            build = Path(directory)
+            for output in (marker + "0\n", "prefix " + marker + "\n", marker + " suffix\n"):
+                with self.subTest(output=output), \
+                        patch.object(STOCK_VERIFIER, "stock_image", return_value=b"\x00" * 4), \
+                        patch.object(STOCK_VERIFIER, "require_reconstruction", return_value=301), \
+                        patch.object(STOCK_VERIFIER, "build_fixture", return_value=b"\x00" * 4), \
+                        patch.object(STOCK_VERIFIER, "harness_defines", return_value={}), \
+                        patch.object(STOCK_VERIFIER.base_verifier, "run_command",
+                                     return_value=SimpleNamespace(stdout=output)), \
+                        self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "exact PASS marker"):
+                    STOCK_VERIFIER.run_region(region, build / "invoke.o", build)
+            with patch.object(STOCK_VERIFIER, "stock_image", return_value=b"\x00" * 4), \
+                    patch.object(STOCK_VERIFIER, "require_reconstruction", return_value=301), \
+                    patch.object(STOCK_VERIFIER, "build_fixture", return_value=b"\x00" * 4), \
+                    patch.object(STOCK_VERIFIER, "harness_defines", return_value={}), \
+                    patch.object(STOCK_VERIFIER.base_verifier, "run_command",
+                                 return_value=SimpleNamespace(stdout="diagnostic\n" + marker + "\n")):
+                self.assertEqual(STOCK_VERIFIER.run_region(region, build / "invoke.o", build), 301)
 
     def test_fuel_cut_regions_address_the_symbols_through_their_pools(self):
         # The state machine points GBR at its first pool word and stores the

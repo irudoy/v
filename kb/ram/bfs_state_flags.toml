@@ -1,8 +1,10 @@
 summary = """
-Unsigned state byte cached after Q7 compensation by the 7mfk Base Fuel \
-Schedule producer. The independently executed primary and Q7 slices read and \
-preserve it; downstream changes and physical mode meanings are outside this \
-proof."""
+Unsigned 7mfk BFS state byte cached in R14 after Q7 compensation. Cached \
+bit4 selects the rate-stage sum or difference. The later alpha-N and \
+previous-word comparisons set, clear, or preserve bit7 and update the cached \
+byte; unrelated bits persist. Correction and blend selectors reread bit7. \
+The physical mode meanings and preceding state writers are outside these \
+independently executed slices."""
 block = "airflow_load/block"
 unit = "bitfield"
 
@@ -23,6 +25,75 @@ path = "tools/kb/tests/test_airflow_bfs_base.py"
 key = """
 test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "alpha_n_flow/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned alpha-N byte is compared to the upper threshold first, then to the \
+lower threshold when the set arm is not selected."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b9e2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "flashy-elk/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The latch set arm additionally requires unsigned previous unblended H >= \
+4*cached Q."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b9f0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "tall-quoll/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Cached Q supplies the four-times latch comparison; its register/RAM \
+coherence is a slice precondition."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b9ee"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
@@ -31,10 +102,9 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 note = """
-Unsigned state byte cached after Q7 compensation by the 7mfk Base Fuel \
-Schedule producer. The independently executed primary and Q7 slices read and \
-preserve it; downstream changes and physical mode meanings are outside this \
-proof."""
+The producer loads this unsigned byte before Q7 publication and caches it in \
+R14. Cached bit4 selects the rate branch; the latch update preserves other \
+bits and refreshes R14, and the correction/blend arms reread its bit7."""
 
 [[link.evidence]]
 kind = "l0"
@@ -45,3 +115,75 @@ kind = "test"
 path = "tools/kb/tests/test_airflow_bfs_base.py"
 key = """
 test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "bfs_alpha_latch_clear/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When the set arm is not selected, alpha-N below the unsigned lower threshold \
+clears bit7. Other contexts preserve the prior byte; the selected write also \
+refreshes cached R14."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba02"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "bfs_alpha_latch_set/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Alpha-N >= the unsigned upper threshold and H >= 4*Q sets bit7. The set arm \
+takes precedence over the lower-threshold arm. Other flag bits are \
+preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b9ea"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The latch set/clear arms write bit7 and refresh cached R14 at \
+0003ba0c..0003ba0e while preserving all other bits; its hold arm does not \
+write."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba0e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

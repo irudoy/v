@@ -47,6 +47,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e06"
 name = "flashy-elk"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -62,6 +64,12 @@ at = "7mfk:0002cd34"
 value = {named = ["000209d8", "0002c648", "0003b75c", "ffff1dee", "ffff1e06"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "input"
 to = "elite-dormouse/ram"
@@ -72,9 +80,23 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The rate stage reads the previous unsigned unblended word H for P=C*H, the \
+latch comparison, and signed correction."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b928"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "writer"

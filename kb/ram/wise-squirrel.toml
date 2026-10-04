@@ -1,8 +1,11 @@
 summary = """
-Selected Base Fuel Schedule working word in the stock ROM8[0x8d92].bit4 \
-path. Function 0003b75c either copies ffff1dee directly or blends it with \
-previous sample ffff1e04 using byte weight ffff1ee1 before adding signed \
-correction ffff1060 and applying the upper limit."""
+Unsigned selected BFS working word published before signed correction. ROM \
+mode bit4 enables publication: the selected condition arm stores \
+floor((A*uint16(ffff1dee)+(256-A)*uint16(ffff1e04))/256), where \
+A=uint8(ffff1ee1); other enabled arms copy ffff1dee. Mode bit4 clear \
+preserves the word. The following limiter separately adds cached signed \
+correction R7 to its selected working word before zero and upper-limit \
+clamps."""
 level = "code"
 unit = "ms*2048"
 
@@ -23,14 +26,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "elite-dormouse/ram"
-type = "input"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "magenta-anaconda/ram"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -100,26 +95,98 @@ at = "7mfk:0003bbb0"
 value = {named = ["00008d92", "0002c648", "0003b75c", "ffff1060", "ffff1dec", "ffff1dee", "ffff1e04"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
-type = "input"
+type = "copy"
 to = "elite-dormouse/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+With mode bit4 set, the producer copies uint16(ffff1dee) when enable bit0 is \
+clear, diagnostic bit2 is set, or refreshed latch bit7 is clear. The \
+selected blend arm is the remaining enabled context."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb80"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "input"
-to = "magenta-anaconda/ram"
+to = "bfs_blend_weight/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+A=uint8(ffff1ee1) selects the arithmetic weighting: \
+floor((A*uint16(ffff1dee)+(256-A)*uint16(ffff1e04))/256). Products and their \
+sum fit unsigned 32-bit storage. The correction is absent from this \
+publication."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "elite-dormouse/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The weighted arm uses unsigned W=uint16(ffff1dee); the copy arm publishes \
+that same unblended word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb68"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "input"
 to = "nifty-otter/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The weighted arm uses unsigned Hs=uint16(ffff1e04), the previous selected \
+working word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb6e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "reader"
@@ -129,13 +196,119 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "bfs_mode_flags/tbl"
+slot = "bit4"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit4 set enables the selected-word store; clear preserves ffff1dec. The \
+following limiter independently selects blended or unblended input with this \
+same mode value."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb3e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "bfs_state_flags/ram"
+slot = "bit7"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit4 set, refreshed bit7 clear selects direct copy; set selects \
+weighted blend only with enable bit0 set and diagnostic bit2 clear."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb5c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "burrowing-platypus/ram"
+slot = "bit0"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit4 set, cached enable bit0 clear selects direct copy; set \
+permits weighted blend only when diagnostic bit2 is clear and refreshed \
+latch bit7 is set. This cached bit is bound to its 0003bab8 load and \
+stack-byte copy."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb4a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "selector"
+to = "busy-bird/ram"
+slot = "bit2"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit4 set, bit2 set selects direct copy; clear permits weighted \
+blend only with enable bit0 set and refreshed latch bit7 set."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb54"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
 type = "writer"
 to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The selected mode-bit4 arm stores the uncorrected weighted or direct working \
+word at 0003bb84; a clear mode bit leaves it unchanged. Signed correction \
+remains a separate cached input to the later limiter."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb84"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "writer"

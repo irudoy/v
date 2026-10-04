@@ -225,7 +225,16 @@ functions = [
     "0006635c",
     "00068724",
 ]
-maps = ["0000851a", "000086f9", "00008b34", "00008b42", "00008d92"]
+maps = [
+    "00008319",
+    "0000831a",
+    "0000851a",
+    "0000865a",
+    "000086f9",
+    "00008b34",
+    "00008b42",
+    "00008d92",
+]
 signals = [
     "ffff11dc",
     "ffff1e00",
@@ -238,10 +247,16 @@ signals = [
     "ffff1e1a",
     "ffff1e1c",
     "ffff1e1e",
+    "ffff1e20",
     "ffff1e30",
     "ffff1e32",
     "ffff1e34",
     "ffff1e46",
+    "ffff1e47",
+    "ffff1e4c",
+    "ffff1ee1",
+    "ffff1f30",
+    "ffff244e",
     "ffff24b1",
     "ffff2836",
     "ffff43ca",
@@ -2108,12 +2123,15 @@ note = "ffff1062 = min(65535,floor(uint32(ffff1e40*uint8(ffff1160))/128))"
 from = "ffff1062"
 to = "ffff1026"
 effect = "filters"
-sign = "positive"
+sign = "none"
 via = ["0003b75c"]
 note = """
-Rate stage on T = 4*ffff1062*ffff115c and P = ffff1f30*ffff1e06 into \
-ffff1dee, blend, ffff1060; fuel.md replays steady BFS from the primary \
-branch."""
+Q = uint16(ffff1062); prev = uint16(ffff1dee); T = \
+min(0xffffffff,4*Q*uint16(ffff115c)); P = uint16(ffff1f30)*uint16(ffff1e06); \
+D = (uint8(ffff24b1)>>4)&1; W = \
+(1-D)*sat_u16((P+T)>>15)+D*sat_u16(max(0,P-T)>>15); I = \
+(1-D)*(1-min(1,abs(W-prev)))*min(1,max(0,min(65535,4*Q)-W)); ffff1dee = W+I; \
+C = sat_s16(floor((uint16(ffff1dee)-uint16(ffff1e06))*ROM8[0x0000865a]/64))"""
 
 [[chain.step]]
 from = "00012c9e"

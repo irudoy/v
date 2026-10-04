@@ -64,6 +64,9 @@ class Region:
     # stock calls replace PR. The boundary restores PR outside all tested
     # instructions; None uses the ordinary RTS/NOP boundary.
     return_address_offset: int | None = None
+    # Scratch register used only by the simulator boundary to restore PR.
+    # R0 keeps the stock result; a block can also retain its cached R5.
+    return_register: int = 5
     # The stock MOV.L @(disp,PC),R12 that loads the base register before a
     # block that reads it on entry.
     base_load: int | None = None
@@ -96,6 +99,52 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(
+        key="jk08a-bfs-rate",
+        rom="JK08A",
+        source="stock_jk08a_bfs_rate.s",
+        harness="harness-stock-jk08a-bfs-rate.c",
+        start=0x0003BB24,
+        end=0x0003BB86,
+        pools=((0x00008319, 2), (0x0000865A, 1), (0x00008D92, 1),
+               (0x00025B98, 4), (0x0003B9D0, 8), (0x0003BB22, 2),
+               (0x0003BBC4, 40)),
+        ram_literals=(0x00025B98, 0x0003B9D0, 0x0003B9D4, 0x0003BBC8,
+                      0x0003BBD0, 0x0003BBD4, 0x0003BBE8),
+        cases=461,
+        return_address_offset=24,
+        return_register=1,
+        symbols=(("Q7_SOURCE", "tall-quoll/ram"),
+                 ("SELECTED_SOURCE", "fanatic-marten/ram"),
+                 ("COEFFICIENT", "bfs_rate_coefficient/ram"),
+                 ("REFERENCE", "flashy-elk/ram"),
+                 ("WORKING", "elite-dormouse/ram"),
+                 ("BLENDED", "wise-squirrel/ram"),
+                 ("CORRECTION", "magenta-anaconda/ram"),
+                 ("FLAGS", "bfs_state_flags/ram"),
+                 ("ALPHA", "alpha_n_flow/ram"),
+                 ("ENABLE", "burrowing-platypus/ram"),
+                 ("DIAGNOSTIC", "busy-bird/ram"),
+                 ("WEIGHT", "bfs_blend_weight/ram"),
+                 ("BLEND_PRIOR", "nifty-otter/ram"),
+                 ("TIMER_FIRST", "bfs_rate_timer_first/ram"),
+                 ("TIMER_SECOND", "bfs_rate_timer_second/ram"),
+                 ("TIMER_THIRD", "bfs_rate_timer_third/ram"),
+                 ("SOURCE_FIRST", "slick-bullfinch/ram"),
+                 ("SOURCE_SECOND", "macho-weasel/ram"),
+                 ("MONITOR", "bfs_rate_timer_monitor/ram"),
+                 ("MODE", "bfs_mode_flags/tbl"),
+                 ("CORRECTION_GAIN", "bfs_correction_gain/tbl"),
+                 ("LATCH_SET", "bfs_alpha_latch_set/tbl"),
+                 ("LATCH_CLEAR", "bfs_alpha_latch_clear/tbl"),
+                 ("QUERY_RECORDS", "hallowed-malkoha/ram"),
+                 ("QUERY_ENTRY", "diagnostic_record_byte2_fault_predicate/fn")),
+        constants=(("PRIMARY_ENTRY", 0x0003B908), ("CORRECTION_ENTRY", 0x0003BAB8),
+                   ("BLEND_ENTRY", 0x0003BB3C), ("POST_QUERY_ENTRY", 0x0003BA6A),
+                   ("PRIMARY_BASE", 0xFFFF1114), ("MODE_BASE", 0xFFFF2460)),
+        callees=((0x0003B908, 0x0003B98C), (0x0003B9D8, 0x0003BB22),
+                 (0x000224FA, 0x00022508), (0x000259E4, 0x00025A12)),
+    ),
     Region(
         key="jk08a-fuel-compensation",
         rom="JK08A",
@@ -749,9 +798,13 @@ def return_stub(region):
         return RETURN_STUB
     if type(offset) is not int or not 0 <= offset <= 60 or offset % 4:
         raise VerificationError(f"{region.key}: return address offset is a multiple of four in 0..60")
-    # MOV.L @(offset,R15),R5; LDS R5,PR; RTS; NOP. R0 remains the result.
+    register = region.return_register
+    if type(register) is not int or not 1 <= register <= 14:
+        raise VerificationError(f"{region.key}: return register is an integer in 1..14")
+    # MOV.L @(offset,R15),Rn; LDS Rn,PR; RTS; NOP. R0 remains the result.
     return b''.join(word.to_bytes(2, 'big')
-                    for word in (0x55F0 | (offset // 4), 0x452A, 0x000B, 0x0009))
+                    for word in (0x50F0 | (register << 8) | (offset // 4),
+                                 0x402A | (register << 8), 0x000B, 0x0009))
 
 
 def build_fixture(region, image):
@@ -842,7 +895,7 @@ def run_region(region, invoke, build_dir):
         f"VQ_SH_ELF_STOCK_CODE status=PASS region={region.key} "
         f"cases={region.cases}"
     )
-    if marker not in result.stdout:
+    if marker not in result.stdout.splitlines():
         raise VerificationError(
             f"{region.key}: zero exit without the exact PASS marker"
             + (f"\n{result.stdout.rstrip()}" if result.stdout else "")

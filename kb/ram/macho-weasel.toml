@@ -37,11 +37,19 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff4250"
 name = "macho-weasel"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002d9da"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "input"
@@ -56,6 +64,27 @@ to = "manipulative-moose/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The rate stage reads bit6 to select a four-count second timer or unsigned \
+decrement to zero; other byte meanings remain separate."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ba3a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "reader"

@@ -503,6 +503,34 @@ target in `verify_npkern_can.py` spans the loader-owned window from `origin`
 to `boundary`, and its `aligned_limit` is that window rounded down to 32
 bytes; the same test holds the relation.
 
+## BFS rate state
+
+The JK08A rate-state fixture reconstructs 310 instructions and 678 bound bytes
+across the rate arithmetic, latch/timer coordinator, signed correction,
+optional blend, natural six-shift helper, and diagnostic-record predicate.
+Its 461 cases cover both unsigned 15-bit paths, product and word saturation,
+same-value increment, latch boundaries, timer combinations, every mode-byte
+value, independent inhibitor combinations, signed rounding and clamps,
+weighted publication, and the natural word-sentinel query.
+
+The caller passes R4=-1 in the query's JSR delay slot. The unchanged predicate
+returns zero for that signed word regardless of diagnostic-record contents.
+Its active third timer therefore decrements toward zero. Eight explicit
+post-query entries at `0x0003BA6A` supply artificial zero or nonzero R0 values
+to execute both timer arms; nonzero results establish no stock reachability.
+Isolated correction and blend entries retain separate register-context scope.
+
+Seven declared high-RAM pool words alone are aliased. A boundary outside the
+tested code at `0x0003BB86` restores PR from SP+24 through R1, preserving the
+cached R5. Cases compare all eight output states, read-only RAM, calibration,
+32 bytes of fragment stack, and distinct before/after C-ABI register states.
+Fragment register observations remain separate from the containing function's
+entry and return contract. The static test binds 734 bytes, including the
+preceding cache/flag/base loads, and rejects every single-byte corruption.
+Published counts derive from the registered region and emitted execution
+marker. The installed simulator has no instruction-trace or PC-profile
+support; the contract does not publish a directly observed helper-call count.
+
 ## Simulator boundaries
 
 GNU `sh-elf-run` cannot map the ECU high-RAM windows. The gate first proves the

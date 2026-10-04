@@ -48,6 +48,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e04"
 name = "nifty-otter"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -63,6 +65,12 @@ at = "7mfk:0002cd4e"
 value = {named = ["000209d8", "0002c648", "0003b75c", "ffff1dec", "ffff1e04"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
 [[link]]
 type = "input"
 to = "wise-squirrel/ram"
@@ -73,9 +81,21 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = "The weighted-blend arm reads this unsigned previous selected word."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb6e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_rate.py"
+key = """
+test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[link]]
 type = "writer"

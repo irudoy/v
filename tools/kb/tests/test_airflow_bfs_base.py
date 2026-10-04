@@ -104,7 +104,7 @@ def test_primary_bfs_keeps_signed_input_split_product_speed_selectors_and_cohere
         symbol = model.symbols[SymbolKey('7mfk', 'ram', address)]
         assert symbol.meaning.key == name + '/ram'
         assert symbol.meaning.props['block'] == 'airflow_load/block'
-        assert 'outside this' in symbol.meaning.props['summary']
+        assert 'outside' in symbol.meaning.props['summary']
     quarter = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff1e40))
     assert 'modulo 2^40' in quarter.props['summary']
     assert any('0x02017ffc' in note and 'Stock F=109' in note for note in quarter.props['note'])
