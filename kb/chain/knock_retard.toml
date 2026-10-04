@@ -91,8 +91,10 @@ effect = "compares"
 sign = "negative"
 via = ["knock_slice_evaluator/fn"]
 note = """
-An exceedance is metric > threshold, so a higher threshold admits fewer \
-events."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); T \
+= RAM16[0xffff2144+2*(c-1)]; M = RAM32[0xffff21d8+4*(c-1)]; E = \
+min(1,max(0,uint32(M)-0x80000000-uint16(T))); C = uint8(ffff2142); ffff2142 \
+= min(255,C+E)"""
 
 [[step]]
 from = "knock_metric_base/ram"
@@ -101,8 +103,11 @@ effect = "compares"
 sign = "positive"
 via = ["knock_slice_evaluator/fn"]
 note = """
-Each exceedance increments ffff2142 up to 0xFF and sets ffff24c2 bit 6 and \
-bit c - 1 of ffff2150."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); T \
+= RAM16[0xffff2144+2*(c-1)]; M = RAM32[0xffff21d8+4*(c-1)]; E = \
+min(1,max(0,uint32(M)-0x80000000-uint16(T))); C = uint8(ffff2142); S = \
+uint8(ffff24c2); B = uint8(ffff2150); H = 1<<(c-1); ffff2142 = min(255,C+E); \
+ffff24c2 = (S&191)|(E<<6); ffff2150 = (B&uint8(~H))|(E*H)"""
 
 [[step]]
 from = "knock_count/ram"

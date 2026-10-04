@@ -322,12 +322,38 @@ key = "Executable lookup contract"
 [[link]]
 type = "reader"
 to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The natural accessor 00049ffc called at 0004a2ee publishes the selected word \
+and returns R0 = 2*c and R2 = threshold. MOV.W at 0004a31a reads ffff2144 + \
+2*(c-1), EXTU.W at 0004a320 zero-extends it, and ADD at 0004a324 forms \
+0x80000000 + uint16(T). The raw uint32 metric comparison is strict; equality \
+clears the current result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a31a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
 
 [[link]]
 type = "selector"

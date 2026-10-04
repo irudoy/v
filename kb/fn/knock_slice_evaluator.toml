@@ -1,18 +1,29 @@
 summary = """
-Per-evaluator-channel knock monitor. It refreshes the current channel \
-threshold through 00049ffc, compares the calculated uint32 metric with the \
-selected uint16 threshold, writes the current result to ffff24c2 bit 6, sets \
-or clears the selected bit in ffff2150, and saturating-increments ffff2142 \
-on an exceedance."""
+Per-evaluator-channel knock monitor. On 7mfk, bounded entry 0004a2ee \
+refreshes the selected uint16 threshold through natural accessor 00049ffc, \
+compares uint32(M) > 0x80000000 + uint16(T), writes the current result to \
+ffff24c2 bit 6, sets or clears bit c-1 in ffff2150, and increments ffff2142 \
+once with saturation at 255 on an exceedance. The bounded selected channel \
+is one-based in 1..6."""
 note = [
     """
 Compare the current evaluator-channel knock metric with its interpolated \
 threshold""",
     """
-The counter saturates at 0xff. The six bitmap positions follow the \
-function's one-based internal channel selector; physical cylinder or sensor \
-order remains unverified. Threshold 0xffff is the uint16 upper bound and \
-effectively prevents an exceedance.""",
+The 7mfk bounded comparison ends at 0004a386 before reference learning. The \
+current strict unsigned predicate is raw offset-binary metric M > 0x80000000 \
++ uint16(T); equality clears the current result. A raw threshold 65535 can \
+still be exceeded by metric 0x80010000. Stock JK08A selector 0x82 uses the \
+primary channel; other tested mode bytes are artificial contexts without \
+asserted live reachability. Entry requires 1 <= selected c <= 6 and contains \
+no channel guard. Natural threshold return R0 = 2*c and R2 = threshold \
+precedes the comparison load. Steps 7 and 8 are two input views of the same \
+one-time count publication, not sequential increments. The six bitmap \
+positions follow the internal one-based selector; physical cylinder or \
+sensor order and engineering scale remain unverified. The full 802-byte \
+evaluator, metric production and reference learning are outside this bounded \
+proof. Driver PR/R1 restoration at the simulator boundary is outside checked \
+spans and does not assert stock fragment PR preservation.""",
 ]
 level = "code"
 role = "monitor"

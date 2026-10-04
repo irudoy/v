@@ -1,8 +1,9 @@
 summary = """
-Multipurpose state byte. FUN 0004a238 writes bit 6 as the current \
-selected-channel knock-threshold comparison result; set means the calculated \
-uint32 metric exceeds the selected uint16 threshold. Other bits and \
-consumers belong to independent calculations."""
+Multipurpose state byte. On 7mfk, evaluator 0004a238 writes bit 6 as the \
+current selected-channel comparison result: set means uint32(M) > 0x80000000 \
++ uint16(T), where M is the selected raw offset-binary metric and T is the \
+natural accessor threshold. Other bits and consumers belong to independent \
+calculations."""
 note = [
     """
 Bit 6 describes the current evaluator result and is not an interval-latched \
@@ -46,6 +47,13 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff24c2"
 name = "military-flamingo"
+level = "code"
+width = 8
+signed = false
+note = """
+Unsigned 7mfk state byte. The bounded evaluator writes only bit 6 from the \
+current strict offset-binary comparison and preserves the other seven bits. \
+This is a current result, without an interval-latched event claim."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -82,12 +90,151 @@ at = "7mfk:0004a418"
 value = {named = ["0004a238", "00062c68", "ffff24c2"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a330"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
 [[link]]
-type = "reader"
-to = "knock_slice_evaluator/fn"
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_slice_evaluator/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+When mode bit 3 is set, this unsigned byte supplies selected c to 0004a238. \
+Entry requires 1 <= c <= 6 without a channel guard. The comparison reads M \
+at ffff21d8 + 4*(c-1) and the naturally refreshed T at ffff2144 + 2*(c-1). \
+Physical channel identity remains unverified."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a40a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When mode bit 3 is clear, this unsigned byte supplies selected c to \
+0004a238. Entry requires 1 <= c <= 6 without a channel guard. The comparison \
+reads M at ffff21d8 + 4*(c-1) and the naturally refreshed T at ffff2144 + \
+2*(c-1). Physical channel identity remains unverified."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a300"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "input"
+to = "knock_metric_base/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.L at 0004a314 reads the selected uint32 M from ffff21d8 + 4*(c-1). This \
+raw offset-binary metric is an explicit input to the bounded strict \
+comparison against 0x80000000 + uint16(T); metric production and reference \
+learning are outside this entry contract."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a314"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B at 0004a32c or 0004a412 reads the old ffff24c2 before preserving all \
+bits except bit 6. The read at 0004a334 extracts the newly published current \
+bit 6 for bitmap and count selection; it is not an interval-latched event."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a32c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
 
 [[link]]
 type = "reader"
@@ -97,10 +244,101 @@ relies = "level"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+At 0004a2f6/0004a2f8, mode bit 3 clear selects uint8(ffff11de) and bit 3 set \
+selects uint8(ffff2143). Entry requires 1 <= selected c <= 6; this slice \
+contains no channel guard. JK08A stock 0x82 uses the primary branch. Other \
+mode values are artificial contexts without live reachability claims."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a2f6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "threshold"
+to = "knock_threshold_base/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The strict unsigned predicate at 0004a326 is uint32(M) > 0x80000000 + \
+uint16(T). T is the selected word after the natural accessor 00049ffc \
+publishes it. Equality clears the current result. The arithmetic difference \
+is a mathematical integer without a uint32 wrap; raw threshold 65535 can be \
+exceeded by metric 0x80010000. Metric production and reference learning are \
+outside this entry contract."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a326"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
 type = "writer"
 to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+MOV.B at 0004a330 clears bit 6 on uint32(M) <= 0x80000000 + uint16(T); the \
+store in branch delay slot 0004a418 sets it on strict unsigned exceedance. \
+Every other bit is preserved. Equality clears the current result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a330"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"

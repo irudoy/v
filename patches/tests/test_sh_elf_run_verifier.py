@@ -631,6 +631,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-knock-comparison": {
+                "REGION_ENTRY": 0x0004A2EE, "TABLE": 0x0001108E,
+                "AXIS": 0x00015340, "MODE": 0x00008B3D,
+                "PRIMARY": 0xFFFF11DE, "ALTERNATE": 0xFFFF2143,
+                "SPEED": 0xFFFF11F4, "THRESHOLDS": 0xFFFF2144,
+                "METRICS": 0xFFFF21D8, "COUNT": 0xFFFF2142,
+                "STATUS": 0xFFFF24C2, "BITMAP": 0xFFFF2150,
+                "SHIFT_ENTRY": 0x000221BC, "JUMP_TABLE": 0x0002219C,
+            },
             "jk08a-knock-threshold": {
                 "REGION_ENTRY": 0x00049FFC, "TABLE": 0x0001108E,
                 "AXIS": 0x00015340, "MODE": 0x00008B3D,
@@ -945,7 +954,7 @@ mov #0x5,r1
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
                 if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
                                "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate",
-                               "jk08a-knock-threshold"):
+                               "jk08a-knock-threshold", "jk08a-knock-comparison"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
                 # Vector tables and harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.

@@ -75,6 +75,41 @@ RAM contexts. Metric production, evaluator comparison and event-count updates,
 reference learning, acquisition, scheduling, physical channel or sensor mapping
 and the engineering threshold scale have separate evidence boundaries.
 
+## Bounded comparison contract
+
+The registered `jk08a-knock-comparison` fixture reconstructs 314 instructions
+and binds 963 bytes of the exact JK08A image. Its 1100 cases include 1048
+comparison contexts and 52 direct bitmap-shift contexts. The comparison entry
+at `0x4A2EE` executes the natural threshold accessor and real interpolation
+helpers, then reads the selected unsigned longword metric and threshold word.
+The caller supplies legal channels `1..6`; the channel-zero guard is outside
+this entry. Metric production is separate from the input contract.
+
+For selected channel `c`, raw metric `m = RAM32[0xFFFF21D8 + 4*(c-1)]` and
+threshold `t = RAM16[0xFFFF2144 + 2*(c-1)]`, exceedance is the strict unsigned
+predicate `m > 0x80000000 + t`. Equality clears the condition. Status bit 6 at
+`0xFFFF24C2` reflects exceedance while other bits are retained. The local byte
+at `SP+12` holds `0x40` or zero. The selected bit `c-1` at `0xFFFF2150` is set
+or cleared without changing sibling bits. Exceedance increments the unsigned
+byte at `0xFFFF2142`, saturated at 255; the clear path preserves it.
+
+The real left-shift helper executes every legal channel shift `0..5`. Isolated
+contexts also cover `6..7`, negative counts and counts `>=32`. Negative counts
+retain the input; counts `>=32` return zero. Positive counts `8..31` are outside
+the bound execution envelope. Artificial selector-byte contexts establish the
+raw bit-3 alternative without a stock mode-reachability claim.
+
+Only eight declared RAM pool words are relocated after byte identity. Every
+case checks all other aliased RAM, sibling thresholds and metrics, inputs,
+calibration, preserved fragment registers and a separate C caller ABI. The
+52-byte observed frame contains exact nested saved words, the wrapper/linear
+tail slot, local neighbors and the continuation at `SP+16`. A descending tail
+stores its unsigned left cell in the reused tail slot; other paths retain the
+wrapper return. The boundary at `0x4A386` restores driver PR and R1 outside
+tested instructions. It does not establish a stock function-return contract
+or execute reference learning, full evaluator dispatch, acquisition, physical
+timing or hardware behavior.
+
 ## Channel schedule
 
 Crank tooth handler `FUN_00029588` opens one knock window per 120 crank

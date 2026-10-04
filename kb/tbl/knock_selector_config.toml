@@ -99,6 +99,38 @@ alternate channel byte"""
 
 [[link]]
 type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B at 0004a2f4 reads ROM8[00008b3d] before TST 8 at 0004a2f6. Bit 3 \
+selects the one-based channel source. Natural accessor 00049ffc has already \
+used the same mode and inputs; stock 0x82 and artificial mode contexts \
+remain distinct."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a2f4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "reader"
 to = "knock_slice_threshold_lookup/fn"
 via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]

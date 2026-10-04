@@ -27,11 +27,40 @@ Target evaluator stores the offset-binary metric of channel n at base plus 4 \
 [[symbol]]
 layout = "7mfk"
 address = "ffff21d8"
+level = "code"
+width = 32
+signed = false
+note = """
+Unsigned 7mfk metric word at the selected address ffff21d8 + 4*(c-1), with \
+legal one-based c in 1..6. The bounded comparison consumes this raw \
+offset-binary value as an explicit input. Its strict predicate is uint32(M) \
+> 0x80000000 + uint16(T). Metric production, reference learning, physical \
+scale and channel identity are outside this entry contract. The width \
+describes one accessed cell and does not declare an array extent."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00049f44"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a314"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +97,35 @@ value = "ffff212c"
 note = """
 Target evaluator stores the offset-binary metric of channel n at base plus 4 \
 * (n - 1)"""
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.L at 0004a314 reads ffff21d8 + 4*(c-1) as unsigned raw offset-binary M. \
+Legal c is 1..6. M is an explicit input to this bounded entry; metric \
+production and reference learning are outside its proof. This link declares \
+one accessed cell, without an array extent."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a314"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"

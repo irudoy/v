@@ -555,6 +555,32 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock threshold comparison
+
+The registered JK08A comparison fixture reconstructs 314 instructions and
+binds 963 bytes. Its 1100 cases contain 1048 comparisons and 52 direct shift
+contexts. The comparison executes the natural threshold accessor and its real
+word-axis, divider and linear helpers before the strict unsigned predicate
+`metric > 0x80000000 + threshold`. Equality clears the condition. Selected
+channels are `1..6`; metric production and the caller's channel-zero guard are
+outside the bounded entry.
+
+Status bit 6, the local byte at SP+12, the selected bitmap bit and the saturated
+event count are checked independently. Legal shifts `0..5` execute the real
+bitmap helper; isolated cases cover `6..7`, negative counts and counts `>=32`.
+Positive shift counts `8..31` are outside this executable envelope. Stock and
+artificial mode-byte contexts, every legal channel, strict predicate edges and
+count boundaries retain separate literal expectations.
+
+Eight high-RAM pool words alone are aliased. Cases check the full remaining
+RAM, sibling metrics and thresholds, calibration, a 52-byte frame and distinct
+fragment/C-ABI observations. Nested saved words include the wrapper/linear
+tail slot, which holds the left cell on descending paths. The boundary at
+`0x0004A386` restores driver PR from SP+16 through R1 outside tested code.
+Reference learning, complete evaluator dispatch, physical timing and hardware
+behavior are separate from this proof. The detailed contract is in
+[`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
+
 ## Optional exact PC observation
 
 `Dockerfile.pctrace` builds a separate GNU16.3 simulator with a small host-only

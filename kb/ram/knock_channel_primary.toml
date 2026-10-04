@@ -238,6 +238,38 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit 3 clear, the evaluator reads this byte as c, zero-extends it \
+at 0004a306, and addresses the metric and threshold slots with c-1. The \
+bounded precondition is 1 <= c <= 6; this slice contains no channel guard \
+and assigns no physical channel identity."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a300"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_comparison_chain.py"
+key = "test_knock_comparison_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded comparison contract"
+
+[[link]]
+type = "reader"
 to = "knock_slice_threshold_lookup/fn"
 via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
