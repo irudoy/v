@@ -23,11 +23,38 @@ note = "Target evaluator reads this channel byte while selector bit 3 is set"
 [[symbol]]
 layout = "7mfk"
 address = "ffff2143"
+level = "code"
+width = 8
+signed = false
+note = """
+The bounded 7mfk threshold accessor uses this byte as one-based evaluator \
+channel c only on its selected mode branch. The executable domain is 1 <= c \
+<= 6; 00049ffc contains no channel guard. The lookup proof does not assign \
+physical channel identity or live mode reachability."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00049e5c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a010"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -59,3 +86,35 @@ supports = "homology"
 at = "jk78c:000636e8"
 to = "7mfk:ffff2143"
 note = "Target evaluator reads this channel byte while selector bit 3 is set"
+
+[[link]]
+type = "reader"
+to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is set, the accessor reads this unsigned byte as c. \
+The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row = \
+0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a010"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

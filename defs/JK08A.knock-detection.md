@@ -44,6 +44,37 @@ admits an exceedance only for a metric above 65535 (see
 [Channel schedule](#channel-schedule) gives the crank-angle window that each
 row serves.
 
+## Executable lookup contract
+
+The registered `jk08a-knock-threshold` GNU fixture independently reconstructs
+184 instructions and binds 635 bytes of the exact JK08A image. Its 829 cases
+execute the complete accessor, explicit word-axis wrapper, axis search,
+fraction divider and unsigned linear finisher through their natural returns.
+Factory selector, six threshold rows, axis and final neighboring word are
+compared with the image before any artificial calibration context is installed.
+
+The accessor contract requires `1 <= channel <= 6`; it contains no channel
+guard. The zero-channel check belongs to the evaluator. Stock selector `0x82`
+chooses the primary channel; the other selector-byte contexts test bit 3
+without establishing their use in an unmodified ECU. The wrapper narrows the
+coordinate to `uint16` and returns zero fraction below the first or at and
+above the last axis point. It loads both cells even when the fraction is zero,
+including the word at `0x1114E` following the last row.
+
+For unsigned cells `a`, `b` and Q0.16 fraction `f`, the finisher returns
+`a + floor(max(0, b-a)*f/65536) - floor(max(0, a-b)*f/65536)`.
+Descending intervals truncate the positive decrement before subtraction.
+The accessor stores the threshold and naturally returns `R0 = 2*channel`
+with the threshold in `R2`. The fixture compares all sibling outputs, the
+aliased RAM, calibration, stack footprints and preserved register states;
+the external C ABI is checked separately from stock entry and exit states.
+Only the three declared high-RAM pool words are relocated after byte identity.
+
+This execution contract covers lookup and threshold publication from explicit
+RAM contexts. Metric production, evaluator comparison and event-count updates,
+reference learning, acquisition, scheduling, physical channel or sensor mapping
+and the engineering threshold scale have separate evidence boundaries.
+
 ## Channel schedule
 
 Crank tooth handler `FUN_00029588` opens one knock window per 120 crank

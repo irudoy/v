@@ -27,11 +27,39 @@ alternate channel byte"""
 [[symbol]]
 layout = "7mfk"
 address = "00008b3d"
+level = "code"
+storage = "uint8"
+cols = 1
+rows = 1
+note = """
+Unsigned 7mfk selector byte. Bit 3 clear selects ffff11de and bit 3 set \
+selects ffff2143 in 00049ffc. JK08A stock value 0x82 selects the primary \
+byte; other tested byte values are artificial contexts, without a live \
+reachability claim."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:000419b4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a002"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -68,3 +96,34 @@ value = "00008965"
 note = """
 Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
 alternate channel byte"""
+
+[[link]]
+type = "reader"
+to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B at 0004a002 reads the unsigned mode byte at 00008b3d before TST 8. Bit \
+3 controls the channel source; all other mode bits leave this accessor \
+selection unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a002"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

@@ -2,11 +2,39 @@
 layout = "7mfk"
 address = "00015340"
 name = "laughing-caterpillar"
+level = "code"
+storage = "uint16"
+points = 16
+note = """
+The 7mfk lookup reads sixteen unsigned word knots. JK08A stock raw knots are \
+32..512 in steps of 32; chain steps 4-6 use this stock axis. Artificial axes \
+in the executable contract exercise irregular intervals without asserting \
+live calibration values. Coordinate x is the unsigned word ffff11f4; below \
+the first knot and at or above the last knot the fraction is zero."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004a02c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a020"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -39,3 +67,35 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[link]]
+type = "reader"
+to = "versatile-junglefowl/fn"
+via = ["knock_slice_threshold_lookup/fn", "eminent-lynx/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Within the accessor call path through 000264f8, 00026984 reads zero-extended \
+word knots. It searches downward from byte offset 30; exact knots, \
+below-first and at-or-above-last coordinates return zero fraction. The \
+interior divider 00026c78 computes a Q0.16 unsigned fraction."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026986"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

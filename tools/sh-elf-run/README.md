@@ -531,6 +531,30 @@ Published counts derive from the registered region and emitted execution
 marker. The installed simulator has no instruction-trace or PC-profile
 support; the contract does not publish a directly observed helper-call count.
 
+## Knock threshold lookup
+
+The registered JK08A knock-threshold fixture reconstructs 184 instructions
+and binds 635 bytes, including the stock selector, six rows, word axis and
+last neighboring word. Its 829 cases execute the complete accessor and its
+word-axis wrapper, search, divider and unsigned linear finisher through
+natural stock returns. Factory calibration is checked before artificial
+selector, table or axis contexts. Every stock knot, adjacent coordinate and
+interval midpoint is exercised for all six rows.
+
+The accessor requires a one-based channel in 1..6 and contains no channel
+guard. Its result is stored at the selected word; natural R0 is twice the
+channel and R2 holds the threshold. Descending interpolation truncates the
+positive decrement before subtraction. The last-cell path still reads the
+following word even with zero fraction, so that word is bound too.
+
+Only three high-RAM pool words are aliased. Cases compare the full aliased
+RAM outside the selected output, sibling words, calibration and stack
+footprints. Stock preserved registers and the external C caller ABI have
+distinct before/after observations. Comparison, count publication, metric
+production, reference learning, physical channel identity and engineering
+scale are outside this executable slice. The detailed contract is in
+[`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
+
 ## Simulator boundaries
 
 GNU `sh-elf-run` cannot map the ECU high-RAM windows. The gate first proves the

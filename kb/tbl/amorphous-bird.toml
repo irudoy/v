@@ -4,12 +4,16 @@ calculated metric exceeding the interpolated threshold contributes to \
 increasing the knock count."""
 note = [
     """
-00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 \
-points along axis 0x15340, and stores the threshold for comparison in \
-0004a238. Stock rows 3 and 5 are all 0xffff. Value 0xffff is the uint16 \
-upper bound and makes exceeding the threshold practically impossible. The \
-catalog identifies the rows as cylinders, but exact code does not establish \
-their physical cylinder or sensor order.""",
+On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates \
+16 uint16 cells along axis 00015340, and writes the selected word at \
+ffff2144 + 2*(c-1). Its bounded domain is 1 <= c <= 6; the accessor has no \
+channel guard. JK08A stock rows 3 and 5 contain raw threshold 65535 at every \
+cell. The selected raw word enters comparison in 0004a238; metric \
+production, comparison outcome and count publication are outside the bounded \
+lookup proof. Both neighboring cells are loaded, including 0001114e on the \
+last row endpoint. The catalog identifies rows as cylinders, but exact \
+lookup code does not establish physical cylinder or sensor order. The \
+engineering threshold scale remains candidate.""",
 ]
 level = "code"
 role = "table"
@@ -189,6 +193,102 @@ exact normalized accessor shape preserves the direct-row-major table \
 operand"""
 
 [[link]]
+type = "axis"
+to = "laughing-caterpillar/axis"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The accessor loads row base 0001108e at 0004a014 and axis base 00015340 at \
+0004a020, then invokes wrapper 000264f8 at 0004a02c. Six rows of sixteen \
+uint16 cells share this sixteen-word axis; bounded channel c is one-based in \
+1..6."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a020"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "index"
+to = "knock_channel_alternate/ram"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is set, the accessor reads this unsigned byte as c. \
+The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row = \
+0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a010"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "index"
+to = "knock_channel_primary/ram"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is clear, the accessor reads this unsigned byte as \
+c. The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row \
+= 0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a044"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
 type = "reader"
 to = "knock_slice_evaluator/fn"
 layouts = ["7mfk"]
@@ -198,7 +298,35 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "accessor"
+note = """
+Wrapper 000264f8 unconditionally reads both uint16 row cells at 0002650a and \
+00026510, including last neighbor 0001114e even with zero fraction. Unsigned \
+finisher 00026740 adds a floored positive increment for an ascending segment \
+and subtracts a separately floored positive decrement for a descending \
+segment. Physical scale and order are outside this bounded proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002650a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

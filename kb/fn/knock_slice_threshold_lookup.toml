@@ -1,18 +1,24 @@
 summary = """
-Per-evaluator-channel accessor for Knock Slice Map 0x1108E: it selects one \
-of six 16-element uint16 rows by one-based channel number, interpolates the \
-row through 000264f8 using speed axis 0x15340, and stores the threshold at \
-ffff2144 + 2*(channel-1) for evaluator 0004a238."""
+Bounded 7mfk unsigned threshold accessor at 00049ffc. The selected one-based \
+channel c addresses row 0001108e + 32*(c-1) and output word ffff2144 + \
+2*(c-1). Wrapper 000264f8 uses the uint16 coordinate ffff11f4 and word axis \
+00015340; the natural return leaves R0 = 2*c and R2 = threshold. The legal \
+domain is 1 <= c <= 6; the accessor has no channel guard."""
 note = [
     """
 Interpolate the current evaluator-channel knock threshold by engine speed""",
     """
-The six uint16 thresholds occupy ffff2144..ffff214f. The apparent base \
-reference ffff2142 in an indexed-listing comment is two bytes below the \
-first effective one-based write and is the independent event counter. ROM \
-axis 0x15340 corresponds to 400..6400 RPM. Stock ROM8[00008b3d].bit3 is \
-clear, so the selected channel comes from ffff11de rather than alternate \
-ffff2143. Physical cylinder or sensor order is not established.""",
+On 7mfk, ROM8[00008b3d].bit3 clear selects uint8(ffff11de); bit 3 set \
+selects uint8(ffff2143). JK08A stock selector 0x82 chooses the primary byte. \
+Other mode bytes in the executable contract are artificial contexts, without \
+asserted live reachability. The stock word axis is raw 32..512 in steps of \
+32. Chain steps 4-6 use this stock axis; independent artificial axis/table \
+contexts exercise the underlying unsigned kernels. The selected uint16 write \
+occupies ffff2144 + 2*(c-1); ffff2142 is a separate event counter. Both row \
+cells are loaded even with zero fraction, including last neighbor 0001114e. \
+A cell value 0xffff is raw threshold 65535; metric comparison and count \
+publication belong to evaluator 0004a238 outside this lookup slice. Physical \
+channel order and engineering threshold scale remain unverified.""",
 ]
 level = "code"
 role = "accessor"
@@ -122,3 +128,36 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+TST 8 at 0004a004 and BT at 0004a006 select the primary byte when bit 3 is \
+clear and the alternate byte when it is set. Entry requires 1 <= selected c \
+<= 6. Stock 0x82 and the tested artificial mode variants are distinct \
+contexts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a004"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

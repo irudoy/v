@@ -164,9 +164,34 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+note = """
+MOV.W at 0004a024 reads ffff11f4 and EXTU.W in the JSR delay slot at \
+0004a02e supplies the unsigned coordinate x to wrapper 000264f8. The bounded \
+stock-axis equation uses raw knots 32..512; independent artificial axes are \
+separate calibration contexts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a024"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[link]]
 type = "reader"

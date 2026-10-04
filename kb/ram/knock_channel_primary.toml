@@ -98,7 +98,15 @@ note = "Target evaluator reads this channel byte while selector bit 3 is clear"
 [[symbol]]
 layout = "7mfk"
 address = "ffff11de"
+level = "code"
 former = ["nifty-marmoset/ram/7mfk-ffff11de"]
+width = 8
+signed = false
+note = """
+The bounded 7mfk threshold accessor uses this byte as one-based evaluator \
+channel c only on its selected mode branch. The executable domain is 1 <= c \
+<= 6; 00049ffc contains no channel guard. The lookup proof does not assign \
+physical channel identity or live mode reachability."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -138,6 +146,25 @@ supports = "identity"
 at = "7mfk:000c2e00"
 value = {named = ["000083d5", "0002265c", "00028ea2", "0002b768", "00099a48", "000c2c58", "000c2de0", "ffff11de", "ffff13c8"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a044"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[symbol]]
 layout = "jk00c"
@@ -208,6 +235,38 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is clear, the accessor reads this unsigned byte as \
+c. The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row \
+= 0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a044"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[link]]
 type = "reader"

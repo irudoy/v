@@ -73,6 +73,14 @@ Target threshold lookup stores the threshold of channel n at base plus 2 * \
 layout = "7mfk"
 address = "ffff2144"
 former = ["thoughtful-civet/ram/7mfk-ffff2144"]
+width = 16
+signed = false
+note = """
+The bounded 7mfk lookup writes one unsigned word selected by 1 <= c <= 6, at \
+slot = 0xffff2144 + 2*(c-1). The arithmetic alias to denotes the stored word \
+at slot. There is no channel guard in 00049ffc. Sibling threshold words and \
+all other RAM bytes are preserved. This storage contract does not identify \
+physical channels or establish engineering scale."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -155,9 +163,161 @@ Target threshold lookup stores the threshold of channel n at base plus 2 * \
 [[link]]
 type = "input"
 to = "amorphous-bird/tbl"
+via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+For the selected legal row, the wrapper zero-extends two uint16 cells a and \
+b. The result is a + floor(max(0,b-a)*f/65536) - floor(max(0,a-b)*f/65536). \
+A raw threshold 65535 is a cell value; evaluator comparison is outside this \
+lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026510"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "input"
+to = "authentic-wasp/ram"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The raw uint16 coordinate x is the zero-extended word ffff11f4 at \
+0004a024/0004a02e. It supplies the interpolation fraction; no hardware \
+cadence or current sample alignment is asserted."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a024"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is set, the accessor reads this unsigned byte as c. \
+The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row = \
+0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a010"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When ROM8[00008b3d].bit3 is clear, the accessor reads this unsigned byte as \
+c. The bounded entry domain is 1 <= c <= 6; no channel guard is present. Row \
+= 0001108e + 32*(c-1), slot = ffff2144 + 2*(c-1). Physical identity and live \
+reachability are not established by the lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a044"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "input"
+to = "laughing-caterpillar/axis"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Wrapper 000264f8 invokes word-axis search 00026984 with maximum byte offset \
+30. JK08A stock knots are 32..512; x <= 32 and x >= 512 produce zero \
+fraction. Each interior raw interval is 32 counts. Artificial irregular axes \
+exercise the kernel separately from the stock-axis chain equations."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026986"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
 
 [[link]]
 type = "reader"
@@ -170,10 +330,70 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+At 0004a004, bit 3 clear selects uint8(ffff11de), while bit 3 set selects \
+uint8(ffff2143). The selected c must satisfy 1 <= c <= 6 before entry; the \
+accessor has no channel guard. JK08A stock byte 0x82 selects the primary \
+path. Other mode bytes are explicit artificial contexts, without live \
+reachability claims."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a004"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
 type = "writer"
 to = "knock_slice_threshold_lookup/fn"
+via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Within 1 <= c <= 6, MOV.W at 0004a03a writes the selected uint16 to slot = \
+ffff2144 + 2*(c-1); the arithmetic alias to denotes that word. The accessor \
+has no channel guard. All siblings and other RAM bytes are preserved. \
+Natural R0 = 2*c and R2 = threshold; ffff2142 is the separate event \
+counter."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a03a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_threshold_chain.py"
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"

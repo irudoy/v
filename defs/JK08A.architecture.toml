@@ -3280,8 +3280,8 @@ effect = "selects"
 sign = "none"
 via = ["00049ffc"]
 note = """
-Channel c = cylinder ffff11de of the tooth-7 event selects row 0x1108E + \
-0x20 * (c - 1) and slot ffff2144 + 2 * (c - 1)."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); \
+row = 0x0001108e+32*(c-1); slot = 0xffff2144+2*(c-1)"""
 
 [[chain.step]]
 from = "ffff11f4"
@@ -3290,8 +3290,8 @@ effect = "indexes"
 sign = "none"
 via = ["00049ffc"]
 note = """
-RPM/12.5 word ffff11f4 interpolates the row on axis 0x15340 (400..6400 \
-RPM)."""
+x = uint16(ffff11f4); i = min(15,max(0,floor(x/32)-1)); f = \
+min(1,max(0,512-x))*max(0,x-32*(i+1))*2048"""
 
 [[chain.step]]
 from = "0001108e"
@@ -3299,7 +3299,13 @@ to = "ffff2144"
 effect = "looks-up"
 sign = "positive"
 via = ["00049ffc"]
-note = "Six rows of 16 uint16 thresholds; stock rows 3 and 5 hold only 0xFFFF."
+note = """
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); \
+row = 0x0001108e+32*(c-1); slot = 0xffff2144+2*(c-1); x = uint16(ffff11f4); \
+i = min(15,max(0,floor(x/32)-1)); f = \
+min(1,max(0,512-x))*max(0,x-32*(i+1))*2048; a = ROM16[row+2*i]; b = \
+ROM16[row+2*i+2]; to = \
+a+floor(max(0,b-a)*f/65536)-floor(max(0,a-b)*f/65536)"""
 
 [[chain.step]]
 from = "ffff2144"
