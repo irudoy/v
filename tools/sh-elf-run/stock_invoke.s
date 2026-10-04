@@ -389,6 +389,75 @@ _stock_invoke_compensation:
     nop
     .size _stock_invoke_compensation,.-_stock_invoke_compensation
 
+! Direct entry supplies a wide R2 to the working copy's otherwise unreachable
+! signed cap and zero branches. The context holds the mapped base and value.
+    .global _stock_invoke_working_cap
+    .type _stock_invoke_working_cap,@function
+_stock_invoke_working_cap:
+    mov.l r8,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r3
+    extu.b r5,r4
+    shll r4
+    mov.l @r6,r5
+    mov.l @(4,r6),r2
+    mov #-1,r6
+    extu.w r6,r6
+    mov.l compensation_saved_macl,r0
+    lds r0,macl
+    mov.l compensation_saved_r12,r12
+    mov.l compensation_saved_r13,r13
+    mov.l compensation_saved_r14,r14
+    mov.l compensation_saved_gbr,r0
+    ldc r0,gbr
+    jsr @r3
+    nop
+    bra compensation_record
+    nop
+    .size _stock_invoke_working_cap,.-_stock_invoke_working_cap
+
+! Direct anti-stall entry receives input, previous, and weighted words, mapped
+! filter GBR, and MACL. Its stock frame holds saved GBR above saved MACL.
+    .global _stock_invoke_filter_tail
+    .type _stock_invoke_filter_tail,@function
+_stock_invoke_filter_tail:
+    mov.l r8,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r3
+    mov r6,r2
+    extu.b r5,r1
+    shll r1
+    mov.l @r2,r6
+    mov.l @(4,r2),r4
+    mov.l @(8,r2),r7
+    mov.l @(12,r2),r0
+    ldc r0,gbr
+    mov.l @(16,r2),r0
+    lds r0,macl
+    mov.l compensation_saved_r12,r12
+    mov.l compensation_saved_r13,r13
+    mov.l compensation_saved_r14,r14
+    sts.l macl,@-r15
+    mov.l compensation_saved_gbr,r0
+    mov.l r0,@-r15
+    jsr @r3
+    nop
+    bra compensation_record
+    nop
+    .size _stock_invoke_filter_tail,.-_stock_invoke_filter_tail
+
 ! Stock bias 80 makes a zero denominator unreachable for a previous word.
 ! Direct entry at TST R7,R7 supplies zero and the producer's full saved frame.
 ! The natural epilogue restores GBR, MACL, PR, R14, R13, and R12; its tested

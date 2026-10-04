@@ -8,6 +8,11 @@ note = [
     """
 The summary rule is exact; its external diagnostic presentation and physical \
 phase name remain unresolved.""",
+    """
+On 7mfk, bit5 selects the bank-indexed MAF filter: clear copies the working \
+word; set executes the previous-output update with ROM8[0x870a]. The filter \
+reads this byte without modifying any bit. This code association leaves the \
+physical state of bit5 unresolved.""",
 ]
 level = "code"
 unit = "bitfield"
@@ -31,6 +36,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2461"
 name = "satisfied-bulldog"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

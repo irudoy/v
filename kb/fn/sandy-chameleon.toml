@@ -1,13 +1,22 @@
 summary = """
-Two-bank first-order MAF filter. For indices 0 and 1 it writes \
-ffff1df0/ffff1df2 from working curve values ffff1058/ffff105a. A mode bit \
-selects direct copy or weighted update and code applies a one-count \
-anti-stall correction when truncation would leave a changing value \
-unchanged."""
+Two-bank unsigned first-order MAF filter on 7mfk. Indices 0 and 1 write \
+ffff1df0/ffff1df2 from working words ffff1058/ffff105a. Byte ffff2461.bit5 \
+selects direct copy when clear or a weighted previous-output update when \
+set. Stock ROM8[0x870a]=26 gives weights 26 and 230 over 256, truncated by \
+logical shift. The one-count rule moves an otherwise unchanged result toward \
+a differing input. The function preserves MACL and GBR in its natural return \
+and delay slot."""
 note = [
     """
 Caller 0003a904 invokes exactly indices 0 and 1. The filter coefficient's \
 physical time constant remains unresolved.""",
+    """
+The downward one-count branch cannot be selected from entry with the \
+positive stock coefficient: for previous>input the floor result is already \
+below previous. Direct post-arithmetic entry supplies previous, input, and \
+weighted words plus the exact saved GBR/MACL frame to execute that \
+alternative. These software cases establish no physical mode identity, \
+scheduling interval, or filter time constant.""",
 ]
 level = "code"
 role = "service"
@@ -96,3 +105,53 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "spiked-dalmatian/ram"
+via = ["sandy-chameleon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Previous unsigned word ffff1df2 has weight 230 while the input has weight \
+26. If the truncated weighted result equals the previous word and differs \
+from the input, CMP/GT selects +1 for a higher input or -1 for a lower \
+input; equal input or a changed weighted result skips correction. Stock \
+positive coefficient 26 makes the lower-input correction unreachable from \
+entry; direct post-arithmetic cases supply its register context explicitly."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a9f0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "vegan-polecat/ram"
+via = ["sandy-chameleon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Previous unsigned word ffff1df0 has weight 230 while the input has weight \
+26. If the truncated weighted result equals the previous word and differs \
+from the input, CMP/GT selects +1 for a higher input or -1 for a lower \
+input; equal input or a changed weighted result skips correction. Stock \
+positive coefficient 26 makes the lower-input correction unreachable from \
+entry; direct post-arithmetic cases supply its register context explicitly."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a9f0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""

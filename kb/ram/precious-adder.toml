@@ -1,6 +1,15 @@
 summary = """
-Working bank 1 MAF-curve output copied from ffff1054 by FUN 0003a982. It \
-feeds the per-bank filter pipeline and total-MAF producer 0003b27e."""
+Working bank 1 MAF word on 7mfk, copied from unsigned transfer output \
+ffff1054 to ffff1058 by FUN 0003a982 before the per-bank filter and \
+total-MAF producer. The copy publishes the low word in its RTS delay slot; \
+its signed cap and negative-value branches are unreachable after the input \
+EXTU.W."""
+note = [
+    """
+Normal calls use bank-byte indices 0 and 1. Explicit direct entry at \
+0003a996 supplies wide R2 to execute the otherwise unreachable cap and zero \
+branches; these cases do not establish a reachable stored input state.""",
+]
 level = "code"
 unit = "raw MAF quantity"
 
@@ -46,6 +55,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1058"
 name = "precious-adder"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -69,11 +80,48 @@ value = {named = ["0003a982", "0003a9aa", "0003b27e", "ffff1054", "ffff1058"], s
 key = "body"
 
 [[link]]
-type = "input"
+type = "copy"
 to = "vague-pony/ram"
+via = ["brass-ammonite/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The complete 7mfk working-value refresh copies the selected unsigned word \
+ffff1054 into ffff1058, preserves the sibling bank, and stores in the RTS \
+delay slot. The bank argument is first truncated to a byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a9a8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
+
+[[link]]
+type = "input"
+to = "vague-pony/ram"
+via = ["brass-ammonite/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bank index 0 or 1 selects unsigned word ffff1054. EXTU.W guarantees 0..65535 \
+before the signed cap and zero tests; the normal function returns an exact \
+word copy in ffff1058."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a98e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 
 [[link]]
 type = "lookup"

@@ -1942,8 +1942,8 @@ effect = "filters"
 sign = "positive"
 via = ["0003a904", "0003a982", "0003a9aa"]
 note = """
-0003a982 copies A to ffff1058; 0003a9aa writes ffff1df0 as a direct copy or \
-a first-order update with one-count anti-stall."""
+ffff1058 = uint16(ffff1054); prev = uint16(ffff1df0); k = ROM8[0x0000870a]; \
+f = floor((k*ffff1058+(256-k)*prev)/256); ffff1df0 = uint16(f)"""
 
 [[chain.step]]
 from = "ffff1056"
@@ -1951,7 +1951,9 @@ to = "ffff1df2"
 effect = "filters"
 sign = "positive"
 via = ["0003a904", "0003a982", "0003a9aa"]
-note = "Bank-2 twin through working copy ffff105a."
+note = """
+ffff105a = uint16(ffff1056); prev = uint16(ffff1df2); k = ROM8[0x0000870a]; \
+f = floor((k*ffff105a+(256-k)*prev)/256); ffff1df2 = uint16(f)"""
 
 [[chain.step]]
 from = "ffff1df0"

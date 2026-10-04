@@ -1,8 +1,17 @@
 summary = """
-Bank-indexed MAF working-value refresh. It copies transfer outputs \
-ffff1054/ffff1056 to ffff1058/ffff105a before the per-bank filter and \
-total-MAF calculations."""
-note = ["Caller 0003a904 invokes exactly indices 0 and 1."]
+Bank-indexed unsigned MAF working-value refresh on 7mfk. It truncates the \
+bank argument to a byte, copies transfer outputs ffff1054/ffff1056 to \
+ffff1058/ffff105a, and stores in the RTS delay slot. Both cap and zero \
+branches are unreachable after the unsigned word read. Caller 0003a904 \
+supplies indices 0 and 1 before filtering and total-MAF calculations."""
+note = [
+    "Caller 0003a904 invokes exactly indices 0 and 1.",
+    """
+Independent full-function cases bind the exact word copy, high bank-argument \
+truncation, natural return, preserved input, and sibling/neighbor bytes. \
+Explicit entry at the cap comparison supplies wide positive and negative R2 \
+values without changing tested instructions.""",
+]
 level = "code"
 role = "service"
 block = "airflow_load/block"

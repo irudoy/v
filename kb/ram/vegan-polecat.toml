@@ -1,7 +1,21 @@
 summary = """
-Filtered bank 1 MAF quantity written by FUN 0003a9aa from working curve \
-output ffff1058. A mode bit selects direct copy or a weighted first-order \
-update with one-count anti-stall correction."""
+Filtered bank 1 MAF word ffff1df0 on 7mfk. With ffff2461.bit5 clear, FUN \
+0003a9aa copies unsigned working word ffff1058. With bit5 set, \
+f=floor((ROM8[0x870a]*uint16(ffff1058)+(256-ROM8[0x870a])*uint16(previous \
+output))/256); stock ROM8[0x870a]=26. If f equals the previous output but \
+differs from the input, the function moves one count toward the input before \
+storing the word."""
+note = [
+    """
+At input 1000 and previous output zero, five stock weighted calls produce \
+101, 192, 274, 347, 413. With the positive stock coefficient 26, a lower \
+input gives a weighted result strictly below the previous word, making the \
+downward anti-stall branch unreachable from function entry. Explicit \
+post-arithmetic entry supplies input, previous, and weighted words plus \
+saved GBR/MACL to execute both correction directions without changing \
+instructions. The physical bit5 state, scheduler timing, and coefficient \
+time constant remain unresolved.""",
+]
 level = "code"
 unit = "raw MAF quantity"
 
@@ -39,6 +53,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1df0"
 name = "vegan-polecat"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -69,11 +85,50 @@ value = {named = ["0003a9aa", "0003af42", "ffff1058", "ffff1df0"], span = 1}
 key = "reference"
 
 [[link]]
-type = "input"
+type = "copy"
 to = "precious-adder/ram"
+via = ["sandy-chameleon/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+With ffff2461.bit5 clear, the selected unsigned word ffff1058 is copied \
+directly into ffff1df0, without reading the previous output or applying the \
+weighted update. Other flag bits and the sibling bank remain unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003aa0a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
+
+[[link]]
+type = "input"
+to = "precious-adder/ram"
+via = ["sandy-chameleon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The selected unsigned working word ffff1058 is read before the bit5 mode \
+branch. A clear bit selects direct copy; a set bit supplies its weight \
+ROM8[0x870a]=26 in a 256-denominator update with the previous output. The \
+one-count rule prevents a changing higher input from leaving the stored word \
+unchanged through floor truncation."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a9be"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 
 [[link]]
 type = "reader"
@@ -84,6 +139,30 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "satisfied-bulldog/ram"
+slot = "bit5"
+via = ["sandy-chameleon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, bit5 clear selects an unsigned word copy; bit5 set selects the \
+stock 26/256 weighted update from the previous output plus the conditional \
+one-count rule. Other bits do not select this mode; the byte is read-only in \
+the filter."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a9c4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_filter.py"
+key = """
+test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 
 [[link]]
 type = "writer"

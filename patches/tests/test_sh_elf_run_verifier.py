@@ -631,6 +631,21 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-maf-filter": {
+                "REGION_ENTRY": 0x0003A982,
+                "MAF_SOURCE_B1": 0xFFFF1054,
+                "MAF_SOURCE_B2": 0xFFFF1056,
+                "MAF_WORKING_B1": 0xFFFF1058,
+                "MAF_WORKING_B2": 0xFFFF105A,
+                "MAF_FILTERED_B1": 0xFFFF1DF0,
+                "MAF_FILTERED_B2": 0xFFFF1DF2,
+                "MODE_FLAGS": 0xFFFF2461,
+                "FILTER_ENTRY": 0x0003A9AA,
+                "COPY_CAP_ENTRY": 0x0003A996,
+                "ANTI_STALL_ENTRY": 0x0003A9EC,
+                "COEFFICIENT_ADDRESS": 0x0000870A,
+                "FILTER_BASE": 0xFFFF1DEC,
+            },
             "jk08a-maf-transfer": {
                 "REGION_ENTRY": 0x0003A922,
                 "MAF_INPUT_B1": 0xFFFF1E48,
@@ -829,9 +844,9 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation"):
+                if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
-                # MAF vectors run through both banks and additional entries.
+                # Bank vectors execute additional entries and repeated calls.
                 # The executable gate binds their emitted invocation count.
         region = regions["jk78c-ascd-main"]
         image = STOCK_VERIFIER.stock_image(region.rom)

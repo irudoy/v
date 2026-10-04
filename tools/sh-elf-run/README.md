@@ -176,6 +176,21 @@ The gate performs these checks:
    word stores and that callee, the boundary at 0x0003a950 restores PR from
    stack offset zero outside all tested instructions. Cases check MACL, GBR,
    the input base, both input words, stock tables, and neighboring RAM.
+   The MAF filter fixture reconstructs the complete bank-indexed working copy
+   and first-order filter. It executes both unsigned word copies and outputs,
+   byte argument truncation, bit5 copy/weighted selection, stock coefficient
+   26/256, floor rounding, and the one-count rising correction. Five successive
+   filtered calls per bank retain the literal sequence 101, 192, 274, 347, 413
+   for input 1000 from zero. The copy's cap and negative-value branches are
+   unreachable after EXTU.W; direct entry supplies wide R2 values. With stock
+   coefficient 26, a lower input makes the weighted result strictly below the
+   previous word, so the downward anti-stall branch is also unreachable from
+   the function entry. Direct post-arithmetic entry supplies input, previous,
+   and weighted words plus the saved GBR/MACL frame to execute both corrections
+   and both skip paths. These cases establish no live calibration or physical
+   time constant. Three declared RAM pool words alone are aliased. All stock
+   instructions, coefficient data, natural returns, input words, flag bits,
+   sibling-bank values, MACL, GBR, saved registers, and neighbors are checked.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets
