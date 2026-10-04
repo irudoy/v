@@ -249,6 +249,43 @@ Full event-builder mode reachability, timer/latch policy, producer lifecycle, la
 summation, physical input identities, cadence and hardware behavior remain
 outside this execution envelope.
 
+## Shared ignition-advance event arithmetic
+
+Steps 22 and 23 of `ignition_advance/chain` share the bounded event
+publication contract, while steps 24 and 25 share the bounded event-retard
+contract. All four views name `event_timing_correction_builder/fn` at
+`7mfk:0004d99c`. The ordered paths, effects, signs and all other chain
+steps retain their existing declarations.
+
+Publication uses full independent incoming R6, P in 0..65535. Signed-byte
+S at ffff2378 and signed-word W at ffff11d6 form the signed32 sum at
+ffff1ff8; ffff12d6 receives signed-byte saturation of S+W+C-P, with signed
+byte C at ffff2356. The live R2 supplies both publications with no RAM
+readback. The bounded fragment does not consume the separately seeded
+ffff1ff6 word numerically and establishes no equality between that RAM
+word and incoming R6.
+
+Retard uses Q from ffff24c5.bit5 OR ffff24cb.bit2 and G from the ROM
+bit5 configuration scalar at 00008710. Signed K/A/B and unsigned high
+byte H supply the declared FIRST alternatives. SECOND has whole-word
+retention when G=0; when G=1 it publishes the separate B-based result.
+The accepted contracts define these widths, conditions and alternatives.
+
+`tools/kb/tests/test_ignition_event_arithmetic_chain.py` owns the shared
+views through `test_ignition_event_arithmetic_chain_owner_contract` and
+`test_ignition_event_arithmetic_registered_stock_contract`. The gate binds
+the four exact notes and identities to the accepted registered publication
+and retard Regions, reuses their stock-byte checks and rejects changes to
+the incoming register domain or retained-word interpretation. Their
+execution boundaries are 26 instructions / 76 bytes / 8754 cases and
+63 instructions / 147 bytes / 7408 cases. No additional executable Region
+or complete builder execution is inferred from shared chain membership.
+
+Full builder dispatch, upstream request and P production, snapshot copying,
+timer/latch behavior, scheduling, physical units and hardware validation
+remain outside these bounded arithmetic proofs. Their independent owned
+evidence retains its existing scope.
+
 ## Bounded knock integration
 
 The registered `jk08a-knock-integration` fixture reconstructs 39 instructions
