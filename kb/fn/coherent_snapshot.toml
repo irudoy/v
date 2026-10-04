@@ -52,6 +52,18 @@ consumed during the current pass. Exact DID 0x1103 identifies ffff1188 as \
 battery voltage. Normal timer initialization makes this scheduler cadence \
 exactly 204800/Pphi seconds; passive target-CAN timestamps establish Pphi=20 \
 MHz and 10.24 ms per pass.""",
+    """
+Independent 7mfk execution covers only 00020f04..00020f1a and the length-28 \
+stock copier selection. It shifts BFS current to previous, refreshes current \
+from newest, and copies ffff1048..ffff1063 to ffff102c..ffff1047 through \
+seven descending longword stores. The table entry at 00022174 selects \
+0002213a; the dispatcher delay slot reads offset 24 and the natural return \
+delay slot restores R3. Five declared RAM pointers alone are aliased after \
+byte identity. The simulator boundary at 00020f1c restores PR from SP+0 \
+outside all tested instructions. Source bytes, newest BFS, neighbors, MACL, \
+GBR, and saved registers remain unchanged. These cases establish no other \
+copy length, complete scheduler execution, live cadence, or hardware \
+atomicity.""",
 ]
 level = "code"
 role = "dispatch"

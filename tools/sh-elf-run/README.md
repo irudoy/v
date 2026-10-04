@@ -213,6 +213,18 @@ The gate performs these checks:
    Only three declared RAM pointers are aliased. The boundary at 0x0003bd5c
    restores PR from SP+0 outside all tested instructions. Cases check saved
    registers, MACL, GBR, R11, the reference word, inputs, and neighboring RAM.
+   The load-snapshot fixture reconstructs the scheduler's two BFS history
+   stores and complete 28-byte copy call. The unchanged length dispatcher
+   selects 0x0002213a through its stock table entry; its JMP delay slot loads
+   the last source longword before the seven descending longword stores.
+   Cases cover all source bytes, word and byte sign boundaries, independent
+   patterns, unchanged source and guards, and three successive snapshots.
+   Five declared RAM pool words alone are aliased. The copier returns through
+   its natural RTS and R3-pop delay slot; the boundary at 0x00020f1c restores
+   PR from SP+0 outside tested instructions. The helper frame is shared with
+   the normalization fixture. This proof covers the length-28 selection and
+   byte-zero view, without a complete scheduler, other copy lengths, or
+   hardware atomicity claim.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

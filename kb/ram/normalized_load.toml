@@ -17,6 +17,14 @@ consumers are exact. The HR catalog calls the ratio Cylinder Filling Up \
 Efficiency; that physical name remains a candidate and is not required for \
 the normalized-BFS percentage. J1979 Calculated Load ffff413e uses a \
 different RPM-dependent denominator and 100*A/255 encoding.""",
+    """
+Independent 7mfk execution binds the exact 28-byte snapshot call, \
+length-table selection, seven descending longword stores, and the \
+normalized-load byte at offset zero. The dispatcher JMP delay slot loads \
+source offset 24; its selected tail returns through the stock RTS and R3-pop \
+delay slot. The byte view preserves the existing percent conversion without \
+a direct MOV.B store, whole-scheduler execution, or hardware atomicity \
+claim.""",
 ]
 level = "code"
 width = 8
@@ -191,6 +199,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff102c"
 former = ["inquisitive-spoonbill/ram/7mfk-ffff102c"]
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -322,11 +332,54 @@ producer at 0003bd1c has no match in the target with PC-relative \
 displacements masked"""
 
 [[link]]
-type = "input"
+type = "copy"
 to = "benign-cassowary/ram"
+via = ["coherent_snapshot/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1048 to ffff102c. Byte zero of the \
+exact 28-byte block view is copied without numerical conversion; seven \
+descending longword stores preserve all source bytes. The complete slice, \
+selected dispatcher path, natural copier return, and both delay slots \
+execute unchanged; the SP+0 continuation lies outside tested instructions. \
+This proof establishes no complete scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f18"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
+
+[[link]]
+type = "input"
+to = "benign-cassowary/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1048 to ffff102c. Byte zero of the \
+exact 28-byte block view is copied without numerical conversion; seven \
+descending longword stores preserve all source bytes. The complete slice, \
+selected dispatcher path, natural copier return, and both delay slots \
+execute unchanged; the SP+0 continuation lies outside tested instructions. \
+This proof establishes no complete scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f18"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
 
 [[link]]
 type = "input"

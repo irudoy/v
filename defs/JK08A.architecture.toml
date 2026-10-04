@@ -2102,9 +2102,7 @@ to = "ffff102c"
 effect = "copies"
 sign = "positive"
 via = ["00020dfe"]
-note = """
-00020dfe copies ffff1048..ffff1063 to ffff102c..ffff1047 before the periodic \
-tasks; the maps of that pass read ffff102c."""
+note = "ffff102c = uint8(ffff1048)"
 
 [[chain]]
 id = "fuel-pulse"

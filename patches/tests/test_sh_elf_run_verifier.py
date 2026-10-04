@@ -631,6 +631,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-load-snapshot": {
+                "REGION_ENTRY": 0x00020F04,
+                "BFS_NEWEST": 0xFFFF1026,
+                "BFS_CURRENT": 0xFFFF1024,
+                "BFS_PREVIOUS": 0xFFFF1028,
+                "LIVE_LOAD": 0xFFFF1048,
+                "SNAPSHOT_LOAD": 0xFFFF102C,
+                "COPY_SIZE": 28,
+            },
             "jk08a-load-normalization": {
                 "REGION_ENTRY": 0x0003BD1C,
                 "BFS_INPUT": 0xFFFF1026,
@@ -873,6 +882,19 @@ mov #0x5,r1
                 region, image[:region.base_load] + b"\x00\x09"
                 + image[region.base_load + 2:]
             )
+
+    def test_published_stock_slice_instruction_counts_match_the_executed_regions(self):
+        readme = (ROOT / "tools/sh-elf-run/README.md").read_text(encoding="utf-8")
+        regions = {region.key: region for region in STOCK_VERIFIER.REGIONS}
+        for key, pattern in (
+            ("jk08a-maf-aggregate", r"combined-MAF fixture reconstructs the complete (\d+)-instruction sum"),
+            ("jk08a-load-normalization", r"Q7 load fixture reconstructs the (\d+)-instruction normalization slice"),
+        ):
+            with self.subTest(region=key):
+                match = re.search(pattern, readme)
+                self.assertIsNotNone(match)
+                region = regions[key]
+                self.assertEqual(int(match.group(1)), (region.end - region.start) // 2)
 
     def test_a_calling_slice_restores_pr_only_at_its_simulator_boundary(self):
         region = next(item for item in STOCK_VERIFIER.REGIONS

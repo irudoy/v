@@ -97,6 +97,24 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-load-snapshot",
+        rom="JK08A",
+        source="stock_jk08a_load_snapshot.s",
+        harness="stock_load_snapshot_harness.c",
+        start=0x00020F04,
+        end=0x00020F1C,
+        pools=((0x0002110C, 24), (0x00022110, 4), (0x00022174, 4)),
+        ram_literals=(0x0002110C, 0x00021110, 0x00021114, 0x00021118, 0x00021120),
+        cases=11,
+        return_address_offset=0,
+        symbols=(("BFS_NEWEST", "bfs/ram"), ("BFS_CURRENT", "kickass-mole/ram"),
+                 ("BFS_PREVIOUS", "micro-chicken/ram"),
+                 ("LIVE_LOAD", "benign-cassowary/ram"),
+                 ("SNAPSHOT_LOAD", "normalized_load/ram")),
+        constants=(("COPY_SIZE", 28),),
+        callees=((0x00022104, 0x00022110), (0x0002213A, 0x00022158)),
+    ),
+    Region(
         key="jk08a-load-normalization",
         rom="JK08A",
         source="stock_jk08a_load_normalization.s",

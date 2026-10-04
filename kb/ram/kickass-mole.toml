@@ -11,6 +11,12 @@ Exact DID 0x1208 returns producer word ffff1026 as Base Fuel Schedule. One \
 count is 1/2048 ms in the time base of the injection-pulse words, which \
 makes the high byte raw/8 ms; the derivation is recorded at ffff1026. Pulse \
 precursor 0004e974 and common-gain builder 00053698 read this sample.""",
+    """
+Independent 7mfk scheduler-slice execution copies the prior ffff1024 word to \
+ffff1028 before copying the newest ffff1026 word into ffff1024. Both \
+transfers preserve all 16 bits and leave the producer word and neighbors \
+unchanged. Three successive calls preserve literal history through unsigned \
+word boundaries; this proof does not execute the complete scheduler.""",
 ]
 level = "code"
 unit = "ms*2048"
@@ -98,6 +104,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1024"
 name = "kickass-mole"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -114,11 +122,54 @@ value = {named = ["00020dfe", "0004e974", "0005185c", "00053698", "0008083c", "0
 key = "reference"
 
 [[link]]
-type = "input"
+type = "copy"
 to = "bfs/ram"
+via = ["coherent_snapshot/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1026 to ffff1024. The previous \
+current word is first preserved at ffff1028; the newest producer word \
+remains read-only. The complete slice, selected dispatcher path, natural \
+copier return, and both delay slots execute unchanged; the SP+0 continuation \
+lies outside tested instructions. This proof establishes no complete \
+scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f14"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
+
+[[link]]
+type = "input"
+to = "bfs/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1026 to ffff1024. The previous \
+current word is first preserved at ffff1028; the newest producer word \
+remains read-only. The complete slice, selected dispatcher path, natural \
+copier return, and both delay slots execute unchanged; the SP+0 continuation \
+lies outside tested instructions. This proof establishes no complete \
+scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f14"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
 
 [[link]]
 type = "reader"

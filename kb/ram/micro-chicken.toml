@@ -8,6 +8,12 @@ note = [
 Stock JK08A has ROM8[00008d92].bit3 set, so the positive Base Fuel Schedule \
 delta comparison and its ffff1220 writer do not execute. The raw/2048 ms \
 conversion remains a hardware-validation target.""",
+    """
+Independent 7mfk scheduler-slice execution binds the exact old-current word \
+store at 00020f0c before the current-word refresh at 00020f14. The 16-bit \
+snapshot preserves the high bit and the newest source word. Physical \
+conversion, stock delta-comparison mode, and hardware validation remain \
+unchanged.""",
 ]
 level = "code"
 unit = "ms*2048"
@@ -47,6 +53,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1028"
 name = "micro-chicken"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -77,11 +85,52 @@ value = {named = ["00020dfe", "00051a98", "ffff1024", "ffff1028"], span = 1}
 key = "reference"
 
 [[link]]
-type = "input"
+type = "copy"
 to = "kickass-mole/ram"
+via = ["coherent_snapshot/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1024 to ffff1028. The source is the \
+old current word before the following refresh from ffff1026. The complete \
+slice, selected dispatcher path, natural copier return, and both delay slots \
+execute unchanged; the SP+0 continuation lies outside tested instructions. \
+This proof establishes no complete scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f0c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
+
+[[link]]
+type = "input"
+to = "kickass-mole/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, the scheduler slice copies ffff1024 to ffff1028. The source is the \
+old current word before the following refresh from ffff1026. The complete \
+slice, selected dispatcher path, natural copier return, and both delay slots \
+execute unchanged; the SP+0 continuation lies outside tested instructions. \
+This proof establishes no complete scheduler or hardware atomicity claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00020f0c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_snapshot.py"
+key = """
+test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
 
 [[link]]
 type = "reader"
