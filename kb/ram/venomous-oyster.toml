@@ -2,15 +2,168 @@
 layout = "7mfk"
 address = "ffff1ff8"
 name = "venomous-oyster"
+level = "code"
+width = 32
+signed = true
+summary = "Widened signed long publication of the bounded 7mfk S+W entry."
+note = """
+MOV.L at 0004db54 publishes signed-byte S plus signed-word W as a signed32 \
+long at GBR+4. The sum ranges across signed16 boundaries without truncation \
+or wrapping of its low word. The same working R2 then supplies the final \
+correction, without loading this RAM publication back. Other event-builder \
+paths and physical units remain separate facts."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004da62"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004db54"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
+[[link]]
+type = "base"
+to = "wandering-earthworm/ram"
+offset = 0x4
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The explicit incoming GBR context is ffff1ff4. Stock MOV.L load 0004d9a8, \
+LDC 0004d9aa and pool 0004dba0 bind that address but are not executed. MOV.L \
+0004db54 uses GBR+4=ffff1ff8. This relation states an address offset without \
+numeric input from the base, array extent or base producer meaning."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db54"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
+[[link]]
+type = "input"
+to = "eccentric-badger/ram"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.W at 0004db48 sign-extends W from R14=ffff11d4 plus 2. ADD at 0004db50 \
+forms signed32 S+W without low-word truncation, then MOV.L 0004db54 \
+publishes all four bytes. The producing event-retard branches are outside \
+this explicit entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db48"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
+[[link]]
+type = "input"
+to = "liberal-gorilla/ram"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B at 0004db4e sign-extends S from R13=ffff2330 plus indexed 0x48. The \
+incoming base is bound by unchanged normal-path anchor 0004da7c and pool \
+0004dbbc, not an executed setup path. ADD 0004db50 forms a widened signed32 \
+result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db4e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
 [[link]]
 type = "writer"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+MOV.L at 0004db54 stores all four bytes of signed32 S+W to GBR+4=ffff1ff8. \
+It is the only intermediate store in this entry; subsequent arithmetic \
+retains the working R2 rather than reading RAM back. Every other RAM byte \
+except final ffff12d6 is preserved per case."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db54"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"

@@ -106,6 +106,18 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff12d6"
 name = "viridian-koel"
+level = "code"
+width = 8
+signed = true
+summary = "Signed byte publication of bounded 7mfk clamp(S+W+C-P,-128,127)."
+note = """
+The explicit entry 0004db48 publishes the widened long S+W, then signed byte \
+clamp(S+W+C-P,-128,127) at 0004db8c. P is the full incoming R6 operand \
+constrained to 0..65535. RAM ffff1ff6 is independently seeded and preserved, \
+with no RAM read or executed producer claim. The bypass, timer/latch, \
+diagnostic cap and full return paths are outside this bounded entry. \
+Existing physical scale and downstream timing consumption remain separate \
+facts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -184,6 +196,25 @@ at = "7mfk:0004dcd0"
 value = {named = ["000147da", "0004d99c", "0004dbe8", "ffff11d6", "ffff12d6", "ffff1ff6", "ffff2000", "ffff22fa", "ffff2356", "ffff2378", "ffff23c2"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004db8c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
 [[link]]
 type = "depends"
 to = "nifty-clam/ram"
@@ -195,9 +226,37 @@ role = "consumer"
 [[link]]
 type = "input"
 to = "artichoke-capuchin/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+P=x denotes the independent incoming R6 operand constrained to 0..65535, \
+with its full register value consumed by SUB 0004db5c. RAM word ffff1ff6 is \
+seeded independently and differently from P and is preserved; no RAM read or \
+numeric reader is executed here. The preceding static store 0004dad4 is \
+outside the bounded spans. This preserved existing relationship does not \
+establish an executed producer, upper-word truncation, producer signedness \
+or complete interpolation reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db5c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "input"
@@ -209,23 +268,96 @@ supports = "identity"
 [[link]]
 type = "input"
 to = "eccentric-badger/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+MOV.W 0004db48 sign-extends W; the shared working value S+W is widened \
+before adding C and subtracting incoming R6. Positive derivative through the \
+final clamp is conditional on its unsaturated range, with no claim about \
+prior retard production."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db48"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "input"
 to = "liberal-gorilla/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+MOV.B 0004db4e sign-extends S and adds W into the signed32 working value. \
+The natural R13 anchor is unchanged but not executed; producer lifecycle, \
+timer/latch and bypass mode reachability remain outside the entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db4e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "input"
 to = "lumpy-kudu/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+MOV.B 0004db58 sign-extends C; ADD 0004db5a adds it to the widened working \
+value before SUB 0004db5c consumes R6. The signed-byte output clamp retains \
+both lower and upper saturation branches."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db58"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "input"
@@ -233,6 +365,38 @@ to = "steady-lionfish/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "input"
+to = "venomous-oyster/ram"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The final arithmetic uses the same signed32 working register R2 after MOV.L \
+0004db54 publishes S+W. There is no RAM readback from ffff1ff8 in this \
+bounded slice. The output alias denotes the shared widened value, retaining \
+sums below -32768 or above 32767 before the signed-byte clamp."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db54"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "lookup"
@@ -251,10 +415,69 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded context explicitly enters normal publication at 0004db48 and \
+exits before the full epilogue at 0004db8e. Incoming R13/R14/GBR and R6 are \
+declared contexts. Timer/latch, diagnostic cap, bypass at 0004db74, \
+interpolation and their eligibility predicates remain outside this \
+execution."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db48"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
+[[link]]
 type = "writer"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+MOV.B at 0004db8c publishes the lower/upper saturated signed byte after the \
+shared widened sum and explicit incoming R6 subtraction. Boundary 0004db8e \
+is an ordinary simulator return outside stock spans and precedes the full \
+function epilogue. Full builder dispatch, timer/latch, bypass and \
+diagnostic-cap branches are outside this proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db8c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"

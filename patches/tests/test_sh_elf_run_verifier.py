@@ -631,6 +631,12 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-knock-event-publication": {
+                "REGION_ENTRY": 0x0004DB86, "PUBLICATION_ENTRY": 0x0004DB48,
+                "RETARD": 0xFFFF11D6, "SNAPSHOT": 0xFFFF2378,
+                "CORRECTION": 0xFFFF2356, "SCALED_RAM": 0xFFFF1FF6,
+                "LONG_SUM": 0xFFFF1FF8, "BYTE_OUTPUT": 0xFFFF12D6,
+            },
             "jk08a-knock-event-retard": {
                 "REGION_ENTRY": 0x0004D9AC,
                 "FIRST": 0xFFFF11D6, "SECOND": 0xFFFF11D8,
@@ -976,7 +982,7 @@ mov #0x5,r1
                                "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate",
                                "jk08a-knock-threshold", "jk08a-knock-comparison",
                                "jk08a-knock-timing-byte", "jk08a-knock-integration",
-                               "jk08a-knock-event-retard"):
+                               "jk08a-knock-event-retard", "jk08a-knock-event-publication"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
                 # Vector tables and harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.

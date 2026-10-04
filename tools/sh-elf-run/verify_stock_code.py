@@ -100,6 +100,25 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-knock-event-publication", rom="JK08A",
+        source="stock_jk08a_knock_event_publication.s",
+        harness="harness-stock-jk08a-knock-event-publication.c",
+        start=0x0004DB86, end=0x0004DB8E,
+        pools=((0x0004D9A8, 4), (0x0004D9C2, 2), (0x0004DA7C, 2),
+               (0x0004DBA0, 4), (0x0004DBAC, 4), (0x0004DBBC, 4),
+               (0x0004DBE4, 4)),
+        ram_literals=(0x0004DBA0, 0x0004DBAC, 0x0004DBBC, 0x0004DBE4),
+        cases=8754,
+        symbols=(("RETARD", "eccentric-badger/ram"),
+                 ("SNAPSHOT", "liberal-gorilla/ram"),
+                 ("CORRECTION", "lumpy-kudu/ram"),
+                 ("SCALED_RAM", "artichoke-capuchin/ram"),
+                 ("LONG_SUM", "venomous-oyster/ram"),
+                 ("BYTE_OUTPUT", "viridian-koel/ram")),
+        constants=(("PUBLICATION_ENTRY", 0x0004DB48),),
+        callees=((0x0004DB48, 0x0004DB74),),
+    ),
+    Region(
         key="jk08a-knock-event-retard", rom="JK08A",
         source="stock_jk08a_knock_event_retard.s",
         harness="harness-stock-jk08a-knock-event-retard.c",

@@ -555,6 +555,27 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock event correction publication
+
+`jk08a-knock-event-publication` binds 26 instructions, 76 bytes and 8754
+literal cases. Explicit RAM contexts supply signed S/W/C; the full
+independent incoming R6 supplies P in 0..65535. The widened signed32 sum
+S+W is published to `ffff1ff8`; the signed byte at `ffff12d6` is
+`max(-128,min(127,S+W+C-P))`. Subsequent arithmetic retains the shared
+register sum without RAM readback. The separately seeded `ffff1ff6` word
+is preserved and supplies no numeric input to this slice.
+
+Cases cover signed extrema, word-range crossings and both clamp edges.
+Every case checks both publications, T, general/special registers,
+SP/driver PR, the entire frame, independent C ABI, all calibration/pool
+bytes and every other RAM byte. The natural R13 anchor at `0004da7c`
+and other exact base anchors are not executed; the driver supplies their
+register contexts. Declared high-RAM pool aliases preserve all checked
+instructions. Full builder execution, timer/latch behavior, P production,
+bypass paths, full-function return, cadence and hardware behavior remain
+outside the proof. The narrow contract is in
+[`JK08A.ignition-state.md`](../../defs/JK08A.ignition-state.md).
+
 ## Knock event retard
 
 `jk08a-knock-event-retard` binds 63 instructions, 147 bytes and 7408 literal

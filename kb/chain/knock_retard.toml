@@ -186,5 +186,5 @@ effect = "adds"
 sign = "positive"
 via = ["event_timing_correction_builder/fn"]
 note = """
-ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6); 0004dbe8 \
-carries it into advance ffff11d4."""
+P = x; ffff1ff8 = int8(ffff2378)+int16(ffff11d6); ffff12d6 = \
+max(-128,min(127,ffff1ff8+int8(ffff2356)-P))"""

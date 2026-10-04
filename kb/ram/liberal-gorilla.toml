@@ -50,6 +50,17 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2378"
 name = "liberal-gorilla"
+level = "code"
+width = 8
+signed = true
+summary = """
+Signed byte snapshot consumed by the bounded 7mfk event-correction \
+publication entry."""
+note = """
+MOV.B at 0004db4e sign-extends this byte through explicitly seeded \
+R13=ffff2330 plus index 0x48. The normal-path R13 load 0004da7c and pool \
+0004dbbc bind the address but are not executed. Earlier snapshot production \
+and existing physical scale remain separate facts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -86,6 +97,25 @@ at = "7mfk:0004db56"
 value = {named = ["00020dfe", "0004d99c", "0004dbe8", "ffff2378", "ffff2404"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004db4e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
+
 [[link]]
 type = "input"
 to = "functional-corgi/ram"
@@ -96,12 +126,37 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+MOV.B 0004db4e reads signed8 S through independently seeded R13=ffff2330 \
+plus index 0x48. Normal-path anchor 0004da7c and pool 0004dbbc are unchanged \
+and not executed. The producer and full previous-pass scheduling remain \
+separate facts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db4e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "reader"

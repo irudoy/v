@@ -176,6 +176,38 @@ calibrations it sets `0xFFFF2466.bit6` when the state is at or below
 Other gates can force either selector state, so these thresholds are not the
 complete high-level high-detonation policy.
 
+## Bounded knock event publication
+
+The registered `jk08a-knock-event-publication` fixture reconstructs 26
+instructions and binds 76 bytes from stock JK08A. Its 8754 literal cases
+enter at `0004db48`, pass through the shared clamp and store at `0004db86`,
+and stop at the ordinary return boundary `0004db8e` outside stock spans.
+
+Let S be the signed byte at `ffff2378`, W the signed word at `ffff11d6`,
+and C the signed byte at `ffff2356`. P is the full independent incoming
+R6 register, constrained to 0..65535. The fragment publishes the widened
+signed32 sum S+W to longword `ffff1ff8` and signed byte
+`max(-128,min(127,S+W+C-P))` to `ffff12d6`. The sum remains in R2 before
+the remaining arithmetic; there is no RAM readback of `ffff1ff8`.
+
+The RAM word at `ffff1ff6` is independently seeded and preserved. The
+fragment neither reads that word as P nor executes its earlier producer.
+It contains no EXTU.B or EXTU.W conversion of incoming R6. Literal cases
+cover signed extrema, sums outside the signed-word range, independent
+P boundaries and all valid neighbors of both signed-byte clamp edges.
+
+The exact natural-path base anchors include the R13 load at `0004da7c`,
+which addresses the `ffff2330` context. Those anchors are not executed;
+the driver supplies their register bases. Only declared high-RAM pool
+words are aliased after exact ROM/GNU identity. Every case checks the
+widened longword and byte publications, clamp T, general/special registers,
+SP/driver PR, the entire frame, independent external C ABI, all bound
+calibration/pool bytes and every other RAM byte.
+
+Full builder execution, timer/latch behavior, scaled-term production,
+bypass branches, natural full-function return, cadence, physical input
+identities and hardware behavior remain outside this bounded proof.
+
 ## Bounded knock event retard
 
 The registered `jk08a-knock-event-retard` fixture reconstructs 63 instructions

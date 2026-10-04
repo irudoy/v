@@ -252,9 +252,34 @@ key = "Bounded knock event retard"
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+MOV.W 0004db48 reads signed16 W through independently seeded R14=ffff11d4 \
+plus offset 2. It is preserved while contributing to widened signed32 S+W. \
+The stock R14 load 0004d9c2 and pool 0004dbac bind this base but are not \
+executed by the publication entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004db48"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_publication_chain.py"
+key = "test_knock_event_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event publication"
 
 [[link]]
 type = "selector"
