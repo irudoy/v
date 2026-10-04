@@ -3339,8 +3339,8 @@ effect = "integrates"
 sign = "negative"
 via = ["000493e8"]
 note = """
-Knock branch: ffff1380 = sat16(ffff1258 + 13) after a quiet interval, else \
-sat16(ffff1258 - 307 * ffff2142); the count is then cleared."""
+n = uint8(x); ffff1380 = \
+max(-32768,min(32767,int16(ffff1258)-ROM16[0x00008eae]*n)); ffff2142 = 0"""
 
 [[chain.step]]
 from = "ffff1258"
@@ -3349,8 +3349,8 @@ effect = "adds"
 sign = "positive"
 via = ["000493e8"]
 note = """
-Q8 state ffff1258 is the base of the knock step; ROM16[0x8EAA] = 13 and \
-ROM16[0x8EAE] = 307."""
+ffff1380 = max(-32768,min(32767,int16(ffff1258)+ROM16[0x00008eaa])); \
+ffff2142 = 0"""
 
 [[chain.step]]
 from = "ffff1380"

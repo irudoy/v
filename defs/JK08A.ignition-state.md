@@ -176,6 +176,43 @@ calibrations it sets `0xFFFF2466.bit6` when the state is at or below
 Other gates can force either selector state, so these thresholds are not the
 complete high-level high-detonation policy.
 
+## Bounded knock integration
+
+The registered `jk08a-knock-integration` fixture reconstructs 39 instructions
+and binds 114 bytes from stock JK08A. It executes 4035 literal cases: 3967
+explicit event entries at `00049900` and 68 quiet entries at `00049544`.
+Both paths use the common signed saturation/publication block and stop at
+`00049582`, before subsequent coordinator behavior.
+
+Let S be signed word `ffff1258`. The quiet entry publishes
+`ffff1380 = clamp(S + ROM16[00008eaa], -32768, 32767)` with stock increment 13.
+The event entry receives independent R4=x in the explicit domain 0..255 and
+publishes `ffff1380 = clamp(S - ROM16[00008eae]*x, -32768, 32767)` with stock
+multiplier 307. Both entries clear byte `ffff2142`. They are alternative entry
+views of one publication, not sequential state updates. Event R4=0 remains an
+event-entry context and does not identify a quiet dispatch.
+
+The event MUL.L consumes the full 32-bit R4; this fragment performs no EXTU.B
+on it and establishes no truncation of arbitrary upper bits. Every event case
+seeds the RAM count independently and differently from R4. The preceding
+dispatcher MOV.B at `0004952c` and EXTU.B at `0004952e` have separate static
+byte checks; the dispatcher, quiet eligibility predicate and natural entry
+selection are outside this execution envelope.
+
+The literals cover all 256 R4 byte values, signed state boundaries, quiet
+upper saturation and every in-domain event lower-saturation transition.
+R4=213 includes the final transition at S=32623; R4>=214 publishes -32768
+throughout the signed-word domain. MACL equals 307*x on the event path and
+retains its incoming value on the quiet path. Working R4 before the final
+lower clamp, final T, all 15 general registers, special registers, stock
+SP/driver PR, the seeded 52-byte frame and external caller ABI are checked.
+Every case checks the full other 64k RAM bytes and all calibration/pool bytes.
+Only the five declared RAM pool words receive simulator aliases. The ordinary
+RTS/NOP boundary lies outside checked stock instructions.
+
+This contract does not execute the complete coordinator or establish physical
+mode reachability, event cadence, learning lifecycle or hardware behavior.
+
 ## Bounded timing-byte conversion
 
 The registered `jk08a-knock-timing-byte` fixture independently reconstructs

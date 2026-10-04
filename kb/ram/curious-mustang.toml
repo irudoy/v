@@ -49,11 +49,44 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1380"
 name = "curious-mustang"
+level = "code"
+width = 16
+signed = true
+summary = """
+Signed 7mfk word publication of the separate bounded knock integration \
+entries."""
+note = """
+The bounded quiet entry 00049544 and event entry 00049900 publish one signed \
+word clamped to -32768..32767 at 00049570, then clear byte ffff2142 at \
+00049580. These entries are alternatives, not sequential updates. Event x \
+denotes incoming 32-bit R4 constrained to 0..255; the slice does not \
+establish arbitrary upper-word truncation or full dispatcher reachability. \
+Existing Q8 scale and later direct-map or slew consumption remain separate \
+facts."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00049570"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049570"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
 
 [[link]]
 type = "depends"
@@ -78,6 +111,77 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "input"
+to = "knock_count/ram"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Within explicit event entry 00049900, arithmetic alias x denotes independent \
+incoming 32-bit R4 constrained to 0..255. MUL.L at 00049908 consumes all 32 \
+register bits; no EXTU.B of R4 is executed in this fragment. uint8(x) is \
+constrained notation, without an arbitrary upper-word truncation claim. This \
+entry does not read ffff2142; its RAM count is seeded independently from R4 \
+in every event case. The preceding static dispatcher MOV.B at 0004952c and \
+EXTU.B at 0004952e identify a count-read context outside the executed spans. \
+That preserved context does not prove complete dispatch predicates or \
+producer execution."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049908"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
+
+[[link]]
+type = "input"
+to = "thick-dalmatian/ram"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.W at 00049548 and 00049906 sign-extends the input word ffff1258. Quiet \
+entry 00049544 adds the signed positive stock calibration word at 00008eaa. \
+Event entry 00049900 subtracts the low32 product of the signed positive word \
+at 00008eae and the constrained incoming R4 operand. The declared domains \
+cannot overflow signed32. The input word is preserved; later coordinator \
+consumption remains outside the bounded proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049548"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
+
+[[link]]
 type = "reader"
 to = "knock_function/fn"
 layouts = ["7mfk"]
@@ -86,3 +190,74 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Entry 00049544 supplies the quiet equation; entry 00049900 supplies the \
+event equation. They are alternative contexts, not sequential updates. Both \
+converge on signed clamp 00049550-00049566, output word store 00049570 and \
+count-clear byte store 00049580. Event R4=0 is an explicit arithmetic-entry \
+context and does not imply quiet mode. The count/diagnostic dispatcher and \
+its predicates are outside the bounded execution proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049544"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+note = """
+Both alternative arithmetic entries reach MOV.W at 00049570, publishing \
+max(-32768,min(32767,value)) to ffff1380. Quiet value is \
+sign16(ffff1258)+ROM16[00008eaa]; event value is \
+sign16(ffff1258)-ROM16[00008eae]*incomingR4 with R4 constrained to 0..255. \
+Working R4 is capped only at 32767 and may remain below -32768; the stored \
+R2 is saturated on both sides. The stock fragment has no calls or stack \
+accesses."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049570"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"

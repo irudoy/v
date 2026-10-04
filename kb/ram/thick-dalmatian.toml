@@ -36,6 +36,19 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1258"
 name = "thick-dalmatian"
+level = "code"
+width = 16
+signed = true
+summary = """
+Signed 7mfk word consumed by the separate bounded knock integration \
+entries."""
+note = """
+The bounded quiet entry 00049544 and event entry 00049900 read this signed \
+word and preserve it. They publish their saturated signed result to \
+ffff1380, not to this input address. The quiet arithmetic adds \
+ROM16[00008eaa]; the event arithmetic subtracts ROM16[00008eae] times \
+explicit incoming R4 in 0..255. Existing Q8 scale, other coordinator \
+branches and dispatcher facts are separate from this bounded proof."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -49,12 +62,63 @@ supports = "identity"
 at = "7mfk:00008eae"
 value = "0x0133"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049548"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
+
 [[link]]
 type = "input"
 to = "knock_count/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.W at 00049548 and 00049906 reads sign16(ffff1258) through loaded base \
+ffff124c plus offset 12. The bounded quiet and event entries both preserve \
+this input word. They write ffff1380 and clear ffff2142; no ffff1258 store \
+is executed in these spans."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049548"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
 
 [[link]]
 type = "writer"

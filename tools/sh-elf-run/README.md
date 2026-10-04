@@ -555,6 +555,26 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock event integration
+
+`jk08a-knock-integration` binds 39 instructions, 114 bytes and 4035 literal
+cases: 3967 event entries and 68 quiet entries. Independent event R4 is in
+0..255; the 32-bit MUL.L consumes it without an in-fragment EXTU.B. RAM count
+is seeded independently. The event result is signed saturation of S-307*R4;
+the quiet result is signed saturation of S+13. Both clear the RAM count and
+are alternative entry views, not sequential updates or a dispatch inference
+from R4=0.
+
+All byte counts, signed state boundaries and in-domain saturation transitions
+are covered. MACL contains the event product or retains the quiet input.
+Per-case checks bind the working arithmetic register, T, all general/special
+registers, SP/driver PR, the full 52-byte frame, independent C caller ABI,
+calibrations and all other RAM bytes. Five RAM pool aliases preserve all
+checked instruction words. The ordinary return at `00049582` is outside
+stock spans. Separate static dispatcher checks at `0004952c/0004952e` do not
+execute the dispatcher or quiet predicate. Complete coordinator modes,
+cadence, producer lifecycles and hardware behavior remain outside this proof.
+
 ## Knock timing-byte conversion
 
 `jk08a-knock-timing-byte` binds 16 stock instructions, 48 bytes and 65650 cases.

@@ -267,12 +267,40 @@ key = "Bounded comparison contract"
 [[link]]
 type = "reader"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The preceding static dispatcher MOV.B at 0004952c and EXTU.B at 0004952e \
+read and zero-extend ffff2142 into R4. These instructions are outside the \
+bounded integration execution spans. Explicit event entry 00049900 receives \
+an independent 32-bit R4 context constrained to 0..255 and does not read the \
+RAM count, which is seeded differently in every event case. Full \
+count/diagnostic dispatcher predicates and reachability remain separate \
+facts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004952c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
 
 [[link]]
 type = "reader"
@@ -409,11 +437,37 @@ key = "Bounded comparison contract"
 [[link]]
 type = "writer"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Both bounded arithmetic entries unconditionally clear ffff2142 with MOV.B at \
+00049580 after publishing the signed output word. Event input R4 is \
+independent of this RAM byte within the executed envelope. All other RAM \
+bytes except the output word are preserved; complete dispatcher predicates, \
+later state consumption and count scheduling are outside this proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049580"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_integration_chain.py"
+key = "test_knock_integration_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock integration"
 
 [[link]]
 type = "writer"
