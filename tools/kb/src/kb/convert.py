@@ -172,10 +172,11 @@ ROW_TESTS = {
 
 def _location(item):
     """An evidence item as the files state it: a symbol `to` as its location,
-    with test paths but without registry origin metadata or legacy tokens."""
+    with test and specification paths but without registry origin metadata
+    or legacy tokens."""
     return {key: value.location if isinstance(value, SymbolKey) else value
             for key, value in item.items()
-            if key != "legacy" and (key != "path" or item.get("kind") == "test")}
+            if key != "legacy" and (key != "path" or item.get("kind") in ("test", "spec"))}
 
 
 def _notes(value):

@@ -4,11 +4,33 @@ from types import SimpleNamespace
 from kb import adapters, convert, repo
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
-from kb.model import Entity
+from kb.model import Entity, SymbolKey
 from kb.repo import KbError
 
 
 class ConvertTest(unittest.TestCase):
+    def test_specification_paths_and_keys_survive_evidence_conversion(self):
+        for item in (
+            {"kind": "spec", "path": "defs/contract.md", "key": "Bounded publication"},
+            {"kind": "spec", "path": "defs/contract.md"},
+            {"kind": "spec", "key": "published-standard"},
+        ):
+            with self.subTest(item=item):
+                self.assertEqual(convert._location(item), item)
+
+    def test_evidence_conversion_separates_source_paths_from_registry_origin_metadata(self):
+        item = {"kind": "test", "path": "tools/kb/tests/test_convert.py",
+                "key": "test_a_converted_registry_converts_to_no_change", "legacy": "token"}
+        self.assertEqual(convert._location(item), {
+            "kind": "test", "path": "tools/kb/tests/test_convert.py",
+            "key": "test_a_converted_registry_converts_to_no_change"})
+        item = {"kind": "byte-identical", "path": "defs/source.csv", "legacy": "token",
+                "at": "7mfk:00026388", "to": SymbolKey("jk00c", "fn", 0x26564),
+                "sha256": "a" * 64, "supports": "identity"}
+        self.assertEqual(convert._location(item), {
+            "kind": "byte-identical", "at": "7mfk:00026388", "to": "jk00c:00026564",
+            "sha256": "a" * 64, "supports": "identity"})
+
     def test_a_converted_home_declaration_remains_a_distinct_source(self):
         meaning = SimpleNamespace(home='7mfk', tables={}, props={})
         symbol = SimpleNamespace(layout='7mfk', meaning=meaning,
