@@ -1,5 +1,5 @@
 """Write commands (tools/kb/SPEC.md, section 12.3): `new`, `set`, `bind`,
-`absent`, `unresolved`, `link`, `unlink`, `merge`, `rename`, `move`, and
+`absent`, `unresolved`, `link`, `unlink`, `select`, `merge`, `rename`, `move`, and
 `apply`, which applies a batch of them as one change.
 
 A change edits entity files as documents over the working tree. An operation
@@ -35,6 +35,9 @@ become `former` references.
   evidence to the link of one type, target, slot, and offset that the file
   holds; `unlink` removes a link of the file, which the slot and the offset
   choose among the links of one type and target.
+- `select` adds a dependency selector to an existing owned ledger row for
+  one existing native relation and claim. It changes no relation or evidence,
+  and the complete batch must retain that selector and its supporting fact.
 - `merge` joins another meaning into a meaning, or another file of one meaning
   into its file. Each symbol of the other meaning takes the evidence of the
   join, stated or found as `bind` finds it, and its entry moves into the file
@@ -67,13 +70,15 @@ resolves the references on a current graph, plans, writes the files through
 temporary files and renames, and loads the graph.
 """
 
+import copy
 import difflib
 from pathlib import Path
 import re
 import tomllib
 import weakref
 
-from kb import checks, compile, graph, lock, match, names, refs, repo, store, vocab
+from kb import (checks, compile, graph, ledger_projection, lock, match, names, refs, repo,
+                store, tokens, vocab)
 from kb.adapters import files as file_adapter
 from kb.model import MEANING_REF, Meaning, Symbol, SymbolKey
 from kb.repo import KbError
@@ -87,6 +92,7 @@ COMMANDS = {
     "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
     "link": ("meaning", "type", "to", "keys", "evidence"),
     "unlink": ("meaning", "type", "to", "keys"),
+    "select": ("meaning", "registry", "order", "dependency"),
     "merge": ("meaning", "other", "evidence", "from"),
     "rename": ("meaning", "name"),
     "move": ("symbol", "to", "evidence", "from", "level", "note"),
@@ -94,6 +100,7 @@ COMMANDS = {
 REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
             "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
             "link": ("meaning", "type", "to"), "unlink": ("meaning", "type", "to"),
+            "select": ("meaning", "registry", "order", "dependency"),
             "merge": ("meaning", "other"), "rename": ("meaning", "name"),
             "move": ("symbol", "to")}
 SEARCH = ("method", "target", "count")
@@ -886,6 +893,64 @@ class Change:
                     marker["fields"] = [field for field in marker.get("fields", ())
                                         if field != "accessor"]
 
+    def select(self, op):
+        registry, order = op["registry"], op["order"]
+        if not isinstance(registry, str) or registry not in ledger_projection.HEADERS:
+            raise KbError(f"invalid ledger registry {registry!r}", code=2)
+        if isinstance(order, bool) or not isinstance(order, int) or order < 0:
+            raise KbError("a ledger order is a nonnegative integer", code=2)
+        item = checked(store.LEDGER_DEPENDENCY, "dependency", op["dependency"])
+        required = ("role", "to", "type", "end", "relies", "supports")
+        if any(not isinstance(item.get(key), str) or not item[key] for key in required):
+            raise KbError("dependency needs string role, to, type, end, relies, and supports",
+                          code=2)
+        if ("link_role" in item and not isinstance(item["link_role"], str)
+                or "offset_text" in item and (not isinstance(item["offset_text"], str)
+                                               or "offset" not in item)
+                or "offset" in item and item["offset"] < 0):
+            raise KbError("invalid dependency link_role or offset spelling", code=2)
+        meaning, _ = self.resolve(op["meaning"])
+        to, _ = self.resolve(item["to"])
+        self._gate(meaning)
+        self._gate(to)
+        item["to"] = to.key
+        _, _, original_path, _ = _selection_row(self.model, meaning.key, registry, order)
+        texts = self.texts()
+        current = (compile.build(self.root, {**self.model.overlay, **texts})
+                   if texts else self.model)
+        path, marker = _selection(current, meaning.key, registry, order, item)
+        if path != original_path:
+            raise KbError(f"{meaning.key}: ledger row changes its owned file", code=3)
+        selected = marker.get("dependency", ())
+        def identity(entry):
+            return (*(entry.get(key) for key in ("role", "to", "type", "end", "link_role")),
+                    entry.get("offset", 0) if entry.get("type") == "base"
+                    else entry.get("offset"))
+
+        same = [entry for entry in selected
+                if identity(entry) == identity(item)]
+        if same and (len(same) != 1 or same[0] != item):
+            raise KbError(f"{meaning.key}: incompatible or duplicate ledger dependency", code=3)
+        if not same:
+            document = self._open(path)
+            [held] = [entry for entry in document.get("ledger", ())
+                      if entry.get("registry") == registry and entry.get("order") == order]
+            held["dependency"] = [*held.get("dependency", ()), item]
+
+        def retained(result):
+            try:
+                final_path, final = _selection(result, meaning.key, registry, order, item)
+                same = [entry for entry in final.get("dependency", ())
+                        if identity(entry) == identity(item)]
+                if final_path != original_path or same != [item]:
+                    return f"{meaning.key}: selected ledger dependency is not retained"
+            except KbError as error:
+                return str(error)
+            return None
+
+        self.expected.append(retained)
+        self.lines.append(f"select {meaning.key} {registry} {order}")
+
     def _ends(self, op):
         """(meaning, to, type) of a link operation."""
         meaning, _ = self.resolve(op["meaning"])
@@ -1619,6 +1684,94 @@ class Change:
             self._domain = names.domain_dictionary(self.model, self.root)
         attempts = self.model.config.get("names", {}).get("attempts", 1000)
         return names.draw(self._taken, self._domain, attempts)
+
+
+def _selection_row(model, key, registry, order):
+    """The unique owned row of an existing compatible symbol."""
+    meaning = next((entry for entry in model.meanings if entry.key == key), None)
+    symbol = meaning and meaning.symbols.get("7mfk")
+    if symbol is None or symbol.kind not in ledger_projection.REGISTRY_KINDS[registry]:
+        raise KbError(f"{key}: ledger selection has no compatible 7mfk symbol", code=3)
+    rows = []
+    for kind, name, markers, src in model.stash.get("ledger_rows", ()):
+        owner = model.files[kind, name][0]
+        rows.extend((Path(src), marker, owner) for marker in markers
+                    if marker.get("registry") == registry and marker.get("order") == order)
+    if (len(rows) != 1 or rows[0][2] is not meaning
+            or isinstance(rows[0][1]["order"], bool)
+            or not isinstance(rows[0][1]["order"], int)):
+        raise KbError(f"{key}: no unique owned ledger row {registry}/{order}", code=3)
+    path, marker, _ = rows[0]
+    return meaning, symbol, path, marker
+
+
+def _selection(model, key, registry, order, item):
+    """The unique owned row and native relation that a selector can select.
+
+    Each candidate uses the ledger projector's direction and claim validator
+    in isolation; merged registry claims cannot supply a native claim.
+    """
+    meaning, symbol, path, marker = _selection_row(model, key, registry, order)
+    column = next((column for column, supports in tokens.SUPPORTS.items()
+                   if supports == item["supports"]), None)
+    if registry == "diagnostic-bindings" or column not in ledger_projection.HEADERS[registry].split(","):
+        raise KbError(f"{key}: {registry} does not project a {item['supports']} dependency claim",
+                      code=3)
+    ledger_projection.dependency(model, symbol, item)
+    target = next(entry for entry in model.meanings if entry.key == item["to"])
+    owner, other = ((meaning, target) if item["end"] == "owner" else (target, meaning))
+    isolated = copy.copy(model)
+    isolated.self_links = []
+
+    def matches(link):
+        isolated.links = [link]
+        try:
+            ledger_projection.dependency(isolated, symbol, item)
+            return True
+        except KbError:
+            return False
+
+    candidates = [link for link in model.links
+                  if link.owner is owner and link.to is other and link.type == item["type"]
+                  and link.offset == (item.get("offset", 0) if item["type"] == "base"
+                                      else item.get("offset"))
+                  and matches(link)]
+    if len(candidates) != 1:
+        raise KbError(f"{key}: ledger dependency needs one relation, found {len(candidates)}",
+                      code=3)
+    [relation] = candidates
+    native = []
+    for subject, src in model.files.values():
+        if subject is not owner:
+            continue
+        document = store.load(model.root, src, model.overlay)
+        for entry in document.get("link", ()):
+            found = REFERENCE.fullmatch(str(entry.get("to")))
+            if (entry.get("type") == relation.type and found is not None
+                    and found.group("kind") == other.kind
+                    and found.group("name") in Change._names(other)
+                    and entry.get("slot") == relation.slot
+                    and (entry.get("offset", 0) if relation.type == "base"
+                         else entry.get("offset")) == relation.offset):
+                native.append(entry)
+    if len(native) != 1:
+        raise KbError(f"{key}: ledger dependency needs one native relation, found {len(native)}",
+                      code=3)
+    [entry] = native
+    if "offset" in entry and (isinstance(entry["offset"], bool)
+                              or not isinstance(entry["offset"], int)
+                              or entry["offset"] < 0):
+        raise KbError(f"{key}: native relation has an invalid offset", code=3)
+    owned = copy.copy(relation)
+    owned.props = {name: value for name, value in entry.items()
+                   if name not in ("type", "to", "evidence", "role", "slot", "offset")}
+    owned.roles = {entry["role"]} if "role" in entry else set()
+    stated = {evidence["at"].split(":", 1)[0] for evidence in entry.get("evidence", ())
+              if isinstance(evidence.get("at"), str) and ":" in evidence["at"]}
+    owned.stated = stated or set(entry.get("layouts") or (owner.home,))
+    if not matches(owned):
+        raise KbError(f"{key}: native relation does not hold the selected claim", code=3)
+    return path, marker
 
 
 def _issues(model):

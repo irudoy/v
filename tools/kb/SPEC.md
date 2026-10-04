@@ -711,6 +711,9 @@ storage description does not supply a semantic unit.
 
 `kb unlink` removes the dependency selectors of the removed link at both
 claiming ends and the accessor column when it removes that accessor. The
+`kb select` command selects one existing native relation and claim in an
+existing owned ledger row, identified by exact `registry` and `order`.
+It neither creates a row nor changes its other selectors or facts. The
 `ledgers` check rejects selectors whose facts or indices no longer hold,
 including in a planned write. New evidence, columns, and notes enter a view
 when its selectors explicitly select them.
@@ -1331,6 +1334,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]` | Status `unresolved` with the method and target of the search | 3 |
 | `kb link <from> <type> <to> [<key>=<value>]... [--evidence <item>]... [--dry-run]` | A typed link with its keys and evidence | 3 |
 | `kb unlink <from> <type> <to> [<key>=<value>]... [--dry-run]` | Removes a typed link of the file of a meaning | 3 |
+| `kb select <meaning> <registry> <order> <key>=<value>... [--dry-run]` | Selects one existing native relation and claim in an existing owned ledger row | 6 |
 | `kb merge <meaning> <other> [--evidence <item>]... [--from <l>] [--dry-run]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
@@ -1465,6 +1469,26 @@ references.
   the file of `<from>`; `slot=` and `offset=` choose among several, and more
   than one match exits with 4. A link that only a registry states is
   refused, since the registry owns its facts until its conversion.
+- `kb select <meaning> <registry> <order>` adds one `ledger.dependency`
+  selector with required string keys `role`, `to`, `type`, `end`, `relies`,
+  and `supports`, and optional `link_role`, numeric `offset`, and
+  `offset_text`. Keys follow section 7.8. The exact owned row must exist in
+  the source model of the batch; its order is a nonnegative integer, not a
+  boolean. A symbol reference for `meaning` or `to` names its meaning; the
+  selected row belongs to the subject's `7mfk` symbol. The token role, link
+  type, claiming end, layout, offset, link role,
+  and claim must match exactly one canonical relation and one native
+  document relation. Registry claims cannot supply the native claim.
+  The claim's `tokens.SUPPORTS` column must exist in the registry header.
+  `curated` and `diagnostic-bindings` do not project dependency selectors and
+  are refused.
+  Missing or duplicate rows, missing or ambiguous relations, unknown keys or
+  vocabulary, and mismatched directions or claims are refused. An exact
+  unique repeated selector is idempotent; an incompatible or duplicate
+  selector is refused rather than replaced. No link, evidence, property, or
+  unrelated selector changes. The complete batch must retain the row in its
+  original owned file, the exact unique selector, and its native relation
+  and claim; a later removal or incompatible change refuses the whole batch.
 - `kb merge` of the two files of one meaning, which the `names` check
   reports, takes `<name>/<kind>` as the file of that name and joins the
   entries of each symbol that both files state: the name that the other file
@@ -1478,7 +1502,8 @@ of one command under their names: `kind`, `meaning`, `other`, `symbol` as a
 location for `new`, `slug`, `name` as a semantic name, `ref`, `layout`,
 `type`, `to`, `keys` as a table for `set`, `link`, and `unlink`, `unset` as
 an array of dotted keys for `set`, `evidence` as an array of tables, `from`,
-`level`, `method`, `target`, `count`, and `note`. `kb apply` applies all
+`level`, `method`, `target`, `count`, and `note`; `select` uses `meaning`,
+`registry`, `order`, and `dependency` as a table. `kb apply` applies all
 operations or none. Each operation resolves existing references and searches
 on the working tree, and edits the files as the earlier operations leave
 them. References to a meaning that an earlier `new` starts use its pending

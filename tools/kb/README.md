@@ -44,6 +44,8 @@ uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism do
 uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
 uv run kb link <from> <type> <to> [<key>=<value>...] --dry-run   # a typed link with its keys and evidence
 uv run kb unlink <from> <type> <to> --dry-run   # a link of the file of a meaning
+uv run kb select <meaning> <registry> <order> <key>=<value>... --dry-run
+                                              # select an existing native relation in an owned ledger row
 uv run kb merge <meaning> <other> --dry-run   # two meanings, or two files of one meaning, as one
 uv run kb rename <meaning> <semantic-name> --dry-run   # the semantic name of a meaning
 uv run kb set <ref> <key>=<value> --dry-run   # keys of a meaning, a symbol, a designed entity, or a feature target
@@ -75,6 +77,20 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   The `ledgers` check also runs before a write: an evidence replacement cannot
   leave an invalid view index, and `kb unlink` withdraws the removed relation's
   selected dependency tokens at both claiming ends.
+  `kb select` restores a dependency selector for one existing native relation
+  and claim in the exact owned ledger `registry` and `order`. The row must
+  exist before the batch. Required dependency keys are `role`, `to`, `type`,
+  `end`, `relies`, and `supports`; optional keys are `link_role`, `offset`,
+  and `offset_text`. It does not change links, evidence, properties, or other
+  selectors. A symbol reference names its meaning; the selected row belongs
+  to that meaning's `7mfk` symbol. Missing or ambiguous rows and relations,
+  mismatched directions
+  or claims, and incompatible duplicate selectors are refused. One exact
+  repeated selector writes nothing. The final batch must retain the selected
+  claim, its row, and its native relation.
+  The selected claim must have a corresponding evidence column in the
+  registry; `curated` and `diagnostic-bindings` do not project dependency
+  selectors and are refused.
   `blocks` verifies declared stages, placements of reviewed home functions,
   and typed endpoint members. Architecture entities require the metadata of
   their generated view, positive order values, and repository-local named
@@ -233,7 +249,7 @@ Partial or unrenderable engineering conversions still refuse projection.
 ## Write commands
 
 `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`,
-`kb unlink`, `kb merge`, `kb rename`, and `kb move` write one operation, and
+`kb unlink`, `kb select`, `kb merge`, `kb rename`, and `kb move` write one operation, and
 `kb apply` the operations of a TOML file of `[[op]]` tables, as one change
 under `.kb/lock` (section 12.3 of the specification). A change resolves its
 references on a current graph, edits the entity files in memory, and compiles

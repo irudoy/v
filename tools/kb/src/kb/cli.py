@@ -423,6 +423,15 @@ def command_unlink(args, root=repo.ROOT):
                           "to": args.to, "keys": _link_keys(args)}], root)
 
 
+def command_select(args, root=repo.ROOT):
+    keys, unset = write.parse_assignments(args.assignments)
+    if unset:
+        raise repo.KbError(f"a dependency key takes a value: {', '.join(unset)}", code=2)
+    return _write(args, [{"cmd": "select", "meaning": args.meaning,
+                          "registry": args.registry, "order": args.order,
+                          "dependency": keys}], root)
+
+
 def command_merge(args, root=repo.ROOT):
     return _write(args, [{
         "cmd": "merge", "meaning": args.meaning, "other": args.other,
@@ -643,6 +652,12 @@ def build_parser():
                         help="slot or offset, which choose among the links of one type and "
                         "target")
     unlink.set_defaults(handler=command_unlink)
+    select = writer("select", "select an existing native relation in an owned ledger row",
+                    meaning, ("registry", "the existing ledger registry"))
+    select.add_argument("order", type=int, help="the existing nonnegative ledger row order")
+    select.add_argument("assignments", nargs="+", metavar="key=value",
+                        help="keys of ledger.dependency as TOML values or strings")
+    select.set_defaults(handler=command_select)
     merge = writer("merge", "join another meaning, or another file of one meaning, into a "
                    "meaning", ("meaning", "the meaning that keeps its name, or its symbol that "
                                "a search starts from"),

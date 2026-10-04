@@ -31,7 +31,7 @@ INSTRUCTIONS = (
     "evidence of every layout. Each tool runs the `kb` command of its name with the same "
     "arguments and budgets. Answers state full references, one fact per line; a first "
     "line that reads TRUNCATED names the option that shows the rest. kb_apply applies a "
-    "batch file of new, set, bind, absent, unresolved, link, unlink, merge, rename, and move "
+    "batch file of new, set, bind, absent, unresolved, link, unlink, select, merge, rename, and move "
     "operations as one change, or checks it and returns its diff with dry_run.")
 
 

@@ -6,7 +6,7 @@ from kb import cli, mcp
 
 # Commands that change state or serve, and so are no MCP read tools.
 NOT_READ = {"sync", "instance", "mcp", "project", "fmt", "new", "set", "bind", "absent",
-            "unresolved", "link", "unlink", "merge", "rename", "move", "apply"}
+            "unresolved", "link", "unlink", "select", "merge", "rename", "move", "apply"}
 
 
 class ToolTest(unittest.TestCase):
