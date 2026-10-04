@@ -631,6 +631,17 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-fuel-compensation": {
+                "REGION_ENTRY": 0x0003C284, "SELECTOR_ENTRY": 0x0003C1C0,
+                "PRIMARY_BASE": 0xFFFF1114, "WRAPPER_ENTRY": 0x000261F0,
+                "DIVIDER_ENTRY": 0x00026C78, "RPM_SOURCE": 0xFFFF11F4,
+                "COL_SOURCE": 0xFFFF1170, "OUTPUT": 0xFFFF1160,
+                "FIRST_SOURCE": 0xFFFF5625, "SECOND_SOURCE": 0xFFFF2836,
+                "MODE_A": 0x00008B42, "MODE_B": 0x00008B34,
+                "SOURCE_MODE": 0x000086F9, "BYPASS_SCALAR": 0x0000851A,
+                "TABLE": 0x0000A29A, "ROW_AXIS": 0x00011CF0,
+                "COL_AXIS": 0x00011D4C,
+            },
             "jk08a-bfs-limit": {
                 "REGION_ENTRY": 0x0003BC78, "SELECTOR_ENTRY": 0x0003BB86,
                 "PRIMARY_BASE": 0xFFFF1DEC, "WORKING": 0xFFFF1DEE,
@@ -907,9 +918,9 @@ mov #0x5,r1
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
                 if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
-                               "jk08a-maf-contribution"):
+                               "jk08a-maf-contribution", "jk08a-fuel-compensation"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
-                # Bank vectors execute additional entries and repeated calls.
+                # Bank vectors and surface harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.
         region = regions["jk78c-ascd-main"]
         image = STOCK_VERIFIER.stock_image(region.rom)
