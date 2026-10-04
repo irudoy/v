@@ -1,11 +1,12 @@
 summary = """
 Exact one-byte response source for UDS DID 0x1103 and current \
-battery-voltage byte. FUN 00039a9e copies phase-2 AN0 mux sample ffff1d6e to \
-ffff1fc4, stores uint8(sample >> 2) in ffff1fc6, scales that byte through \
-guard 00067188 and Q1.15 scaler 000671d8 with shared coefficient ffff4970, \
-saturates the result to 255, and writes it here at 00039ae2. FUN 00038618 \
-and selected-temperature gate 0003967a compare it with raw 100; scheduler \
-00020dfe snapshots it to ffff1108."""
+battery-voltage byte. On 7mfk, FUN 00039a9e forms input byte \
+uint8(uint16(ffff1d6e)>>2), applies shared unsigned Q1.15 coefficient \
+ffff4970 through guard 00067188 and scaler 000671d8, and caps the result at \
+255. The guard is bypassed with ffff4252.bit3 set; otherwise inclusive \
+0x7900..0x8700 is preserved and other coefficients reset to 0x8000. FUN \
+00038618 and selected-temperature gate 0003967a compare the output with raw \
+100; scheduler 00020dfe snapshots it to ffff1108."""
 note = [
     """
 One count is 0.08 V: the ROM limits that the DTC monitors apply to snapshot \
@@ -16,6 +17,11 @@ sample shifted right by two, so one count is 20 mV at the converter input \
 and the terminal divider is 4:1. Raw 100 is 8.00 V. Target recordings hold \
 157..180 counts, or 12.56..14.40 V, around a diagnostic reading of 13.92 \
 V.""",
+    """
+The unsigned word copy at ffff1fc4 and byte intermediate at ffff1fc6 retain \
+distinct access widths. The battery output has no MAF-style increment at raw \
+0x03ff. Executed software cases do not validate the physical scale or the \
+reachable state of coefficient bypass.""",
 ]
 level = "code"
 width = 8
@@ -202,6 +208,8 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1188"
 former = ["heretic-vole/ram/7mfk-ffff1188"]
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -324,17 +332,66 @@ role = "writes"
 
 [[link]]
 type = "input"
-to = "eager-alligator/ram"
+to = "amaranth-swine/ram"
+via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+ffff1188 = min(255,floor(uint8(ffff1fc6)*uint16(ffff4970)/32768)). The \
+intermediate byte is zero-extended before scaling; words above 255 select \
+the byte cap."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039ac4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
+
+[[link]]
+type = "input"
+to = "eager-alligator/ram"
+via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The raw word passes through uint8(uint16(ffff1d6e)>>2) at ffff1fc6 before \
+unsigned Q1.15 scaling and the output byte cap; there is no MAF \
+raw-full-scale increment."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039aae"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 
 [[link]]
 type = "input"
 to = "satisfied-oarfish/ram"
+via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The shared coefficient word is checked or bypassed before the unsigned byte \
+input enters scaler 000671d8. The publisher caps its word result at 255 and \
+stores a byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039aca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 
 [[link]]
 type = "reader"
@@ -412,6 +469,29 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+slot = "bit3"
+via = ["battery_voltage_publish/fn", "horned-frog/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit3 set preserves any shared coefficient word. Bit3 clear preserves \
+inclusive 0x7900..0x8700 and replaces other words with ROM16[0x92be]=0x8000. \
+This guard runs before the battery byte is scaled; the output cap remains \
+255 in either mode."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039abc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 
 [[link]]
 type = "writer"

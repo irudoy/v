@@ -2,11 +2,33 @@
 layout = "7mfk"
 address = "ffff1fc4"
 name = "crouching-mole"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00039ab0"
+
+[[link]]
+type = "copy"
+to = "eager-alligator/ram"
+via = ["battery_voltage_publish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, FUN 00039a9e copies the complete source word ffff1d6e to word \
+ffff1fc4 before conversion, without modifying the source."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039ab0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 
 [[link]]
 type = "writer"

@@ -97,6 +97,27 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-battery-scaling",
+        rom="JK08A",
+        source="stock_jk08a_maf_scaling.s",
+        harness="stock_battery_scaling_harness.c",
+        start=0x00039A9E,
+        end=0x00039AEE,
+        pools=((0x000087F8, 2), (0x000092BE, 2), (0x00039BDC, 2),
+               (0x00039CAC, 20), (0x000671C6, 18), (0x0006726A, 6)),
+        ram_literals=(0x00039CAC, 0x00039CB0, 0x00039CBC, 0x000671C8,
+                      0x000671CC, 0x0006726C),
+        cases=32,
+        boundary=False,
+        symbols=(("BATTERY_SAMPLE", "eager-alligator/ram"),
+                 ("BATTERY_COPY", "crouching-mole/ram"),
+                 ("BATTERY_BYTE", "amaranth-swine/ram"),
+                 ("BATTERY_OUTPUT", "battery_voltage/ram"),
+                 ("COEFFICIENT", "satisfied-oarfish/ram"),
+                 ("MODE_FLAGS", "shrewd-manul/ram")),
+        callees=((0x00067188, 0x000671C6), (0x000671D8, 0x00067202)),
+    ),
+    Region(
         key="jk08a-maf-scaling",
         rom="JK08A",
         source="stock_jk08a_maf_scaling.s",

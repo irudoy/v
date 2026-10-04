@@ -1,7 +1,7 @@
-! JK08A bank-selected MAF publisher, coefficient guard, and unsigned scaler.
+! JK08A MAF and battery publishers, coefficient guard, and unsigned scaler.
 ! Link at 0x000087f8 and require exact code, literal, bound, and reset bytes.
 ! Padding between reconstructed spans is not part of the simulator fixture.
-! The stock-image fixture aliases five RAM literals after byte identity.
+! Each stock-image fixture aliases only its declared RAM literals after byte identity.
     .text
     .balign 4
 coefficient_bounds:
@@ -10,6 +10,65 @@ coefficient_bounds:
     .org 0x000092be - 0x000087f8
 coefficient_default:
     .word 0x8000
+
+    .org 0x00039a9e - 0x000087f8
+battery_publish:
+    sts.l pr,@-r15
+    stc.l gbr,@-r15
+    mov.l battery_context,r0
+    ldc r0,gbr
+    add #-4,r15
+    mov.l battery_sample_base,r6
+    mov #0x3a,r0
+    mov.l battery_context,r5
+    mov.w @(r0,r6),r0
+    mov.w r0,@(0x164,gbr)
+    extu.w r0,r2
+    mov.w battery_byte_offset,r0
+    shlr2 r2
+    mov.b r2,@(r0,r5)
+    mov.l battery_guard_pointer,r2
+    jsr @r2
+    nop
+    mov.l battery_context,r5
+    mov.w battery_byte_offset,r0
+    mov.b @(r0,r5),r2
+    extu.b r2,r4
+    mov.l battery_scaler_pointer,r2
+    jsr @r2
+    mov r15,r5
+    mov.w @r15,r5
+    mov #-1,r6
+    extu.b r6,r2
+    extu.w r5,r5
+    cmp/gt r2,r5
+    bt battery_cap
+    mov r5,r2
+battery_cap:
+    mov r2,r6
+    mov.l battery_output_base,r2
+    mov #0x74,r0
+    mov.b r6,@(r0,r2)
+    add #4,r15
+    ldc.l @r15+,gbr
+    lds.l @r15+,pr
+    rts
+    nop
+
+    .org 0x00039bdc - 0x000087f8
+battery_byte_offset:
+    .word 0x0166
+    .org 0x00039cac - 0x000087f8
+battery_context:
+    .long 0xffff1e60
+battery_sample_base:
+    .long 0xffff1d34
+battery_guard_pointer:
+    .long coefficient_guard
+battery_scaler_pointer:
+    .long unsigned_scale
+battery_output_base:
+    .long 0xffff1114
 
     .org 0x0003c408 - 0x000087f8
 maf_publish:

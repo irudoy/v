@@ -255,3 +255,46 @@ maf_cap_macl:
     .long 0x89abcdef
 maf_cap_return_pointer:
     .long maf_cap_return
+
+! stock_invoke_battery(entry, macl, state): seed a distinct GBR, call the
+! complete stock battery publisher, and record MACL, R13, R14, and GBR.
+    .global _stock_invoke_battery
+    .type _stock_invoke_battery,@function
+_stock_invoke_battery:
+    mov.l r8,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r6,r8
+    mov r4,r2
+    lds r5,macl
+    mov.l battery_saved_r13,r13
+    mov.l battery_saved_r14,r14
+    mov.l battery_seed_gbr,r0
+    ldc r0,gbr
+    jsr @r2
+    nop
+    sts macl,r2
+    mov.l r2,@r8
+    mov.l r13,@(4,r8)
+    mov.l r14,@(8,r8)
+    stc gbr,r2
+    mov.l r2,@(12,r8)
+    ldc.l @r15+,gbr
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_battery,.-_stock_invoke_battery
+    .balign 4
+battery_saved_r13:
+    .long 0x13579bdf
+battery_saved_r14:
+    .long 0x2468ace0
+battery_seed_gbr:
+    .long 0x13572468

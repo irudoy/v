@@ -2,11 +2,33 @@
 layout = "7mfk"
 address = "ffff1fc6"
 name = "amaranth-swine"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00039ab8"
+
+[[link]]
+type = "input"
+to = "eager-alligator/ram"
+via = ["battery_voltage_publish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, ffff1fc6 = uint8(uint16(ffff1d6e)>>2). The byte store discards all \
+bits above the low byte before the scaler reloads and zero-extends it."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00039ab8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_battery_scaling.py"
+key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 
 [[link]]
 type = "writer"

@@ -631,6 +631,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-battery-scaling": {
+                "REGION_ENTRY": 0x00039A9E,
+                "BATTERY_SAMPLE": 0xFFFF1D6E,
+                "BATTERY_COPY": 0xFFFF1FC4,
+                "BATTERY_BYTE": 0xFFFF1FC6,
+                "BATTERY_OUTPUT": 0xFFFF1188,
+                "COEFFICIENT": 0xFFFF4970,
+                "MODE_FLAGS": 0xFFFF4252,
+            },
             "jk08a-maf-scaling": {
                 "REGION_ENTRY": 0x0003C408,
                 "MAF_SAMPLE_B1": 0xFFFF1D62,

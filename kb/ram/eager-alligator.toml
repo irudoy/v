@@ -55,6 +55,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1d6e"
 name = "eager-alligator"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

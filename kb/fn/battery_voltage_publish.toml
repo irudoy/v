@@ -1,10 +1,12 @@
 title = "Convert the AN0 mux battery sample and publish DID 0x1103 raw voltage"
 summary = """
-Battery-voltage diagnostic publisher. It copies phase-2 AN0 mux sample \
-ffff1d6e to ffff1fc4 at 00039ab0, stores uint8(sample >> 2) in ffff1fc6 at \
-00039ab8, runs coefficient guard 00067188, scales the byte through Q1.15 \
-scaler 000671d8 with shared coefficient ffff4970, saturates the result to \
-255, and writes DID-0x1103 response byte ffff1188 at 00039ae2."""
+Battery-voltage diagnostic publisher on 7mfk. It copies unsigned word \
+ffff1d6e to ffff1fc4 and stores uint8(uint16(ffff1d6e)>>2) in ffff1fc6. \
+Guard 00067188 preserves any coefficient when ffff4252.bit3 is set; with \
+bit3 clear it accepts inclusive 0x7900..0x8700 and resets other words to \
+0x8000. Scaler 000671d8 converts the unsigned byte; the publisher caps the \
+result at 255 and stores DID-0x1103 byte ffff1188. There is no \
+raw-full-scale increment."""
 note = [
     """
 The exact service-0x22 table binds ffff1188 to DID 0x1103. With stock \
@@ -14,6 +16,11 @@ battery terminal, which the ROM limits of the DTC monitors fix against the \
 factory test conditions on row ffff1108 and in JK08A.diagnostics.md; the \
 terminal divider is therefore 4:1. A target diagnostic reading of 13.92 V \
 lies inside the recorded range of 12.56..14.40 V.""",
+    """
+The complete publisher, coefficient guard, and scaler have an independent \
+stock-address GNU reconstruction. Executed byte-wrap and cap cases preserve \
+the raw word, neighboring RAM, mode byte, MACL, and GBR. These cases \
+establish no live bypass state or physical mode identity.""",
 ]
 level = "code"
 role = "accessor"

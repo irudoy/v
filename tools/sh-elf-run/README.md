@@ -141,6 +141,14 @@ The gate performs these checks:
    a wide R5 and the producer's saved return frame to execute both outcomes
    without changing tested instructions. These branch cases establish no
    reachable ADC state or physical meaning for the coefficient bypass mode.
+   A separate battery fixture reconstructs its complete publisher and the
+   same guard and scaler. Literal cases distinguish the raw word copy, input
+   byte truncation after the two-bit shift, and final byte cap from the MAF
+   word contract. They exercise both coefficient modes, all bound edges,
+   input byte wrap, signed-word boundaries, and byte saturation without a
+   full-scale increment. Six declared RAM literals alone are aliased. The
+   stock publisher restores GBR and PR, and the harness also checks MACL,
+   mode and source preservation, and every neighboring output byte.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets
