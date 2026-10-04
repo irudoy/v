@@ -1,10 +1,13 @@
 summary = """
-Common quarter-BFS fixed-point source inside 0003b75c. The fallback writes \
-floor(M/4) for Base Fuel Schedule raw value M from map 0x15630. In the \
-primary branch, Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], \
-E=ROM8[0x88fb], and selected engine-speed count N produce \
-fixed=min(floor(floor(F*K*Q/256)/(E*N)),0x726f9), followed by \
-ffff1e40=floor(fixed*9163/65536)."""
+Quarter-BFS longword on 7mfk. The primary branch first tests \
+int32(ffff1e38)>0; nonpositive values store zero. For positive Q, \
+fixed-address byte F and word K form p=floor(F*K*Q/256), and the split \
+multiplication retains t=p modulo 2^40. Unsigned division by \
+ROM8[0x88fb]*selected speed produces fixed capped at 0x726f9; a zero \
+denominator selects that cap without invoking the divider. The publication \
+is floor(fixed*9163/65536), at most 65535. The independent fallback map \
+branch writes floor(M/4) for Base Fuel Schedule raw value M from map \
+0x15630."""
 note = [
     """
 The limit 0x726f9 maps to 65535 after multiplication by 9163 and the right \
@@ -13,6 +16,28 @@ as MAF Factor with x*0.0001 kg/hr and K as K-Value with ms/kg. Combined with \
 N at 1.5625 RPM/count, the firmware coefficient differs from the quarter-BFS \
 raw/2048 dimensional coefficient by only 43.994 ppm. Engineering units \
 remain source-derived pending hardware validation.""",
+    """
+The chain formula selects the normal ffff11e8 word and assumes positive \
+signed aggregate and nonzero denominator. With incoming ffff4185.bit6 clear, \
+ffff2461.bit5 selects alternate ffff11dc instead; both word sources are \
+unsigned and clamped to at least 64. With the incoming mode bit set, the \
+tested slice uses eight times its already cached ffff2804 byte, clamped to \
+at least 64. Explicit byte contexts do not execute the upstream \
+mode/fallback selector.""",
+    """
+The complete per-bank contribution and aggregate proofs bound a coherent \
+nonnegative stock aggregate at 2*0xffffff+0x7fff+0xffff=0x02017ffc. Stock \
+F=109 and K=26806 keep p below 2^40 over that domain, so the simpler \
+unbounded product agrees there. Wide positive aggregate contexts or changed \
+fixture coefficients exercise the split-product wrap without a live \
+reachability or tuning claim.""",
+    """
+Independent GNU execution covers primary speed selection, both unsigned \
+stock arithmetic helpers including delay slots and division boundaries, \
+primary zero/cap paths, and the Q7 consumer. Only seven declared RAM pool \
+words are aliased after byte comparison; the original GBR and pre-entry \
+context remain bound by the decoded static test. The fallback map, post-Q7 \
+rate stage, and final BFS publication are outside this selected slice.""",
 ]
 level = "code"
 unit = "quarter BFS raw"
@@ -84,6 +109,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e40"
 name = "voracious-oarfish"
+width = 32
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -153,6 +180,26 @@ key = "reference"
 
 [[link]]
 type = "input"
+to = "bfs_alternate_speed/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = """
+Normal primary mode with ffff2461.bit5 set uses max(64,uint16(ffff11dc))."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7d4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "input"
 to = "nice-coucal/tbl"
 layouts = ["7mfk"]
 relies = "structure"
@@ -161,34 +208,159 @@ supports = "identity"
 [[link]]
 type = "input"
 to = "polar-viper/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The selected primary branch treats the loaded longword as signed for its \
+positive test. Nonpositive Q stores zero. Positive Q is multiplied as \
+unsigned; after /256 the split product retains its low 40 bits. The coherent \
+stock producer bound is 0x02017ffc."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b802"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "statuesque-husky/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Incoming ffff4185.bit6 set selects max(64,8*the cached unsigned ffff2804 \
+byte). Explicit contexts below the upstream selector threshold test this \
+arithmetic without asserting full-entry reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7f4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
 [[link]]
 type = "input"
 to = "vigorous-horse/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Normal primary mode with ffff2461.bit5 clear uses this unsigned word as \
+max(64,value). Engineering scale and producer facts remain independent."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7e2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
 [[link]]
 type = "lookup"
 to = "active-caracal/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Unsigned ROM16 K=26806 is loaded at fixed address 0x9284. The aggregate is a \
+multiplicand and never indexes this scalar."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b814"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
 [[link]]
 type = "lookup"
 to = "spectral-corgi/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Unsigned ROM8 F=109 is loaded at fixed address 0x8a27. The aggregate is a \
+multiplicand and never indexes this scalar."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b824"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "satisfied-bulldog/ram"
+slot = "bit5"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 5 set selects alternate ffff11dc in normal word mode; clear selects \
+ffff11e8. Other bits do not affect this selection."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7ce"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "small-sheep/ram"
+slot = "bit6"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The already masked incoming bit 6 selects cached-byte speed when set and \
+word speed when clear. The pre-entry flag load and mask are statically \
+bound; the independent selected execution starts after them."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7b6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
 [[link]]
 type = "writer"

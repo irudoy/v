@@ -1,0 +1,47 @@
+summary = """
+Alternate unsigned engine-speed word selected by 7mfk primary BFS when the \
+incoming ffff4185.bit6 mode is clear and ffff2461.bit5 is set. The selected \
+count is lower-bounded at 64. Its producer, engineering scale, and refresh \
+cadence are outside this execution proof."""
+block = "airflow_load/block"
+unit = "raw speed count"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff11dc"
+level = "code"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b7d4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Alternate unsigned engine-speed word selected by 7mfk primary BFS when the \
+incoming ffff4185.bit6 mode is clear and ffff2461.bit5 is set. The selected \
+count is lower-bounded at 64. Its producer, engineering scale, and refresh \
+cadence are outside this execution proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b7d4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""

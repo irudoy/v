@@ -193,8 +193,11 @@ effect = "scales"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
 note = """
-Primary branch: fixed = min(floor(floor(F*K*Q/256)/(E*N)), 0x726f9), \
-ffff1e40 = floor(fixed*9163/65536), a quarter BFS."""
+N = max(64,uint16(ffff11e8)); p = \
+floor(ROM8[0x00008a27]*ROM16[0x00009284]*uint32(ffff1e38)/256); t = \
+256*uint32(floor(p/256))+(p&255); fixed = \
+min(0x726f9,floor(t/(ROM8[0x000088fb]*N))); ffff1e40 = \
+floor(fixed*9163/65536)"""
 
 [[step]]
 from = "active-caracal/tbl"
@@ -202,7 +205,12 @@ to = "voracious-oarfish/ram"
 effect = "scales"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
-note = "Base Fuel Schedule K-Value K = 26806 multiplies aggregate Q."
+note = """
+N = max(64,uint16(ffff11e8)); p = \
+floor(ROM8[0x00008a27]*ROM16[0x00009284]*uint32(ffff1e38)/256); t = \
+256*uint32(floor(p/256))+(p&255); fixed = \
+min(0x726f9,floor(t/(ROM8[0x000088fb]*N))); ffff1e40 = \
+floor(fixed*9163/65536)"""
 
 [[step]]
 from = "spectral-corgi/tbl"
@@ -210,7 +218,12 @@ to = "voracious-oarfish/ram"
 effect = "scales"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
-note = "MAF Factor F = 109 multiplies aggregate Q."
+note = """
+N = max(64,uint16(ffff11e8)); p = \
+floor(ROM8[0x00008a27]*ROM16[0x00009284]*uint32(ffff1e38)/256); t = \
+256*uint32(floor(p/256))+(p&255); fixed = \
+min(0x726f9,floor(t/(ROM8[0x000088fb]*N))); ffff1e40 = \
+floor(fixed*9163/65536)"""
 
 [[step]]
 from = "vigorous-horse/ram"
@@ -219,8 +232,11 @@ effect = "scales"
 sign = "negative"
 via = ["base_fuel_schedule_producer/fn"]
 note = """
-N is ffff11e8 (1.5625 rpm per count) or ffff11dc, lower-bounded at 64; E*N \
-divides F*K*Q with E = ROM8[0x88fb] = 3."""
+N = max(64,uint16(ffff11e8)); p = \
+floor(ROM8[0x00008a27]*ROM16[0x00009284]*uint32(ffff1e38)/256); t = \
+256*uint32(floor(p/256))+(p&255); fixed = \
+min(0x726f9,floor(t/(ROM8[0x000088fb]*N))); ffff1e40 = \
+floor(fixed*9163/65536)"""
 
 [[step]]
 from = "voracious-oarfish/ram"
@@ -228,7 +244,7 @@ to = "tall-quoll/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
-note = "ffff1062 = min(65535, floor(ffff1e40*ffff1160/128))."
+note = "ffff1062 = min(65535,floor(uint32(ffff1e40*uint8(ffff1160))/128))"
 
 [[step]]
 from = "fuel_compensation_main/tbl"
@@ -246,9 +262,7 @@ to = "tall-quoll/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
-note = """
-The Q7 Fuel Compensation Main byte multiplies the quarter-BFS source \
-ffff1e40."""
+note = "ffff1062 = min(65535,floor(uint32(ffff1e40*uint8(ffff1160))/128))"
 
 [[step]]
 from = "tall-quoll/ram"

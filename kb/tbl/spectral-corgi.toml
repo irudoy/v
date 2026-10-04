@@ -1,9 +1,8 @@
 summary = """
-Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. \
-With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], \
-and engine-speed count N, FUN 0003b75c forms \
-min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point \
-conversion to ffff1e40."""
+Fixed-address unsigned MAF Factor byte in the 7mfk primary BFS calculation. \
+ROM8[0x8a27]=109 multiplies positive signed-tested aggregate Q and ROM16 K; \
+after /256 the stock split product retains low 40 bits before unsigned speed \
+division. The aggregate is not an index."""
 note = [
     """
 Stock F is 109. The A2L MAF Factor entry matches the byte's operational \
@@ -70,14 +69,6 @@ to = "maf_range_model_byte_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "polar-viper/ram"
-type = "index"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -238,13 +229,6 @@ at = "jk78c:0004091c"
 to = "7mfk:0003b9ac"
 value = "00008896"
 note = "normalized homologous consumers reference the target MAF factor scalar"
-
-[[link]]
-type = "index"
-to = "polar-viper/ram"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

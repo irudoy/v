@@ -631,6 +631,17 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-bfs-base": {
+                "REGION_ENTRY": 0x0003B8DA, "PRIMARY_ENTRY": 0x0003B7C6,
+                "PRIMARY_BASE": 0xFFFF1DEC, "AGGREGATE": 0xFFFF1E38,
+                "PRIMARY_SPEED": 0xFFFF11E8, "ALTERNATE_SPEED": 0xFFFF11DC,
+                "SPEED_FLAGS": 0xFFFF2461, "QUARTER_BFS": 0xFFFF1E40,
+                "COMPENSATION": 0xFFFF1160, "COMPENSATED_BFS": 0xFFFF1062,
+                "CONTROL_BYTE": 0xFFFF24B1, "K_ADDRESS": 0x00009284,
+                "FACTOR_ADDRESS": 0x00008A27, "E_ADDRESS": 0x000088FB,
+                "DIVIDER_ENTRY": 0x00021CE0, "REMAINDER_ENTRY": 0x00021F40,
+                "FAULT_ADDRESS": 0xFFFF9818,
+            },
             "jk08a-maf-contribution": {
                 "REGION_ENTRY": 0x0003AF42,
                 "MAF_INPUT_B1": 0xFFFF1DF0, "MAF_INPUT_B2": 0xFFFF1DF2,
@@ -919,6 +930,23 @@ mov #0x5,r1
         self.assertIsNotNone(match)
         region = next(item for item in STOCK_VERIFIER.REGIONS if item.key == "jk08a-maf-contribution")
         self.assertEqual(int(match.group(1)), sum((end-start)//2 for start,end in region.code_spans))
+
+    def test_published_primary_bfs_instruction_and_byte_counts_match_bound_spans(self):
+        readme = (ROOT / "tools/sh-elf-run/README.md").read_text(encoding="utf-8")
+        match = re.search(r"primary BFS fixture reconstructs (\d+) instructions", readme)
+        self.assertIsNotNone(match)
+        region = next(item for item in STOCK_VERIFIER.REGIONS if item.key == "jk08a-bfs-base")
+        self.assertEqual(int(match.group(1)), sum((end - start) // 2 for start, end in region.code_spans))
+        bound = re.search(r"GNU assembly\s+binds (\d+) bytes", readme)
+        self.assertIsNotNone(bound)
+        self.assertEqual(int(bound.group(1)), sum(end - start for start, end in region.code_spans)
+                         + sum(size for _, size in region.pools))
+        static = (ROOT / "tools/kb/tests/test_airflow_bfs_base.py").read_text(encoding="utf-8")
+        spans = re.findall(r"\(0x([0-9a-f]+), 0x([0-9a-f]+), '[0-9a-f]{64}'\)", static)
+        bound_static = re.search(r"for (\d+) bytes in total", readme)
+        self.assertIsNotNone(bound_static)
+        self.assertEqual(int(bound_static.group(1)),
+                         sum(int(end, 16) - int(start, 16) for start, end in spans))
 
     def test_a_calling_slice_restores_pr_only_at_its_simulator_boundary(self):
         region = next(item for item in STOCK_VERIFIER.REGIONS

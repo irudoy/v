@@ -1,8 +1,8 @@
 summary = """
-Current Q7 Fuel Compensation Main coefficient. Init routine 0002c648 and \
-runtime coordinator 0003bd74 write the 0xA29A result or a gated bounded \
-bypass value here. Base Fuel Schedule producer 0003b75c forms \
-ffff1062=min(65535,floor(ffff1e40*uint8(ffff1160)/128))."""
+Current unsigned Q7 Fuel Compensation Main byte. Init routine 0002c648 and \
+runtime coordinator 0003bd74 write a table result or a gated bounded bypass \
+value. The 7mfk Base Fuel Schedule producer multiplies cached quarter BFS by \
+this byte modulo 32 bits, shifts right seven, and caps ffff1062 at 65535."""
 note = [
     """
 Raw 128 is neutral 1.0 or 100 percent. Runtime gates can bypass the lookup, \
@@ -62,6 +62,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1160"
 name = "majestic-jackrabbit"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

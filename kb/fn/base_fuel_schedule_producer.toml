@@ -39,6 +39,17 @@ alternative executes the stock divider fault record and stores zero. The \
 simulator continuation restores PR from SP+0 at 0003bd5c outside all tested \
 instructions; this proof does not execute the complete producer or promote \
 physical units.""",
+    """
+The independently reconstructed primary slice 0003b7c6..0003b8b8 and Q7 \
+consumer 0003b8da..0003b908 execute both stock unsigned arithmetic helpers \
+00021ce0 and 00021f40. Their 378 instructions retain the signed aggregate \
+branch, low-40-bit split product, zero-denominator fixed cap, exact speed \
+source choice, Q7 cached operand, and word publication. Seven declared RAM \
+pool aliases follow byte identity. A boundary continuation ends at 0003b908 \
+before post-Q7 rate processing; the stock full function and fallback \
+selection are not executed by this slice. Helper-only divide/remainder zero \
+contexts record 0x44e at ffff9818; the primary zero denominator avoids those \
+helpers.""",
 ]
 level = "code"
 role = "accessor"
@@ -631,3 +642,50 @@ at = "7mfk:0003bd24"
 kind = "test"
 path = "tools/kb/tests/test_load_normalization.py"
 key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
+
+[[link]]
+type = "threshold"
+to = "tall-quoll/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Cached quarter times unsigned compensation byte retains low 32 bits, shifts \
+logically by seven, and clamps to 65535 before a word store. Coherent stock \
+quarter never exceeds 65535; explicit wide or mismatched caches are software \
+boundary contexts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b8f8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "threshold"
+to = "voracious-oarfish/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Signed aggregate <=0 stores zero; positive aggregate and zero denominator \
+select fixed cap 0x726f9. Nonzero denominator uses low-40-bit product and \
+two unsigned divide calls plus unsigned remainder. Word and cached-byte \
+speed choices clamp to at least 64. The final factor 9163/65536 maps the \
+fixed cap to 65535."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b806"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""

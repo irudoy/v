@@ -1,8 +1,8 @@
 summary = """
-Base Fuel Schedule K-Value. The primary calculation in FUN 0003b75c \
-multiplies nonnegative MAF aggregate ffff1e38 by this uint16 scalar before \
-fixed-point normalization produces ffff1e40 and, downstream, Base Fuel \
-Schedule DID 0x1208."""
+Fixed-address unsigned K-Value scalar in the 7mfk primary BFS calculation. \
+ROM16[0x9284]=26806 multiplies positive signed-tested aggregate Q; split \
+fixed-point multiplication and unsigned speed division produce quarter BFS. \
+The aggregate is not an index."""
 note = [
     """
 Exact code establishes the address, uint16 representation, stock value \
@@ -66,14 +66,6 @@ to = "married-moth/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "polar-viper/ram"
-type = "index"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -223,13 +215,6 @@ at = "jk78c:00040918"
 to = "7mfk:0003b9a8"
 value = "00008f80"
 note = "normalized homologous consumers preserve the K-value operand role"
-
-[[link]]
-type = "index"
-to = "polar-viper/ram"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

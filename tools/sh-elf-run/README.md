@@ -218,6 +218,26 @@ The gate performs these checks:
    check the returned and stored longword, preserved registers, all input
    bytes, and output neighbors. They establish no live overflow or physical
    identity of the auxiliary term.
+   The primary BFS fixture reconstructs 378 instructions across speed
+   selection, split-product arithmetic, Q7 compensation, and the complete
+   unsigned divide and remainder helpers. Positive signed aggregate selects
+   the primary calculation; zero or negative values publish zero. Normal
+   mode selects either unsigned speed word by bit5; alternate incoming mode
+   uses eight times its cached speed byte. Each count is clamped to at least
+   64. The product after /256 retains 40 bits, and a zero denominator selects
+   the fixed cap without recording a helper fault. Literal cases cover stock
+   coherent aggregate bounds, explicit wide-product wrap, unsigned division
+   boundaries, final factor 9163/65536, Q7 coefficient extremes, output
+   saturation, and mismatched cached quarter BFS. Those explicit contexts
+   establish no full-entry reachability or live calibration claim.
+   Seven declared RAM pool words alone are aliased. Independent GNU assembly
+   binds 828 bytes; the decoded static test additionally binds pre-entry
+   context for 930 bytes in total. The boundary at `0x0003b908` restores PR
+   from SP+24 outside tested instructions, before the rate stage. Cases
+   check the stock cache/register result, source words, coefficient, flags,
+   neighboring RAM, and ROM coefficients. The helper restores the external
+   C frame after recording the stock slice's register and MACL changes.
+   The fallback lookup and final BFS publication remain outside this proof.
    The Q7 load fixture reconstructs the 32-instruction normalization slice
    and its unsigned divider. Entry R5 contains the preceding unsigned BFS
    word; a separate byte proof binds its stock load and preservation. Cases

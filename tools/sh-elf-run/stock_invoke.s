@@ -650,3 +650,63 @@ contribution_saved_gbr:
     .long 0x13572468
 contribution_return_pointer:
     .long contribution_return
+
+! Execute the selected primary quarter-BFS slice or Q7 consumer with an
+! explicit incoming mode/speed/cache context. SP+24 holds the continuation
+! restored by the boundary at 0003b908, outside tested instructions. R9 holds
+! the result record; neither the selected arithmetic nor its helpers use it.
+    .global _stock_invoke_bfs_base
+    .type _stock_invoke_bfs_base,@function
+_stock_invoke_bfs_base:
+    mov.l r8,@-r15
+    mov.l r9,@-r15
+    mov.l r10,@-r15
+    mov.l r11,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r6,r9
+    mov r4,r3
+    mov r5,r7
+    add #-28,r15
+    mov.l bfs_base_return_pointer,r0
+    mov.l r0,@(24,r15)
+    mov.l @(12,r7),r0
+    ldc r0,gbr
+    mov.l @(16,r7),r12
+    mov.l @(20,r7),r11
+    mov.l @(8,r7),r6
+    mov.l @(4,r7),r5
+    mov.l @r7,r4
+    jsr @r3
+    nop
+bfs_base_return:
+    add #28,r15
+    sts macl,r2
+    mov.l r2,@r9
+    mov.l r6,@(4,r9)
+    mov.l r13,@(8,r9)
+    mov.l r14,@(12,r9)
+    stc gbr,r2
+    mov.l r2,@(16,r9)
+    mov.l r11,@(20,r9)
+    mov.l r12,@(24,r9)
+    ldc.l @r15+,gbr
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r12
+    mov.l @r15+,r11
+    mov.l @r15+,r10
+    mov.l @r15+,r9
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_bfs_base,.-_stock_invoke_bfs_base
+    .balign 4
+bfs_base_return_pointer:
+    .long bfs_base_return

@@ -1,0 +1,47 @@
+summary = """
+Unsigned state byte cached after Q7 compensation by the 7mfk Base Fuel \
+Schedule producer. The independently executed primary and Q7 slices read and \
+preserve it; downstream changes and physical mode meanings are outside this \
+proof."""
+block = "airflow_load/block"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24b1"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003b8ec"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned state byte cached after Q7 compensation by the 7mfk Base Fuel \
+Schedule producer. The independently executed primary and Q7 slices read and \
+preserve it; downstream changes and physical mode meanings are outside this \
+proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b8ec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""

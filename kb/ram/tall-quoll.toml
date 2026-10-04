@@ -1,12 +1,21 @@
 summary = """
-Unsigned common schedule-width result. Init and runtime fallback paths \
-derive it from Base Fuel Schedule fallback map 0x15630 and byte ffff1160, \
-while the main runtime branch derives it from an airflow-related aggregate. \
-Consumers use four times the value as a comparison width or tolerance."""
+Unsigned Q7-compensated quarter-BFS word on 7mfk. Stock primary and fallback \
+paths provide cached quarter BFS in R6; the consumer forms \
+uint32(R6*uint8(ffff1160)), shifts logically by seven, and caps the result \
+at 65535 before storing ffff1062. Other consumers use four times this value \
+as a comparison width or tolerance."""
 note = [
     """
 The operational role and relationship to the Base Fuel Schedule producer are \
 exact. Its standalone physical unit is not assigned.""",
+    """
+The chain formula describes coherent cache/RAM quarter BFS. The independent \
+consumer also executes deliberately mismatched cached R6 and RAM, wide \
+cached-product wrap, neutral 128, zero and maximum byte coefficients, and \
+word saturation. Those explicit contexts do not assert a concurrent RAM race \
+or live-state reachability. The selected primary and Q7 slices preserve the \
+source words, coefficient, flags, neighboring RAM, and fixed ROM \
+coefficients.""",
 ]
 level = "code"
 unit = "raw"
@@ -61,11 +70,57 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1062"
 name = "tall-quoll"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002cd1a"
+
+[[link]]
+type = "input"
+to = "majestic-jackrabbit/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte coefficient is multiplied by cached quarter BFS. Raw 128 is \
+neutral; zero, 127, 128, 129, and 255 execute, including the word output \
+cap."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b8e0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "voracious-oarfish/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The consumer uses the already cached quarter-BFS R6, with coherent cache/RAM \
+required for the chain formula. A low-32-bit unsigned product precedes the \
+logical /128 and 65535 cap; stock coherent quarter is at most 65535."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b8e6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_base.py"
+key = """
+test_primary_bfs_speed_selection_split_product_unsigned_divisions_and_q7_store_match_stock"""
 
 [[link]]
 type = "lookup"

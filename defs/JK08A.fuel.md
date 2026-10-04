@@ -96,19 +96,47 @@ static boundary.
 For the primary BFS branch, let:
 
 ```text
-Q = uint32[0xFFFF1E38]
+Q = int32[0xFFFF1E38]
 F = ROM8 [0x8A27] = 109
 K = ROM16[0x9284] = 26806
 E = ROM8 [0x88FB] = 3
 N = selected engine-speed count, lower-bounded at 64
 ```
 
-The exact integer sequence is equivalent to:
+For positive Q and a nonzero denominator, the exact integer sequence is:
 
 ```text
-fixed = min(floor(floor(F*K*Q/256)/(E*N)), 0x726F9)
+p = floor(F*K*uint32(Q)/256)
+t = p modulo 2^40
+fixed = min(floor(t/(E*N)), 0x726F9)
 0xFFFF1E40 = floor(fixed*9163/65536)
 ```
+
+Nonpositive signed Q publishes zero. A zero denominator with positive Q selects
+the fixed cap without calling the division helpers. The normal word-speed mode
+selects unsigned `0xFFFF11E8` or `0xFFFF11DC` by `0xFFFF2461.bit5`; the other
+mode uses eight times its cached unsigned `0xFFFF2804` byte. Every selected
+count is lower-bounded at 64. The pre-entry selector is statically bound;
+independent execution begins at `0x3B7C6` with its selected context.
+
+The complete bank-contribution and aggregate proofs bound coherent stock Q at
+`2*0xFFFFFF+0x7FFF+0xFFFF=0x02017FFC`. With stock F and K, p stays below
+`2^40` over that domain, so the simpler unbounded product gives the same result.
+Wide positive Q and changed fixture coefficients execute the 40-bit wrap as
+software boundaries without establishing live reachability or calibration
+validity.
+
+The following Q7 consumer uses cached quarter BFS, rather than rereading its
+longword, and publishes:
+
+```text
+product = uint32(cached_quarter * uint8[0xFFFF1160])
+0xFFFF1062 = min(65535, floor(product/128))
+```
+
+For coherent quarter BFS, the cached value equals `0xFFFF1E40` and is at most
+65535. Direct consumer cases also execute mismatched and wide cached values;
+they establish the operand and product width without asserting a live RAM race.
 
 The fallback branch looks up uint16 table `0x15630` by normalized coolant,
 writes the result to `0xFFFF1E44`, and writes one quarter of it to
