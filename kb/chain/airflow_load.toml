@@ -282,8 +282,10 @@ effect = "limits"
 sign = "positive"
 via = ["base_fuel_schedule_producer/fn"]
 note = """
-Upper-limit curve on RPM/25 byte ffff11eb, cell << 8, caps the corrected \
-schedule while ffff2449.bit7 is clear."""
+u = uint8(ffff11eb); i = min(14,floor(u/16)); f = min(16,u-16*i); a = \
+ROM8[0x00012c9e+i]; b = ROM8[0x00012c9e+i+1]; c = \
+a+floor(max(0,b-a)*f/16)-floor(max(0,a-b)*f/16); ffff1e46 = c; candidate = \
+max(0,uint16(ffff1dec)+int16(ffff1060)); ffff1026 = min(candidate,c*256)"""
 
 [[step]]
 from = "bfs/ram"

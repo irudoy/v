@@ -248,6 +248,37 @@ The corrected schedule is rate-adjusted and optionally blended with the prior
 sample. RPM curve `0x12C9E` normally caps the result before it is written to
 `0xFFFF1026`; an alternate mode uses direct grid `0x974E`.
 
+With `0xFFFF2449.bit7` clear, the limiting slice uses unsigned blended word
+`0xFFFF1DEC` when `ROM8[0x8D92].bit4` is set, or unsigned unblended word
+`0xFFFF1DEE` otherwise. It adds the cached signed correction word also stored
+at `0xFFFF1060` and clamps the candidate at zero. The coordinate byte
+`0xFFFF11EB` selects the implicit 16-point byte curve with 16-count spacing.
+Below coordinate 240, each directional increment truncates down separately:
+
+```text
+i, fraction = divmod(coordinate, 16)
+a = ROM8[0x12C9E+i]
+b = ROM8[0x12C9E+i+1]
+cell = a + floor(max(0,b-a)*fraction/16) - floor(max(0,a-b)*fraction/16)
+0xFFFF1E46 = cell
+0xFFFF1026 = min(max(0, selected_word + signed_correction), cell*256)
+```
+
+Coordinates from 240 upward use cell 15 directly; the caller makes its signed
+byte return unsigned before the shift and comparison. Stock cells 0 and 1
+are 101, and cells 2 through 15 are 255. The corresponding bounds are 25856
+at coordinates up to 16 and 65280 from 32 upward. Descending interpolation
+differs from flooring an unbounded weighted average.
+
+With bit 7 set, the branch bypasses the correction and curve. RPM/12.5 byte
+`0xFFFF11EA` selects rows below 64, 128, and 192; at or above 192 it publishes
+zero. Absolute-throttle byte `0xFFFF1075` selects columns below 7, 15, and 22,
+or the last column otherwise. A selected grid cell is shifted left eight;
+this branch preserves `0xFFFF1E46`. Independent execution covers both paths
+through the exact word store. Preceding state writers remain outside that
+slice. The exact mode-byte record applies to JK08A, which holds `0x7A`;
+JK00A shares layout `7mfk` and holds `0x7E` at that address.
+
 ## Commanded mixture
 
 `FUN_0005594A`, the second stage of `FUN_00057608`, is the only stock writer of

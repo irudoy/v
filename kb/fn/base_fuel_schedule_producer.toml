@@ -50,6 +50,18 @@ before post-Q7 rate processing; the stock full function and fallback \
 selection are not executed by this slice. Helper-only divide/remainder zero \
 contexts record 0x44e at ffff9818; the primary zero denominator avoids those \
 helpers.""",
+    """
+The independently reconstructed limiting slice includes the bit7 selector, \
+both corrected word-source paths, the diagnostic speed/throttle grid, \
+implicit 16-point byte wrapper, four-shift shared body, directional \
+finisher, and exact ffff1026 word publication. Its 163 instructions execute \
+969 contexts. Six declared RAM pool aliases follow byte identity; the \
+boundary after 0003bc7e restores PR from SP+0 outside tested instructions. \
+Direct wrapper calls execute natural last-cell signed returns and byte \
+argument wrap; explicit word-format body calls cover the otherwise unused \
+cell-width branch. All 509 static bytes and 400 independent GNU bytes bind \
+before execution. Physical mode identity and preceding state writers remain \
+outside this slice.""",
 ]
 level = "code"
 role = "accessor"
@@ -598,6 +610,28 @@ supports = "identity"
 
 [[link]]
 type = "threshold"
+to = "almond-orca/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The diagnostic branch divides speed byte into three row ranges below \
+64,128,192, and publishes zero at >=192. Absolute-throttle columns change at \
+7,15,22. The branch bypasses correction and normal upper-limit lookup."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bc22"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "threshold"
 to = "benign-cassowary/ram"
 via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
@@ -619,6 +653,29 @@ at = "7mfk:0003bd32"
 kind = "test"
 path = "tools/kb/tests/test_load_normalization.py"
 key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
+
+[[link]]
+type = "threshold"
+to = "lilac-magpie/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal candidate max(0,unsigned selected word+cached signed correction) is \
+capped by the unsigned interpolated byte shifted eight. Both source choices, \
+signed boundaries, below/equal/above cap, all coordinate bytes, and stock \
+and fixture-only rising/descending cells execute."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bc08"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
 [[link]]
 type = "threshold"

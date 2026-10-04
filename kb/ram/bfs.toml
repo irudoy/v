@@ -27,6 +27,19 @@ reference word. Its first saturation test uses the unsigned word cached at \
 0003bcc0; the unsaturated path explicitly rereads the word at 0003bd3a. \
 These cases preserve the existing physical conversion and do not execute the \
 complete BFS producer.""",
+    """
+On 7mfk with ffff2449.bit7 clear, the limiting slice adds cached signed \
+correction R7 to the unsigned working word selected by ROM8[0x8d92].bit4, \
+clamps the candidate at zero, looks up the implicit 16-point upper-limit \
+byte, and caps at byte*256 before word publication. Static pre-entry binding \
+identifies the correction as the word also stored at ffff1060 and the mode \
+as the masked ROM bit. Incoming selected contexts execute both source paths \
+without executing their preceding writers. With bit7 set, the independent \
+branch uses saturated RPM/12.5 byte and absolute-throttle byte to select the \
+direct 3x4 grid; speed byte >=192 publishes zero. This branch preserves the \
+upper-limit byte and does not add correction or invoke the limit curve. \
+Existing time scale and history/normalization contracts remain \
+independent.""",
 ]
 level = "code"
 width = 16
@@ -269,6 +282,72 @@ value = "ffff102e"
 note = "Aligned diagnostic pointer table and direct references agree"
 
 [[link]]
+type = "input"
+to = "elite-dormouse/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With mode bit 4 clear, the normal candidate uses unsigned unblended ffff1dee \
+instead of the blended word; the same signed correction and zero clamp \
+apply."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb92"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "magenta-anaconda/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The selected slice uses cached R7, truncated and sign-extended as a word, \
+rather than rereading RAM. The chain formula requires coherent correction \
+cache/RAM; pre-entry stores and cache copies bind that association \
+statically."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb94"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "input"
+to = "wise-squirrel/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With the stock-set mode bit 4, the normal candidate is \
+max(0,uint16(ffff1dec)+int16(cached correction))."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bbb0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
 type = "lookup"
 to = "active-caracal/tbl"
 layouts = ["7mfk"]
@@ -278,16 +357,52 @@ reverse_supports = "identity"
 [[link]]
 type = "lookup"
 to = "almond-orca/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Bit7 set uses this direct 3x4 byte grid by speed byte buckets below \
+64,128,192 and absolute-throttle byte columns below 7,15,22 or above. Speed \
+byte >=192 publishes zero without reading the grid; other cells publish \
+byte*256 and preserve the normal cap byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bc70"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
 [[link]]
 type = "lookup"
 to = "lilac-magpie/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+With bit7 clear, implicit byte interpolation is made unsigned before its \
+byte publication and left shift; unsigned candidate comparison retains the \
+smaller value. Stock first cells 101,101 cap at 25856; cells from coordinate \
+32 onward are 255 and cap at 65280."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bbfe"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
 [[link]]
 type = "lookup"
@@ -328,6 +443,52 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "bfs_mode_flags/tbl"
+slot = "bit4"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+note = """
+Bit4 set selects blended ffff1dec; clear selects unblended ffff1dee in \
+normal mode. Its ROM load/mask is statically bound; execution receives the \
+already selected mode."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb3c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "selector"
+to = "slick-bullfinch/ram"
+slot = "bit7"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit7 clear uses the signed-corrected candidate and interpolated upper limit. \
+Set selects the independent speed/throttle grid, or zero above its speed \
+range, and preserves the prior upper-limit byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb88"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
 [[link]]
 type = "writer"

@@ -1,0 +1,66 @@
+summary = """
+Unsigned byte of the 7mfk normal-mode BFS upper-limit lookup. The caller \
+stores the interpolated byte before shifting it left eight to cap the \
+nonnegative corrected schedule. The ffff2449.bit7 alternate branch preserves \
+this byte."""
+block = "airflow_load/block"
+unit = "BFS high-byte raw"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1e46"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003bc04"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "lookup"
+to = "lilac-magpie/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The implicit 16-point byte curve uses coordinate uint8(ffff11eb), spacing \
+16, directional floor increments, and unsigned last-cell publication."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bbfe"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal mode publishes exactly the unsigned returned curve byte; diagnostic \
+alternate mode preserves the prior byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bc04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""

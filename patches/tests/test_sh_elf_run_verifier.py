@@ -631,6 +631,16 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-bfs-limit": {
+                "REGION_ENTRY": 0x0003BC78, "SELECTOR_ENTRY": 0x0003BB86,
+                "PRIMARY_BASE": 0xFFFF1DEC, "WORKING": 0xFFFF1DEE,
+                "BLENDED": 0xFFFF1DEC, "CORRECTION": 0xFFFF1060,
+                "FLAGS": 0xFFFF2449, "SPEED_BYTE": 0xFFFF11EA,
+                "RPM_BYTE": 0xFFFF11EB, "THROTTLE_BYTE": 0xFFFF1075,
+                "CAP_BYTE": 0xFFFF1E46, "OUTPUT": 0xFFFF1026,
+                "LIMIT_TABLE": 0x00012C9E, "ALTERNATE_TABLE": 0x0000974E,
+                "WRAPPER_ENTRY": 0x00026388, "BODY_ENTRY": 0x00026A84,
+            },
             "jk08a-bfs-base": {
                 "REGION_ENTRY": 0x0003B8DA, "PRIMARY_ENTRY": 0x0003B7C6,
                 "PRIMARY_BASE": 0xFFFF1DEC, "AGGREGATE": 0xFFFF1E38,
@@ -965,6 +975,24 @@ mov #0x5,r1
         with self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "overlaps a pool"):
             STOCK_VERIFIER.build_fixture(
                 replace(region, pools=(*region.pools, (region.end, 4))), image)
+
+    def test_published_bfs_limiting_counts_match_executed_and_statically_bound_spans(self):
+        readme = (ROOT / "tools/sh-elf-run/README.md").read_text(encoding="utf-8")
+        section = readme.split("The BFS limiting fixture", 1)[1].split("The Q7 load fixture", 1)[0]
+        region = next(item for item in STOCK_VERIFIER.REGIONS if item.key == "jk08a-bfs-limit")
+        count = re.search(r"reconstructs (\d+) instructions", section)
+        self.assertIsNotNone(count)
+        self.assertEqual(int(count.group(1)), sum((end-start)//2 for start,end in region.code_spans))
+        bound = re.search(r"GNU assembly\s+binds (\d+) bytes", section)
+        self.assertIsNotNone(bound)
+        self.assertEqual(int(bound.group(1)), sum(end-start for start,end in region.code_spans)
+                         + sum(size for _,size in region.pools))
+        static = (ROOT / "tools/kb/tests/test_airflow_bfs_limit.py").read_text(encoding="utf-8")
+        spans = re.findall(r"\(0x([0-9a-f]+), 0x([0-9a-f]+), '[0-9a-f]{64}'\)", static)
+        bound_static = re.search(r"static test binds (\d+) bytes", section)
+        self.assertIsNotNone(bound_static)
+        self.assertEqual(int(bound_static.group(1)),
+                         sum(int(end,16)-int(start,16) for start,end in spans))
 
     def test_fuel_cut_regions_address_the_symbols_through_their_pools(self):
         # The state machine points GBR at its first pool word and stores the

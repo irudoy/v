@@ -4,6 +4,8 @@ note = ["The pre-snapshot engine-speed byte uses RPM/25 counts."]
 layout = "7mfk"
 address = "ffff11eb"
 name = "liberal-falcon"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"

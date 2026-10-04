@@ -64,6 +64,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1dec"
 name = "wise-squirrel"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "unbound-constant"

@@ -710,3 +710,55 @@ bfs_base_return:
     .balign 4
 bfs_base_return_pointer:
     .long bfs_base_return
+
+! Supply the already selected word mode, correction cache, GBR, and MACL.
+! The boundary after BFS publication restores PR from SP+0 outside stock code.
+    .global _stock_invoke_bfs_limit
+    .type _stock_invoke_bfs_limit,@function
+_stock_invoke_bfs_limit:
+    sts.l pr,@-r15
+    stc.l gbr,@-r15
+    sts.l macl,@-r15
+    mov.l r8,@-r15
+    mov.l r9,@-r15
+    mov.l r10,@-r15
+    mov.l r11,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    mov r6,r8
+    mov r4,r2
+    mov.l @(4,r5),r7
+    mov.l @(8,r5),r0
+    ldc r0,gbr
+    mov.l @(12,r5),r0
+    lds r0,macl
+    mov.l @r5,r5
+    add #-4,r15
+    mov.l bfs_limit_return_pointer,r0
+    mov.l r0,@r15
+    jsr @r2
+    nop
+bfs_limit_return:
+    sts macl,r1
+    mov.l r1,@r8
+    stc gbr,r1
+    mov.l r1,@(4,r8)
+    mov.l r9,@(8,r8)
+    add #4,r15
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r12
+    mov.l @r15+,r11
+    mov.l @r15+,r10
+    mov.l @r15+,r9
+    mov.l @r15+,r8
+    lds.l @r15+,macl
+    ldc.l @r15+,gbr
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _stock_invoke_bfs_limit,.-_stock_invoke_bfs_limit
+    .balign 4
+bfs_limit_return_pointer:
+    .long bfs_limit_return

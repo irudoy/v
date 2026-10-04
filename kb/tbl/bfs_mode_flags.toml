@@ -1,0 +1,60 @@
+summary = """
+Fixed-address JK08A BFS mode byte ROM8[0x8d92]=0x7a. Its bit 4 selects the \
+blended working word ffff1dec for corrected normal-mode publication; a clear \
+bit selects unblended ffff1dee. The pre-entry load and mask are statically \
+bound, while selected contexts independently execute both word-source \
+paths."""
+note = [
+    """
+The symbol and exact byte evidence apply to JK08A. JK00A shares layout 7mfk \
+but holds 0x7e at this address; its value and other bits are not inherited \
+from this record. The full producer, preceding blending and correction \
+writers, and physical mode meanings are outside the independent limiting \
+slice.""",
+]
+block = "airflow_load/block"
+access = "direct-scalar"
+storage = "uint8"
+unit = "bitfield"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008d92"
+level = "code"
+images = ["JK08A"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003bb3c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00008d92"
+value = "0x7a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The unchanged pre-entry code reads this fixed-address byte through the \
+recorded R13 pool and masks bit 4 before the selected limiting slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bb3c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""

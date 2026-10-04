@@ -162,6 +162,29 @@ value = "97/8=12.125"
 
 [[link]]
 type = "index"
+to = "absolute_throttle/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The diagnostic branch selects column 0 below 7, 1 below 15, 2 below 22, and \
+3 otherwise from the unsigned absolute-throttle byte. All boundaries execute \
+independently; the existing PID 0x11 declaration remains its physical \
+source."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bc44"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_bfs_limit.py"
+key = """
+test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
+
+[[link]]
+type = "index"
 to = "angelic-shark/ram"
 layouts = ["7mfk"]
 relies = "structure"

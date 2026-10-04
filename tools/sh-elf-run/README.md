@@ -238,6 +238,22 @@ The gate performs these checks:
    neighboring RAM, and ROM coefficients. The helper restores the external
    C frame after recording the stock slice's register and MACL changes.
    The fallback lookup and final BFS publication remain outside this proof.
+   The BFS limiting fixture reconstructs 163 instructions across the bit7
+   selector, both corrected working-word paths, implicit byte lookup, direct
+   diagnostic grid, and exact word publication. All 256 coordinate bytes
+   execute for the stock limit curve and explicit rising/descending patterns.
+   Cases retain directional floor increments, signed correction truncation,
+   the zero clamp, below/equal/above cap, natural last-cell signed return,
+   byte argument wrap, diagnostic row and throttle-column boundaries, and
+   zero above the grid's speed range. Explicit word-format body entry covers
+   the shared cell-width branch without claiming that the byte wrapper uses
+   word cells. The pre-entry ROM mode mask and correction cache association
+   are statically bound; the preceding producers do not execute here.
+   Six declared RAM pool words alone are aliased. Independent GNU assembly
+   binds 400 bytes; the decoded static test binds 509 bytes. The boundary at
+   `0x0003bc80` restores PR from SP+0 after the tested BFS word store. Cases
+   check MACL, GBR, the publication pointer, all source bytes, the normal cap
+   byte's preservation in diagnostic mode, tables, and neighboring RAM.
    The Q7 load fixture reconstructs the 32-instruction normalization slice
    and its unsigned divider. Entry R5 contains the preceding unsigned BFS
    word; a separate byte proof binds its stock load and preservation. Cases

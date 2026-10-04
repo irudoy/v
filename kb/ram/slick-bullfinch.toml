@@ -41,6 +41,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2449"
 name = "slick-bullfinch"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

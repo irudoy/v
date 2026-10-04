@@ -1,7 +1,11 @@
 summary = """
-Interpolated Base Fuel Schedule upper-limit curve. FUN 0003b75c indexes it \
-by RPM/25 byte ffff11eb, shifts the returned byte left by eight, and caps \
-the corrected schedule candidate before writing ffff1026."""
+Implicit 16-point unsigned byte BFS upper-limit curve on 7mfk. Wrapper \
+00026388 truncates the RPM/25 coordinate byte, interpolates 16-count cells \
+below 240, and returns cell 15 directly from 240 upward. Directional floor \
+increments distinguish descending interpolation from floor of a weighted \
+average. The producer makes the return unsigned, stores ffff1e46, and caps \
+the corrected nonnegative candidate at 256 times that byte before ffff1026 \
+publication."""
 note = [
     """
 Code proves the RPM lookup, upper-bound operation, high-byte representation, \
@@ -9,6 +13,14 @@ and path to the exact DID 0x1208 source word. The x/8 ms cell conversion \
 follows from the homologous diagnostic profile's full-word raw/2048 ms \
 formula and requires hardware validation. Result disposition: \
 inline_comparison.""",
+    """
+The normal limit applies with ffff2449.bit7 clear. The chain formula uses \
+the stock-set ROM8[0x8d92].bit4 blended source; a clear bit selects ffff1dee \
+with the same signed correction and zero clamp. All 256 coordinate bytes \
+execute for the stock curve and explicit rising/descending fixture patterns. \
+The shared body word-cell alternative executes only through explicit format \
+contexts, without a claim that this byte wrapper selects it. Engineering \
+conversion remains at its existing source-derived level.""",
 ]
 level = "code"
 role = "threshold"
