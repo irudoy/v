@@ -13,6 +13,11 @@ requires ffff418f.bit4, the scheduler latch of TCM field ffff3a2e == 3 from \
 CAN 0x174 byte 4; the 2026-09-22 road captures carry that value in 4-3 and \
 3-2 downshifts, so bit 1 is set during those gear changes. Other bits and \
 consumers belong to independent state.""",
+    """
+On 7mfk, FUN 00067188 reads this byte at ffff4252 and tests mask 0x08. Bit3 \
+set bypasses the shared MAF and battery coefficient guard without changing \
+ffff4970. Its physical mode identity and reachable scheduler states require \
+separate evidence.""",
 ]
 level = "code"
 unit = "bitfield"
@@ -102,6 +107,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff4252"
 name = "shrewd-manul"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

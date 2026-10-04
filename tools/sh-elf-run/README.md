@@ -129,6 +129,18 @@ The gate performs these checks:
    only the declared output-window pool word. Independent bank values, signed
    word boundaries, discarded low bits, maximum counts, read-only MMIO, and
    neighboring output bytes have literal expectations.
+   The MAF scaling fixture reconstructs the complete bank-selected publisher,
+   coefficient guard, and unsigned Q1.15 scaler at their stock addresses.
+   Cases execute both banks, bit3 guard bypass, inclusive coefficient bounds,
+   reset to the stock ROM word, the raw-full-scale increment after scaling,
+   unsigned product truncation, word saturation, and MACL preservation in the
+   scaler's return delay slot. Only five declared RAM pool words are aliased;
+   the bounds, reset word, call targets, and tested instructions stay stock.
+   The publisher's final signed cap comparison follows EXTU.W, so its taken
+   branch is unreachable from the function entry. Explicit direct entry supplies
+   a wide R5 and the producer's saved return frame to execute both outcomes
+   without changing tested instructions. These branch cases establish no
+   reachable ADC state or physical meaning for the coefficient bypass mode.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

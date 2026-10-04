@@ -1870,20 +1870,16 @@ from = "ffff1d62"
 to = "ffff101c"
 effect = "scales"
 sign = "positive"
-via = ["0003c408"]
-note = """
-ffff101c = min(65535, ffff1d62*ffff4970/32768), +1 at 0x3ff; stock \
-coefficient 0x8000 is unity; DID 0x1204 at 5 mV per count."""
+via = ["0003c408", "000671d8"]
+note = "ffff101c = min(65535, floor(uint16(ffff1d62)*uint16(ffff4970)/32768))"
 
 [[chain.step]]
 from = "ffff1d64"
 to = "ffff101e"
 effect = "scales"
 sign = "positive"
-via = ["0003c408"]
-note = """
-Bank-2 twin of ffff101c with the same guarded coefficient ffff4970; DID \
-0x1205."""
+via = ["0003c408", "000671d8"]
+note = "ffff101e = min(65535, floor(uint16(ffff1d64)*uint16(ffff4970)/32768))"
 
 [[chain.step]]
 from = "ffff101c"

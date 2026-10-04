@@ -97,6 +97,28 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-maf-scaling",
+        rom="JK08A",
+        source="stock_jk08a_maf_scaling.s",
+        harness="stock_maf_scaling_harness.c",
+        start=0x0003C408,
+        end=0x0003C45C,
+        pools=((0x000087F8, 2), (0x000092BE, 2), (0x0003C474, 2),
+               (0x0003C48C, 16), (0x000671C6, 18), (0x0006726A, 6)),
+        ram_literals=(0x0003C490, 0x0003C498, 0x000671C8, 0x000671CC, 0x0006726C),
+        cases=107,
+        boundary=False,
+        symbols=(("MAF_SAMPLE_B1", "enthusiastic-pillbug/ram"),
+                 ("MAF_SAMPLE_B2", "hairy-dalmatian/ram"),
+                 ("MAF_OUTPUT_B1", "maf_b1/ram"), ("MAF_OUTPUT_B2", "maf_b2/ram"),
+                 ("COEFFICIENT", "satisfied-oarfish/ram"),
+                 ("MODE_FLAGS", "shrewd-manul/ram")),
+        constants=(("GUARD_ENTRY", 0x00067188), ("SCALE_ENTRY", 0x000671D8),
+                   ("CAP_ENTRY", 0x0003C444), ("BOUNDS_ADDRESS", 0x000087F8),
+                   ("DEFAULT_ADDRESS", 0x000092BE)),
+        callees=((0x00067188, 0x000671C6), (0x000671D8, 0x00067202)),
+    ),
+    Region(
         key="jk08a-maf-adc",
         rom="JK08A",
         source="stock_jk08a_maf_adc.s",

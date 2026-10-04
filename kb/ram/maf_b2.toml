@@ -1,12 +1,16 @@
 summary = """
-Bank 2 MAF sensor diagnostic word. FUN 0003c408 scales ten-bit AN15 sample \
-ffff1d64 by coefficient ffff4970 with saturation and adds one at full-scale \
-raw 0x03ff; exact UDS DID 0x1205 returns the word in big-endian order."""
+Bank 2 MAF sensor diagnostic word. On 7mfk, FUN 0003c408 checks or bypasses \
+coefficient ffff4970 according to ffff4252.bit3, scales unsigned sample \
+ffff1d64 through 000671d8, and adds one after scaling when the original raw \
+word equals 0x03ff. UDS DID 0x1205 returns word ffff101e in big-endian \
+order."""
 note = [
     """
-The same guarded coefficient and transform as bank 1 apply. The diagnostic \
-display unit is V at 5 mV per count; JK08A.diagnostics.md derives that \
-scale.""",
+With ffff4252.bit3 clear, coefficient values outside inclusive \
+0x7900..0x8700 reset to 0x8000; bit3 set leaves any word unchanged. At \
+0x8000, samples 0..1022 are unchanged and 1023 produces 1024. The diagnostic \
+display scale is raw/200 V at 5 mV per count; the homologous display \
+conversion lacks synchronized live validation.""",
 ]
 level = "code"
 width = 16
@@ -158,6 +162,8 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff101e"
 former = ["happy-potoo/ram/7mfk-ffff101e"]
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -235,9 +241,43 @@ note = "Aligned diagnostic pointer table and direct references agree"
 [[link]]
 type = "input"
 to = "hairy-dalmatian/ram"
+via = ["outstanding-penguin/fn", "optimistic-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Unsigned raw word ffff1d64 is scaled by unsigned coefficient ffff4970, \
+shifted logically right by 15, and capped at 65535 before the publisher \
+tests the original raw word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c420"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_scaling.py"
+key = "test_maf_scaling_guard_and_order_match_stock"
+
+[[link]]
+type = "input"
+to = "satisfied-oarfish/ram"
+via = ["outstanding-penguin/fn", "optimistic-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The post-guard unsigned coefficient word multiplies the unsigned raw sample. \
+Neither the mode byte nor coefficient is sign extended into the product."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000671e0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_scaling.py"
+key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
 type = "reader"
@@ -263,6 +303,28 @@ to = "married-moth/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "hairy-dalmatian/ram"
+via = ["outstanding-penguin/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Original raw word ffff1d64 == 0x03ff selects ffff101e = \
+floor(1023*uint16(ffff4970)/32768) + 1 after the scaler returns. Other raw \
+words select the saturated scaler result without increment. For the ten-bit \
+ADC domain, even coefficient 0xffff produces at most 2046 after increment."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003c432"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_scaling.py"
+key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
 type = "writer"

@@ -1,13 +1,15 @@
 summary = """
-Shared Q1.15 coefficient used by FUN 000671d8 when converting both ten-bit \
-MAF ADC samples to DID 0x1204/0x1205 words and the shifted battery sample to \
-DID 0x1103 byte ffff1188. FUN 00067188 accepts values 0x7900..0x8700 and \
-restores ROM16[0x92be]=0x8000 outside that range."""
+Shared unsigned Q1.15 coefficient at ffff4970 on 7mfk. FUN 000671d8 scales \
+both MAF ADC words and the shifted battery sample. With ffff4252.bit3 clear, \
+FUN 00067188 preserves the inclusive range 0x7900..0x8700 and replaces other \
+values with ROM16[0x92be]=0x8000; bit3 set preserves any coefficient word."""
 note = [
     """
-At stock 0x8000, conversion is identity for samples 0..1022; FUN 0003c408 \
-increments the full-scale sample 1023 to 1024. The lifecycle of non-stock \
-in-range values remains unresolved.""",
+At coefficient 0x8000, the scaler is an identity. MAF publisher 0003c408 \
+adds one after scaling only when its original raw word equals 0x03ff; \
+battery publisher 00039a9e has a separate byte-width output contract. The \
+physical meaning and scheduler reachability of ffff4252.bit3, and the \
+lifecycle of non-stock coefficient values, remain unresolved.""",
 ]
 level = "code"
 unit = "Q1.15 coefficient"
@@ -55,6 +57,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff4970"
 name = "satisfied-oarfish"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -117,6 +121,30 @@ to = "outstanding-penguin/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shrewd-manul/ram"
+slot = "bit3"
+via = ["horned-frog/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit3 set bypasses both range comparisons and preserves ffff4970, returning \
+the unsigned mode byte. Bit3 clear selects the inclusive-range check: \
+0x7900..0x8700 is preserved with return 0x55; other words reset to \
+ROM16[0x92be]=0x8000 with return 0xaa. The MAF publisher invokes this guard \
+before loading either selected raw sample."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00067190"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_scaling.py"
+key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
 type = "writer"

@@ -116,3 +116,25 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "satisfied-oarfish/ram"
+via = ["horned-frog/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ffff4252.bit3 clear, unsigned coefficient >= ROM8[0x87f9]<<8 (0x7900) \
+and <= ROM8[0x87f8]<<8 (0x8700) selects preservation and return 0x55. Below \
+or above those inclusive bounds selects a word reset from ROM16[0x92be] \
+(0x8000) and return 0xaa."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000671a4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_scaling.py"
+key = "test_maf_scaling_guard_and_order_match_stock"

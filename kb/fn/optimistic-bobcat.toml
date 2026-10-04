@@ -1,12 +1,15 @@
 summary = """
-Unsigned Q1.15 scaler used for both MAF sensor channels and for the \
-battery-voltage byte. It calculates min(65535, \
-floor(uint16(input)*uint16[ffff4970]/32768)) and writes the uint16 result \
-through its output pointer."""
+Unsigned Q1.15 scaler on 7mfk for both MAF sensor channels and the \
+battery-voltage publisher. It stores min(65535, \
+floor(uint16(input)*uint16(ffff4970)/32768)) through its word output \
+pointer. The unsigned-word product fits in 32 bits, and the scaler preserves \
+MACL through its stock return delay slot."""
 note = [
     """
-Stock ffff4970=0x8000 makes the transform an identity before the separate \
-full-scale correction in 0003c408.""",
+Coefficient 0x8000 makes the scaler an identity. MAF publisher 0003c408 \
+applies its raw-full-scale increment after the call; battery publisher \
+00039a9e applies a separate byte cap. The scaler does not check the \
+coefficient range or mode bit.""",
 ]
 level = "code"
 role = "service"

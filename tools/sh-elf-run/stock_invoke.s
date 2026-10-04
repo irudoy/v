@@ -156,3 +156,102 @@ _stock_invoke_adc:
     rts
     nop
     .size _stock_invoke_adc,.-_stock_invoke_adc
+
+! stock_invoke_maf(entry, bank, macl, state): supply a bank byte or call the
+! coefficient guard directly. Record MACL, R13, and R14 after the stock RTS.
+    .global _stock_invoke_maf
+    .type _stock_invoke_maf,@function
+_stock_invoke_maf:
+    mov.l r8,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    mov r7,r8
+    mov r4,r2
+    lds r6,macl
+    mov.l maf_saved_r13,r13
+    mov.l maf_saved_r14,r14
+    jsr @r2
+    mov r5,r4
+    bra maf_record_return
+    nop
+    .size _stock_invoke_maf,.-_stock_invoke_maf
+
+! stock_invoke_maf_scale(entry, raw, destination, macl, state): call the
+! scaler with a full register input and a guarded output word.
+    .global _stock_invoke_maf_scale
+    .type _stock_invoke_maf_scale,@function
+_stock_invoke_maf_scale:
+    mov.l r8,@-r15
+    mov.l @(4,r15),r8
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    mov r4,r2
+    mov r5,r4
+    mov r6,r5
+    lds r7,macl
+    mov.l maf_saved_r13,r13
+    mov.l maf_saved_r14,r14
+    jsr @r2
+    nop
+    bra maf_record_return
+    nop
+    .size _stock_invoke_maf_scale,.-_stock_invoke_maf_scale
+
+! The producer's cap branch follows EXTU.W, which makes its taken outcome
+! unreachable from the function entry. Direct entry at the stock CMP/GT
+! supplies a wide R5 and the producer's saved PR/R14/R13 frame. The frame and
+! continuation lie outside the tested code, and its natural epilogue returns.
+    .global _stock_invoke_maf_cap
+    .type _stock_invoke_maf_cap,@function
+_stock_invoke_maf_cap:
+    mov.l r8,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    mov r7,r8
+    mov r4,r2
+    mov.l maf_cap_macl,r0
+    lds r0,macl
+    add #-16,r15
+    mov #0,r0
+    mov.l r0,@r15
+    mov.l maf_cap_return_pointer,r0
+    mov.l r0,@(4,r15)
+    mov.l maf_saved_r14,r0
+    mov.l r0,@(8,r15)
+    mov.l maf_saved_r13,r0
+    mov.l r0,@(12,r15)
+    extu.b r6,r13
+    shll r13
+    mov #-1,r6
+    extu.w r6,r6
+    jmp @r2
+    nop
+maf_cap_return:
+maf_record_return:
+    sts macl,r2
+    mov.l r2,@r8
+    mov.l r13,@(4,r8)
+    mov.l r14,@(8,r8)
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_maf_cap,.-_stock_invoke_maf_cap
+    .balign 4
+maf_saved_r13:
+    .long 0x13579bdf
+maf_saved_r14:
+    .long 0x2468ace0
+maf_cap_macl:
+    .long 0x89abcdef
+maf_cap_return_pointer:
+    .long maf_cap_return

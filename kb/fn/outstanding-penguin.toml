@@ -1,15 +1,18 @@
 summary = """
-Bank-indexed MAF diagnostic-word publisher. It reads ten-bit AN4/AN15 \
-samples ffff1d62/ffff1d64, invokes 000671d8 to apply shared Q1.15 \
-coefficient ffff4970 with uint16 saturation, adds one when the raw sample is \
-full-scale 0x03ff, and writes ffff101c/ffff101e."""
+Bank-indexed MAF diagnostic-word publisher on 7mfk. It calls coefficient \
+guard 00067188, selects AN4/AN15 word ffff1d62/ffff1d64 through the low byte \
+of its bank argument, and calls unsigned Q1.15 scaler 000671d8. Raw 0x03ff \
+selects a one-count increment after scaling; the selected word is stored at \
+ffff101c/ffff101e."""
 note = [
     """
-FUN 0003c3ac is the complete caller and invokes indices 0 and 1. A \
-whole-program p-code scan found no other writer candidates for \
-ffff101c/ffff101e. The full-scale increment makes the published span 0..1024 \
-counts rather than 0..1023, so the saturated reading is one count above the \
-last converted value.""",
+FUN 0003c3ac invokes bank indices 0 and 1. At coefficient 0x8000, raw \
+samples 0..1022 retain their value and raw 1023 produces 1024. The increment \
+is stored as a word before the final unsigned extension. The outer signed \
+comparison against 65535 has an unreachable taken branch from the function \
+entry because R5 is already extended from a word; the GNU fixture tests that \
+branch only through explicit direct entry with a prepared stock return \
+frame.""",
 ]
 level = "code"
 role = "service"
