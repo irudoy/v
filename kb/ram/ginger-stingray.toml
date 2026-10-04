@@ -1,15 +1,22 @@
 summary = """
-Bank 1 MAF-table input written by FUN 0003ae8a from diagnostic word \
-ffff101c: the first call copies the word, and later calls write \
-uint16(ffff101c-c) with c = floor(floor(K*335/65536)/min(65535, previous \
-ffff1e48+80)) and K = uint32 ffff3998. FUN 0003a904 uses its low 12 bits to \
-interpolate curve 0x14274."""
+Bank 1 MAF-table input word on 7mfk. With ffff3976.bit0 clear, FUN 0003ae8a \
+copies diagnostic word ffff101c to ffff1e48 and sets mask 1. With the bit \
+set it subtracts the correction computed from the previous unsigned output \
+word and bank-specific uint32 input at ffff3998, then stores the low 16 bits \
+without a zero clamp. FUN 0003a904 indexes the transfer curve with the low \
+12 bits of this word."""
 note = [
     """
 Init 0002d120 seeds K = 0x00180000, so c = floor(8040/(previous+80)) until \
 0003aa12 rewrites K: 32 counts, 0.16 V, at a steady 1 V input. The transfer \
 curve therefore follows this word, not diagnostic word ffff101c. The \
 physical meaning of the correction remains unresolved.""",
+    """
+The numerator is floor(K*335/65536), formed from the high and low halves of \
+the unsigned 32-bit K word. The denominator is min(65535,uint16(previous \
+output)+80). At raw 200 and K=0x00180000, calls produce 200, 172, 169, 168, \
+168 from a clear bank flag. This software sequence does not establish a \
+physical correction state or its reachability.""",
 ]
 level = "code"
 unit = "V*200"
@@ -65,6 +72,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e48"
 name = "ginger-stingray"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -134,18 +143,67 @@ value = {named = ["00009586", "0000958c", "000095b6", "00014274", "0003a904", "0
 key = "reference"
 
 [[link]]
-type = "input"
-to = "annoying-foxhound/ram"
+type = "copy"
+to = "maf_b1/ram"
+via = ["enchanted-cricket/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+With ffff3976.bit0 clear, the first call copies unsigned word ffff101c into \
+ffff1e48, ORs mask 1 into the flag byte, and preserves the other bank and \
+all other flag bits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003aec0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_compensation.py"
+key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
+
+[[link]]
+type = "input"
+to = "annoying-foxhound/ram"
+via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The selected unsigned 32-bit K word contributes floor(K*335/65536) through \
+two word-half products and their sum. Division by the saturated prior-word \
+denominator gives c; subtraction preserves only the low output word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003af04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_compensation.py"
+key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 
 [[link]]
 type = "input"
 to = "maf_b1/ram"
+via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Unsigned diagnostic word ffff101c is saved before the mode branch. An \
+initialized bank stores uint16(uint16(ffff101c)-c); a first call copies the \
+same word without evaluating c."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003aeac"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_compensation.py"
+key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 
 [[link]]
 type = "reader"
@@ -153,6 +211,28 @@ to = "dual_bank_maf_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shapeless-bandicoot/ram"
+slot = "bit0"
+via = ["enchanted-cricket/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit0 clear selects the first-call word copy and sets initialization mask 1; \
+bit0 set selects compensation from the previous output word. The mask is \
+bank index+1 for the supported indices 0 and 1, not bit index+1."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003aeb2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_compensation.py"
+key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 
 [[link]]
 type = "writer"

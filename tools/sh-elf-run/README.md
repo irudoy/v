@@ -149,6 +149,19 @@ The gate performs these checks:
    full-scale increment. Six declared RAM literals alone are aliased. The
    stock publisher restores GBR and PR, and the harness also checks MACL,
    mode and source preservation, and every neighboring output byte.
+   The MAF compensation fixture reconstructs the complete bank-indexed
+   preprocessor and unsigned divider. First-call cases bind masks 1 and 2 to
+   bit0 and bit1 and preserve the sibling bank and other flag bits. Initialized
+   cases check the unsigned 32-bit numerator's split products, the saturated
+   previous-word denominator, quotient truncation, and modulo-65536 output.
+   Five successive calls per bank retain the literal sequence 200, 172, 169,
+   168, 168 for K=0x00180000. The stock bias 80 prevents a zero denominator
+   from the function entry; explicit entry at its zero test supplies the full
+   saved frame and checks the raw+1 word alternative. Direct divider cases
+   cover the short quotient, wide divisors, and zero-divisor fault record.
+   Four declared RAM literals alone are aliased. Every tested instruction,
+   natural return, calibration word, mode byte, and read-only input remains
+   stock; MACL, GBR, and saved R12/R13/R14 are checked after execution.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

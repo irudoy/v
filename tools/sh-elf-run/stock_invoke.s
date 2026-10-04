@@ -298,3 +298,98 @@ battery_saved_r14:
     .long 0x2468ace0
 battery_seed_gbr:
     .long 0x13572468
+
+! stock_invoke_compensation(entry, bank, macl, state): record MACL, R12,
+! R13, R14, and GBR after the complete producer's natural stock return.
+    .global _stock_invoke_compensation
+    .type _stock_invoke_compensation,@function
+_stock_invoke_compensation:
+    mov.l r8,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r2
+    lds r6,macl
+    mov.l compensation_saved_r12,r12
+    mov.l compensation_saved_r13,r13
+    mov.l compensation_saved_r14,r14
+    mov.l compensation_saved_gbr,r0
+    ldc r0,gbr
+    jsr @r2
+    mov r5,r4
+    bra compensation_record
+    nop
+    .size _stock_invoke_compensation,.-_stock_invoke_compensation
+
+! Stock bias 80 makes a zero denominator unreachable for a previous word.
+! Direct entry at TST R7,R7 supplies zero and the producer's full saved frame.
+! The natural epilogue restores GBR, MACL, PR, R14, R13, and R12; its tested
+! instruction bytes are unchanged. The fifth argument is the state pointer.
+    .global _stock_invoke_compensation_zero
+    .type _stock_invoke_compensation_zero,@function
+_stock_invoke_compensation_zero:
+    mov.l r8,@-r15
+    mov.l @(4,r15),r8
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r4,r2
+    mov r7,r14
+    extu.b r5,r13
+    shll r13
+    add #-28,r15
+    mov.w r6,@r15
+    mov.l compensation_saved_gbr,r0
+    mov.l r0,@(4,r15)
+    mov.l compensation_saved_macl,r0
+    mov.l r0,@(8,r15)
+    mov.l compensation_zero_return_pointer,r0
+    mov.l r0,@(12,r15)
+    mov.l compensation_saved_r14,r0
+    mov.l r0,@(16,r15)
+    mov.l compensation_saved_r13,r0
+    mov.l r0,@(20,r15)
+    mov.l compensation_saved_r12,r0
+    mov.l r0,@(24,r15)
+    mov #0,r7
+    jmp @r2
+    nop
+compensation_zero_return:
+compensation_record:
+    sts macl,r2
+    mov.l r2,@r8
+    mov.l r12,@(4,r8)
+    mov.l r13,@(8,r8)
+    mov.l r14,@(12,r8)
+    stc gbr,r2
+    mov.l r2,@(16,r8)
+    ldc.l @r15+,gbr
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r12
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_compensation_zero,.-_stock_invoke_compensation_zero
+    .balign 4
+compensation_saved_r12:
+    .long 0x10203040
+compensation_saved_r13:
+    .long 0x13579bdf
+compensation_saved_r14:
+    .long 0x2468ace0
+compensation_saved_gbr:
+    .long 0x13572468
+compensation_saved_macl:
+    .long 0x89abcdef
+compensation_zero_return_pointer:
+    .long compensation_zero_return

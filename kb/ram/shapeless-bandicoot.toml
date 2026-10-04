@@ -2,6 +2,9 @@
 layout = "7mfk"
 address = "ffff3976"
 name = "shapeless-bandicoot"
+width = 8
+signed = false
+unit = "bitfield"
 
 [[symbol.evidence]]
 kind = "l0"

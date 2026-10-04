@@ -49,18 +49,22 @@ from = "maf_b1/ram"
 to = "ginger-stingray/ram"
 effect = "subtracts"
 sign = "positive"
-via = ["enchanted-cricket/fn"]
+via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
 note = """
-ffff1e48 = uint16(ffff101c - c), c = floor(floor(K*335/65536)/min(65535, \
-prev+80)), K = ffff3998; the first call copies the word."""
+prev = uint16(ffff1e48); K = uint32(ffff3998); c = \
+floor(floor(K*335/65536)/min(65535,prev+80)); ffff1e48 = \
+uint16(uint16(ffff101c)-c)"""
 
 [[step]]
 from = "maf_b2/ram"
 to = "careful-penguin/ram"
 effect = "subtracts"
 sign = "positive"
-via = ["enchanted-cricket/fn"]
-note = "Bank-2 twin of ffff1e48 with K = ffff399c."
+via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
+note = """
+prev = uint16(ffff1e4a); K = uint32(ffff399c); c = \
+floor(floor(K*335/65536)/min(65535,prev+80)); ffff1e4a = \
+uint16(uint16(ffff101e)-c)"""
 
 [[step]]
 from = "ginger-stingray/ram"

@@ -97,6 +97,28 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-maf-compensation",
+        rom="JK08A",
+        source="stock_jk08a_maf_compensation.s",
+        harness="stock_maf_compensation_harness.c",
+        start=0x0003AE8A,
+        end=0x0003AF42,
+        pools=((0x00009586, 2), (0x0000958C, 2), (0x00021DC8, 8), (0x0003B0F8, 20)),
+        ram_literals=(0x00021DC8, 0x0003B0F8, 0x0003B0FC, 0x0003B100),
+        cases=90,
+        boundary=False,
+        symbols=(("MAF_INPUT_B1", "maf_b1/ram"), ("MAF_INPUT_B2", "maf_b2/ram"),
+                 ("MAF_OUTPUT_B1", "ginger-stingray/ram"),
+                 ("MAF_OUTPUT_B2", "careful-penguin/ram"),
+                 ("CORRECTION_B1", "annoying-foxhound/ram"),
+                 ("CORRECTION_B2", "unselfish-okapi/ram"),
+                 ("INIT_FLAGS", "shapeless-bandicoot/ram"),
+                 ("DIVIDER_ENTRY", "unsigned_divide/fn")),
+        constants=(("ZERO_DEN_ENTRY", 0x0003AEF2), ("MULTIPLIER_ADDRESS", 0x00009586),
+                   ("BIAS_ADDRESS", 0x0000958C), ("FAULT_ADDRESS", 0xFFFF9818)),
+        callees=((0x00021CE0, 0x00021DC6),),
+    ),
+    Region(
         key="jk08a-battery-scaling",
         rom="JK08A",
         source="stock_jk08a_maf_scaling.s",

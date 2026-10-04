@@ -2,6 +2,8 @@
 layout = "7mfk"
 address = "ffff3998"
 name = "annoying-foxhound"
+width = 32
+signed = false
 
 [[symbol.evidence]]
 kind = "l0"
