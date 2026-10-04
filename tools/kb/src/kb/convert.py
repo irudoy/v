@@ -172,9 +172,10 @@ ROW_TESTS = {
 
 def _location(item):
     """An evidence item as the files state it: a symbol `to` as its location,
-    without the registry path and the legacy token."""
+    with test paths but without registry origin metadata or legacy tokens."""
     return {key: value.location if isinstance(value, SymbolKey) else value
-            for key, value in item.items() if key not in ("path", "legacy")}
+            for key, value in item.items()
+            if key != "legacy" and (key != "path" or item.get("kind") == "test")}
 
 
 def _notes(value):
@@ -389,6 +390,8 @@ class Conversion:
                 continue
             document = self._document(link.owner)
             entry = {"type": link.type, "to": link.to.key, **link.props}
+            if 'via' in link.props:
+                entry['via'] = [self._ledger_reference(ref) for ref in link.props['via']]
             if link.slot is not None:
                 entry["slot"] = link.slot
             if link.offset is not None:
@@ -545,6 +548,37 @@ class Conversion:
             converted.append(item)
             self.changed.append((key.location, "identity evidence", repr(item)))
 
+    def _ledger_reference(self, reference):
+        symbol = self.before.symbols.get(reference)
+        if symbol is None or symbol.meaning is None:
+            raise KbError(f'ledger reference {reference!r} names no meaning', code=3)
+        meaning = symbol.meaning
+        return (meaning.key if meaning.home == symbol.layout else
+                f'{meaning.key}/{symbol.layout}')
+
+    def _ledger_site(self, symbol, registry, token, supports):
+        """Retain a selected site's owned context while its terminal still holds."""
+        from kb import ledger_projection as projection
+
+        document = self._document(symbol.meaning)
+        marker = next((item for item in document.get('ledger', ())
+                       if item['registry'] == registry), None)
+        if marker is None:
+            return None
+        entry = self._entry(document, symbol)
+        selected = projection._indices(symbol, marker.get(supports, []),
+                                       entry.get('evidence', []), 'held ledger site')
+        at = f'{symbol.layout}:{token.value}'
+        found = [item for item in selected
+                 if item.get('kind') in ('l0', 'l0-context', 'unverified-site')
+                 and item.get('at') == at
+                 and item.get('supports', 'identity') == supports]
+        if len(found) > 1:
+            raise KbError(f'{symbol.key.key}: ambiguous held ledger site {at}', code=3)
+        if found and projection.terminal(self.before, symbol, found[0]) == token.text:
+            return dict(found[0])
+        return None
+
     def _ledger_item(self, symbol, registry, row, token, supports=None):
         """Type one terminal without inventing a byte binding or a scale."""
         manual = repo.config(self.root).get("tokens", {}).get("manual", ())
@@ -564,6 +598,9 @@ class Conversion:
         if token.role == "trace":
             item["to"] = f"{self.before.meaning_of(to).key}/{to.layout}"
         if token.role == "site":
+            held = self._ledger_site(symbol, registry, token, supports) if supports else None
+            if held is not None:
+                return held, raw
             named, span = sites.row_footprint(registry, row)
             layout = symbol.layout
             classification = sites.classify(
@@ -1688,6 +1725,10 @@ def plan(name, root=repo.ROOT):
                                         for kind, _, _ in store.files(root)):
         order = tuple(item for item in order if item is not adapter)
     before = compile.build(root, order=order)
+    if adapter is ledgers and before.stash.get('ledger_rows'):
+        # Owned selectors can be more precise than their CSV terminal. The
+        # projection supplies conversion inputs but cannot add native claims.
+        before = compile.build(root, order=tuple(item for item in order if item is not adapter))
     conversion = Conversion(adapter, before, root)
     texts = conversion.run()
     result = compile.build(root, {**before.overlay, **texts})
