@@ -1,7 +1,7 @@
 """Layout-specific architecture views read from the current kb graph.
 
-An address belongs to an actual symbol of the selected layout. A missing
-binding remains unavailable; no address from another layout supplies it.
+An address belongs to an actual symbol of the selected layout and image.
+A missing binding remains unavailable; no other image supplies it.
 The address-map layers retain their stock-image and source-file gates.
 """
 
@@ -60,30 +60,39 @@ class Knowledge:
         self.accesses = rows.get('accesses', [])
         self.models = {}
 
-    def binding(self, meaning, layout):
+    def binding(self, meaning, layout, image=None):
         facts = self.meanings[meaning]
-        symbol = self.symbols[meaning].get(layout)
+        candidate = self.symbols[meaning].get(layout)
+        images = candidate.get('images', []) if candidate else []
+        excluded = bool(images) and image is not None and image not in images
+        symbol = None if excluded else candidate
         return {
             'meaning': meaning, 'name': facts['name'], 'home': facts.get('home'),
             'former': sorted(set(facts.get('former', []))
                              | set(symbol.get('former', []) if symbol else [])),
             'layout': layout, 'symbol': symbol['key'] if symbol else None,
+            'image': image, 'images': images,
+            'availability': 'image-excluded' if excluded else 'bound' if symbol else 'missing',
             'reference': (f'{symbol["name"]}/{facts["kind"]}/'
                           f'{layout}-{symbol["address"]:08x}') if symbol else None,
             'symbols': [{'layout': key, 'address': f'{item["address"]:08x}',
                          'name': item.get('name'),
                          'ref': f'{item["name"]}/{facts["kind"]}/{key}-{item["address"]:08x}',
-                         'level': item.get('level', facts.get('level'))}
+                         'level': item.get('level', facts.get('level')),
+                         'images': item.get('images', [])}
                         for key, item in sorted(self.symbols[meaning].items())],
             'statuses': sorted(self.statuses[meaning], key=lambda item: item['layout']),
             'analogs': [{**item, 'name': self.meanings[item['to']]['name']}
                         for item in self.analogs[meaning]],
         }
 
-    def model(self, layout):
-        if layout not in self.models:
-            self.models[layout] = LayoutArchitecture(self, layout)
-        return self.models[layout]
+    def model(self, layout, image=None):
+        if image is not None and self.images.get(image) != layout:
+            raise ValueError(f'{image} belongs to {self.images.get(image)}, not to {layout}')
+        key = (layout, image)
+        if key not in self.models:
+            self.models[key] = LayoutArchitecture(self, layout, image)
+        return self.models[key]
 
 
 def snapshot(root=repo.ROOT):
@@ -155,10 +164,12 @@ LINK_RULES = {
 class LayoutArchitecture(architecture_model.Architecture):
     """The existing view schema with nodes from one layout's real symbols."""
 
-    def __init__(self, knowledge, layout):
+    def __init__(self, knowledge, layout, image=None):
         self.knowledge, self.rom = knowledge, layout
+        self.image, self.view_key = image, image or layout
         self.source = repo.ROOT / 'tools/kb'
-        self.summary = f'Architecture from the bound symbols of layout {layout}.'
+        self.summary = (f'Architecture from symbols applicable to {image} in layout {layout}.'
+                        if image else f'Architecture from the bound symbols of layout {layout}.')
         self.ledgers = SimpleNamespace(paths={})
         self.errors, self.nodes, self.edges, self._spec_cache = [], {}, {}, {}
         self.by_meaning, self.by_symbol = {}, {}
@@ -166,6 +177,9 @@ class LayoutArchitecture(architecture_model.Architecture):
             if layout not in symbols:
                 continue
             symbol, facts = symbols[layout], knowledge.meanings[meaning]
+            binding = knowledge.binding(meaning, layout, image)
+            if binding['symbol'] is None:
+                continue
             props = {**facts, **symbol}
             kind, address = symbol['kind'], f'{symbol["address"]:08x}'
             node_id = f'{PREFIXES.get(kind, kind)}:{address}'
@@ -177,7 +191,7 @@ class LayoutArchitecture(architecture_model.Architecture):
                 text(props.get('summary')), text(props.get('note')),
                 props.get('level', ''), props.get('role', ''), props.get('unit', ''),
                 ', '.join(facts.get('src', [])),
-                meta={'binding': knowledge.binding(meaning, layout), 'kbKind': kind,
+                meta={'binding': binding, 'kbKind': kind,
                       'summaryLayout': layout if 'summary' in symbol else facts.get('home'),
                       'noteLayout': layout if 'note' in symbol else facts.get('home'),
                       'scale': props.get('scale'), 'scaleConfidence': props.get('scale_level'),
@@ -306,7 +320,8 @@ class LayoutArchitecture(architecture_model.Architecture):
             availability.append({'id': identifier(item['key']), 'name': item.get('title', ''),
                                  'home': item.get('home', '7mfk'), 'bound': len(steps),
                                  'total': len(rows), 'missing': [
-                                     self.knowledge.binding(key, self.rom) for key in sorted(missing)]})
+                                     self.knowledge.binding(key, self.rom, self.image)
+                                     for key in sorted(missing)]})
             # An incomplete calculation is reported as unavailable, never as a
             # complete chain assembled from a subset of its steps.
             if missing or len(steps) != len(rows) or len(outputs) != 1:
@@ -319,7 +334,8 @@ class LayoutArchitecture(architecture_model.Architecture):
 
     def export(self):
         found = super().export()
-        found.update({'layout': self.rom, 'fingerprint': self.knowledge.fingerprint,
+        found.update({'id': self.view_key, 'layout': self.rom, 'image': self.image,
+                      'fingerprint': self.knowledge.fingerprint,
                       'source': 'kb graph', 'chainAvailability': self.chain_availability,
                       'edgeEvidence': [{'from': edge.source, 'to': edge.target,
                                         'kind': edge.kind, 'origins': sorted(edge.origins)}

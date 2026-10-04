@@ -757,7 +757,10 @@
       ...(item.binding ? [
         {label: "Meaning", value: item.binding.meaning},
         {label: "Symbol", value: item.binding.reference},
-        ...item.binding.symbols.map((symbol) => ({label: symbol.layout, value: symbol.ref})),
+        {label: "Applicable images", value: item.binding.images.length
+          ? item.binding.images.join(", ") : "all images of the layout"},
+        ...item.binding.symbols.map((symbol) => ({label: symbol.layout,
+          value: `${symbol.ref}${symbol.images.length ? ` (${symbol.images.join(", ")})` : ""}`})),
         ...item.binding.statuses.map((status) => ({label: status.layout,
           value: `${status.state}${status.note ? `: ${status.note}` : ""}`})),
         ...item.binding.analogs.map((analog) => ({label: "Analog", value: `${analog.to}: ${analog.note}`})),

@@ -4,7 +4,7 @@ from copy import deepcopy
 
 import pytest
 
-from tools.romviz import graph_atlas
+from tools.romviz import graph_atlas, model
 
 
 def fixture_rows():
@@ -17,6 +17,7 @@ def fixture_rows():
         'fingerprint': 'fixture',
         'layouts': [{'key': '7mfk'}, {'key': 'jk00d'}],
         'images': [{'image': 'JK08A', 'layout': '7mfk'},
+                   {'image': 'JK00A', 'layout': '7mfk'},
                    {'image': 'JK00D', 'layout': 'jk00d'}],
         'meanings': [
             {'key': 'producer/fn', 'name': 'producer', 'kind': 'fn', 'home': '7mfk',
@@ -116,3 +117,65 @@ def test_l0_accesses_join_actual_symbols_and_distinguish_a_parameter_from_a_load
     assert 'L0 derived' in write.origins
     assert ('signal:ffff1002', 'function:00003000', 'data') in home.edges
     assert knowledge.model('jk00d').edges == {}
+
+
+def test_image_restriction_filters_nodes_relations_endpoints_and_complete_chains():
+    rows = fixture_rows()
+    rows['symbols'][0]['props']['images'] = ['JK08A']
+    rows['entities'].append({'key': 'sensor/endpoint', 'kind': 'endpoint', 'title': 'Sensor'})
+    rows['entity_refs'].extend([
+        {'from': 'sensor/endpoint', 'kind': 'BLOCK', 'to': 'engine_speed/block'},
+        {'from': 'sensor/endpoint', 'kind': 'FUNCTION', 'to': 'producer/fn'}])
+    rows['accesses'] = [{'source': '7mfk-00003000/fn', 'target': '7mfk-ffff1000/ram',
+                        'modes': ['load'], 'producer': 'l0'}]
+    knowledge = graph_atlas.Knowledge(rows)
+    included = knowledge.model('7mfk', 'JK08A')
+    excluded = knowledge.model('7mfk', 'JK00A')
+    assert len(included.chains) == len(included.endpoints) == 1
+    assert included.edges
+    assert not excluded.chains and not excluded.endpoints and not excluded.edges
+    assert set(excluded.by_meaning) == {'input/ram', 'output/ram'}
+    missing = excluded.chain_availability[0]['missing']
+    assert len(missing) == 1 and missing[0]['meaning'] == 'producer/fn'
+    assert missing[0]['symbol'] is None and missing[0]['reference'] is None
+    assert missing[0]['availability'] == 'image-excluded'
+    assert missing[0]['image'] == 'JK00A' and missing[0]['images'] == ['JK08A']
+    assert missing[0]['symbols'][0]['images'] == ['JK08A']
+    assert included is knowledge.model('7mfk', 'JK08A')
+    assert excluded is knowledge.model('7mfk', 'JK00A') and excluded is not included
+    assert included.export()['image'] == 'JK08A'
+    assert excluded.export()['image'] == 'JK00A'
+    foreign = knowledge.binding('output/ram', 'jk00d', 'JK00D')
+    assert foreign['availability'] == 'missing'
+    assert foreign['former'] == ['old_speed']
+    assert foreign['statuses'][0]['state'] == 'unresolved'
+    assert foreign['analogs'][0]['to'] == 'alternative/ram'
+
+
+@pytest.mark.parametrize('image', ['JK00D', 'unknown'])
+def test_image_model_refuses_wrong_or_unregistered_layout_membership(image):
+    knowledge = graph_atlas.Knowledge(fixture_rows())
+    with pytest.raises(ValueError, match='belongs to .*not to 7mfk'):
+        knowledge.model('7mfk', image)
+    assert not knowledge.models
+
+
+@pytest.mark.parametrize('images', [None, [], ['JK08A'], ['JK08A', 'JK00A']])
+def test_semantic_object_binding_respects_image_scope_and_preserves_geometry(images):
+    rows = fixture_rows()
+    if images is not None:
+        rows['symbols'][0]['props']['images'] = images
+    knowledge = graph_atlas.Knowledge(rows)
+    original = {'id': 'function:00003000', 'kind': 'reviewed-function',
+                'start': 0x3000, 'end': 0x3100, 'layer': 'functions', 'label': 'Producer'}
+    for image in ('JK08A', 'JK00A'):
+        item = deepcopy(original)
+        architecture = {'layout': '7mfk', 'image': image}
+        model._bind_objects([item], architecture, knowledge)
+        expected = not images or image in images
+        assert ('binding' in item) == expected
+        assert {key: value for key, value in item.items() if key != 'binding'} == original
+        if expected:
+            assert item['binding']['availability'] == 'bound'
+            assert item['binding']['image'] == image
+            assert item['binding']['reference'] == 'producer/fn/7mfk-00003000'

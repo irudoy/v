@@ -250,13 +250,13 @@ def test_the_output_carries_no_impact_of_its_own(tracked):
 
 
 def test_atlas_ships_the_gated_architecture(atlas, tracked):
-    assert set(atlas['architectures']) == set(ROM_BINDINGS.values())
-    home = atlas['architectures']['7mfk']
+    assert set(atlas['architectures']) == set(ROM_BINDINGS)
+    home = atlas['architectures']['JK08A']
     assert len(home['blocks']) == len(tracked.blocks)
     assert len(home['endpoints']) == len(tracked.endpoints)
     assert len(home['chains']) == len(tracked.chains)
     assert sum(len(chain['steps']) for chain in home['chains']) == 387
-    assert '7mfk=47 blocks, 17 chains' in build.summary(atlas)
+    assert 'JK08A=47 blocks, 17 chains' in build.summary(atlas)
     document = build.render(atlas)
     assert '"architectures"' in document
     assert "arch-canvas" in document
@@ -266,15 +266,34 @@ def test_every_rom_binds_the_architecture(atlas):
     bindings = {rom["id"]: rom["architecture"] for rom in atlas["roms"]}
     assert set(bindings) == set(ROM_BINDINGS)
     for rom, layout in ROM_BINDINGS.items():
-        assert bindings[rom] == {'source': layout, 'mode': 'layout', 'layout': layout}
-        view = atlas['architectures'][layout]
+        assert bindings[rom] == {'source': rom, 'mode': 'layout', 'layout': layout, 'image': rom}
+        view = atlas['architectures'][rom]
+        assert view['id'] == view['image'] == rom and view['layout'] == layout
         for node in view['nodes']:
             binding = node['meta']['binding']
             assert binding['layout'] == layout
+            assert binding['image'] == rom
+            assert not binding['images'] or rom in binding['images']
             assert binding['symbol'] == f'{layout}-{node["addr"]}/{node["meta"]["kbKind"]}'
         for chain in view['chainAvailability']:
             if chain['missing']:
                 assert chain['id'] not in {item['id'] for item in view['chains']}
+
+
+def test_same_layout_images_keep_exact_mode_byte_applicability(atlas):
+    for rom in ('JK08A', 'JK00A', 'JK03A', 'JK03B'):
+        view = atlas['architectures'][rom]
+        nodes = {node['meta']['binding']['meaning']: node for node in view['nodes']}
+        assert ('bfs_mode_flags/tbl' in nodes) == (rom == 'JK08A')
+        if rom == 'JK08A':
+            assert nodes['bfs_mode_flags/tbl']['meta']['binding']['images'] == ['JK08A']
+        assert 'bfs_upper_limit_raw/ram' in nodes
+        objects = next(item['objects'] for item in atlas['roms'] if item['id'] == rom)
+        for item in objects:
+            binding = item.get('binding')
+            if binding:
+                assert binding['availability'] == 'bound'
+                assert not binding['images'] or rom in binding['images']
 
 
 def test_manifest_architecture_table_is_validated():

@@ -540,7 +540,7 @@
       elements.banner.dataset.mode = binding.mode;
       const lead = html("strong", {text: `${MODE_LABELS[binding.mode]}: `});
       const text = `${raw.layout}: ${raw.nodes.length.toLocaleString()} bound symbols for ${state.rom.id}. `
-        + "Calculation chains require every binding on this layout.";
+        + "Calculation chains require every binding for this image.";
       elements.banner.append(lead, text);
 
       elements.crumbs.replaceChildren();
@@ -1915,10 +1915,15 @@
       if (!binding) return null;
       return section("Meaning bindings", metaList([
         ["Meaning", binding.meaning], ["Selected layout", binding.layout],
-        ["Symbol", binding.reference || binding.statuses.find((item) => item.layout === binding.layout)?.state || "unknown"],
+        ["Selected image", binding.image],
+        ["Applicable images", binding.images.length ? binding.images.join(", ")
+          : binding.availability === "missing" ? "unknown" : "all images of the layout"],
+        ["Symbol", binding.reference || (binding.availability === "image-excluded"
+          ? `not applicable to ${binding.image}`
+          : binding.statuses.find((item) => item.layout === binding.layout)?.state || "unknown")],
         ["Home layout", binding.home],
         ...binding.symbols.map((symbol) => [symbol.layout,
-          `${symbol.ref}${symbol.level ? ` [${symbol.level}]` : ""}`]),
+          `${symbol.ref}${symbol.level ? ` [${symbol.level}]` : ""}${symbol.images.length ? ` (${symbol.images.join(", ")})` : ""}`]),
         ...binding.statuses.map((status) => [status.layout,
           `${status.state}${status.stale ? " (stale search)" : ""}${status.note ? `: ${status.note}` : ""}`]),
       ]), binding.analogs.length ? html("ul", {className: "arch-reach-list"},

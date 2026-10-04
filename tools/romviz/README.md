@@ -54,7 +54,7 @@ chains that lead from the crank events and the sensors to each command.
 Stages, blocks, endpoints, chains, and meaning placements belong to `kb`.
 `tools/romviz/graph_atlas.py` reads one graph snapshot under the writer lock
 after its fingerprint check. Every architecture node binds an actual symbol
-of the selected layout. Its meaning carries the semantic or generated name,
+applicable to the selected image in its declared layout. Its meaning carries the semantic or generated name,
 cross-layout symbols, statuses, and analog hints. Analogs do not join meanings
 or inherit knowledge levels.
 Relations retain their origins: declared links, L0 calls, and L0 accesses.
@@ -87,10 +87,15 @@ relation records evidence rather than a signed effect, and the view labels it
 as such.
 
 Each manifest declares `[architecture]` with `layout`. The graph's image
-membership must agree with it. ROMs of one layout share its architecture
-snapshot while retaining their independent stock identities and address-map
-layers. A calculation chain is available only when its output and every
-source, destination, and intervening function have symbols on that layout.
+membership must agree with it. All ROM views use one graph snapshot, with
+separate architecture models for each image. A symbol's `images` list limits
+its applicability within a layout; an absent list admits every image of that
+layout. Excluded symbols and their incident relations do not enter the image's
+architecture or semantic object bindings. Address-map geometry remains tied
+to its declared sources. Binding details expose image restrictions and retain
+cross-layout symbols, statuses, and analogs. A calculation chain is available
+only when its output and every source, destination, and intervening function
+have symbols applicable to the selected image.
 The chain list reports incomplete binding counts and missing meanings with
 their statuses. The atlas requires the configured graph; an unavailable graph
 fails the build.

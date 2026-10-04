@@ -1391,8 +1391,9 @@ def _architecture_binding(manifest, cache):
     actual = knowledge.images.get(manifest['rom'])
     if layout not in knowledge.layouts or actual != layout:
         raise ModelError(f'{context}: {manifest["rom"]} belongs to {actual}, not to {layout}')
-    knowledge.model(layout)
-    return {'source': layout, 'mode': 'layout', 'layout': layout}
+    view = knowledge.model(layout, manifest['rom'])
+    return {'source': view.view_key, 'mode': 'layout', 'layout': layout,
+            'image': manifest['rom']}
 
 
 def _bind_objects(objects, architecture, knowledge):
@@ -1407,7 +1408,9 @@ def _bind_objects(objects, architecture, knowledge):
         key = f'{layout}-{item["start"]:08x}/{kind}'
         found = knowledge.symbol_keys.get(key)
         if found:
-            item['binding'] = knowledge.binding(found[0], layout)
+            binding = knowledge.binding(found[0], layout, architecture['image'])
+            if binding['symbol'] is not None:
+                item['binding'] = binding
 
 
 def build_rom_model(manifest_path, architecture_cache=None):
@@ -1509,10 +1512,10 @@ def build_atlas(manifests):
     architectures = {}
     knowledge = cache.get('_knowledge')
     models = knowledge.models.values() if knowledge else []
-    for architecture in sorted(models, key=lambda item: item.rom):
-        if architecture.rom in architectures:
-            raise ModelError(f"duplicate architecture models for {architecture.rom}")
-        architectures[architecture.rom] = architecture.export()
+    for architecture in sorted(models, key=lambda item: item.view_key):
+        if architecture.view_key in architectures:
+            raise ModelError(f"duplicate architecture models for {architecture.view_key}")
+        architectures[architecture.view_key] = architecture.export()
     return {
         "schemaVersion": 1,
         "layers": [{"id": key, "label": label} for key, label in LAYERS],
