@@ -1,9 +1,11 @@
 """Refusal contracts for optional byte-bound GNU SH PC observations."""
 
+import ast
 from dataclasses import replace
 import hashlib
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -164,6 +166,38 @@ class InvocationTest(unittest.TestCase):
 
 
 class SourceAndElfBindingTest(unittest.TestCase):
+    def test_published_observation_counts_and_identity_follow_the_execution_sources(self):
+        text = (TOOL_DIR / "README.md").read_text(encoding="utf-8")
+        section = " ".join(text.split("## Optional exact PC observation\n", 1)[1]
+                           .split("\n## ", 1)[0].split())
+        corrections = verifier.CORRECTION_EXPECTATIONS
+        blends = verifier.BLEND_EXPECTATIONS
+        checked = len(corrections) + len(blends)
+        entries = sum(count for _, count in (*corrections, *blends))
+        for phrase in (
+            f"all {verifier.CONTEXTS} cases", f"separates {verifier.CONTEXTS} caller frames",
+            f"check {len(corrections)} correction contexts", f"{len(blends)} blend contexts",
+            f"{entries} checked helper entries", f"other {verifier.CONTEXTS - checked} frames",
+        ):
+            self.assertIn(phrase, section)
+        recipe = (TOOL_DIR / "Dockerfile.pctrace").read_text(encoding="ascii")
+        archive_digest = re.findall(r"'([0-9a-f]{64})'", recipe)[0]
+        self.assertIn(archive_digest, section)
+        version = re.search(r"gdb-([0-9.]+)\.tar\.xz", recipe)[1]
+        self.assertIn(f"GNU{version}", section)
+        patch = (TOOL_DIR / "gnu16.3-sh-pc-observer.patch").read_text(encoding="ascii")
+        ranges = int(re.search(r"vq_sh_pc_trace_ranges\[(\d+)\]", patch)[1])
+        self.assertIn(f"up to {ranges} comma-separated", section)
+        probe = ast.parse((TOOL_DIR / "probe_pc_observation.py").read_text(encoding="ascii"))
+        invalid = [node.value for node in ast.walk(probe) if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id == "invalid"
+                           for target in node.targets)]
+        self.assertEqual(len(invalid), 1)
+        names = [item.elts[0].value for item in invalid[0].elts]
+        self.assertEqual(len(names), len(set(names)))
+        number_words = {10: "Ten"}
+        self.assertIn(f"{number_words[len(names)]} malformed or unwritable requests", section)
+
     def test_unrelated_invokers_do_not_change_the_bfs_function_pin(self):
         source = (TOOL_DIR / "stock_invoke.s").read_bytes()
         block = observation.function_block(source, "_stock_invoke_bfs_rate")
