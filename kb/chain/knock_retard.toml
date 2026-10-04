@@ -164,9 +164,7 @@ to = "steady-lionfish/ram"
 effect = "scales"
 sign = "positive"
 via = ["knock_function/fn"]
-note = """
-ffff22fa = trunc_toward_zero(int16(ffff121a) / 256), one crank degree per \
-count."""
+note = "ffff22fa = trunc0(int16(ffff121a)/256)"
 
 [[step]]
 from = "steady-lionfish/ram"

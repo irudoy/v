@@ -631,6 +631,11 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-knock-timing-byte": {
+                "REGION_ENTRY": 0x000496CC,
+                "WORD_STATE": 0xFFFF121A, "BYTE_STATE": 0xFFFF22FA,
+                "CONVERSION_ENTRY": 0x0004964A,
+            },
             "jk08a-knock-comparison": {
                 "REGION_ENTRY": 0x0004A2EE, "TABLE": 0x0001108E,
                 "AXIS": 0x00015340, "MODE": 0x00008B3D,
@@ -954,7 +959,8 @@ mov #0x5,r1
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
                 if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
                                "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate",
-                               "jk08a-knock-threshold", "jk08a-knock-comparison"):
+                               "jk08a-knock-threshold", "jk08a-knock-comparison",
+                               "jk08a-knock-timing-byte"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
                 # Vector tables and harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.

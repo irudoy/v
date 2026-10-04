@@ -555,6 +555,28 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock timing-byte conversion
+
+`jk08a-knock-timing-byte` binds 16 stock instructions, 48 bytes and 65650 cases.
+The cases comprise all 65536 low words and 114 literal cases with independent
+upper words. Entry `0004964a` sign-extends the incoming R2 low word to R12;
+the delay-slot store publishes the raw word to `ffff121a`. The sign-dependent
+255 adjustment and logical shift/reconstruction publish the signed byte
+`trunc0(int16(ffff121a)/256)` to `ffff22fa`.
+
+The two R9 anchors and their pools bind the explicit `ffff22f8` base without
+executing its producers. Pool `000496c8` is the sole high-RAM alias. The return
+boundary at `000496da` lies outside tested instructions. Per-case checks cover
+outputs, neighbors, all general/special registers, T, SP/PR, the complete
+52-byte frame, independent caller ABI and calibration/context anchors.
+
+Every literal case checks all other 64k RAM bytes. Full RAM is observed at each
+256-case sweep block boundary; the sweep does not assert full per-case RAM
+observation, and compensating writes within a block remain outside snapshot
+coverage. Both fixed stock stores have checked bases and outputs. Complete
+coordinator modes, preceding calculation, cadence and hardware behavior remain
+outside the bounded conversion proof.
+
 ## Knock threshold comparison
 
 The registered JK08A comparison fixture reconstructs 314 instructions and

@@ -61,6 +61,14 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff22fa"
 name = "steady-lionfish"
+width = 8
+signed = true
+note = """
+The bounded 7mfk conversion writes the signed byte trunc0(sign16(incoming \
+R2)/256) at 000496d8. The low word of the same original R2 is stored to \
+ffff121a. Conversion uses the register copy rather than reading the stored \
+word back. Positive contexts establish arithmetic behavior without asserting \
+full-coordinator mode reachability."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -84,11 +92,71 @@ value = {named = ["00009a1a", "00009b1a", "000493e8", "0004d99c", "ffff121a", "f
 key = "reference"
 
 [[link]]
-type = "input"
-to = "knock_timing_state/ram"
+type = "base"
+to = "hungry-sidewinder/ram"
+offset = 0x2
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The incoming R9 base is anchored by stock MOV.L loads at 000495da/000499ae \
+and their unchanged pools 000496ac/00049b38 = ffff22f8. Those containing \
+paths are not executed. MOV.B at 000496d8 uses offset 2, yielding ffff22fa. \
+This is an address relation, without a numeric input from ffff22f8 or an \
+array extent."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000496d8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"
+
+[[link]]
+type = "input"
+to = "knock_timing_state/ram"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The word publication at 00049656 and byte publication at 000496d8 share the \
+independent incoming R2 low word. EXTS.W at 0004964a makes R12 the signed \
+copy used by the conversion. The arithmetic alias int16(ffff121a) denotes \
+this shared signed low word; conversion does not load ffff121a back from \
+RAM."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004964a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"
 
 [[link]]
 type = "lookup"
@@ -119,10 +187,70 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "selector"
+to = "knock_timing_state/ram"
+slot = "bit15"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+CMP/PZ at 00049652 tests the signed low word copied from incoming R2. Bit 15 \
+set selects the negative branch that adds uint8(-1) = 255 at \
+000496cc/000496ce before extraction; bit 15 clear bypasses that adjustment. \
+The sampled sign is shared with the raw word stored at 00049656, without a \
+RAM readback or full-mode claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049652"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"
+
+[[link]]
 type = "writer"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Within 0004964a-0004965a and 000496cc-000496d8, negative sign16(incoming R2) \
+receives an added 255 before SHLR8/SWAP.W/EXTS.B/XTRCT; nonnegative input \
+bypasses the adjustment. MOV.B at 000496d8 stores truncation toward zero of \
+that signed value divided by 256. R9 is an anchored incoming base equal to \
+ffff22f8; the full coordinator and its R9-producing paths are not executed."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000496d8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"

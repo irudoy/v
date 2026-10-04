@@ -176,6 +176,40 @@ calibrations it sets `0xFFFF2466.bit6` when the state is at or below
 Other gates can force either selector state, so these thresholds are not the
 complete high-level high-detonation policy.
 
+## Bounded timing-byte conversion
+
+The registered `jk08a-knock-timing-byte` fixture independently reconstructs
+16 instructions and binds 48 bytes from stock JK08A. It executes 65650 cases:
+all 65536 low-word inputs and 114 literal cases combining 19 signed boundaries
+with six independent upper words. Its entry is `0004964a`; the two checked
+instruction spans end at `0004965c` and `000496da`.
+
+Incoming R2 is an explicit raw register context. EXTS.W R2,R12 gives the signed
+low word. The delay-slot store at `00049656` publishes its raw low 16 bits to
+`ffff121a` on both sign branches. Negative input receives an added 255 before
+logical shift and signed reconstruction; nonnegative input bypasses that
+adjustment. The byte store at `000496d8` publishes
+`ffff22fa = trunc0(int16(ffff121a)/256)`. This formula describes the shared
+low-word input; the conversion uses its register copy without reading the
+stored word back.
+
+Unexecuted stock load anchors at `000495da` and `000499ae` bind incoming R9 to
+`ffff22f8`. Their producing paths are outside this execution. Only pool
+`000496c8` receives the declared simulator alias for `ffff120e`. The ordinary
+RTS/NOP boundary at `000496da` is outside checked stock instructions.
+
+Every case checks both outputs, neighboring bytes, all 15 general registers,
+branch T, special registers, SP/PR, the seeded 52-byte frame, external caller
+ABI and context-anchor/pool preservation. Each literal case checks all other
+64k RAM bytes. The sweep checks full RAM at each 256-case block boundary and
+does not claim full per-case RAM observation: compensating writes within a
+block are not excluded by that snapshot alone. The exact stock spans contain
+only the two declared stores and no calls or stack accesses.
+
+Positive inputs establish arithmetic without asserting full-coordinator mode
+reachability. Earlier calculations, mode selection, event consumption, cadence,
+complete coordinator behavior and hardware behavior remain separate contracts.
+
 ## Target-vehicle trace boundary
 
 `tools/logs/ignition_surface_audit.py` replays the exact ignition finisher,

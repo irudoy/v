@@ -105,6 +105,14 @@ reads ROM16[0x9078] = 0x500 on 7mfk"""
 layout = "7mfk"
 address = "ffff121a"
 former = ["vegan-zebra/ram/7mfk-ffff121a"]
+width = 16
+signed = true
+note = """
+Within the bounded 7mfk conversion entry 0004964a, incoming raw R2 supplies \
+the low word stored at 00049656. EXTS.W R2,R12 establishes the same signed \
+low word for the byte conversion. R2 is an independent entry context; this \
+slice does not attribute its preceding calculation or physical mode. \
+Existing Q8 unit/scale and coordinator claims are separate facts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -220,6 +228,40 @@ value = "0x1c"
 note = "Bit 3 set enables the state-code selection of 000797cc"
 
 [[link]]
+type = "base"
+to = "red-sidewinder/ram"
+offset = 0xc
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.L at 0004964c loads unchanged pool 000496c8 = ffff120e into R8; the \
+delay-slot MOV.W at 00049656 uses offset 0x0c, yielding ffff121a. This is an \
+address relation, without a numeric input from the value at ffff120e or an \
+array extent. Only this pool word is aliased in the bounded simulator \
+fixture."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004964c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"
+
+[[link]]
 type = "input"
 to = "curious-mustang/ram"
 layouts = ["7mfk"]
@@ -250,8 +292,34 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+At entry 0004964a, EXTS.W copies the signed low word of independent raw R2 \
+to R12; MOV R2,R0 preserves the original low word. The BT/S delay-slot MOV.W \
+at 00049656 stores that low word to ffff121a on both sign branches. The \
+slice does not establish the preceding R2 calculation or a complete \
+coordinator mode."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049656"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+key = "test_knock_timing_byte_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded timing-byte conversion"

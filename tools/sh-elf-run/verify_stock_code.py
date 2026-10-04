@@ -100,6 +100,19 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-knock-timing-byte", rom="JK08A",
+        source="stock_jk08a_knock_timing_byte.s",
+        harness="harness-stock-jk08a-knock-timing-byte.c",
+        start=0x000496CC, end=0x000496DA,
+        pools=((0x000495DA, 2), (0x000496AC, 4), (0x000496C8, 4),
+               (0x000499AE, 2), (0x00049B38, 4)),
+        ram_literals=(0x000496C8,), cases=65650,
+        symbols=(("WORD_STATE", "knock_timing_state/ram"),
+                 ("BYTE_STATE", "steady-lionfish/ram")),
+        constants=(("CONVERSION_ENTRY", 0x0004964A),),
+        callees=((0x0004964A, 0x0004965C),),
+    ),
+    Region(
         key="jk08a-knock-comparison", rom="JK08A",
         source="stock_jk08a_knock_comparison.s",
         harness="harness-stock-jk08a-knock-comparison.c",

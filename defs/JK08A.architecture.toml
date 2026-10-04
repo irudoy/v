@@ -3387,9 +3387,7 @@ to = "ffff22fa"
 effect = "scales"
 sign = "positive"
 via = ["000493e8"]
-note = """
-ffff22fa = trunc_toward_zero(int16(ffff121a) / 256), one crank degree per \
-count."""
+note = "ffff22fa = trunc0(int16(ffff121a)/256)"
 
 [[chain.step]]
 from = "ffff22fa"
