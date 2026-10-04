@@ -1,15 +1,26 @@
 summary = """
-Live Q7 normalized Base Fuel Schedule byte produced by FUN 0003b75c as \
-min(255,floor(uint16[ffff1026]*128/ROM16[00009534])). Stock \
-ROM16[00009534]=0x6a5a. FUN 00020dfe snapshots this byte to ffff102c before \
-the next periodic task pass; FUN 0004bbee and FUN 0004dbe8 also read the \
-live value directly."""
+Live unsigned Q7 normalized Base Fuel Schedule byte produced on 7mfk by FUN \
+0003b75c. With the stock coherent cached BFS word and a nonzero reference, \
+ffff1048=min(255,floor(uint16[ffff1026]*128/ROM16[00009534])); stock \
+reference is 0x6a5a. The first quotient uses cached R5 for the cap, while \
+the unsaturated path explicitly rereads ffff1026 for its low-byte store. A \
+zero reference records the divider fault and stores zero. FUN 00020dfe \
+snapshots the byte to ffff102c before the next periodic task pass; FUN \
+0004bbee and FUN 0004dbe8 also read it directly."""
 note = [
     """
 A whole-program p-code census found site 0003bd5a as the only direct writer. \
 Raw 128 means Base Fuel Schedule equals the 0x9534 reference, and \
 raw*100/128 is the exact normalized percentage. The physical Cylinder \
 Filling name remains a catalog candidate.""",
+    """
+The stock word load at 0003bcbe and EXTU.W at 0003bcc0 establish the cached \
+R5; the following producer instructions preserve it until 0003bd1c. \
+Independent slice execution covers the two unsigned division calls, delay \
+slots, cap edges, 16-bit input and denominator boundaries, byte-store \
+neighbors, and zero-reference fault 0x44e. Explicit artificial cache/RAM \
+mismatches distinguish the first quotient cap from the second low-byte store \
+and establish no live race or scheduling claim.""",
 ]
 level = "code"
 unit = "normalized BFS Q7"
@@ -73,6 +84,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1048"
 name = "benign-cassowary"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -151,18 +164,51 @@ relies = "contract"
 [[link]]
 type = "input"
 to = "bfs/ram"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, the cached unsigned BFS word in R5 supplies the first quotient and \
+saturation test. The cache comes from MOV.W 0003bcbe and EXTU.W 0003bcc0 and \
+remains unchanged through 0003bd1c. With coherent cache/RAM, \
+min(255,floor(uint16[ffff1026]*128/reference)) is exact. An unsaturated \
+first quotient selects the explicit word reread at 0003bd3a and its low-byte \
+quotient store; artificial mismatched contexts establish no live race."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bd3a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_normalization.py"
+key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
 [[link]]
 type = "lookup"
 to = "precise-nuthatch/tbl"
+via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+On 7mfk, the one-cell unsigned reference is read directly at fixed ROM \
+address 00009534 before both unsigned divisions. Stock value 27226 gives raw \
+128 at equal BFS. BFS supplies the numerator rather than a table index. \
+Nonzero reference selects the ratio; zero reference records 0x44e at \
+ffff9818 and publishes zero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bd24"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_normalization.py"
+key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
 [[link]]
 type = "reader"

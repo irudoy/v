@@ -201,6 +201,18 @@ The gate performs these checks:
    check the returned and stored longword, preserved registers, all input
    bytes, and output neighbors. They establish no live overflow or physical
    identity of the auxiliary term.
+   The Q7 load fixture reconstructs the 32-instruction normalization slice
+   and its unsigned divider. Entry R5 contains the preceding unsigned BFS
+   word; a separate byte proof binds its stock load and preservation. Cases
+   execute the cached saturation check, explicit word reread, both division
+   delay slots, byte publication, stock reference 27226, word/reference
+   boundaries, and the zero-reference fault record. Artificial mismatched
+   cache/RAM inputs distinguish the cached cap from the second quotient's
+   low-byte store; they establish no reachable race. Direct divider cases
+   execute the wide-divisor path outside the word-only normalization entry.
+   Only three declared RAM pointers are aliased. The boundary at 0x0003bd5c
+   restores PR from SP+0 outside all tested instructions. Cases check saved
+   registers, MACL, GBR, R11, the reference word, inputs, and neighboring RAM.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

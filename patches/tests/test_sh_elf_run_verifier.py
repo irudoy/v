@@ -631,6 +631,14 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-load-normalization": {
+                "REGION_ENTRY": 0x0003BD1C,
+                "BFS_INPUT": 0xFFFF1026,
+                "LIVE_LOAD": 0xFFFF1048,
+                "REFERENCE_ADDRESS": 0x00009534,
+                "DIVIDER_ENTRY": 0x00021CE0,
+                "FAULT_ADDRESS": 0xFFFF9818,
+            },
             "jk08a-maf-aggregate": {
                 "REGION_ENTRY": 0x0003B252,
                 "MAF_BANK1": 0xFFFF1DF8,

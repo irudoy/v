@@ -2086,9 +2086,7 @@ to = "ffff1048"
 effect = "scales"
 sign = "positive"
 via = ["0003b75c"]
-note = """
-ffff1048 = min(255, floor(ffff1026*128/ROM16[0x9534])); raw 128 is 100 \
-percent of the reference."""
+note = "ffff1048 = min(255,floor(uint16(ffff1026)*128/ROM16[0x00009534]))"
 
 [[chain.step]]
 from = "00009534"
@@ -2096,9 +2094,7 @@ to = "ffff1048"
 effect = "scales"
 sign = "negative"
 via = ["0003b75c"]
-note = """
-Internal Load Normalization Reference 0x6a5a = 27226 divides the schedule; \
-it also scales the torque filling coordinate."""
+note = "ffff1048 = min(255,floor(uint16(ffff1026)*128/ROM16[0x00009534]))"
 
 [[chain.step]]
 from = "ffff1048"

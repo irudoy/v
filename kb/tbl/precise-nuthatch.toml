@@ -14,6 +14,14 @@ Cylinder Filling Up Efficiency Scaler and describes it as the BFS at maximum \
 airflow. That physical name and the raw/2048 BFS conversion remain \
 source-derived candidates. Editing this scalar shifts ignition, CVTC, \
 candidate AFR, and torque coordinates together.""",
+    """
+The 7mfk normalization consumer reads this one-cell uint16 scalar directly \
+at fixed ROM address 00009534 for both divisions; the BFS word is the \
+numerator and does not index its address. A nonzero denominator gives the \
+stated Q7 ratio with the stock coherent cached numerator. A zero denominator \
+returns zero and writes fault code 0x44e to ffff9818; controlled \
+reference-word cases establish this alternative without a stock calibration \
+or hardware claim.""",
 ]
 level = "code"
 role = "table"
@@ -75,14 +83,6 @@ supports = "identity"
 role = "consumer"
 to = "primitive-lizard/fn"
 type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "bfs/ram"
-type = "index"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -274,13 +274,6 @@ at = "jk78c:00083cac"
 to = "7mfk:00065ad0"
 value = "000091ee"
 note = "normalized homologous consumers preserve the primary limiter scalar role"
-
-[[link]]
-type = "index"
-to = "bfs/ram"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

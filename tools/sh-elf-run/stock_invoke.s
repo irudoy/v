@@ -526,3 +526,66 @@ compensation_saved_macl:
     .long 0x89abcdef
 compensation_zero_return_pointer:
     .long compensation_zero_return
+
+! Supply the normalization slice with its cached unsigned BFS in R5 and the
+! stock unsigned divider in R11. SP+0 holds a simulator continuation for the
+! boundary after the byte store; all tested instructions remain unchanged.
+    .global _stock_invoke_normalized_load
+    .type _stock_invoke_normalized_load,@function
+_stock_invoke_normalized_load:
+    mov.l r8,@-r15
+    mov.l r11,@-r15
+    mov.l r12,@-r15
+    mov.l r13,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r3
+    lds r6,macl
+    mov.l normalization_divider,r11
+    mov.l normalization_seed_r12,r12
+    mov.l normalization_seed_r13,r13
+    mov.l normalization_seed_r14,r14
+    mov.l normalization_seed_gbr,r0
+    ldc r0,gbr
+    add #-4,r15
+    mov.l normalization_return_pointer,r0
+    mov.l r0,@r15
+    jsr @r3
+    nop
+normalization_return:
+    add #4,r15
+    sts macl,r2
+    mov.l r2,@r8
+    mov.l r12,@(4,r8)
+    mov.l r13,@(8,r8)
+    mov.l r14,@(12,r8)
+    stc gbr,r2
+    mov.l r2,@(16,r8)
+    mov.l r11,@(20,r8)
+    ldc.l @r15+,gbr
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r13
+    mov.l @r15+,r12
+    mov.l @r15+,r11
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_normalized_load,.-_stock_invoke_normalized_load
+    .balign 4
+normalization_divider:
+    .long 0x00021ce0
+normalization_seed_r12:
+    .long 0x10203040
+normalization_seed_r13:
+    .long 0x13579bdf
+normalization_seed_r14:
+    .long 0x2468ace0
+normalization_seed_gbr:
+    .long 0x13572468
+normalization_return_pointer:
+    .long normalization_return

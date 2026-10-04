@@ -97,6 +97,23 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-load-normalization",
+        rom="JK08A",
+        source="stock_jk08a_load_normalization.s",
+        harness="stock_load_normalization_harness.c",
+        start=0x0003BD1C,
+        end=0x0003BD5C,
+        pools=((0x00009534, 2), (0x00021DC8, 8),
+               (0x0003BDF0, 4), (0x0003BE10, 12)),
+        ram_literals=(0x00021DC8, 0x0003BDF0, 0x0003BE10),
+        cases=44,
+        return_address_offset=0,
+        symbols=(("BFS_INPUT", "bfs/ram"), ("LIVE_LOAD", "benign-cassowary/ram"),
+                 ("REFERENCE_ADDRESS", "precise-nuthatch/tbl")),
+        constants=(("DIVIDER_ENTRY", 0x00021CE0), ("FAULT_ADDRESS", 0xFFFF9818)),
+        callees=((0x00021CE0, 0x00021DC6),),
+    ),
+    Region(
         key="jk08a-maf-aggregate",
         rom="JK08A",
         source="stock_jk08a_maf_aggregate.s",

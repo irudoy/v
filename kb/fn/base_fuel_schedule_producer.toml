@@ -26,6 +26,19 @@ formula proves a Q7 ratio to the 0x9534 Base Fuel Schedule reference; raw \
 0x8a27 as MAF Factor, 0x9284 as K-Value, and 0x9534 as the Cylinder Filling \
 Up Efficiency Scaler vocabulary. The physical Cylinder Filling name and BFS \
 engineering units remain source-derived pending hardware validation.""",
+    """
+The 7mfk normalization slice 0003bd1c..0003bd5a independently reconstructs \
+and executes both unsigned division calls, their delay slots, the \
+cached-quotient cap at 255, and the final byte store. R5 is the unsigned \
+ffff1026 word loaded at 0003bcc0 and preserved through the intervening \
+producer instructions. Coherent incoming cache and RAM plus a nonzero \
+reference give min(255,floor(uint16[ffff1026]*128/ROM16[00009534])); \
+explicit artificial mismatches reveal a cached cap followed by a low-byte \
+second quotient and do not establish a live race. The zero-reference \
+alternative executes the stock divider fault record and stores zero. The \
+simulator continuation restores PR from SP+0 at 0003bd5c outside all tested \
+instructions; this proof does not execute the complete producer or promote \
+physical units.""",
 ]
 level = "code"
 role = "accessor"
@@ -571,3 +584,50 @@ to = "small-sheep/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "benign-cassowary/ram"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, CMP/HI at 0003bd32 compares the first unsigned quotient from cached \
+R5 against 255. A greater quotient stores byte 255 without rereading BFS; \
+otherwise the second quotient of the explicitly reread unsigned word \
+supplies its low byte. The min-255 formula requires the stock coherent \
+cached word. Artificial cache/RAM mismatches are direct slice contexts \
+without a live reachability claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bd32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_normalization.py"
+key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
+
+[[link]]
+type = "threshold"
+to = "precise-nuthatch/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, unsigned reference ROM16[00009534] nonzero selects normal division. \
+A zero word selects the stock divider fault path on both calls, returns \
+zero, records 0x44e at ffff9818, and publishes zero. Stock \
+ROM16[00009534]=27226 keeps this alternative inactive; explicit controlled \
+calibration cases execute it without changing tested instructions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bd24"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_normalization.py"
+key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"

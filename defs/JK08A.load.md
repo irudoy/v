@@ -41,10 +41,14 @@ live_load_raw = min(255, floor(uint16(ffff1026) * 128 / 27226))
 ffff1048 = live_load_raw
 ```
 
-The first equivalent quotient at `0x3BD1E..0x3BD34` performs the saturation
-test; the second quotient reads `ffff1026` explicitly and supplies the stored
-byte. A whole-program p-code census finds `0x3BD5A` as the only direct writer
-of `ffff1048`.
+The first quotient at `0x3BD1E..0x3BD34` performs the saturation test with R5,
+the unsigned `ffff1026` word loaded at `0x3BCBE` and extended at `0x3BCC0`.
+The intervening producer instructions preserve R5. The unsaturated path reads
+`ffff1026` explicitly for the second quotient and stores its low byte. The
+formula therefore uses the stock coherent cached word and a nonzero
+reference. A zero reference executes the unsigned divider fault path, writes
+`0x44E` to `ffff9818`, and stores zero. A whole-program p-code census finds
+`0x3BD5A` as the only direct writer of `ffff1048`.
 
 The exact normalized representation is therefore:
 

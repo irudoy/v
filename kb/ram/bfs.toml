@@ -20,6 +20,13 @@ a gain of 0.39 or 1.57, outside that range. Replaying the chain over three \
 ratio of 1.000, with 87 to 98 percent of steady records within 2 percent. \
 The raw/2048 ms conversion of the homologous structured Nissan profile for \
 DID 0x1208 agrees with this arithmetic.""",
+    """
+On 7mfk, the Q7 normalization consumer reads this word unsigned, shifts its \
+value left by seven without overflowing 32 bits, and divides by an unsigned \
+reference word. Its first saturation test uses the unsigned word cached at \
+0003bcc0; the unsaturated path explicitly rereads the word at 0003bd3a. \
+These cases preserve the existing physical conversion and do not execute the \
+complete BFS producer.""",
 ]
 level = "code"
 width = 16
@@ -182,6 +189,8 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff1026"
 former = ["taupe-swan/ram/7mfk-ffff1026"]
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
