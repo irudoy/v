@@ -133,30 +133,34 @@ ffff2142 = 0"""
 from = "curious-mustang/ram"
 to = "knock_timing_state/ram"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["knock_function/fn"]
 note = """
-Direct branch adds (low7 0x9A1A - low7 0x9B1A) << 8; otherwise ffff121a \
-slews from ffff1258 toward ffff1380 by ROM16[0x9078] = 0x500, clamped to <= \
-0."""
+H = x[0]; y = x[1]; D = \
+(1-((uint8(ffff2469)>>7)&1))*((uint8(ffff2467)>>6)&1); S = int16(ffff1258); \
+V = int16(ffff1380); N = uint8(ffff230a); Y = \
+min(S+ROM16[0x00009078],max(S-ROM16[0x00009078],V)); R = \
+D*(V+256*(H-(uint32(y)&127)))+(1-D)*min(0,max(Y,-256*N)); to = uint16(R)"""
 
 [[step]]
 from = "high_octane_timing_state/tbl"
 to = "knock_timing_state/ram"
 effect = "looks-up"
-sign = "positive"
+sign = "none"
 via = ["knock_function/fn"]
 note = """
-Direct branch (ffff2469 bit 7 clear, ffff2467 bit 6 set): the high-octane \
-low 7 bits enter with weight +256."""
+H = x[0]; y = x[1]; R = int16(ffff1380)+256*(H-(uint32(y)&127)); to = \
+uint16(R)"""
 
 [[step]]
 from = "high_detonation_timing_state/tbl"
 to = "knock_timing_state/ram"
 effect = "looks-up"
-sign = "negative"
+sign = "none"
 via = ["knock_function/fn"]
-note = "Direct branch: the high-detonation low 7 bits enter with weight -256."
+note = """
+H = x[0]; y = x[1]; R = int16(ffff1380)+256*(H-(uint32(y)&127)); to = \
+uint16(R)"""
 
 [[step]]
 from = "knock_timing_state/ram"

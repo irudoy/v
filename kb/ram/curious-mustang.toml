@@ -184,12 +184,37 @@ key = "Bounded knock integration"
 [[link]]
 type = "reader"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The bounded selection entry reads signed V at 00049644 on direct normal \
+dispatch, or 000499c4 on alternative dispatch and standalone invocation. It \
+preserves the word and exposes widened R2 before any low-word store. \
+Existing integration publication evidence belongs to its separate entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049644"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "selector"

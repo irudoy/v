@@ -99,7 +99,10 @@ note = """
 MOV.W at 00049548 and 00049906 reads sign16(ffff1258) through loaded base \
 ffff124c plus offset 12. The bounded quiet and event entries both preserve \
 this input word. They write ffff1380 and clear ffff2142; no ffff1258 store \
-is executed in these spans."""
+is executed in these spans. The separate bounded selection entry reads \
+signed S at 000499bc, 000499d4 or 000499fe and preserves it while limiting \
+movement toward V. Its full 64k RAM contract applies per case; no \
+integration entry or producer is jointly executed."""
 
 [[link.evidence]]
 kind = "l0"
@@ -119,6 +122,25 @@ key = "test_knock_integration_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock integration"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499bc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "writer"

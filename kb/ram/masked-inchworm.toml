@@ -40,11 +40,38 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2469"
 name = "masked-inchworm"
+level = "code"
+width = 8
+signed = false
+note = """
+Normal post-lookup entry 00049614 reads this byte at GBR+0x11 and tests bit7 \
+at 0004961e. A set bit dispatches to the alternative arithmetic. A clear bit \
+permits the second bit6 test; other bits and consumers are separate. \
+Standalone entry 000499b8 does not read this byte."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002e2f0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004961c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "depends"
@@ -64,9 +91,34 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Normal entry reads this preserved byte at 0004961c and tests bit7 at \
+0004961e. The standalone alternative entry does not read it. The explicit \
+GBR base is bound by unchanged 000493fc/0004965c context, without execution \
+of that earlier setup."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004961c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"

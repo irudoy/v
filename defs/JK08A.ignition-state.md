@@ -176,6 +176,47 @@ calibrations it sets `0xFFFF2466.bit6` when the state is at or below
 Other gates can force either selector state, so these thresholds are not the
 complete high-level high-detonation policy.
 
+## Bounded knock state selection
+
+The registered `jk08a-knock-state-selection` fixture reconstructs 70
+instructions and binds 208 bytes. Its 11615 literal cases comprise 7671
+post-lookup entries at `00049614` and 3944 standalone alternative entries
+at `000499b8`. Both stop at `0004964a` before the separate signed-low-word
+conversion and publication.
+
+H is the explicit first masked byte at SP+0x0c, in 0..127. Incoming R0
+supplies the independent second raw value; its AND #127 and byte store
+execute. With `ffff2469.bit7` clear and `ffff2467.bit6` set, widened R2 is
+`int16(ffff1380)+256*(H-(uint32(R0)&127))`. The register can exceed either
+signed16 boundary and is neither saturated nor prematurely truncated.
+
+The alternative path uses S=`int16(ffff1258)`, V=`int16(ffff1380)` and
+N=`uint8(ffff230a)`. With stock ROM16[00009078]=1280, it computes
+`Y=min(S+1280,max(S-1280,V))` and `R2=min(0,max(Y,-256*N))`.
+Standalone entries execute this path regardless of the normal gate bits.
+All byte gates, all N values and every low7 difference are covered.
+For N=128 the forcing-below-bound outcome is unreachable; equality is
+covered. For N>=129 the bound lies below the signed input hull.
+
+The first lookup/mask/store and second lookup are not executed. Exact static
+anchors bind both table pointers, call/delay pairs and bases; they establish
+no lookup numerics, producer identity or dispatch reachability. Six declared
+high-RAM pool aliases preserve all checked instruction bytes.
+
+Every case checks widened R2, all 15 general registers, T, MACL and other
+special registers, SP/driver PR, independent external C ABI, the complete
+64-byte frame, all 68 anchor/pool/calibration bytes and every other RAM byte.
+Only the normal-entry second stack byte may change. Output words and bytes
+retain their seeded values. The natural PR from the preceding second lookup
+is outside this proof; the ordinary boundary returns through driver PR.
+
+Composition with the separately registered conversion gives
+`ffff121a=uint16(R2)` and `ffff22fa=trunc0(int16(ffff121a)/256)`.
+It is not joint execution of both fragments. The conversion retains its
+declared RAM sweep boundary contract. Signed monotonic behavior across word
+wrap, complete coordinator execution, cadence, physical timing and hardware
+behavior remain outside these bounded proofs.
+
 ## Bounded knock event publication
 
 The registered `jk08a-knock-event-publication` fixture reconstructs 26

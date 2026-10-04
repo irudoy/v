@@ -107,12 +107,21 @@ address = "ffff121a"
 former = ["vegan-zebra/ram/7mfk-ffff121a"]
 width = 16
 signed = true
+summary = """
+Raw low-word publication related to bounded 7mfk widened state selection by \
+a separate conversion entry."""
 note = """
 Within the bounded 7mfk conversion entry 0004964a, incoming raw R2 supplies \
 the low word stored at 00049656. EXTS.W R2,R12 establishes the same signed \
 low word for the byte conversion. R2 is an independent entry context; this \
 slice does not attribute its preceding calculation or physical mode. \
-Existing Q8 unit/scale and coordinator claims are separate facts."""
+Existing Q8 unit/scale and coordinator claims are separate facts. The \
+separate state-selection envelope enters 00049614 after the second lookup or \
+enters standalone 000499b8, and retains widened R2 at boundary 0004964a \
+without storing RAM. Its direct result ranges across signed16 bounds without \
+saturation. The independent conversion entry binds uint16(R2) at 00049656 \
+and the signed-byte conversion, not joint coordinator execution or signed \
+monotonicity across low-word wrap."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -127,6 +136,25 @@ supports = "identity"
 at = "7mfk:000496d8"
 value = {named = ["000493e8", "0004d99c", "ffff121a", "ffff1380", "ffff2467", "ffff2469"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049656"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[symbol]]
 layout = "jk00c"
@@ -264,9 +292,34 @@ key = "Bounded timing-byte conversion"
 [[link]]
 type = "input"
 to = "curious-mustang/ram"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Normal direct arithmetic reads signed V=ffff1380 at 00049644 and forms \
+widened R2=V+256*(H-(incomingR0&127)). Alternative arithmetic reads the same \
+signed target at 000499c4 and limits motion from S toward V. Both preserve \
+this word; the preceding target publication is a separate entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049644"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "input"
@@ -277,10 +330,175 @@ supports = "identity"
 
 [[link]]
 type = "input"
+to = "knock_state_negative_bound/ram"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On alternative dispatch or standalone 000499b8, the unsigned byte N supplies \
+floor -256*N. R=min(0,max(Y,-256*N)); N=128 can equal the signed lower \
+endpoint but cannot force below it, and N>=129 cannot force within the \
+signed input hull. Direct arithmetic does not read N."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499dc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "input"
+to = "knock_state_slew_step/tbl"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On alternative dispatch or standalone 000499b8, the unsigned scalar \
+ROM16[00009078] supplies step in Y=min(S+step,max(S-step,V)). The floor and \
+zero cap follow this limited signed target. Direct arithmetic does not read \
+this scalar. Stock bytes and artificial contexts belong to distinct \
+execution contracts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499cc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "input"
 to = "masked-inchworm/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "input"
+to = "thick-dalmatian/ram"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The alternative entry sign-extends S from ffff1258 at 000499bc through \
+loaded base ffff124c plus 12. It forms Y=min(S+step,max(S-step,V)), then \
+applies the N floor and zero cap. The source RAM is preserved; its preceding \
+integration or producer is not executed by this selection envelope."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499bc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "lookup"
+to = "high_detonation_timing_state/tbl"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded post-lookup entry 00049614 declares x[1]=y as full incoming R0 \
+and executes AND 0x7f plus the second byte store at SP+0x10. Static table \
+pointer, lookup JSR 00049610 and its delay slot are byte-bound but not \
+executed. In normal direct arithmetic uint32(y)&127 contributes -256 times \
+its value. x[0] is independently declared H; no executed lookup arithmetic \
+or producer claim follows."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049610"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "lookup"
+to = "high_octane_timing_state/tbl"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded post-lookup entry 00049614 declares x[0]=H as the independent \
+0..127 byte at SP+0x0c. Static first-lookup/mask/store anchors 000495e8, \
+000495f6 and 000495fa are byte-bound but not executed. In normal direct \
+arithmetic H contributes +256*H before low-word wrap. x[1]=y is the complete \
+independent incoming R0; this link does not establish either executed lookup \
+numeric value or their producers."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000495e8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "reader"
@@ -288,6 +506,109 @@ to = "event_timing_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "glorious-spider/ram"
+slot = "bit6"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal entry 00049614 reaches this bit6 test only with ffff2469.bit7 clear. \
+A set bit6 selects the widened direct difference; a clear bit6 dispatches to \
+000499b8. Standalone alternative invocation does not read either gate byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049628"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "selector"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal post-lookup entry 00049614 receives x[0] as independent SP+0x0c byte \
+H in 0..127 and x[1] as full incoming R0. The second AND 0x7f and store \
+execute before reading bit7/bit6 gates. Standalone alternative entry \
+000499b8 uses S = int16(ffff1258); V = int16(ffff1380); N = uint8(ffff230a); \
+Y = min(S+ROM16[0x00009078],max(S-ROM16[0x00009078],V)); R = \
+min(0,max(Y,-256*N)); to = uint16(R); the gate bytes and x operands are not \
+read by that invocation. These entries are alternative contexts, not \
+sequential updates. Static lookup/first-mask/first-store anchors, natural PR \
+from the unexecuted second lookup, full coordinator and hardware \
+reachability remain separate facts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049614"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "selector"
+to = "masked-inchworm/ram"
+slot = "bit7"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal entry 00049614 selects direct arithmetic only when this bit7 is clear \
+and ffff2467.bit6 is set. A set bit7 dispatches to 000499b8. The byte is \
+preserved; standalone alternative invocation does not read either gate \
+byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004961e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "writer"
@@ -303,7 +624,14 @@ At entry 0004964a, EXTS.W copies the signed low word of independent raw R2 \
 to R12; MOV R2,R0 preserves the original low word. The BT/S delay-slot MOV.W \
 at 00049656 stores that low word to ffff121a on both sign branches. The \
 slice does not establish the preceding R2 calculation or a complete \
-coordinator mode."""
+coordinator mode. The independent 70-instruction state-selection envelope \
+produces widened R2 at boundary 0004964a and preserves all RAM. The separate \
+16-instruction conversion envelope executes EXTS.W and the raw uint16 \
+low-word store at 00049656, followed by the byte conversion. Their evidence \
+is not joint execution: selection supplies a mathematical R2 boundary and \
+conversion supplies its independent low-word projection. No signed \
+monotonicity follows across wrap, and the conversion sweep retains its \
+per-256-case-block RAM observation limit."""
 
 [[link.evidence]]
 kind = "l0"
@@ -323,3 +651,22 @@ key = "test_knock_timing_byte_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded timing-byte conversion"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049648"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"

@@ -41,11 +41,39 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2467"
 name = "glorious-spider"
+level = "code"
+width = 8
+signed = false
+note = """
+If ffff2469.bit7 is clear, normal post-lookup entry reads this byte at \
+GBR+0x0f and tests bit6 at 00049628. A set bit selects direct widened \
+difference arithmetic; a clear bit dispatches to the alternative. Standalone \
+entry 000499b8 does not read this byte. Other bits and consumers are \
+separate."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00021064"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049626"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
 
 [[link]]
 type = "depends"
@@ -65,9 +93,33 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "knock_function/fn"
+via = ["knock_function/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+With bit7 clear, normal entry reads this preserved byte at 00049626 and \
+tests bit6 at 00049628. The standalone alternative entry does not read it. \
+Other byte bits and producer lifecycles remain outside the selection claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00049626"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"

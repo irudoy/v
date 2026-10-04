@@ -1,0 +1,103 @@
+summary = """
+7mfk byte storage consumed as the unsigned operand N of a bounded -256*N \
+state floor."""
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff230a"
+level = "code"
+width = 8
+signed = false
+summary = """
+Unsigned byte N used by the bounded 7mfk alternate state-selection reader."""
+note = """
+MOV.B 000499dc reads N through explicit R9=ffff22f8 plus 0x12; EXTU.B \
+000499e2 establishes the unsigned byte before MUL.L forms -256*N. The \
+negative floor affects the alternative state-selection arithmetic, with no \
+claim about the producing stores, array extent, physical identity or full \
+mode reachability."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000499dc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "base"
+to = "hungry-sidewinder/ram"
+offset = 0x12
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Explicit incoming R9=ffff22f8 plus indexed 0x12 yields ffff230a at MOV.B \
+000499dc. Unchanged R9 anchors 000495da/000496ac and 000499ae/00049b38 bind \
+that address but are not executed. The relation describes an address offset, \
+not numeric input, array extent or an executed base producer."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499dc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B 000499dc and EXTU.B 000499e2 read unsigned N through explicit \
+R9=ffff22f8 plus 0x12. MUL.L establishes -256*N and the signed floor; the \
+producing stores and R9 setup anchors are not executed by this envelope. No \
+array size or hardware identity is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499dc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"

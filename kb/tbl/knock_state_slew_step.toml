@@ -1,0 +1,70 @@
+summary = """
+7mfk scalar unsigned word supplying the bounded alternate state-selection \
+slew step."""
+note = """
+MOV.W 000499cc loads this scalar through unchanged pool 00049b3c, and EXTU.W \
+000499ce supplies the unsigned step. The owning knock_function is placed in \
+ignition_timing. The reviewed consumer limits motion from signed source S \
+toward signed target V before applying the unsigned-byte negative floor and \
+zero cap. Other consumers and engineering interpretation are separate \
+facts."""
+block = "ignition_timing/block"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009078"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000499cc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+via = ["knock_function/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Alternative arithmetic loads this unchanged ROM word at 000499cc and EXTU.W \
+000499ce supplies its unsigned step. Direct arithmetic does not read it. \
+Other consumers, calibration design and engineering units are separate \
+facts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000499cc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_state_selection_chain.py"
+key = "test_knock_state_selection_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock state selection"

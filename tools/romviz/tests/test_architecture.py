@@ -22,7 +22,8 @@ FREE_MAP = "0001fff0"
 # Declared table-to-output impact signs for the chain families.
 IMPACT_CLAIMS = (
     ("ignition-advance", "0000991a", "positive"),
-    ("knock-retard", "00009b1a", "negative"),
+    # Widened selection followed by low-word wrapping has no monotone sign.
+    ("knock-retard", "00009b1a", "none"),
     ("fuel-pulse", "0000a9aa", "none"),
     ("intake-cvtc", "0000b43a", "positive"),
     ("idle-air", "0001465a", "positive"),

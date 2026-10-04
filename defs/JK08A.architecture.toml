@@ -501,8 +501,8 @@ functions = [
     "0006469c",
     "00065434",
 ]
-maps = ["00008710"]
-signals = []
+maps = ["00008710", "00009078"]
+signals = ["ffff230a"]
 
 [[block]]
 id = "cvtc-intake"
@@ -3398,30 +3398,34 @@ ffff2142 = 0"""
 from = "ffff1380"
 to = "ffff121a"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["000493e8"]
 note = """
-Direct branch adds (low7 0x9A1A - low7 0x9B1A) << 8; otherwise ffff121a \
-slews from ffff1258 toward ffff1380 by ROM16[0x9078] = 0x500, clamped to <= \
-0."""
+H = x[0]; y = x[1]; D = \
+(1-((uint8(ffff2469)>>7)&1))*((uint8(ffff2467)>>6)&1); S = int16(ffff1258); \
+V = int16(ffff1380); N = uint8(ffff230a); Y = \
+min(S+ROM16[0x00009078],max(S-ROM16[0x00009078],V)); R = \
+D*(V+256*(H-(uint32(y)&127)))+(1-D)*min(0,max(Y,-256*N)); to = uint16(R)"""
 
 [[chain.step]]
 from = "00009a1a"
 to = "ffff121a"
 effect = "looks-up"
-sign = "positive"
+sign = "none"
 via = ["000493e8"]
 note = """
-Direct branch (ffff2469 bit 7 clear, ffff2467 bit 6 set): the high-octane \
-low 7 bits enter with weight +256."""
+H = x[0]; y = x[1]; R = int16(ffff1380)+256*(H-(uint32(y)&127)); to = \
+uint16(R)"""
 
 [[chain.step]]
 from = "00009b1a"
 to = "ffff121a"
 effect = "looks-up"
-sign = "negative"
+sign = "none"
 via = ["000493e8"]
-note = "Direct branch: the high-detonation low 7 bits enter with weight -256."
+note = """
+H = x[0]; y = x[1]; R = int16(ffff1380)+256*(H-(uint32(y)&127)); to = \
+uint16(R)"""
 
 [[chain.step]]
 from = "ffff121a"

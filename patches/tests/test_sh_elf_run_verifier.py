@@ -700,6 +700,15 @@ mov #0x5,r1
                 "OUTPUT": 0xFFFF191C,
                 "LTFT_CONFIG": 0x0000893D, "CONTROL_CONFIG": 0x00008940,
             },
+            "jk08a-knock-state-selection": {
+                "REGION_ENTRY": 0x00049614, "POST_LOOKUP_ENTRY": 0x00049614,
+                "ALTERNATIVE_ENTRY": 0x000499B8,
+                "SOURCE_STATE": 0xFFFF1258, "TARGET_STATE": 0xFFFF1380,
+                "NEGATIVE_BOUND": 0xFFFF230A,
+                "GATE69": 0xFFFF2469, "GATE67": 0xFFFF2467,
+                "WORD_OUTPUT": 0xFFFF121A, "BYTE_OUTPUT": 0xFFFF22FA,
+                "SLEW_STEP": 0x00009078,
+            },
             "jk08a-knock-event-publication": {
                 "REGION_ENTRY": 0x0004DB86, "PUBLICATION_ENTRY": 0x0004DB48,
                 "RETARD": 0xFFFF11D6, "SNAPSHOT": 0xFFFF2378,
@@ -1070,7 +1079,8 @@ mov #0x5,r1
                                "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate",
                                "jk08a-knock-threshold", "jk08a-knock-comparison",
                                "jk08a-knock-timing-byte", "jk08a-knock-integration",
-                               "jk08a-knock-event-retard", "jk08a-knock-event-publication"):
+                               "jk08a-knock-event-retard", "jk08a-knock-event-publication",
+                               "jk08a-knock-state-selection"):
                     self.assertEqual(sum(array.count('{"') for array in cases), region.cases)
                 # Vector tables and harness loops execute additional entries.
                 # The executable gate binds their emitted invocation count.

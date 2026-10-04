@@ -555,6 +555,32 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock timing-state selection
+
+`jk08a-knock-state-selection` binds 70 instructions, 208 bytes and 11615
+literal cases: 7671 explicit post-lookup entries and 3944 standalone
+alternative entries. The direct path computes widened signed R2 from the
+signed target word and `256*(H-(uint32(R0)&127))`. The alternative path slews
+the target within source +/-1280, applies the unsigned-byte floor -256*N
+and caps at zero. Normal gate bits select these paths; standalone entry
+executes only the alternative arithmetic.
+
+The first lookup and second lookup are not executed. Static anchors bind
+their tables, call/delay pairs and bases; explicit contexts supply their
+operands. The second mask and stack byte store execute. All low7 differences,
+both widened overflow directions, every gate byte and negative-bound byte,
+valid slew/floor/cap neighbors and unreachable floor outcomes are checked.
+Six RAM pool aliases leave the instruction words unchanged.
+
+Every case checks full literal register exits, T/MACL, SP/driver PR, the
+64-byte frame, separate external C ABI, all calibration/context bytes and
+all other RAM bytes. The output publication slots are preserved. Natural PR
+from the preceding lookup, full coordinator execution and hardware behavior
+remain outside the proof. Separate conversion composes the low-word wrap
+and signed-byte result without a joint execution claim or signed monotonic
+claim across wrap. The narrow contract is in
+[`JK08A.ignition-state.md`](../../defs/JK08A.ignition-state.md).
+
 ## Knock event correction publication
 
 `jk08a-knock-event-publication` binds 26 instructions, 76 bytes and 8754
