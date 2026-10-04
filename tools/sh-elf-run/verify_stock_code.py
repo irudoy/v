@@ -97,6 +97,23 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-maf-aggregate",
+        rom="JK08A",
+        source="stock_jk08a_maf_aggregate.s",
+        harness="stock_maf_aggregate_harness.c",
+        start=0x0003B252,
+        end=0x0003B27E,
+        pools=((0x0003B390, 8),),
+        ram_literals=(0x0003B390, 0x0003B394),
+        cases=32,
+        boundary=False,
+        symbols=(("MAF_BANK1", "jasper-walrus/ram"),
+                 ("MAF_BANK2", "imposing-auk/ram"),
+                 ("MAF_CORRECTION", "mindful-goose/ram"),
+                 ("MAF_AUXILIARY", "wondrous-sparrow/ram"),
+                 ("MAF_AGGREGATE", "polar-viper/ram")),
+    ),
+    Region(
         key="jk08a-maf-filter",
         rom="JK08A",
         source="stock_jk08a_maf_filter.s",

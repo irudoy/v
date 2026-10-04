@@ -191,6 +191,16 @@ The gate performs these checks:
    time constant. Three declared RAM pool words alone are aliased. All stock
    instructions, coefficient data, natural returns, input words, flag bits,
    sibling-bank values, MACL, GBR, saved registers, and neighbors are checked.
+   The combined-MAF fixture reconstructs the complete 22-instruction sum.
+   It executes signed bank contributions, sign-extended correction words,
+   unsigned auxiliary words, 32-bit wrap at every addition, and the signed
+   zero clamp after the final sum. Literal cases cover the largest positive
+   longword, the smallest negative longword, positive and negative overflow,
+   and cancellation of signed and unsigned words. Both RAM pool words alone
+   are aliased; natural return and GBR restoration execute unchanged. Cases
+   check the returned and stored longword, preserved registers, all input
+   bytes, and output neighbors. They establish no live overflow or physical
+   identity of the auxiliary term.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

@@ -1982,8 +1982,8 @@ effect = "adds"
 sign = "positive"
 via = ["0003b252"]
 note = """
-ffff1e38 = max(0, ffff1df8 + ffff1dfc + ffff1e2a + ffff2368); stock ffff1e2a \
-is zero and ffff2368 has no application writer."""
+s = int32(uint32(ffff1df8+ffff1dfc+int16(ffff1e2a)+uint16(ffff2368))); \
+ffff1e38 = max(0,s)"""
 
 [[chain.step]]
 from = "ffff1dfc"
@@ -1991,7 +1991,9 @@ to = "ffff1e38"
 effect = "adds"
 sign = "positive"
 via = ["0003b252"]
-note = "The bank-2 contribution enters the combined nonnegative MAF aggregate."
+note = """
+s = int32(uint32(ffff1df8+ffff1dfc+int16(ffff1e2a)+uint16(ffff2368))); \
+ffff1e38 = max(0,s)"""
 
 [[chain.step]]
 from = "ffff1e38"

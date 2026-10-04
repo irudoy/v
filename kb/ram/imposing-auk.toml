@@ -45,6 +45,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1dfc"
 name = "imposing-auk"
+width = 32
+signed = true
 
 [[symbol.evidence]]
 kind = "l0-context"

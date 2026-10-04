@@ -631,6 +631,14 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-maf-aggregate": {
+                "REGION_ENTRY": 0x0003B252,
+                "MAF_BANK1": 0xFFFF1DF8,
+                "MAF_BANK2": 0xFFFF1DFC,
+                "MAF_CORRECTION": 0xFFFF1E2A,
+                "MAF_AUXILIARY": 0xFFFF2368,
+                "MAF_AGGREGATE": 0xFFFF1E38,
+            },
             "jk08a-maf-filter": {
                 "REGION_ENTRY": 0x0003A982,
                 "MAF_SOURCE_B1": 0xFFFF1054,

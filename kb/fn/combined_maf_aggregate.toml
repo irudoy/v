@@ -1,14 +1,23 @@
 title = "Build the nonnegative combined MAF value used by BFS"
 summary = """
-Nonnegative combined MAF producer. It writes \
-ffff1e38=max(0,int32[ffff1df8]+int32[ffff1dfc]+int16[ffff1e2a]+uint16[ffff2368]). \
-Caller 0003a904 executes immediately before Base Fuel Schedule producer \
-0003b75c in the same seven-entry periodic table. Stock configuration makes \
-ffff1e2a zero on every producer call."""
+Nonnegative combined MAF producer on 7mfk. It adds the two 32-bit bank \
+contributions ffff1df8/ffff1dfc, sign-extended word ffff1e2a, and unsigned \
+word ffff2368 with 32-bit wrap; CMP/PZ then clamps a negative signed total \
+to zero and stores the longword at ffff1e38. Caller 0003a904 executes \
+immediately before Base Fuel Schedule producer 0003b75c in the same \
+seven-entry periodic table. Stock configuration makes ffff1e2a zero on every \
+producer call."""
 note = [
     """
 Signedness, saturation at zero, destination, and MAF identity are exact. The \
 engineering scale and physical meaning of ffff2368 remain unresolved.""",
+    """
+Independent reconstruction and literal executable cases bind all 22 \
+instructions, both pointer pools, positive and negative wrap, signed-word \
+cancellation, zero comparison, natural RTS, and delay-slot GBR restoration. \
+The function leaves MACL and saved registers unchanged. Only the two \
+declared RAM pointers are aliased after byte identity; physical scales and \
+live overflow remain unverified.""",
 ]
 level = "code"
 role = "service"
@@ -153,3 +162,26 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "polar-viper/ram"
+via = ["combined_maf_aggregate/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, CMP/PZ tests the completed 32-bit wrapping sum as signed. A \
+negative result selects zero; zero and positive results pass through \
+unchanged. The stored and returned longword agree, and the natural RTS delay \
+slot restores GBR."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b270"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_aggregate.py"
+key = """
+test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""

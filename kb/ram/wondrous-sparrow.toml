@@ -12,6 +12,12 @@ It remains zero in the recovered normal application-code and statically \
 recovered DMAC configuration. Static analysis cannot exclude an unresolved \
 computed peripheral access, external bus master, execution outside the \
 analyzed application, or establish the physical meaning.""",
+    """
+On 7mfk, the combined-MAF consumer reads ffff2368 as a word and explicitly \
+zero-extends it before a wrapping 32-bit addition. Independent execution \
+covers 0x8000 and 0xffff as positive additions. The absence of a recovered \
+application writer and the physical meaning retain their existing \
+uncertainty.""",
 ]
 level = "code"
 unit = "raw MAF correction"
@@ -59,6 +65,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2368"
 name = "wondrous-sparrow"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"

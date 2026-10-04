@@ -9,6 +9,11 @@ note = [
 The stock lifecycle and all integer branch formulas are exact. The \
 alternative modes' physical meaning and engineering scale remain \
 unresolved.""",
+    """
+On 7mfk, the combined-MAF consumer reads ffff1e2a as a sign-extended 16-bit \
+word before a wrapping 32-bit addition. Independent execution covers both \
+word sign boundaries and cancellation; these cases do not extend the \
+correction writer or its lifecycle proof.""",
 ]
 level = "code"
 unit = "raw MAF correction"
@@ -64,6 +69,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e2a"
 name = "mindful-goose"
+width = 16
+signed = true
 
 [[symbol.evidence]]
 kind = "rom-bytes"

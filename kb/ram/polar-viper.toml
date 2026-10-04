@@ -1,9 +1,10 @@
 summary = """
-Nonnegative combined MAF quantity written by 0003b252 immediately before \
-Base Fuel Schedule producer 0003b75c executes in the same seven-entry task \
-table. Exact formula is max(0, int32[ffff1df8] + int32[ffff1dfc] + \
-int16[ffff1e2a] + uint16[ffff2368]); stock configuration makes ffff1e2a zero \
-on every producer call."""
+Nonnegative combined MAF longword written by 0003b252 immediately before \
+Base Fuel Schedule producer 0003b75c in the same seven-entry task table. On \
+7mfk, s=int32(uint32(ffff1df8+ffff1dfc+int16(ffff1e2a)+uint16(ffff2368))) \
+and ffff1e38=max(0,s). Every addition wraps at 32 bits before the final \
+signed zero test. Stock configuration makes ffff1e2a zero on every producer \
+call."""
 note = [
     """
 The exact AN4/AN15 and DID 0x1204/0x1205 paths establish the MAF identity. \
@@ -14,6 +15,12 @@ ROM8[0x83ec]/25600 g/s per count of the offset-corrected total ffff105c, and \
 the 2026-09-17 recordings reproduce the Base Fuel Schedule from A+B, so the \
 aggregate shares that unit: 0.01477 kg/hr per count with stock 105 against \
 F*0.0001 = 0.0109 from the A2L scale of F.""",
+    """
+Independent full-function execution binds signed longword bank inputs, the \
+sign-extended correction word, unsigned auxiliary word, wrap at each \
+addition, the final signed clamp, natural return, and read-only input and \
+output-neighbor bytes. Boundary vectors establish arithmetic without \
+establishing live overflow or the auxiliary term physical identity.""",
 ]
 level = "code"
 unit = "MAF Factor input counts"
@@ -61,6 +68,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1e38"
 name = "polar-viper"
+width = 32
+signed = true
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -107,16 +116,95 @@ key = "reference"
 [[link]]
 type = "input"
 to = "imposing-auk/ram"
+via = ["combined_maf_aggregate/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, longword ffff1dfc enters the combined sum with the sibling bank, \
+sign-extended correction ffff1e2a, and unsigned auxiliary ffff2368. ADD \
+wraps at 32 bits; the signed nonnegative test occurs after all three \
+additions. No individual bank is clamped before the sum."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b262"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_aggregate.py"
+key = """
+test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""
 
 [[link]]
 type = "input"
 to = "jasper-walrus/ram"
+via = ["combined_maf_aggregate/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+On 7mfk, longword ffff1df8 enters the combined sum with the sibling bank, \
+sign-extended correction ffff1e2a, and unsigned auxiliary ffff2368. ADD \
+wraps at 32 bits; the signed nonnegative test occurs after all three \
+additions. No individual bank is clamped before the sum."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b25e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_aggregate.py"
+key = """
+test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""
+
+[[link]]
+type = "input"
+to = "mindful-goose/ram"
+via = ["combined_maf_aggregate/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, MOV.W at 0003b258 sign-extends ffff1e2a before its ADD into the \
+combined longword. The final signed zero clamp follows the unsigned \
+auxiliary addition; negative intermediate results can wrap or be cancelled \
+before that clamp. Stock zero-writing modes belong to the correction \
+producer, outside this consumer proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b258"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_aggregate.py"
+key = """
+test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""
+
+[[link]]
+type = "input"
+to = "wondrous-sparrow/ram"
+via = ["combined_maf_aggregate/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, the word ffff2368 is explicitly zero-extended before the final \
+wrapping ADD. The signed result of that final addition selects the zero \
+clamp; the high word bit does not make the auxiliary input negative. \
+Recovered writer coverage and physical identity remain unresolved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003b268"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_aggregate.py"
+key = """
+test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""
 
 [[link]]
 type = "reader"
