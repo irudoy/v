@@ -618,13 +618,18 @@ trim_b = max(trim_b, 0)
 The base result is:
 
 ```text
-v = uint16[0xFFFF2436] + floor(I_b * trim_b / 65536)
+P = uint32(I_b * trim_b)
+v = uint16[0xFFFF2436] + floor(P / 65536)
 
 if I_b != 0:
-    v = floor((256*v + offset_b - 0x8000) / 256)
+    v = floor(uint32(256*v + offset_b - 0x8000) / 256)
 
 0xFFFF191C + 2*b = min(v, 65535)
 ```
+
+The product and offset expression retain their low32 machine values before
+logical shifts. I_b=0 bypasses the offset read and correction. The bounded
+bank-base contract states the full unsigned-word consumer domain.
 
 All three trim words are Q8.8 percent with neutral `0x6400`, so the neutral
 delta is `0x6400` and the neutral stage factor is `0x6400 / 65536 = 100 / 256`.
@@ -699,6 +704,72 @@ part whose RPM/12.5 word reaches the `0xC0` gate of `FUN 0004F736`, which
 requests the full mask while MAF summary snapshot bit `0xFFFF2448.bit7` is set;
 the stream carries neither `0xFFFF41B5` nor the remaining permit terms of
 `FUN 00057D1E`.
+
+## Bounded bank base-pulse builder
+
+The complete natural-return `bank_base_pulse_builder/fn` at
+7mfk:0004ead4 has an independently reconstructed GNU SH-2E contract of
+103 instructions, 232 bound bytes and 6184 literal cases. Its stock RTS
+at 0004eb9e executes the MACL-restoring delay slot at 0004eba0. The three
+high-RAM pointer pools at 0004ec00/0004ec04/0004ec08 are the declared
+simulator aliases; the ROM pointer and arithmetic constant FFFF3800
+retain their stock values. No call, MMIO access or exception return occurs
+within this envelope.
+
+Full incoming R4 is an independent context; its low byte b is admitted
+only in 0..1. Each numerical operand is interpreted by this bounded
+consumer as an unsigned16 RAM word. The first and second banks have
+S at ffff22dc+2*b, L at ffff2302+2*b, E at ffff2a24+2*b,
+I at ffff18c0+2*b and O at ffff2310+2*b. Common A is at ffff2436.
+ROM8[00008940].bit4 selects control C at ffff22e8 when set or
+ffff22e6 when clear. Include L if ROM8[0000893d].bit1 is set or
+the selected C<=16384. When bit1 is set, the code reads neither control
+candidate nor the bit4 scalar.
+
+```
+trim = max(0,S+L+E-51200) if include_L else max(0,S+E-25600)
+P = uint32(I*trim)
+v = A+floor(P/65536)
+corrected = floor(uint32(256*v+O-32768)/256) if I!=0 else v
+output = min(65535,corrected)
+```
+
+I=0 bypasses the O read and the complete offset calculation. MUL.L
+supplies the low32 product; logical shifts and the unsigned cap retain
+the stated machine domain. Full-word inputs admit product overflow and
+unsigned offset underflow. They can produce decreasing output when S,
+L, E, I or A increases, including with factory flag bytes 51/01. The six
+complete-domain views in closed_loop_fuel steps 16..19 and fuel_pulse
+steps 17/19 therefore use sign=none. Their other fields and all other
+39 notes remain intact. These are views of one output publication.
+
+The fixture checks both legal banks, upper R4 bits, incoming T0/1,
+all flag-byte values, trim and cap equality neighbors, zero-I bypass,
+word boundaries, product overflow and offset wrap. Stock calibration
+contexts and artificial contexts retain separate classifications.
+Expectations are independent integer literals, including all fifteen
+exit GPRs and final cap T. Original GNU nonT status bits are retained;
+STC records the actual full SR after bank-preserving LDC. Exit full SR
+equals (sr_before&~1)|expected_T. Arbitrary nonT-bit variation and
+full incoming SR=0/1 are not claimed.
+
+Every case checks the selected two output bytes and every other byte of
+the 64 KiB aliased RAM, all 26 bound pool/calibration bytes, natural
+PR/SP/GBR/MACH/MACL and the independent C caller ABI. The complete
+80-byte frame spans SP-48..SP+31, with saved GBR at SP-8 and MACL
+at SP-4; all other observed bytes retain their seeded values. Exit capture
+starts at SP+32 and is disjoint from that frame.
+
+`tools/kb/tests/test_bank_base_pulse_chain.py` owns the native view through
+`test_bank_base_pulse_chain_owner_contract` and the registered executable
+identity through `test_bank_base_pulse_registered_stock_contract`. The
+gate binds every stock byte, scalar shape, typed bank and input conditions,
+literal matrix, publication counts and preserved ledger selectors.
+
+This bounded CPU result does not establish upstream producer states,
+physical units, live bank mapping, caller dispatch, scheduling, injector
+waveforms or engine reachability. Independent physical and hardware
+evidence retains its existing scope.
 
 ## Six-channel compensated pulse words
 

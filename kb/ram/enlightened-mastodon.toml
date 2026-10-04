@@ -86,6 +86,13 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff191c"
 name = "enlightened-mastodon"
+width = 16
+note = """
+The complete bank base-pulse entry consumes or publishes this raw16 word in \
+its stated legal bank context. Its unsigned16 reader interpretation is \
+explicit on typed reader/input/writer links; this storage-width fact does \
+not change producer signedness, units, physical identity, other readers or \
+layouts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -108,47 +115,213 @@ at = "7mfk:0004ec36"
 value = {named = ["0004ead4", "0004eba2", "ffff18c0", "ffff191c", "ffff22dc", "ffff2302", "ffff2310", "ffff2436", "ffff2a24"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004eb9a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
 [[link]]
 type = "input"
 to = "astonishing-hoatzin/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=0: E=RAM16[ffff2a24]. This is one view of the same complete output \
+publication, with explicit full-word arithmetic and wrap. A sign-positive \
+physical domain is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eaf0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
 to = "dainty-oriole/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=0: I=RAM16[ffff18c0]. I=0 bypasses the offset correction completely. This \
+is one view of the same complete output publication, with explicit full-word \
+arithmetic and wrap. A sign-positive physical domain is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb5e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
 to = "ltft_b1/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=0: L=RAM16[ffff2302], only when ROM893d.bit1 is set or selected \
+control<=16384. This is one view of the same complete output publication, \
+with explicit full-word arithmetic and wrap. A sign-positive physical domain \
+is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
 to = "portable-kingfisher/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Common A=RAM16[ffff2436] adds after the low32 product high-word extraction. \
+This is one view of the same complete output publication, with explicit \
+full-word arithmetic and wrap. A sign-positive physical domain is not \
+inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
 to = "provocative-cat/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=0 and I!=0: O=RAM16[ffff2310], interpreted only through unsigned \
+uint32(256*V+O-32768). I=0 does not read O. This is one view of the same \
+complete output publication, with explicit full-word arithmetic and wrap. A \
+sign-positive physical domain is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb7a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
 to = "stft_b1/ram"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=0: S=RAM16[ffff22dc]. This is one view of the same complete output \
+publication, with explicit full-word arithmetic and wrap. A sign-positive \
+physical domain is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eae6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"
@@ -161,10 +334,165 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "selector"
+to = "bank_base_control_config/tbl"
+slot = "bit4"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When LTFT flag bit1 is clear, bit4 clear selects unsigned C at ffff22e6 and \
+set selects ffff22e8. The strict omit condition is C>16384, so equality \
+includes L. If LTFT flag bit1 is set neither control candidate nor this \
+scalar is read."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb0e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "selector"
+to = "bank_base_ltft_config/tbl"
+slot = "bit1"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit1 set includes L; clear includes L only when the separately selected \
+C<=16384. LTFT flag does not change bank selection. Complete machine inputs \
+admit nonmonotone output across low32 product and offset-wrap boundaries."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eaf6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "threshold"
+to = "af_state_factor/ram"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ROM893d.bit1 clear, this candidate controls LTFT inclusion only when \
+selected by ROM8940.bit4. Unsigned C<=16384 includes L, strictly greater \
+omits it. The other candidate is independent and preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb12"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "threshold"
+to = "dazzling-sawfly/ram"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With ROM893d.bit1 clear, this candidate controls LTFT inclusion only when \
+selected by ROM8940.bit4. Unsigned C<=16384 includes L, strictly greater \
+omits it. The other candidate is independent and preserved."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb22"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
 type = "writer"
 to = "bank_base_pulse_builder/fn"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Incoming independent full R4 has uint8(x)=0; the complete arithmetic note \
+applies once to the corresponding output at ffff191c+2*b. All six chain \
+views describe this same publication, not sequential updates. I=0 bypasses \
+offset correction; I!=0 uses low32 offset arithmetic after low32 product \
+extraction. Natural return restores MACL/GBR and the exact eight-byte frame. \
+All remaining RAM and all 26 pool/calibration bytes are preserved per case, \
+without an upstream producer, scheduling or physical bank claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb9a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"

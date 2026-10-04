@@ -419,7 +419,7 @@ functions = [
     "0005b7ec",
     "000befb0",
 ]
-maps = []
+maps = ["0000893d", "00008940"]
 signals = []
 
 [[block]]
@@ -2345,11 +2345,16 @@ spans 0.7495..0.8494."""
 from = "ffff18c0"
 to = "ffff191c"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
 note = """
-v = ffff2436 + floor(ffff18c0*trim/65536); the neutral trim 0x6400 is the \
-factor 100/256 to 10 us counts."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain.step]]
 from = "ffff1108"
@@ -2365,9 +2370,16 @@ byte ffff1108: 0.70 ms at 14.0 V, 0.09 ms per V."""
 from = "ffff2436"
 to = "ffff191c"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
-note = "Injector opening time ffff2436 adds to both parity bases."
+note = """
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain.step]]
 from = "ffff191c"
@@ -2602,39 +2614,61 @@ note = "Adjustment term ffff5648 from 00058168 adds around neutral 0x6400."
 from = "ffff22dc"
 to = "ffff191c"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
 note = """
-trim = max(STFT + LTFT + ffff2a24 - 0xC800, 0), or STFT + ffff2a24 - 0x6400 \
-while ffff22e6 > 0x4000; v = ffff2436 + ffff18c0*trim/65536."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain.step]]
 from = "ffff2302"
 to = "ffff191c"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
-note = "LTFT enters the trim sum only while multiplier ffff22e6 <= 0x4000."
+note = """
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain.step]]
 from = "ffff2a24"
 to = "ffff191c"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
 note = """
-Third trim ffff2a24 from 0005b534, 90..110 percent with neutral 0x6400, adds \
-to the trim sum; its physical source is unresolved."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain.step]]
 from = "ffff18c0"
 to = "ffff191c"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["0004ead4"]
 note = """
-The trim sum over 65536 scales bank-1 precursor ffff18c0; offset word \
-ffff2310 stays at neutral 0x8000."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[chain]]
 id = "injection-phase"

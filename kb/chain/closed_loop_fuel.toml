@@ -161,36 +161,58 @@ note = "Adjustment term ffff5648 from 00058168 adds around neutral 0x6400."
 from = "stft_b1/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
 note = """
-trim = max(STFT + LTFT + ffff2a24 - 0xC800, 0), or STFT + ffff2a24 - 0x6400 \
-while ffff22e6 > 0x4000; v = ffff2436 + ffff18c0*trim/65536."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
 from = "ltft_b1/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
-note = "LTFT enters the trim sum only while multiplier ffff22e6 <= 0x4000."
+note = """
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
 from = "astonishing-hoatzin/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
 note = """
-Third trim ffff2a24 from 0005b534, 90..110 percent with neutral 0x6400, adds \
-to the trim sum; its physical source is unresolved."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
 from = "dainty-oriole/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
 note = """
-The trim sum over 65536 scales bank-1 precursor ffff18c0; offset word \
-ffff2310 stays at neutral 0x8000."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""

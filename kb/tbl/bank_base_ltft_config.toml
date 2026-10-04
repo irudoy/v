@@ -1,0 +1,70 @@
+summary = """
+7mfk scalar byte whose bit1 selects LTFT inclusion in the bounded bank \
+base-pulse reader."""
+note = """
+The bounded reader loads this raw ROM byte at 0004eaf4 and tests bit1. Set \
+includes L regardless of control; clear delegates inclusion to the \
+separately selected unsigned control word. Other readers and unrelated bits \
+have no inferred role. Generic storage does not prescribe a stock byte or a \
+physical mode."""
+block = "fuel_quantity/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000893d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004eaf4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded reader loads this raw ROM byte at 0004eaf4 and tests bit1. Set \
+includes L regardless of control; clear delegates inclusion to the \
+separately selected unsigned control word. Other readers and unrelated bits \
+have no inferred role. Generic storage does not prescribe a stock byte or a \
+physical mode."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eaf4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"

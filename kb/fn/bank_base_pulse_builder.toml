@@ -1,13 +1,13 @@
 title = "Apply bank trims and common additive word to form two parity bases"
 summary = """
-Two-bank base-pulse producer. For bank b it combines STFT ffff22dc+2*b, LTFT \
-ffff2302+2*b, extra term ffff2a24+2*b, precursor ffff18c0+2*b, common word \
-ffff2436, and offset word ffff2310+2*b. Stock flags select either \
-STFT+extra-0x6400 when ffff22e6>0x4000 or STFT+LTFT+extra-0xc800 otherwise, \
-clamp the delta nonnegative, scale the precursor by it over 65536, so \
-neutral delta 0x6400 is the factor 100/256 that converts the precursor to 10 \
-us counts, add ffff2436, apply the offset-neutral correction, saturate, and \
-write ffff191c+2*b."""
+Complete 7mfk two-bank base-pulse producer from unsigned16 RAM words. The \
+raw incoming R4 low byte chooses the bank. Two scalar flag bits choose \
+control and conditional LTFT inclusion; a lower trim clamp precedes low32 \
+multiplication, unsigned offset correction with a zero-precursor bypass, and \
+a final unsigned16 cap. Full machine inputs admit both product wrap and \
+unsigned offset underflow. The CPU-only natural-return contract does not \
+establish upstream producers, physical bank order, scheduling or hardware \
+behavior."""
 note = [
     """
 The trace proves two-bank parity reuse across six channels but not physical \
@@ -131,6 +131,16 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0004ead4"
+note = """
+Complete natural entry 0004ead4..0004eba2 consumes independent full incoming \
+R4 with low byte b in 0..1. All declared numerical RAM words are \
+zero-extended unsigned16 by this reader. The 103-instruction/232-byte stock \
+envelope executes 6184 explicit contexts; every case checks all 15 GPRs, \
+natural eight-byte MACL/GBR frame, full RAM except the literal selected \
+two-byte output, all 26 bound calibration/pool bytes, C ABI and full SR \
+relative to prepared incoming T with nonT status retained. Existing producer \
+units/signedness, preceding caller and physical bank mapping are separate \
+facts."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -255,6 +265,25 @@ supports = "identity"
 at = "7mfk:0004ed42"
 value = {named = ["0000893d", "00008940", "0004ead4", "0004eba2", "ffff18c0", "ffff191c", "ffff191e", "ffff22dc", "ffff22e6", "ffff2302", "ffff2310", "ffff2436", "ffff2a24", "ffff2a26"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004ead4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "depends"

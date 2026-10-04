@@ -768,6 +768,37 @@ execution contexts. Hardware eligibility still requires the mandatory byte,
 execution and hardware validation contracts. Build logs, source archives,
 ELFs, binaries, traces and observation reports remain ignored.
 
+## Bank base-pulse builder
+
+The stock Region `jk08a-bank-base-pulse` executes the complete natural
+function at 0004ead4..0004eba2: 103 instructions, 232 bound bytes and
+6184 literal cases. The natural RTS and MACL-restoring delay slot remain
+exact. Only three high-RAM pointer longwords are simulator aliases; the
+ROM pointer and arithmetic constant FFFF3800 remain unchanged.
+
+Both legal bank selectors use independent full R4 upper bits and raw
+unsigned16 RAM inputs. The gate covers conditional LTFT inclusion,
+both control choices, strict control threshold, lower trim clamp, low32
+product, unsigned offset wrap, zero-precursor bypass and cap equality.
+Factory and artificial calibration/software contexts remain distinct.
+Full machine-domain decreases prevent positive signs in the six shared
+chain views.
+
+Each case checks literal output and all fifteen GPRs, final T, complete
+observed full SR, natural special-register/PR/SP restoration, distinct
+external C ABI, the entire 80-byte frame, every other RAM byte and all
+bound calibration/pool bytes. The SR setup retains GNU MD/RB and all
+other nonT bits, reads actual SR after LDC, and verifies their preservation.
+Stock saved GBR/MACL occupy SP-8/SP-4; capture above SP+32 does not
+overlap the SP-48..SP+31 observer.
+
+`defs/JK08A.fuel.md` section `Bounded bank base-pulse builder` owns the
+explicit inputs and arithmetic. Named owner and registered-stock
+contracts in `tools/kb/tests/test_bank_base_pulse_chain.py` bind this
+publication to its actual registered Region, literal array, harness loop
+and result marker. Caller dispatch, upstream production, live operating
+states, physical units and hardware mapping remain separate evidence.
+
 ## Simulator boundaries
 
 GNU `sh-elf-run` cannot map the ECU high-RAM windows. The gate first proves the

@@ -191,6 +191,13 @@ note = "Aligned diagnostic pointer table and direct references agree"
 layout = "7mfk"
 address = "ffff2304"
 former = ["maroon-herring/ram/7mfk-ffff2304"]
+width = 16
+note = """
+The complete bank base-pulse entry consumes or publishes this raw16 word in \
+its stated legal bank context. Its unsigned16 reader interpretation is \
+explicit on typed reader/input/writer links; this storage-width fact does \
+not change producer signedness, units, physical identity, other readers or \
+layouts."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -211,6 +218,21 @@ supports = "identity"
 at = "7mfk:00057c2a"
 value = {named = ["00022744", "0003235c", "00035856", "00057b26", "000593ac", "ffff2304", "ffff2308", "ffff564a"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[symbol]]
 layout = "jk00c"
@@ -250,6 +272,39 @@ value = 51
 note = "Aligned diagnostic pointer table and direct references agree"
 
 [[link]]
+type = "base"
+to = "ltft_b1/ram"
+offset = 0x2
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded bank b=1 reader/publication uses this raw word at the \
+corresponding bank b=0 base+2. This is an executed two-word \
+consumer/publication address relation, without physical bank order, array \
+extension or upstream producer semantics."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
 type = "input"
 to = "benevolent-anteater/ram"
 layouts = ["7mfk"]
@@ -262,6 +317,39 @@ to = "inquisitive-dormouse/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+b=1: L=RAM16[ffff2302+2], only when ROM893d.bit1 is set or selected \
+control<=16384. MOV.W/EXTU.W supplies an unsigned16 bounded-consumer \
+context. Both banks, complete uint16 word boundaries and independent sibling \
+words are executed; producer signedness, units, acquisition and physical \
+meaning are unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb04"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"

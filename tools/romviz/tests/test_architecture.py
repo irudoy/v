@@ -19,12 +19,11 @@ FINDINGS = architecture.ROOT / "defs" / "JK08A.findings.csv"
 # An address that no ledger names.
 FREE_MAP = "0001fff0"
 
-# One durable direction per chain family: the sign that an increase of the
-# table has on the published output of the chain.
+# Declared table-to-output impact signs for the chain families.
 IMPACT_CLAIMS = (
     ("ignition-advance", "0000991a", "positive"),
     ("knock-retard", "00009b1a", "negative"),
-    ("fuel-pulse", "0000a9aa", "positive"),
+    ("fuel-pulse", "0000a9aa", "none"),
     ("intake-cvtc", "0000b43a", "positive"),
     ("idle-air", "0001465a", "positive"),
     ("electronic-throttle", "00013202", "negative"),

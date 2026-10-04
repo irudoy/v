@@ -2734,3 +2734,5 @@ L_knock_event_publication_frame_seed: .long 0xa3b4c5d6
 L_knock_event_publication_return_pointer: .long L_knock_event_publication_stock_return
 
     .size _stock_invoke_knock_event_publication,.-_stock_invoke_knock_event_publication
+
+    .include "stock_bank_base_pulse_invoke.s"

@@ -185,8 +185,33 @@ class RamStructureEvidenceTest(unittest.TestCase):
                 {"kind": "test", "supports": "identity", "path": self.PATH, "key": key}]
 
     def assert_pair(self, address, items):
-        self.assertEqual([item for item in items if item["kind"] in ("indirect", "test")],
+        # Independent execution contracts may accompany the required base pair.
+        self.assertEqual([item for item in items
+                          if item["kind"] == "indirect"
+                          or (item["kind"] == "test" and item.get("path") == self.PATH)],
                          self.expected_items(address))
+
+    def test_independent_contract_keeps_the_original_pair_required(self):
+        address = 0xFFFF18C2
+        pair = self.expected_items(address)
+        independent = {"kind": "test", "supports": "identity",
+                       "path": "tools/kb/tests/test_bank_base_pulse_chain.py",
+                       "key": "test_bank_base_pulse_chain_owner_contract"}
+        self.assert_pair(address, [*pair, independent])
+        for omitted in range(2):
+            with self.subTest(omitted=omitted):
+                with self.assertRaises(AssertionError):
+                    self.assert_pair(address, [pair[1 - omitted], independent])
+        for index, field, value in ((0, "value", pair[0]["value"] + 1),
+                                    (0, "supports", "structure"),
+                                    (1, "key", "test_other_contract"),
+                                    (1, "supports", "structure"),
+                                    (1, "path", independent["path"])):
+            with self.subTest(index=index, field=field):
+                changed = copy.deepcopy(pair)
+                changed[index][field] = value
+                with self.assertRaises(AssertionError):
+                    self.assert_pair(address, [*changed, independent])
 
     def declare(self, row):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {}, repo.config())

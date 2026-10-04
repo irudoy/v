@@ -171,11 +171,16 @@ spans 0.7495..0.8494."""
 from = "dainty-oriole/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
 note = """
-v = ffff2436 + floor(ffff18c0*trim/65536); the neutral trim 0x6400 is the \
-factor 100/256 to 10 us counts."""
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
 from = "private-groundhog/ram"
@@ -191,9 +196,16 @@ byte ffff1108: 0.70 ms at 14.0 V, 0.09 ms per V."""
 from = "portable-kingfisher/ram"
 to = "enlightened-mastodon/ram"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["bank_base_pulse_builder/fn"]
-note = "Injector opening time ffff2436 adds to both parity bases."
+note = """
+B = uint8(x); S = RAM16[ffff22dc+2*B]; L = RAM16[ffff2302+2*B]; E = \
+RAM16[ffff2a24+2*B]; I = RAM16[ffff18c0+2*B]; A = RAM16[ffff2436]; O = \
+RAM16[ffff2310+2*B]; F = (ROM8[0000893d]>>1)&1; J = (ROM8[00008940]>>4)&1; C \
+= (1-J)*RAM16[ffff22e6]+J*RAM16[ffff22e8]; G = \
+max(F,1-min(1,max(0,C-16384))); T = max(0,S+G*L+E-25600*(1+G)); P = \
+uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
+(1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
 from = "enlightened-mastodon/ram"

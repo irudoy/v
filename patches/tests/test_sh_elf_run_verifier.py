@@ -1,5 +1,6 @@
 import importlib.util
 from dataclasses import replace
+from io import StringIO
 import re
 from pathlib import Path
 import sys
@@ -61,7 +62,66 @@ sys.modules[STOCK_SPEC.name] = STOCK_VERIFIER
 STOCK_SPEC.loader.exec_module(STOCK_VERIFIER)
 
 
+def _require_bank_invoker_include_and_symbols(shared, included):
+    includes = re.findall(r'^\s*\.include\s+"([^"]+)"\s*$', shared, re.MULTILINE)
+    assert includes.count("stock_bank_base_pulse_invoke.s") == 1
+    combined = shared + "\n" + included
+    exported = "_stock_invoke_bank_base_pulse"
+    assert len(re.findall(r'^' + exported + r':$', combined, re.MULTILINE)) == 1
+    assert len(re.findall(r'^\s*\.size ' + exported + r',', combined, re.MULTILINE)) == 1
+    local = re.findall(r'^(L_bank_base_pulse_[a-z0-9_]+):', combined, re.MULTILINE)
+    assert local and len(local) == len(set(local))
+
+
 class ShElfRunVerifierTest(unittest.TestCase):
+    def test_stock_invoker_assembler_search_path_preserves_all_region_calls(self):
+        commands, calls = [], []
+
+        def record_region(region, invoke, build):
+            self.assertEqual(invoke, build / "stock-invoke.o")
+            calls.append(region)
+            return sum((end - start) // 2 for start, end in region.code_spans)
+
+        with patch.object(STOCK_VERIFIER.base_verifier, "run_command", commands.append), \
+                patch.object(STOCK_VERIFIER, "run_region", record_region), \
+                patch("sys.stdout", StringIO()):
+            result = STOCK_VERIFIER.verify()
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0], [
+            STOCK_VERIFIER.base_verifier.AS, "--big", "--isa=sh2e", "-I",
+            STOCK_VERIFIER.TOOL_DIR, "-o", commands[0][-2],
+            STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s",
+        ])
+        self.assertEqual(Path(commands[0][-2]).name, "stock-invoke.o")
+        self.assertEqual(calls, list(STOCK_VERIFIER.REGIONS))
+        self.assertEqual(result["regions"], len(calls))
+        self.assertEqual(result["dynamic_cases"], sum(region.cases for region in calls))
+        self.assertEqual(result["instructions"], sum(
+            (end - start) // 2 for region in calls for start, end in region.code_spans))
+
+    def test_stock_bank_invoker_include_resolves_to_unique_sibling_source(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        source = STOCK_VERIFIER.TOOL_DIR / "stock_bank_base_pulse_invoke.s"
+        self.assertTrue(source.is_file())
+        self.assertEqual(source.parent, STOCK_VERIFIER.TOOL_DIR)
+        _require_bank_invoker_include_and_symbols(shared, source.read_text())
+
+    def test_stock_bank_invoker_refuses_missing_duplicate_and_colliding_bindings(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        included = (STOCK_VERIFIER.TOOL_DIR / "stock_bank_base_pulse_invoke.s").read_text()
+        directive = '    .include "stock_bank_base_pulse_invoke.s"'
+        mutations = (
+            (shared.replace(directive, ''), included),
+            (shared + '\n' + directive, included),
+            (shared, included + '\n_stock_invoke_bank_base_pulse:\n'),
+            (shared + '\nL_bank_base_pulse_inner:\n', included),
+            (shared, included.replace('.size _stock_invoke_bank_base_pulse,', '.size _other,')),
+        )
+        for changed_shared, changed_included in mutations:
+            with self.subTest(shared=changed_shared == shared, included=changed_included == included):
+                with self.assertRaises(AssertionError):
+                    _require_bank_invoker_include_and_symbols(changed_shared, changed_included)
+
     def test_preprocessor_writes_the_symbols_of_the_included_header(self):
         header = "#define ANSWER 0x2A\n#define RECORD { 0x01, 0x02 }\n"
         source = (
@@ -631,6 +691,15 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-bank-base-pulse": {
+                "REGION_ENTRY": 0x0004EAD4,
+                "STFT": 0xFFFF22DC, "LTFT": 0xFFFF2302,
+                "EXTRA": 0xFFFF2A24, "PRECURSOR": 0xFFFF18C0,
+                "ADDITIVE": 0xFFFF2436, "OFFSET": 0xFFFF2310,
+                "CONTROL0": 0xFFFF22E6, "CONTROL1": 0xFFFF22E8,
+                "OUTPUT": 0xFFFF191C,
+                "LTFT_CONFIG": 0x0000893D, "CONTROL_CONFIG": 0x00008940,
+            },
             "jk08a-knock-event-publication": {
                 "REGION_ENTRY": 0x0004DB86, "PUBLICATION_ENTRY": 0x0004DB48,
                 "RETARD": 0xFFFF11D6, "SNAPSHOT": 0xFFFF2378,
@@ -978,7 +1047,26 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
+                if key == "jk08a-bank-base-pulse":
+                    header_name = "stock-jk08a-bank-base-pulse-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(
+                        r'^#define BANK_BASE_PULSE_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(r'bank_base_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    literal_row = r'\{0x[0-9a-f]+U,\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\},(?:\d+U,){14}\d+U\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertRegex(harness, r'for\(i=0;i<ARRAY_SIZE\(bank_base_cases\);\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&bank_base_cases\[i\]\)')
+                    self.assertRegex(harness, r'if\(completed!=BANK_BASE_PULSE_CASE_COUNT\)')
+                    self.assertRegex(harness, r'\+\+completed;')
+                elif key not in ("jk08a-maf-scaling", "jk08a-maf-compensation", "jk08a-maf-filter",
                                "jk08a-maf-contribution", "jk08a-fuel-compensation", "jk08a-bfs-rate",
                                "jk08a-knock-threshold", "jk08a-knock-comparison",
                                "jk08a-knock-timing-byte", "jk08a-knock-integration",

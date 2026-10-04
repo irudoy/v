@@ -100,6 +100,28 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-bank-base-pulse", rom="JK08A",
+        source="stock_jk08a_bank_base_pulse.s",
+        harness="harness-stock-jk08a-bank-base-pulse.c",
+        start=0x0004EAD4, end=0x0004EBA2,
+        pools=((0x0000893D, 1), (0x00008940, 1),
+               (0x0004EBE2, 2), (0x0004EBE4, 2),
+               (0x0004EC00, 4), (0x0004EC04, 4), (0x0004EC08, 4),
+               (0x0004EC18, 4), (0x0004EC1C, 4)),
+        ram_literals=(0x0004EC00, 0x0004EC04, 0x0004EC08),
+        cases=6184, boundary=False,
+        symbols=(("STFT", "stft_b1/ram"), ("LTFT", "ltft_b1/ram"),
+                 ("EXTRA", "astonishing-hoatzin/ram"),
+                 ("PRECURSOR", "dainty-oriole/ram"),
+                 ("ADDITIVE", "portable-kingfisher/ram"),
+                 ("OFFSET", "provocative-cat/ram"),
+                 ("CONTROL0", "dazzling-sawfly/ram"),
+                 ("CONTROL1", "af_state_factor/ram"),
+                 ("OUTPUT", "enlightened-mastodon/ram"),
+                 ("LTFT_CONFIG", "bank_base_ltft_config/tbl"),
+                 ("CONTROL_CONFIG", "bank_base_control_config/tbl")),
+    ),
+    Region(
         key="jk08a-knock-event-publication", rom="JK08A",
         source="stock_jk08a_knock_event_publication.s",
         harness="harness-stock-jk08a-knock-event-publication.c",
@@ -1029,7 +1051,7 @@ def verify(verbose=False):
         build_dir = Path(directory)
         invoke = build_dir / "stock-invoke.o"
         base_verifier.run_command([
-            base_verifier.AS, "--big", "--isa=sh2e",
+            base_verifier.AS, "--big", "--isa=sh2e", "-I", TOOL_DIR,
             "-o", invoke, TOOL_DIR / "stock_invoke.s",
         ])
         instructions = 0

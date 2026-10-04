@@ -75,6 +75,13 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2436"
 name = "portable-kingfisher"
+width = 16
+note = """
+The complete bank base-pulse entry consumes or publishes this raw16 word in \
+its stated legal bank context. Its unsigned16 reader interpretation is \
+explicit on typed reader/input/writer links; this storage-width fact does \
+not change producer signedness, units, physical identity, other readers or \
+layouts."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -122,6 +129,25 @@ at = "7mfk:00057002"
 value = {named = ["000084f6", "00008c9e", "0004ead4", "0004eba2", "00051a98", "00056fc0", "ffff1108", "ffff22e0", "ffff2436"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004eb60"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
 [[link]]
 type = "input"
 to = "fuel_inhibit_mask/ram"
@@ -139,12 +165,37 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "bank_base_pulse_builder/fn"
+via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Common A=RAM16[ffff2436] adds after the low32 product high-word extraction. \
+MOV.W/EXTU.W supplies an unsigned16 bounded-consumer context. Both banks, \
+complete uint16 word boundaries and independent sibling words are executed; \
+producer signedness, units, acquisition and physical meaning are unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb60"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"

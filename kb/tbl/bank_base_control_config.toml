@@ -1,0 +1,68 @@
+summary = """
+7mfk scalar byte whose bit4 selects one of two unsigned control words in the \
+bounded bank base-pulse reader."""
+note = """
+Only with LTFT flag bit1 clear, the bounded reader loads this byte through \
+ROM pointer 893d+3 at 0004eb0c and tests bit4. Clear selects ffff22e6; set \
+selects ffff22e8. Generic storage does not prescribe a stock byte, other \
+consumer semantics or a physical mode."""
+block = "fuel_quantity/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008940"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004eb0c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "reader"
+to = "bank_base_pulse_builder/fn"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only with LTFT flag bit1 clear, the bounded reader loads this byte through \
+ROM pointer 893d+3 at 0004eb0c and tests bit4. Clear selects ffff22e6; set \
+selects ffff22e8. Generic storage does not prescribe a stock byte, other \
+consumer semantics or a physical mode."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eb0c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
