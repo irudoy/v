@@ -96,8 +96,29 @@ supports = "homology"
 at = "1me3b:00072786"
 to = "7mfk:0001108e"
 note = """
-normalized-shape pair 0006e854/0007275c of 76 bytes loads the exact \
-direct-row-major second torque surface at the same call ordinal"""
+The exact 1ME3B image loads table 00011dfc through MOV.L at 00072786 and \
+pool 000729a0. Accessor 0007275c selects row table + 32*(c-1), supplies \
+unsigned word axis 00016c46 and coordinate fffe81d6 to 0002af88, and stores \
+the raw word at fffe9100 + 2*(c-1). Its sole interpolation call is ordinal 0 \
+of 1. Caller 00072920 compares the selected uint32 metric against 0x80000000 \
++ uint16(threshold) using strict CMP/HI at 00072c6c. These operands and the \
+consumer support raw threshold-role homology with 7mfk:0001108e. The target \
+axis ends at 464,504,544; fused leaf 0002af88 uses FLOAT/FMUL/FDIV/FTRC and \
+a sign-extended zero-fraction return. Target execution, full arithmetic and \
+ABI equivalence, engineering scale and physical channel identity remain \
+unestablished."""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_knock_target_homology.py"
+key = "test_knock_target_homology_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_knock_target_homology.py"
+key = "test_knock_target_homology_exact_registered_rom_contract"
 
 [[symbol]]
 layout = "1nd"
@@ -110,8 +131,28 @@ supports = "homology"
 at = "1nd:0006e87e"
 to = "7mfk:0001108e"
 note = """
-homologous direct-row-major accessor preserves the second torque surface \
-operand"""
+Exact 1ND0A and 1ND3B images load table 000122c8 through MOV.L at 0006e87e \
+and pool 0006ea98. Accessor 0006e854 selects row table + 32*(c-1), supplies \
+unsigned word axis 00016bc2 and coordinate fffe81ee to 0002893c, and stores \
+the raw word at fffe9138 + 2*(c-1). Its sole interpolation call is ordinal 0 \
+of 1. Caller 0006ea18 compares the selected uint32 metric against 0x80000000 \
++ uint16(threshold) using strict CMP/HI at 0006ed64. These operands and the \
+consumer support raw threshold-role homology with 7mfk:0001108e. Target axis \
+knots end at 464,504,544, unlike the 7mfk knots 448,480,512. Target \
+execution, full arithmetic and ABI equivalence, engineering scale and \
+physical channel identity remain unestablished."""
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_knock_target_homology.py"
+key = "test_knock_target_homology_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = "tools/kb/tests/test_knock_target_homology.py"
+key = "test_knock_target_homology_exact_registered_rom_contract"
 
 [[symbol]]
 layout = "7mfk"

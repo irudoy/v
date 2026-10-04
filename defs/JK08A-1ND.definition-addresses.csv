@@ -37,7 +37,7 @@ Map,0000b43a,,,unsupported,0,absent,the intake CVTC dispatcher 0010dd1c calls no
 Map,0000b53a,,,unsupported,0,absent,the intake CVTC dispatcher 0010dd1c calls no counterpart of source target accessor 000bda64
 Map,0000e98e,00010048,,homologous,21,l0,unique structural accessor pair preserves interpolation-call order
 Map,00010b8e,000120c8,,homologous,2,l0,unique engine-torque surface preserves geometry and exact storage
-Map,0001108e,000122c8,,homologous,1,l0,homologous direct-row-major accessor preserves the second torque surface operand
+Map,0001108e,000122c8,,homologous,1,l0,"Exact 1ND0A and 1ND3B images load table 000122c8 through MOV.L at 0006e87e and pool 0006ea98. Accessor 0006e854 selects row table + 32*(c-1), supplies unsigned word axis 00016bc2 and coordinate fffe81ee to 0002893c, and stores the raw word at fffe9138 + 2*(c-1). Its sole interpolation call is ordinal 0 of 1. Caller 0006ea18 compares the selected uint32 metric against 0x80000000 + uint16(threshold) using strict CMP/HI at 0006ed64. These operands and the consumer support raw threshold-role homology with 7mfk:0001108e. Target axis knots end at 464,504,544, unlike the 7mfk knots 448,480,512. Target execution, full arithmetic and ABI equivalence, engineering scale and physical channel identity remain unestablished."
 Map,00012196,00013c12,,homologous,2,l0,homologous fallback branch preserves the default table role
 Map,0001219e,00013c1a,default,homologous,2,l0,the branch on the default arm of the target state selector preserves the source warm-transition table role
 Map,000121a6,00013c2a,,homologous,2,l0,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role

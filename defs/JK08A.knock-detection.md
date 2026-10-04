@@ -287,6 +287,28 @@ The unreferenced bank therefore has catalog role `dead` for exact JK08A code.
 Changing it cannot alter the active threshold calculation unless executable
 code is also changed to reference it.
 
+## Target-layout raw threshold role
+
+The exact 1ND0A and 1ND3B accessors at `0006e854` load table `000122c8`;
+the exact 1ME3B accessor at `0007275c` loads table `00011dfc`. Each selects a
+channel row, interpolates an unsigned word coordinate and publishes a raw
+threshold word. Their callers compare the selected uint32 metric with
+`0x80000000 + uint16(threshold)` using strict CMP/HI. These operands and the
+consumer establish raw threshold-role homology with JK08A table `0001108e`.
+
+The target axes end at raw knots 464, 504 and 544; JK08A ends at 448, 480
+and 512. The target calibration data agree across the three exact images.
+1ME3B uses a fused FLOAT/FMUL/FDIV/FTRC leaf with a sign-extended
+zero-fraction return; its accessor stores the low word. The integer wrapper
+and the fused leaf require separate arithmetic and ABI proofs.
+
+`tools/kb/tests/test_knock_target_homology.py` binds complete registered
+image identities, table/axis/callee operands, accessor widths and the biased
+strict comparison. The sole interpolation call has ordinal 0 of 1 inside
+each accessor. This static gate establishes neither target execution nor
+full arithmetic/ABI equivalence, engineering scale or physical channel
+identity.
+
 ## Calibration boundary
 
 - Only `0x1108E` is an active threshold calibration in the exact image.
