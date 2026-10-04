@@ -162,6 +162,20 @@ The gate performs these checks:
    Four declared RAM literals alone are aliased. Every tested instruction,
    natural return, calibration word, mode byte, and read-only input remains
    stock; MACL, GBR, and saved R12/R13/R14 are checked after execution.
+   The MAF transfer fixture reconstructs both lookups and word publications,
+   including bank 2's store in the BSR delay slot. The complete implicit
+   64-point word wrapper, its eight-shift body, and unsigned linear finisher
+   retain their stock addresses and returns. Literal cases check both curves,
+   low-12-bit input truncation, 16-count cells, fractional truncation, unsigned
+   cells, both interpolation directions, argument wrap, and the sign-extended
+   last-cell return whose caller stores only the word. Direct body cases
+   execute the byte-cell alternative with explicit format context. The
+   unchanged following callee 0x0003b320 executes only its stock zero-selection
+   path and natural return; its other calibration-selected paths gain no
+   execution claim. Four declared RAM literals alone are aliased. After both
+   word stores and that callee, the boundary at 0x0003a950 restores PR from
+   stack offset zero outside all tested instructions. Cases check MACL, GBR,
+   the input base, both input words, stock tables, and neighboring RAM.
    The JK08A axis-search fixtures reconstruct the
    byte and word kernels and their unsigned fraction divider. Cases use the
    stock fuel, ignition, and torque row axes and independent literal offsets

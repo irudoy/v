@@ -144,6 +144,70 @@ _stock_invoke_format_curve:
     nop
     .size _stock_invoke_format_curve,.-_stock_invoke_format_curve
 
+! Record the word wrapper's MACL after a natural return.
+! The fifth argument supplies the result-state pointer.
+    .global _stock_invoke_word_curve
+    .type _stock_invoke_word_curve,@function
+_stock_invoke_word_curve:
+    mov.l r8,@-r15
+    mov.l @(4,r15),r8
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    mov r4,r2
+    mov r5,r4
+    lds r7,macl
+    jsr @r2
+    mov r6,r5
+    sts macl,r1
+    mov.l r1,@r8
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r8
+    rts
+    nop
+    .size _stock_invoke_word_curve,.-_stock_invoke_word_curve
+
+! The MAF slice receives its input-window base in R14. Its calls replace PR;
+! only the boundary after the second-bank delay-slot store restores PR.
+    .global _stock_invoke_maf_transfer
+    .type _stock_invoke_maf_transfer,@function
+_stock_invoke_maf_transfer:
+    mov.l r8,@-r15
+    mov.l r14,@-r15
+    sts.l pr,@-r15
+    sts.l macl,@-r15
+    stc.l gbr,@-r15
+    mov r7,r8
+    mov r4,r2
+    mov r5,r14
+    lds r6,macl
+    mov.l transfer_gbr_seed,r0
+    ldc r0,gbr
+    mov.l transfer_continuation,r0
+    mov.l r0,@-r15
+    jsr @r2
+    nop
+transfer_record_return:
+    add #4,r15
+    sts macl,r1
+    mov.l r1,@r8
+    mov.l r14,@(4,r8)
+    stc gbr,r1
+    mov.l r1,@(8,r8)
+    ldc.l @r15+,gbr
+    lds.l @r15+,macl
+    lds.l @r15+,pr
+    mov.l @r15+,r14
+    mov.l @r15+,r8
+    rts
+    nop
+    .balign 4
+transfer_gbr_seed:
+    .long 0x76543210
+transfer_continuation:
+    .long transfer_record_return
+    .size _stock_invoke_maf_transfer,.-_stock_invoke_maf_transfer
+
 ! The MAF slice reads R4 from its already established MMIO-base context.
     .global _stock_invoke_adc
     .type _stock_invoke_adc,@function

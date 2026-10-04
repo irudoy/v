@@ -631,6 +631,19 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-maf-transfer": {
+                "REGION_ENTRY": 0x0003A922,
+                "MAF_INPUT_B1": 0xFFFF1E48,
+                "MAF_INPUT_B2": 0xFFFF1E4A,
+                "MAF_OUTPUT_B1": 0xFFFF1054,
+                "MAF_OUTPUT_B2": 0xFFFF1056,
+                "MAF_TABLE_B1": 0x00014274,
+                "MAF_TABLE_B2": 0x000141F4,
+                "CURVE_ENTRY": 0x00026410,
+                "BODY_ENTRY": 0x00026A74,
+                "INPUT_BASE": 0xFFFF1E1C,
+                "CORRECTION_OUTPUT": 0xFFFF1E2A,
+            },
             "jk08a-maf-compensation": {
                 "REGION_ENTRY": 0x0003AE8A,
                 "MAF_INPUT_B1": 0xFFFF101C,

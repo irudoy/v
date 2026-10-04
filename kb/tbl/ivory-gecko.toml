@@ -17,6 +17,13 @@ the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into \
 ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as \
 g/s*100 with the stock factor 105; a changed factor changes the declared \
 conversion.""",
+    """
+On 7mfk, the independently assembled stock lookup executes 64 unsigned word \
+cells with step 256, unsigned argument truncation, last-cell clamping, and \
+both caller word stores. The source input advances one cell per 16 raw \
+counts. The last word returns sign-extended before the caller word store. \
+This executable contract supplies no additional hardware validation of the \
+voltage axis or g/s conversion.""",
 ]
 level = "code"
 role = "table"
@@ -552,11 +559,27 @@ note = "unique structural pair preserves interpolation-call order"
 [[link]]
 type = "index"
 to = "careful-penguin/ram"
+via = ["dual_bank_maf_coordinator/fn", "xanthic-kagu/fn", "precise-koala/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+On 7mfk, uint16(uint16(ffff1e4a)<<4) is the unsigned word argument. This \
+retains the low 12 input bits, selects one of 64 cells with step 256, and \
+supplies 16 input counts per cell. At coordinate >=0x3f00, cell 63 is \
+returned without interpolation; below it the fraction is \
+(argument&255)*256."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a93c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_transfer.py"
+key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
 
 [[link]]
 type = "reader"

@@ -11,6 +11,16 @@ note = [
 The continuous AN4/AN15 -> DID 0x1204/0x1205 -> transfer curves -> DID \
 0x1209 trace establishes MAF identity and bank mapping at code confidence. \
 Engineering conversions remain pending hardware validation.""",
+    """
+On 7mfk, the stock slice 0003a922..0003a94f reads ffff1e48/ffff1e4a, passes \
+uint16(word<<4) to 00026410 with bank curves 00014274/000141f4, and stores \
+words at ffff1054/ffff1056. Bank 2 is stored in the BSR 0003b320 delay slot. \
+The independent fixture executes that unchanged callee only through its \
+stock zero-selection path and natural return. Its boundary at 0003a950 \
+restores PR from stack offset zero after all tested instructions; only four \
+declared high-RAM pool words are aliased. The fixture establishes no \
+execution result for the coordinator outside this slice or for the callee \
+alternatives.""",
 ]
 level = "code"
 role = "accessor"

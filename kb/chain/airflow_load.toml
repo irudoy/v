@@ -71,34 +71,42 @@ from = "ginger-stingray/ram"
 to = "wealthy-woodlouse/tbl"
 effect = "indexes"
 sign = "none"
-via = ["dual_bank_maf_coordinator/fn"]
-note = """
-The low 12 bits of ffff1e48 index the 64-point implicit axis of the bank-1 \
-transfer curve, 16 input counts per cell."""
+via = ["dual_bank_maf_coordinator/fn", "xanthic-kagu/fn", "precise-koala/fn"]
+note = "x = uint16(ffff1e48<<4); to = min(63,x>>8); frac = uint16(x<<8)"
 
 [[step]]
 from = "careful-penguin/ram"
 to = "ivory-gecko/tbl"
 effect = "indexes"
 sign = "none"
-via = ["dual_bank_maf_coordinator/fn"]
-note = "The low 12 bits of ffff1e4a index the bank-2 transfer curve."
+via = ["dual_bank_maf_coordinator/fn", "xanthic-kagu/fn", "precise-koala/fn"]
+note = "x = uint16(ffff1e4a<<4); to = min(63,x>>8); frac = uint16(x<<8)"
 
 [[step]]
 from = "wealthy-woodlouse/tbl"
 to = "vague-pony/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["dual_bank_maf_coordinator/fn"]
-note = "MAF Sensor Transfer - Bank 1 gives output A; one count is 105/25600 g/s."
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "xanthic-kagu/fn",
+    "precise-koala/fn",
+    "didactic-civet/fn",
+]
+note = "ffff1054 = uint16(lookup(0x00014274,uint16(ffff1e48<<4)))"
 
 [[step]]
 from = "ivory-gecko/tbl"
 to = "opalescent-pronghorn/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["dual_bank_maf_coordinator/fn"]
-note = "MAF Sensor Transfer - Bank 2 gives output B; one count is 105/25600 g/s."
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "xanthic-kagu/fn",
+    "precise-koala/fn",
+    "didactic-civet/fn",
+]
+note = "ffff1056 = uint16(lookup(0x000141f4,uint16(ffff1e4a<<4)))"
 
 [[step]]
 from = "vague-pony/ram"

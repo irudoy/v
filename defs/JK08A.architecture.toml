@@ -1908,34 +1908,32 @@ from = "ffff1e48"
 to = "00014274"
 effect = "indexes"
 sign = "none"
-via = ["0003a904"]
-note = """
-The low 12 bits of ffff1e48 index the 64-point implicit axis of the bank-1 \
-transfer curve, 16 input counts per cell."""
+via = ["0003a904", "00026410", "00026a60"]
+note = "x = uint16(ffff1e48<<4); to = min(63,x>>8); frac = uint16(x<<8)"
 
 [[chain.step]]
 from = "ffff1e4a"
 to = "000141f4"
 effect = "indexes"
 sign = "none"
-via = ["0003a904"]
-note = "The low 12 bits of ffff1e4a index the bank-2 transfer curve."
+via = ["0003a904", "00026410", "00026a60"]
+note = "x = uint16(ffff1e4a<<4); to = min(63,x>>8); frac = uint16(x<<8)"
 
 [[chain.step]]
 from = "00014274"
 to = "ffff1054"
 effect = "looks-up"
 sign = "positive"
-via = ["0003a904"]
-note = "MAF Sensor Transfer - Bank 1 gives output A; one count is 105/25600 g/s."
+via = ["0003a904", "00026410", "00026a60", "00026740"]
+note = "ffff1054 = uint16(lookup(0x00014274,uint16(ffff1e48<<4)))"
 
 [[chain.step]]
 from = "000141f4"
 to = "ffff1056"
 effect = "looks-up"
 sign = "positive"
-via = ["0003a904"]
-note = "MAF Sensor Transfer - Bank 2 gives output B; one count is 105/25600 g/s."
+via = ["0003a904", "00026410", "00026a60", "00026740"]
+note = "ffff1056 = uint16(lookup(0x000141f4,uint16(ffff1e4a<<4)))"
 
 [[chain.step]]
 from = "ffff1054"

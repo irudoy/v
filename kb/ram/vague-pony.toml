@@ -1,11 +1,22 @@
 summary = """
-Bank 1 MAF transfer output A from 1D-64 curve 0x14274. FUN 0003a982 copies \
-it to working value ffff1058; FUN 0003b520 combines it with B=ffff1056 to \
-calculate byte contribution wA=uint8(trunc0((A<<8)/(A+B)))."""
+Bank 1 MAF transfer output from the 64-point word curve 0x00014274 on 7mfk. \
+FUN 0003a904 passes uint16(uint16(ffff1e48)<<4) to wrapper 00026410 and \
+stores its low word in ffff1054. The wrapper interpolates adjacent unsigned \
+words below coordinate 0x3f00 and returns the sign-extended last word at or \
+above it. FUN 0003a982 copies the stored unsigned output to the working \
+filtering input; FUN 0003b520 uses the two bank outputs for contribution \
+fractions."""
 note = [
     """
 Exact DID 0x1204 and the continuous AN4-to-DID-to-map-to-DID 0x1209 trace \
 establish the MAF and bank-1 identity.""",
+    """
+The input retains only the low 12 bits before lookup. Each implicit cell \
+spans 16 input counts; its low four input bits form a Q0.16 fraction in \
+multiples of 4096. Last-cell sign extension affects the function return \
+register, not the unsigned published word. Software execution preserves the \
+existing engineering-unit interpretation without validating it on \
+hardware.""",
 ]
 level = "code"
 unit = "raw MAF quantity"
@@ -53,6 +64,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1054"
 name = "vague-pony"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -76,13 +89,61 @@ value = {named = ["00014274", "0003a904", "0003a982", "0003b520", "ffff1054"], s
 key = "reference"
 
 [[link]]
+type = "input"
+to = "ginger-stingray/ram"
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "xanthic-kagu/fn",
+    "precise-koala/fn",
+    "didactic-civet/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The caller reads unsigned word ffff1e48, shifts it left four bits, and \
+passes only the low word. Thus high input nibbles wrap rather than saturate. \
+The implicit index is min(63,(uint16(ffff1e48<<4)>>8)); below the last-cell \
+boundary the fraction is uint16(uint16(ffff1e48<<4)<<8)."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a926"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_transfer.py"
+key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
+
+[[link]]
 type = "lookup"
 to = "wealthy-woodlouse/tbl"
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "xanthic-kagu/fn",
+    "precise-koala/fn",
+    "didactic-civet/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The 64 unsigned word cells at 0x00014274 have implicit coordinate step 256. \
+Adjacent ascending cells give y0+floor((y1-y0)*frac/65536), and descending \
+cells give y0-floor((y0-y1)*frac/65536). Coordinate >=0x3f00 returns signed \
+ROM16[base+126]; the caller stores only its low word. Bank 2 publication is \
+in the BSR 0003b320 delay slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003a938"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_transfer.py"
+key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
 
 [[link]]
 type = "reader"
