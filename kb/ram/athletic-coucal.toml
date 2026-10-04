@@ -37,6 +37,13 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff23c2"
 name = "athletic-coucal"
+width = 16
+note = """
+The bounded reader loads this word at 0004d9fa, applies EXTU.W at 0004d9fe \
+and SHLR8 at 0004da02, and consumes its unsigned high byte only on Q1,G1. \
+Its low byte cannot affect that arithmetic. This reader interpretation does \
+not establish or change producer signedness, existing scale or producer \
+execution."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -51,15 +58,59 @@ at = "7mfk:0004d9fa"
 value = {named = ["00008710", "0004d99c", "00063f30", "ffff23c2"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9fa"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+MOV.W at 0004d9fa, EXTU.W at 0004d9fe and SHLR8 at 0004da02 select the \
+unsigned high byte H on Q1,G1. The low byte is irrelevant to the arithmetic. \
+This reader interpretation preserves the independently owned producer \
+signedness and scale, without executing that producer."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9fa"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "writer"

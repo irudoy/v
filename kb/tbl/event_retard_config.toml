@@ -1,0 +1,68 @@
+summary = """
+7mfk scalar configuration byte whose bit5 selects the bounded event-retard \
+branch."""
+note = """
+The reviewed reader 0004d9b0 loads this ROM byte and 0004d9b2 masks bit5. \
+The owning event_timing_correction_builder function is placed in \
+ignition_timing. This claim covers that bit5 reader only; other bits, \
+readers, physical purpose and layouts are separate facts."""
+block = "ignition_timing/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008710"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+ROM byte load 0004d9b0 and mask 0004d9b2 select G from bit5. This reader \
+alone is covered: G0 preserves SECOND without a store; G1 writes its signed \
+result. Stock and explicitly artificial mode bytes have distinct contexts; \
+other readers and bits remain separate."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

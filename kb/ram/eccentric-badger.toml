@@ -66,6 +66,17 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff11d6"
 name = "eccentric-badger"
+level = "code"
+width = 16
+signed = true
+summary = "Signed word published by the bounded 7mfk event-retard Q/G branches."
+note = """
+With Q=0 this word is -A. With Q=1,G=0 it is min(K,-A). With Q=1,G=1 it is \
+min(K-H,-B). K, A and B are signed byte contexts; H is the unsigned high \
+byte of ffff23c2. Q is the OR of ffff24c5.bit5 and ffff24cb.bit2; G is \
+ROM8[00008710].bit5. Exact word stores retain signed results including +128 \
+and values below -128. Existing engineering scale and later sum consumption \
+are separate from this bounded proof."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -94,33 +105,149 @@ at = "7mfk:0004da4a"
 value = {named = ["00008710", "0004d99c", "ffff11d6", "ffff11f9", "ffff11fa", "ffff22fa", "ffff23c2"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9ce"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
 [[link]]
 type = "input"
 to = "aquamarine-leopard/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Signed-byte B participates in FIRST only for Q1,G1 as min(K-H,-B), with \
+signed32 comparison and a word publication. This branch does not substitute \
+A. Negative byte extrema and signed word results are retained."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004da0a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "input"
 to = "athletic-coucal/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+For Q1,G1, MOV.W 0004d9fa, EXTU.W 0004d9fe and SHLR8 0004da02 form \
+H=uint16(ffff23c2)>>8. Its unsigned high byte is subtracted from K before \
+min(K-H,-B); the low byte is ignored. Producer signedness, scale and \
+execution remain separate."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9fa"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "input"
 to = "hopeful-hedgehog/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Signed-byte A supplies -A when Q0, independent of G, and the signed minimum \
+min(K,-A) when Q1,G0. The enabled Q1,G1 branch uses B instead. Negating -128 \
+gives the signed word +128."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9c8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "input"
 to = "steady-lionfish/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Signed-byte K participates only when Q1. For G0 FIRST=min(K,-A); for G1 \
+FIRST=min(K-H,-B). K is an explicit RAM input context and its producer is \
+not executed by this slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9e4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "reader"
@@ -130,10 +257,133 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "event_retard_config/tbl"
+slot = "bit5"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+G is ROM bit5. G0 uses FIRST=-A or min(K,-A) and performs no SECOND store, \
+preserving its prior raw word. G1 uses FIRST=-A or min(K-H,-B) and SECOND=-B \
+or min(K,-B). Stock and explicit artificial calibration contexts are \
+separate; other ROM bits/readers remain outside this claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "selector"
+to = "muscular-malamute/ram"
+slot = "bit2"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Q is the OR of this bit2 and ffff24c5.bit5. Both clear gives Q0; either set \
+gives Q1. Other flag bits are independently varied without adding producer \
+or mode reachability claims."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9be"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "selector"
+to = "utopian-grebe/ram"
+slot = "bit5"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Q is the OR of this bit5 and ffff24cb.bit2. If Q0, FIRST=-A and G1 \
+SECOND=-B; if Q1, G chooses the signed minimum branch. The bit has no \
+hardware or dispatch identity from this proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
 type = "writer"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Exactly one FIRST word store executes at 0004d9ce, 0004d9f4 or 0004da1e for \
+the declared Q/G branches. The fragment publishes -A, min(K,-A) or \
+min(K-H,-B) without byte saturation. Branch delay-slot stores and signed \
+minima bind to the exact stock words. Entry 0004d9ac ends at 0004da2a before \
+timer/latch and sum logic."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9ce"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

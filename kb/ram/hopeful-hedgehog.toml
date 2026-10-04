@@ -78,6 +78,15 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff11f9"
 name = "hopeful-hedgehog"
+level = "code"
+width = 8
+signed = true
+summary = "Signed byte A consumed by the bounded 7mfk event-retard branches."
+note = """
+MOV.B at 0004d9c8 and 0004d9e2 sign-extends this byte. Its negation supplies \
+FIRST for Q0 and the signed minimum for Q1,G0; the Q1,G1 minimum instead \
+uses B at ffff11fa. Producer behavior and engineering scale remain separate \
+facts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -107,6 +116,25 @@ at = "7mfk:00062ee4"
 value = {named = ["0004d99c", "0004dbe8", "00062e10", "ffff11f9", "ffff2336", "ffff235e", "ffff24cb", "ffff4242"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9c8"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
 [[link]]
 type = "input"
 to = "ambitious-auk/ram"
@@ -124,12 +152,36 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+MOV.B at 0004d9c8 and 0004d9e2 sign-extends A, whose negation supplies Q0 \
+FIRST or Q1,G0 minimum. Q1,G1 uses B instead. Full producer execution and \
+final timing consumption are separate contracts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9c8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "reader"

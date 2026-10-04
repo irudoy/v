@@ -176,6 +176,47 @@ calibrations it sets `0xFFFF2466.bit6` when the state is at or below
 Other gates can force either selector state, so these thresholds are not the
 complete high-level high-detonation policy.
 
+## Bounded knock event retard
+
+The registered `jk08a-knock-event-retard` fixture reconstructs 63 instructions
+and binds 147 bytes from stock JK08A. Its 7408 literal cases enter at
+`0004d9ac` and stop at `0004da2a`, before the timer/latch and later sum logic.
+The input RAM contexts are explicit; their producers are outside this slice.
+There are 3605 stock-mode contexts and 3803 artificial mode contexts. In the
+3676 G0 cases the companion retains every bit of its prior word, with no store.
+
+Let K, A and B be signed bytes at `ffff22fa`, `ffff11f9` and `ffff11fa`.
+Let H be the unsigned high byte of word `ffff23c2`. Q is true when
+`ffff24c5.bit5` or `ffff24cb.bit2` is set. G is bit 5 of ROM byte `00008710`;
+the retained stock byte is `0x7c`. The two output words obey:
+
+| Q | G | `ffff11d6` | `ffff11d8` |
+|---|---|---|---|
+| 0 | 0 | -A | Preserve the complete prior word |
+| 0 | 1 | -A | -B |
+| 1 | 0 | min(K, -A) | Preserve the complete prior word |
+| 1 | 1 | min(K-H, -B) | min(K, -B) |
+
+The enabled Q branch uses B for both minima. The high byte enters only its
+first minimum, while the companion uses the unadjusted K. Signed byte loads,
+negation, EXTS.W, comparisons, branch outcomes and store delay slots bind to
+the exact instruction words. The unsigned high-byte interpretation does not
+establish the source word producer's signedness or engineering scale.
+
+Literal inputs cover signed byte extrema, all four Q/G arms, both independent
+Q bits and their combination, unrelated flag bits, all ROM mode bytes,
+high-byte limits and low-byte contamination. Stock mode contexts and explicit
+artificial calibration contexts remain distinct. Every case checks both
+publications or complete companion retention, T, all 15 general registers,
+special registers, SP/driver PR, the entire 52-byte frame, independent caller
+ABI, all 21 calibration/pool bytes and all other 64k RAM bytes. Four declared
+RAM pool aliases preserve all checked instruction words. The fragment has no
+calls or stack accesses; its ordinary RTS/NOP boundary is outside stock spans.
+
+Full event-builder mode reachability, timer/latch policy, producer lifecycle, later
+summation, physical input identities, cadence and hardware behavior remain
+outside this execution envelope.
+
 ## Bounded knock integration
 
 The registered `jk08a-knock-integration` fixture reconstructs 39 instructions

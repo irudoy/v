@@ -240,6 +240,21 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0004d99c"
+summary = """
+Engine-event timing-correction builder. In the bounded event-retard prefix, \
+Q is ffff24c5.bit5 OR ffff24cb.bit2 and G is ROM8[00008710].bit5. Signed \
+byte contexts K=ffff22fa, A=ffff11f9 and B=ffff11fa and unsigned high byte \
+H=uint16(ffff23c2)>>8 produce ffff11d6=-A for Q0, min(K,-A) for Q1/G0, or \
+min(K-H,-B) for Q1/G1. G1 writes ffff11d8=-B for Q0 or min(K,-B) for Q1; G0 \
+preserves its whole prior word without a store. When ffff24cc.bit1 is set it \
+writes ffff12d6=min(ffff2378,127). Otherwise it interpolates uint16 map \
+0x147da by ffff237e, stores the raw value in ffff2000, scales coefficient \
+ROM8[0x8a3c] or ROM8[0x8a3d] (both 100, selected by ffff2459.bit5) by that \
+value over 100 into ffff1ff6, forms ffff1ff8=ffff2378+ffff11d6 (or a \
+one-count slew toward ffff2378 with timer ffff25fc when ffff24c0.bit6 is \
+set), and writes ffff12d6=clamp_s8(ffff1ff8+ffff2356-ffff1ff6); with \
+ffff40e7 nonzero and ffff24c2.bit1 clear the sum is limited to \
+min(ffff11d6+ffff2356, -ffff40e7)."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"

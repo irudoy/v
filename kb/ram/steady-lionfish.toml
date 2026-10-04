@@ -179,12 +179,36 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+MOV.B at 0004d9e4 and 0004da00 sign-extends K. Q1,G0 uses min(K,-A); Q1,G1 \
+uses min(K-H,-B) for FIRST and min(K,-B) for SECOND. This explicit input \
+context does not execute the timing-byte producer."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9e4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "selector"

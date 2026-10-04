@@ -555,6 +555,28 @@ production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
 
+## Knock event retard
+
+`jk08a-knock-event-retard` binds 63 instructions, 147 bytes and 7408 literal
+cases. Explicit RAM contexts exercise all four combinations of Q (RAM flag
+bit5 or bit2) and G (ROM mode bit5). K, A and B are signed bytes; H is the
+unsigned high byte of the source word. Q0 writes -A; Q1/G0 writes min(K,-A);
+Q1/G1 writes min(K-H,-B). With G1 the companion is -B for Q0 or min(K,-B)
+for Q1; G0 preserves its complete prior word.
+
+Stock mode `0x7c` and artificial mode contexts are labelled separately.
+There are 3605 stock-mode and 3803 artificial cases. In the 3676 G0 cases the
+companion retains the complete prior word through the no-store branch.
+Coverage includes signed boundaries, high/low word contamination, independent
+RAM bits and all ROM mode bytes. Every case checks output/retention, T, all
+general/special registers, SP/driver PR, the full 52-byte frame, independent
+caller ABI, all calibration/pool bytes and all other RAM bytes. Four RAM pool
+aliases leave checked instruction words intact. The ordinary return boundary
+at `0004da2a` is outside stock spans. Full builder mode reachability, timer/latch
+behavior, producer identities, later summation, cadence and hardware behavior
+remain outside the proof. The narrow contract is in
+[`JK08A.ignition-state.md`](../../defs/JK08A.ignition-state.md).
+
 ## Knock event integration
 
 `jk08a-knock-integration` binds 39 instructions, 114 bytes and 4035 literal

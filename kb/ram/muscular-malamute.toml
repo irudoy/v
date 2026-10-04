@@ -2,8 +2,66 @@
 layout = "7mfk"
 address = "ffff24cb"
 name = "muscular-malamute"
+level = "code"
+width = 8
+signed = false
+summary = "7mfk byte storage containing one bit2 selector for bounded event retard."
+note = """
+MOV.B at 0004d9bc reads this byte; TST at 0004d9be tests bit2. Q is true if \
+this bit or ffff24c5.bit5 is set. Other consumers and byte bits remain \
+separate facts."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:000419ae"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9bc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Byte load 0004d9bc and bit2 test 0004d9be contribute the other OR input to \
+Q. This read does not establish the other bits, their producers or full \
+event-builder reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9bc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

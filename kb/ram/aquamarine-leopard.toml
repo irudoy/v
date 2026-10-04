@@ -2,16 +2,70 @@
 layout = "7mfk"
 address = "ffff11fa"
 name = "aquamarine-leopard"
+level = "code"
+width = 8
+signed = true
+summary = """
+Signed byte B consumed by the enabled bounded 7mfk event-retard branches."""
+note = """
+MOV.B at 0004d9d2 or 0004da0a sign-extends this byte. G1 uses its negation \
+for SECOND and, on Q1, for both signed minima. The producer and downstream \
+timing arbitration are outside this bounded execution."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004d9d2"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9d2"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+MOV.B at 0004d9d2 and 0004da0a sign-extends B. G1 uses -B for Q0 SECOND, or \
+both Q1 minima. G0 performs no SECOND store. No full source producer or mode \
+reachability claim is attached."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9d2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

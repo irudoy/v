@@ -2,8 +2,65 @@
 layout = "7mfk"
 address = "ffff24c5"
 name = "utopian-grebe"
+level = "code"
+width = 8
+signed = false
+summary = "7mfk byte storage containing one bit5 selector for bounded event retard."
+note = """
+MOV.B at 0004d9b6 reads this byte; TST at 0004d9b8 tests bit5. Q is true if \
+this bit or ffff24cb.bit2 is set. Unrelated byte bits are preserved and \
+carry no meaning from this proof."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002133e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b6"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Byte load 0004d9b6 and bit5 test 0004d9b8 contribute one OR input to Q. \
+Unrelated bits and all other RAM bytes are retained by the bounded slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b6"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

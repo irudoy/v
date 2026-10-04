@@ -55,6 +55,17 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff11d8"
 name = "wooden-aardwolf"
+level = "code"
+width = 16
+signed = true
+summary = """
+Companion word conditionally published or wholly retained by bounded 7mfk \
+event retard."""
+note = """
+G0 executes no store and retains every prior raw word bit. G1 publishes -B \
+with Q0 or min(K,-B) with Q1 at 0004da28. K and B are signed bytes; Q is the \
+OR of two RAM selector bits. This companion does not subtract H. Existing \
+scheduler snapshot and nonlinear-controller reads remain separate facts."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -63,19 +74,86 @@ at = "7mfk:0004da28"
 value = {named = ["00020dfe", "0004d99c", "00063f30", "ffff11d8", "ffff11fa", "ffff22fa"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004da28"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
 [[link]]
 type = "input"
 to = "aquamarine-leopard/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+For G1,Q0 SECOND=-B; for G1,Q1 SECOND=min(K,-B). G0 executes no SECOND \
+store, so all prior raw bits survive. -B is a signed word operation and -128 \
+becomes +128."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9d2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "input"
 to = "steady-lionfish/ram"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+For G1,Q1 the companion uses signed-byte K without subtracting H: \
+SECOND=min(K,-B). G1,Q0 uses -B; G0 retains the complete prior word without \
+loading a numeric result for a store."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004da00"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
 
 [[link]]
 type = "reader"
@@ -92,10 +170,133 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "selector"
+to = "event_retard_config/tbl"
+slot = "bit5"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+G is ROM bit5. G0 uses FIRST=-A or min(K,-A) and performs no SECOND store, \
+preserving its prior raw word. G1 uses FIRST=-A or min(K-H,-B) and SECOND=-B \
+or min(K,-B). Stock and explicit artificial calibration contexts are \
+separate; other ROM bits/readers remain outside this claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "selector"
+to = "muscular-malamute/ram"
+slot = "bit2"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Q is the OR of this bit2 and ffff24c5.bit5. Both clear gives Q0; either set \
+gives Q1. Other flag bits are independently varied without adding producer \
+or mode reachability claims."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9be"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
+type = "selector"
+to = "utopian-grebe/ram"
+slot = "bit5"
+via = ["event_timing_correction_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Q is the OR of this bit5 and ffff24cb.bit2. If Q0, FIRST=-A and G1 \
+SECOND=-B; if Q1, G chooses the signed minimum branch. The bit has no \
+hardware or dispatch identity from this proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004d9b8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"
+
+[[link]]
 type = "writer"
 to = "event_timing_correction_builder/fn"
+via = ["event_timing_correction_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+G1 executes MOV.W at 0004da28 and publishes -B for Q0 or min(K,-B) for Q1. \
+G0 executes no store to this companion and retains all prior raw word bits. \
+The bounded envelope checks the entire word retention independently from \
+FIRST. Later scheduler snapshot, timer/latch and downstream sum logic are \
+outside this proof."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004da28"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_event_retard_chain.py"
+key = "test_knock_event_retard_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.ignition-state.md"
+key = "Bounded knock event retard"

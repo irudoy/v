@@ -501,7 +501,7 @@ functions = [
     "0006469c",
     "00065434",
 ]
-maps = []
+maps = ["00008710"]
 signals = []
 
 [[block]]
@@ -3396,8 +3396,11 @@ effect = "adds"
 sign = "positive"
 via = ["0004d99c"]
 note = """
-With ffff24c5 bit 5 or ffff24cb bit 2 set and ROM8[0x8710] bit 5: ffff11d6 = \
-min(ffff22fa - hi(ffff23c2), -ffff11fa)."""
+Q = min(1,((uint8(ffff24c5)>>5)&1)+((uint8(ffff24cb)>>2)&1)); G = \
+(ROM8[0x00008710]>>5)&1; K = int8(ffff22fa); A = int8(ffff11f9); B = \
+int8(ffff11fa); H = uint16(ffff23c2)>>8; ffff11d6 = \
+(1-Q)*(-A)+Q*((1-G)*min(K,-A)+G*min(K-H,-B)); ffff11d8 = \
+(1-G)*uint16(ffff11d8)+G*((1-Q)*(-B)+Q*min(K,-B))"""
 
 [[chain.step]]
 from = "ffff11d6"
