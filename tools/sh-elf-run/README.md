@@ -528,8 +528,8 @@ Fragment register observations remain separate from the containing function's
 entry and return contract. The static test binds 734 bytes, including the
 preceding cache/flag/base loads, and rejects every single-byte corruption.
 Published counts derive from the registered region and emitted execution
-marker. The installed simulator has no instruction-trace or PC-profile
-support; the contract does not publish a directly observed helper-call count.
+marker. The optional exact-PC observer below adds per-context helper-call
+counts through the same registered execution API and byte-bound fixture.
 
 ## Knock threshold lookup
 
@@ -554,6 +554,108 @@ distinct before/after observations. Comparison, count publication, metric
 production, reference learning, physical channel identity and engineering
 scale are outside this executable slice. The detailed contract is in
 [`JK08A.knock-detection.md`](../../defs/JK08A.knock-detection.md).
+
+## Optional exact PC observation
+
+`Dockerfile.pctrace` builds a separate GNU16.3 simulator with a small host-only
+observer. The default Dockerfile, runner and registered firmware gates retain
+their existing contracts. The observer records the fetched instruction word
+at its actual PC, including the actual delay-slot PC. It does not alter guest
+registers, operations, memory, ROM or fixture bytes, and successful observation
+preserves host errno. Observation is disabled unless explicitly requested.
+
+The source archive is GNU's official
+`https://ftp.gnu.org/gnu/gdb/gdb-16.3.tar.xz`, SHA256
+`bcfcd095528a987917acf9fff3f1672181694926cc18d609c99d0042c00224c5`.
+Use its existing ignored directory as the named `gnu-source` build context;
+do not commit the archive or extracted tree. The recipe checks that archive,
+the reviewed patch, and both pristine and modified `sim/sh/interp.c` digests.
+It retains and compares the original assembler, compiler and simulator binary
+digests while adding `/opt/gnu-sh-trace/bin/sh-elf-run`.
+
+Build the primary stock image by its existing recipe, then build the separate
+optional image from the repository root. Set `GNU_SOURCE_DIRECTORY` to the
+existing directory containing the exact `gdb-16.3.tar.xz` archive.
+
+```bash
+docker --context default build \
+  --build-context "gnu-source=$GNU_SOURCE_DIRECTORY" \
+  --build-arg STOCK_IMAGE=vq-sh-elf-run:16.3 \
+  -f tools/sh-elf-run/Dockerfile.pctrace \
+  -t vq-sh-elf-run:16.3-pctrace .
+PC_IMAGE_ID=$(docker --context default image inspect \
+  --format '{{.Id}}' vq-sh-elf-run:16.3-pctrace)
+```
+
+Use the immutable ID for every validation command and preserve the resulting
+reports in ignored output directories. Create each output directory empty
+before its command; the tools refuse an occupied retained directory.
+
+```bash
+mkdir -p tmp/pc-observation/probe tmp/pc-observation/bfs
+docker --context default run --rm --network none \
+  --mount "type=bind,source=$PWD,target=/workspace,readonly" \
+  --mount "type=bind,source=$PWD/tmp/pc-observation/probe,target=/observation" \
+  --entrypoint python3 "$PC_IMAGE_ID" \
+  tools/sh-elf-run/probe_pc_observation.py \
+  --image-id "$PC_IMAGE_ID" --output /observation
+```
+
+The probe independently assembles the stock seven-instruction signed helper
+at `0x000224fa`, binds its bytes to the SHA-locked JK08A ROM, and requires two
+exact ordinary/return/delay PC sequences. Original simulator, observation
+disabled, filtered observation and unfiltered observation must produce the
+same values and errno result. Ten malformed or unwritable requests must stop
+with exit 125. The report records the immutable image ID supplied by the host,
+the actual simulator and linked ELF digests, and the trace digests.
+
+Before using observations from an image as an assertion, run the complete
+primary repository-contained GNU gate in that same image:
+
+```bash
+docker --context default run --rm --network none \
+  --mount "type=bind,source=$PWD,target=/workspace,readonly" \
+  "$PC_IMAGE_ID"
+docker --context default run --rm --network none \
+  --mount "type=bind,source=$PWD,target=/workspace,readonly" \
+  --mount "type=bind,source=$PWD/tmp/pc-observation/bfs,target=/observation" \
+  --entrypoint python3 "$PC_IMAGE_ID" \
+  tools/sh-elf-run/verify_bfs_pc_observation.py \
+  --image-id "$PC_IMAGE_ID" --output /observation
+```
+
+The BFS command delegates fixture identity, compilation and all 461 cases to
+the primary `stock.run_region` API. It pins the dedicated assembly, harness,
+literal case order, named Region contract, native harness bindings and the
+invoker's own function block. Unrelated Region or invoker additions remain
+permitted. Linked ELF markers and actual wrapper bytes bind the observation
+after relocation. Every helper opcode, complete sequence and delay flag must
+match stock bytes.
+
+The trace separates 461 caller frames. Literal assertions check 20 correction
+contexts and 7 blend contexts individually, covering zero, one and two helper
+calls with 38 checked helper entries. The other 434 frames retain observed counts
+without count assertions. A whole-run total cannot substitute for these
+per-context expectations. Arithmetic outputs, RAM, calibration and ABI checks
+continue to belong to the unchanged primary harness.
+
+The observer's opt-in environment is `VQ_SH_PC_TRACE_FILE` plus
+`VQ_SH_PC_TRACE_FORMAT=v1`. Optional `VQ_SH_PC_TRACE_RANGES` contains up to 8
+comma-separated hexadecimal half-open `low:high` ranges. The tool selects only
+the helper and compiled invoker ranges to avoid tracing the C RAM loops.
+Unsupported requests, open/write/close errors and zero selected records fail
+with exit 125. `pc_observation.py` accepts only raw ASCII bytes, exact LF syntax,
+one header, one terminal complete footer, the exact positive record count and
+a zero process exit. Pure refusal tests run through ordinary pytest discovery:
+
+```bash
+uv run pytest -q tools/tests/test_sh_pc_observation.py
+```
+
+This optional observer establishes direct invocation counts under the declared
+execution contexts. Hardware eligibility still requires the mandatory byte,
+execution and hardware validation contracts. Build logs, source archives,
+ELFs, binaries, traces and observation reports remain ignored.
 
 ## Simulator boundaries
 
