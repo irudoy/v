@@ -107,8 +107,8 @@ functions = [
     "000c2d76",
     "000c2de0",
 ]
-maps = []
-signals = []
+maps = ["00008c89"]
+signals = ["ffff196c", "ffff8505"]
 
 [[block]]
 id = "analog-inputs"
@@ -1635,10 +1635,13 @@ functions = ["00066bd0", "0006727c"]
 id = "ici0a-ratio-cell"
 name = "ICI0A bounded ratio-cell action"
 summary = """
-The input-capture handler conditionally writes a saturated ratio byte from \
-independent unsigned interval operands and compares its unsigned value \
-against the stock threshold. This bounded action does not establish the \
-interval producer or hardware behavior."""
+The bounded input-capture handler window conditionally writes or retains an \
+unsigned ratio byte and a separate reader window strictly compares it with a \
+stock ROM scalar. At writer entry 0002909a, prev denotes independent \
+incoming R12 and x denotes independent incoming R13, both narrowed to \
+unsigned16. G samples gate bit 7 before skip-tail arming, and C denotes the \
+incoming retained cell byte. The measuring producers, full ISR execution, \
+physical units, timing, and hardware behavior are outside this proof."""
 quantity = "Unsigned ratio byte, previous/current * 64"
 output = "ffff196c"
 specs = ["defs/JK08A.ici0a-ratio.md"]
@@ -1650,9 +1653,9 @@ effect = "stores"
 sign = "none"
 via = ["00021bbc"]
 note = """
-With ffff8505.bit7 set, write 255 for zero current or min(255, floor(64 * \
-previous / current)); otherwise retain the byte. MOV.B writer 000290cc and \
-reader 0002927c use ffff128c + 06e0."""
+P = uint16(prev); D = uint16(x); Z = min(1,D); G = (uint8(ffff8505)>>7)&1; C \
+= uint8(ffff196c); R = (1-Z)*255+Z*min(255,floor(64*P/max(1,D))); ffff196c = \
+G*R+(1-G)*C"""
 
 [[chain]]
 id = "engine-speed"

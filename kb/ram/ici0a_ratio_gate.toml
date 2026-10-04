@@ -1,0 +1,94 @@
+summary = """
+Unsigned gate byte read at the bounded ICI0A ratio-window entry. Sampled bit \
+7 enables the ratio-cell write; a clear bit retains the cell. The included \
+gate-clear tail sets bit 7 when the independent incoming mode byte R4 is at \
+least two, preserving the other bits. Its preceding writer and the remaining \
+state machine are outside this slice."""
+block = "crank_cam/block"
+unit = "raw flag byte"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8505"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002909a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B at 0002909a samples ffff8505; TST 0x80 selects the ratio-write or \
+retained-cell path. The sampled gate precedes the included skip-tail arming \
+store."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002909a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When sampled gate bit 7 is clear, the independent incoming mode byte R4 >= 2 \
+selects OR 0x80 and the MOV.B store at 0002911a; otherwise the gate byte is \
+unchanged. The original sampled byte supplies the other seven bits. This \
+tail retains the ratio cell during the current event and only arms a later \
+event. R4 is an independent incoming mode context, without an asserted RAM \
+producer."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002911a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"

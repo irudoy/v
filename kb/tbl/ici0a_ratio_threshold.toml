@@ -1,0 +1,64 @@
+summary = """
+Unsigned scalar threshold loaded by the bounded ICI0A ratio reader. With \
+independent incoming reader status bit 7 clear, the reader zero-extends the \
+cell and threshold bytes and performs a strict cell > threshold comparison. \
+The following state-store paths and the threshold's other uses are outside \
+this reader slice."""
+role = "threshold"
+block = "crank_cam/block"
+access = "direct-scalar"
+unit = "raw_u8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008c89"
+level = "code"
+storage = "uint8"
+cols = 1
+rows = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002927e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The reader at 0002927e loads ROM8[00008c89] and zero-extends it at 00029282 \
+before CMP/GT at 00029284. This window begins at 00029272 and skips the cell \
+and threshold loads when independent incoming R0.bit7 is set; following \
+state stores are excluded."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002927e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"

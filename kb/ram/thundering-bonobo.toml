@@ -1,18 +1,24 @@
 summary = """
-ICI0A byte-cell ratio action for independent unsigned interval operands: \
-while ffff8505.bit7 is set, write 255 for zero current interval or min(255, \
-floor(64 * previous / current)) through divider 00021bbc; otherwise retain \
-the cell. Handler 00028ea2 reads the unsigned byte at 0002927c and compares \
-it against ROM8[00008c89] = 118. The divider is an arithmetic dependency, \
-not a direct cell reader."""
+Bounded ICI0A unsigned ratio byte produced from independent incoming R12/R13 \
+contexts. Sampled ffff8505.bit7 enables a 255 write for zero current, or \
+min(255, floor(64 * previous / current)) through divider 00021bbc for \
+nonzero current; a clear bit retains the cell. Handler 00028ea2 reads the \
+unsigned byte at 0002927c and strictly compares it with the scalar at \
+00008c89 when independent incoming reader R0.bit7 is clear. The divider is \
+an arithmetic dependency, not a direct cell reader."""
 note = [
     """
 Placement is ffff128c + 0x6e0; MOV.B writer 000290cc and reader 0002927c \
-belong to entry 00028ea2. The bounded proof excludes the interval measuring \
+belong to entry 00028ea2. At bounded writer entry 0002909a, the arithmetic \
+aliases prev and x denote independent incoming R12 and R13, each narrowed by \
+uint16; they do not identify RAM producers. G samples ffff8505.bit7 before \
+the gate-clear skip tail can arm a later event, and C is the incoming \
+retained cell byte. The bounded proof excludes the interval measuring \
 producer, complete ISR execution, physical tooth/time units, and hardware \
 behavior; see defs/JK08A.ici0a-ratio.md.""",
 ]
 level = "code"
+block = "crank_cam/block"
 unit = "ratio*64"
 
 [[ledger]]
@@ -46,6 +52,8 @@ text = "0x6e0"
 layout = "7mfk"
 address = "ffff196c"
 name = "thundering-bonobo"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -94,11 +102,174 @@ to = "pompous-firefly/fn/7mfk"
 relies = "structure"
 
 [[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x6e0
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+R8 loads ffff128c at 00028f06; the writer and reader independently load \
+0x6e0 from 00029150 and 0002938e. Their byte accesses at 000290cc and \
+0002927c address the same ffff196c cell. This base relation declares no \
+extent for the multipurpose base."""
+
+[[link.evidence]]
+kind = "indirect"
+at = "7mfk:00028f06"
+value = 1760
+mode = "base"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
 type = "reader"
 to = "pastel-yak/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The 00029272-00029286/000292ec reader window takes independent incoming R0 \
+status. A set bit 7 skips both cell and threshold reads; a clear bit loads \
+the cell at 0002927c, zero-extends it at 00029280, and strictly compares it \
+with the zero-extended ROM threshold at 00029284. This window performs no \
+RAM stores; subsequent state updates are excluded."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002927c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "selector"
+to = "ici0a_ratio_gate/ram"
+slot = "bit7"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Sampled entry bit 7 set selects the ratio-cell write; clear selects exact \
+retention without a cell store or divider call. On the clear path, the \
+independent incoming mode byte R4 >= 2 can arm the gate after retention for \
+a later event; the equation uses the original sampled bit, not the final \
+armed byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002909a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "selector"
+to = "pompous-firefly/fn"
+via = ["pastel-yak/fn", "pompous-firefly/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On the sampled-gate-set path with nonzero incoming uint16(R13), the real \
+divider returns a nonnegative quotient in R0. Result <= 255 selects that \
+byte; result > 255 selects the 255 cap through the strict unsigned \
+comparison at 000290c4. Zero incoming uint16(R13) bypasses the divider and \
+selects 255 at 000290bc-000290be. Incoming R12/R13 are independent register \
+contexts; the call and its third SHLL2 delay slot execute in place, without \
+a full signed-divider claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000290b4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
+
+[[link]]
+type = "threshold"
+to = "ici0a_ratio_threshold/tbl"
+via = ["pastel-yak/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With independent incoming reader R0.bit7 clear, MOV.B at 0002927c and \
+0002927e load the cell and ROM scalar, EXTU.B at 00029280 and 00029282 \
+narrow both to unsigned8, and CMP/GT at 00029284 evaluates cell > threshold. \
+Equality is false. Incoming status bit 7 set skips the loads and comparison; \
+the following state-store paths are excluded. The exact-image threshold \
+value belongs to defs/JK08A.ici0a-ratio.md and its byte-bound tests."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002927e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
 type = "writer"
@@ -108,3 +279,29 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The 0002909a-000290ce/0002911c writer window takes independent incoming R12 \
+and R13 as previous/current unsigned16 contexts; the arithmetic aliases prev \
+and x refer to those registers. EXTU.W narrows their unrelated upper bits. A \
+sampled set gate bit 7 writes the saturated ratio byte at 000290cc; zero \
+current writes 255 without calling the divider, and a clear gate preserves \
+the incoming cell. No measuring producer or complete ISR is asserted."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000290cc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_numeric_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+key = "test_ici0a_ratio_cell_path"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+key = "test_ici0a_ratio_chain_owner_contract"
