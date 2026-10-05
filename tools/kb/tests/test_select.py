@@ -8,10 +8,68 @@ from unittest import mock
 
 import pytest
 
-from kb import cli, compile, ledger_projection, repo, store, write
+from kb import adapters, cli, compile, convert, ledger_projection, repo, store, write
+from kb.adapters import files as file_adapter
 from kb.repo import KbError
+from tools.kb.tests import selector_sources
 
-pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
+
+ISOLATED_CASES = {
+    'test_an_offset_must_match_the_canonical_relation',
+    'test_final_batch_refuses_a_relation_replaced_without_its_selected_claim',
+    'test_final_batch_refuses_marker_removal_and_incompatible_replacement',
+    'test_final_batch_refuses_unlink_even_when_the_source_had_no_selector',
+    'test_refuses_an_incompatible_or_duplicate_selected_claim',
+    'test_refuses_claims_without_a_projected_dependency_column',
+    'test_refuses_invalid_vocabulary_and_role_direction_mappings',
+    'test_refuses_missing_and_ambiguous_native_relations',
+    'test_refuses_missing_duplicate_and_incompatible_owned_markers',
+    'test_refuses_noninteger_native_base_offsets_that_compare_equal_to_zero',
+    'test_refuses_unknown_keys_missing_keys_and_wrong_value_types',
+    'test_select_cannot_create_a_marker_or_adopt_one_from_an_earlier_operation',
+    'test_the_native_relation_must_hold_each_claiming_end',
+    'test_zero_base_offset_selects_one_relation_and_normalizes_duplicate_identity',
+}
+
+
+@pytest.fixture(scope='module')
+def preserved_full_models(reuse_kb_source_parses):
+    held = {}
+    yield held
+    for cls, model, before, documents in held.values():
+        assert convert.dump(model) == before
+        assert cls.documents == documents
+
+
+@pytest.fixture(scope='module')
+def isolated_model(reuse_kb_source_parses, tmp_path_factory):
+    root = tmp_path_factory.mktemp('selector-writer')
+    hashes = selector_sources.write_sources(root)
+    model = compile.build(root, order=(file_adapter,))
+    assert model.stash['ledger_rows'] and write._issues(model) == {}
+    before = convert.dump(model)
+    documents = {path: store.load(root, path) for path in (STATE_PATH, FUNCTION_PATH)}
+    yield model, documents
+    assert convert.dump(model) == before
+    assert selector_sources.unchanged(root, hashes)
+
+
+@pytest.fixture
+def source_order(request, monkeypatch, preserved_full_models):
+    instance = request.instance
+    if not isinstance(instance, SelectTest):
+        return
+    cls = type(instance)
+    if id(cls.base) not in preserved_full_models:
+        preserved_full_models[id(cls.base)] = (
+            cls, cls.base, convert.dump(cls.base), copy.deepcopy(cls.documents))
+    if request.node.name in ISOLATED_CASES:
+        monkeypatch.setattr(adapters, 'ADAPTERS', (file_adapter,))
+        model, documents = request.getfixturevalue('isolated_model')
+        monkeypatch.setattr(instance, 'base', model)
+        monkeypatch.setattr(instance, 'documents', copy.deepcopy(documents))
+        monkeypatch.setattr(instance, 'model', lambda documents: cls.model(documents, root=model.root))
 
 
 STATE, FUNCTION = "knock_timing_state/ram", "knock_function/fn"
@@ -43,13 +101,13 @@ class SelectTest(unittest.TestCase):
         cls.base = cls.model(cls.documents)
 
     @staticmethod
-    def model(documents):
-        return compile.build(repo.ROOT, {path: store.render(path.parent.name, document)
+    def model(documents, root=repo.ROOT):
+        return compile.build(root, {path: store.render(path.parent.name, document)
                                          for path, document in documents.items()})
 
     def plan(self, *ops, base=None):
         base = base or self.base
-        return write.plan(list(ops), base, write.model_resolver(base))
+        return write.plan(list(ops), base, write.model_resolver(base), root=base.root)
 
     def refused(self, *ops, base=None, code=3):
         with self.assertRaises(KbError) as caught:
@@ -136,7 +194,7 @@ class SelectTest(unittest.TestCase):
         self.assertIn("curated does not project", self.refused({
             **OPS[1], "registry": "curated", "order": 98}))
         path = store.path_of("axis", "fascinating-hog")
-        axis = store.load(repo.ROOT, path)
+        axis = store.load(self.base.root, path)
         [marker] = [entry for entry in axis["ledger"] if entry["registry"] == "axes"]
         item = copy.deepcopy(marker["dependency"][0])
         item["supports"] = "contract"
