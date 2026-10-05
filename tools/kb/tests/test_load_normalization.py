@@ -3,6 +3,7 @@
 import pytest
 
 from kb import compile, derive, repo, sh2
+from tools.kb.tests.stock_corruption import slice_byte_ids, slice_byte_samples
 from kb.model import SymbolKey
 
 
@@ -74,11 +75,9 @@ def test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock():
     verify_normalization(derive.image_bytes(repo.layout('7mfk')))
 
 
-@pytest.mark.parametrize('address', [address + offset
-                                    for address, expected in SLICES
-                                    for offset in range(len(expected))])
-def test_changed_normalized_load_cache_shift_divider_reference_cap_store_or_pool_fails(address):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+@pytest.mark.parametrize('address', slice_byte_samples(SLICES), ids=slice_byte_ids(SLICES))
+def test_changed_normalized_load_cache_shift_divider_reference_cap_store_or_pool_fails(address, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address] ^= 1
     with pytest.raises(AssertionError):
         verify_normalization(data)

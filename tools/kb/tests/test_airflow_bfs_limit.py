@@ -5,6 +5,7 @@ import hashlib
 import pytest
 
 from kb import compile, derive, repo, sh2
+from tools.kb.tests.stock_corruption import byte_span_ids, byte_span_samples
 from kb.model import SymbolKey
 
 
@@ -73,10 +74,9 @@ def test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_wo
     verify_limit(derive.image_bytes(repo.layout('7mfk')))
 
 
-@pytest.mark.parametrize('address', [address for start, end, _ in SPANS
-                                    for address in range(start, end)])
-def test_changed_bfs_limit_mode_signedness_curve_cell_fraction_cap_bypass_or_store_fails(address):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+@pytest.mark.parametrize('address', byte_span_samples(SPANS), ids=byte_span_ids(SPANS))
+def test_changed_bfs_limit_mode_signedness_curve_cell_fraction_cap_bypass_or_store_fails(address, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address] ^= 1
     with pytest.raises(AssertionError):
         verify_limit(data)

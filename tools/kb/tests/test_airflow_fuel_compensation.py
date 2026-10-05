@@ -8,6 +8,7 @@ import pytest
 
 from kb import compile,derive,repo,sh2
 from kb.model import SymbolKey
+from tools.kb.tests.stock_corruption import byte_span_ids, byte_span_samples
 
 
 SPANS=(
@@ -81,9 +82,9 @@ def test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_s
     verify_compensation(derive.image_bytes(repo.layout('7mfk')))
 
 
-@pytest.mark.parametrize('address',[address for start,end,_ in SPANS for address in range(start,end)])
-def test_changed_fuel_compensation_axis_fraction_order_selector_source_or_byte_store_fails(address):
-    data=bytearray(derive.image_bytes(repo.layout('7mfk')))
+@pytest.mark.parametrize('address', byte_span_samples(SPANS), ids=byte_span_ids(SPANS))
+def test_changed_fuel_compensation_axis_fraction_order_selector_source_or_byte_store_fails(address, jk08a_stock_bytes):
+    data=bytearray(jk08a_stock_bytes)
     data[address]^=1
     with pytest.raises(AssertionError):
         verify_compensation(data)

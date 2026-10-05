@@ -522,8 +522,8 @@ def test_ltft_exact_stock_complete_natural_return_and_helper_boundary():
 
 
 @pytest.mark.parametrize('address',[at for s,e,_ in SPANS for at in range(s,e)])
-def test_ltft_every_bound_stock_byte_corruption_is_rejected(address):
-    data=bytearray(derive.image_bytes(repo.layout('7mfk')))
+def test_ltft_every_bound_stock_byte_corruption_is_rejected(address, jk08a_stock_bytes):
+    data=bytearray(jk08a_stock_bytes)
     data[address]^=1
     with pytest.raises(AssertionError):verify_stock(data)
 

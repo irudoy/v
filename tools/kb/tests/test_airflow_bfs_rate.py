@@ -62,8 +62,8 @@ def test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_s
 
 
 @pytest.mark.parametrize('address', [a for start, end, _ in SPANS for a in range(start, end)])
-def test_changed_rate_selector_cache_load_timer_signed_helper_query_or_publication_fails(address):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+def test_changed_rate_selector_cache_load_timer_signed_helper_query_or_publication_fails(address, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address] ^= 1
     with pytest.raises(AssertionError):
         verify_rate(data)

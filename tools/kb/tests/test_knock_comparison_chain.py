@@ -10,6 +10,7 @@ import sys
 import pytest
 
 from kb import compile, derive, repo, sh2
+from tools.kb.tests.stock_corruption import byte_span_ids, byte_span_samples
 from kb.arithmetic import Grammar
 from kb.model import SymbolKey
 
@@ -212,9 +213,9 @@ def test_knock_comparison_exact_stock_predicate_stores_and_helper():
     assert sum((end-start)//2 for start, end in CODE_SPANS) == 314
 
 
-@pytest.mark.parametrize('address', [a for start, end, _ in SPANS for a in range(start, end)])
-def test_knock_comparison_static_corruption_is_rejected(address):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+@pytest.mark.parametrize('address', byte_span_samples(SPANS), ids=byte_span_ids(SPANS))
+def test_knock_comparison_static_corruption_is_rejected(address, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address] ^= 1
     with pytest.raises(AssertionError):
         verify_comparison_stock(data)

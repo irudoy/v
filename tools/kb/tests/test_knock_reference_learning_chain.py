@@ -817,8 +817,8 @@ def test_knock_reference_learning_exact_stock_unsigned_words_natural_returns_and
 
 
 @pytest.mark.parametrize('address', [a for start, end, _ in (*SPANS, *CALLER_SPANS) for a in range(start, end)])
-def test_knock_reference_learning_static_corruption_is_rejected(address):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+def test_knock_reference_learning_static_corruption_is_rejected(address, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address] ^= 1
     with pytest.raises(AssertionError):
         verify_reference_learning_stock(data)

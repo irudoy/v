@@ -3,6 +3,7 @@
 import pytest
 
 from kb import compile, derive, repo, sh2
+from tools.kb.tests.stock_corruption import slice_word_ids, slice_word_samples
 from kb.model import SymbolKey
 
 
@@ -94,12 +95,10 @@ def test_maf_initialization_previous_word_numerator_and_wrap_match_stock():
     verify_compensation(derive.image_bytes(repo.layout('7mfk')))
 
 
-@pytest.mark.parametrize('address', [address + offset
-                                    for address, text in SLICES
-                                    for offset in range(0, len(bytes.fromhex(text)), 2)])
+@pytest.mark.parametrize('address', slice_word_samples(SLICES), ids=slice_word_ids(SLICES))
 @pytest.mark.parametrize('byte', (0, 1))
-def test_changed_maf_bank_mask_numerator_denominator_width_or_return_fails(address, byte):
-    data = bytearray(derive.image_bytes(repo.layout('7mfk')))
+def test_changed_maf_bank_mask_numerator_denominator_width_or_return_fails(address, byte, jk08a_stock_bytes):
+    data = bytearray(jk08a_stock_bytes)
     data[address + byte] ^= 1
     with pytest.raises(AssertionError):
         verify_compensation(data)
