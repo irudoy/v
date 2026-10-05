@@ -10,14 +10,90 @@ from unittest import mock
 
 import pytest
 
-from kb import (adapters, checks, cli, compile, ledger_projection, match, names, repo,
+from kb import (adapters, checks, cli, compile, convert, ledger_projection, match, names, repo,
                 store, targets, vocab, write)
 from kb.adapters import files as file_adapter
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
 from kb.repo import KbError
+from tools.kb.tests import writer_sources
 
-pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
+
+ISOLATED_CASES = {
+    ('NewTest', 'test_a_failed_batch_with_a_new_meaning_writes_no_files_or_graph'),
+    ('NewTest', 'test_a_named_meaning_keeps_the_names_of_the_row_as_former_references'),
+    ('NewTest', 'test_a_new_location_does_not_shadow_an_existing_kind'),
+    ('NewTest', 'test_a_new_meaning_resolves_its_current_symbols_and_former_names'),
+    ('NewTest', 'test_an_unsupported_access_width_refuses_an_entire_batch_before_writes'),
+    ('NewTest', 'test_new_refuses_a_held_place_or_name_and_the_keys_of_the_other_form'),
+    ('NewTest', 'test_new_starts_the_empty_file_of_a_designed_entity'),
+    ('SetTest', 'test_a_feature_takes_every_key_besides_its_targets'),
+    ('SetTest', 'test_set_refuses_keys_and_values_outside_its_schema'),
+    ('SetTest', 'test_tables_join_and_an_unset_key_leaves_no_empty_table'),
+    ('LinkTest', 'test_a_link_names_its_target_by_any_of_its_names'),
+    ('LinkTest', 'test_link_joins_the_keys_and_the_evidence_of_the_held_link'),
+    ('LinkTest', 'test_link_refuses_reliance_on_a_missing_contract'),
+    ('LinkTest', 'test_links_refuse_what_the_schema_or_the_files_contradict'),
+    ('LinkTest', 'test_unlink_removes_the_link_that_its_keys_choose'),
+    ('RenameMeaningTest', 'test_a_batch_renames_a_meaning_after_its_other_operations'),
+    ('RenameMeaningTest', 'test_renames_refuse_the_names_that_the_model_holds'),
+}
+
+
+@pytest.fixture(scope='module')
+def preserved_full_models(reuse_kb_source_parses):
+    held = {}
+    yield held
+    for cls, model, before, document in held.values():
+        assert convert.dump(model) == before
+        assert getattr(cls, 'held', None) == document
+
+
+@pytest.fixture(scope='module')
+def isolated_model(reuse_kb_source_parses, tmp_path_factory):
+    root = tmp_path_factory.mktemp('generic-writer')
+    hashes = writer_sources.write_sources(root)
+    model = compile.build(root, order=(file_adapter,))
+    assert model.stash['ledger_rows'] and write._issues(model) == {}
+    before = convert.dump(model)
+    held = store.load(root, LinkTest.RPM_FILE)
+    yield model, held
+    assert convert.dump(model) == before
+    assert writer_sources.unchanged(root, hashes)
+
+
+@pytest.fixture(scope='module')
+def isolated_feature_model(reuse_kb_source_parses, isolated_model):
+    base, _ = isolated_model
+    probe = {'title': 'Probe', 'target': [{'layout': 'jk00c', 'status': 'planned',
+             'basis': {'maps': 'stock', 'timing': 'stock'}}]}
+    model = compile.build(base.root, {SetTest.PROBE_FILE: store.render('feature', probe)},
+                          order=(file_adapter,))
+    assert model.stash['ledger_rows'] and write._issues(model) == {}
+    before = convert.dump(model)
+    yield model
+    assert convert.dump(model) == before
+
+
+@pytest.fixture
+def source_order(request, monkeypatch, preserved_full_models):
+    instance = request.instance
+    if instance is None or type(instance).__name__ not in {key[0] for key in ISOLATED_CASES}:
+        return
+    cls = type(instance)
+    if cls not in preserved_full_models:
+        preserved_full_models[cls] = (
+            cls, cls.base, convert.dump(cls.base), copy.deepcopy(getattr(cls, 'held', None)))
+    if (cls.__name__, request.node.name) not in ISOLATED_CASES:
+        return
+    monkeypatch.setattr(adapters, 'ADAPTERS', (file_adapter,))
+    model, held = request.getfixturevalue('isolated_model')
+    if cls is SetTest:
+        model = request.getfixturevalue('isolated_feature_model')
+    monkeypatch.setattr(instance, 'base', model)
+    if cls is LinkTest:
+        monkeypatch.setattr(instance, 'held', copy.deepcopy(held))
 
 # A table without a semantic name: the search from its symbol on 7mfk finds one
 # counterpart on JK00C through 40 masked words.
@@ -233,10 +309,10 @@ class NewTest(unittest.TestCase):
         cls.base = compile.build(repo.ROOT, {names.PATH: names.render(rows)})
 
     def plan(self, *ops):
-        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+        return write.plan(list(ops), self.base, write.model_resolver(self.base), root=self.base.root)
 
     def refused(self, *ops, code=3):
-        change = write.Change(self.base, write.model_resolver(self.base))
+        change = write.Change(self.base, write.model_resolver(self.base), root=self.base.root)
         with self.assertRaises(KbError) as caught:
             for number, op in enumerate(ops, 1):
                 change.run(op, number)
@@ -292,7 +368,7 @@ class NewTest(unittest.TestCase):
         self.assertNotIn(key, self.base.symbols)
 
     def test_a_new_meaning_resolves_its_current_symbols_and_former_names(self):
-        change = write.Change(self.base, write.model_resolver(self.base))
+        change = write.Change(self.base, write.model_resolver(self.base), root=self.base.root)
         change.run(new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]))
         for reference in ("probe_cell/ram", "probe_cell", "probe-heron/ram", "probe-otter/ram",
                           self.LOCATION, f"{self.FREE:08x}"):
@@ -309,7 +385,7 @@ class NewTest(unittest.TestCase):
         self.assertEqual(change.resolve("jk00d:ffff0ff2")[1].props["width"], 16)
 
     def test_a_new_location_does_not_shadow_an_existing_kind(self):
-        change = write.Change(self.base, write.model_resolver(self.base))
+        change = write.Change(self.base, write.model_resolver(self.base), root=self.base.root)
         location = f"7mfk:{TABLE_HOME:08x}"
         change.run(new("const", location, name="probe_literal", evidence=[SPEC]))
         with self.assertRaises(KbError) as caught:
@@ -326,7 +402,7 @@ class NewTest(unittest.TestCase):
                 mock.patch.object(write.graph, "sync_held") as graph:
             with self.assertRaises(KbError) as caught:
                 write.apply([new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]),
-                             assign("probe_cell/ram", {"not_a_key": 1})])
+                             assign("probe_cell/ram", {"not_a_key": 1})], root=self.base.root)
             self.assertEqual(caught.exception.code, 2)
             self.assertIn("op 2", str(caught.exception))
             files.assert_not_called()
@@ -351,7 +427,7 @@ class NewTest(unittest.TestCase):
                         new("ram", self.LOCATION, name="probe_cell", evidence=[SPEC]),
                         bind("probe_cell/ram", "jk00d:ffff0ff2", evidence=[SPEC]),
                         assign(reference, {"width": 4}),
-                    ])
+                    ], root=self.base.root)
                 self.assertIn("width 4 of a ram must be 8, 16, or 32 bits", str(caught.exception))
                 files.assert_not_called()
                 graph.assert_not_called()
@@ -578,7 +654,7 @@ class SetTest(unittest.TestCase):
         cls.base = compile.build(repo.ROOT, {cls.PROBE_FILE: store.render("feature", probe)})
 
     def change(self, *ops):
-        change = write.Change(self.base, write.model_resolver(self.base))
+        change = write.Change(self.base, write.model_resolver(self.base), root=self.base.root)
         for number, op in enumerate(ops, 1):
             change.run(op, number)
         return change
@@ -704,10 +780,10 @@ class LinkTest(unittest.TestCase):
         cls.base = compile.build(repo.ROOT, {cls.RPM_FILE: store.render("ram", document)})
 
     def plan(self, *ops):
-        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+        return write.plan(list(ops), self.base, write.model_resolver(self.base), root=self.base.root)
 
     def change(self, *ops):
-        change = write.Change(self.base, write.model_resolver(self.base))
+        change = write.Change(self.base, write.model_resolver(self.base), root=self.base.root)
         for number, op in enumerate(ops, 1):
             change.run(op, number)
         return change
@@ -925,11 +1001,11 @@ class RenameMeaningTest(unittest.TestCase):
         cls.base = compile.cached(repo.ROOT)
 
     def plan(self, *ops):
-        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+        return write.plan(list(ops), self.base, write.model_resolver(self.base), root=self.base.root)
 
     def refused(self, *ops, code=3, base=None):
         base = base or self.base
-        change = write.Change(base, write.model_resolver(base))
+        change = write.Change(base, write.model_resolver(base), root=base.root)
         with self.assertRaises(KbError) as caught:
             for number, op in enumerate(ops, 1):
                 change.run(op, number)
@@ -1005,11 +1081,11 @@ class RenameMeaningTest(unittest.TestCase):
                 self.assertIn(message, self.refused(op, code=code))
         # A former name of INHIBIT and a former reference of its JK00C symbol.
         path = store.path_of("ram", "fuel_inhibit")
-        document = tomllib.loads((repo.ROOT / path).read_text(encoding="utf-8"))
+        document = tomllib.loads((self.base.root / path).read_text(encoding="utf-8"))
         document["former"] = ["throttle_cell"]
         entry = next(entry for entry in document["symbol"] if entry["layout"] == "jk00c")
         entry["former"] = [f"throttle_probe/ram/jk00c-{entry['address']}"]
-        base = compile.build(repo.ROOT, {path: store.render("ram", document)})
+        base = compile.build(self.base.root, {path: store.render("ram", document)})
         self.assertIn(f"throttle_cell is a former name of {INHIBIT} in {path.as_posix()}",
                       self.refused(rename(THROTTLE, "throttle_cell"), base=base))
         self.assertIn(f"throttle_probe is a former name of {INHIBIT}/jk00c-{entry['address']} "
