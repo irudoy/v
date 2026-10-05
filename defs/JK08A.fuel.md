@@ -645,18 +645,19 @@ base calculation and the direct value selected for masked channels.
 
 ### Long-term trim publication and neutralization
 
-`FUN 00057B26` takes the bank index in `r4` and publishes the LTFT diagnostic
-word from the selected learned cell and the adjustment term:
+`FUN 00057B26` publishes the LTFT diagnostic word from the selected learned
+cell and the adjustment term. The legal bank is b=uint8(full incoming R4) in 0..1; its upper 24 bits are independent of b.
 
 ```text
-raw_b = uint16[0xFFFF2306 + 2*b] + uint16[0xFFFF5648 + 2*b] - 0x6400
+raw_b = uint32(uint16[0xFFFF2306 + 2*b] + uint16[0xFFFF5648 + 2*b] - 0x6400)
 ```
 
 Limiting is skipped when bit `b` of `0xFFFF230E` is set, or when
 `uint16[0xFFFF15FC] <= int16[0xFFFF15FE]`: `extu.w` at `0x57B60` zero-extends
 the first word, the load at `0x57B62` sign-extends the second, and `cmp/gt` at
-`0x57B64` compares them as signed 32-bit values. Otherwise the word is clamped
-between two adjacent ROM bytes scaled to Q8.8 percent:
+`0x57B64` compares them as signed 32-bit values. Otherwise the raw uint32 value
+is limited by unsigned comparisons between two adjacent ROM bytes scaled to
+Q8.8 percent:
 
 ```text
 raw_b = min(max(raw_b, ROM8[0x8E5B] << 8), ROM8[0x8E5A] << 8)
@@ -664,7 +665,8 @@ ROM8[0x8E5B] = 90, ROM8[0x8E5A] = 110
 ```
 
 Four independent conditions replace the result with exactly neutral `0x6400`
-before the store to `0xFFFF2302 + 2*b`:
+before the store to `0xFFFF2302 + 2*b`. The final word store publishes uint16(raw_b) unless a neutral condition selects 0x6400.
+The independent neutral conditions are:
 
 ```text
 FUN 00025E20(0x0129) != 0
@@ -1288,3 +1290,88 @@ The minimum controlled validation set is:
 5. Retain Map 1 storage for the DFCO held-request and intermediate-restore
    thresholds until FAIL-BOOT is fixed and base map switching is confirmed on
    hardware; only then add Map 1-5 Hold and Intermediate support.
+
+## Bounded LTFT publication
+
+The complete natural liberal-dormouse/fn at 7mfk:00057b26 and its real
+diagnostic_record_byte1_bit7_predicate/fn have an independently
+reconstructed original GNU SH-2E contract of 108 instructions,
+268 bound bytes and 12028 literal cases. The instruction spans are
+57B26..57B7A, 57BD4..57C34 and 25E20..25E44: 216 instruction bytes
+and 52 bound data bytes. Exactly eight high-RAM longword pools are
+simulator aliases. Three word operands, both ROM pointers and the real
+predicate pointer retain their stock bytes. Natural RTS 57C30 executes
+the R13-restoring delay slot at 57C32; the real predicate also returns
+naturally, without a stack store or replacement stub.
+
+Full incoming R4 is an independent context. Its low byte b=uint8(R4) is
+admitted only in 0..1, and its upper 24 bits vary independently. The
+bounded numerical inputs are unsigned words L at ffff2306+2*b and A at
+ffff5648+2*b. U at ffff15fc is zero-extended; V at ffff15fe is sign-extended.
+The complete byte mask M at ffff230e tests b+1, which is 1 or 2 for
+these legal banks. Bounds lo=ROM8[00008e5b]*256 and hi=ROM8[00008e5a]*256
+have stock operands 90 and 110. Every value 0..255 and reversed bound
+pairs also have explicit artificial contexts.
+
+    raw = uint32(L+A-25600)
+    active = ((M&(b+1))==0) and (U>V)
+    limited = min(hi,max(lo,raw)) if active else raw
+    neutral = diagnostic_byte1.bit7 or F.bit0
+              or (G.bit0 and H.bit1) or (K.bit6 and H.bit0)
+    output = 25600 if neutral else uint16(limited)
+
+F, G, H and K are the independent bytes at ffff41b5, ffff41fa,
+ffff248b and ffff249c. Each genuine short-circuit neutral condition is
+separate from the numerical limit gate. Diagnostic id 0129 addresses
+byte1 at ffff5718+3*0129+1=ffff5a94. Record production and physical
+diagnostic causes are outside this CPU result. The fixed caller cannot
+take the predicate sentinel branch at 25E26 to 25E3E. That branch and
+MOV #0,R2 at 25E3E are identity-only; direct sentinel, negative-id and
+independent helper upper-word semantics are not claimed.
+
+Equality U=V skips limiting. Negative mathematical sums wrap to uint32
+before the genuine unsigned comparisons. With active factory bounds,
+raw=-1 therefore selects 28160; raw=0 selects 23040. A limit bypass
+publishes the low word, including overflow transitions. Reversed bounds
+still implement lower-then-upper min(hi,max(lo,raw)). Full-domain output
+can decrease when either input increases, so the two complete publication
+views use sign=none. They describe one write, not sequential updates.
+Their other fields and the other 17 closed_loop_fuel step records are
+preserved, together with every held relation note/property/evidence and
+ledger selector at both claiming ends.
+
+Each legal bank has 6014 cases. Each incoming T value has 6014 cases.
+There are 8564 factory-bound and 3464 artificial-bound contexts. Independent
+integer expectations cover all 12028 output/T and fifteen-GPR vectors,
+full R4 upper patterns, every mask/diagnostic/control/bound byte value,
+all neutral combinations, all three numerical gate outcomes, unsigned
+underflow, low-word wrap, signed comparison boundaries and bound equality.
+Neither a stock instruction interpreter nor runtime output supplies
+expected values.
+
+Every literal checks full 64 KiB RAM except the selected output word,
+both allowed output bytes, every bound data byte, all fifteen GPRs,
+MACH/MACL/GBR, natural PR/SP, immutable context and an independent C ABI.
+The actual current SR nonT bits are retained while requested T=0/1 is
+injected. STC records prepared full SR, and exit SR equals
+(preparedSR&~1)|expectedT. Arbitrary nonT variation or incoming full
+SR=0/1 is not claimed. The 80-byte observer covers SP-48..SP+31 with
+saved R13/R14/PR at SP-4/-8/-12. Those slots have literal expectations;
+all other observed bytes, including a separate continuation at SP+24,
+are preserved. Exit capture starts at SP+32. Snapshots are per literal.
+
+The mandatory contracts test_ltft_publication_chain_owner_contract and
+test_ltft_publication_registered_stock_contract in
+tools/kb/tests/test_ltft_publication_chain.py bind every stock byte,
+the independent literal output/T/GPR vectors, exact typed conditions,
+scoped owner widths and the registered Region/header-array/C-loop counts.
+Missing required owners, registration, header or publication sections
+fail the contract. The shared predicate retains its separate bounded
+knock-reference proof, both ledger claiming ends and existing evidence.
+The fixed-id LTFT fixture adds no general-id helper case counts.
+
+Upstream learned-grid selection/learning, adjustment production, bank
+dispatch, percentages, physical fuel quantities, timing, live operating
+reachability, full coordinator behavior and hardware validation retain
+separate evidence boundaries. Existing units, scales, producer signedness,
+other layouts and the shared predicate owner remain intact.

@@ -1,9 +1,12 @@
 summary = """
-Long-term fuel-trim diagnostic-word producer. For each bank it calculates \
-selected learned word ffff2306/ffff2308 + adjustment ffff5648/ffff564a - \
-0x6400. Under the normal limiting gate it clamps the result to \
-ROM8[0x8e5b]<<8 through ROM8[0x8e5a]<<8; fault and control gates force \
-neutral 0x6400. It writes ffff2302 for bank 1 or ffff2304 for bank 2."""
+Complete 7mfk two-bank LTFT raw-word publisher. Independent full incoming R4 \
+supplies a legal low-byte bank. Two zero-extended input words form a uint32 \
+raw sum; the complete mask byte and unsigned U versus signed V choose \
+limiting with two raw ROM-byte bounds. A real fixed-id diagnostic predicate \
+and compound raw control bits select neutral publication. Natural return \
+publishes one bank word; full-word underflow and low-word wrap admit \
+nonmonotone output. Producer units, physical mapping, dispatch and hardware \
+reachability retain separate evidence scopes."""
 note = [
     """
 The stock calibrated normal-path range is 90 through 110 percent. UDS DIDs \
@@ -95,6 +98,16 @@ supports = "identity"
 layout = "7mfk"
 address = "00057b26"
 name = "liberal-dormouse"
+note = """
+Complete natural 00057b26 publisher plus its real 00025e20 predicate execute \
+108 instructions, 268 bound bytes and 12028 explicit contexts. Incoming full \
+R4 has uint8(x) in 0..1; the fixed helper id is 0129. Helper sentinel MOV \
+#0,R2 at 00025e3e is byte-bound identity-only in this caller domain. Every \
+case checks fifteen GPRs, final T=!neutral, relative full SR with nonT \
+status retained, natural R13/R14/PR twelve-byte saves, the SP-48..SP+31 \
+observer, all other RAM and all 52 data bytes, immutable context and \
+external C ABI. No dispatcher, producer, general-helper upper-word or \
+hardware execution is claimed."""
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -155,6 +168,21 @@ kind = "trace"
 supports = "identity"
 to = "unique-aardwolf/fn/7mfk"
 relies = "structure"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "depends"

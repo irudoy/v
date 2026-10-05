@@ -1,0 +1,86 @@
+summary = """
+7mfk comparison word read as signed16 by the bounded LTFT numerical-limit \
+predicate."""
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff15fe"
+level = "code"
+width = 16
+signed = true
+note = """
+Storage and read interpretation describe only the bounded 7mfk LTFT \
+consumer; upstream production, physical identity and other layouts have no \
+inferred contract."""
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x372
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded signed16 comparison reads this word at existing raw base \
+ffff128c+0372. The exact pool and consumer bind the offset, without an array \
+extent or producer claim."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only when (uint8(ffff230e)&(b+1))==0, V=int16(ffff15fe) is sign-extended \
+signed16. Compare unsigned U>V enables numerical limiting; U<=V, including \
+equality, bypasses it. No upstream writer or physical meaning follows from \
+the bounded read."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"

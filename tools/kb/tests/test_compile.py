@@ -169,7 +169,7 @@ class RamStructureEvidenceTest(unittest.TestCase):
         0xFFFF1B1D: ("7mfk:000c1dfa", 0x891, "test_indexed_mode_byte_paths"),
         0xFFFF1AA8: ("7mfk:000c1dfa", 0x81C, "test_indexed_state_longword_path"),
     }
-    STRUCTURE_COUNTS = {0xFFFF5A93: 6, 0xFFFF1A40: 1, 0xFFFF1098: 3,
+    STRUCTURE_COUNTS = {0xFFFF5A93: 8, 0xFFFF1A40: 1, 0xFFFF1098: 3,
                         0xFFFF111E: 1, 0xFFFF1DF2: 3, 0xFFFF18C2: 2,
                         0xFFFF1B1D: 1, 0xFFFF1AA8: 1}
 
@@ -332,6 +332,12 @@ class RamStructureEvidenceTest(unittest.TestCase):
             if found and int(found.group(1), 16) in self.EXPECTED:
                 counts[int(found.group(1), 16)] += 1
         self.assertEqual(dict(counts), self.STRUCTURE_COUNTS)
+        ltft_record_barriers = Counter(
+            issue.subject for issue in after - before
+            if issue.subject in {"ltft_b1/ram", "ltft_b2/ram"}
+            and "the structure of 7mfk-ffff5a93/ram," in issue.message)
+        self.assertEqual(ltft_record_barriers,
+                         Counter({"ltft_b1/ram": 1, "ltft_b2/ram": 1}))
         self.assertFalse([issue for issue in after
                           if "the structure of 7mfk-ffff196c/ram," in issue.message])
         self.assertEqual(snapshot(), unchanged)

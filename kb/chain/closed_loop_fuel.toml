@@ -143,19 +143,33 @@ ffff2306."""
 from = "ltft_learned_b1/ram"
 to = "ltft_b1/ram"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["liberal-dormouse/fn"]
 note = """
-LTFT ffff2302 = ffff2306 + ffff5648 - 0x6400, clamped to 90..110 percent; \
-fault and control gates force 0x6400."""
+b = uint8(x); L = uint16(RAM16[0xffff2306+2*b]); A = \
+uint16(RAM16[0xffff5648+2*b]); R = uint32(L+A-25600); U = uint16(ffff15fc); \
+V = int16(ffff15fe); C = (1-((uint8(ffff230e)>>b)&1))*min(1,max(0,U-V)); lo \
+= ROM8[0x00008e5b]*256; hi = ROM8[0x00008e5a]*256; W = \
+C*min(hi,max(lo,R))+(1-C)*R; D = (uint8(ffff5a94)>>7)&1; F = \
+uint8(ffff41b5)&1; G = (uint8(ffff41fa)&1)*((uint8(ffff248b)>>1)&1); K = \
+((uint8(ffff249c)>>6)&1)*(uint8(ffff248b)&1); Z = 1-(1-D)*(1-F)*(1-G)*(1-K); \
+to = Z*25600+(1-Z)*uint16(W)"""
 
 [[step]]
 from = "ltft_adjustment_b1/ram"
 to = "ltft_b1/ram"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["liberal-dormouse/fn"]
-note = "Adjustment term ffff5648 from 00058168 adds around neutral 0x6400."
+note = """
+b = uint8(x); L = uint16(RAM16[0xffff2306+2*b]); A = \
+uint16(RAM16[0xffff5648+2*b]); R = uint32(L+A-25600); U = uint16(ffff15fc); \
+V = int16(ffff15fe); C = (1-((uint8(ffff230e)>>b)&1))*min(1,max(0,U-V)); lo \
+= ROM8[0x00008e5b]*256; hi = ROM8[0x00008e5a]*256; W = \
+C*min(hi,max(lo,R))+(1-C)*R; D = (uint8(ffff5a94)>>7)&1; F = \
+uint8(ffff41b5)&1; G = (uint8(ffff41fa)&1)*((uint8(ffff248b)>>1)&1); K = \
+((uint8(ffff249c)>>6)&1)*(uint8(ffff248b)&1); Z = 1-(1-D)*(1-F)*(1-G)*(1-K); \
+to = Z*25600+(1-Z)*uint16(W)"""
 
 [[step]]
 from = "stft_b1/ram"

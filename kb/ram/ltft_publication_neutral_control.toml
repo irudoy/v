@@ -1,0 +1,57 @@
+summary = """
+7mfk raw control byte whose bit0 selects neutral output in the bounded LTFT \
+publication."""
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff41b5"
+level = "code"
+width = 8
+signed = false
+note = """
+Storage and read interpretation describe only the bounded 7mfk LTFT \
+consumer; upstream production, physical identity and other layouts have no \
+inferred contract."""
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only when the fixed-id diagnostic predicate clears, raw ffff41b5.bit0 set \
+selects neutral 25600. Clear delegates to the G/H and K/H compound \
+conditions; unrelated bits have no inferred role."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"

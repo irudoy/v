@@ -927,3 +927,57 @@ channel identity, diagnostic producers, acquisition, timing, engineering
 units and full evaluator dispatch are not established by the bounded
 RAM-only proof. The narrow mechanism contract is
 `defs/JK08A.knock-detection.md#bounded-knock-reference-learning`.
+
+## LTFT publication
+
+The registered GNU16.3 Region jk08a-ltft-publication executes the
+complete publisher at 57B26 with its second span at 57BD4..57C34 and real
+predicate at 25E20..25E44: 108 instructions, 268 bound bytes and
+12028 literal cases. Natural RTS/delay slots remain stock. Eight
+high-RAM longword pools are aliases; the three words, both ROM pointers
+and real helper pointer remain unchanged. The fixed caller uses id 0129;
+the predicate sentinel branch/MOV at 25E3E is identity-only, with no
+direct sentinel or independent helper upper-word execution claim.
+
+Both legal banks use full incoming R4 with varied upper bits, independent
+uint16 selected/adjustment words, full byte controls and unsigned U versus
+signed V. The exact uint32 sum, both limit bypasses, active lower-then-upper
+comparisons and all four neutral causes have independent expectations.
+Stock and artificial/reversed bounds remain distinct. Full-domain
+underflow and low-word wrap prevent broad positive signs in the two
+shared publication views.
+
+Each case checks output bytes, all fifteen GPRs and final T, full prepared
+SR nonT preservation, natural special registers/PR/SP, distinct external
+C ABI, all other RAM bytes and all 52 data bytes. The 80-byte observer
+uses matching SP-48..SP+31 origins, with natural R13/R14/PR saves at
+SP-4/-8/-12. Independent continuation and capture above SP+32 are
+separate checks. RAM/data snapshots are per literal, without block
+aggregation; an arbitrary full incoming SR=0/1 is not claimed.
+
+The specification section Bounded LTFT publication defines inputs and
+arithmetic. The mandatory contracts test_ltft_publication_chain_owner_contract
+and test_ltft_publication_registered_stock_contract in
+tools/kb/tests/test_ltft_publication_chain.py bind the exact Region, stock
+bytes, independent literal output/T/GPR vectors, typed conditions, scoped
+widths and Region/header-array/C-loop publication counts. Missing owners,
+registration, header or publication sections fail these contracts.
+The shared predicate retains its separate knock-reference direct-context
+proof; those cases belong to that fixture and are not LTFT case counts.
+
+Each legal bank has 6014 cases. Each incoming T value has 6014 cases.
+There are 8564 factory-bound and 3464 artificial-bound contexts.
+The envelope has 216 instruction bytes and 52 bound data bytes.
+
+    raw = uint32(L+A-25600)
+    active = ((M&(b+1))==0) and (U>V)
+    limited = min(hi,max(lo,raw)) if active else raw
+    neutral = diagnostic_byte1.bit7 or F.bit0
+              or (G.bit0 and H.bit1) or (K.bit6 and H.bit0)
+    output = 25600 if neutral else uint16(limited)
+
+All held notes/properties/evidence and ledger selectors, existing units,
+producer interpretations and other layouts are preserved. Caller dispatch,
+upstream producers, physical mapping, percentages, timing, live-state
+reachability, complete coordinator execution and hardware behavior remain
+separate evidence.

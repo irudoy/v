@@ -77,6 +77,7 @@ neutral correction"""
 layout = "7mfk"
 address = "ffff5648"
 former = ["merciful-donkey/ram/7mfk-ffff5648"]
+width = 16
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -98,6 +99,21 @@ supports = "identity"
 at = "7mfk:0005848e"
 value = {named = ["00057b26", "00058168", "ffff2302", "ffff5648"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[symbol]]
 layout = "jk00c"
@@ -146,12 +162,31 @@ role = "writes"
 [[link]]
 type = "reader"
 to = "liberal-dormouse/fn"
+via = ["liberal-dormouse/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+b=0: A=RAM16[ffff5648]. The bounded indexed MOV.W/EXTU.W supplies unsigned16 \
+A; b=1 does not read this sibling."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "writer"

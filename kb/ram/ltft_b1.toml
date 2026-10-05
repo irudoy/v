@@ -241,6 +241,21 @@ kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff2376"
@@ -278,16 +293,58 @@ note = "Aligned diagnostic pointer table and direct references agree"
 [[link]]
 type = "input"
 to = "ltft_adjustment_b1/ram"
+via = ["liberal-dormouse/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=uint8(incoming full R4)=0: this zero-extended unsigned16 input \
+participates in uint32(L+A-25600) for one bounded publication. Its producer \
+units/signedness and sibling bank are preserved. Raw underflow and bypassed \
+low-word wrap prevent a universal positive sign."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "input"
 to = "ltft_learned_b1/ram"
+via = ["liberal-dormouse/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+b=uint8(incoming full R4)=0: this zero-extended unsigned16 input \
+participates in uint32(L+A-25600) for one bounded publication. Its producer \
+units/signedness and sibling bank are preserved. Raw underflow and bypassed \
+low-word wrap prevent a universal positive sign."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "reader"
@@ -348,6 +405,318 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "selector"
+to = "jovial-buzzard/ram"
+slot = "bit6"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After D=0, F=0 and the G/H conjunction clear, ffff249c.bit6 set together \
+with ffff248b.bit0 set selects neutral 25600. Otherwise the next \
+short-circuit condition or the numerical result applies. No hardware mode or \
+unrelated-bit role is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "logical-swan/ram"
+slot = "bit0"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+b=0: mask bit0 clear permits unsigned U>signed V to enable numerical \
+limiting; set bypasses limiting and both comparison reads. The raw sum \
+remains uint32(L+A-25600); neutral predicates remain independent."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "ltft_publication_neutral_control/ram"
+slot = "bit0"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After D=0, F=ffff41b5.bit0 set selects neutral 25600. Otherwise the next \
+short-circuit condition or the numerical result applies. No hardware mode or \
+unrelated-bit role is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+slot = "bit0"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After D=0, F=0 and the G/H conjunction clear, ffff248b.bit0 set together \
+with ffff249c.bit6 set selects neutral 25600. Otherwise the next \
+short-circuit condition or the numerical result applies. No hardware mode or \
+unrelated-bit role is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+slot = "bit1"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After D=0 and F=0, ffff248b.bit1 set together with ffff41fa.bit0 set selects \
+neutral 25600. Otherwise the next short-circuit condition or the numerical \
+result applies. No hardware mode or unrelated-bit role is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "origami-iguana/ram"
+slot = "bit0"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After D=0 and F=0, ffff41fa.bit0 set together with ffff248b.bit1 set selects \
+neutral 25600. Otherwise the next short-circuit condition or the numerical \
+result applies. No hardware mode or unrelated-bit role is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "selector"
+to = "tourmaline-jackal/ram"
+slot = "byte1.bit7"
+via = ["liberal-dormouse/fn", "diagnostic_record_byte1_bit7_predicate/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The natural publisher calls the existing real predicate at 00025e20 with \
+fixed id 0129. Record byte1 at ffff5a94 has bit7 set exactly when D=1, which \
+short-circuits remaining neutral conditions and writes 25600. The sentinel \
+helper arm is identity-only for this caller; no record producer or \
+general-id execution is claimed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "threshold"
+to = "gay-bloodhound/ram"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With the selected mask bit clear, unsigned U>signed V enables numerical \
+limiting. U<=V, including equality, bypasses limiting. Both word \
+interpretations belong to this bounded reader; no producer or physical \
+threshold is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "threshold"
+to = "ltft_limit_comparison_word/ram"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With the selected mask bit clear, unsigned U>signed V enables numerical \
+limiting. U<=V, including equality, bypasses limiting. Both word \
+interpretations belong to this bounded reader; no producer or physical \
+threshold is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "threshold"
+to = "ltft_publication_lower_bound/tbl"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only under the numerical-limit gate, lo=256*the unsigned ROM byte. \
+W=min(hi,max(lo,uint32(L+A-25600))) applies lower then upper comparisons, \
+including reversed artificial bounds. If the gate bypasses, W is the raw \
+uint32 sum; a later neutral condition can still select 25600."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
+type = "threshold"
+to = "ltft_publication_upper_bound/tbl"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only under the numerical-limit gate, hi=256*the unsigned ROM byte. \
+W=min(hi,max(lo,uint32(L+A-25600))) applies lower then upper comparisons, \
+including reversed artificial bounds. If the gate bypasses, W is the raw \
+uint32 sum; a later neutral condition can still select 25600."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
 type = "writer"
 to = "fuel_trim_init/fn"
 layouts = ["7mfk"]
@@ -359,11 +728,36 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "liberal-dormouse/fn"
+via = ["liberal-dormouse/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Incoming independent full R4 has uint8(x)=0. Publish exactly one uint16 word \
+at ffff2302+2*b. The complete arithmetic note describes one publication \
+shared by steps 14/15, not sequential additions. Numerical limiting uses \
+(M&(b+1))==0 and unsigned U>signed V; equality bypasses. Any \
+diagnostic/F/GH/KH neutral condition writes 25600; otherwise publish \
+uint16(W). Natural return restores R13/R14/PR; terminal T=!neutral. All \
+other RAM/data/frame and external C ABI remain preserved without a \
+dispatcher, producer or physical bank claim."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "writer"

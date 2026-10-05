@@ -3018,3 +3018,5 @@ L_knock_state_selection_return_pointer: .long L_knock_state_selection_stock_retu
     .include "stock_bank_base_pulse_invoke.s"
 
     .include "stock_knock_reference_learning_invoke.s"
+
+    .include "stock_ltft_publication_invoke.s"

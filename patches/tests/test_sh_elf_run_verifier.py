@@ -73,7 +73,41 @@ def _require_bank_invoker_include_and_symbols(shared, included):
     assert local and len(local) == len(set(local))
 
 
+def _require_ltft_invoker_include_and_symbols(shared, included):
+    includes = re.findall(r'^\s*\.include\s+"([^"]+)"\s*$', shared, re.MULTILINE)
+    assert includes.count("stock_ltft_publication_invoke.s") == 1
+    combined = shared + "\n" + included
+    exported = "_stock_invoke_ltft_publication"
+    assert len(re.findall(r'^' + exported + r':$', combined, re.MULTILINE)) == 1
+    assert len(re.findall(r'^\s*\.size ' + exported + r',', combined, re.MULTILINE)) == 1
+    local = re.findall(r'^(L_ltft_publication_[a-z0-9_]+):', combined, re.MULTILINE)
+    assert local and len(local) == len(set(local))
+
+
 class ShElfRunVerifierTest(unittest.TestCase):
+    def test_stock_ltft_invoker_include_resolves_to_unique_sibling_source(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        source = STOCK_VERIFIER.TOOL_DIR / "stock_ltft_publication_invoke.s"
+        self.assertTrue(source.is_file())
+        self.assertEqual(source.parent, STOCK_VERIFIER.TOOL_DIR)
+        _require_ltft_invoker_include_and_symbols(shared, source.read_text())
+
+    def test_stock_ltft_invoker_refuses_missing_duplicate_and_colliding_bindings(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        included = (STOCK_VERIFIER.TOOL_DIR / "stock_ltft_publication_invoke.s").read_text()
+        directive = '    .include "stock_ltft_publication_invoke.s"'
+        mutations = (
+            (shared.replace(directive, ''), included),
+            (shared + '\n' + directive, included),
+            (shared, included + '\n_stock_invoke_ltft_publication:\n'),
+            (shared + '\nL_ltft_publication_inner:\n', included),
+            (shared, included.replace('.size _stock_invoke_ltft_publication,', '.size _other,')),
+        )
+        for changed_shared, changed_included in mutations:
+            with self.subTest(shared=changed_shared == shared, included=changed_included == included):
+                with self.assertRaises(AssertionError):
+                    _require_ltft_invoker_include_and_symbols(changed_shared, changed_included)
+
     def test_stock_invoker_assembler_search_path_preserves_all_region_calls(self):
         commands, calls = [], []
 
@@ -691,6 +725,23 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-ltft-publication": {
+                "REGION_ENTRY": 0x00057B26,
+                "SELECTED": 0xFFFF2306,
+                "ADJUSTMENT": 0xFFFF5648,
+                "OUTPUT": 0xFFFF2302,
+                "MASK": 0xFFFF230E,
+                "COMPARE_U": 0xFFFF15FC,
+                "COMPARE_V": 0xFFFF15FE,
+                "DIAGNOSTIC_RECORD": 0xFFFF5A93,
+                "CONTROL_F": 0xFFFF41B5,
+                "CONTROL_G": 0xFFFF41FA,
+                "CONTROL_H": 0xFFFF248B,
+                "CONTROL_K": 0xFFFF249C,
+                "LOWER": 0x00008E5B,
+                "UPPER": 0x00008E5A,
+                "DIAGNOSTIC_BYTE1_OFFSET": 1,
+            },
             "jk08a-knock-reference-learning": {
                 "REGION_ENTRY": 0x0004A118,
                 "REFERENCES": 0xFFFF2178,
@@ -1092,6 +1143,26 @@ mov #0x5,r1
                     self.assertRegex(harness, r'run_case\(i,&reference_cases\[i\]\)')
                     self.assertRegex(harness, r'if\(completed!=KNOCK_REFERENCE_LEARNING_CASE_COUNT\)')
                     self.assertRegex(harness, r'\+\+completed;')
+                elif key == "jk08a-ltft-publication":
+                    header_name = "stock-jk08a-ltft-publication-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(
+                        r'^#define LTFT_PUBLICATION_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(r'ltft_publication_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    literal_row = r'\{0x[0-9a-f]+U,\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\},(?:\d+U,){4}-?\d+,(?:\d+U,){11}\d+U\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertRegex(harness, r'for\(i=0;i<ARRAY_SIZE\(ltft_publication_cases\);\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&ltft_publication_cases\[i\]\)')
+                    self.assertRegex(harness, r'if\(completed!=LTFT_PUBLICATION_CASE_COUNT\)')
+                    self.assertRegex(harness, r'\+\+completed;')
+                    self.assertIn("#define DIAGNOSTIC (DIAGNOSTIC_RECORD + DIAGNOSTIC_BYTE1_OFFSET)", harness)
                 elif key == "jk08a-bank-base-pulse":
                     header_name = "stock-jk08a-bank-base-pulse-cases.h"
                     self.assertEqual(re.findall(

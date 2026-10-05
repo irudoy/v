@@ -146,7 +146,10 @@ class BaseFuelScheduleScaleTest(unittest.TestCase):
             self.assertIn("0x6400", self.vars[address]["semantics"])
         for address in ("ffff160d", "ffff17ee", "ffff31d8", "ffff17b9", "ffff13b1"):
             self.assertIn("writes:00053698@structural", self.vars[address]["evidence"])
-        self.assertIn("100/256", self.funcs["0004ead4"]["semantics"])
+        # Full-word producer semantics retain wrap and offset boundaries;
+        # fixed neutral scaling is bound by the specification below.
+        self.assertIn("low32 multiplication", self.funcs["0004ead4"]["semantics"])
+        self.assertIn("unsigned offset underflow", self.funcs["0004ead4"]["semantics"])
         self.assertIn("100/2048", self.funcs["0004e974"]["note"])
         self.assertIn("(1/8) * (100/256) = 100/2048", self.fuel)
         self.assertNotIn("code alone cannot close the schedule", self.fuel)

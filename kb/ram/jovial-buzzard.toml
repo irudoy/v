@@ -126,6 +126,7 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff249c"
 name = "jovial-buzzard"
+width = 8
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -203,6 +204,21 @@ at = "7mfk:000c04ca"
 value = {named = ["0000873e", "0000873f", "000089f1", "000089f2", "000089f3", "0002e466", "0004ed88", "00050a60", "000bf630", "000bfe88", "ffff1071", "ffff110e", "ffff244f", "ffff248b", "ffff249c", "ffff2714", "ffff99c7"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
 [[link]]
 type = "input"
 to = "chocolate-civet/ram"
@@ -251,6 +267,33 @@ to = "fuel_output_inhibit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "liberal-dormouse/fn"
+via = ["liberal-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only after diagnostic, F and G/H conditions clear, neutral 25600 requires \
+ffff249c.bit6 set together with ffff248b.bit0 set. Otherwise the numerical \
+result publishes its low word; unrelated bits have no inferred role."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_ltft_publication_chain.py"
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded LTFT publication"
 
 [[link]]
 type = "reader"
