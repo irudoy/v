@@ -6,8 +6,12 @@ import tomllib
 import unittest
 from unittest import mock
 
+import pytest
+
 from kb import cli, compile, ledger_projection, repo, store, write
 from kb.repo import KbError
+
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
 
 
 STATE, FUNCTION = "knock_timing_state/ram", "knock_function/fn"

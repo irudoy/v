@@ -8,12 +8,16 @@ import tomllib
 import unittest
 from unittest import mock
 
+import pytest
+
 from kb import (adapters, checks, cli, compile, ledger_projection, match, names, repo,
                 store, targets, vocab, write)
 from kb.adapters import files as file_adapter
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
 from kb.repo import KbError
+
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
 
 # A table without a semantic name: the search from its symbol on 7mfk finds one
 # counterpart on JK00C through 40 masked words.

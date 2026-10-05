@@ -1,11 +1,15 @@
 import unittest
 from types import SimpleNamespace
 
+import pytest
+
 from kb import adapters, convert, repo
 from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Entity, SymbolKey
 from kb.repo import KbError
+
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
 
 
 class ConvertTest(unittest.TestCase):

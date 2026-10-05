@@ -15,8 +15,11 @@ CHAIN = 'engine_speed/chain'
 CHAIN_FILE = store.path_of('chain', 'engine_speed')
 
 
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
+
+
 @pytest.fixture(scope='module')
-def model():
+def model(reuse_kb_source_parses):
     return compile.build(repo.ROOT)
 
 
@@ -26,7 +29,7 @@ def document():
 
 
 @pytest.fixture(scope='module')
-def held_prose():
+def held_prose(reuse_kb_source_parses):
     document = copy.deepcopy(store.load(repo.ROOT, CHAIN_FILE))
     document['step'][0]['note'] = 'Copy the capture while a mode is selected.'
     model = compile.build(repo.ROOT, {CHAIN_FILE: store.render('chain', document)})
