@@ -1,0 +1,66 @@
+summary = "Eight-word 7mfk RAM input vector consumed by bounded reference learning."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff20c2"
+level = "code"
+width = 16
+signed = false
+note = """
+The normal learner reads eight words from ffff20c2+2*i for i in 0..7, then \
+EXTU.W supplies each unsigned sample before multiplication. The 16-byte \
+consumer footprint is preserved in every case. Forced reset does not consume \
+these samples. The earlier acquisition and digital-bin producer are not \
+executed; no sensor, scale or hardware identity is inferred."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a1ba"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.W 0004a1ba reads eight sample words at indices 0..7, and EXTU.W 0004a1c2 \
+supplies uint16 values. The vector is preserved per case. Forced reset does \
+not read it; prior ADC/DMAC and digital-bin production remain outside the \
+learner."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a1ba"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"

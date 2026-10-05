@@ -61,6 +61,15 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00025e20"
+note = """
+The real predicate is executed with natural returns for caller ids 012d and \
+013f, yielding byte1 addresses ffff5aa0 and ffff5ad6. Direct contexts \
+separately vary all record bytes and full R4 upper words; a low-word ffff \
+sentinel returns zero without a record read. Full R4 is preserved and \
+nonsentinel pointer arithmetic consumes its signed low word. Other signed \
+indices, array extent, diagnostic production and hardware identity remain \
+outside this bounded proof. Existing generic predicate contract and other \
+caller evidence are unchanged."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -75,6 +84,25 @@ supports = "contract"
 at = "7mfk:00025e20"
 value = {named = ["0005096c", "ffff5718"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00025e20"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
 
 [[link]]
 type = "depends"

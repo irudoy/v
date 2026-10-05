@@ -691,6 +691,18 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-knock-reference-learning": {
+                "REGION_ENTRY": 0x0004A118,
+                "REFERENCES": 0xFFFF2178,
+                "SAMPLES": 0xFFFF20C2,
+                "PRIMARY": 0xFFFF11DE,
+                "ALTERNATE": 0xFFFF2143,
+                "DIAGNOSTICS": 0xFFFF5718,
+                "SELECTOR": 0x00008B3D,
+                "WEIGHT": 0x0000884B,
+                "RESET_WORD": 0x00009282,
+                "PREDICATE_ENTRY": 0x00025E20,
+            },
             "jk08a-bank-base-pulse": {
                 "REGION_ENTRY": 0x0004EAD4,
                 "STFT": 0xFFFF22DC, "LTFT": 0xFFFF2302,
@@ -1056,7 +1068,31 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key == "jk08a-bank-base-pulse":
+                if key == "jk08a-knock-reference-learning":
+                    header_name = "stock-jk08a-knock-reference-learning-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(
+                        r'^#define KNOCK_REFERENCE_LEARNING_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(r'reference_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    literal_row = (
+                        r'\{(?:\d+, ){9}0x[0-9a-f]+U, '
+                        r'\{(?:\d+,){7}\d+\}, \{(?:\d+,){7}\d+\}, '
+                        r'\{(?:\d+,){7}\d+\}, '
+                        r'\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\}, [01]\},'
+                    )
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertRegex(harness, r'for\(i=0;i<ARRAY_SIZE\(reference_cases\);\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&reference_cases\[i\]\)')
+                    self.assertRegex(harness, r'if\(completed!=KNOCK_REFERENCE_LEARNING_CASE_COUNT\)')
+                    self.assertRegex(harness, r'\+\+completed;')
+                elif key == "jk08a-bank-base-pulse":
                     header_name = "stock-jk08a-bank-base-pulse-cases.h"
                     self.assertEqual(re.findall(
                         r'^#include "' + re.escape(header_name) + r'"$',

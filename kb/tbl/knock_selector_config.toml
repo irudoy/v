@@ -99,6 +99,37 @@ alternate channel byte"""
 
 [[link]]
 type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+MOV.B 0004a12c and TST bit3 choose the two declared channel-byte contexts. \
+Every selector value is explicit; stock bytes and artificial calibration \
+contexts do not establish full scheduler or hardware mode reachability."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a12c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
 to = "knock_slice_evaluator/fn"
 via = ["knock_slice_evaluator/fn"]
 layouts = ["7mfk"]

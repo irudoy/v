@@ -1,0 +1,67 @@
+summary = """
+7mfk scalar byte supplying the unsigned weight of normal RAM reference \
+learning."""
+note = """
+The normal learner loads this ROM byte at 0004a1a4 and EXTU.B supplies W. \
+Its coefficients are W and 255-W before unsigned weighted-word division by \
+256. Forced reset does not read this scalar. Generic storage facts do not \
+prescribe a stock value, calibration policy or physical time constant."""
+block = "knock/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000884b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a1a4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal learning reads this byte, zero-extends it and forms both W and 255-W. \
+Forced reset does not read it. Generic shape and the executed byte domain \
+are separate from stock or artificial weight values."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a1a4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"

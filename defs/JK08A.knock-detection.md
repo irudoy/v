@@ -322,3 +322,73 @@ identity.
 - The combustion event that each channel window observes, the sensors behind
   AN24 and AN25, and the physical scale require controlled signal or vehicle
   validation before per-cylinder tuning decisions.
+
+## Bounded knock reference learning
+
+The complete RAM-only learner at `0004a118..0004a1fc` and its real
+diagnostic predicate at `00025e20..00025e44` form the registered
+`jk08a-knock-reference-learning` Region. The exact contract binds
+132 instructions, 304 bound bytes and 7336 cases. The envelope contains
+264 instruction bytes and 40 data bytes: 36 pool bytes and 4 calibration bytes. Both functions
+return through their natural stock RTS/delay slots; no predicate stub or
+boundary return replaces an instruction.
+
+`ROM8[0x00008b3d].bit3` selects primary channel byte `ffff11de` when clear
+and alternate byte `ffff2143` when set. Normal learning uses a declared
+one-based channel `c` in 1..6, eight unsigned samples at
+`ffff20c2+2*i`, and eight unsigned old words at
+`ffff2178+16*(c-1)+2*i`, with `i` in 0..7. Both loaded words are
+zero-extended before multiplication. With both queried diagnostic results
+clear, byte weight `W = ROM8[0x0000884b]` supplies:
+
+```text
+q = floor((W*uint16(v)+(255-W)*uint16(old))/256)
+new = min(65535,q+min(1,max(0,uint16(old)-q)))
+```
+
+The coefficients sum to 255. Stock `W=224` supplies coefficients 224
+and 31. Equal positive sample and old values do not imply an unchanged
+word: `v=old=65535` yields `q=65279` and `new=65280`. Across the complete
+uint16/byte-weight domain, the numerator fits uint32, `q<=65279`, and
+`new<=65280`. The upper-clamp taken arm is unreachable in this domain;
+out-of-domain inputs do not force it. Only the selected 16-byte reference row may
+change on the normal path.
+
+The genuine calls query ids `012d` and `013f` through byte1.bit7 at
+`ffff5718+3*sign16(id)+1`, giving `ffff5aa0` and `ffff5ad6`. Either set
+result resets all 48 reference words across the six-row, 96-byte reference bank
+to the low word of `ROM16[0x00009282]`; stock reset is `ffff`. A set first
+result skips the second query. The normal path consumes the sample and
+weight inputs; forced reset does not. Diagnostic low bits, samples,
+unselected inputs, calibration and other RAM remain unchanged. These are
+executed branch and return facts; no direct invocation-count observation
+is inferred.
+
+The literal matrix contains 5256 normal learning cases, 540 forced reset cases and
+1540 direct predicate cases. There are 5796 natural learner calls.
+Stock selector/weight/reset bytes supply 2015 stock normal cases and
+18 stock forced cases, totaling 2033 stock natural cases.
+Artificial selector, weight and reset contexts retain separate labels.
+All 42048 normal output words and each of the 7336 full fifteen-GPR and
+SR.T exit vectors have independent arithmetic expectations. Direct
+predicate contexts cover all 256 record bytes for both ids and three
+independent R4 upper words, plus four low-word-ffff sentinel contexts.
+The sentinel returns zero without reading a record. Other signed indices
+and diagnostic array extent are outside this contract.
+
+Every case checks the complete 64k aliased RAM, all 40 bound pool/calibration bytes,
+the 80-byte observed frame, MACL/MACH/GBR, natural SP/PR and a distinct
+external C caller ABI. The 36-byte natural save footprint holds R8..R14, PR and
+MACL; the predicate adds no stack storage. Forced reset checks every
+reference word, normal learning checks every selected-row word, and a
+direct predicate permits no RAM change. The fixture checks final SR.T
+without injecting SR or claiming preservation of its other bits.
+
+`tools/kb/tests/test_knock_reference_learning_chain.py` gates image
+identity, exact instruction/data bytes, literal arithmetic, complete
+ordered Region bindings, published counts, typed conditional relations
+and owner preservation. Chain step 2 has sign=none. Separate static caller
+anchors do not execute acquisition or full evaluator dispatch. ADC/DMAC,
+digital-bin production, metric scaling, threshold/count updates,
+diagnostic producers, physical units, sensor mapping, scheduling and
+hardware behavior require their own evidence.

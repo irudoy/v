@@ -27,18 +27,17 @@ Tooth 7 opens and tooth 0 closes the window; DMAC 2 reads ADDR24 (AN24/AN25 \
 scan); metric = sum of the 3 largest rises over the reference."""
 
 [[step]]
-from = "vehement-hare/reg"
+from = "knock_reference_samples/ram"
 to = "gigantic-goshawk/ram"
 effect = "learns"
 sign = "none"
-via = [
-    "bold-hummingbird/fn",
-    "meteoric-raptor/fn",
-    "knock_slice_evaluator/fn",
-]
+via = ["knock_reference_learning/fn"]
 note = """
-Per-channel reference update ref = (224 * v + 31 * ref) >> 8, plus 1 when \
-below the old value; weight ROM8[0x884B] = 0xE0."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); i \
+= x; row = 0xffff2178+16*(c-1); v = RAM16[0xffff20c2+2*i]; old = \
+RAM16[row+2*i]; W = ROM8[0x0000884b]; q = \
+floor((W*uint16(v)+(255-W)*uint16(old))/256); to = \
+min(65535,q+min(1,max(0,uint16(old)-q)))"""
 
 [[step]]
 from = "gigantic-goshawk/ram"

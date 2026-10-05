@@ -1,0 +1,69 @@
+summary = """
+7mfk scalar raw word copied across the reference bank on a queried \
+diagnostic condition."""
+note = """
+The forced learner path loads this raw ROM word at 0004a150 and stores its \
+low16 bits to all 48 reference words. The register load sign-extends, while \
+the stored raw bits retain the unsigned word value. Other readers, including \
+startup initialization, are separate facts. Generic storage does not \
+prescribe a fixed stock word or physical diagnostic meaning."""
+block = "knock/block"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009282"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a150"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Forced reset reads and sign-extends this ROM word, then stores its unchanged \
+low16 bits to every word of the six-row bank. Normal learning does not read \
+it. Startup reader semantics and stock/artificial calibration contexts \
+remain separate."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a150"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"

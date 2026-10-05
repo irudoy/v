@@ -345,12 +345,40 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "diagnostic_record_byte1_bit7_predicate/fn"
+via = ["diagnostic_record_byte1_bit7_predicate/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = ["contract", "identity"]
 role = "indexed_by"
+note = """
+The real predicate uses three-byte records, loads byte1 at 00025e32 and \
+returns bit7. Bounded direct contexts use ids 012d/013f with independent \
+upper-word R4 patterns; the low-word ffff sentinel makes no record read. \
+Nonsentinel R6 addresses base+3*id while full R4 is preserved. These indexed \
+reader claims establish no complete array extent, record producer or \
+hardware meaning. The existing diagnostic record byte unit and both ledger \
+claiming ends remain unchanged."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00025e20"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
 
 [[link]]
 type = "reader"

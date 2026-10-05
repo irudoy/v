@@ -89,6 +89,37 @@ note = "Target evaluator reads this channel byte while selector bit 3 is set"
 
 [[link]]
 type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Selector bit3 set reads alternate channel through ffff1ff4+0x14f. The normal \
+row calculation has explicit legal c in 1..6 and preserves the independently \
+different unused channel byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a13a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
 to = "knock_slice_evaluator/fn"
 via = ["knock_slice_evaluator/fn"]
 layouts = ["7mfk"]

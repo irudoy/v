@@ -1,0 +1,72 @@
+summary = """
+Complete 7mfk RAM-only reference learner with natural diagnostic predicate \
+and returns."""
+note = """
+The complete entry selects a legal one-based channel c in 1..6 from the bit3 \
+scalar and the two declared channel bytes. With both queried diagnostic \
+byte1.bit7 results clear, it updates eight uint16 reference words from eight \
+uint16 samples using byte weight W, coefficient sum 255 and a conditional \
+increment. Either queried result set resets all six eight-word rows using a \
+raw ROM word. The CPU-only envelope executes the real predicate and natural \
+returns. Its caller, acquisition, diagnostic producers, scheduling, physical \
+channel order, units and hardware behavior are separate facts."""
+role = "consumer"
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004a118"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a118"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "depends"
+to = "knock_slice_evaluator/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Static primary BSR 0004a386 and delay-slot NOP 0004a388 call this learner \
+from the evaluator. The caller entry, its channel-zero guard, acquisition, \
+preceding metric/threshold/count arithmetic and scheduler are not executed \
+by the RAM-only learning fixture. The chain step therefore begins at the \
+explicit RAM sample vector and names the learner only."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a386"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"

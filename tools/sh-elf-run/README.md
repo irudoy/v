@@ -877,3 +877,53 @@ must:
 
 A simulator limitation is not a waiver. Until an equivalent executable check
 exists, the image remains ineligible for hardware testing.
+
+## Bounded JK08A knock reference learning
+
+`jk08a-knock-reference-learning` executes the complete RAM-only learner
+and the real diagnostic predicate through natural stock calls and returns.
+The exact-stock envelope binds 132 instructions, 304 bound bytes and
+7336 cases: 264 instruction bytes and 40 data bytes, comprising 36 pool bytes and 4 calibration bytes.
+The source is `stock_jk08a_knock_reference_learning.s`; a separate
+`stock_knock_reference_learning_invoke.s` enters through the shared
+invoker. The original literal result marker matches the Region key and
+case count. Guest instructions, branch/delay slots and result text retain
+their reconstructed bytes.
+
+The ordered KB definitions supply the reference bank, unsigned sample
+vector, two channel bytes, diagnostic-record base, selector byte, weight
+byte and reset word. Five validated RAM pool words are aliased after
+independent GNU byte comparison. The real predicate address, all other
+pool values and calibration bytes retain stock identity. The fixture
+uses no stock-function stub or synthetic boundary return.
+
+The matrix contains 5256 normal learning cases, 540 forced reset cases and 1540
+direct predicate cases. There are 5796 natural learner calls.
+Stock calibration supplies 2015 stock normal cases and 18 stock forced cases,
+totaling 2033 stock natural cases. The normal legal
+channel domain is 1..6 with eight uint16 samples/old words and byte W.
+The coefficients W and 255-W divide by 256; only q<old adds one.
+The complete domain has q<=65279 and result<=65280, so it cannot take
+the final upper clamp. Forced reset publishes the raw reset word to all
+48 reference words across six rows. Artificial calibration cases remain
+distinct from stock contexts.
+
+Each case checks all fifteen GPRs, actual final SR.T, special registers,
+natural SP/PR, a distinct external C ABI and the 80-byte observed frame
+around the 36-byte natural save footprint. All 64k aliased RAM and all 40 bound
+pool/calibration bytes are checked. Normal learning permits only the selected
+16-byte reference row to change; forced reset permits the 96-byte reference bank; direct
+predicate calls permit no RAM changes. Independent expectations cover
+all 42048 normal output words and all 7336 register/flag vectors.
+SR is not injected and non-T preservation is outside this fixture.
+
+The two real diagnostic ids are 012d and 013f. Both bit7 outcomes,
+short-circuit/reset branches, all record bytes, independent R4 upper
+words and the low-word-ffff sentinel are covered. Static acquisition and
+caller anchors remain separate from this execution. Other signed diagnostic
+indices, complete record-array extent and hardware behavior are outside
+this bounded proof. Physical sensor and
+channel identity, diagnostic producers, acquisition, timing, engineering
+units and full evaluator dispatch are not established by the bounded
+RAM-only proof. The narrow mechanism contract is
+`defs/JK08A.knock-detection.md#bounded-knock-reference-learning`.

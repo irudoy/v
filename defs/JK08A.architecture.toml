@@ -364,6 +364,7 @@ knock monitor, and the knock-circuit monitor surfaces."""
 specs = ["defs/JK08A.knock-detection.md"]
 functions = [
     "00049ffc",
+    "0004a118",
     "0004a238",
     "0004a5ac",
     "0004a6d4",
@@ -371,8 +372,8 @@ functions = [
     "000a52e4",
     "000a543c",
 ]
-maps = []
-signals = []
+maps = ["0000884b", "00009282"]
+signals = ["ffff20c2", "ffff2178"]
 
 [[block]]
 id = "fuel-quantity"
@@ -3296,14 +3297,17 @@ Tooth 7 opens and tooth 0 closes the window; DMAC 2 reads ADDR24 (AN24/AN25 \
 scan); metric = sum of the 3 largest rises over the reference."""
 
 [[chain.step]]
-from = "fffff840"
+from = "ffff20c2"
 to = "ffff2178"
 effect = "learns"
 sign = "none"
-via = ["0004a5ac", "0004a8d4", "0004a238"]
+via = ["0004a118"]
 note = """
-Per-channel reference update ref = (224 * v + 31 * ref) >> 8, plus 1 when \
-below the old value; weight ROM8[0x884B] = 0xE0."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); i \
+= x; row = 0xffff2178+16*(c-1); v = RAM16[0xffff20c2+2*i]; old = \
+RAM16[row+2*i]; W = ROM8[0x0000884b]; q = \
+floor((W*uint16(v)+(255-W)*uint16(old))/256); to = \
+min(65535,q+min(1,max(0,uint16(old)-q)))"""
 
 [[chain.step]]
 from = "ffff2178"

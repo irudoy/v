@@ -1,9 +1,344 @@
+summary = """
+Six-row 7mfk reference bank updated or wholly reset by the RAM-only \
+learner."""
+block = "knock/block"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff2178"
 name = "gigantic-goshawk"
+level = "code"
+width = 16
+signed = false
+note = """
+The complete learner binds six rows of eight uint16 words, 16 bytes per row \
+and 96 bytes total. Normal legal channel c in 1..6 updates only row \
+ffff2178+16*(c-1). Either real queried diagnostic bit7 set copies the raw \
+reset word to all 48 words, including sibling rows. The normal old word is \
+zero-extended before multiplication; the row footprint and full-bank extent \
+are exact executed storage claims without physical channel order or \
+acquisition semantics."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004a14e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a158"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With selector bit3 set, MOV.B 0004a13a supplies selected channel c from \
+ffff1ff4+0x14f. Normal learning uses declared legal c in 1..6. The other \
+channel byte remains independently different; all selector-byte contexts \
+preserve both inputs, without a channel-zero guard or physical ordering \
+claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a13a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With selector bit3 clear, MOV.B 0004a17e supplies selected channel c, then \
+normal learning constrains its zero-extended value to the declared legal \
+domain 1..6. The other channel byte is independently different. The caller \
+channel-zero guard and physical cylinder order are not executed or inferred \
+here."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a17e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "input"
+to = "knock_reference_reset/tbl"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Either queried diagnostic result set selects forced full-bank reset: for \
+every j in 0..47, to = ROM16[0x00009282]. All 48 raw words receive this \
+value, not only the selected row. The normal path does not read this scalar. \
+Artificial reset words are separate contexts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a150"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "input"
+to = "knock_reference_samples/ram"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal learning reads unsigned v=RAM16[ffff20c2+2*i] with i=x in 0..7. \
+EXTU.W 0004a1c2 precedes multiplication. Both real diagnostic results must \
+be clear; forced reset does not read the sample vector. Acquisition and \
+digital-bin production are not executed by this CPU-only learner."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a1ba"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "input"
+to = "knock_reference_weight/tbl"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Normal learning uses byte W and coefficients W and 255-W. \
+q=floor((W*v+(255-W)*old)/256); the conditional +1 is taken only if q<old. \
+The declared uint16/byte domain has q<=65279 and result<=65280, so the final \
+upper-clamp taken arm is unreachable. Artificial weights are labelled \
+independently of stock bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a1a4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On normal learning, the loaded reference base and channel select eight old \
+uint16 words; EXTU.W zero-extends each before the weighted multiply. Only \
+the selected row is rewritten. Forced reset reads no old numeric reference \
+value and copies all 48 reset words. Natural return and per-case sibling \
+isolation are independently checked."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a194"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "selector"
+to = "diagnostic_record_byte1_bit7_predicate/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The real queries use ids 012d and 013f. Both clear selects normal eight-word \
+learning; either byte1.bit7 set selects all 48 reference words for forced \
+reset. If the first result is set the second query is skipped by the genuine \
+code. This source/branch contract makes no direct call-count observation, \
+diagnostic producer, acquisition or hardware claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a142"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+ROM8[00008b3d].bit3 clear selects primary ffff11de; set selects alternate \
+ffff2143. Legal channel c is 1..6. Every unrelated selector bit is \
+independently varied and preserved. The complete learner reads the scalar \
+and channel bytes, without executing acquisition or its caller zero-guard."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a12e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
+
+[[link]]
+type = "writer"
+to = "knock_reference_learning/fn"
+via = ["knock_reference_learning/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+note = """
+With both diagnostic results clear, the arithmetic-only normal note applies \
+to i=x in 0..7 and the selected row only, updating eight words/16 bytes. \
+With either result set, the independent reset view for j in 0..47 is to = \
+ROM16[0x00009282] and writes all 48 words/96 bytes. The maximum normal \
+result is 65280 for the declared uint16/byte-weight domain; the upper-clamp \
+taken arm is unreachable. All other 64k RAM, samples, channels, diagnostic \
+records and calibration/pool bytes are preserved per case. Acquisition, the \
+static caller and full evaluator dispatch are not executed."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004a158"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+key = "test_knock_reference_learning_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded knock reference learning"
