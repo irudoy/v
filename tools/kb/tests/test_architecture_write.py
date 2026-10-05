@@ -7,32 +7,82 @@ from unittest import mock
 
 import pytest
 
-from kb import checks, compile, repo, store, write
+from kb import adapters, checks, compile, convert, repo, store, write
+from kb.adapters import files as file_adapter
 from kb.repo import KbError
+from tools.kb.tests import architecture_sources
 
 
 CHAIN = 'engine_speed/chain'
 CHAIN_FILE = store.path_of('chain', 'engine_speed')
 
 
-pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses')
+pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
+
+ISOLATED_CASES = {
+    'test_unset_refuses_the_required_chain_summary',
+    'test_invalid_home_is_refused_before_reference_resolution',
+    'test_typed_metadata_is_checked_before_canonical_omission',
+    'test_step_values_must_match_the_array_schema',
+    'test_invalid_step_replacements_fail_model_checks',
+    'test_held_prose_remains_reported_without_blocking_an_unrelated_metadata_edit',
+    'test_a_changed_step_cannot_reuse_a_held_prose_rejection',
+}
+ISOLATED_NOTES = {'to = min(from)', 'to = from; use alternate input',
+                  'to = lookup(from, selected)'}
+
+
+def full_case(request):
+    name = request.node.name.split('[', 1)[0]
+    if name in ISOLATED_CASES:
+        return False
+    if name == 'test_new_prose_and_malformed_arithmetic_refuse_the_complete_batch':
+        return request.node.callspec.params['note'] not in ISOLATED_NOTES
+    return True
 
 
 @pytest.fixture(scope='module')
-def model(reuse_kb_source_parses):
-    return compile.build(repo.ROOT)
+def full_model(reuse_kb_source_parses):
+    model = compile.build(repo.ROOT)
+    held = convert.dump(model)
+    yield model
+    assert convert.dump(model) == held
+
+
+@pytest.fixture(scope='module')
+def isolated_model(reuse_kb_source_parses, tmp_path_factory):
+    root = tmp_path_factory.mktemp('architecture-writer')
+    hashes = architecture_sources.write_sources(root)
+    model = compile.build(root, order=(file_adapter,))
+    assert write._issues(model) == {}
+    held = convert.dump(model)
+    yield model
+    assert convert.dump(model) == held
+    assert architecture_sources.unchanged(root, hashes)
 
 
 @pytest.fixture
-def document():
-    return copy.deepcopy(store.load(repo.ROOT, CHAIN_FILE))
+def source_order(request, monkeypatch):
+    if not full_case(request):
+        monkeypatch.setattr(adapters, 'ADAPTERS', (file_adapter,))
+
+
+@pytest.fixture
+def model(request, source_order):
+    return request.getfixturevalue('full_model' if full_case(request) else 'isolated_model')
+
+
+@pytest.fixture
+def document(model):
+    return copy.deepcopy(store.load(model.root, CHAIN_FILE))
 
 
 @pytest.fixture(scope='module')
-def held_prose(reuse_kb_source_parses):
-    document = copy.deepcopy(store.load(repo.ROOT, CHAIN_FILE))
+def held_prose(reuse_kb_source_parses, isolated_model):
+    document = copy.deepcopy(store.load(isolated_model.root, CHAIN_FILE))
     document['step'][0]['note'] = 'Copy the capture while a mode is selected.'
-    model = compile.build(repo.ROOT, {CHAIN_FILE: store.render('chain', document)})
+    model = compile.build(isolated_model.root, {CHAIN_FILE: store.render('chain', document)},
+                          order=(file_adapter,))
     assert any(issue.subject == 'engine_speed/chain step 1'
                for issue in checks.chain_notes(model))
     return model, document
@@ -43,7 +93,7 @@ def assign(keys, ref=CHAIN):
 
 
 def plan(model, *ops):
-    return write.plan(list(ops), model, write.model_resolver(model))
+    return write.plan(list(ops), model, write.model_resolver(model), root=model.root)
 
 
 def replacement(document):
@@ -188,7 +238,7 @@ def test_invalid_chain_prevents_condition_files_and_graph_writes(model):
             mock.patch.object(write.store, 'write') as written, \
             mock.patch.object(write.graph, 'sync_held') as synced:
         with pytest.raises(KbError) as refused:
-            write.apply([condition(), assign({'step': []})])
+            write.apply([condition(), assign({'step': []})], root=model.root)
     assert refused.value.code == 3
     assert 'a chain needs ordered steps' in str(refused.value)
     written.assert_not_called()
@@ -210,7 +260,7 @@ def test_new_prose_and_malformed_arithmetic_refuse_the_complete_batch(model, doc
             mock.patch.object(write.store, 'write') as written, \
             mock.patch.object(write.graph, 'sync_held') as synced:
         with pytest.raises(KbError) as refused:
-            write.apply([condition(), assign(keys)])
+            write.apply([condition(), assign(keys)], root=model.root)
     assert refused.value.code == 3
     assert 'chain-notes' in str(refused.value)
     assert repr(note) in str(refused.value)
