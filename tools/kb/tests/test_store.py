@@ -286,5 +286,89 @@ class SchemaLookupTest(unittest.TestCase):
         self.assertEqual(b.spec('a')['value'], 2)
 
 
+class SchemaOrderTest(unittest.TestCase):
+    def test_builtin_key_containers_keep_schema_order_and_sorted_unknowns(self):
+        table = store.Table((('z', store.DID), ('a', store.PLAIN)))
+        for make in (dict.fromkeys, list, tuple, set, frozenset):
+            with self.subTest(container=make):
+                result = table.order(make(('b', 'a', 'c', 'z')))
+                self.assertIs(type(result), list)
+                self.assertEqual(result, ['z', 'a', 'b', 'c'])
+                result.append('local')
+                self.assertEqual(table.order(make(('b', 'a', 'c', 'z'))), ['z', 'a', 'b', 'c'])
+
+    def test_duplicate_names_and_a_first_none_spec_keep_duplicate_output_keys(self):
+        table = store.Table((('a', None), ('z', store.DID), ('a', store.TEXT),
+                             ('present', store.PLAIN)))
+        self.assertEqual(table.order({'b': 1, 'a': 2, 'z': 3, 'present': 4}),
+                         ['a', 'z', 'a', 'present', 'a', 'b'])
+
+    def test_mutable_grammar_rows_and_key_containers_keep_current_values(self):
+        for rows in ([('a', store.PLAIN)], (['a', store.PLAIN],), [['a', store.PLAIN]]):
+            with self.subTest(rows=rows):
+                table = store.Table(rows)
+                self.assertEqual(table.order(['b', 'a']), ['a', 'b'])
+                if isinstance(rows, list):
+                    rows[0] = ('b', store.HEX)
+                else:
+                    rows[0][:] = ['b', store.HEX]
+                self.assertEqual(table.order(['b', 'a']), ['b', 'a'])
+        keys = ['b', 'a']
+        table = store.Table((('a', store.PLAIN),))
+        self.assertEqual(table.order(keys), ['a', 'b'])
+        keys[:] = ['c']
+        self.assertEqual(table.order(keys), ['c'])
+
+    def test_replacing_the_immutable_grammar_discards_the_previous_index(self):
+        table = store.Table((('a', store.PLAIN),))
+        self.assertEqual(table.order({'a': 1, 'b': 2}), ['a', 'b'])
+        object.__setattr__(table, 'keys', (('b', None), ('a', store.PLAIN)))
+        self.assertEqual(table.order({'a': 1, 'b': 2}), ['b', 'a', 'b'])
+        object.__setattr__(table, 'keys', (('b', store.HEX),))
+        self.assertEqual(table.order({'a': 1, 'b': 2}), ['b', 'a'])
+
+    def test_a_subclass_override_remains_the_source_of_unknown_key_classification(self):
+        class Table(store.Table):
+            def spec(self, key):
+                return None if key == 'b' else super().spec(key)
+        table = Table((('a', store.PLAIN), ('b', store.HEX)))
+        self.assertEqual(table.order({'a': 1, 'b': 2, 'other': 3}), ['a', 'b', 'b', 'other'])
+
+    def test_nonstandard_key_objects_keep_equality_and_output_identity(self):
+        class Key(str):
+            pass
+        a, c = Key('a'), Key('c')
+        table = store.Table((('a', store.PLAIN),))
+        result = table.order([c, a])
+        self.assertEqual(result, ['a', 'c'])
+        self.assertIs(type(result[0]), str)
+        self.assertIs(result[1], c)
+        self.assertEqual(table.order(['a', 1]), ['a', 1])
+        with self.assertRaises(TypeError):
+            table.order(['a', 1, 'unknown'])
+
+    def test_a_custom_key_container_preserves_membership_and_iteration_behavior(self):
+        calls = []
+        class Keys:
+            def __contains__(self, key):
+                calls.append(('contains', key))
+                return key in ('a', 'b')
+            def __iter__(self):
+                calls.append(('iterate',))
+                return iter(('b', 'a'))
+            def __bool__(self):
+                raise AssertionError('Custom truth testing is not part of ordering.')
+        table = store.Table((('a', store.PLAIN), ('b', store.HEX)))
+        self.assertEqual(table.order(Keys()), ['a', 'b'])
+        self.assertEqual(calls, [('contains', 'a'), ('contains', 'b'), ('iterate',)])
+
+    def test_empty_containers_leave_an_unused_grammar_index_uninitialized(self):
+        for make in (dict, list, tuple, set, frozenset):
+            with self.subTest(container=make):
+                table = store.Table((('a', store.PLAIN),))
+                self.assertEqual(table.order(make()), [])
+                self.assertNotIn('_lookup', vars(table))
+
+
 if __name__ == "__main__":
     unittest.main()

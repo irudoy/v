@@ -63,6 +63,17 @@ class Table:
 
     def order(self, keys):
         known = [name for name, _ in self.keys if name in keys]
+        if type(self) is Table and type(keys) in (dict, list, tuple, set, frozenset) \
+                and keys and all(type(key) is str for key in keys):
+            held = self.keys
+            lookup = self.__dict__.get("_lookup")
+            if lookup is None or lookup[0] is not held:
+                index = _schema_index(held)
+                object.__setattr__(self, "_lookup", (held, index))
+            else:
+                index = lookup[1]
+            if index is not None:
+                return known + sorted(key for key in keys if index.get(key) is None)
         return known + sorted(key for key in keys if self.spec(key) is None)
 
 
