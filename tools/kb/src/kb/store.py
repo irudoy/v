@@ -46,6 +46,16 @@ class Table:
     inline: bool = False
 
     def spec(self, key):
+        if type(self) is Table and type(key) is str:
+            keys = self.keys
+            lookup = self.__dict__.get("_lookup")
+            if lookup is None or lookup[0] is not keys:
+                index = _schema_index(keys)
+                object.__setattr__(self, "_lookup", (keys, index))
+            else:
+                index = lookup[1]
+            if index is not None:
+                return index.get(key)
         for name, spec in self.keys:
             if name == key:
                 return spec
@@ -54,6 +64,18 @@ class Table:
     def order(self, keys):
         known = [name for name, _ in self.keys if name in keys]
         return known + sorted(key for key in keys if self.spec(key) is None)
+
+
+def _schema_index(keys):
+    """First specs of exact immutable grammar keys; other inputs keep scans."""
+    if type(keys) is not tuple or any(type(item) is not tuple or len(item) != 2
+                                     or type(item[0]) is not str for item in keys):
+        return None
+    index = {}
+    for name, spec in keys:
+        if name not in index:
+            index[name] = spec
+    return index
 
 
 @dataclass(frozen=True)

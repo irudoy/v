@@ -1,3 +1,6 @@
+import copy
+from dataclasses import fields
+import pickle
 import re
 import tempfile
 import tomllib
@@ -188,6 +191,99 @@ class CanonicalTest(unittest.TestCase):
             path.write_text("title = \n", encoding="utf-8")
             (issue,) = store.canonical(root)
             self.assertTrue(issue.message.startswith("no TOML"))
+
+
+class SchemaLookupTest(unittest.TestCase):
+    def test_immutable_duplicate_keys_keep_the_first_object_and_none_spec(self):
+        first, second = object(), object()
+        table = store.Table((('a', first), ('a', second), ('b', None), ('b', second)))
+        for _ in range(2):
+            self.assertIs(table.spec('a'), first)
+            self.assertIsNone(table.spec('b'))
+            self.assertIsNone(table.spec('missing'))
+        self.assertEqual(table.order({'a': 1, 'b': 2, 'missing': 3}), ['a', 'a', 'b', 'b', 'b', 'missing'])
+
+    def test_mutable_key_containers_preserve_edits_and_first_match(self):
+        for keys in ([('a', 'plain')], (['a', 'plain'],), [['a', 'plain']]):
+            with self.subTest(keys=keys):
+                table = store.Table(keys)
+                self.assertEqual(table.spec('a'), 'plain')
+                if isinstance(keys, list):
+                    keys[0] = ('b', 'hex')
+                else:
+                    keys[0][:] = ['b', 'hex']
+                self.assertIsNone(table.spec('a'))
+                self.assertEqual(table.spec('b'), 'hex')
+
+    def test_nonstandard_queries_keep_unhashable_equality_and_comparison_order(self):
+        compared = []
+        class Key(str):
+            __hash__ = None
+            def __eq__(self, other):
+                compared.append(other)
+                return other == 'b'
+        table = store.Table((('a', 'plain'), ('b', 'hex')))
+        self.assertEqual(table.spec('a'), 'plain')
+        self.assertEqual(table.spec(Key('unrelated')), 'hex')
+        self.assertEqual(compared, ['a', 'b'])
+        for key in (None, 1, [], {}):
+            with self.subTest(key=key):
+                self.assertIsNone(table.spec(key))
+
+    def test_table_subclasses_preserve_constructor_and_field_access_behavior(self):
+        accessed = []
+        class Table(store.Table):
+            def __post_init__(self):
+                raise AssertionError('Unexpected constructor hook')
+            def __getattribute__(self, name):
+                accessed.append(name)
+                return super().__getattribute__(name)
+        table = Table((('a', 'plain'),))
+        accessed.clear()
+        self.assertEqual(table.spec('a'), 'plain')
+        self.assertEqual(accessed, ['spec', 'keys'])
+
+    def test_malformed_keys_keep_lookup_errors_and_constructor_acceptance(self):
+        for keys, exception, message in ((None, TypeError, "'NoneType' object is not iterable"),
+                                         (7, TypeError, "'int' object is not iterable"),
+                                         ((('a',),), ValueError, 'not enough values to unpack'),
+                                         ((('a', None, None),), ValueError, 'too many values to unpack')):
+            with self.subTest(keys=keys):
+                table = store.Table(keys)
+                for _ in range(2):
+                    with self.assertRaises(exception) as error:
+                        table.spec('a')
+                    self.assertIn(message, str(error.exception))
+
+    def test_replacing_the_key_tuple_preserves_current_specification_objects(self):
+        old, current = object(), object()
+        table = store.Table((('a', old),))
+        self.assertIs(table.spec('a'), old)
+        object.__setattr__(table, 'keys', (('b', current),))
+        self.assertIsNone(table.spec('a'))
+        self.assertIs(table.spec('b'), current)
+
+    def test_copy_pickle_repr_hash_and_dataclass_fields_keep_their_contracts(self):
+        table = store.Table((('a', store.Table((('b', 'plain'),))),), sort=('a',), inline=True)
+        before = repr(table), hash(table)
+        table.spec('a')
+        self.assertEqual((repr(table), hash(table)), before)
+        self.assertEqual([item.name for item in fields(table)], ['keys', 'sort', 'inline'])
+        for clone in (copy.copy(table), copy.deepcopy(table), pickle.loads(pickle.dumps(table))):
+            with self.subTest(clone=type(clone)):
+                self.assertIs(clone.spec('a'), clone.keys[0][1])
+                self.assertEqual(clone, table)
+                self.assertEqual((repr(clone), hash(clone)), before)
+
+    def test_independent_tables_keep_their_own_mutable_specification_references(self):
+        first, second = {'value': 1}, {'value': 2}
+        a, b = store.Table((('a', first),)), store.Table((('a', second),))
+        self.assertIs(a.spec('a'), first)
+        self.assertIs(b.spec('a'), second)
+        first['value'] = 3
+        self.assertIs(a.spec('a'), first)
+        self.assertEqual(a.spec('a')['value'], 3)
+        self.assertEqual(b.spec('a')['value'], 2)
 
 
 if __name__ == "__main__":
