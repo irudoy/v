@@ -104,11 +104,17 @@ and releases below 115; it enables the conditional table."""
 from = "injection_end_angle/ram"
 to = "flat-coyote/ram"
 effect = "converts"
-sign = "positive"
+sign = "none"
 via = ["transformed_pulse_maximum/fn"]
 note = """
-Start delay d = 2*E - 4*p crank degrees, or 0 when E < 2*p; lead ffff23f0 = \
-d / 120 engine events, forced to 3 while ffff4251.bit0 is set."""
+F = (uint8(ffff4184)>>6)&1; R = F*uint16(ffff10ca)+(1-F)*uint16(ffff11bc); K \
+= floor(uint32(16*R*50331)/65536); P = uint16(ffff241c); P = \
+max(P,uint16(RAM16[0xffff23d4])); P = max(P,uint16(RAM16[0xffff23d6])); P = \
+max(P,uint16(RAM16[0xffff23d8])); P = max(P,uint16(RAM16[0xffff23da])); P = \
+max(P,uint16(RAM16[0xffff23dc])); P = max(P,uint16(RAM16[0xffff23de])); p = \
+min(255,floor(K*P/65536)); E = uint16(ffff192e); D0 = max(0,2*E-4*p); W = \
+(uint8(ffff24c9)>>5)&1; D = max(0,D0-W*ROM8[0x000083ea]); q = floor(D/120); \
+C = uint8(ffff4251)&1; to = (1-C)*uint8(q)+3*C"""
 
 [[step]]
 from = "injection_end_angle/ram"
@@ -124,21 +130,33 @@ count; the remainder has no monotonic sign in d."""
 from = "handsome-spaniel/ram"
 to = "flat-coyote/ram"
 effect = "subtracts"
-sign = "negative"
+sign = "none"
 via = ["transformed_pulse_maximum/fn"]
 note = """
-The longest transformed pulse ffff23d4..ffff23de, floored at ffff241c in 10 \
-us counts, gives pulse angle p = min((k * pulse) >> 16, 255)."""
+F = (uint8(ffff4184)>>6)&1; R = F*uint16(ffff10ca)+(1-F)*uint16(ffff11bc); K \
+= floor(uint32(16*R*50331)/65536); P = uint16(ffff241c); P = \
+max(P,uint16(RAM16[0xffff23d4])); P = max(P,uint16(RAM16[0xffff23d6])); P = \
+max(P,uint16(RAM16[0xffff23d8])); P = max(P,uint16(RAM16[0xffff23da])); P = \
+max(P,uint16(RAM16[0xffff23dc])); P = max(P,uint16(RAM16[0xffff23de])); p = \
+min(255,floor(K*P/65536)); E = uint16(ffff192e); D0 = max(0,2*E-4*p); W = \
+(uint8(ffff24c9)>>5)&1; D = max(0,D0-W*ROM8[0x000083ea]); q = floor(D/120); \
+C = uint8(ffff4251)&1; to = (1-C)*uint8(q)+3*C"""
 
 [[step]]
 from = "rpm/ram"
 to = "flat-coyote/ram"
 effect = "scales"
-sign = "negative"
+sign = "none"
 via = ["transformed_pulse_maximum/fn"]
 note = """
-k = ((ffff11bc << 4) * 0xC49B) >> 16 turns pulse time into angle, so a \
-higher RPM/12.5 speed raises p and lowers the start delay d."""
+F = (uint8(ffff4184)>>6)&1; R = F*uint16(ffff10ca)+(1-F)*uint16(ffff11bc); K \
+= floor(uint32(16*R*50331)/65536); P = uint16(ffff241c); P = \
+max(P,uint16(RAM16[0xffff23d4])); P = max(P,uint16(RAM16[0xffff23d6])); P = \
+max(P,uint16(RAM16[0xffff23d8])); P = max(P,uint16(RAM16[0xffff23da])); P = \
+max(P,uint16(RAM16[0xffff23dc])); P = max(P,uint16(RAM16[0xffff23de])); p = \
+min(255,floor(K*P/65536)); E = uint16(ffff192e); D0 = max(0,2*E-4*p); W = \
+(uint8(ffff24c9)>>5)&1; D = max(0,D0-W*ROM8[0x000083ea]); q = floor(D/120); \
+C = uint8(ffff4251)&1; to = (1-C)*uint8(q)+3*C"""
 
 [[step]]
 from = "flat-coyote/ram"

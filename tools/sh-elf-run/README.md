@@ -981,3 +981,36 @@ producer interpretations and other layouts are preserved. Caller dispatch,
 upstream producers, physical mapping, percentages, timing, live-state
 reachability, complete coordinator execution and hardware behavior remain
 separate evidence.
+
+## Injection start-delay publication
+
+`jk08a-injection-start-delay` binds 404 instructions, 871 bound bytes, and
+6855 literal cases for the natural `521a8` publisher and real `21bbc/21e14`
+quotient/remainder helpers. Its envelope contains 808 instruction bytes and
+63 data bytes. Nine high-RAM aliases relocate pool addresses while preserving
+the instruction bytes, numeric constants, ROM and helper targets. Natural
+calls and returns execute with `boundary=False`.
+
+The first selected-speed product retains its uint32 wrap. Full unsigned16
+speed, pulse, floor, and end words produce a nonnegative delay; control bit 5
+enables a clamped unsigned-byte decrement. Division by 120 yields a quotient
+stored through uint8, a clamped remainder byte, and a separate bit-0 forced
+value 3. The 32-case control/T/register cross-product covers all eight relevant
+bit combinations. The matrix includes 5446 primary and 1409 alternate speed
+contexts, 4446 short and 2409 long helper paths, all 120 remainders,
+5610 stock and 1245 artificial calibration contexts. The zero-numerator path
+executes 1304 times. Invalid helper domains, sign correction, and the main
+negative-angle adjustment are identity-only.
+
+Each case checks both result bytes, all fifteen GPRs, actual full SR, natural
+PR/SP, GBR/MACH/MACL, every other 64k RAM byte, all 63 data bytes, a 96-byte
+frame at `SP-64..SP+31`, and a separate external C ABI snapshot. The prefix
+preserves MD/RB, injects T, clears M/Q explicitly, and records actual prepared
+SR. Frame origins agree and the exit capture begins at SP+32.
+
+Two unconditional contracts require canonical owners, the registered Region,
+exact execution sources, count bindings, and the three arithmetic-only chain
+steps with sign `none`. Single-byte mutations are refused across the complete
+bound envelope. The unsigned ROM83EA scalar states this conditional consumer.
+Physical units, peripheral producers, complete scheduling, and hardware
+behavior retain separate evidence requirements.

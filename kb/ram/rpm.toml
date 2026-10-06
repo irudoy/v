@@ -111,6 +111,8 @@ at = "1nd:00076cb0"
 layout = "7mfk"
 address = "ffff11bc"
 former = ["daffy-gopher/ram/7mfk-ffff11bc"]
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -188,6 +190,25 @@ supports = "identity"
 to = "pearl-waxbill/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000521ca"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff11ca"
@@ -229,6 +250,38 @@ note = "Direct target consumers use the native RPM word"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006af24"
+
+[[link]]
+type = "base"
+to = "offbeat-mantis/ram"
+offset = 0x20
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact stock pool and natural consumer bind this address plus the stated \
+byte offset. This is an address-base relation only, without a numeric \
+base-value input, producer, full structure extent or physical claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521ca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "copy"
@@ -371,6 +424,25 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521ca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "reader"

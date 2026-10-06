@@ -84,7 +84,41 @@ def _require_ltft_invoker_include_and_symbols(shared, included):
     assert local and len(local) == len(set(local))
 
 
+def _require_injection_invoker_include_and_symbols(shared, included):
+    includes = re.findall(r'^\s*\.include\s+"([^"]+)"\s*$', shared, re.MULTILINE)
+    assert includes.count("stock_injection_start_delay_invoke.s") == 1
+    combined = shared + "\n" + included
+    exported = "_stock_invoke_injection_start_delay"
+    assert len(re.findall(r'^' + exported + r':$', combined, re.MULTILINE)) == 1
+    assert len(re.findall(r'^\s*\.size ' + exported + r',', combined, re.MULTILINE)) == 1
+    local = re.findall(r'^(L_injection_start_delay_[a-z0-9_]+):', combined, re.MULTILINE)
+    assert local and len(local) == len(set(local))
+
+
 class ShElfRunVerifierTest(unittest.TestCase):
+    def test_stock_injection_invoker_include_resolves_to_unique_sibling_source(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        source = STOCK_VERIFIER.TOOL_DIR / "stock_injection_start_delay_invoke.s"
+        self.assertTrue(source.is_file())
+        self.assertEqual(source.parent, STOCK_VERIFIER.TOOL_DIR)
+        _require_injection_invoker_include_and_symbols(shared, source.read_text())
+
+    def test_stock_injection_invoker_refuses_missing_duplicate_and_colliding_bindings(self):
+        shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
+        included = (STOCK_VERIFIER.TOOL_DIR / "stock_injection_start_delay_invoke.s").read_text()
+        directive = '    .include "stock_injection_start_delay_invoke.s"'
+        mutations = (
+            (shared.replace(directive, ''), included),
+            (shared + '\n' + directive, included),
+            (shared, included + '\n_stock_invoke_injection_start_delay:\n'),
+            (shared + '\nL_injection_start_delay_inner:\n', included),
+            (shared, included.replace('.size _stock_invoke_injection_start_delay,', '.size _other,')),
+        )
+        for changed_shared, changed_included in mutations:
+            with self.subTest(shared=changed_shared == shared, included=changed_included == included):
+                with self.assertRaises(AssertionError):
+                    _require_injection_invoker_include_and_symbols(changed_shared, changed_included)
+
     def test_stock_ltft_invoker_include_resolves_to_unique_sibling_source(self):
         shared = (STOCK_VERIFIER.TOOL_DIR / "stock_invoke.s").read_text()
         source = STOCK_VERIFIER.TOOL_DIR / "stock_ltft_publication_invoke.s"
@@ -725,6 +759,20 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-injection-start-delay": {
+                "REGION_ENTRY": 0x000521A8,
+                "PRIMARY_SPEED": 0xFFFF11BC,
+                "ALTERNATE_SPEED": 0xFFFF10CA,
+                "PULSES": 0xFFFF23D4,
+                "FLOOR": 0xFFFF241C,
+                "END": 0xFFFF192E,
+                "SPEED_SELECTOR": 0xFFFF4184,
+                "DELAY_CONTROL": 0xFFFF24C9,
+                "LEAD_OVERRIDE": 0xFFFF4251,
+                "ANGLE_OUTPUT": 0xFFFF23BF,
+                "LEAD_OUTPUT": 0xFFFF23F0,
+                "DELAY_CONFIG": 0x000083EA,
+            },
             "jk08a-ltft-publication": {
                 "REGION_ENTRY": 0x00057B26,
                 "SELECTED": 0xFFFF2306,
@@ -1163,6 +1211,25 @@ mov #0x5,r1
                     self.assertRegex(harness, r'if\(completed!=LTFT_PUBLICATION_CASE_COUNT\)')
                     self.assertRegex(harness, r'\+\+completed;')
                     self.assertIn("#define DIAGNOSTIC (DIAGNOSTIC_RECORD + DIAGNOSTIC_BYTE1_OFFSET)", harness)
+                elif key == "jk08a-injection-start-delay":
+                    header_name = "stock-jk08a-injection-start-delay-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(
+                        r'^#define INJECTION_START_DELAY_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(r'injection_start_delay_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    literal_row = r'\{\{0x[0-9a-f]+U,0x[0-9a-f]+U\},\{(?:0x[0-9a-f]+U,){5}0x[0-9a-f]+U\},\d+,\d+,\{(?:0x[0-9a-f]+U,){2}0x[0-9a-f]+U\},(?:\d+,){5}(?:0x[0-9a-f]+U,){8}\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\},0x[0-9a-f]+U,\d+\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertRegex(harness, r'for\(i=0;i<ARRAY_SIZE\(injection_start_delay_cases\);\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&injection_start_delay_cases\[i\]\)')
+                    self.assertRegex(harness, r'if\(completed!=INJECTION_START_DELAY_CASE_COUNT\)')
+                    self.assertRegex(harness, r'\+\+completed;')
                 elif key == "jk08a-bank-base-pulse":
                     header_name = "stock-jk08a-bank-base-pulse-cases.h"
                     self.assertEqual(re.findall(

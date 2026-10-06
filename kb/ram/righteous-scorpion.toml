@@ -66,6 +66,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff23bf"
 name = "righteous-scorpion"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -142,26 +144,212 @@ at = "7mfk:00054bd6"
 value = {named = ["000083ea", "0000c49b", "000521a8", "000522a8", "00054a44", "ffff192e", "ffff23bf", "ffff23d4", "ffff241c"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00052276"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[link]]
-type = "input"
-to = "devout-swift/ram"
+type = "base"
+to = "amorphous-ape/ram"
+offset = 0x3
+via = ["transformed_pulse_maximum/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The exact stock pool and natural consumer bind this address plus the stated \
+byte offset. This is an address-base relation only, without a numeric \
+base-value input, producer, full structure extent or physical claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052276"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "input"
+to = "devout-swift/ram"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned16 floor ffff241c participates in P=max(floor,six unsigned pulse \
+words). Its producer, physical scale and scheduler snapshot remain separate \
+facts."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521f2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "input"
 to = "handsome-spaniel/ram"
+via = ["transformed_pulse_maximum/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The consumer reads six unsigned16 words at ffff23d4+2*i for i=0..5. P is \
+their maximum and the independently read floor. The common bounded publisher \
+computes both result bytes from live arithmetic; no scheduler readback or \
+upstream transform is executed."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521e2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "input"
 to = "injection_end_angle/ram"
+via = ["transformed_pulse_maximum/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Unsigned16 E supplies D0=max(0,2*E-4*p). Full-word quotient-byte wrap \
+prevents a universal monotone sign. Stored lead and angle are separate from \
+the widened helper registers."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052212"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "input"
+to = "rare-sawfly/ram"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When speed-selector bit6 is set, unsigned16 ffff10ca supplies R, \
+independently of the unused primary word. K=floor(uint32(16*R*50331)/65536) \
+retains the low32 product wrap."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521c4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "input"
+to = "rpm/ram"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+When speed-selector bit6 is clear, unsigned16 ffff11bc supplies R. \
+K=floor(uint32(16*R*50331)/65536) retains the low32 product wrap. Other \
+selector bits are irrelevant to this numerical choice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521ca"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "reader"
@@ -178,3 +366,22 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052276"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"

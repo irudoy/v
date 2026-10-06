@@ -1,0 +1,68 @@
+summary = """
+7mfk unsigned scalar byte supplying the conditional decrement of the bounded \
+injection start-delay consumer."""
+block = "injection_timing/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "000083ea"
+level = "code"
+width = 8
+signed = false
+storage = "uint8"
+cols = 1
+rows = 1
+note = """
+MOV.B 00052234 and EXTU.B 00052236 supply an unsigned decrement only when \
+incoming snapshot byte ffff24c9.bit5 is set. The natural consumer clamps its \
+subtraction at zero. Stock value, artificial calibration contexts, other \
+readers and physical purpose are distinct evidence scopes."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00052234"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For this bounded entry, bit5 set applies max(0,D0-ROM8[000083ea]) with an \
+unsigned uint8 decrement; bit5 clear retains D0."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052234"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"

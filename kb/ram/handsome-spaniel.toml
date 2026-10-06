@@ -49,6 +49,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff23d4"
 name = "handsome-spaniel"
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -91,6 +93,57 @@ supports = "identity"
 to = "pulse_affine_floor_transform/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000521e2"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "base"
+to = "amorphous-ape/ram"
+offset = 0x18
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact stock pool and natural consumer bind this address plus the stated \
+byte offset. This is an address-base relation only, without a numeric \
+base-value input, producer, full structure extent or physical claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521e2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[link]]
 type = "lookup"
 to = "over_run_channel_multiplier/tbl"
@@ -117,6 +170,25 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521e2"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "writer"

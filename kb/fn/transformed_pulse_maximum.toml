@@ -1,14 +1,15 @@
 title = "Reduce six transformed pulse words and derive scalar outputs"
 summary = """
-Injection start-delay calculator. It takes the longest of the six \
-transformed pulse words ffff23d4..ffff23de and floor ffff241c in 10 us \
-counts and the engine-speed word in RPM/12.5, ffff11bc or ffff10ca while \
-ffff4184.bit6 is set, and forms pulse angle p = min((((speed << 4) * 0xc49b \
->> 16) * pulse) >> 16, 255) in 4 crank degrees per count. With E = \
-uint16[ffff192e] the start delay is 2*E - 4*p crank degrees, or zero when E \
-< 2*p, less ROM8[000083ea] = 30 while ffff24c9.bit5 is set. It writes lead \
-ffff23f0 = delay / 120, forced to 3 while ffff4251.bit0 is set, and start \
-angle ffff23bf = clamp(delay % 120, 4, 116) / 4."""
+Complete 7mfk bounded injection start-delay publisher with natural quotient \
+and remainder calls. Five unsigned-word input identities supply the two \
+speed alternatives, six-word maximum, floor and end word. The selected-speed \
+product retains uint32 wrap, the pulse fraction clamps at 255, and \
+nonnegative delay optionally subtracts an unsigned ROM byte. Divisor 120 \
+produces a remainder clamped to 4..116 and a quotient published through \
+uint8 unless a raw control bit forces 3. All full-word input and \
+control-byte domains are explicit consumer contexts. Upstream units, \
+acquisition, scheduling and hardware reachability retain their separate \
+evidence."""
 note = [
     """
 p = rpm * t * 1.49998 while crank rotation is rpm * t * 6 degrees, so one \
@@ -333,6 +334,126 @@ supports = "identity"
 to = "sage-tapir/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000521a8"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+via = ["transformed_pulse_maximum/fn", "pompous-firefly/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The natural caller executes the real quotient helper with nonnegative D in \
+0..131070 and fixed divisor120. Zero numerator, short and long positive \
+branches, calls and natural returns execute. Negative numerator, \
+zero/negative/wide divisor and result-sign correction semantics are \
+identity-only in this caller domain; broad signed helper contracts retain \
+their separate evidence."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052246"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "depends"
+to = "sage-tapir/fn"
+via = ["transformed_pulse_maximum/fn", "sage-tapir/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The natural caller executes the real remainder helper with nonnegative D in \
+0..131070 and fixed divisor120. Zero numerator, short and long positive \
+branches, calls and natural returns execute. Negative numerator, \
+zero/negative/wide divisor and result-sign correction semantics are \
+identity-only in this caller domain; broad signed helper contracts retain \
+their separate evidence."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052250"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit5"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For this bounded entry, bit5 set applies max(0,D0-ROM8[000083ea]) with an \
+unsigned uint8 decrement; bit5 clear retains D0."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005222e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[link]]
 type = "selector"
 to = "apc_mode/ram"
@@ -343,9 +464,72 @@ supports = "identity"
 [[link]]
 type = "selector"
 to = "futuristic-chinchilla/ram"
+slot = "bit6"
+via = ["transformed_pulse_maximum/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+For this bounded entry, bit6 set selects unsigned16 word ffff10ca; bit6 \
+clear selects unsigned16 word ffff11bc. Other bits and producers retain \
+their independent evidence."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000521ba"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+slot = "bit0"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For this bounded entry, bit0 set publishes ffff23f0=3; bit0 clear publishes \
+uint8(floor(D/120))."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005227a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "selector"

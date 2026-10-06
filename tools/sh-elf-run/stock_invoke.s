@@ -3020,3 +3020,5 @@ L_knock_state_selection_return_pointer: .long L_knock_state_selection_stock_retu
     .include "stock_knock_reference_learning_invoke.s"
 
     .include "stock_ltft_publication_invoke.s"
+
+    .include "stock_injection_start_delay_invoke.s"

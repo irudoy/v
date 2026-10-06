@@ -102,6 +102,8 @@ clamp to this word"""
 layout = "7mfk"
 address = "ffff192e"
 former = ["nifty-meerkat/ram/7mfk-ffff192e"]
+width = 16
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -144,6 +146,25 @@ at = "7mfk:00056e5c"
 value = {named = ["0000c49b", "00012302", "0001230a", "000521a8", "000522a8", "00056bd0", "00056e70", "ffff192e"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00052212"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff1992"
@@ -184,6 +205,38 @@ Homologous end-of-injection stage 000730cc stores the doubled 209-count \
 clamp to this word"""
 
 [[link]]
+type = "base"
+to = "outstanding-marmot/ram"
+offset = 0x6a2
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact stock pool and natural consumer bind this address plus the stated \
+byte offset. This is an address-base relation only, without a numeric \
+base-value input, producer, full structure extent or physical claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052212"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
 type = "lookup"
 to = "crouching-orca/tbl"
 layouts = ["7mfk"]
@@ -210,6 +263,25 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052212"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "writer"

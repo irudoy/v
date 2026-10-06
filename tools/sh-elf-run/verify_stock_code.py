@@ -100,6 +100,25 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-injection-start-delay", rom="JK08A",
+        source="stock_jk08a_injection_start_delay.s",
+        harness="harness-stock-jk08a-injection-start-delay.c",
+        start=0x000521A8, end=0x00052292, boundary=False,
+        pools=((0x000083EA, 1), (0x00052296, 2),
+               (0x00052298, 4), (0x0005229C, 4), (0x000522A0, 4),
+               (0x000522A4, 4), (0x000522A8, 4), (0x000522AC, 4),
+               (0x000522B0, 4), (0x000522B4, 4), (0x000522B8, 4),
+               (0x000522BC, 4), (0x000522C0, 4),
+               (0x00021CD8, 4), (0x00021CDC, 4),
+               (0x00021F38, 4), (0x00021F3C, 4)),
+        ram_literals=(0x00021CD8, 0x00021F38, 0x00052298,
+                      0x0005229C, 0x000522A0, 0x000522A4,
+                      0x000522AC, 0x000522B0, 0x000522C0),
+        cases=6855,
+        symbols=(('PRIMARY_SPEED', 'rpm/ram'), ('ALTERNATE_SPEED', 'rare-sawfly/ram'), ('PULSES', 'handsome-spaniel/ram'), ('FLOOR', 'devout-swift/ram'), ('END', 'injection_end_angle/ram'), ('SPEED_SELECTOR', 'futuristic-chinchilla/ram'), ('DELAY_CONTROL', 'apc_mode/ram'), ('LEAD_OVERRIDE', 'shaggy-nyala/ram'), ('ANGLE_OUTPUT', 'righteous-scorpion/ram'), ('LEAD_OUTPUT', 'flat-coyote/ram'), ('DELAY_CONFIG', 'injection_start_delay_decrement/tbl')),
+        callees=((0x00021BBC, 0x00021CD6), (0x00021E14, 0x00021F38)),
+    ),
+    Region(
         key="jk08a-ltft-publication", rom="JK08A",
         source="stock_jk08a_ltft_publication.s",
         harness="harness-stock-jk08a-ltft-publication.c",

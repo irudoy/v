@@ -172,6 +172,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff4251"
 name = "shaggy-nyala"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -324,6 +326,57 @@ supports = "identity"
 to = "foamy-chowchow/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00052278"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "base"
+to = "expert-lion/ram"
+offset = 0x5
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact stock pool and natural consumer bind this address plus the stated \
+byte offset. This is an address-base relation only, without a numeric \
+base-value input, producer, full structure extent or physical claim."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052278"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
+
 [[link]]
 type = "input"
 to = "graceful-armadillo/ram"
@@ -411,6 +464,38 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+via = ["transformed_pulse_maximum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+This bounded consumer reads the raw 7mfk value at its independently owned \
+address; conditions are stated by the function selectors. The input is \
+preserved per case, and producer or hardware-mode reachability is not \
+inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00052278"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_start_delay_chain.py"
+key = "test_injection_start_delay_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "writer"
