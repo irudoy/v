@@ -274,6 +274,8 @@ def _diagnostic(model, symbol, binding, meaning_index=None):
 def render(model):
     """Every JK08A ledger and the 7mfk curated names, from entity files."""
     rows = {name: [] for name in HEADERS}
+    orders = {name: set() for name in HEADERS}
+    unusual_orders = set()
     links = defaultdict(list)
     for link in model.links:
         links[id(link.owner)].append(link)
@@ -293,7 +295,9 @@ def render(model):
             registry, order = marker.get("registry"), marker.get("order")
             if (registry not in HEADERS or isinstance(order, bool) or not isinstance(order, int)
                     or order < 0 or symbol.kind not in REGISTRY_KINDS[registry]
-                    or any(index == order for index, _ in rows[registry])):
+                    or (order in orders[registry]
+                        if type(order) is int and registry not in unusual_orders
+                        else any(index == order for index, _ in rows[registry]))):
                 raise KbError(f"{symbol.key.key}: invalid or duplicate ledger row selector", code=3)
             if marker["registry"] == "diagnostic-bindings":
                 bindings = [item for item in meaning.tables.get("diagnostic", ())
@@ -304,7 +308,14 @@ def render(model):
                 row = _diagnostic(model, symbol, bindings[0], lookup[2])
             else:
                 row = _row(model, symbol, document, marker, lookup)
-            rows[marker["registry"]].append((marker["order"], row))
+            row_registry = marker["registry"]
+            entries = rows[row_registry]
+            row_order = marker["order"]
+            entries.append((row_order, row))
+            if type(row_order) is int:
+                orders[row_registry].add(row_order)
+            else:
+                unusual_orders.add(row_registry)
     output = {}
     for name, entries in rows.items():
         out = io.StringIO(newline="")

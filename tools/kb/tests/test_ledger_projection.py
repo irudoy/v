@@ -251,5 +251,101 @@ class TraceLookupTest(unittest.TestCase):
         self.assertLessEqual(len(accesses), 3 * len(model.meanings))
 
 
+class RenderOrderTest(unittest.TestCase):
+    def make_model(self, orders):
+        model, symbol, document, _ = fixture([], count=0)
+        model.stash['ledger_rows'][0][2].extend(
+            {'registry': 'vars', 'order': order} for order in orders)
+        return model, symbol, document
+
+    def render_model(self, model, document):
+        with patch.object(ledger_projection.store, 'load', return_value=document), \
+                patch.object(ledger_projection, '_row', side_effect=lambda m, s, d, marker, lookup:
+                             {'addr': str(marker['order'])}) as row:
+            rendered = ledger_projection.render(model)
+        return rendered, row.call_count
+
+    def test_noncontiguous_selectors_keep_numeric_output_order(self):
+        model, _, document = self.make_model([3, 0, 2, 1000000])
+        rendered, count = self.render_model(model, document)
+        values = list(csv.DictReader(io.StringIO(rendered[ledgers.PATHS['vars'].as_posix()])))
+        self.assertEqual([value['addr'] for value in values], ['0', '2', '3', '1000000'])
+        self.assertEqual(count, 4)
+
+    def test_a_duplicate_selector_refuses_before_rendering_the_duplicate_row(self):
+        model, _, document = self.make_model([2, 0, 2])
+        with patch.object(ledger_projection.store, 'load', return_value=document), \
+                patch.object(ledger_projection, '_row', return_value={}) as row, \
+                self.assertRaises(KbError) as error:
+            ledger_projection.render(model)
+        self.assertEqual(error.exception.code, 3)
+        self.assertEqual(str(error.exception), '7mfk-ffff106f/ram: invalid or duplicate ledger row selector')
+        self.assertEqual(row.call_count, 2)
+
+    def test_equal_orders_of_different_registries_are_independent(self):
+        model, symbol, document = self.make_model([])
+        symbol.kind = 'fn'
+        model.stash['ledger_rows'][0][2].extend([
+            {'registry': 'funcs', 'order': 0}, {'registry': 'curated', 'order': 0}])
+        rendered, count = self.render_model(model, document)
+        self.assertEqual(count, 2)
+        self.assertIn('0,', rendered[ledgers.PATHS['funcs'].as_posix()])
+        self.assertIn('0,', rendered['tools/ghidra/symbols/7mfk.csv'])
+
+    def test_invalid_selectors_refuse_before_serializing_a_row(self):
+        for changes in ({'order': True}, {'order': -1}, {'order': 1.5},
+                        {'order': None}, {'registry': 'unknown'}, {'registry': 'funcs'}):
+            with self.subTest(changes=changes):
+                model, _, document = self.make_model([0])
+                model.stash['ledger_rows'][0][2][0].update(changes)
+                with patch.object(ledger_projection.store, 'load', return_value=document), \
+                        patch.object(ledger_projection, '_row') as row, \
+                        self.assertRaises(KbError) as error:
+                    ledger_projection.render(model)
+                self.assertEqual(error.exception.code, 3)
+                row.assert_not_called()
+
+    def test_unhashable_integer_subclasses_keep_duplicate_equality(self):
+        class UnhashableInteger(int):
+            __hash__ = None
+        for orders in ([UnhashableInteger(2), 2], [2, UnhashableInteger(2)],
+                       [UnhashableInteger(2), UnhashableInteger(2)]):
+            with self.subTest(orders=orders):
+                model, _, document = self.make_model(orders)
+                with self.assertRaises(KbError) as error:
+                    self.render_model(model, document)
+                self.assertEqual(error.exception.code, 3)
+        model, _, document = self.make_model([UnhashableInteger(2), 3, 1])
+        rendered, count = self.render_model(model, document)
+        self.assertEqual(count, 3)
+        values = list(csv.DictReader(io.StringIO(rendered[ledgers.PATHS['vars'].as_posix()])))
+        self.assertEqual([value['addr'] for value in values], ['1', '2', '3'])
+
+    def test_each_render_reads_current_selectors_after_success_and_refusal(self):
+        model, _, document = self.make_model([0, 1])
+        first, _ = self.render_model(model, document)
+        markers = model.stash['ledger_rows'][0][2]
+        markers[1]['order'] = 0
+        with self.assertRaises(KbError):
+            self.render_model(model, document)
+        markers[1]['order'] = 2
+        after, count = self.render_model(model, document)
+        self.assertEqual(count, 2)
+        self.assertNotEqual(after, first)
+        self.assertIn('2,', after[ledgers.PATHS['vars'].as_posix()])
+
+    def test_the_duplicate_check_observes_the_selector_appended_by_row_rendering(self):
+        model, _, document = self.make_model([0, 4])
+        def render_row(m, s, d, marker, lookup):
+            marker['order'] = 4
+            return {}
+        with patch.object(ledger_projection.store, 'load', return_value=document), \
+                patch.object(ledger_projection, '_row', side_effect=render_row) as row, \
+                self.assertRaises(KbError) as error:
+            ledger_projection.render(model)
+        self.assertEqual(error.exception.code, 3)
+        self.assertEqual(row.call_count, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
