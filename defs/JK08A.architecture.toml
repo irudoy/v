@@ -2852,20 +2852,18 @@ from = "ffff23f0"
 to = "ffff2364"
 effect = "copies"
 sign = "positive"
-via = ["00020dfe"]
-note = """
-00020dfe copies the 140-byte block 0xFFFF23BC..0xFFFF2447 to 0xFFFF2330, so \
-ffff2364 is the scheduler snapshot of lead ffff23f0."""
-specs = ["defs/JK08A.fuel.md"]
+via = ["00020dfe", "00022558"]
+note = "to = uint8(from)"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[chain.step]]
 from = "ffff23bf"
 to = "ffff2333"
 effect = "copies"
 sign = "positive"
-via = ["00020dfe"]
-note = "The same 140-byte copy places start angle ffff23bf in snapshot ffff2333."
-specs = ["defs/JK08A.fuel.md"]
+via = ["00020dfe", "00022558"]
+note = "to = uint8(from)"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[chain.step]]
 from = "ffff2364"

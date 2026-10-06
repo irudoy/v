@@ -72,3 +72,50 @@ the existing Grammar and exact rational values. The software proof covers
 this consumer and these helper domains; acquisition, full scheduler
 reachability, operating cadence, physical units and calibration purpose,
 and hardware behavior require their own evidence.
+
+## Bounded injection result snapshot
+
+The caller slice `00021314..0002131a` and its real byte-copy helper
+`00022558..0002258e` bind 32 instructions, 72 bound bytes and
+1700 literal cases. Entry registers are explicit: R11=00022558 and
+R12=140. The two original pool words identify source `ffff23bc` and
+destination `ffff2330`. The natural JSR delay slot supplies length 140.
+The helper copies in ascending byte order, checks the limit after each
+byte, and returns through its stock RTS and R2-restoring delay slot.
+Only the two high-RAM data pointers are aliased for the simulator.
+
+The copy places `ffff23f0 -> ffff2364` at offset 52 and
+`ffff23bf -> ffff2333` at offset 3. Native `injection_phase`
+steps 13 and 14 state `to = uint8(from)` through the ordered caller and
+real helper. The sign is `positive` for the unsigned-byte source domain.
+The 6 arithmetic records of the complete chain comprise the four
+publisher records and these two copies. They establish no physical scale
+or upstream production claim.
+
+The matrix contains 1024 affine caller contexts, 280 isolated-byte caller contexts,
+384 direct helper contexts, and 12 successive caller contexts.
+Every source position in the affine contexts takes all 256 byte values.
+The isolated contexts exercise each of the 140 source positions independently.
+Direct calls cover lengths 0, 1, 2, 3, 4, 5, 6, 7, 139, 140, 141 and 255,
+all sixteen source/destination alignments, and both incoming T values.
+Two register contexts cover both caller T values. Successive contexts
+retain the preceding RAM state. A twelve-case preliminary matrix includes
+the caller and every early helper exit before full execution.
+
+Every case checks all fifteen GPRs, complete SR relative to the recorded
+prepared SR, MACH, MACL, GBR, PR/SP, the immutable 76-byte input context,
+the complete 96-byte frame, all 64k RAM bytes, both pool words, and an
+independent external C ABI snapshot. Source and neighboring RAM bytes
+remain unchanged; only the declared destination bytes receive source bytes.
+The helper saves R2/R3/R4 even on its zero-length path.
+
+The simulator boundary at `0002131c` restores PR from SP+24 using R7,
+then returns outside all tested instructions. The caller's observed R7
+therefore holds the boundary continuation; this is not a stock R7-preservation
+claim. Direct helper calls retain incoming R7 and use the natural return.
+The existing shared invocation prefix clears M/Q, sets entry T, and preserves
+the other observed SR bits. Separate static bytes identify the upstream
+R11 helper pool and the R12 length preparation; the executable slice begins
+with explicit input registers. Complete scheduler execution, live cadence,
+other copy calls, overlapping-source domains, hardware atomicity, and
+hardware readiness retain separate evidence.

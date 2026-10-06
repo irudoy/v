@@ -2,11 +2,118 @@
 layout = "7mfk"
 address = "ffff2364"
 name = "fabulous-koel"
+width = 8
+signed = false
+note = [
+    """
+Independent 7mfk execution of 00021314..0002131a calls the real byte copier \
+00022558..0002258e with explicit incoming R11=00022558 and R12=140. It \
+copies ffff23bc..ffff2447 to ffff2330..ffff23bb, including unsigned lead \
+ffff23f0 to ffff2364 and unsigned angle ffff23bf to ffff2333. Only two data \
+pointers are aliased after exact instruction identity. The simulator \
+boundary at 0002131c restores PR from SP+24 and uses R7 outside stock bytes. \
+Complete scheduler execution, live cadence, other copy calls and hardware \
+atomicity retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00054ab0"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021314"
+value = 52
+mode = "base"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"
+
+[[link]]
+type = "copy"
+to = "flat-coyote/ram"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+This bounded 7mfk caller copies the unsigned byte through its real 140-byte \
+block-copy helper; to = uint8(from). Entry R11 and R12 are explicit \
+contexts. No complete scheduler execution, live cadence or hardware \
+atomicity is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00021318"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00022558"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"
+
+[[link]]
+type = "input"
+to = "flat-coyote/ram"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+This bounded 7mfk caller copies the unsigned byte through its real 140-byte \
+block-copy helper; to = uint8(from). Entry R11 and R12 are explicit \
+contexts. No complete scheduler execution, live cadence or hardware \
+atomicity is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00021318"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00022558"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"
 
 [[link]]
 type = "reader"
@@ -15,3 +122,39 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "coherent_snapshot/fn"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+This bounded 7mfk caller copies the unsigned byte through its real 140-byte \
+block-copy helper; to = uint8(from). Entry R11 and R12 are explicit \
+contexts. No complete scheduler execution, live cadence or hardware \
+atomicity is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00021318"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00022558"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"

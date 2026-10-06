@@ -100,6 +100,19 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-injection-snapshot", rom="JK08A",
+        source="stock_jk08a_injection_snapshot.s",
+        harness="harness-stock-jk08a-injection-snapshot.c",
+        start=0x00021314, end=0x0002131C,
+        pools=((0x000213A0, 8),), ram_literals=(0x000213A0, 0x000213A4),
+        cases=1700, return_address_offset=24, return_register=7,
+        symbols=(("LEAD_SOURCE", "flat-coyote/ram"),
+                 ("ANGLE_SOURCE", "righteous-scorpion/ram"),
+                 ("LEAD_SNAPSHOT", "fabulous-koel/ram"),
+                 ("ANGLE_SNAPSHOT", "nippy-caribou/ram")),
+        constants=(("EARLY_ONLY", 0),), callees=((0x00022558, 0x00022590),),
+    ),
+    Region(
         key="jk08a-injection-start-delay", rom="JK08A",
         source="stock_jk08a_injection_start_delay.s",
         harness="harness-stock-jk08a-injection-start-delay.c",

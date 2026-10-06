@@ -18,6 +18,17 @@ contract = [0]
 layout = "7mfk"
 address = "00022558"
 name = "mahogany-bobcat"
+note = [
+    """
+Independent 7mfk execution of 00021314..0002131a calls the real byte copier \
+00022558..0002258e with explicit incoming R11=00022558 and R12=140. It \
+copies ffff23bc..ffff2447 to ffff2330..ffff23bb, including unsigned lead \
+ffff23f0 to ffff2364 and unsigned angle ffff23bf to ffff2333. Only two data \
+pointers are aliased after exact instruction identity. The simulator \
+boundary at 0002131c restores PR from SP+24 and uses R7 outside stock bytes. \
+Complete scheduler execution, live cadence, other copy calls and hardware \
+atomicity retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "spec"
@@ -28,3 +39,22 @@ key = "sh2-decode"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00022558"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00022558"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"

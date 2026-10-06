@@ -107,7 +107,8 @@ def test_injection_angle_published_arithmetic_records_follow_the_native_chain():
     chain = model.entities[('chain', 'injection_phase')]
     grammar = Grammar(repo.config())
     indices = [index + 1 for index, step in enumerate(chain.steps)
-               if grammar.validate(step['note']) is None]
+               if grammar.validate(step['note']) is None
+               and publication.normalized(model, step['via']) == ['transformed_pulse_maximum/fn']]
     assert indices == [9, 10, 11, 12]
     step = chain.steps[9]
     assert publication.normalized(model, step) == publication.REQUIRED_STEPS['9']

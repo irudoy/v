@@ -361,6 +361,42 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "coherent_snapshot/fn"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+This bounded 7mfk caller copies the unsigned byte through its real 140-byte \
+block-copy helper; to = uint8(from). Entry R11 and R12 are explicit \
+contexts. No complete scheduler execution, live cadence or hardware \
+atomicity is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00021318"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00022558"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_snapshot_chain.py"
+key = "test_injection_snapshot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection result snapshot"
+
+[[link]]
 type = "writer"
 to = "transformed_pulse_maximum/fn"
 layouts = ["7mfk"]
