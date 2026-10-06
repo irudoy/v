@@ -1334,6 +1334,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]` | Status `unresolved` with the method and target of the search | 3 |
 | `kb link <from> <type> <to> [<key>=<value>]... [--evidence <item>]... [--dry-run]` | A typed link with its keys and evidence | 3 |
 | `kb unlink <from> <type> <to> [<key>=<value>]... [--dry-run]` | Removes a typed link of the file of a meaning | 3 |
+| `kb set-link <from> <type> <to> <key>=<value>... [--slot <slot>] [--offset <offset>] [--dry-run]` | Replaces mutable properties of one existing owned native link | 6 |
 | `kb select <meaning> <registry> <order> <key>=<value>... [--dry-run]` | Selects one existing native relation and claim in an existing owned ledger row | 6 |
 | `kb merge <meaning> <other> [--evidence <item>]... [--from <l>] [--dry-run]` | Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb rename <meaning> <semantic-name> [--dry-run]` | Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
@@ -1469,6 +1470,23 @@ references.
   the file of `<from>`; `slot=` and `offset=` choose among several, and more
   than one match exits with 4. A link that only a registry states is
   refused, since the registry owns its facts until its conversion.
+- `kb set-link <from> <type> <to>` replaces mutable properties of exactly one
+  native relation in an existing owned source file. The source model must
+  hold that file and relation before the batch. Exact `--slot` and
+  `--offset` selectors identify it; omitted selectors require absent keys,
+  and an explicit zero offset differs from an absent offset. Offsets are
+  nonnegative integers, excluding booleans. Type, target, slot, offset, and
+  evidence are immutable. Mutable keys are `via`, `layouts`, `relies`,
+  `supports`, `reverse_relies`, `reverse_supports`, `role`, and `note`,
+  checked against the link schema and vocabulary. A value replaces the held
+  value, including an array; an empty assignment removes an existing key.
+  Missing or ambiguous native links, invalid values, immutable keys, and
+  conflicting or duplicate unsets are refused. Exact repetitions are
+  idempotent. The command changes no other link or ledger selector. The
+  complete batch retains the resulting native link, its original evidence,
+  and the original ledger dependencies of both ends with the native claims
+  they select. Different edits to the same link belong in one operation;
+  a conflicting later edit refuses the complete batch.
 - `kb select <meaning> <registry> <order>` adds one `ledger.dependency`
   selector with required string keys `role`, `to`, `type`, `end`, `relies`,
   and `supports`, and optional `link_role`, numeric `offset`, and
@@ -1503,7 +1521,9 @@ location for `new`, `slug`, `name` as a semantic name, `ref`, `layout`,
 `type`, `to`, `keys` as a table for `set`, `link`, and `unlink`, `unset` as
 an array of dotted keys for `set`, `evidence` as an array of tables, `from`,
 `level`, `method`, `target`, `count`, and `note`; `select` uses `meaning`,
-`registry`, `order`, and `dependency` as a table. `kb apply` applies all
+`registry`, `order`, and `dependency` as a table. `set-link` uses `meaning`,
+`type`, `to`, optional `selector` with `slot` and `offset`, a `keys` table,
+and an `unset` array of mutable property names. `kb apply` applies all
 operations or none. Each operation resolves existing references and searches
 on the working tree, and edits the files as the earlier operations leave
 them. References to a meaning that an earlier `new` starts use its pending

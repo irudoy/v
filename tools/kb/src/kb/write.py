@@ -1,5 +1,6 @@
 """Write commands (tools/kb/SPEC.md, section 12.3): `new`, `set`, `bind`,
-`absent`, `unresolved`, `link`, `unlink`, `select`, `merge`, `rename`, `move`, and
+`absent`, `unresolved`, `link`, `set-link`, `unlink`, `select`, `merge`, `rename`,
+`move`, and
 `apply`, which applies a batch of them as one change.
 
 A change edits entity files as documents over the working tree. An operation
@@ -35,6 +36,9 @@ become `former` references.
   evidence to the link of one type, target, slot, and offset that the file
   holds; `unlink` removes a link of the file, which the slot and the offset
   choose among the links of one type and target.
+- `set-link` replaces mutable properties of one existing owned native link.
+  Its type, target, slot, offset, evidence and existing ledger dependencies
+  stay fixed; the complete batch retains the resulting native link.
 - `select` adds a dependency selector to an existing owned ledger row for
   one existing native relation and claim. It changes no relation or evidence,
   and the complete batch must retain that selector and its supporting fact.
@@ -92,6 +96,7 @@ COMMANDS = {
     "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
     "link": ("meaning", "type", "to", "keys", "evidence"),
     "unlink": ("meaning", "type", "to", "keys"),
+    "set-link": ("meaning", "type", "to", "selector", "keys", "unset"),
     "select": ("meaning", "registry", "order", "dependency"),
     "merge": ("meaning", "other", "evidence", "from"),
     "rename": ("meaning", "name"),
@@ -100,6 +105,7 @@ COMMANDS = {
 REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
             "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
             "link": ("meaning", "type", "to"), "unlink": ("meaning", "type", "to"),
+            "set-link": ("meaning", "type", "to"),
             "select": ("meaning", "registry", "order", "dependency"),
             "merge": ("meaning", "other"), "rename": ("meaning", "name"),
             "move": ("symbol", "to")}
@@ -565,7 +571,7 @@ class Change:
             lacking = [key for key in REQUIRED[cmd] if op.get(key) in (None, "", [])]
             if lacking:
                 raise KbError(f"{cmd} needs {', '.join(lacking)}", code=2)
-            getattr(self, cmd)(op)
+            getattr(self, cmd.replace("-", "_"))(op)
         except KbError as error:
             if number is None:
                 raise
@@ -846,6 +852,109 @@ class Change:
                 held["evidence"] = [*held.get("evidence", ()), *evidence]
         described = "; ".join(summary(item) for item in evidence) or "no evidence"
         self.lines.append(f"link {meaning.key} {type_} {to.key}: {described}")
+
+    def set_link(self, op):
+        """Replace mutable properties of one existing owned native relation."""
+        meaning, to, type_ = self._ends(op)
+        if any(op.get(name) is not None and not isinstance(op[name], dict)
+               for name in ("selector", "keys")):
+            raise KbError("set-link selector and keys are tables", code=2)
+        selector = self._link_keys(op.get("selector"), LINK_CHOICE)
+        if "slot" in selector and (not isinstance(selector["slot"], str)
+                                   or not selector["slot"]):
+            raise KbError("set-link slot is a nonempty string", code=2)
+        if "offset" in selector and selector["offset"] < 0:
+            raise KbError("set-link offset is nonnegative", code=2)
+        allowed = tuple(key for key in LINK_KEYS if key not in LINK_CHOICE)
+        keys = self._link_keys(op.get("keys"), allowed)
+        unset = [] if op.get("unset") is None else op["unset"]
+        if not isinstance(unset, list) or not all(isinstance(key, str) and key in allowed
+                                                  for key in unset):
+            raise KbError("set-link unsets only mutable property names", code=2)
+        if len(set(unset)) != len(unset) or set(keys) & set(unset):
+            raise KbError("set-link has repeated or conflicting unset keys", code=2)
+        if not keys and not unset:
+            raise KbError("set-link needs keys or unset", code=2)
+        _, _, path = self._file_of(op["meaning"])
+        if path is None or not any(owner is meaning and src is not None and Path(src) == path
+                                   for owner, src in self.model.files.values()):
+            raise KbError(f"{meaning.key}: set-link needs an existing owned file", code=3)
+        entry = {"type": type_, "to": to.key, **selector}
+        source = store.load(self.root, path, self.model.overlay)
+        original = [link for link in source.get("link", ())
+                    if self._same_link(link, entry, to)]
+        if len(original) != 1:
+            raise KbError(f"{meaning.key}: set-link needs one existing native relation; "
+                          f"found {len(original)}", code=3)
+        held_offset = original[0].get("offset")
+        if held_offset is not None and (isinstance(held_offset, bool)
+                                        or not isinstance(held_offset, int)
+                                        or held_offset < 0):
+            raise KbError("set-link native offset is a nonnegative integer", code=3)
+        document = self._open(path)
+        selected = [link for link in document.get("link", ())
+                    if self._same_link(link, entry, to)]
+        if len(selected) != 1:
+            raise KbError(f"{meaning.key}: set-link needs one current native relation; "
+                          f"found {len(selected)}", code=3)
+        held = selected[0]
+        immutable = ("type", "to", "slot", "offset", "evidence")
+        if ({key: held[key] for key in immutable if key in held}
+                != {key: original[0][key] for key in immutable if key in original[0]}):
+            raise KbError(f"{meaning.key}: set-link retains the original identity and evidence",
+                          code=3)
+        if any(key not in held for key in unset):
+            missing = next(key for key in unset if key not in held)
+            raise KbError(f"{meaning.key}: the selected link has no {missing}", code=3)
+
+        def dependencies(document):
+            return [(marker.get("registry"), marker.get("order"), marker.get("binding"),
+                     copy.deepcopy(marker["dependency"]))
+                    for marker in document.get("ledger", ()) if "dependency" in marker]
+
+        selectors = {
+            Path(src): dependencies(store.load(self.root, Path(src), self.model.overlay))
+            for owner, src in self.model.files.values()
+            if src is not None and (owner is meaning or owner is to)}
+        claims = []
+        for owner, src in self.model.files.values():
+            if src is None or (owner is not meaning and owner is not to):
+                continue
+            for marker in store.load(self.root, Path(src), self.model.overlay).get("ledger", ()):
+                for item in marker.get("dependency", ()):
+                    other = to if owner is meaning else meaning
+                    end = "owner" if owner is meaning else "to"
+                    if (item.get("type") == type_ and item.get("end") == end
+                            and self.resolve(item.get("to"))[0] is other
+                            and item.get("offset", 0 if type_ == "base" else None)
+                            == held.get("offset", 0 if type_ == "base" else None)):
+                        claim = (owner.key, marker["registry"], marker["order"],
+                                 copy.deepcopy(item))
+                        _selection(self.model, *claim)
+                        claims.append(claim)
+        for key in unset:
+            del held[key]
+        held.update(keys)
+        expected = copy.deepcopy(held)
+        identity = _link_key(expected)
+
+        def retained(result):
+            try:
+                final = store.load(self.root, path, result.overlay)
+                found = [link for link in final.get("link", ()) if _link_key(link) == identity]
+                if found != [expected]:
+                    return f"{meaning.key}: updated native link is not retained"
+                for claim in claims:
+                    _selection(result, *claim)
+                for src, before in selectors.items():
+                    if dependencies(store.load(self.root, src, result.overlay)) != before:
+                        return f"{meaning.key}: set-link does not retain ledger dependencies"
+            except (KbError, OSError, TypeError, AttributeError, KeyError):
+                return f"{meaning.key}: set-link does not retain its owned documents"
+            return None
+
+        self.expected.append(retained)
+        self.lines.append(f"set-link {meaning.key} {type_} {to.key}")
 
     def unlink(self, op):
         meaning, to, type_ = self._ends(op)

@@ -43,6 +43,8 @@ uv run kb bind <meaning> <layout>:<address> --dry-run   # a symbol of a meaning 
 uv run kb absent <meaning> --layout <l> --evidence '<item>'   # the mechanism does not exist on a layout
 uv run kb unresolved <meaning> --layout <l>   # the search that finds no unique symbol
 uv run kb link <from> <type> <to> [<key>=<value>...] --dry-run   # a typed link with its keys and evidence
+uv run kb set-link <from> <type> <to> <key>=<value>... --dry-run
+                                              # replace properties of one existing native link
 uv run kb unlink <from> <type> <to> --dry-run   # a link of the file of a meaning
 uv run kb select <meaning> <registry> <order> <key>=<value>... --dry-run
                                               # select an existing native relation in an owned ledger row
@@ -249,7 +251,7 @@ Partial or unrenderable engineering conversions still refuse projection.
 ## Write commands
 
 `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`,
-`kb unlink`, `kb select`, `kb merge`, `kb rename`, and `kb move` write one operation, and
+`kb set-link`, `kb unlink`, `kb select`, `kb merge`, `kb rename`, and `kb move` write one operation, and
 `kb apply` the operations of a TOML file of `[[op]]` tables, as one change
 under `.kb/lock` (section 12.3 of the specification). A change resolves its
 references on a current graph, edits the entity files in memory, and compiles
@@ -312,6 +314,21 @@ a field or a chain with its keys, whose empty file fails the checks.
   with the held value. `kb unlink <from> <type> <to>` removes a link of the
   file, which `slot=` and `offset=` choose among several; a link that only a
   registry states is refused.
+- `kb set-link <from> <type> <to> <key>=<value>...` replaces mutable properties
+  of one existing link in the owned file of `<from>`. `--slot` and `--offset`
+  select the exact held values; an omitted selector selects an absent key,
+  so an absent offset differs from an explicit zero. The offset is a
+  nonnegative integer. Type, target, slot, offset, and evidence stay fixed.
+  Mutable keys are `via`, `layouts`, `relies`, `supports`, `reverse_relies`,
+  `reverse_supports`, `role`, and `note`; arrays replace the held arrays.
+  An empty assignment removes an existing mutable key. A batch uses
+  `cmd = "set-link"`, `meaning`, `type`, `to`, optional `selector`, `keys`,
+  and `unset`. Unknown keys, invalid values, missing or duplicate native
+  links, and links or owner files created earlier in the batch are refused.
+  Exact repeated edits write nothing. Combine different property edits of
+  one link in one operation: the complete batch retains each operation's
+  resulting link, its evidence, and the original ledger dependencies of
+  both ends with their native claims. Other links and selectors are unchanged.
 - `kb rename <meaning> <semantic-name>` renames the file of the meaning. Each
   entry drops its generated name and keeps its previous full reference as its
   first `former` reference, a previous semantic name becomes a former name of

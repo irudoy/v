@@ -423,6 +423,15 @@ def command_unlink(args, root=repo.ROOT):
                           "to": args.to, "keys": _link_keys(args)}], root)
 
 
+def command_set_link(args, root=repo.ROOT):
+    keys, unset = write.parse_assignments(args.assignments)
+    selector = {name: getattr(args, name) for name in ("slot", "offset")
+                if getattr(args, name) is not None}
+    return _write(args, [{"cmd": "set-link", "meaning": args.meaning,
+                          "type": args.type, "to": args.to, "selector": selector,
+                          "keys": keys, "unset": unset}], root)
+
+
 def command_select(args, root=repo.ROOT):
     keys, unset = write.parse_assignments(args.assignments)
     if unset:
@@ -652,6 +661,13 @@ def build_parser():
                         help="slot or offset, which choose among the links of one type and "
                         "target")
     unlink.set_defaults(handler=command_unlink)
+    amend = writer("set-link", "mutable properties of one existing owned native link", *ends)
+    amend.add_argument("assignments", nargs="+", metavar="key=value",
+                       help="mutable link keys; an empty value unsets its key")
+    amend.add_argument("--slot", help="the exact held slot; absent selects an absent slot")
+    amend.add_argument("--offset", type=lambda text: int(text, 0),
+                       help="the exact held integer offset; absent selects an absent offset")
+    amend.set_defaults(handler=command_set_link)
     select = writer("select", "select an existing native relation in an owned ledger row",
                     meaning, ("registry", "the existing ledger registry"))
     select.add_argument("order", type=int, help="the existing nonnegative ledger row order")
