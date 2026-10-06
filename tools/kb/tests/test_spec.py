@@ -19,8 +19,9 @@ WRITE = "### 12.3 Write commands"
 CODES = "### 12.5 Exit codes"
 READ_OPTIONS = "<read options>"
 PACKAGE = "tools/kb/src/kb"
-TOKEN = re.compile(r"\[|\]|\.\.\.|--[a-z-]+|(?:<[^>]+>[:=]?)+|[a-z]+(?:\|[a-z]+)*")
-WORD = re.compile(r"[a-z]+")
+TOKEN = re.compile(r"\[|\]|\.\.\.|--[a-z-]+|(?:<[^>]+>[:=]?)+|"
+                   r"[a-z]+(?:-[a-z]+)*(?:\|[a-z]+(?:-[a-z]+)*)*")
+WORD = re.compile(r"[a-z]+(?:-[a-z]+)*")
 
 
 @dataclass
@@ -141,8 +142,11 @@ def positionals(parser):
 def _value(action):
     if action is not None and action.choices:
         return str(next(iter(action.choices)))
-    if action is not None and action.type is int:
-        return "1"
+    if action is not None and action.type is not None:
+        try:
+            action.type("x")
+        except (ValueError, TypeError, argparse.ArgumentTypeError):
+            return "1"
     return "x"
 
 
@@ -263,6 +267,26 @@ class CommandTableTest(unittest.TestCase):
 
 
 class SyntaxTest(unittest.TestCase):
+    def test_a_hyphenated_command_keeps_its_options_and_positionals(self):
+        syntax = parse("kb set-link <from> <type> <to> <key>=<value>... "
+                       "[--offset <offset>] [--slot <slot>] [--dry-run]", WRITE, 6)
+        self.assertEqual(syntax.command, "set-link")
+        self.assertEqual(syntax.positionals, [Positional(True, False)] * 3 +
+                         [Positional(True, True)])
+        self.assertEqual(syntax.options, {"--offset": Option(True, False, False),
+                                         "--slot": Option(True, False, False),
+                                         "--dry-run": Option(False, False, False)})
+        for text in ("kb set-link- <from>", "kb -link <from>", "kb set-link! <from>"):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                parse(text, WRITE, 6)
+
+    def test_generated_examples_accept_an_integer_converter(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--offset", type=lambda text: int(text, 0))
+        syntax = parse("kb [--offset <offset>]", WRITE, 6)
+        self.assertEqual(argv(syntax, parser, True), ["--offset", "1"])
+        self.assertEqual(parser.parse_args(argv(syntax, parser, True)).offset, 1)
+
     def test_a_syntax_gives_its_positionals_and_options(self):
         common = {"--full": Option(False, False, False)}
         syntax = parse("kb unresolved <meaning> --layout <l> [--method <kind> --count <n>] "
