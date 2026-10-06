@@ -167,7 +167,8 @@ def publication_contract(text, model):
         assert phrase in text
     grammar = Grammar(repo.config())
     indices = [i + 1 for i, step in enumerate(model.entities[('chain', 'injection_phase')].steps)
-               if grammar.validate(step['note']) is None]
+               if grammar.validate(step['note']) is None
+               and publication.normalized(model, step['via']) in (['transformed_pulse_maximum/fn'], VIA)]
     assert indices == [9, 10, 11, 12, 13, 14]
     assert 'The 6 arithmetic records' in text
 

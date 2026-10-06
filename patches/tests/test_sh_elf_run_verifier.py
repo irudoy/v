@@ -759,6 +759,12 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            "jk08a-injection-slot": {
+                "REGION_ENTRY": 0x00054A64, "CYLINDER": 0xFFFF11DE,
+                "LEAD": 0xFFFF2364, "MODE": 0xFFFF8513,
+                "COUNTER": 0xFFFF4555, "HISTORY": 0xFFFF1526,
+                "SLOT": 0xFFFF20B4, "EARLY_ONLY": 0,
+            },
             "jk08a-injection-snapshot": {
                 "REGION_ENTRY": 0x00021314,
                 "LEAD_SOURCE": 0xFFFF23F0,
@@ -1219,6 +1225,27 @@ mov #0x5,r1
                     self.assertRegex(harness, r'if\(completed!=LTFT_PUBLICATION_CASE_COUNT\)')
                     self.assertRegex(harness, r'\+\+completed;')
                     self.assertIn("#define DIAGNOSTIC (DIAGNOSTIC_RECORD + DIAGNOSTIC_BYTE1_OFFSET)", harness)
+                elif key == "jk08a-injection-slot":
+                    header_name = "injection-slot-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(
+                        r'^#define SLOT_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(r'slot_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    literal_row = r'\{(?:0x[0-9a-f]+U,){11}\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\},\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\}\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertRegex(harness, r'for\s*\(i = 0; i < SLOT_ACTIVE_CASE_COUNT; \+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i, slot_cases \+ i\)')
+                    self.assertRegex(harness, r'if\s*\(completed != SLOT_ACTIVE_CASE_COUNT\)')
+                    self.assertRegex(harness, r'\+\+completed;')
+                    self.assertIn("#define SLOT_ACTIVE_CASE_COUNT (EARLY_ONLY ? 12U : SLOT_CASE_COUNT)", harness)
+                    self.assertIn("ARRAY_SIZE(slot_cases) != SLOT_CASE_COUNT", harness)
                 elif key == "jk08a-injection-snapshot":
                     header_name = "injection-snapshot-cases.h"
                     self.assertEqual(re.findall(

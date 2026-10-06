@@ -14,6 +14,18 @@ pointers are aliased after exact instruction identity. The simulator \
 boundary at 0002131c restores PR from SP+24 and uses R7 outside stock bytes. \
 Complete scheduler execution, live cadence, other copy calls and hardware \
 atomicity retain separate evidence.""",
+    """
+Independent 7mfk execution of 00054a64..00054ac6 uses explicit incoming \
+R2=255, R5=ffff8510, R14=ffff4555 and GBR=ffff1ff4. The six-cylinder domain \
+is 1 <= c <= 6, with full unsigned lead, flags, counter and history bytes. \
+Bit5 selects lead ffff2364 or constant 3. A negative difference gets one \
+addition of 6 before uint8 storage; c=1, lead=7 and bit5 set store 255. For \
+a given c, modulo-6 and a slot in 0..5 hold when selected lead <= c+5; \
+selected lead <= 6 covers all six c values. The counter saturates at 255 and \
+history ORs 1<<(c-1). Prologue, tail, upstream producer bounds, live \
+scheduling and hardware reachability retain their separate evidence. Only \
+four RAM literal aliases and the declared incoming RAM base registers are \
+simulator substitutions.""",
 ]
 
 [[symbol.evidence]]
@@ -42,6 +54,25 @@ key = "test_injection_snapshot_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection result snapshot"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054ab0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_slot_chain.py"
+key = "test_injection_slot_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_slot_chain.py"
+key = "test_injection_slot_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection slot construction"
 
 [[link]]
 type = "copy"
@@ -118,10 +149,40 @@ key = "Bounded injection result snapshot"
 [[link]]
 type = "reader"
 to = "amigurumi-dormouse/fn"
+via = ["amigurumi-dormouse/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Independent 7mfk execution of 00054a64..00054ac6 uses explicit incoming \
+R2=255, R5=ffff8510, R14=ffff4555 and GBR=ffff1ff4. The six-cylinder domain \
+is 1 <= c <= 6, with full unsigned lead, flags, counter and history bytes. \
+Bit5 selects lead ffff2364 or constant 3. A negative difference gets one \
+addition of 6 before uint8 storage; c=1, lead=7 and bit5 set store 255. For \
+a given c, modulo-6 and a slot in 0..5 hold when selected lead <= c+5; \
+selected lead <= 6 covers all six c values. The counter saturates at 255 and \
+history ORs 1<<(c-1). Prologue, tail, upstream producer bounds, live \
+scheduling and hardware reachability retain their separate evidence. Only \
+four RAM literal aliases and the declared incoming RAM base registers are \
+simulator substitutions."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_slot_chain.py"
+key = "test_injection_slot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_slot_chain.py"
+key = "test_injection_slot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection slot construction"
 
 [[link]]
 type = "writer"

@@ -88,8 +88,8 @@ The copy places `ffff23f0 -> ffff2364` at offset 52 and
 `ffff23bf -> ffff2333` at offset 3. Native `injection_phase`
 steps 13 and 14 state `to = uint8(from)` through the ordered caller and
 real helper. The sign is `positive` for the unsigned-byte source domain.
-The 6 arithmetic records of the complete chain comprise the four
-publisher records and these two copies. They establish no physical scale
+The 6 arithmetic records bound by the publisher and copy fixtures
+comprise four publisher records and these two copies. They establish no physical scale
 or upstream production claim.
 
 The matrix contains 1024 affine caller contexts, 280 isolated-byte caller contexts,
@@ -119,3 +119,52 @@ R11 helper pool and the R12 length preparation; the executable slice begins
 with explicit input registers. Complete scheduler execution, live cadence,
 other copy calls, overlapping-source domains, hardware atomicity, and
 hardware readiness retain separate evidence.
+
+## Bounded injection slot construction
+
+The bounded `00054a64..00054ac6` slice binds 50 instructions,
+152 bound bytes and 8508 literal cases. Entry contexts are R2=255,
+R5=ffff8510, R14=ffff4555 and GBR=ffff1ff4. Four RAM literal aliases
+and the corresponding incoming base-register aliases place high RAM in
+simulator memory after exact instruction identity. The original 52 pool
+and order-table bytes are bound. The entry-preparation bytes at
+`00054a56..00054a62` retain static identity; the prologue is not executed.
+An appended RTS/NOP at `00054ac8` returns outside the stock slice.
+
+The cylinder input c is an unsigned byte in 1..6. Two fixed stock ROM
+lookups at `0002268e` and `0002269b` yield c in this domain. Counter
+`ffff4555` saturates at 255. History `ffff1526` ORs `1<<(c-1)`.
+Control byte `ffff8513`.bit5 selects unsigned lead `ffff2364` or constant 3.
+The negative difference receives one addition of 6 before byte storage.
+Cylinder 1, lead 7 and bit5 set stores 255; mathematical modulo-6 yields 5.
+For a given c, lead <= c+5 makes the stored byte equal modulo-6 in 0..5.
+The uniform bound lead <= 6 covers all six legal cylinder inputs.
+
+The 2 arithmetic records at native injection_phase steps 15 and 16
+bind lead and cylinder inputs to slot `ffff20b4` through the sequencer.
+They use sign `none` and the exact bounded expression:
+
+```text
+F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))
+```
+
+The matrix has 12 early contexts, 6144 enabled-lead contexts,
+48 disabled-lead contexts, 2048 full-control-byte contexts and
+256 counter-byte contexts. Enabled lead covers 0..255 for each legal c,
+both incoming T values and two complete GPR variants. Control contexts
+cover all 256 raw byte values, including other bits and sign extension.
+Counter contexts cover every byte and both saturation branch outcomes.
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region
+uses EARLY_ONLY=0 and requires the complete declared count.
+
+Each case observes all fifteen GPRs, actual prepared complete SR/T,
+MACH, MACL, GBR, PR/SP, the immutable 76-byte context, all 96 frame bytes,
+an independent outer C ABI, all 64k RAM bytes and every bound ROM byte.
+Only counter, history and slot stores may change RAM. This slice has no
+stock call, MMIO access or internal frame write. The shared invocation
+prefix preserves its accepted instruction bytes and its SR preparation.
+
+Full-byte lead values are explicit consumer contexts. Complete prologue
+and tail behavior, upstream producer bounds, live scheduling, physical
+cylinder identity and hardware reachability require separate evidence.
+This proof does not establish that lead values above six occur in service.

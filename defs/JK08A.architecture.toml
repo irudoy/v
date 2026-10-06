@@ -2872,8 +2872,9 @@ effect = "indexes"
 sign = "none"
 via = ["00054a44"]
 note = """
-On every engine event 00054a44 forms slot ffff20b4 = (ffff11de - 1 - lead) \
-mod 6; the lead is ffff2364 while ffff8513.bit5 is set, else 3."""
+F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
+uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[chain.step]]
 from = "ffff11de"
@@ -2882,8 +2883,9 @@ effect = "indexes"
 sign = "none"
 via = ["00054a44"]
 note = """
-ffff11de is the engine-event cylinder number 1..6 that tooth 7 copies before \
-feeder 000208f8 runs the engine-event tasks."""
+F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
+uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[chain.step]]
 from = "ffff20b4"

@@ -100,6 +100,20 @@ FUEL_CUT_BITS = (
 
 REGIONS = (
     Region(
+        key="jk08a-injection-slot", rom="JK08A",
+        source="stock_jk08a_injection_slot.s",
+        harness="harness-stock-jk08a-injection-slot.c",
+        start=0x00054A64, end=0x00054AC8,
+        pools=((0x0002268E, 20), (0x00054B52, 4), (0x00054C30, 28)),
+        ram_literals=(0x00054C38, 0x00054C40, 0x00054C44, 0x00054C48),
+        cases=8508,
+        symbols=(("CYLINDER", "knock_channel_primary/ram"),
+                 ("LEAD", "fabulous-koel/ram"), ("MODE", "flawless-silkworm/ram"),
+                 ("COUNTER", "arcane-chinchilla/ram"), ("HISTORY", "lime-caracara/ram"),
+                 ("SLOT", "acrid-bonobo/ram")),
+        constants=(("EARLY_ONLY", 0),),
+    ),
+    Region(
         key="jk08a-injection-snapshot", rom="JK08A",
         source="stock_jk08a_injection_snapshot.s",
         harness="harness-stock-jk08a-injection-snapshot.c",
