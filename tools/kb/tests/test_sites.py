@@ -1,6 +1,7 @@
 import csv
 import hashlib
 import io
+from itertools import combinations_with_replacement
 from pathlib import Path
 import tempfile
 import unittest
@@ -123,6 +124,55 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(sites.extent("findings", {"width": "", "height": "",
                                                    "storagetype": ""}), 1)
         self.assertEqual(sites.extent("vars", {}), 1)
+
+
+class LinkedRangeTest(unittest.TestCase):
+    def test_duplicate_pairs_and_interval_boundaries_follow_the_address_range(self):
+        pairs = [(0, 10), (2, 20), (2, 20), (2, 21), (3, 30), (7, 70)]
+        for values in (pairs, tuple(pairs)):
+            for subject, span in ((-1, 1), (0, 1), (1, 1), (2, 1), (2, 2),
+                                  (3, 4), (3, 5), (8, 1), (2, 0), (2, -1)):
+                with self.subTest(values=type(values).__name__, subject=subject, span=span):
+                    expected = {owner for address, owner in pairs
+                                if subject <= address < subject + span}
+                    self.assertEqual(sites.linked(subject, span, values), expected)
+        self.assertEqual(sites.linked(0, 1, []), set())
+        self.assertEqual(sites.linked(0, 1, ()), set())
+
+    def test_small_sorted_multisets_match_an_independent_interval_set(self):
+        pairs = [(address, owner) for address in range(3) for owner in range(2)]
+        for length in range(4):
+            for values in combinations_with_replacement(pairs, length):
+                for subject in range(-1, 5):
+                    for span in (-1, 0, 1, 2, 4):
+                        expected = {owner for address, owner in values
+                                    if subject <= address < subject + span}
+                        self.assertEqual(sites.linked(subject, span, values), expected)
+
+    def test_repeated_queries_return_fresh_sets_and_observe_pair_changes(self):
+        pairs = [(0, 10), (1, 20)]
+        first = sites.linked(0, 2, pairs)
+        first.add(30)
+        self.assertEqual(sites.linked(0, 2, pairs), {10, 20})
+        pairs[1] = (1, 40)
+        self.assertEqual(sites.linked(0, 2, pairs), {10, 40})
+
+    def test_a_narrow_query_does_not_copy_or_scan_the_unrelated_suffix(self):
+        class ObservedPairs(list):
+            examined = 0
+
+            def __getitem__(self, key):
+                self.examined += len(range(*key.indices(len(self)))) if isinstance(key, slice) else 1
+                return super().__getitem__(key)
+
+            def __iter__(self):
+                for value in super().__iter__():
+                    self.examined += 1
+                    yield value
+
+        pairs = ObservedPairs((address, address % 11) for address in range(100000))
+        self.assertEqual(sites.linked(0, 1, pairs), {0})
+        self.assertLessEqual(pairs.examined, 64)
 
 
 class SitesCheckTest(unittest.TestCase):

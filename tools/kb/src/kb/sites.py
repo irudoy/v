@@ -145,7 +145,8 @@ def linked(subject, span, links):
     """Functions that L0 links to the addresses [subject, subject + span)."""
     start = bisect.bisect_left(links, (subject, -1))
     functions = set()
-    for address, func in links[start:]:
+    for position in range(start, len(links)):
+        address, func = links[position]
         if address >= subject + span:
             break
         functions.add(func)
