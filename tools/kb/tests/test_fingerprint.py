@@ -67,5 +67,97 @@ class FingerprintTest(unittest.TestCase):
         self.assertEqual(found.part(lambda path: path == "a"), fingerprint.digest([("a", "1")]))
 
 
+class CompilerBoundaryTest(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.fixture_inputs = (
+            'kb/ram/fixture.toml', 'kb/names.csv',
+            'defs/vq37-native-tables.toml', 'tools/kb/config.toml',
+            'rom-images/homology.toml', 'rom-images/roms.csv',
+            'l0/fixture/funcs.csv', 'rom-images/fixture.bin',
+        )
+        self.active_modules = (
+            'compile.py', 'store.py', 'graph.py', 'derive.py',
+            'l0graph.py', 'adapters/files.py',
+        )
+        self.projection_modules = (
+            'ledger_projection.py', 'architecture_projection.py',
+        )
+        for path in self.fixture_inputs:
+            self.write(path, b'fixture input\n')
+        for name in self.active_modules + self.projection_modules:
+            self.write(f'{compile.PACKAGE}/{name}', b'VALUE = 1\n')
+        from unittest.mock import patch
+        self.enterContext(patch.object(compile.adapters, 'inputs',
+            return_value=['kb/ram/fixture.toml', 'defs/vq37-native-tables.toml']))
+        self.enterContext(patch.object(compile.names, 'inputs',
+            return_value=['kb/names.csv']))
+        self.enterContext(patch.object(repo, 'layouts', return_value={'fixture': None}))
+        self.enterContext(patch.object(repo, 'images', return_value={
+            'fixture': repo.Image('fixture', self.root / 'rom-images/fixture.bin', 'unused'),
+        }))
+
+    def write(self, path, data):
+        destination = self.root / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(data)
+
+    def test_ledger_rendering_content_does_not_change_compiler_fingerprint(self):
+        before = fingerprint.compute(self.root)
+        path = f'{compile.PACKAGE}/ledger_projection.py'
+        self.write(path, b'VALUE = 200\n')
+        after = fingerprint.compute(self.root)
+        self.assertNotIn(path, before.blobs)
+        self.assertEqual(after.blobs, before.blobs)
+        self.assertEqual(after.value, before.value)
+
+    def test_each_active_module_content_changes_compiler_fingerprint(self):
+        for name in self.active_modules:
+            with self.subTest(module=name):
+                before = fingerprint.compute(self.root)
+                path = f'{compile.PACKAGE}/{name}'
+                self.write(path, b'VALUE = 200\n')
+                after = fingerprint.compute(self.root)
+                self.assertNotEqual(after.blobs[path], before.blobs[path])
+                self.assertNotEqual(after.value, before.value)
+
+    def test_fact_configuration_l0_and_image_content_remain_inputs(self):
+        for path in self.fixture_inputs:
+            with self.subTest(path=path):
+                before = fingerprint.compute(self.root)
+                self.write(path, b'changed fixture input with distinct length\n')
+                after = fingerprint.compute(self.root)
+                self.assertNotEqual(after.blobs[path], before.blobs[path])
+                self.assertNotEqual(after.value, before.value)
+
+    def test_an_unknown_nested_python_module_is_included(self):
+        before = fingerprint.compute(self.root)
+        path = f'{compile.PACKAGE}/extensions/fixture.py'
+        self.write(path, b'VALUE = 1\n')
+        after = fingerprint.compute(self.root)
+        self.assertEqual(after.blobs[path], fingerprint.blob(b'VALUE = 1\n'))
+        self.assertEqual(set(after.blobs) - set(before.blobs), {path})
+        self.assertNotEqual(after.value, before.value)
+
+    def test_removing_an_active_module_changes_the_fingerprint(self):
+        before = fingerprint.compute(self.root)
+        path = f'{compile.PACKAGE}/store.py'
+        (self.root / path).unlink()
+        after = fingerprint.compute(self.root)
+        self.assertIn(path, before.blobs)
+        self.assertNotIn(path, after.blobs)
+        self.assertNotEqual(after.value, before.value)
+
+    def test_removing_projection_modules_keeps_the_fingerprint(self):
+        before = fingerprint.compute(self.root)
+        for name in self.projection_modules:
+            (self.root / compile.PACKAGE / name).unlink()
+        after = fingerprint.compute(self.root)
+        self.assertEqual(after.blobs, before.blobs)
+        self.assertEqual(after.value, before.value)
+
+
 if __name__ == "__main__":
     unittest.main()
