@@ -29,13 +29,19 @@ accumulator have distinct identities from the stored bytes. Negative
 numerators, zero/negative/wide divisors, helper sign correction, and the main
 negative-angle adjustment are identity-only within this caller domain.
 
-The three arithmetic records in `injection_phase`, steps 9, 11, and 12,
+The 4 arithmetic records in `injection_phase`, steps 9, 10, 11, and 12,
 use only this publisher as their proof path. Their sign is `none` under the
 admitted full-word and byte-store domains. Executed stock contexts give lead
 `0 -> 6` for R `5333 -> 5334`, `255 -> 0` for E `15359 -> 15360`, and
 `0 -> 255` for P `0 -> 6`. The first-product and quotient-byte wraps prevent
-a universal direction. Address-base relations identify indexed storage;
-the base owners are not extra numerical inputs. The unsigned scalar owner
+a universal direction for the lead byte. The angle byte has a separate
+periodic remainder: with factory calibration 30, an executed context
+stores `29 -> 1` for E `15359 -> 15360`, as D changes `30718 -> 30720`
+and D%120 changes `118 -> 0`. The angle is independent of the lead
+override. Upper remainder clamps 116 through 120 give the same stored
+byte after floor division by 4; this equivalence states no intermediate
+register or instruction identity. Address-base relations identify indexed
+storage; the base owners are not extra numerical inputs. The unsigned scalar owner
 `injection_start_delay_decrement/tbl` belongs to `injection_timing/block`
 and states only this conditional reader. The independent reader at `4e03e`
 has a separate evidence scope.

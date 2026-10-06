@@ -123,8 +123,14 @@ effect = "converts"
 sign = "none"
 via = ["transformed_pulse_maximum/fn"]
 note = """
-Start angle ffff23bf = clamp(d % 120, 4, 116) / 4 in 4 crank degrees per \
-count; the remainder has no monotonic sign in d."""
+F = (uint8(ffff4184)>>6)&1; R = F*uint16(ffff10ca)+(1-F)*uint16(ffff11bc); K \
+= floor(uint32(16*R*50331)/65536); P = uint16(ffff241c); P = \
+max(P,uint16(RAM16[0xffff23d4])); P = max(P,uint16(RAM16[0xffff23d6])); P = \
+max(P,uint16(RAM16[0xffff23d8])); P = max(P,uint16(RAM16[0xffff23da])); P = \
+max(P,uint16(RAM16[0xffff23dc])); P = max(P,uint16(RAM16[0xffff23de])); p = \
+min(255,floor(K*P/65536)); E = uint16(ffff192e); D0 = max(0,2*E-4*p); W = \
+(uint8(ffff24c9)>>5)&1; D = max(0,D0-W*ROM8[0x000083ea]); r = D%120; to = \
+floor(min(116,max(4,r))/4)"""
 
 [[step]]
 from = "handsome-spaniel/ram"

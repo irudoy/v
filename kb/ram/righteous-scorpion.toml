@@ -266,9 +266,11 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 note = """
-Unsigned16 E supplies D0=max(0,2*E-4*p). Full-word quotient-byte wrap \
-prevents a universal monotone sign. Stored lead and angle are separate from \
-the widened helper registers."""
+Unsigned16 E supplies D0=max(0,2*E-4*p). The bounded publisher stores \
+floor(min(116,max(4,D%120))/4) in unsigned byte ffff23bf. Remainder \
+periodicity prevents a universal monotone sign; the stored angle is \
+independent of the quotient-byte override. Producer, physical units and \
+scheduler reachability retain their separate evidence."""
 
 [[link.evidence]]
 kind = "l0"
