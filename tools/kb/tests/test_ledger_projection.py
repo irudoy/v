@@ -2,10 +2,11 @@ import csv
 import io
 import copy
 import unittest
+from types import SimpleNamespace
 
 from kb import compile, ledger_projection, match, project, repo, tokens, vocab
 from kb.adapters import ledgers
-from kb.model import Builder
+from kb.model import Builder, SymbolKey
 from kb.repo import KbError
 from unittest.mock import patch
 
@@ -161,6 +162,93 @@ class SelectionTest(unittest.TestCase):
             with self.subTest(item=item):
                 self.assertTrue(all(key in item for key in vocab.EVIDENCE_KINDS[item['kind']][0]))
                 self.assertEqual(match.rank(item, self.row, self.model), -1)
+
+
+def target(key='target/ram', address=0xffff1068):
+    return SimpleNamespace(key=key, symbols={'7mfk': SimpleNamespace(address=address)})
+
+
+def fixture(targets, count=1):
+    evidence = {'kind': 'trace', 'to': 'target/ram/7mfk', 'relies': 'structure'}
+    document = {'symbol': [{'layout': '7mfk', 'evidence': [evidence]}]}
+    symbol = SimpleNamespace(kind='ram', address=0xffff106f,
+                             key=SymbolKey('7mfk', 'ram', 0xffff106f), value=lambda name: None)
+    owner = SimpleNamespace(key='row/ram', symbols={'7mfk': symbol})
+    symbol.meaning = owner
+    markers = [{'registry': 'vars', 'order': index, 'fields': [], 'identity': [0]}
+               for index in range(count)]
+    model = SimpleNamespace(meanings=[*targets, owner], links=[], self_links=[],
+                            files={('ram', 'row'): (owner, None)}, root=repo.ROOT, overlay={},
+                            stash={'ledger_rows': [('ram', 'row', markers, 'probe')]})
+    return model, symbol, document, evidence
+
+
+def rows(model, document):
+    with patch.object(ledger_projection.store, 'load', return_value=document):
+        text = ledger_projection.render(model)[ledgers.PATHS['vars'].as_posix()]
+    return list(csv.DictReader(io.StringIO(text)))
+
+
+class TraceLookupTest(unittest.TestCase):
+    def test_duplicate_meaning_keys_keep_the_first_trace_target(self):
+        model, _, document, _ = fixture([target(), target(address=0xffff1080)])
+        self.assertEqual(rows(model, document)[0]['evidence'], 'trace:ffff1068@structural')
+
+    def test_each_render_observes_current_targets_names_and_addresses(self):
+        selected = target()
+        model, _, document, evidence = fixture([selected])
+        self.assertEqual(rows(model, document)[0]['evidence'], 'trace:ffff1068@structural')
+        selected.symbols['7mfk'].address = 0xffff1080
+        selected.key = 'renamed/ram'
+        evidence['to'] = 'renamed/ram/7mfk'
+        self.assertEqual(rows(model, document)[0]['evidence'], 'trace:ffff1080@structural')
+        model.meanings[0] = target('renamed/ram', 0xffff1090)
+        self.assertEqual(rows(model, document)[0]['evidence'], 'trace:ffff1090@structural')
+
+    def test_numeric_and_symbol_targets_keep_their_selected_notes_and_properties(self):
+        model, symbol, _, evidence = fixture([])
+        for to in ('7mfk:ffff1068', SymbolKey('7mfk', 'ram', 0xffff1068)):
+            for note in ('trace', 'irq_trace'):
+                with self.subTest(to=to, note=note):
+                    item = {**evidence, 'to': to, 'note': note}
+                    self.assertEqual(ledger_projection.terminal(model, symbol, item),
+                                     note + ':ffff1068@structural')
+
+    def test_missing_and_malformed_trace_targets_keep_their_errors(self):
+        model, symbol, document, evidence = fixture([target()])
+        for to, error in (('missing/ram/7mfk', StopIteration),
+                          ('target/ram', ValueError), ('target/ram/7mfk/extra', ValueError)):
+            with self.subTest(to=to):
+                evidence['to'] = to
+                with self.assertRaises(error) as direct:
+                    ledger_projection.terminal(model, symbol, evidence)
+                with self.assertRaises(error) as rendered:
+                    rows(model, document)
+                self.assertEqual(str(rendered.exception), str(direct.exception))
+
+    def test_rendering_does_not_reuse_l0_context_verdicts(self):
+        model, symbol, document, _ = fixture([target()], count=3)
+        item = {'kind': 'l0-context', 'at': '7mfk:0002040c'}
+        document['symbol'][0]['evidence'] = [item]
+        with patch.object(match, 'verify', return_value=None) as verify:
+            rows(model, document)
+        self.assertEqual(verify.call_args_list, [unittest.mock.call(model, symbol, item)] * 3)
+
+    def test_repeated_trace_targets_do_not_scan_all_meaning_keys(self):
+        accesses = []
+        class Meaning:
+            def __init__(self, key, address):
+                self.name = key
+                self.symbols = {'7mfk': SimpleNamespace(address=address)}
+            @property
+            def key(self):
+                accesses.append(self.name)
+                return self.name
+        targets = [Meaning(f'other_{index}/ram', 0xffff0000 + index) for index in range(128)]
+        targets.append(Meaning('target/ram', 0xffff1068))
+        model, _, document, _ = fixture(targets, count=64)
+        self.assertEqual(len(rows(model, document)), 64)
+        self.assertLessEqual(len(accesses), 3 * len(model.meanings))
 
 
 if __name__ == "__main__":

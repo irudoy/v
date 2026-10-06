@@ -68,7 +68,7 @@ def _offset(symbol, address, value, text):
     return text
 
 
-def terminal(model, symbol, item, offset_text=None):
+def terminal(model, symbol, item, offset_text=None, meaning_index=None):
     """A selected typed item as a legacy token, without granting a new claim."""
     kind = item["kind"]
     if kind in ("l0-context", "unverified-site"):
@@ -101,7 +101,12 @@ def terminal(model, symbol, item, offset_text=None):
             address = to.address
         elif "/" in str(to):
             name, kind, layout = str(to).split("/")
-            meaning = next(item for item in model.meanings if item.key == f"{name}/{kind}")
+            if meaning_index is None:
+                meaning = next(item for item in model.meanings if item.key == f"{name}/{kind}")
+            else:
+                meaning = meaning_index.get(f"{name}/{kind}")
+                if meaning is None:
+                    raise StopIteration
             address = meaning.symbols[layout].address
         else:
             address = int(str(to).split(":")[1], 16)
@@ -236,7 +241,8 @@ def _row(model, symbol, document, marker, lookup=None):
             items = _indices(symbol, indices, entry.get("evidence", []), column)
             if any(item.get("supports", "identity") != supports for item in items):
                 raise KbError(f"{symbol.key.key}: {column} selects another claim", code=3)
-            selected = [terminal(model, symbol, item, offsets.get(index))
+            selected = [terminal(model, symbol, item, offsets.get(index),
+                                 lookup[2] if lookup is not None else None)
                         for index, item in zip(indices, items)]
         except (IndexError, KeyError, TypeError) as error:
             raise KbError(f"{symbol.key.key}: invalid {column} selection", code=3) from error
@@ -252,7 +258,7 @@ def _row(model, symbol, document, marker, lookup=None):
     return row
 
 
-def _diagnostic(model, symbol, binding):
+def _diagnostic(model, symbol, binding, meaning_index=None):
     row = {"id": binding["id"], "kind": binding["kind"],
            "firmware_label": LABELS[symbol.kind], "firmware_addr": f"{symbol.address:08x}",
            "diagnostic_label": binding["label"], "diagnostic_key": binding["key"],
@@ -260,7 +266,7 @@ def _diagnostic(model, symbol, binding):
            "source_claim_id": binding["claim"]["id"], "confidence": binding["level"],
            "applicability": binding["applicability"], "rom_scope": binding["scope"],
            "priority": str(binding["priority"]), "note": binding["note"]}
-    row["evidence"] = tokens.canonical("; ".join(terminal(model, symbol, item)
+    row["evidence"] = tokens.canonical("; ".join(terminal(model, symbol, item, meaning_index=meaning_index)
                                                 for item in binding["evidence"]))
     return row
 
@@ -271,7 +277,12 @@ def render(model):
     links = defaultdict(list)
     for link in model.links:
         links[id(link.owner)].append(link)
-    lookup = {meaning.key: meaning for meaning in model.meanings}, links
+    last, first = {}, {}
+    for meaning in model.meanings:
+        key = meaning.key
+        last[key] = meaning
+        first.setdefault(key, meaning)
+    lookup = last, links, first
     for kind, name, markers, src in model.stash.get("ledger_rows", ()):
         meaning = model.files[kind, name][0]
         symbol = meaning.symbols.get(ledgers.LAYOUT)
@@ -290,7 +301,7 @@ def render(model):
                 if len(bindings) != 1:
                     raise KbError(f"{symbol.key.key}: ledger selects no unique diagnostic binding",
                                   code=3)
-                row = _diagnostic(model, symbol, bindings[0])
+                row = _diagnostic(model, symbol, bindings[0], lookup[2])
             else:
                 row = _row(model, symbol, document, marker, lookup)
             rows[marker["registry"]].append((marker["order"], row))
