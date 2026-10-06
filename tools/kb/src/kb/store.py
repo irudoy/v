@@ -27,6 +27,7 @@ INDENT = "    "
 BARE_KEY = re.compile(r"[A-Za-z0-9_-]+")
 ESCAPES = {'"': '\\"', "\\": "\\\\", "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f",
            "\r": "\\r"}
+ESCAPABLE = re.compile(r'[\x00-\x1f\x7f"\\]')
 
 # Value specs: a plain value (a scalar, an array of scalars, or an inline
 # table), an integer in hexadecimal, or a DID number in four hexadecimal
@@ -298,6 +299,8 @@ def _key(name):
 
 
 def escape(text):
+    if type(text) is str and ESCAPABLE.search(text) is None:
+        return text
     out = []
     for char in text:
         if char in ESCAPES:

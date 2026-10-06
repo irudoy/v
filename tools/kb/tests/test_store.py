@@ -3,6 +3,7 @@ import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from kb import repo, store
 
@@ -108,6 +109,61 @@ class RenderTest(unittest.TestCase):
                               "via": ["g/fn", "h/fn"]}]}
         text = store.render("ram", document)
         self.assertEqual(store.render("ram", tomllib.loads(text)), text)
+
+
+class EscapeScanTest(unittest.TestCase):
+    def test_ascii_controls_and_named_escapes_keep_their_literal_forms(self):
+        named = {'"': '\\"', "\\": "\\\\", "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f",
+                 "\r": "\\r"}
+        for point in range(128):
+            text = chr(point)
+            expected = named.get(text, f"\\u{point:04x}" if point < 32 or point == 127 else text)
+            with self.subTest(point=point):
+                self.assertEqual(store.escape(text), expected)
+
+    def test_unicode_and_long_mixed_strings_keep_content_and_return_type(self):
+        samples = ["", "\u0085", "\u0416", "\u2028", "\U0001f600", "\ud800", "\udfff", "\U0010ffff",
+                   "a" * 4096, "a" * 72 + '\\"', "\u0416" * 96 + "\x1f"]
+        for text in samples:
+            expected = "".join(store.ESCAPES.get(char, (
+                f"\\u{ord(char):04x}" if ord(char) < 32 or ord(char) == 127 else char))
+                for char in text)
+            with self.subTest(text=repr(text)):
+                result = store.escape(text)
+                self.assertEqual(result, expected)
+                self.assertIs(type(result), str)
+
+    def test_subclasses_and_character_iterables_keep_their_string_result(self):
+        class Text(str):
+            pass
+        factories = (lambda: Text('a"b'), lambda: ['a', '"', 'b'],
+                     lambda: iter(['a', '"', 'b']), lambda: {'a': 1, '"': 2, 'b': 3})
+        for make in factories:
+            result = store.escape(make())
+            self.assertEqual(result, 'a\\"b')
+            self.assertIs(type(result), str)
+
+    def test_invalid_inputs_keep_their_original_error_kind(self):
+        cases = ((None, "not iterable"), (1, "not iterable"), ([None], "ord"),
+                 (["ab"], "length 2"), (b"ab", "int"))
+        for value, message in cases:
+            with self.subTest(value=repr(value)):
+                with self.assertRaisesRegex(TypeError, message):
+                    store.escape(value)
+
+    def test_a_plain_string_does_not_probe_each_character_against_named_escapes(self):
+        class ObservedEscapes(dict):
+            probes = 0
+
+            def __contains__(self, key):
+                self.probes += 1
+                return super().__contains__(key)
+
+        observed = ObservedEscapes(store.ESCAPES)
+        text = "plain " * 1000
+        with patch.object(store, "ESCAPES", observed):
+            self.assertEqual(store.escape(text), text)
+        self.assertLessEqual(observed.probes, 64)
 
 
 class CanonicalTest(unittest.TestCase):
