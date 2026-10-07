@@ -45,6 +45,19 @@ pending mask. Negative-delta entry clears only the pending byte. Full \
 unsigned cursor and slot contexts do not imply service reachability. Earlier \
 mode exits, positive-delta catch-up, other calls, complete sequencer \
 execution and MMIO retain separate evidence.""",
+    """
+Bounded 7mfk entry 00054c54..00054cc6 takes N=uint8(R6) and the raw cursor \
+byte ffff221e. N=0 leaves all RAM unchanged and writes zero at SP+12/SP+16. \
+For N>0, C0=min(cursor,5), C=(C0+N)%6; the loop visits successive slots and \
+accumulates their masks from ROM8[00022695+slot]. Its accumulator is the OR \
+of the next min(N,6) slot masks; N>=6 gives 0x3f. It stores C at ffff221e, \
+ORs the accumulator into ffff20b5/ffff157e/ffff16fe and clears those bits at \
+ffff1935. Signed MOV.B scratch registers and unsigned byte stores are \
+explicit. For N>0 it saves incoming R9 at SP, writes N at SP+12 and the \
+accumulator at SP+16, and restores R9. The boundary is 00054cc8 before the \
+ROM flag check, duration helper and one-shot scheduler. The preceding \
+mode/lead decision, pending-mask publication, later calls, other writers, \
+physical channel mapping and hardware retain separate evidence.""",
 ]
 
 [[symbol.evidence]]
@@ -114,6 +127,25 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054c84"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_catchup_chain.py"
+key = "test_injection_catchup_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_catchup_chain.py"
+key = "test_injection_catchup_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection positive-delta mask accumulation"
 
 [[link]]
 type = "reader"

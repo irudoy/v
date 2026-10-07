@@ -759,6 +759,7 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-injection-catchup': {'REGION_ENTRY': 347220, 'CURSOR': 4294910494, 'QUEUE': 4294910133, 'CLEAR': 4294908213, 'MASK_A': 4294907262, 'MASK_B': 4294907646, 'EARLY_ONLY': 0},
             'jk08a-injection-pending': {'REGION_ENTRY': 347398, 'SLOT': 4294910132, 'CURSOR': 4294910494, 'PENDING': 4294910504, 'ZERO_ENTRY': 347100, 'NEGATIVE_ENTRY': 347150, 'EARLY_ONLY': 0},
             'jk08a-injection-reciprocal': {'REGION_ENTRY': 167548, 'OUTPUT': 4294907586, 'REMAINDER': 4294908219, 'EARLY_ONLY': 0},
             'jk08a-injection-tooth': {'REGION_ENTRY': 177760, 'COUNT': 4294906808, 'REMAINDER': 4294908219, 'MODE': 4294911177, 'POSITION': 4294906802, 'DIRECT_ENTRY': 177782, 'NORMALIZER_ENTRY': 167368, 'EARLY_ONLY': 0},
@@ -1251,6 +1252,25 @@ mov #0x5,r1
                     self.assertIn("i < " + upper + "_ACTIVE_CASE_COUNT", harness)
                     self.assertIn("run_case(i, " + scope + "_cases + i)", harness)
                     self.assertIn("completed != " + upper + "_ACTIVE_CASE_COUNT", harness)
+                    self.assertRegex(harness, r'\+\+completed;')
+                elif key == "jk08a-injection-catchup":
+                    header_name = "injection-catchup-cases.h"
+                    self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(r'^#define CATCHUP_CASE_COUNT (\d+)U$', header, re.MULTILINE), [str(region.cases)])
+                    [body] = re.findall(r'catchup_cases\[\] = \{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in body.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    def array(count):
+                        return r'\{(?:0x[0-9a-f]+U,){' + str(count-1) + r'}0x[0-9a-f]+U\}'
+                    literal_row = r'\{(?:0x[0-9a-f]+U,){7}' + ','.join(array(n) for n in (4,4,15,15)) + r'\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertIn("#define CATCHUP_ACTIVE_CASE_COUNT (EARLY_ONLY ? 12U : CATCHUP_CASE_COUNT)", harness)
+                    self.assertIn("ARRAY_SIZE(catchup_cases) != CATCHUP_CASE_COUNT", harness)
+                    self.assertIn("i < CATCHUP_ACTIVE_CASE_COUNT", harness)
+                    self.assertIn("run_case(i, catchup_cases + i)", harness)
+                    self.assertIn("completed != CATCHUP_ACTIVE_CASE_COUNT", harness)
                     self.assertRegex(harness, r'\+\+completed;')
                 elif key == "jk08a-injection-slot":
                     header_name = "injection-slot-cases.h"

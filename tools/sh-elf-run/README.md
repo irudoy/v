@@ -1253,3 +1253,44 @@ outer C ABI, all 64k RAM bytes and every bound pool byte. The unchanged
 shared invocation prepares the entry and observes the return. Software
 execution establishes no live reachability, physical scale or hardware
 behavior outside the declared instruction entries.
+
+## Bounded injection positive-delta mask accumulation
+
+The loop at `00054c54..00054cc6` binds 58 instructions,
+138 bound bytes and 11340 literal cases. Its input N=uint8(R6) is a
+prepared register context. For N=0 it leaves all RAM unchanged and writes
+zero at SP+12 and SP+16. For N>0 each iteration increments the raw cursor
+byte `ffff221e`, wraps a resulting byte >=6 to zero, and reads the mask
+`02 04 08 10 20 01` at `00022695+cursor`. The final cursor is
+`(min(old_cursor,5)+N)%6`. The accumulator ORs the next min(N,6) masks;
+N>=6 produces 0x3f. It ORs that accumulator into `ffff20b5`, `ffff157e`
+and `ffff16fe`, and clears its bits in `ffff1935`. Upper byte bits in the
+four history values are preserved. Signed MOV.B scratch registers retain
+their actual full GPR values before unsigned byte storage.
+
+For N>0 the loop saves incoming R9 at SP and restores it, stores N at
+SP+12 and stores the accumulated mask at SP+16. Other frame bytes are
+held. The boundary at `00054cc8` uses an RTS/NOP outside the stock span.
+The two RAM literal bases alone use simulator aliases; incoming R8 is
+the stock table base `0002268e`, and incoming GBR is the declared RAM
+alias of `ffff1ff4`. ROM instructions, masks and offsets are unchanged.
+
+The matrix contains 12 early contexts, 7168 full-cursor and selected-delta
+contexts with both GPR patterns and entry T values, 3072 full-delta
+contexts over all six valid cursor values and two GPR patterns, 1024
+independent full-byte history contexts and 64 upper-delta-bit contexts.
+Every cursor byte and low delta byte occurs. N=0, loop completion,
+cursor wrap, repeated complete cycles and both incoming T values execute.
+The native owners describe unsigned byte storage and the exact bounded
+writer. All 22 complete steps of injection_phase retain their current
+bindings. The preceding mode/lead decision, later flag and duration-helper
+paths, pending-mask publication, one-shot call, physical channel mapping
+and hardware retain separate evidence. These raw direct contexts do not
+establish service reachability or the full step-17 selection conditions.
+
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region uses
+EARLY_ONLY=0 and requires every literal. Each case observes all fifteen GPRs,
+actual complete SR including T, MACH, MACL, GBR, PR/SP, the immutable
+76-byte entry context, all 96 frame bytes, a separate twelve-word outer
+C ABI, all 64k RAM bytes and every bound ROM pool byte. The original
+shared invocation and pinned GNU tools execute the fixture.
