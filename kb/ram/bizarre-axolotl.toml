@@ -33,6 +33,20 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff221d"
 name = "bizarre-axolotl"
+width = 8
+signed = false
+note = [
+    """
+Bounded 7mfk entry 00054d0c..00054d22 stores uint8(R9) at ffff221d and \
+prepares the argument before JSR at 00054d24. Bit 0 of byte ffff4251 selects \
+R4=52 when set, including the BRA delay slot, and the complete 32-bit entry \
+word at SP+8 when clear. R2 holds stock callee 0002b64a. The fixture covers \
+every flag and prior-lead byte, saved words 4*A for every A in 0..255, upper \
+words, both prepared T values and complete register/frame/RAM preservation. \
+R11 is the declared observer-boundary scratch. The earlier snapshot \
+producer, mode/delta selection, actual callee invocation, count/remainder \
+composition, other accessors and hardware retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -68,6 +82,25 @@ supports = "identity"
 at = "7mfk:00054d12"
 value = {named = ["00028ea2", "00054a44", "ffff221d"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054d12"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_dispatch_chain.py"
+key = "test_injection_dispatch_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_dispatch_chain.py"
+key = "test_injection_dispatch_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection pre-call argument preparation"
 
 [[link]]
 type = "writer"

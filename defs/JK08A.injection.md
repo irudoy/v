@@ -352,3 +352,44 @@ actual complete SR including T, MACH, MACL, GBR, PR/SP, the immutable
 76-byte entry context, all 96 frame bytes, a separate twelve-word outer
 C ABI, all 64k RAM bytes and every bound ROM pool byte. The original
 shared invocation and pinned GNU tools execute the fixture.
+
+## Bounded injection pre-call argument preparation
+
+The mandatory `jk08a-injection-dispatch` Region reconstructs 12 instructions,
+38 bound bytes and 9292 literal cases with `EARLY_ONLY=0`. It enters at
+00054d0c and observes at 00054d24 before JSR to 0002b64a. The byte at
+ffff221d receives uint8(R9). Bit 0 of ffff4251 selects argument 52 when set
+and the complete 32-bit word at SP+8 when clear. Other flag bits are retained;
+the MOV of 52 executes in the BRA delay slot. R2 holds the stock callee
+address at the boundary. Further callee execution has separate evidence.
+
+The stored-word domain includes 4*A for every byte A in 0..255, independent
+upper-word contexts and both prepared T values. These are explicit entry
+inputs; earlier producer and mode conditions retain their own proof. The
+matrix contains 12 early cases, 4096 full-flag cases, 4096 byte-snapshot-word
+cases, 1024 previous-lead cases and 64 upper-word cases. Every flag byte and
+every previous lead byte is covered. The direct contexts do not establish
+caller reachability or all combinations of 32-bit arguments and lead values.
+
+The harness checks all fifteen GPRs and the actual complete SR, MACH, MACL,
+GBR, PR/SP, the immutable 76-byte context, 96 frame bytes, an independent
+12-word C caller ABI record, 64k RAM and every bound ROM-pool byte. R11 is
+the explicit boundary scratch and equals the independently recorded driver
+continuation. Fourteen other GPR results bind to the literal matrix. The
+frame and RAM checks permit only the stock lead-byte write. The input flag,
+saved argument, neighboring frame bytes and other RAM retain their values.
+
+`stock_injection_dispatch_invoke.s` preserves the complete start-delay
+observer after a symbol rename and two setup instructions. Those instructions
+copy the explicit incoming R4 word into SP+8 before the before-frame capture.
+The contract normalizes that insertion and compares the complete remaining
+source with `stock_injection_start_delay_invoke.s`. Mutation checks reject
+each register result, each bound byte, changed setup offset/source, missing
+frame capture, changed Region boundaries and conflicting published counts.
+
+Simulator RAM aliases affect only the declared words at 00054e8c and
+00054e9c. The existing boundary stub at 00054d24 loads its continuation
+from SP+24 through R11; the interval under test retains its exact ROM bytes.
+The pinned GNU tools, image, runner and timeouts remain the standard gate.
+The boundary precedes hardware compare and timer accesses; software proof
+of argument preparation leaves hardware validation as a separate condition.
