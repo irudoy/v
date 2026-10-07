@@ -1,14 +1,16 @@
 summary = """
 Delayed injection-start programmer. It sets pending flag ffff84ec.bit7 and \
-converts its angle argument in crank degrees into a tooth count and a \
-compare. While P0335 fallback snapshot ffff24c9.bit6 is clear it splits the \
-angle by ten through 00028e7c into count ffff13b8 and remainder ffff193b, \
-moves one tooth into the remainder when the count is nonzero, and normalizes \
-both through 00028dc8; in fallback an angle of 120 or more becomes count 1 \
-with remainder angle - 120. When the count is zero it forms offset ffff16c2 \
-= ffff22bc * remainder / 10, writes GR1A fffff444 = crank reference capture \
-ffff158a + offset, or TCNT1A + 2 when that instant has passed, clears TSR1A \
-bit 0 at fffff45e, and sets TIER1A bit 0 at fffff462."""
+converts the unsigned low byte of its angle argument into a tooth count and \
+a compare. While P0335 fallback snapshot ffff24c9.bit6 is clear it splits \
+the angle by ten through 00028e7c into count ffff13b8 and remainder \
+ffff193b, moves one tooth into the remainder when the count is nonzero, and \
+normalizes both through 00028dc8; in fallback an angle of 120 or more \
+becomes count 1 with remainder angle - 120. When the count is zero it forms \
+M=uint16(ffff22bc)*uint8(ffff193b), computes Q=floor(uint32(6554*M)/65536) \
+through 00028e7c, stores the word Q at ffff16c2 and the byte uint8(M-10*Q) \
+at ffff166c, writes GR1A fffff444 = crank reference capture ffff158a + \
+offset, or TCNT1A + 2 when that instant has passed, clears TSR1A bit 0 at \
+fffff45e, and sets TIER1A bit 0 at fffff462."""
 note = [
     """
 ffff22bc is the time of one 10-degree crank tooth, so the offset is the \
@@ -106,6 +108,28 @@ supports = "identity"
 layout = "7mfk"
 address = "0002b64a"
 name = "pumpkin-peacock"
+note = [
+    """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence.""",
+    """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -210,6 +234,40 @@ supports = "identity"
 to = "split_u8_by_ten/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b660"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"
@@ -225,6 +283,41 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit6"
+via = ["pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
 
 [[link]]
 type = "selector"

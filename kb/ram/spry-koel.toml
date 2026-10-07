@@ -93,6 +93,19 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff22bc"
 name = "spry-koel"
+width = 16
+signed = false
+note = [
+    """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -149,6 +162,25 @@ supports = "identity"
 at = "7mfk:000c2dfa"
 value = {named = ["00028ea2", "0002a892", "0002acba", "0002b768", "000c2c58", "000c2de0", "ffff11fc", "ffff22bc"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b6da"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
 
 [[link]]
 type = "copy"
@@ -234,10 +266,37 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
 
 [[link]]
 type = "reader"

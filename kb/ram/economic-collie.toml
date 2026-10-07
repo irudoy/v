@@ -1,16 +1,210 @@
+summary = """
+Unsigned 7mfk delayed injection-start remainder byte. The bounded argument \
+splitter and phase normalizer publish it at ffff193b. The offset caller \
+reads it zero-extended with the period word ffff22bc. Raw full-byte consumer \
+contexts establish storage and arithmetic, not upstream physical bounds or \
+hardware reachability."""
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff193b"
 name = "economic-collie"
+width = 8
+signed = false
+note = [
+    """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence.""",
+    """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:000295f6"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b6a0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
+
+[[link]]
+type = "reader"
+to = "apc_command_phase_normalizer/fn"
+via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
+[[link]]
+type = "reader"
+to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
+
+[[link]]
+type = "writer"
+to = "apc_command_phase_normalizer/fn"
+via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
 [[link]]
 type = "writer"
 to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"

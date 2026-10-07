@@ -95,6 +95,21 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff13b2"
 name = "tunneling-doberman"
+width = 8
+signed = false
+note = [
+    """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -197,15 +212,61 @@ at = "7mfk:000c2dbc"
 value = {named = ["00008c81", "00008c82", "00008c89", "00028dc8", "00028ea2", "00029020", "0002a36a", "0002a5cc", "0003e04e", "000c2c58", "000c2d76", "ffff128c", "ffff13b2"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00028dce"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
+via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
 
 [[link]]
 type = "reader"

@@ -1,8 +1,11 @@
 title = "Split an unsigned byte into quotient and remainder modulo ten"
 summary = """
-Unsigned byte division by ten used by APC command schedulers. It multiplies \
-the input by reciprocal 0x199a, stores floor(input/10) through the word \
-pointer, and stores input-10*quotient through the byte pointer."""
+Unsigned reciprocal splitter used by APC command schedulers. For the \
+complete 32-bit input M it computes Q=floor(uint32(6554*M)/65536), stores Q \
+through the word pointer and uint8(M-10*Q) through the byte pointer. For M \
+in 0..255 this equals ordinary division by ten; larger inputs can differ \
+through reciprocal precision or low-32-bit product wrap. The natural return \
+delay slot restores MACL."""
 note = ["The reciprocal is exact over the admitted byte domain."]
 level = "code"
 role = "service"
@@ -29,6 +32,15 @@ contract = [4, 5, 6, 7, 8, 9, 10]
 [[symbol]]
 layout = "7mfk"
 address = "00028e7c"
+note = [
+    """
+The complete 7mfk helper 00028e7c..00028e9c uses a 32-bit R4 input M and \
+distinct output pointers in R5 and R6. Q = floor(uint32(6554*M)/65536); the \
+word output is Q and the byte output is uint8(M-10*Q). The stock return \
+delay slot restores entry MACL. Q equals floor(M/10) for M in 0..255, while \
+M=200000 gives Q=20001 and byte 246. The helper neither caps a quotient nor \
+establishes caller pointer identities, units or hardware reachability.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -104,3 +116,22 @@ supports = "contract"
 at = "7mfk:00028e98"
 value = {named = ["00028ea0"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00028e7c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection reciprocal splitter"

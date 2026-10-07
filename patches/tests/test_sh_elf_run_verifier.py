@@ -759,6 +759,10 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-injection-pending': {'REGION_ENTRY': 347398, 'SLOT': 4294910132, 'CURSOR': 4294910494, 'PENDING': 4294910504, 'ZERO_ENTRY': 347100, 'NEGATIVE_ENTRY': 347150, 'EARLY_ONLY': 0},
+            'jk08a-injection-reciprocal': {'REGION_ENTRY': 167548, 'OUTPUT': 4294907586, 'REMAINDER': 4294908219, 'EARLY_ONLY': 0},
+            'jk08a-injection-tooth': {'REGION_ENTRY': 177760, 'COUNT': 4294906808, 'REMAINDER': 4294908219, 'MODE': 4294911177, 'POSITION': 4294906802, 'DIRECT_ENTRY': 177782, 'NORMALIZER_ENTRY': 167368, 'EARLY_ONLY': 0},
+            'jk08a-injection-offset': {'REGION_ENTRY': 177876, 'PERIOD': 4294910652, 'REMAINDER': 4294908219, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'EARLY_ONLY': 0},
             "jk08a-injection-slot": {
                 "REGION_ENTRY": 0x00054A64, "CYLINDER": 0xFFFF11DE,
                 "LEAD": 0xFFFF2364, "MODE": 0xFFFF8513,
@@ -1225,6 +1229,29 @@ mov #0x5,r1
                     self.assertRegex(harness, r'if\(completed!=LTFT_PUBLICATION_CASE_COUNT\)')
                     self.assertRegex(harness, r'\+\+completed;')
                     self.assertIn("#define DIAGNOSTIC (DIAGNOSTIC_RECORD + DIAGNOSTIC_BYTE1_OFFSET)", harness)
+                elif key in ("jk08a-injection-pending", "jk08a-injection-reciprocal",
+                             "jk08a-injection-tooth", "jk08a-injection-offset"):
+                    scope = key.rsplit("-", 1)[1]
+                    upper = scope.upper()
+                    header_name = "injection-" + scope + "-cases.h"
+                    self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(r'^#define ' + upper + r'_CASE_COUNT (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(scope + r'_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    scalars = 6 if scope == "reciprocal" else 12 if scope == "tooth" else 8
+                    literal_row = r'\{(?:0x[0-9a-f]+U,){' + str(scalars) + r'}\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\},\{(?:0x[0-9a-f]+U,){14}0x[0-9a-f]+U\}\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertIn("#define " + upper + "_ACTIVE_CASE_COUNT (EARLY_ONLY ? 12U : " + upper + "_CASE_COUNT)", harness)
+                    self.assertIn("ARRAY_SIZE(" + scope + "_cases) != " + upper + "_CASE_COUNT", harness)
+                    self.assertIn("i < " + upper + "_ACTIVE_CASE_COUNT", harness)
+                    self.assertIn("run_case(i, " + scope + "_cases + i)", harness)
+                    self.assertIn("completed != " + upper + "_ACTIVE_CASE_COUNT", harness)
+                    self.assertRegex(harness, r'\+\+completed;')
                 elif key == "jk08a-injection-slot":
                     header_name = "injection-slot-cases.h"
                     self.assertEqual(re.findall(

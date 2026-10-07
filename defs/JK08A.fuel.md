@@ -1097,11 +1097,17 @@ the current one and `0xFFFF221D` with the lead. Every fired mask is ORed into `0
 `0xFFFF1935`, and, with stock `ROM8[0x8D92]` bit 3 set, ORed into `0xFFFF14C3`
 and `0xFFFF14C2`.
 
-`FUN_0002B64A` sets pending flag `0xFFFF84EC.bit7`, splits its angle by ten
-through `FUN_00028E7C` into tooth count `0xFFFF13B8` and remainder
-`0xFFFF193B`, and, when the count is zero, writes
-`GR1A = 0xFFFF158A + 0xFFFF22BC * remainder / 10`, or `TCNT1A + 2` when that
-instant has passed. `0xFFFF22BC` is the time of one 10-degree crank tooth in
+`FUN_0002B64A` sets pending flag `0xFFFF84EC.bit7` and uses the unsigned
+low byte of its argument. The normal path splits that byte by ten through
+`FUN_00028E7C`, moves one ten-count group into the remainder when nonzero,
+and executes `FUN_00028DC8` to normalize tooth count `0xFFFF13B8` and
+remainder byte `0xFFFF193B`. For the zero-count offset path,
+`M = uint16(0xFFFF22BC) * uint8(0xFFFF193B)` and
+`Q = floor(uint32(6554*M)/65536)`. It stores Q at `0xFFFF16C2` and
+`uint8(M-10*Q)` at `0xFFFF166C`. The following compare programmer uses
+`GR1A = 0xFFFF158A + Q`, or `TCNT1A + 2` when that instant has passed.
+The bounded software proof of argument splitting, normalization and
+offset arithmetic is in [JK08A.injection.md](JK08A.injection.md). `0xFFFF22BC` is the time of one 10-degree crank tooth in
 `3.2 us` channel-1 counts and `0xFFFF158A` is the crank reference capture of
 the current event. It then clears `TSR1A` bit 0 and sets `TIER1A` bit 0. In
 P0335 fallback (`0xFFFF24C9.bit6`) an angle of 120 or more becomes count 1

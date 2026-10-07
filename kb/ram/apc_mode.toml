@@ -88,6 +88,19 @@ address = "ffff24c9"
 former = ["remarkable-husky/ram/7mfk-ffff24c9"]
 width = 8
 signed = false
+note = [
+    """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -149,6 +162,25 @@ key = "test_injection_start_delay_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b662"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
 
 [[symbol]]
 layout = "jk00c"
@@ -215,6 +247,40 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
 
 [[link]]
 type = "reader"

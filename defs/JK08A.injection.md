@@ -168,3 +168,146 @@ Full-byte lead values are explicit consumer contexts. Complete prologue
 and tail behavior, upstream producer bounds, live scheduling, physical
 cylinder identity and hardware reachability require separate evidence.
 This proof does not establish that lead values above six occur in service.
+
+## Bounded injection pending-mask selection
+
+The accepted lookup and two selection entries bind 32 instructions,
+80 bound bytes and 9216 literal cases. The direct lookup at
+`00054d06..00054d0a` requires slot 0..5 and reads the six stock masks
+`02 04 08 10 20 01` at `00022695`. Entry `00054bdc` supplies the
+zero-lead-delta context: it clears pending byte `ffff2228`, computes the
+next cursor as old cursor+1 below 5 and zero otherwise, and accepts only
+a matching target slot. Acceptance stores the cursor and the looked-up
+mask. Entry `00054c0e` supplies the negative-lead-delta context and clears
+only the pending byte. The boundary at `00054d0c` is outside all three
+stock spans; its RTS/NOP adds no sequencer semantics. One RAM literal
+and incoming GBR/R14 alone use simulator RAM aliases.
+
+The matrix contains 12 early contexts, 6144 valid-slot zero-delta contexts,
+1500 invalid-slot contexts, 1024 negative-delta contexts, 24 accepted
+direct lookups and 512 full-cursor extreme-invalid-slot contexts. The
+zero-delta and negative-delta inputs cover complete unsigned byte domains;
+direct lookup contexts keep the necessary valid table-index bound.
+Earlier mode gates and earlier mode exits, positive-delta catch-up, stock
+calls and MMIO are outside these spans. Native step 17 retains a separate
+complete-selection question; this fixture does not assert that every
+sequencer path without an accepted slot clears pending.
+
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region uses
+EARLY_ONLY=0 and requires its complete declared count. Each case observes
+all fifteen GPRs, actual complete SR including T, MACH, MACL, GBR, PR/SP,
+the immutable 76-byte incoming context, all 96 frame bytes, an independent
+outer C ABI, all 64k RAM bytes and every bound pool byte. The unchanged
+shared invocation prepares the entry and observes the return. Software
+execution establishes no live reachability, physical scale or hardware
+behavior outside the declared instruction entries.
+
+## Bounded injection reciprocal splitter
+
+The complete `00028e7c..00028e9c` helper binds 17 instructions,
+36 bound bytes and 12826 literal cases. It takes a full unsigned 32-bit
+input M in R4 and independent word and byte output pointers in R5/R6.
+The ROM word `00028ea0` is 6554. The actual operator is
+`Q=floor(uint32(6554*M)/65536)` with word Q and byte `uint8(M-10*Q)`.
+There is no saturating quotient cap. Both quotient-zero branch outcomes,
+the word store in its BT/S delay slot, and the natural return with MACL
+restoration in its delay slot execute. No literal or instruction alias
+is needed. Prepared output pointers are explicit helper contexts; this
+generic fixture does not identify all callers' destinations.
+
+For M in 0..255, Q equals floor(M/10). Larger operands can differ through
+reciprocal precision and low-32-bit wrap. The early M=200000 context
+executes Q=20001 and residue byte 246. The matrix contains 12 early
+contexts, 2816 coarse word-period products, 9450 product-wrap seam
+contexts, 512 complete unsigned-byte/T contexts and 36 raw-32-bit corners.
+All byte-valued remainders contribute wrap-seam boundaries where present.
+
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region uses
+EARLY_ONLY=0 and requires its complete declared count. Each case observes
+all fifteen GPRs, actual complete SR including T, MACH, MACL, GBR, PR/SP,
+the immutable 76-byte incoming context, all 96 frame bytes, an independent
+outer C ABI, all 64k RAM bytes and every bound pool byte. The unchanged
+shared invocation prepares the entry and observes the return. Software
+execution establishes no live reachability, physical scale or hardware
+behavior outside the declared instruction entries.
+
+## Bounded injection argument splitting and phase normalization
+
+The caller at `0002b660..0002b6cc`, its complete phase normalizer at
+`00028dc8..00028e7a` and its real reciprocal splitter bind 162 instructions,
+350 bound bytes and 12668 literal cases. A=uint8(R4) executes in the
+BT/S delay slot on both mode-bit6 outcomes. With bit6 clear, byte-domain
+division by ten is exact: initial count is max(0,floor(A/10)-1), and
+remainder is A%10 plus ten when the quotient is nonzero. The normalizer
+reads raw position byte `ffff13b2` and writes count word `ffff13b8` and
+remainder byte `ffff193b`. With bit6 set, A<120 stores count zero and
+remainder A; other byte values store count one and remainder A-120.
+
+At position 4 the normalizer maps count 4 to 3 with remainder+10, 5 to 3
+with remainder+20, and 6..15 to count-2. At position 9 it maps 9 to 8
+with remainder+10 and counts >=10 to count-2 with remainder+20. Other
+raw position bytes map 1 to zero with remainder+10, 2 to zero with
+remainder+20, 3..12 to count-2, 13 to ten with remainder+10, 14 to ten
+with remainder+20, and 15..24 to count-4. Other counts are unchanged.
+Byte additions keep uint8 storage while scratch GPRs retain signed
+byte extension. This full raw consumer domain does not expand the
+physical tooth domain.
+
+The matrix contains 12 early contexts, 2560 normal byte/valid-position
+contexts, 1536 fallback contexts, 3328 complete raw-position contexts,
+1536 complete control-byte contexts, 288 upper-argument-bit contexts,
+32 direct clamp contexts and 3376 direct normalizer contexts. The direct
+clamp supplies entry `0002b676` to cover the signed clamp unreachable
+after byte truncation. The normalizer uses its natural return. Caller
+entries return through a PR restore at stack offset 24 in a boundary
+at `0002b6ce`, with R11 as scratch outside the stock bytes. Three RAM
+pool words alone are aliased. The prologue, source-argument dispatch,
+preceding pending flag and following count decision and MMIO retain
+separate evidence. Native step 18 requires composition with those
+caller conditions before it gains a complete arithmetic record.
+
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region uses
+EARLY_ONLY=0 and requires its complete declared count. Each case observes
+all fifteen GPRs, actual complete SR including T, MACH, MACL, GBR, PR/SP,
+the immutable 76-byte incoming context, all 96 frame bytes, an independent
+outer C ABI, all 64k RAM bytes and every bound pool byte. The unchanged
+shared invocation prepares the entry and observes the return. Software
+execution establishes no live reachability, physical scale or hardware
+behavior outside the declared instruction entries.
+
+## Bounded injection offset multiplication
+
+The `0002b6d4..0002b6f6` multiply and its complete real reciprocal helper
+bind 35 instructions, 90 bound bytes and 14118 literal cases. The caller
+reads unsigned period word `ffff22bc` and remainder byte `ffff193b`.
+It computes M=P*R and passes the actual word output `ffff16c2` and byte
+output `ffff166c` to `00028e7c`. The word is Q and the byte is
+uint8(M-10*Q). MACL contains M after the helper restores its saved input;
+it does not preserve the MACL value before the caller's multiplication.
+
+Native injection_phase step 19 has sign `none`, includes the ordered
+caller and real helper, and binds the exact bounded arithmetic:
+
+```text
+M = uint16(ffff22bc)*uint8(ffff193b); to = floor(uint32(6554*M)/65536)
+```
+
+P=8192,R=4 executes Q=3277 while ordinary division gives 3276.
+P=25000,R=8 executes Q=20001 and byte 246. Across full word/byte
+consumer contexts the reciprocal product wraps and Q can decrease
+when an operand increases. The raw residue is not limited to 0..9.
+The matrix contains 12 early contexts, 3328 coarse word/byte products,
+9450 wrap-seam contexts, 1280 complete-byte contexts at five word values,
+and 48 word-corner contexts. Two declared RAM literals alone are aliased.
+The boundary at `0002b6f8` restores PR from stack offset 24 using R11
+outside all tested bytes. The preceding zero-count decision, compare
+programming, physical timer units and hardware retain separate evidence.
+
+EARLY_ONLY=1 executes the first twelve literals; the mandatory Region uses
+EARLY_ONLY=0 and requires its complete declared count. Each case observes
+all fifteen GPRs, actual complete SR including T, MACH, MACL, GBR, PR/SP,
+the immutable 76-byte incoming context, all 96 frame bytes, an independent
+outer C ABI, all 64k RAM bytes and every bound pool byte. The unchanged
+shared invocation prepares the entry and observes the return. Software
+execution establishes no live reachability, physical scale or hardware
+behavior outside the declared instruction entries.

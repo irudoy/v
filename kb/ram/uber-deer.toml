@@ -58,6 +58,20 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2228"
 name = "uber-deer"
+width = 8
+signed = false
+note = [
+    """
+Bounded 7mfk entries 00054d06, 00054bdc and 00054c0e execute the accepted \
+lookup, zero-lead-delta selection and negative-lead-delta clear. The direct \
+lookup requires slot 0..5 and uses ROM8[00022695+slot]. Zero-delta selection \
+clears the pending byte, computes next = cursor+1 for unsigned cursor <5 and \
+0 otherwise, and accepts only slot==next; acceptance updates cursor and the \
+pending mask. Negative-delta entry clears only the pending byte. Full \
+unsigned cursor and slot contexts do not imply service reachability. Earlier \
+mode exits, positive-delta catch-up, other calls, complete sequencer \
+execution and MMIO retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -113,6 +127,91 @@ at = "7mfk:00054d0a"
 value = {named = ["00022695", "00028ea2", "0002be40", "0002c13c", "00054a44", "ffff2228"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054d0a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection pending-mask selection"
+
+[[link]]
+type = "input"
+to = "acrid-bonobo/ram"
+via = ["amigurumi-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entries 00054d06, 00054bdc and 00054c0e execute the accepted \
+lookup, zero-lead-delta selection and negative-lead-delta clear. The direct \
+lookup requires slot 0..5 and uses ROM8[00022695+slot]. Zero-delta selection \
+clears the pending byte, computes next = cursor+1 for unsigned cursor <5 and \
+0 otherwise, and accepts only slot==next; acceptance updates cursor and the \
+pending mask. Negative-delta entry clears only the pending byte. Full \
+unsigned cursor and slot contexts do not imply service reachability. Earlier \
+mode exits, positive-delta catch-up, other calls, complete sequencer \
+execution and MMIO retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection pending-mask selection"
+
+[[link]]
+type = "input"
+to = "lurking-swine/ram"
+via = ["amigurumi-dormouse/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entries 00054d06, 00054bdc and 00054c0e execute the accepted \
+lookup, zero-lead-delta selection and negative-lead-delta clear. The direct \
+lookup requires slot 0..5 and uses ROM8[00022695+slot]. Zero-delta selection \
+clears the pending byte, computes next = cursor+1 for unsigned cursor <5 and \
+0 otherwise, and accepts only slot==next; acceptance updates cursor and the \
+pending mask. Negative-delta entry clears only the pending byte. Full \
+unsigned cursor and slot contexts do not imply service reachability. Earlier \
+mode exits, positive-delta catch-up, other calls, complete sequencer \
+execution and MMIO retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection pending-mask selection"
+
 [[link]]
 type = "reader"
 to = "injector_event_isr/fn"
@@ -133,11 +232,37 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "amigurumi-dormouse/fn"
+via = ["amigurumi-dormouse/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Bounded 7mfk entries 00054d06, 00054bdc and 00054c0e execute the accepted \
+lookup, zero-lead-delta selection and negative-lead-delta clear. The direct \
+lookup requires slot 0..5 and uses ROM8[00022695+slot]. Zero-delta selection \
+clears the pending byte, computes next = cursor+1 for unsigned cursor <5 and \
+0 otherwise, and accepts only slot==next; acceptance updates cursor and the \
+pending mask. Negative-delta entry clears only the pending byte. Full \
+unsigned cursor and slot contexts do not imply service reachability. Earlier \
+mode exits, positive-delta catch-up, other calls, complete sequencer \
+execution and MMIO retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_sequencing_chain.py"
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection pending-mask selection"
 
 [[link]]
 type = "writer"
