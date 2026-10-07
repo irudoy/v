@@ -742,6 +742,10 @@ mov #0x5,r1
                         fixture[address:address + 4],
                         VERIFIER.alias_high_ram(value).to_bytes(4, "big"),
                     )
+                for address, original, alias, size in region.ram_word_literals:
+                    allowed.update(range(address, address + 2))
+                    self.assertEqual(int.from_bytes(image[address:address + 2], "big") | 0xffff0000, original)
+                    self.assertEqual(fixture[address:address + 2], alias.to_bytes(2, "big"))
                 self.assertLessEqual(changed, allowed)
                 for start, end in region.code_spans:
                     self.assertEqual(fixture[start:end], image[start:end])
@@ -759,6 +763,7 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-injection-prologue': {'REGION_ENTRY': 177738, 'CONTROL': 4294935788, 'EARLY_ONLY': 0, 'WORD_ALIAS': 32512},
             'jk08a-injection-count': {'REGION_ENTRY': 177870, 'COUNT': 4294906808, 'PERIOD': 4294910652, 'REMAINDER': 4294908219, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'EARLY_ONLY': 0},
             'jk08a-injection-dispatch': {'REGION_ENTRY': 347404, 'LEAD': 4294910493, 'FLAG': 4294918737, 'EARLY_ONLY': 0},
             'jk08a-injection-catchup': {'REGION_ENTRY': 347220, 'CURSOR': 4294910494, 'QUEUE': 4294910133, 'CLEAR': 4294908213, 'MASK_A': 4294907262, 'MASK_B': 4294907646, 'EARLY_ONLY': 0},
@@ -1254,6 +1259,25 @@ mov #0x5,r1
                     self.assertIn("i < " + upper + "_ACTIVE_CASE_COUNT", harness)
                     self.assertIn("run_case(i, " + scope + "_cases + i)", harness)
                     self.assertIn("completed != " + upper + "_ACTIVE_CASE_COUNT", harness)
+                    self.assertRegex(harness, r'\+\+completed;')
+                elif key == "jk08a-injection-prologue":
+                    header_name = "injection-prologue-cases.h"
+                    self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(r'^#define PROLOGUE_CASE_COUNT (\d+)U$', header, re.MULTILINE), [str(region.cases)])
+                    [body] = re.findall(r'prologue_cases\[\] = \{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in body.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    def array(count):
+                        return r'\{(?:0x[0-9a-f]+U,){' + str(count-1) + r'}0x[0-9a-f]+U\}'
+                    literal_row = r'\{(?:0x[0-9a-f]+U,){3}' + ','.join(array(n) for n in (15,15)) + r'\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertIn("#define PROLOGUE_ACTIVE_CASE_COUNT (EARLY_ONLY ? 12U : PROLOGUE_CASE_COUNT)", harness)
+                    self.assertIn("ARRAY_SIZE(prologue_cases) != PROLOGUE_CASE_COUNT", harness)
+                    self.assertIn("i < PROLOGUE_ACTIVE_CASE_COUNT", harness)
+                    self.assertIn("run_case(i, prologue_cases + i)", harness)
+                    self.assertIn("completed != PROLOGUE_ACTIVE_CASE_COUNT", harness)
                     self.assertRegex(harness, r'\+\+completed;')
                 elif key == "jk08a-injection-count":
                     header_name = "injection-count-cases.h"

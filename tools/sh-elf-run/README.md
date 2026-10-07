@@ -1385,3 +1385,42 @@ The standard boundary stub at 0002b6f8 reads SP+24 through R11. All instructions
 under test retain their exact ROM bytes. The pinned GNU tools, image, runner
 and timeouts are the standard gate. MMIO and hardware behavior have separate
 validation conditions.
+
+## Bounded injection programmer entry frame and byte flag
+
+The mandatory `jk08a-injection-prologue` Region reconstructs 11 instructions,
+28 bound bytes and 1036 literal cases with `EARLY_ONLY=0`. It enters at
+0002b64a and observes at 0002b660 before the argument and mode calculations.
+The five saved words are R13, R14, PR, MACL and GBR, pushed in that order;
+actual SP-20 and every saved byte are observed before stack compensation.
+The natural JSR continuation is saved PR. The long pool at 0002b864 loads
+GBR from ffff128c. The exact word 0002b75c=84ec sign-extends to ffff84ec;
+MOV.B loads that byte with sign extension, OR 0x80 sets bit 7 and MOV.B
+stores the low byte. R0 retains the sign-extended byte OR 128; T is held.
+
+The matrix covers every byte 0..255, two independent complete register
+contexts and both prepared T values, plus 12 early cases. The harness checks
+all fifteen GPRs, actual complete SR, MACH/MACL, loaded GBR, actual PR/SP,
+the immutable 76-byte input context, 96 frame bytes, an independent 12-word
+C caller ABI record, 64k RAM, all six pool bytes and sixteen low-alias bytes.
+Only the alias byte's bit 7 and the five saved words may change. The complete
+high-RAM test window and every neighboring low-alias byte are retained.
+
+The declared simulator binding (0002b75c, ffff84ec, 0x7f00, 1) relocates only
+the pointer's two pool bytes. Its original sign-extended target lies in the
+configured MCU RAM domain. The positive signed-word alias and its extent
+must fit the image, avoid all tested code, pool data and return boundaries,
+and avoid repeated pool words or overlapping aliases and original RAM
+extents. A simultaneous long-literal binding to the same original address
+is refused. The long pointer alone maps to 0x0100128c. Every instruction
+under test retains its stock bytes. Two padding bytes before the two-byte
+aligned entry are outside the reconstructed code and preserve PC-relative
+longword alignment. The boundary is the ordinary RTS/NOP pair.
+
+The complete normalized observer equals the start-delay observer after the
+declared allocation and actual-SP capture insertions. Every old Region's
+complete declaration and simulator fixture remain exact with the empty
+RAM-word binding default. The GNU image, tools, runner and timeouts are the
+standard gate. Storage width is eight bits; the physical flag meaning,
+following mode/delta selection, count/remainder composition, real dispatcher
+invocation, whole-function return, MMIO and hardware retain separate evidence.

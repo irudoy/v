@@ -110,7 +110,8 @@ EXPECTED_REGION = {'key': 'jk08a-bfs-rate',
                ['POST_QUERY_ENTRY', 244330],
                ['PRIMARY_BASE', 4294906132],
                ['MODE_BASE', 4294911072]],
- 'callees': [[243976, 244108], [244184, 244514], [140538, 140552], [154084, 154130]]}
+ 'callees': [[243976, 244108], [244184, 244514], [140538, 140552], [154084, 154130]],
+ 'ram_word_literals': []}
 EXPECTED_DEFINES = {'REGION_ENTRY': 244516,
  'Q7_SOURCE': 4294905954,
  'SELECTED_SOURCE': 4294906204,

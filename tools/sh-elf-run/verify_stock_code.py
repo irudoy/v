@@ -82,6 +82,9 @@ class Region:
     # Additional stock instruction spans executed by this region, including
     # callees or a selection path separated by pool data, at stock addresses.
     callees: tuple[tuple[int, int], ...] = ()
+    # Explicit (pool, high-RAM address, positive word alias, byte extent).
+    # MOV.W sign-extension requires a separate low-memory alias domain.
+    ram_word_literals: tuple[tuple[int, int, int, int], ...] = ()
 
     @property
     def code_spans(self):
@@ -99,6 +102,7 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(key='jk08a-injection-prologue', rom='JK08A', source='stock_jk08a_injection_prologue.s', harness='harness-stock-jk08a-injection-prologue.c', start=177738, end=177760, pools=((178012, 2), (178276, 4)), ram_literals=(178276,), cases=1036, boundary=True, return_address_offset=None, return_register=5, base_load=None, symbols=(('CONTROL', 'provocative-anteater/ram'),), bits=(), constants=(('EARLY_ONLY', 0), ('WORD_ALIAS', 32512)), callees=(), ram_word_literals=((178012, 4294935788, 32512, 1),)),
     Region(key='jk08a-injection-count', rom='JK08A', source='stock_jk08a_injection_count.s', harness='harness-stock-jk08a-injection-count.c', start=177870, end=177912, pools=((167584, 2), (178014, 6), (178276, 4), (178284, 4), (178292, 4)), ram_literals=(178276, 178292), cases=10252, boundary=True, return_address_offset=24, return_register=11, base_load=None, symbols=(('COUNT', 'huge-lori/ram'), ('PERIOD', 'spry-koel/ram'), ('REMAINDER', 'economic-collie/ram'), ('OUTPUT', 'amphibian-panda/ram'), ('SCRATCH', 'injection_offset_reciprocal_residue/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=((167548, 167582), (177994, 178006))),
     Region(key='jk08a-injection-dispatch', rom='JK08A', source='stock_jk08a_injection_dispatch.s', harness='harness-stock-jk08a-injection-dispatch.c', start=347404, end=347428, pools=((347598, 2), (347788, 4), (347804, 8)), ram_literals=(347788, 347804), cases=9292, boundary=True, return_address_offset=24, return_register=11, base_load=None, symbols=(('LEAD', 'bizarre-axolotl/ram'), ('FLAG', 'shaggy-nyala/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=()),
     Region(key='jk08a-injection-catchup', rom='JK08A', source='stock_jk08a_injection_catchup.s', harness='harness-stock-jk08a-injection-catchup.c', start=347220, end=347336, pools=((140949, 6), (347582, 8), (347788, 8)), ram_literals=(347788, 347792), cases=11340, boundary=True, return_address_offset=None, return_register=5, base_load=None, symbols=(('CURSOR', 'lurking-swine/ram'), ('QUEUE', 'curvy-hyena/ram'), ('CLEAR', 'quantum-tiger/ram'), ('MASK_A', 'injection_catchup_mask_a/ram'), ('MASK_B', 'injection_catchup_mask_b/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=()),
@@ -1082,6 +1086,50 @@ def return_stub(region):
                                  0x402A | (register << 8), 0x000B, 0x0009))
 
 
+def ram_word_aliases(region,image):
+    """Checked (pool, RAM address, simulator address, byte extent) bindings."""
+    rows=region.ram_word_literals
+    if not isinstance(rows,tuple):
+        raise VerificationError(f"{region.key}: RAM word bindings are a tuple")
+    if not rows:
+        return ()
+    layout=kb_targets.repo.layout(kb_targets.layout_of(region.rom,root=ROOT),root=ROOT)
+    ram_start,ram_end=(int(value,16) for value in kb_targets.repo.config(ROOT)['mcu'][layout.mcu]['ram'])
+    checked=[]
+    code=list(region.code_spans)
+    if region.boundary:
+        code.append((region.end,region.end+len(return_stub(region))))
+    pools=[(start,start+size) for start,size in region.pools]
+    overlaps=lambda start,end,spans:any(start<right and left<end for left,right in spans)
+    for row in rows:
+        if (not isinstance(row,tuple) or len(row)!=4
+            or any(type(value) is not int for value in row)):
+            raise VerificationError(f"{region.key}: a RAM word binding has four integers")
+        pool,original,alias,size=row
+        if pool<0 or pool%2 or pool+2>len(image) or not any(left<=pool and pool+2<=right for left,right in pools):
+            raise VerificationError(f"{region.key}: RAM word {pool:#010x} leaves its declared pool")
+        if overlaps(pool,pool+2,code):
+            raise VerificationError(f"{region.key}: RAM word {pool:#010x} overlaps stock code or return boundary")
+        value=int.from_bytes(image[pool:pool+2],'big')
+        target=value|0xffff0000 if value&0x8000 else value
+        if target!=original or not 0xffff8000<=original<0x100000000 or not ram_start<=original<ram_end:
+            raise VerificationError(f"{region.key}: RAM word {pool:#010x} does not bind its sign-extended high-RAM address")
+        if size<=0 or original+size>ram_end or alias<0 or alias+size>0x8000 or alias+size>len(image):
+            raise VerificationError(f"{region.key}: RAM word alias leaves the positive signed-word window")
+        if overlaps(alias,alias+size,code+pools):
+            raise VerificationError(f"{region.key}: RAM word alias overlaps stock code, pool or return boundary")
+        if any(alias<other_alias+other_size and other_alias<alias+size
+               or pool<other_pool+2 and other_pool<pool+2
+               or original<other_original+other_size and other_original<original+size
+               for other_pool,other_original,other_alias,other_size in checked):
+            raise VerificationError(f"{region.key}: RAM word bindings overlap or repeat")
+        if any(pool<address+4 and address<pool+2
+               or _word(image,address)==original for address in region.ram_literals):
+            raise VerificationError(f"{region.key}: RAM word binding conflicts with a long RAM literal")
+        checked.append(row)
+    return tuple(checked)
+
+
 def build_fixture(region, image):
     """The simulator-only fixture of a region; the region bytes stay stock."""
     fixture = bytearray(image)
@@ -1095,6 +1143,8 @@ def build_fixture(region, image):
         fixture[address : address + 4] = base_verifier.alias_high_ram(
             value
         ).to_bytes(4, "big")
+    for address,original,alias,size in ram_word_aliases(region,image):
+        fixture[address:address+2] = alias.to_bytes(2,"big")
     if region.boundary:
         boundary = return_stub(region)
         end = region.end + len(boundary)
