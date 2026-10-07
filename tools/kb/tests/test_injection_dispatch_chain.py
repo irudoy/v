@@ -21,7 +21,7 @@ LEAD = 'bizarre-axolotl/ram'
 FLAG = 'shaggy-nyala/ram'
 OWNERS = ((LEAD,0xffff221d),(FLAG,0xffff4251))
 SLICES = ((347404, b'\xd3_\x90^\xd6b\x03\x94\x84e\xc8\x01\x89\x02\xd2a\xa0\x02\xe44T\xf2\xd2_'), (347598, b'\x02)'), (347788, b'\xff\xff\x1f\xf4'), (347804, b'\xff\xffBL\x00\x02\xb6J'))
-EXECUTION_SOURCES = {'stock_jk08a_injection_dispatch.s': '0f6db66bb28fb9b69056990cbf4a0d89b7e847d10941f347f0359b986147d5a3', 'harness-stock-jk08a-injection-dispatch.c': 'fc59d2cbabcbfbeb5db83c79dfb2817684b04c67049517790e204a1bfe1f181d', 'injection-dispatch-cases.h': 'a321e51996e0caf35899a89fc81ae4208f866c8e8136cc0eb965da919885c811', 'stock_injection_dispatch_invoke.s': 'afe5c4e8ac1e73ef82994be9de3306cebe9abf01d12a0600dec79e0d5162c36c', 'stock_invoke.s': '4836c830878a1c06f0eae35bcb47baacbcb1ddfac0f2ef9c42ca83fbfc8b5ae3', 'stock_injection_start_delay_invoke.s': '0e60c06fb860bfccde3e166f1d45e4059994026ccd89db9313a5b6d0757d44db'}
+EXECUTION_SOURCES = {'stock_jk08a_injection_dispatch.s': '0f6db66bb28fb9b69056990cbf4a0d89b7e847d10941f347f0359b986147d5a3', 'harness-stock-jk08a-injection-dispatch.c': 'fc59d2cbabcbfbeb5db83c79dfb2817684b04c67049517790e204a1bfe1f181d', 'injection-dispatch-cases.h': 'a321e51996e0caf35899a89fc81ae4208f866c8e8136cc0eb965da919885c811', 'stock_injection_dispatch_invoke.s': 'afe5c4e8ac1e73ef82994be9de3306cebe9abf01d12a0600dec79e0d5162c36c', 'stock_invoke.s': '3dc406d51859502a6a987023cdae830968444b66c4ec2eba8b93bc28c47bd4fd', 'stock_injection_start_delay_invoke.s': '0e60c06fb860bfccde3e166f1d45e4059994026ccd89db9313a5b6d0757d44db'}
 
 def evidence():
     return [{'kind':'test','path':PATH,'key':'test_injection_dispatch_owner_contract'},

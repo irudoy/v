@@ -2906,6 +2906,7 @@ via = ["00054a44", "0002b64a"]
 note = """
 00054a44 passes angle 4*ffff2333 to 0002b64a, which splits it by 10 into \
 tooth count and remainder; offset ffff16c2 = ffff22bc * rem / 10."""
+specs = ["defs/JK08A.injection.md"]
 
 [[chain.step]]
 from = "ffff22bc"

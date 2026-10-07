@@ -23,6 +23,19 @@ cover full unsigned count words and raw remainder/position bytes, including \
 signed byte scratch registers. Prologue, source-argument dispatch, count \
 decision, compare programming, live tooth validity and hardware remain \
 separate evidence.""",
+    """
+Direct 7mfk entry 0002b6ce tests the stored unsigned count word ffff13b8. \
+The MOV.W sign-extends its scratch R0; TST selects zero independently of \
+that sign. Count zero executes the complete offset multiplication and real \
+reciprocal splitter until 0002b6f8 before MMIO. Nonzero count executes the \
+real epilogue 0002b74a..0002b754, restores the explicitly staged GBR, MACL, \
+PR, R14 and R13, including the RTS delay slot, and returns with SP increased \
+by 20. Nonzero count preserves all RAM. The observer records actual PR/SP \
+before its own compensation and checks all fifteen GPRs, complete SR, 92 \
+immutable entry bytes, 96 neighboring frame bytes, the outer ABI, all 64k \
+RAM and bound pools. The original prologue, validity of the staged frame as \
+its product, earlier count and argument producers, complete call composition \
+and MMIO/hardware retain separate evidence.""",
 ]
 
 [[symbol.evidence]]
@@ -48,6 +61,25 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection argument splitting and phase normalization"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b6ce"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_count_chain.py"
+key = "test_injection_count_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_count_chain.py"
+key = "test_injection_count_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection count decision and saved-frame return"
 
 [[link]]
 type = "reader"
@@ -82,6 +114,42 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection argument splitting and phase normalization"
+
+[[link]]
+type = "reader"
+to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Direct 7mfk entry 0002b6ce tests the stored unsigned count word ffff13b8. \
+The MOV.W sign-extends its scratch R0; TST selects zero independently of \
+that sign. Count zero executes the complete offset multiplication and real \
+reciprocal splitter until 0002b6f8 before MMIO. Nonzero count executes the \
+real epilogue 0002b74a..0002b754, restores the explicitly staged GBR, MACL, \
+PR, R14 and R13, including the RTS delay slot, and returns with SP increased \
+by 20. Nonzero count preserves all RAM. The observer records actual PR/SP \
+before its own compensation and checks all fifteen GPRs, complete SR, 92 \
+immutable entry bytes, 96 neighboring frame bytes, the outer ABI, all 64k \
+RAM and bound pools. The original prologue, validity of the staged frame as \
+its product, earlier count and argument producers, complete call composition \
+and MMIO/hardware retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_count_chain.py"
+key = "test_injection_count_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_injection_count_chain.py"
+key = "test_injection_count_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Bounded injection count decision and saved-frame return"
 
 [[link]]
 type = "writer"

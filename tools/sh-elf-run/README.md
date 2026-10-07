@@ -1335,3 +1335,53 @@ from SP+24 through R11; the interval under test retains its exact ROM bytes.
 The pinned GNU tools, image, runner and timeouts remain the standard gate.
 The boundary precedes hardware compare and timer accesses; software proof
 of argument preparation leaves hardware validation as a separate condition.
+
+## Bounded injection count decision and saved-frame return
+
+The mandatory `jk08a-injection-count` Region reconstructs 44 instructions,
+108 bound bytes and 10252 literal cases with `EARLY_ONLY=0`. It enters at
+0002b6ce, reads the stored unsigned word ffff13b8 through GBR and tests zero.
+MOV.W sign-extends the scratch R0; that sign does not affect the zero test.
+Count zero executes M=uint16(ffff22bc)*uint8(ffff193b), followed by the real
+00028e7c reciprocal splitter: Q=floor(uint32(6554*M)/65536), word ffff16c2=Q
+and byte ffff166c=uint8(M-10*Q). Observation at 0002b6f8 is before MMIO.
+The reciprocal formula preserves 32-bit multiplication wrap and byte residue
+truncation; exact division by ten does not describe every input context.
+
+Nonzero count branches to the real saved-frame epilogue 0002b74a..0002b754.
+It restores the explicitly staged GBR, MACL, PR, R14 and R13, including R13
+in the RTS delay slot, and returns with SP+20. All RAM bytes are preserved.
+The staged frame is an explicit direct-entry input. The original prologue,
+validity of that frame as its product, earlier producers, actual dispatcher
+invocation and complete caller composition retain separate evidence.
+
+The matrix contains 12 early cases, 4096 count-word contexts, 4096 period-word
+contexts, 1024 remainder-byte contexts and 1024 independent upper-count-byte
+contexts. Both count-byte positions cover 0..255 independently; every period
+low byte, remainder byte and both prepared T values are covered. These domains
+do not claim all 65536 count words, a full Cartesian product or caller reachability.
+
+The harness checks all fifteen GPRs and the actual complete SR, MACH, MACL,
+GBR, actual PR/SP, the immutable 92-byte context, 96 frame bytes, an independent
+12-word C caller ABI record, 64k RAM and every bound ROM-pool byte. R11 is
+the declared scratch of the zero-path boundary and equals its recorded
+continuation; the nonzero path preserves its incoming value. Saved GBR and
+MACL differ from their incoming values, and saved R13/R14 are independently
+seeded. The zero path permits only the offset word, residue byte and the real
+splitter's saved-MACL frame word to change. The nonzero path permits no RAM
+or frame change. The observer records actual returned SP before compensation.
+
+`stock_injection_count_invoke.s` retains the complete start-delay observer
+after normalization of symbol names, the declared frame allocation, saved-frame
+setup, two return-capture sequences, actual-SP capture and continuation pointer.
+Its entire normalized source equals `stock_injection_start_delay_invoke.s`.
+Contracts bind every execution input by SHA-256 and reject changed registers,
+saved state, every bound byte, missing reader evidence, altered chain description,
+changed Region boundaries and conflicting published counts. The dispatch input
+contract binds the shared invocation source including the count observer.
+
+Simulator RAM aliases affect only the declared words at 0002b864 and 0002b874.
+The standard boundary stub at 0002b6f8 reads SP+24 through R11. All instructions
+under test retain their exact ROM bytes. The pinned GNU tools, image, runner
+and timeouts are the standard gate. MMIO and hardware behavior have separate
+validation conditions.
