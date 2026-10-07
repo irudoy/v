@@ -51,6 +51,36 @@ address = "ffff23d4"
 name = "handsome-spaniel"
 width = 16
 signed = false
+note = [
+    """
+The bounded 7mfk channel builder admits uint8(R4) in 0..5 and retains \
+independent higher argument bits. It selects parity-0 base ffff191c or \
+parity-1 base ffff191e, adds signed16 ffff1396+2*i and subtracts signed16 \
+ffff1466+2*i only when ROM8[8d92] bit3 is set. A set aggregate mask bit i \
+bypasses these inputs and both helpers: the unsigned opening word ffff2436 \
+is published to both output words. Otherwise a positive intermediate is \
+multiplied by unsigned ROM8[129c0+i], shifted through the actual 000224f8 \
+fall-through path and its natural RTS/delay slot, then capped at 65535; a \
+nonpositive intermediate gives zero. The complete natural builder publishes \
+that compensated word at ffff23c8+2*i and the helper result at ffff23d4+2*i. \
+The actual affine helper at 0005b7ec returns the maximum of its unsigned \
+input and two independent saturated affine branches, each using \
+uint32(a*x+100*b)>>14. Exact original instructions, every saved/local byte, \
+all GPRs, complete SR/PR/SP/MACH/MACL/GBR, input context, outer ABI, all 64k \
+RAM and all declared ROM inputs are observed. Artificial scalar calibrations \
+are explicit test contexts. No producer physical decomposition, operating \
+cadence, hardware actuation or live validation follows from this numeric \
+contract.""",
+    """
+The bounded 7mfk caller 00021314 copies the unsigned word at ffff23d4+2*i to \
+ffff2348+2*i through its real 140-byte block-copy helper 00022558, with i in \
+0..5 and to = uint16(from). Both vectors have byte offset 24 inside the \
+exact source ffff23bc and destination ffff2330 blocks. The existing \
+registered copy Region observes every source, destination and neighboring \
+RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
+explicit entry contexts; complete scheduler execution, live cadence and \
+hardware atomicity retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -112,6 +142,21 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
 [[link]]
 type = "base"
 to = "amorphous-ape/ram"
@@ -145,6 +190,33 @@ path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[link]]
+type = "input"
+to = "injection_0/ram"
+via = ["injector_channel_pulse_builder/fn", "pulse_affine_floor_transform/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+An uninhibited channel passes the same compensated unsigned16 value through \
+the real affine call before publishing it; inhibited channels copy opening \
+time without executing the helper."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
 type = "lookup"
 to = "over_run_channel_multiplier/tbl"
 layouts = ["7mfk"]
@@ -154,12 +226,22 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "coherent_snapshot/fn"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The bounded 7mfk caller 00021314 copies the unsigned word at ffff23d4+2*i to \
+ffff2348+2*i through its real 140-byte block-copy helper 00022558, with i in \
+0..5 and to = uint16(from). Both vectors have byte offset 24 inside the \
+exact source ffff23bc and destination ffff2330 blocks. The existing \
+registered copy Region observes every source, destination and neighboring \
+RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
+explicit entry contexts; complete scheduler execution, live cadence and \
+hardware atomicity retain separate evidence."""
 
 [[link]]
 type = "reader"
@@ -193,8 +275,13 @@ key = "Bounded injection start-delay publication"
 [[link]]
 type = "writer"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn", "pulse_affine_floor_transform/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The actual caller stores the affine maximum for an uninhibited channel and \
+the unchanged opening word for an inhibited one. Complete natural return and \
+both output writes are executed."""

@@ -46,6 +46,19 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2348"
 name = "berserk-terrier"
+width = 16
+signed = false
+note = [
+    """
+The bounded 7mfk caller 00021314 copies the unsigned word at ffff23d4+2*i to \
+ffff2348+2*i through its real 140-byte block-copy helper 00022558, with i in \
+0..5 and to = uint16(from). Both vectors have byte offset 24 inside the \
+exact source ffff23bc and destination ffff2330 blocks. The existing \
+registered copy Region observes every source, destination and neighboring \
+RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
+explicit entry contexts; complete scheduler execution, live cadence and \
+hardware atomicity retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -68,12 +81,37 @@ at = "7mfk:00054da4"
 value = {named = ["00020dfe", "00054d3e", "ffff2348", "ffff23d4"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
 [[link]]
 type = "input"
 to = "handsome-spaniel/ram"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The bounded 7mfk caller 00021314 copies the unsigned word at ffff23d4+2*i to \
+ffff2348+2*i through its real 140-byte block-copy helper 00022558, with i in \
+0..5 and to = uint16(from). Both vectors have byte offset 24 inside the \
+exact source ffff23bc and destination ffff2330 blocks. The existing \
+registered copy Region observes every source, destination and neighboring \
+RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
+explicit entry contexts; complete scheduler execution, live cadence and \
+hardware atomicity retain separate evidence."""
 
 [[link]]
 type = "reader"
@@ -88,8 +126,18 @@ role = "indexed_by"
 [[link]]
 type = "writer"
 to = "coherent_snapshot/fn"
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The bounded 7mfk caller 00021314 copies the unsigned word at ffff23d4+2*i to \
+ffff2348+2*i through its real 140-byte block-copy helper 00022558, with i in \
+0..5 and to = uint16(from). Both vectors have byte offset 24 inside the \
+exact source ffff23bc and destination ffff2330 blocks. The existing \
+registered copy Region observes every source, destination and neighboring \
+RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
+explicit entry contexts; complete scheduler execution, live cadence and \
+hardware atomicity retain separate evidence."""

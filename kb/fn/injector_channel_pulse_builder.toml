@@ -110,6 +110,27 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0004eba2"
+note = [
+    """
+The bounded 7mfk channel builder admits uint8(R4) in 0..5 and retains \
+independent higher argument bits. It selects parity-0 base ffff191c or \
+parity-1 base ffff191e, adds signed16 ffff1396+2*i and subtracts signed16 \
+ffff1466+2*i only when ROM8[8d92] bit3 is set. A set aggregate mask bit i \
+bypasses these inputs and both helpers: the unsigned opening word ffff2436 \
+is published to both output words. Otherwise a positive intermediate is \
+multiplied by unsigned ROM8[129c0+i], shifted through the actual 000224f8 \
+fall-through path and its natural RTS/delay slot, then capped at 65535; a \
+nonpositive intermediate gives zero. The complete natural builder publishes \
+that compensated word at ffff23c8+2*i and the helper result at ffff23d4+2*i. \
+The actual affine helper at 0005b7ec returns the maximum of its unsigned \
+input and two independent saturated affine branches, each using \
+uint32(a*x+100*b)>>14. Exact original instructions, every saved/local byte, \
+all GPRs, complete SR/PR/SP/MACH/MACL/GBR, input context, outer ABI, all 64k \
+RAM and all declared ROM inputs are observed. Artificial scalar calibrations \
+are explicit test contexts. No producer physical decomposition, operating \
+cadence, hardware actuation or live validation follows from this numeric \
+contract.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -192,3 +213,18 @@ supports = "identity"
 at = "7mfk:0004ec9e"
 value = {named = ["00008d92", "000129c0", "0004eba2", "ffff1396", "ffff1466", "ffff191c", "ffff191e", "ffff22e0", "ffff23c8", "ffff23d4", "ffff2436"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"

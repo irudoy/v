@@ -209,12 +209,33 @@ note = "Multiple homologous fuel-control functions use this mask"
 layout = "7mfk"
 address = "ffff22e0"
 former = ["dandelion-dolphin/ram/7mfk-ffff22e0"]
+note = [
+    """
+The bounded channel reader tests bit i after uint8(R4)=i in0..5; higher mask \
+bits do not select any admitted channel. The complete bounded reader \
+contract supplies test and specification evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:000219dc"
 value = "0004ed88"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
 
 [[symbol]]
 layout = "jk00c"
@@ -284,12 +305,16 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The bounded channel reader tests bit i after uint8(R4)=i in0..5; higher mask \
+bits do not select any admitted channel."""
 
 [[link]]
 type = "reader"
@@ -315,6 +340,33 @@ to = "merge_six_channel_masks/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For i=uint8(R4) in0..5, bit i set selects ffff2436 for both words and \
+bypasses parity bases, corrections, multiplier and affine helper; clear \
+selects the complete compensated and transformed calculations."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
 type = "writer"

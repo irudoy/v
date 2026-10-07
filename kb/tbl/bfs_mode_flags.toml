@@ -24,6 +24,13 @@ layout = "7mfk"
 address = "00008d92"
 level = "code"
 images = ["JK08A"]
+note = [
+    """
+The bounded channel reader at0004ec48 uses bit3 for signed correction \
+subtraction. Existing BFS consumers and the other bits retain their \
+independent roles. The complete bounded reader contract supplies test and \
+specification evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -45,6 +52,21 @@ kind = "test"
 path = "tools/kb/tests/test_airflow_bfs_rate.py"
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
 type = "reader"
@@ -77,3 +99,57 @@ kind = "test"
 path = "tools/kb/tests/test_airflow_bfs_rate.py"
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bounded channel reader at0004ec48 uses bit3 for signed correction \
+subtraction. Existing BFS consumers and the other bits retain their \
+independent roles."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "selector"
+to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only in the uninhibited branch, bit3 set subtracts signed16 ffff1466+2*i; \
+clear omits that correction. Channel parity and aggregate inhibition are \
+independent."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"

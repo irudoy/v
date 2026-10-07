@@ -1424,3 +1424,48 @@ RAM-word binding default. The GNU image, tools, runner and timeouts are the
 standard gate. Storage width is eight bits; the physical flag meaning,
 following mode/delta selection, count/remainder composition, real dispatcher
 invocation, whole-function return, MMIO and hardware retain separate evidence.
+
+## Bounded channel pulse calculation and word snapshot
+
+The mandatory `jk08a-channel-pulse` Region reconstructs 184 instructions,
+423 bound bytes and 14132 literal cases with `EARLY_ONLY=0`. The complete
+natural builder enters at 0004eba2, executes its second span at 0004ec24,
+calls the real arithmetic-shift path 000224f8 and affine helper 0005b7ec,
+and returns through its own RTS and delay slot at 0004eca8. The admitted
+argument is uint8(R4)=i in 0..5; independent higher argument bits are retained.
+
+A set aggregate inhibit bit i selects the unsigned opening word ffff2436
+for both channel vectors and bypasses both helpers. Otherwise parity selects
+ffff191c or ffff191e, adds signed16 ffff1396+2*i and conditionally subtracts
+signed16 ffff1466+2*i under ROM8[8d92].bit3. A positive intermediate multiplies
+unsigned ROM8[129c0+i] and shifts seven bits; nonpositive values become zero.
+The compensated result is capped at 65535 and stored at ffff23c8+2*i.
+The affine result at ffff23d4+2*i is the maximum of that input and two
+independently saturated branches, each floor(uint32(a*x+100*b)/16384).
+The four unsigned coefficients a,c,b,d occupy 91da,91dc,91de,91e0; exact
+stock words are 3558,4000,109a,0000. All six exact stock multipliers are 0x80.
+The second stock branch equals the input; artificial unsigned calibration
+contexts execute separate branch saturation and low32 sum-wrap outcomes.
+The generalized transformed relation uses `sign = "none"` because a wrap
+does not establish global monotonicity.
+
+The existing mandatory `jk08a-injection-snapshot` caller at 00021314 copies
+the unsigned words ffff23d4+2*i to ffff2348+2*i through the real 140-byte
+helper 00022558. Both vectors start at byte offset 24 of source ffff23bc and
+destination ffff2330. Explicit R11=00022558 and R12=140 entry contexts and
+the complete per-byte RAM checks bind this word relation. The copy does
+not establish full scheduler execution, live cadence or hardware atomicity.
+The formulas occupy fuel_pulse steps 20, 21, 22 and 23; all other fuel and
+injection steps retain their independent contracts.
+
+The numeric harness checks all fifteen GPRs, actual complete SR, natural
+PR/SP, restored MACH/MACL/GBR, the immutable 76-byte entry context, 96 frame bytes,
+the independent C caller ABI, 64k RAM and all 55 bound pool/calibration bytes.
+The aggregate bypass and both real calls include exact saved and local words.
+Only the selected compensated and transformed word writes may change RAM.
+The simulator relocates exactly the three declared long RAM pools to matching
+low16 offsets in 0x01000000 RAM; all instruction bytes remain original.
+The original GNU image, assembler, compiler, simulator and 120-second stock
+timeouts execute the contract. The physical decomposition of the corrections,
+producer acquisition, operating cadence, actuation and hardware validation
+remain separate from this bounded numeric publication.

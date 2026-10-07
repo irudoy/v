@@ -94,7 +94,7 @@ def test_word_alias_bfs_pc_observation_refuses_every_nonempty_binding(bindings):
 
 def test_word_alias_empty_default_preserves_every_original_registered_fixture():
     module=publication.stock_module()
-    regions={row.key:row for row in module.REGIONS if row.key!='jk08a-injection-prologue'}
+    regions={row.key:row for row in module.REGIONS if row.key not in ('jk08a-injection-prologue','jk08a-channel-pulse')}
     assert len(GOLDEN_FIELDS)==len(GOLDEN_FIXTURES)==48 and set(regions)==set(GOLDEN_FIELDS)
     images={rom:module.stock_image(rom) for rom in {row.rom for row in regions.values()}}
     for key,row in regions.items():

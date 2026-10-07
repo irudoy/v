@@ -214,8 +214,12 @@ effect = "scales"
 sign = "positive"
 via = ["injector_channel_pulse_builder/fn"]
 note = """
-Even channels: v = ffff191c + ffff1396[i] - ffff1466[i], zero if negative, \
-times ROM8[0x129C0+i] >> 7; DID 0x1206, ms = raw/100."""
+I = uint8(x); P = I&1; B = (1-P)*RAM16[ffff191c]+P*RAM16[ffff191e]; D = \
+int16(RAM16[ffff1396+2*I]); E = int16(RAM16[ffff1466+2*I]); F = \
+(ROM8[00008d92]>>3)&1; V = max(0,B+D-F*E); M = ROM8[000129c0+I]; A = \
+RAM16[ffff2436]; Z = (RAM8[ffff22e0]>>I)&1; to = \
+Z*A+(1-Z)*min(65535,floor(V*M/128))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "over_run_channel_multiplier/tbl"
@@ -224,28 +228,35 @@ effect = "multiplies"
 sign = "positive"
 via = ["injector_channel_pulse_builder/fn"]
 note = """
-Injection Pulse Channel Multiplier, Q1.7; all six stock cells are 0x80, \
-unity."""
+I = uint8(x); P = I&1; B = (1-P)*RAM16[ffff191c]+P*RAM16[ffff191e]; D = \
+int16(RAM16[ffff1396+2*I]); E = int16(RAM16[ffff1466+2*I]); F = \
+(ROM8[00008d92]>>3)&1; V = max(0,B+D-F*E); M = ROM8[000129c0+I]; A = \
+RAM16[ffff2436]; Z = (RAM8[ffff22e0]>>I)&1; to = \
+Z*A+(1-Z)*min(65535,floor(V*M/128))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "injection_0/ram"
 to = "handsome-spaniel/ram"
 effect = "limits"
-sign = "positive"
+sign = "none"
 via = ["injector_channel_pulse_builder/fn", "pulse_affine_floor_transform/fn"]
 note = """
-Minimum-pulse floor: max(x, sat_u16(floor((13656*x + 425000)/16384))) with \
-the stock coefficients at 0x91DA."""
+X = uint16(from); A = ROM16[000091da]; C = ROM16[000091dc]; B = \
+ROM16[000091de]; D = ROM16[000091e0]; L = \
+min(65535,floor(uint32(A*X+100*B)/16384)); U = \
+min(65535,floor(uint32(C*X+100*D)/16384)); I = uint8(x); Z = \
+(RAM8[ffff22e0]>>I)&1; to = Z*X+(1-Z)*max(max(X,L),U)"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "handsome-spaniel/ram"
 to = "berserk-terrier/ram"
 effect = "copies"
 sign = "positive"
-via = ["coherent_snapshot/fn"]
-note = """
-The periodic 140-byte copy ffff23bc -> ffff2330 snapshots the transformed \
-words."""
+via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
+note = "to = uint16(from)"
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "berserk-terrier/ram"

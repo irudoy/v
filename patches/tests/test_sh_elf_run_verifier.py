@@ -763,6 +763,7 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-channel-pulse': {'REGION_ENTRY': 322466, 'INHIBIT': 4294910688, 'COMPENSATED': 4294910920, 'TRANSFORMED': 4294910932, 'OPENING': 4294911030, 'ADDITIVE': 4294906774, 'SUBTRACTIVE': 4294906982, 'MULTIPLIER': 76224, 'EARLY_ONLY': 0},
             'jk08a-injection-prologue': {'REGION_ENTRY': 177738, 'CONTROL': 4294935788, 'EARLY_ONLY': 0, 'WORD_ALIAS': 32512},
             'jk08a-injection-count': {'REGION_ENTRY': 177870, 'COUNT': 4294906808, 'PERIOD': 4294910652, 'REMAINDER': 4294908219, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'EARLY_ONLY': 0},
             'jk08a-injection-dispatch': {'REGION_ENTRY': 347404, 'LEAD': 4294910493, 'FLAG': 4294918737, 'EARLY_ONLY': 0},
@@ -1259,6 +1260,25 @@ mov #0x5,r1
                     self.assertIn("i < " + upper + "_ACTIVE_CASE_COUNT", harness)
                     self.assertIn("run_case(i, " + scope + "_cases + i)", harness)
                     self.assertIn("completed != " + upper + "_ACTIVE_CASE_COUNT", harness)
+                    self.assertRegex(harness, r'\+\+completed;')
+                elif key == "jk08a-channel-pulse":
+                    header_name = "channel-pulse-cases.h"
+                    self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    self.assertEqual(re.findall(r'^#define CHANNEL_PULSE_CASE_COUNT (\d+)U$', header, re.MULTILINE), [str(region.cases)])
+                    [body] = re.findall(r'channel_pulse_cases\[\] = \{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in body.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    def array(count):
+                        return r'\{(?:0x[0-9a-f]+U,){' + str(count-1) + r'}0x[0-9a-f]+U\}'
+                    literal_row = r'\{(?:0x[0-9a-f]+U,){24}' + ','.join(array(n) for n in (15,15)) + r'\},'
+                    self.assertTrue(all(re.fullmatch(literal_row, row) for row in rows))
+                    self.assertIn("#define ACTIVE_CASE_COUNT (EARLY_ONLY ? 12U : CHANNEL_PULSE_CASE_COUNT)", harness)
+                    self.assertIn("ARRAY_SIZE(channel_pulse_cases)!=CHANNEL_PULSE_CASE_COUNT", harness)
+                    self.assertIn("i<ACTIVE_CASE_COUNT", harness)
+                    self.assertIn("run_case(i,channel_pulse_cases+i)", harness)
+                    self.assertIn("completed!=ACTIVE_CASE_COUNT", harness)
                     self.assertRegex(harness, r'\+\+completed;')
                 elif key == "jk08a-injection-prologue":
                     header_name = "injection-prologue-cases.h"

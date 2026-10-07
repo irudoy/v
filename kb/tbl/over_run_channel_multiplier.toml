@@ -106,6 +106,12 @@ homologous channel accessor preserves the six exact unity-multiplier bytes"""
 layout = "7mfk"
 address = "000129c0"
 former = ["glittering-skunk/tbl/7mfk-000129c0"]
+note = [
+    """
+Only uninhibited positive intermediate reads unsigned8 cell i, multiplies \
+before the real seven-bit arithmetic shift and caps at65535. The complete \
+bounded reader contract supplies test and specification evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -184,6 +190,21 @@ supports = "scale"
 to = "truthful-nightingale/fn/7mfk"
 relies = "contract"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014d45"
@@ -219,9 +240,13 @@ note = "near-exact homologous accessor preserves the operand and six exact bytes
 [[link]]
 type = "reader"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "accessor"
+note = """
+Only uninhibited positive intermediate reads unsigned8 cell i, multiplies \
+before the real seven-bit arithmetic shift and caps at65535."""

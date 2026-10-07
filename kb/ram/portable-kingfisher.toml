@@ -76,12 +76,19 @@ layout = "7mfk"
 address = "ffff2436"
 name = "portable-kingfisher"
 width = 16
-note = """
+note = [
+    """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \
 its stated legal bank context. Its unsigned16 reader interpretation is \
 explicit on typed reader/input/writer links; this storage-width fact does \
 not change producer signedness, units, physical identity, other readers or \
-layouts."""
+layouts.""",
+    """
+Only an inhibited channel loads this unsigned16 word and publishes it \
+unchanged to both channel vectors; compensation and affine calls are \
+bypassed. The complete bounded reader contract supplies test and \
+specification evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -147,6 +154,21 @@ key = "test_bank_base_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
 type = "input"
@@ -218,12 +240,17 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Only an inhibited channel loads this unsigned16 word and publishes it \
+unchanged to both channel vectors; compensation and affine calls are \
+bypassed."""
 
 [[link]]
 type = "writer"

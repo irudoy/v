@@ -155,6 +155,27 @@ note = "Aligned diagnostic pointer table and channel-array producer agree"
 layout = "7mfk"
 address = "ffff23c8"
 former = ["chocolate-hound/ram/7mfk-ffff23c8"]
+note = [
+    """
+The bounded 7mfk channel builder admits uint8(R4) in 0..5 and retains \
+independent higher argument bits. It selects parity-0 base ffff191c or \
+parity-1 base ffff191e, adds signed16 ffff1396+2*i and subtracts signed16 \
+ffff1466+2*i only when ROM8[8d92] bit3 is set. A set aggregate mask bit i \
+bypasses these inputs and both helpers: the unsigned opening word ffff2436 \
+is published to both output words. Otherwise a positive intermediate is \
+multiplied by unsigned ROM8[129c0+i], shifted through the actual 000224f8 \
+fall-through path and its natural RTS/delay slot, then capped at 65535; a \
+nonpositive intermediate gives zero. The complete natural builder publishes \
+that compensated word at ffff23c8+2*i and the helper result at ffff23d4+2*i. \
+The actual affine helper at 0005b7ec returns the maximum of its unsigned \
+input and two independent saturated affine branches, each using \
+uint32(a*x+100*b)>>14. Exact original instructions, every saved/local byte, \
+all GPRs, complete SR/PR/SP/MACH/MACL/GBR, input context, outer ABI, all 64k \
+RAM and all declared ROM inputs are observed. Artificial scalar calibrations \
+are explicit test contexts. No producer physical decomposition, operating \
+cadence, hardware actuation or live validation follows from this numeric \
+contract.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -197,6 +218,21 @@ supports = "identity"
 to = "pulse_affine_floor_transform/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff2444"
@@ -235,6 +271,169 @@ value = 79
 note = "Aligned diagnostic pointer table and channel-array producer agree"
 
 [[link]]
+type = "input"
+to = "able-cougar/ram"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only uninhibited odd i in 0..5 selects this unsigned16 bank base; even \
+channels select the independent sibling. This relation denotes the value \
+publication, not physical causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "input"
+to = "apricot-raven/ram"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only uninhibited i in 0..5 with ROM8[8d92].bit3 set reads signed16 at \
+base+2*i and subtracts it. A clear bit omits the read. This relation denotes \
+the value publication, not physical causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "input"
+to = "berserk-ocelot/ram"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only uninhibited i in 0..5 reads signed16 at base+2*i and adds it before \
+scaling. Producer physical decomposition is unchanged. This relation denotes \
+the value publication, not physical causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "input"
+to = "enlightened-mastodon/ram"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only uninhibited even i in 0..5 selects this unsigned16 bank base; odd \
+channels select the independent sibling. This relation denotes the value \
+publication, not physical causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "input"
+to = "over_run_channel_multiplier/tbl"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only uninhibited positive intermediate reads unsigned8 cell i, multiplies \
+before the real seven-bit arithmetic shift and caps at65535. This relation \
+denotes the value publication, not physical causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "input"
+to = "portable-kingfisher/ram"
+via = ["injector_channel_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only an inhibited channel loads this unsigned16 word and publishes it \
+unchanged to both channel vectors; compensation and affine calls are \
+bypassed. This relation denotes the value publication, not physical \
+causation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
 type = "lookup"
 to = "over_run_channel_multiplier/tbl"
 layouts = ["7mfk"]
@@ -253,8 +452,12 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+The natural builder writes the selected channel compensated unsigned16 word \
+after the affine call or inhibited bypass; sibling words are preserved."""

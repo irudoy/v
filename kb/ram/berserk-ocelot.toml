@@ -36,6 +36,14 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1396"
 name = "berserk-ocelot"
+width = 16
+signed = true
+note = [
+    """
+The exact bounded channel consumer reads each admitted correction through \
+MOV.W with signed extension; width16 and signed storage apply on7mfk. The \
+producer physical decomposition remains unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -65,15 +73,34 @@ at = "7mfk:0004ec42"
 value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_channel_pulse_chain.py"
+key = "test_channel_pulse_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded channel pulse calculation and word snapshot"
+
 [[link]]
 type = "reader"
 to = "injector_channel_pulse_builder/fn"
+via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Only uninhibited i in 0..5 reads signed16 at base+2*i and adds it before \
+scaling. Producer physical decomposition is unchanged."""
 
 [[link]]
 type = "writer"
