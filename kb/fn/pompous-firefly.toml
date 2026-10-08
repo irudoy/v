@@ -1,3 +1,12 @@
+note = [
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+]
 role = "service"
 block = "library/block"
 contract = """
@@ -58,3 +67,22 @@ key = "test_injection_start_delay_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00021bbc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

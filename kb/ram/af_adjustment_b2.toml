@@ -9,8 +9,16 @@ note = [
 Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code \
 fixes the signed count range; public sources disagree on the scale, so the \
 physical conversion remains unresolved.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 width = 16
 unit = "ratio"
 scale = "x*0.002"
@@ -168,6 +176,25 @@ at = "7mfk:000a1792"
 value = {named = ["00008e7c", "00008e7e", "0001462a", "0001463a", "000229c4", "0003235c", "000a0ee8", "ffff45a2"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ef28"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff4776"
@@ -218,6 +245,35 @@ to = "topaz-chameleon/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete converter consumes the declared independent software value \
+through exact stock instructions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ef28"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"

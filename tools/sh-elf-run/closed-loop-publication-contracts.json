@@ -27,7 +27,8 @@
         "summary": "Bank-1 A/F adjustment integrator state in 000a0ee8, a signed word: each update adds the unsigned up step ffff97a4 (map 0x1462a on selector 2), subtracts the unsigned down step ffff97a0 (map 0x1463a on selector 2), saturates to signed 16 bits, bounds the result to -500..500 with signed compares, and publishes it as exact DID 0x1249.",
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
-          "Structured Nissan diagnostics identify DID 0x1249 as A/F ADJ-B1. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved."
+          "Structured Nissan diagnostics identify DID 0x1249 as A/F ADJ-B1. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
         ],
         "level": "code",
         "width": 16,
@@ -202,7 +203,8 @@
         "summary": "Bank-2 A/F adjustment integrator state in 000a0ee8, a signed word updated like ffff45a0 from the up step ffff97a6 and the down step ffff97a2 of the same maps 0x1462a and 0x1463a, with the same saturation and -500..500 bounds, and published as exact DID 0x124a.",
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
-          "Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved."
+          "Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
         ],
         "level": "code",
         "width": 16,
@@ -4042,7 +4044,8 @@
         "summary": "Current Base Fuel Schedule sample. Its high byte serves as the load-axis input of the 16x16 accessor families 00082c8a and 000befb0 and enters the five-level rotational-irregularity classifier. The full unsigned word is the numerator of calculated-load producer 0008083c: floor((ffff1024<<8)/lookup(0x1491a)). Scheduler 00020dfe copies the previous value to ffff1028 before refreshing ffff1024 from ffff1026.",
         "note": [
           "Exact DID 0x1208 returns producer word ffff1026 as Base Fuel Schedule. One count is 1/2048 ms in the time base of the injection-pulse words, which makes the high byte raw/8 ms; the derivation is recorded at ffff1026. Pulse precursor 0004e974 and common-gain builder 00053698 read this sample.",
-          "Independent 7mfk scheduler-slice execution copies the prior ffff1024 word to ffff1028 before copying the newest ffff1026 word into ffff1024. Both transfers preserve all 16 bits and leave the producer word and neighbors unchanged. Three successive calls preserve literal history through unsigned word boundaries; this proof does not execute the complete scheduler."
+          "Independent 7mfk scheduler-slice execution copies the prior ffff1024 word to ffff1028 before copying the newest ffff1026 word into ffff1024. Both transfers preserve all 16 bits and leave the producer word and neighbors unchanged. Three successive calls preserve literal history through unsigned word boundaries; this proof does not execute the complete scheduler.",
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
         ],
         "level": "code",
         "unit": "ms*2048"

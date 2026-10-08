@@ -7,6 +7,13 @@ note = [
     """
 One of three explicit-axis cores. The cores are byte-identical except for \
 axis element width; downward-search stride is the decisive distinction.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
 role = "kernel"
@@ -46,6 +53,25 @@ kind = "spec"
 supports = "identity"
 key = "clamp"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00026944"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[symbol]]
 layout = "jk00c"
 address = "00027548"
@@ -81,3 +107,33 @@ supports = "homology"
 to = "7mfk:00026944"
 value = "exact-wrapper-bytes-and-reviewed-library-order"
 key = "00026944"
+
+[[link]]
+type = "depends"
+to = "mahogany-dodo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026944"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

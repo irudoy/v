@@ -9,9 +9,17 @@ note = [
 C=0 and failed range gates retain the unadjusted coordinate. The fixed-point \
 divisor role is exact; the physical sensor quantity is unresolved. Result \
 disposition: consumer.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
 role = "table"
+block = "fuel_closed_loop/block"
 access = "explicit"
 unit = "ratio"
 scale = "x/128"
@@ -275,6 +283,25 @@ kind = "arithmetic"
 supports = "scale"
 value = "128/128=1"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ef9a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[symbol]]
 layout = "jk00c"
 address = "00014587"
@@ -334,8 +361,29 @@ supports = "identity"
 type = "reader"
 to = "enlightened-orangutan/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ef9a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"

@@ -10,8 +10,16 @@ note = [
 The source word and destination word occupy matching offsets in the exact \
 snapshot-copy blocks. The matcher tolerance of 30 counts corresponds to 375 \
 RPM.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 unit = "rpm/12.5"
 
 [logparam]
@@ -209,6 +217,25 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003edd8"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff11ca"
@@ -360,6 +387,35 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete converter consumes the declared independent software value \
+through exact stock instructions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003edd8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"

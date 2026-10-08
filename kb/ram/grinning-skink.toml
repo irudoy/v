@@ -5,8 +5,16 @@ coordinate path."""
 note = [
     """
 The fixed-point role is exact. The physical sensor quantity is unresolved.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 unit = "Q1.7 divisor"
 
 [[ledger]]
@@ -94,6 +102,25 @@ at = "7mfk:0003f13c"
 value = {named = ["00012292", "0003ef74", "ffff2f8e"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003efb0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[link]]
 type = "lookup"
 to = "elite-turaco/tbl"
@@ -109,6 +136,35 @@ to = "screeching-panther/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete converter publishes the addressed channel value on its natural \
+call/return path."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003efb0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "writer"

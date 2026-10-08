@@ -1,0 +1,98 @@
+summary = """
+Independent unsigned word admitted strictly between the calibrated lower \
+threshold and 65280."""
+note = [
+    """
+The independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff110a"
+level = "code"
+width = 16
+signed = false
+note = """
+The independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ee6a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Independent unsigned word admitted strictly between the calibrated lower \
+threshold and 65280."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ee6a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "reader"
+to = "screeching-panther/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Independent unsigned word admitted strictly between the calibrated lower \
+threshold and 65280."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ee6a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

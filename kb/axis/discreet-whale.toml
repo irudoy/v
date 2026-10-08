@@ -5,8 +5,16 @@ the two uint16 coordinates returned by FUN 0003ef74 directly to wrapper \
 000264f8. Stored points span 0..1960. Code proves the adjusted-sample \
 coordinate role; the physical sensor quantity and engineering scale are \
 unresolved.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 quantity = "raw"
 unit = "raw"
 scale = "x"
@@ -27,3 +35,22 @@ name = "discreet-whale"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003ee86"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ee84"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

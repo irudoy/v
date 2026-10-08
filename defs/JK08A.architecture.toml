@@ -475,22 +475,54 @@ maps = [
     "0000881a",
     "0000881b",
     "000088f5",
+    "00008978",
     "00008a9d",
     "00008a9e",
     "00008a9f",
     "00008e5a",
     "00008e5b",
+    "00008ea4",
+    "00008f98",
+    "00009384",
+    "00009386",
+    "000095c6",
+    "0000c10e",
+    "0000c18e",
+    "00011b47",
+    "00012292",
     "00012592",
     "000126dc",
     "000129c6",
+    "00013d54",
+    "00013d94",
+    "000148fa",
+    "00015d20",
 ]
 signals = [
+    "ffff1024",
+    "ffff110a",
+    "ffff11bc",
     "ffff130a",
     "ffff1457",
     "ffff1458",
     "ffff15fe",
+    "ffff267c",
+    "ffff267e",
+    "ffff2882",
+    "ffff2884",
+    "ffff29e2",
+    "ffff29e4",
+    "ffff2b4d",
+    "ffff2b54",
+    "ffff2b56",
     "ffff2c21",
+    "ffff2f8e",
+    "ffff322c",
+    "ffff322e",
     "ffff41b5",
+    "ffff4524",
+    "ffff45a0",
+    "ffff45a2",
     "ffff49b0",
     "ffff49f0",
     "ffff9925",
@@ -2684,8 +2716,14 @@ effect = "scales"
 sign = "none"
 via = ["0003ef74", "0003edb4"]
 note = """
-Z1 = max(0, 880 + sat_s16(trunc0(128*(X-880)/C))), X = 2*ffff267c in stock, \
-C from 0x12292 on ffff4524; the sign follows X-880."""
+B = uint8(x); M = (ROM8[0x00008978]>>3)&1; X = \
+M*RAM16[0xffff2882+2*B]+(1-M)*uint16(2*RAM16[0xffff267c+2*B]); H = \
+ROM16[0x00008f98]; D = sat_s16(X-H); C = uint8(from); K = min(1,C); Q = \
+K*sat_s16(trunc0(128*D/max(1,C)))+(1-K)*(65535*min(1,max(0,(D)-(0)+1))-32768); \
+S = RAM16[0xffff110a]; W = RAM16[0xffff4524]; G = \
+min(1,max(0,(S)-(ROM16[0x000095c6])))*min(1,max(0,(65280)-(S)))*(min(1,max(0,(W)-(ROM16[0x00009384])))+min(1,max(0,(ROM16[0x00009386])-(W))))*K; \
+to = uint16((1-G)*X+G*max(0,H+Q))"""
+specs = ["defs/JK08A.closed-loop-conversion.md"]
 
 [[chain.step]]
 from = "ffff322c"
@@ -2694,8 +2732,25 @@ effect = "indexes"
 sign = "none"
 via = ["0003edb4"]
 note = """
-Adjusted coordinate Z1 indexes the common conversion curve over axis \
-0x15D20, points 0..1960."""
+X = uint16(from); T1 = min(1,max(0,(X)-(ROM16[0x00015d22])+1)); T2 = \
+min(1,max(0,(X)-(ROM16[0x00015d24])+1)); T3 = \
+min(1,max(0,(X)-(ROM16[0x00015d26])+1)); T4 = \
+min(1,max(0,(X)-(ROM16[0x00015d28])+1)); T5 = \
+min(1,max(0,(X)-(ROM16[0x00015d2a])+1)); T6 = \
+min(1,max(0,(X)-(ROM16[0x00015d2c])+1)); T7 = \
+min(1,max(0,(X)-(ROM16[0x00015d2e])+1)); T8 = \
+min(1,max(0,(X)-(ROM16[0x00015d30])+1)); T9 = \
+min(1,max(0,(X)-(ROM16[0x00015d32])+1)); T10 = \
+min(1,max(0,(X)-(ROM16[0x00015d34])+1)); T11 = \
+min(1,max(0,(X)-(ROM16[0x00015d36])+1)); T12 = \
+min(1,max(0,(X)-(ROM16[0x00015d38])+1)); T13 = \
+min(1,max(0,(X)-(ROM16[0x00015d3a])+1)); T14 = \
+min(1,max(0,(X)-(ROM16[0x00015d3c])+1)); T15 = \
+min(1,max(0,(X)-(ROM16[0x00015d3e])+1)); I = \
+T1+T2+T3+T4+T5+T6+T7+T8+T9+T10+T11+T12+T13+T14+T15; F = \
+(1-T15)*floor(65536*max(0,X-ROM16[0x00015d20+2*I])/max(1,ROM16[0x00015d20+2*min(15,I+1)]-ROM16[0x00015d20+2*I])); \
+to = I"""
+specs = ["defs/JK08A.closed-loop-conversion.md"]
 
 [[chain.step]]
 from = "000148fa"
@@ -2704,8 +2759,10 @@ effect = "looks-up"
 sign = "positive"
 via = ["0003edb4"]
 note = """
-ffff29e2 = clamp(Y1 + A1 + O1 + P1 - 32768, 0, 65535) with Y1 from this \
-curve, 5000..30000; stock P1 is zero."""
+B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = uint16(from); A = \
+RAM16[0xffff8544+14-2*B]; O = int16(RAM16[0xffff45a0+2*B]); P = \
+int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))"""
+specs = ["defs/JK08A.closed-loop-conversion.md"]
 
 [[chain.step]]
 from = "0000c10e"
@@ -2714,8 +2771,10 @@ effect = "adds"
 sign = "positive"
 via = ["0003edb4"]
 note = """
-Offset-binary 8x8 correction A1, stock 32747..32789, adds to Y1 before the \
-32768 offset."""
+B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
+uint16(from); O = int16(RAM16[0xffff45a0+2*B]); P = \
+int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))"""
+specs = ["defs/JK08A.closed-loop-conversion.md"]
 
 [[chain.step]]
 from = "0001462a"
@@ -2741,7 +2800,11 @@ to = "ffff29e2"
 effect = "adds"
 sign = "positive"
 via = ["0003edb4"]
-note = "Signed A/F adjustment state O1, DID 0x1249, adds to the conversion sum."
+note = """
+B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
+RAM16[0xffff8544+14-2*B]; O = int16(from); P = int16(RAM16[0xffff2b54+2*B]); \
+to = min(65535,max(0,Y+A+O+P-32768))"""
+specs = ["defs/JK08A.closed-loop-conversion.md"]
 
 [[chain.step]]
 from = "ffff29e2"

@@ -1800,3 +1800,20 @@ physical units and cadence remain separate. Hardware readiness is NO.
 The narrow mechanism and boundaries are in
 `defs/JK08A.closed-loop-publication.md`. The three Regions execute independently;
 their combined registration does not establish a jointly invoked feedback cycle.
+
+## Bounded closed-loop input conversion
+
+One mandatory Region binds 823 instructions, 2233 bound bytes and 4338 literal
+cases. `jk08a-closed-loop-conversion` executes the complete `0003edb4` entry,
+the natural `0003ef74` coordinate conditioner and nine real lookup or division
+helpers. Both channels exercise the word-wrapped source selection, both
+signed16 clamps, strict admission/bypass, directional integer interpolation,
+signed adjustment and optional offset, and final unsigned16 saturation.
+The matrix contains 4022 admitted calls and 46 zero-coefficient calls.
+The observer checks all GPRs, full SR, natural PR/SP, MACH/MACL/GBR, outer ABI,
+all 64 KiB RAM, two workspace aliases and neighbors, all bound bytes and the
+complete 160-byte nested frame. Nine 32-bit RAM pools and two declared 16-bit
+RAM pointers relocate after exact byte reconstruction. Producer semantics,
+physical units, engine reachability, permission and cadence remain separate.
+Hardware readiness is NO. The narrow mechanism and arithmetic are in
+`defs/JK08A.closed-loop-conversion.md`.

@@ -1,0 +1,68 @@
+summary = """
+Bit 3 selects the direct unsigned source pair or the word-wrapped doubled \
+pair."""
+note = [
+    """
+The independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008978"
+level = "code"
+storage = "uint8"
+note = """
+The independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ee00"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit 3 selects the direct unsigned source pair or the word-wrapped doubled \
+pair."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ee00"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

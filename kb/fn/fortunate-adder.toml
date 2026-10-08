@@ -1,6 +1,15 @@
 summary = """
 Explicit-axis 1D-16 wrapper over the byte core; geometry is in the entry \
 registry."""
+note = [
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+]
 level = "code"
 role = "wrapper"
 block = "library/block"
@@ -63,6 +72,25 @@ kind = "registry"
 supports = "identity"
 path = "defs/JK08A.interp.csv"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000264a0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[symbol]]
 layout = "jk00c"
 address = "000270a4"
@@ -122,6 +150,25 @@ relies = "level"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000264a0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[link]]
 type = "depends"
 to = "successful-ammonite/fn"
@@ -129,3 +176,33 @@ layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "uptight-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000264a0"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

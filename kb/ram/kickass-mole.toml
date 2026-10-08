@@ -17,8 +17,16 @@ ffff1028 before copying the newest ffff1026 word into ffff1024. Both \
 transfers preserve all 16 bits and leave the producer word and neighbors \
 unchanged. Three successive calls preserve literal history through unsigned \
 word boundaries; this proof does not execute the complete scheduler.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 unit = "ms*2048"
 
 [[ledger]]
@@ -121,6 +129,25 @@ at = "7mfk:00053788"
 value = {named = ["00020dfe", "0004e974", "0005185c", "00053698", "0008083c", "00082c8a", "000befb0", "ffff1024", "ffff1026"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003edcc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[link]]
 type = "copy"
 to = "bfs/ram"
@@ -213,6 +240,35 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "enlightened-orangutan/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete converter consumes the declared independent software value \
+through exact stock instructions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003edcc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"

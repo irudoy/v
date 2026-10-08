@@ -11,6 +11,15 @@ Stock ROM16[00008ea4]=0, so P1/P2 cannot change either output. The vendor \
 AFR Conversion Table name and the downstream two-bank fuel-trim context \
 support a physical hypothesis but do not establish an engineering scale; \
 code confidence is limited to the conversion and correction arithmetic.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence. B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = uint16(from); A = \
+RAM16[0xffff8544+14-2*B]; O = int16(RAM16[0xffff45a0+2*B]); P = \
+int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))""",
 ]
 level = "code"
 role = "accessor"
@@ -289,6 +298,25 @@ supports = "identity"
 to = "screeching-panther/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003edb4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
 [[link]]
 type = "depends"
 to = "brainy-rat/tbl"
@@ -307,11 +335,101 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
+to = "eminent-lynx/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003edb4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "depends"
 to = "evasive-caracara/axis"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "nondescript-seagull/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003edb4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "depends"
+to = "screeching-panther/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003edb4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[link]]
 type = "depends"

@@ -4,8 +4,16 @@ Axis for dual-channel deviation divisor 00012292. FUN 0003ef74 passes \
 high8(uint16[ffff4524]) directly to wrapper 000264a0. Stored points are 0, \
 5, 6, 25..225 in steps of 25, followed by four 255 endpoints. The physical \
 quantity and engineering scale of ffff4524 are unresolved.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
 ]
 level = "code"
+block = "fuel_closed_loop/block"
 quantity = "raw"
 unit = "raw"
 scale = "x"
@@ -26,6 +34,25 @@ name = "evasive-caracara"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003efa6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ef9e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
 
 [[symbol]]
 layout = "jk00c"

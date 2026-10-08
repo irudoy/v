@@ -1218,6 +1218,7 @@ mov #0x5,r1
                 'MODE_ALIAS': 0x7f40, 'FORCE_ALIAS': 0x7f50, 'EARLY_ONLY': 0},
             'jk08a-grid-selection': {'REGION_ENTRY': 0x0005796c, 'EARLY_ONLY': 0},
             'jk08a-grid-learning': {'REGION_ENTRY': 0x00057d1e, 'EARLY_ONLY': 0},
+            'jk08a-closed-loop-conversion': {'REGION_ENTRY': 0x0003edb4, 'EARLY_ONLY': 0},
         })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
@@ -1231,7 +1232,7 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning"):
+                if key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning", "jk08a-closed-loop-conversion"):
                     scope = key.removeprefix("jk08a-")
                     header_name = "stock-jk08a-" + scope + "-cases.h"
                     self.assertEqual(re.findall(
@@ -1239,6 +1240,8 @@ mov #0x5,r1
                         harness, re.MULTILINE), ['#include "' + header_name + '"'])
                     header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
                     macro = scope.replace("-", "_").upper() + "_CASE_COUNT"
+                    if key == 'jk08a-closed-loop-conversion':
+                        macro = 'CONVERSION_CASE_COUNT'
                     self.assertEqual(re.findall(r'^#define ' + macro + r' (\d+)U$',
                         header, re.MULTILINE), [str(region.cases)])
                     [array] = re.findall(r'samples\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
