@@ -16,6 +16,13 @@ rounding and final output saturation are independently checked. The \
 independent software domain and reader interpretation do not establish \
 source producers, physical units, engine reachability, permission or \
 cadence.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
 ]
 level = "code"
 block = "fuel_closed_loop/block"
@@ -195,6 +202,25 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a172a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
 [[symbol]]
 layout = "jk00c"
 address = "ffff4776"
@@ -248,6 +274,35 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The admitted update consumes the exact signed incoming state word; its \
+engineering scale remains separately bounded."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a172a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "reader"
 to = "enlightened-orangutan/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -290,6 +345,25 @@ relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a172a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
 
 [[link]]
 type = "writer"

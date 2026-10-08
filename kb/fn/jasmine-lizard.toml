@@ -1,6 +1,15 @@
 summary = """
 Explicit-axis 1D-8 wrapper over the word core; geometry is in the entry \
 registry."""
+note = [
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
+]
 level = "code"
 role = "wrapper"
 block = "library/block"
@@ -63,6 +72,25 @@ kind = "registry"
 supports = "identity"
 path = "defs/JK08A.interp.csv"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000264cc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
 [[symbol]]
 layout = "jk00c"
 address = "000270d0"
@@ -122,6 +150,25 @@ relies = "level"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000264cc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
 [[link]]
 type = "depends"
 to = "lyrical-pig/fn"
@@ -129,3 +176,33 @@ layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "versatile-junglefowl/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete unsigned lookup executes this real helper under the exact stock \
+boundary."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000264cc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

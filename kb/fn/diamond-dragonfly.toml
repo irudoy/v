@@ -6,7 +6,25 @@ unsigned down step ffff97a0/ffff97a2 (map 0x1463a on selector 2, 0 on \
 selectors 1 and 3, 1 on selector 4), saturates the result to signed 16 bits, \
 bounds it with signed compares to ROM16[0x8e7c]..ROM16[0x8e7e] = -500..500, \
 and writes it back."""
-note = ["The physical scale of the states is not derived."]
+note = [
+    "The physical scale of the states is not derived.",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability. B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = \
+uint16(from); D = RAM16[0xffff97a0+2*B]; G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I)) B = uint8(x); \
+S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D = \
+uint16(from); G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))""",
+]
 level = "code"
 role = "accessor"
 block = "fuel_closed_loop/block"
@@ -78,3 +96,52 @@ supports = "identity"
 at = "7mfk:000a1738"
 value = {named = ["00008e7c", "00008e7e", "0001462a", "0001463a", "000a0ee8", "ffff45a0", "ffff45a2"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a0ee8"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "depends"
+to = "jasmine-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete entry executes this real stock helper with natural calls, tail \
+transfers and returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a0ee8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

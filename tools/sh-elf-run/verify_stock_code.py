@@ -1081,6 +1081,16 @@ REGIONS = (
         ram_word_literals=((0x3ef10, 0xffff8544, 0x7d00, 0x1c), (0x3f002, 0xffff8560, 0x7d40, 0x14)),
         callees=((0x21bbc, 0x21cd6), (0x26270, 0x262a0), (0x264a0, 0x264c2), (0x264f8, 0x2651a), (0x26740, 0x2676e), (0x26848, 0x268a0), (0x26944, 0x26980), (0x26984, 0x269c0), (0x26c78, 0x26d0e), (0x3ef1c, 0x3effe), (0x3f068, 0x3f176)),
     ),
+    Region(
+        key='jk08a-closed-loop-adjustment', rom='JK08A',
+        source='stock_jk08a_closed_loop_adjustment.s', harness='harness-stock-jk08a-closed-loop-adjustment.c',
+        start=0xa0ee8, end=0xa101c,
+        pools=((0x8e78, 0x8), (0x8fa0, 0x4), (0x1462a, 0x22), (0x15d00, 0x22), (0x264f0, 0x8), (0x269c0, 0x4), (0xa101c, 0x10), (0xa1142, 0x16), (0xa11ca, 0x6), (0xa12e6, 0x8), (0xa1378, 0x8), (0xa1408, 0x2), (0xa1518, 0x18), (0xa163e, 0x2), (0xa1706, 0x1e), (0xa1810, 0x2), (0xa1814, 0x4)),
+        ram_literals=(0xa114c, 0xa1150, 0xa1154, 0xa1378, 0xa137c, 0xa1520, 0xa1708, 0xa1720),
+        cases=10286, boundary=False, constants=(('EARLY_ONLY', 0),),
+        ram_word_literals=((0xa101c, 0xffff977c, 0x7e00, 0x7a),),
+        callees=((0x264cc, 0x264ee), (0x26740, 0x2676e), (0x26984, 0x269c0), (0x26c78, 0x26d0e), (0xa102c, 0xa1142), (0xa1158, 0xa11ca), (0xa11d0, 0xa12e6), (0xa12ee, 0xa1376), (0xa1380, 0xa1408), (0xa140a, 0xa1518), (0xa1530, 0xa163e), (0xa1640, 0xa1706), (0xa1724, 0xa17dc)),
+    ),
 )
 
 
@@ -1204,11 +1214,14 @@ def ram_word_aliases(region,image):
         if any(pool<other_pool+2 and other_pool<pool+2
                for other_pool,other_original,other_alias,other_size in checked):
             raise VerificationError(f"{region.key}: RAM word pool bindings overlap or repeat")
-        if any((alias<other_alias+other_size and other_alias<alias+size
-                or original<other_original+other_size and other_original<original+size)
-               and (original,alias,size)!=(other_original,other_alias,other_size)
-               for other_pool,other_original,other_alias,other_size in checked):
-            raise VerificationError(f"{region.key}: RAM word windows overlap or conflict")
+        for other_pool,other_original,other_alias,other_size in checked:
+            overlap = (alias<other_alias+other_size and other_alias<alias+size
+                       or original<other_original+other_size and other_original<original+size)
+            identical = (original,alias,size)==(other_original,other_alias,other_size)
+            coherent = (original!=other_original
+                        and alias-original==other_alias-other_original)
+            if overlap and not (identical or coherent):
+                raise VerificationError(f"{region.key}: RAM word windows overlap or conflict")
         if any(pool<address+4 and address<pool+2
                or _word(image,address)==original for address in region.ram_literals):
             raise VerificationError(f"{region.key}: RAM word binding conflicts with a long RAM literal")
@@ -1355,6 +1368,7 @@ REGION_OBSERVERS.update({
     'jk08a-grid-selection': 'invoke-grid-selection.s',
     'jk08a-grid-learning': 'invoke-grid-learning.s',
     'jk08a-closed-loop-conversion': 'invoke-closed-loop-conversion.s',
+    'jk08a-closed-loop-adjustment': 'invoke-closed-loop-adjustment.s',
 })
 
 

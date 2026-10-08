@@ -12,9 +12,17 @@ stop at RAM ffff45a0 and ffff45a2 inside 000a0ee8 because the artifact \
 contains no readers or peripheral binding for them. The direct machine trace \
 of the map result reaches only conditional writes 000a1652 and 000a168c; \
 catalogs offer several incompatible purposes for the shape alone.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
 ]
 level = "candidate"
 role = "table"
+block = "fuel_closed_loop/block"
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -115,6 +123,25 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a1642"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
 [[link]]
 type = "depends"
 to = "astonishing-leech/tbl"
@@ -131,3 +158,22 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a1642"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

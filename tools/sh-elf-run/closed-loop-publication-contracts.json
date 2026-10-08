@@ -28,7 +28,8 @@
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
           "Structured Nissan diagnostics identify DID 0x1249 as A/F ADJ-B1. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "width": 16,
@@ -204,7 +205,8 @@
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
           "Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "width": 16,

@@ -1,0 +1,96 @@
+summary = """
+Decoded bank admission input at workspace offset 0x2c; only its Boolean \
+reader interpretation is established."""
+note = [
+    """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff97a8"
+level = "code"
+width = 8
+signed = false
+note = """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a0f26"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "reader"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Decoded bank admission input at workspace offset 0x2c; only its Boolean \
+reader interpretation is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a0f26"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "writer"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Decoded bank admission input at workspace offset 0x2c; only its Boolean \
+reader interpretation is established."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a0f26"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

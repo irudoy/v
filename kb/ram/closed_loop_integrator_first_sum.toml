@@ -1,0 +1,67 @@
+summary = """
+Shared scratch word containing signed bank state plus the unsigned increment \
+on admitted paths; bypass paths preserve its preceding contents."""
+note = [
+    """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9790"
+level = "code"
+width = 32
+signed = true
+note = """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a16c4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "writer"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Shared scratch word containing signed bank state plus the unsigned increment \
+on admitted paths; bypass paths preserve its preceding contents."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a16c4"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

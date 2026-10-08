@@ -21,9 +21,17 @@ ffff97a4/ffff97a6; ffff97a4 -> 000a16b4 -> extu.w -> add signed16 ffff45a0 \
 -> subtract uint16 ffff97a0 -> saturation to signed16 and subsequent \
 min/max; pseudocode 000a0ee8 shows symmetric channel ffff97a6 + signed16 \
 ffff45a2 - uint16 ffff97a2.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
 ]
 level = "code"
 role = "table"
+block = "fuel_closed_loop/block"
 access = "explicit"
 
 [[ledger]]
@@ -74,6 +82,25 @@ supports = "identity"
 to = "diamond-dragonfly/fn/7mfk"
 relies = "level"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a1402"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
 [[link]]
 type = "depends"
 to = "thick-goshawk/tbl"
@@ -86,5 +113,26 @@ role = "from_map"
 type = "reader"
 to = "diamond-dragonfly/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a1402"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

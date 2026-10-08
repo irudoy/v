@@ -87,8 +87,12 @@ effect = "integrates"
 sign = "positive"
 via = ["diamond-dragonfly/fn"]
 note = """
-On selector 2 each update adds up step ffff97a4 from this map to ffff45a0, \
-bounded to -500..500."""
+B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = uint16(from); D = \
+RAM16[0xffff97a0+2*B]; G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
+specs = ["defs/JK08A.closed-loop-adjustment.md"]
 
 [[step]]
 from = "topaz-chameleon/tbl"
@@ -96,7 +100,13 @@ to = "af_adjustment_b1/ram"
 effect = "integrates"
 sign = "negative"
 via = ["diamond-dragonfly/fn"]
-note = "On selector 2 each update subtracts down step ffff97a0 from this map."
+note = """
+B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D \
+= uint16(from); G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
+specs = ["defs/JK08A.closed-loop-adjustment.md"]
 
 [[step]]
 from = "af_adjustment_b1/ram"

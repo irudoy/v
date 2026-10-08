@@ -1817,3 +1817,27 @@ RAM pointers relocate after exact byte reconstruction. Producer semantics,
 physical units, engine reachability, permission and cadence remain separate.
 Hardware readiness is NO. The narrow mechanism and arithmetic are in
 `defs/JK08A.closed-loop-conversion.md`.
+
+## Bounded closed-loop adjustment
+
+One mandatory Region binds 1231 instructions, 2678 bound bytes and 10286 literal
+cases. `jk08a-closed-loop-adjustment` executes the complete `000a0ee8` entry and
+four real unsigned lookup and division helpers. The two channels exercise all
+four selectors, both-bank admission/bypass, signed saturation, ordered signed
+bounds, byte counters and preserved state. The 512-case admission product
+covers all four permission outcomes without claiming a full Cartesian product
+of every raw input.
+The observer checks all 15 GPRs, full SR/MQT, MACH/MACL/GBR, natural PR/SP, outer
+ABI, all 64 KiB RAM, the 122-byte workspace and neighbors, bound bytes and the
+complete 192-byte nested frame. Eight long RAM pools and one declared 16-bit
+workspace pointer relocate after exact byte reconstruction. Counts describe
+reconstructed instructions; they do not measure dynamic instruction coverage.
+Physical units, source producers, permission, cadence, whole feedback and engine
+reachability require separate evidence. Hardware readiness is NO. The narrow
+mechanism and numerical views are in `defs/JK08A.closed-loop-adjustment.md`.
+
+RAM word windows with different origins may overlap when their address
+translation is identical. Identical windows may share distinct pool bindings.
+Duplicate or overlapping pool words, conflicting translations and different
+extents at the same origin are refused. Stock code, pools, return boundaries,
+register windows and long RAM literal restrictions remain checked.

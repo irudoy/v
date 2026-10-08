@@ -24,7 +24,8 @@
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
           "Structured Nissan diagnostics identify DID 0x1249 as A/F ADJ-B1. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "block": "fuel_closed_loop/block",
@@ -259,7 +260,8 @@
         "note": [
           "The -500..500 bounds limit the candidate factor to -1..1.",
           "Structured Nissan diagnostics identify DID 0x124a as A/F ADJ-B2. The code fixes the signed count range; public sources disagree on the scale, so the physical conversion remains unresolved.",
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "block": "fuel_closed_loop/block",
@@ -2558,7 +2560,8 @@
         "summary": "1D linear interpolation: if (y1 < y0) return y0 - ((y0-y1)*frac >> 16); return y0 + ((y1-y0)*frac >> 16). Branching avoids signed overflow on a descending segment. Registers are y0=R0, y1=R2, frac=R3.",
         "note": [
           "This is a lower-level primitive rather than the bank core. Twelve functions hold pointers to it, so enumerating from it yields 230 sites instead of one; the registry declares wrapper 0x2642C for it.",
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "role": "finisher",
@@ -5737,7 +5740,8 @@
       "props": {
         "summary": "Sub-helper for cores 0x26944 and 0x26984: the second search stage that computes the fractional part.",
         "note": [
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "role": "service",
@@ -8092,7 +8096,8 @@
       "props": {
         "summary": "Word-axis interpolation core: same body as 0x26944, with downward-search stride ADD #-2,R4. Seven wrappers serve 107 tables; sub-helper 0x26C78 computes the fractional part.",
         "note": [
-          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence."
+          "The complete bounded conversion executes both channels with exact bytes and real helpers; both signed16 clamps, admission/bypass, integer lookup rounding and final output saturation are independently checked. The independent software domain and reader interpretation do not establish source producers, physical units, engine reachability, permission or cadence.",
+          "The complete bounded adjustment entry executes both channels and four real helpers with exact stock bytes; all selectors, signed saturation, ordered bounds, byte counters and both-bank admission/bypass have independent register, frame and memory expectations. The independent raw software domain does not establish physical units, source producers, permission, cadence or engine reachability."
         ],
         "level": "code",
         "role": "kernel",
@@ -8257,7 +8262,10 @@
       "via": [
         "diamond-dragonfly/fn"
       ],
-      "note": "On selector 2 each update adds up step ffff97a4 from this map to ffff45a0, bounded to -500..500."
+      "note": "B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = uint16(from); D = RAM16[0xffff97a0+2*B]; G = 1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); I = G*sat_s16(S+U-D); to = min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))",
+      "specs": [
+        "defs/JK08A.closed-loop-adjustment.md"
+      ]
     },
     "6": {
       "from": "topaz-chameleon/tbl",
@@ -8267,7 +8275,10 @@
       "via": [
         "diamond-dragonfly/fn"
       ],
-      "note": "On selector 2 each update subtracts down step ffff97a0 from this map."
+      "note": "B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D = uint16(from); G = 1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); I = G*sat_s16(S+U-D); to = min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))",
+      "specs": [
+        "defs/JK08A.closed-loop-adjustment.md"
+      ]
     },
     "8": {
       "from": "ruddy-reindeer/ram",

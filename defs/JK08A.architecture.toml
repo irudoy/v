@@ -481,8 +481,14 @@ maps = [
     "00008a9f",
     "00008e5a",
     "00008e5b",
+    "00008e78",
+    "00008e7a",
+    "00008e7c",
+    "00008e7e",
     "00008ea4",
     "00008f98",
+    "00008fa0",
+    "00008fa2",
     "00009384",
     "00009386",
     "000095c6",
@@ -495,7 +501,11 @@ maps = [
     "000129c6",
     "00013d54",
     "00013d94",
+    "0001462a",
+    "0001463a",
     "000148fa",
+    "00015d00",
+    "00015d10",
     "00015d20",
 ]
 signals = [
@@ -505,6 +515,8 @@ signals = [
     "ffff130a",
     "ffff1457",
     "ffff1458",
+    "ffff14e8",
+    "ffff14e9",
     "ffff15fe",
     "ffff267c",
     "ffff267e",
@@ -512,19 +524,64 @@ signals = [
     "ffff2884",
     "ffff29e2",
     "ffff29e4",
+    "ffff29f3",
+    "ffff29f4",
+    "ffff2a89",
+    "ffff2a92",
+    "ffff2a94",
     "ffff2b4d",
     "ffff2b54",
     "ffff2b56",
     "ffff2c21",
+    "ffff2f1c",
+    "ffff2f1d",
     "ffff2f8e",
+    "ffff2fd1",
+    "ffff2fd2",
+    "ffff302e",
     "ffff322c",
     "ffff322e",
+    "ffff326a",
+    "ffff32ce",
+    "ffff32cf",
+    "ffff334c",
+    "ffff334d",
+    "ffff3522",
+    "ffff3523",
     "ffff41b5",
+    "ffff424f",
     "ffff4524",
     "ffff45a0",
     "ffff45a2",
+    "ffff48b4",
+    "ffff48b7",
+    "ffff48be",
+    "ffff48c0",
     "ffff49b0",
     "ffff49f0",
+    "ffff9790",
+    "ffff9794",
+    "ffff9798",
+    "ffff979a",
+    "ffff979c",
+    "ffff979e",
+    "ffff97a0",
+    "ffff97a2",
+    "ffff97a4",
+    "ffff97a6",
+    "ffff97a8",
+    "ffff97a9",
+    "ffff97aa",
+    "ffff97ab",
+    "ffff97ac",
+    "ffff97ad",
+    "ffff97ae",
+    "ffff97b5",
+    "ffff97b6",
+    "ffff97c7",
+    "ffff97c8",
+    "ffff97c9",
+    "ffff97ca",
     "ffff9925",
 ]
 
@@ -2783,8 +2840,12 @@ effect = "integrates"
 sign = "positive"
 via = ["000a0ee8"]
 note = """
-On selector 2 each update adds up step ffff97a4 from this map to ffff45a0, \
-bounded to -500..500."""
+B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = uint16(from); D = \
+RAM16[0xffff97a0+2*B]; G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
+specs = ["defs/JK08A.closed-loop-adjustment.md"]
 
 [[chain.step]]
 from = "0001463a"
@@ -2792,7 +2853,13 @@ to = "ffff45a0"
 effect = "integrates"
 sign = "negative"
 via = ["000a0ee8"]
-note = "On selector 2 each update subtracts down step ffff97a0 from this map."
+note = """
+B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D \
+= uint16(from); G = \
+1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
+I = G*sat_s16(S+U-D); to = \
+min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
+specs = ["defs/JK08A.closed-loop-adjustment.md"]
 
 [[chain.step]]
 from = "ffff45a0"

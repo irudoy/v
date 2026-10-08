@@ -1,0 +1,62 @@
+summary = "Unsigned decrement for downward selector 3; the stock word is zero."
+note = [
+    """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008e7a"
+level = "code"
+storage = "uint16"
+note = """
+The bounded software interpretation does not establish physical units, \
+source producers, permission, cadence or engine reachability."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a13fc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "reader"
+to = "diamond-dragonfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned decrement for downward selector 3; the stock word is zero."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a13fc"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
