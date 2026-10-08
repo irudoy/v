@@ -245,11 +245,12 @@ def test_channel_pulse_scalar_mutation_is_rejected(scalar):
 def test_channel_pulse_all_accepted_region_fields_and_fixtures_remain_exact():
     from dataclasses import asdict
     module=publication.stock_module()
-    regions={row.key:row for row in module.REGIONS if row.key!=KEY}
+    regions={row.key:row for row in module.REGIONS if row.key!=KEY and row.key not in ('jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch')}
     assert set(regions)==set(HELD_REGIONS)==set(HELD_FIXTURES) and len(regions)==49
     images={rom:module.stock_image(rom) for rom in {row.rom for row in regions.values()}}
     for key,region in regions.items():
-        assert asdict(region)==HELD_REGIONS[key]
+        assert region.register_word_literals==()
+        assert {field:value for field,value in asdict(region).items() if field!='register_word_literals'}==HELD_REGIONS[key]
         assert hashlib.sha256(module.build_fixture(region,images[region.rom])).hexdigest()==HELD_FIXTURES[key]
 
 @pytest.mark.parametrize('field,value',(('cases',0),('boundary',True),('ram_literals',()),

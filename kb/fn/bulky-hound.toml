@@ -139,6 +139,19 @@ supports = "identity"
 layout = "7mfk"
 address = "00054d3e"
 name = "bulky-hound"
+note = [
+    """
+The complete natural 00054d3e selector admits the low byte ofR4. Either \
+ffff418c.bit1 orffff24a0.bit6 fills six unsigned wordsffff224e+2*i \
+withffff23aa. Mode0 fillsffff238a. Modes1,2,4 cap \
+opening+floor(ROM16[94e8]*100/256), conditionally subtractffff238a \
+fromffff2386 whenffff2388 exceeds that cap, floor at0, and apply the \
+corresponding floorffff238c/238e/2392. Every other mode writes \
+max(snapshotffff2348+2*i,ffff2390). UnderROM8[8d92].bit3 the real 000571c0 \
+tail clears selected correction words and scales or copies the independent \
+secondary vector. No acquisition cadence follows from these consumer \
+contexts.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -282,6 +295,58 @@ supports = "identity"
 to = "abiding-mink/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "abiding-mink/fn"
+via = ["bulky-hound/fn", "abiding-mink/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"
@@ -289,6 +354,38 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "copper-crayfish/fn"
+via = ["bulky-hound/fn", "copper-crayfish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "depends"

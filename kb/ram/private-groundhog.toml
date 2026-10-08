@@ -122,6 +122,13 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1108"
 name = "private-groundhog"
+width = 8
+signed = false
+note = [
+    """
+The exact consumer contract binds unsigned8 storage on7mfk; physical units \
+and upstream acquisition retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -289,6 +296,26 @@ kind = "manual"
 supports = "identity"
 key = "esm-ec439-p2a00-battery-gt-11v"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "input"
 to = "battery_voltage/ram"
@@ -362,10 +389,21 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "fuel_output_override_word/fn"
+via = ["fuel_output_override_word/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The complete natural 7mfk function 00056fc0 reads unsigned battery byte \
+ffff1108 and independent unsigned ROM bytes000084f6 and00008c9e. Its actual \
+seven-SHAR helper floors the signed product (175-B)*Q/128 before adding A \
+and clamping below0. The result atffff2436 is unsigned16; the maximum603 in \
+the complete byte domains makes the upper65535 clamp unreachable. \
+StockQ92/A70 give raw counts12..195. Physical voltage and duration \
+conversion retain their separate evidence."""
 
 [[link]]
 type = "reader"

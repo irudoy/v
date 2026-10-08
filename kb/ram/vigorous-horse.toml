@@ -57,6 +57,11 @@ address = "ffff11e8"
 name = "vigorous-horse"
 width = 16
 signed = false
+note = [
+    """
+The exact consumer contract binds unsigned16 storage on7mfk; physical units \
+and upstream acquisition retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -78,6 +83,26 @@ supports = "identity"
 at = "7mfk:0003b7e4"
 value = {named = ["0003846e", "000384cc", "000384fe", "0003b75c", "ffff11e8"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "reader"

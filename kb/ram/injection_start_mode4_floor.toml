@@ -1,0 +1,71 @@
+summary = """
+Unsigned floor selected only for mode4. Upstream producer and physical \
+meaning are unverified."""
+block = "injector_output/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2392"
+level = "code"
+width = 16
+signed = false
+note = """
+Unsigned floor selected only for mode4. Upstream producer and physical \
+meaning are unverified."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054e3c"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "reader"
+to = "bulky-hound/fn"
+via = ["bulky-hound/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned floor selected only for mode4. Upstream producer and physical \
+meaning are unverified."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

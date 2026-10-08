@@ -35,7 +35,8 @@ def test_the_architecture_gate_reproduces_placements_and_flows(tmp_path, tracked
     projected = tmp_path / 'JK08A.architecture.toml'
     projected.write_text(projection.render(projection.document(tracked)))
     generated = romviz.load(projected)
-    assert [(block.id, block.functions, block.maps, block.signals)
+    assert [(block.id, tuple(sorted(block.functions)), tuple(sorted(block.maps)),
+             tuple(sorted(block.signals)))
             for block in generated.blocks] == [
                 (block.id, tuple(sorted(block.functions)), tuple(sorted(block.maps)),
                  tuple(sorted(block.signals))) for block in current.blocks]

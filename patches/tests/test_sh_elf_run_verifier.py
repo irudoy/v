@@ -746,14 +746,20 @@ mov #0x5,r1
                     allowed.update(range(address, address + 2))
                     self.assertEqual(int.from_bytes(image[address:address + 2], "big") | 0xffff0000, original)
                     self.assertEqual(fixture[address:address + 2], alias.to_bytes(2, "big"))
+                for address, original, alias, size in region.register_word_literals:
+                    allowed.update(range(address, address + 2))
+                    self.assertEqual(int.from_bytes(image[address:address + 2], "big") | 0xffff0000, original)
+                    self.assertEqual(fixture[address:address + 2], alias.to_bytes(2, "big"))
                 self.assertLessEqual(changed, allowed)
                 for start, end in region.code_spans:
                     self.assertEqual(fixture[start:end], image[start:end])
-                self.assertEqual(
-                    fixture[region.end:region.end + len(STOCK_VERIFIER.return_stub(region))],
-                    STOCK_VERIFIER.return_stub(region) if region.boundary
-                    else image[region.end:region.end + len(STOCK_VERIFIER.return_stub(region))],
-                )
+                tail = range(region.end, region.end + len(STOCK_VERIFIER.return_stub(region)))
+                if region.boundary:
+                    self.assertEqual(fixture[tail.start:tail.stop], STOCK_VERIFIER.return_stub(region))
+                else:
+                    for address in tail:
+                        if address not in allowed:
+                            self.assertEqual(fixture[address], image[address])
 
     def test_stock_harness_takes_the_symbols_of_the_entity_files(self):
         regions = {region.key: region for region in STOCK_VERIFIER.REGIONS}
@@ -763,6 +769,16 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-opening-word': {'REGION_ENTRY': 356288, 'BATTERY': 4294906120, 'OPENING': 4294911030, 'EARLY_ONLY': 0},
+            'jk08a-pulse-selector': {'REGION_ENTRY': 347454, 'OUTPUT': 4294910542, 'SNAPSHOT': 4294910792, 'EARLY_ONLY': 0},
+            'jk08a-full-programmer': {'REGION_ENTRY': 177738, 'CONTROL': 4294935788, 'COUNT': 4294906808, 'REMAINDER': 4294908219, 'MODE': 4294911177, 'POSITION': 4294906802, 'PERIOD': 4294910652, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'COUNTER_REGISTER': 4294964288, 'COMPARE_REGISTER': 4294964292, 'STATUS_REGISTER': 4294964318, 'CONTROL_REGISTER': 4294964322, 'EARLY_ONLY': 0, 'WORD_ALIAS': 32512, 'REGISTER_ALIAS': 32256},
+            'jk08a-oneshot': {'REGION_ENTRY': 180540, 'COUNTER_REGISTER': 4294964800, 'START_REGISTER': 4294964838, 'OPENING': 4294910890, 'INHIBIT': 4294910688, 'HISTORY': 4294908213, 'ENABLE': 4294918532, 'DIAGNOSTIC': 4294918737, 'EARLY_ONLY': 0, 'REGISTER_ALIAS': 32000},
+            'jk08a-rpm-phase-word': {'REGION_ENTRY': 230662, 'INPUT_WORD': 4294906262, 'WORK_WORD': 4294906344, 'WORK_BYTE': 4294906347, 'SNAPSHOT_BYTE': 4294906291, 'EARLY_ONLY': 0, 'VIEW_KIND': 0},
+            'jk08a-rpm-phase-byte': {'REGION_ENTRY': 230604, 'INPUT_WORD': 4294906262, 'WORK_WORD': 4294906344, 'WORK_BYTE': 4294906347, 'SNAPSHOT_BYTE': 4294906291, 'EARLY_ONLY': 0, 'VIEW_KIND': 1},
+            'jk08a-rpm-phase-copy': {'REGION_ENTRY': 135008, 'INPUT_WORD': 4294906262, 'WORK_WORD': 4294906344, 'WORK_BYTE': 4294906347, 'SNAPSHOT_BYTE': 4294906291, 'EARLY_ONLY': 0, 'VIEW_KIND': 2},
+            'jk08a-event-isr': {'REGION_ENTRY': 179776, 'TIMER_REGISTER': 4294964288, 'STATUS_REGISTER': 4294964318, 'CONTROL_REGISTER': 4294964322, 'COUNTER_REGISTER': 4294964800, 'START_REGISTER': 4294964838, 'EARLY_ONLY': 0, 'TIMER_ALIAS': 32256, 'PULSE_ALIAS': 32000, 'CONTROL_ALIAS': 32512, 'EVENT_ALIAS': 31744},
+            'jk08a-end-angle': {'REGION_ENTRY': 355280, 'EARLY_ONLY': 0},
+            'jk08a-full-dispatch': {'REGION_ENTRY': 346692, 'TIMER_REGISTER': 4294964288, 'STATUS_REGISTER': 4294964318, 'CONTROL_REGISTER': 4294964322, 'COUNTER_REGISTER': 4294964800, 'START_REGISTER': 4294964838, 'EARLY_ONLY': 0, 'TIMER_ALIAS': 32256, 'PULSE_ALIAS': 32000, 'CONTROL_ALIAS': 32512, 'EVENT_ALIAS': 31488},
             'jk08a-channel-pulse': {'REGION_ENTRY': 322466, 'INHIBIT': 4294910688, 'COMPENSATED': 4294910920, 'TRANSFORMED': 4294910932, 'OPENING': 4294911030, 'ADDITIVE': 4294906774, 'SUBTRACTIVE': 4294906982, 'MULTIPLIER': 76224, 'EARLY_ONLY': 0},
             'jk08a-injection-prologue': {'REGION_ENTRY': 177738, 'CONTROL': 4294935788, 'EARLY_ONLY': 0, 'WORD_ALIAS': 32512},
             'jk08a-injection-count': {'REGION_ENTRY': 177870, 'COUNT': 4294906808, 'PERIOD': 4294910652, 'REMAINDER': 4294908219, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'EARLY_ONLY': 0},
@@ -1280,6 +1296,9 @@ mov #0x5,r1
                     self.assertIn("run_case(i,channel_pulse_cases+i)", harness)
                     self.assertIn("completed!=ACTIVE_CASE_COUNT", harness)
                     self.assertRegex(harness, r'\+\+completed;')
+                elif key in ('jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch'):
+                    from tools.kb.tests import test_connected_injection_chain as connected
+                    connected.harness_contract(region,harness,STOCK_VERIFIER.TOOL_DIR)
                 elif key == "jk08a-injection-prologue":
                     header_name = "injection-prologue-cases.h"
                     self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',

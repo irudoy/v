@@ -1,0 +1,71 @@
+summary = """
+Raw countdown tested and reloaded fromROM876f; decrement cadence is \
+unverified."""
+block = "injector_output/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff24df"
+level = "code"
+width = 8
+signed = false
+note = """
+Raw countdown tested and reloaded fromROM876f; decrement cadence is \
+unverified."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00056c54"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "writer"
+to = "enthusiastic-salmon/fn"
+via = ["enthusiastic-salmon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw countdown tested and reloaded fromROM876f; decrement cadence is \
+unverified."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

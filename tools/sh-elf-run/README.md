@@ -112,7 +112,9 @@ The gate performs these checks:
    a knock margin wrapper that reads its operands before the stock call, or
    that relies on a register across it, fails the case. The telemetry fixture
    also installs a simulator-only TRAPA vector after byte identity is proven.
-   TRAPA creates the architectural exception stack. The canonical combined
+   The pinned GNU simulator's TRAPA/RTE uses SPC/SSR and leaves SP unchanged; it does not
+   establish the SH-2E PC/SR exception stack. Equivalent exception-stack
+   coverage is required before hardware eligibility. The canonical combined
    SLE1 ISR returns through its unchanged `RTE` instruction. Each 8MFK wrapper
    restores all interrupted registers, including `r0` in the `JMP` delay slot,
    and tail-chains to an explicit simulator-only `RTE` stub for the unchanged
@@ -1469,3 +1471,72 @@ The original GNU image, assembler, compiler, simulator and 120-second stock
 timeouts execute the contract. The physical decomposition of the corrections,
 producer acquisition, operating cadence, actuation and hardware validation
 remain separate from this bounded numeric publication.
+
+## Connected injection calculation and raw scheduling
+
+Ten mandatory Regions bind 3021 instructions, 7319 bound bytes
+and 194860 literal cases with EARLY_ONLY=0. Each function or bounded view
+has independently reconstructed instruction bytes. The registered contracts
+execute the complete opening-word publisher, pulse selector, delayed-start
+programmer, one-shot, end-angle publisher, injector-event ISR and dispatcher.
+Three RPM views cover word scaling, capped byte scaling and the real copy;
+they do not establish whole RPM-producer execution or sample simultaneity.
+
+The opening word uses unsigned battery B and ROM bytes Q/A:
+min(65535,max(0,floor((175-B)*Q/128)+A)). The real seven-SHAR helper floors
+negative products. The full byte domains have a maximum of 603, making the
+upper clamp unreachable. Raw duration and voltage units remain unverified.
+
+The selector distinguishes override, stopped, start modes 1/2/4 and running.
+Start modes compare the threshold with capped opening plus ROM margin,
+conditionally subtract the stopped word, then apply the selected floor.
+Running takes the maximum of each snapshot word and the running floor.
+Its real secondary tail clears pending corrections and scales or copies
+secondary words under the independent aggregate mask and ROM control bit.
+
+The one-shot requires explicit invocation and an enabled output byte. Any
+intersection of the whole mask with inhibition or history selects opening
+for every selected channel. A set start bit subtracts opening with floor0.
+The capped increment is floor(800*d/256), or 1000 in diagnostic mode; addition
+to the raw counter wraps modulo65536. Its chain sign is none. DSTR ORs only
+bits0..5 under I15 and restores the incoming interrupt mask. Synthetic raw
+register storage does not verify peripheral timing or physical actuation.
+
+Normal end-angle equations read the state after the prefix, latch, countdown
+and bias updates. They select the conditional curve, fixed override, or base
+curve plus bias, then cap at209 and double. The unsigned eight-cell implicit
+lookup uses step32 and last-cell clamp224. It adds or subtracts the floor of
+the positive interpolation distance. Alternate and inhibited entries retain
+separately executed outcomes. Synthetic curves and scalars expose branches
+that stock calibration suppresses; their physical reachability is unverified.
+
+The base path of publisher 00056bd0 executes wrapper 00026370 and linear
+finisher 00026740, adds the updated unsigned byte ffff340c to the base curve
+result, applies the 209-count cap, and stores the doubled word at ffff192e.
+
+Pending-mask equations read staged state after optional trigger setup and
+before lead/cursor updates. Equal lead accepts only a matching next cursor,
+negative lead clears pending, and positive lead executes the actual catch-up
+loop and both consumers before publishing the final slot mask. The programmer
+receives 4*unsigned8[ffff2333] or52 and wraps it to uint8. Nonzero normalized
+count retains offset. Zero count uses the exact wrapped remainder and the
+low32 reciprocal product. Compare selection uses delta+2>q, including timer
+wrap; raw status/control updates have independently checked word boundaries.
+The ISR equations require an explicit invocation; hardware compare delivery
+is not inferred from separate compare and raw-publication observations.
+
+Every admitted path observes all15 GPRs, complete SR/PR/SP/MACH/MACL/GBR,
+the immutable76-byte input, the C caller ABI, declared saved/local bytes,
+64k RAM, all bound ROM inputs and declared alias neighbors. The combined
+dispatcher and ISR compare all192 frame bytes. The pinned GNU simulator's TRAPA/RTE uses SPC/SSR
+and leaves SP unchanged. It does not establish the SH-2E exception stack;
+equivalent exception-stack coverage is required before hardware eligibility.
+Only declared RAM and register pointer pools are relocated. Exact instruction
+bytes, the original GNU image and standard timeouts remain under the gate.
+
+The arithmetic covers fuel_pulse18/24/25/26 and
+injection_phase1..8/17/18/20..22. Indexed one-shot context x[0] is the incoming
+aggregate mask and x[1] is channel0..5. The raw counter's previous value is
+prev. This specification fixes the meaning of lookup and staged-state
+boundaries; physical units, acquisition cadence and hardware validation
+require their separate evidence.

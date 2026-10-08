@@ -85,6 +85,8 @@ class Region:
     # Explicit (pool, high-RAM address, positive word alias, byte extent).
     # MOV.W sign-extension requires a separate low-memory alias domain.
     ram_word_literals: tuple[tuple[int, int, int, int], ...] = ()
+    # Explicit pool, I/O address, positive alias, and declared register extent.
+    register_word_literals: tuple[tuple[int, int, int, int], ...] = ()
 
     @property
     def code_spans(self):
@@ -102,6 +104,16 @@ FUEL_CUT_BITS = (
 )
 
 REGIONS = (
+    Region(key='jk08a-opening-word', rom='JK08A', source='stock_jk08a_opening_word.s', harness='harness-stock-jk08a-opening-word.c', start=356288, end=356364, pools=((34038, 1), (35998, 1), (356364, 20)), ram_literals=(356364, 356380), cases=12556, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('BATTERY', 'private-groundhog/ram'), ('OPENING', 'portable-kingfisher/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=((140536, 140552),), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-pulse-selector', rom='JK08A', source='stock_jk08a_pulse_selector.s', harness='harness-stock-jk08a-pulse-selector.c', start=347454, end=347582, pools=((34295, 1), (36242, 1), (38120, 2), (139676, 32), (139736, 8), (347596, 2), (347784, 2), (347788, 4), (347796, 4), (347812, 20), (357020, 6), (357204, 28)), ram_literals=(347788, 347812, 347816, 347820, 357204, 357208, 357216, 357220, 357228), cases=7302, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('OUTPUT', 'portable-gecko/ram'), ('SNAPSHOT', 'berserk-terrier/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=((347600, 347784), (356800, 356986), (139708, 139734), (139744, 139768)), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-full-programmer', rom='JK08A', source='stock_jk08a_full_programmer.s', harness='harness-stock-jk08a-full-programmer.c', start=177738, end=178006, pools=((167582, 4), (167968, 4), (178010, 14), (178276, 20)), ram_literals=(167968, 178276, 178280, 178292), cases=18696, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('CONTROL', 'provocative-anteater/ram'), ('COUNT', 'huge-lori/ram'), ('REMAINDER', 'economic-collie/ram'), ('MODE', 'apc_mode/ram'), ('POSITION', 'tunneling-doberman/ram'), ('PERIOD', 'spry-koel/ram'), ('OUTPUT', 'amphibian-panda/ram'), ('SCRATCH', 'injection_offset_reciprocal_residue/ram'), ('COUNTER_REGISTER', 'pompous-impala/reg'), ('COMPARE_REGISTER', 'injection_scheduler_compare_word/reg'), ('STATUS_REGISTER', 'injection_scheduler_status_word/reg'), ('CONTROL_REGISTER', 'injection_scheduler_control_word/reg')), bits=(), constants=(('EARLY_ONLY', 0), ('WORD_ALIAS', 32512), ('REGISTER_ALIAS', 32256)), callees=((167368, 167582),), ram_word_literals=((178012, 4294935788, 32512, 1),), register_word_literals=((178020, 4294964288, 32256, 36),)),
+    Region(key='jk08a-oneshot', rom='JK08A', source='stock_jk08a_oneshot.s', harness='harness-stock-jk08a-oneshot.c', start=180540, end=180788, pools=((180788, 2), (180792, 28)), ram_literals=(180800, 180804, 180808, 180812, 180816), cases=8012, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('COUNTER_REGISTER', 'glossy-tarantula/reg'), ('START_REGISTER', 'imported-panther/reg'), ('OPENING', 'flashy-jerboa/ram'), ('INHIBIT', 'fuel_inhibit_mask/ram'), ('HISTORY', 'quantum-tiger/ram'), ('ENABLE', 'futuristic-chinchilla/ram'), ('DIAGNOSTIC', 'shaggy-nyala/ram')), bits=(), constants=(('EARLY_ONLY', 0), ('REGISTER_ALIAS', 32000)), callees=(), ram_word_literals=(), register_word_literals=((180788, 4294964800, 32000, 40),)),
+    Region(key='jk08a-rpm-phase-word', rom='JK08A', source='stock_jk08a_rpm_phase_word.s', harness='harness-stock-jk08a-rpm-phase.c', start=230662, end=230686, pools=((34627, 1), (230824, 4), (230836, 8)), ram_literals=(230824, 230836), cases=65536, boundary=True, return_address_offset=None, return_register=11, base_load=None, symbols=(('INPUT_WORD', 'classic-caracal/ram'), ('WORK_WORD', 'vigorous-horse/ram'), ('WORK_BYTE', 'liberal-falcon/ram'), ('SNAPSHOT_BYTE', 'daffodil-gibbon/ram')), bits=(), constants=(('EARLY_ONLY', 0), ('VIEW_KIND', 0)), callees=(), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-rpm-phase-byte', rom='JK08A', source='stock_jk08a_rpm_phase_byte.s', harness='harness-stock-jk08a-rpm-phase.c', start=230604, end=230630, pools=((230824, 4),), ram_literals=(230824,), cases=65536, boundary=False, return_address_offset=None, return_register=11, base_load=None, symbols=(('INPUT_WORD', 'classic-caracal/ram'), ('WORK_WORD', 'vigorous-horse/ram'), ('WORK_BYTE', 'liberal-falcon/ram'), ('SNAPSHOT_BYTE', 'daffodil-gibbon/ram')), bits=(), constants=(('EARLY_ONLY', 0), ('VIEW_KIND', 1)), callees=(), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-rpm-phase-copy', rom='JK08A', source='stock_jk08a_rpm_phase_copy.s', harness='harness-stock-jk08a-rpm-phase.c', start=135008, end=135024, pools=((135508, 12), (139536, 4), (139664, 4)), ram_literals=(135508, 135512, 135516), cases=2048, boundary=True, return_address_offset=24, return_register=11, base_load=None, symbols=(('INPUT_WORD', 'classic-caracal/ram'), ('WORK_WORD', 'vigorous-horse/ram'), ('WORK_BYTE', 'liberal-falcon/ram'), ('SNAPSHOT_BYTE', 'daffodil-gibbon/ram')), bits=(), constants=(('EARLY_ONLY', 0), ('VIEW_KIND', 2)), callees=((139512, 139524), (139550, 139608)), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-event-isr', rom='JK08A', source='stock_jk08a_event_isr.s', harness='harness-stock-jk08a-event-isr.c', start=179776, end=180090, pools=((34295, 1), (36242, 1), (38120, 2), (139676, 32), (139736, 8), (180090, 34), (180412, 20), (180788, 2), (180792, 28), (347596, 2), (347784, 2), (347788, 4), (347796, 4), (347812, 20), (357020, 6), (357204, 28)), ram_literals=(180412, 180420, 180424, 180800, 180804, 180808, 180812, 180816, 347788, 347812, 347816, 347820, 357204, 357208, 357216, 357220, 357228), cases=7254, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('TIMER_REGISTER', 'pompous-impala/reg'), ('STATUS_REGISTER', 'injection_scheduler_status_word/reg'), ('CONTROL_REGISTER', 'injection_scheduler_control_word/reg'), ('COUNTER_REGISTER', 'glossy-tarantula/reg'), ('START_REGISTER', 'imported-panther/reg')), bits=(), constants=(('EARLY_ONLY', 0), ('TIMER_ALIAS', 32256), ('PULSE_ALIAS', 32000), ('CONTROL_ALIAS', 32512), ('EVENT_ALIAS', 31744)), callees=((347454, 347582), (347600, 347784), (356800, 356986), (139708, 139734), (139744, 139768), (180540, 180788)), ram_word_literals=((180092, 4294935788, 32512, 1), (180096, 4294935828, 31744, 1)), register_word_literals=((180090, 4294964288, 32256, 36), (180788, 4294964800, 32000, 40))),
+    Region(key='jk08a-end-angle', rom='JK08A', source='stock_jk08a_end_angle.s', harness='harness-stock-jk08a-end-angle.c', start=355280, end=355608, pools=((34553, 1), (34571, 1), (34601, 1), (34670, 1), (34671, 1), (34672, 1), (35003, 1), (35636, 1), (35650, 1), (35803, 1), (36076, 1), (36140, 1), (36355, 1), (36358, 1), (36918, 2), (36920, 2), (37114, 2), (38148, 2), (72627, 8), (74038, 8), (74498, 8), (74506, 8), (76818, 9), (138696, 4), (138700, 4), (154520, 4), (156546, 2), (156548, 4), (156824, 4), (156828, 4), (158080, 4), (158396, 4), (355608, 2), (355770, 2), (355772, 2), (355774, 2), (355776, 4), (355780, 4), (355784, 4), (355788, 4), (355792, 4), (355796, 4), (355800, 4), (355804, 4), (355808, 4), (355812, 4), (355816, 4), (355820, 4), (355824, 4), (355828, 4), (355832, 4), (355836, 4), (355840, 4), (355844, 4), (355848, 4), (355852, 4), (355856, 4), (355860, 4), (355864, 4), (355868, 4), (355872, 4), (356202, 2), (356204, 2), (356206, 2), (356208, 2), (356210, 2), (356212, 4), (356216, 4), (356220, 4), (356224, 4), (356228, 4), (356232, 4), (356236, 4), (356240, 4), (356244, 4), (356248, 4), (356252, 4), (356256, 4), (356260, 4), (356264, 4), (356268, 4), (356272, 4), (356276, 4), (356280, 4), (356284, 4)), ram_literals=(138696, 154520, 355776, 355792, 355796, 355804, 355812, 355820, 355848, 356212, 356216, 356228, 356236, 356248, 356252, 356256, 356272, 356280), cases=4056, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(), bits=(), constants=(('EARLY_ONLY', 0),), callees=((355610, 355770), (355876, 355952), (355952, 356006), (356006, 356202), (154084, 154130), (156528, 156546), (156788, 156822), (157504, 157550), (158336, 158394), (158020, 158080), (158840, 158990), (138464, 138694)), ram_word_literals=(), register_word_literals=()),
+    Region(key='jk08a-full-dispatch', rom='JK08A', source='stock_jk08a_full_dispatch.s', harness='harness-stock-jk08a-full-dispatch.c', start=346692, end=346962, pools=((34295, 1), (36242, 1), (38120, 2), (139676, 32), (139736, 4), (139740, 4), (140942, 269), (167582, 2), (167584, 2), (167968, 4), (178010, 2), (178012, 2), (178014, 2), (178016, 2), (178018, 2), (178020, 2), (178022, 2), (178276, 4), (178280, 4), (178284, 4), (178288, 4), (178292, 4), (180788, 2), (180792, 2), (180794, 2), (180796, 2), (180798, 2), (180800, 4), (180804, 4), (180808, 4), (180812, 4), (180816, 4), (346962, 2), (346964, 2), (346966, 2), (346968, 2), (346970, 2), (346972, 2), (347162, 2), (347164, 2), (347166, 2), (347168, 2), (347170, 2), (347172, 2), (347174, 2), (347176, 2), (347178, 2), (347180, 2), (347184, 4), (347188, 4), (347192, 4), (347196, 4), (347200, 4), (347204, 4), (347208, 4), (347212, 4), (347216, 4), (347582, 2), (347584, 2), (347586, 2), (347588, 2), (347590, 2), (347592, 2), (347594, 2), (347596, 2), (347598, 2), (347784, 2), (347788, 4), (347792, 4), (347796, 4), (347800, 4), (347804, 4), (347808, 4), (347812, 4), (347816, 4), (347820, 4), (347824, 4), (347828, 4), (357020, 2), (357022, 2), (357024, 2), (357204, 4), (357208, 4), (357212, 4), (357216, 4), (357220, 4), (357224, 4), (357228, 4)), ram_literals=(167968, 178276, 178280, 178292, 180800, 180804, 180808, 180812, 180816, 347184, 347188, 347192, 347200, 347204, 347208, 347788, 347792, 347804, 347812, 347816, 347820, 357204, 357208, 357216, 357220, 357228), cases=3864, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('TIMER_REGISTER', 'pompous-impala/reg'), ('STATUS_REGISTER', 'injection_scheduler_status_word/reg'), ('CONTROL_REGISTER', 'injection_scheduler_control_word/reg'), ('COUNTER_REGISTER', 'glossy-tarantula/reg'), ('START_REGISTER', 'imported-panther/reg')), bits=(), constants=(('EARLY_ONLY', 0), ('TIMER_ALIAS', 32256), ('PULSE_ALIAS', 32000), ('CONTROL_ALIAS', 32512), ('EVENT_ALIAS', 31488)), callees=((346974, 347162), (347220, 347454), (347454, 347582), (347600, 347784), (356800, 356986), (139708, 139734), (139744, 139768), (180540, 180788), (177738, 178006), (167368, 167582)), ram_word_literals=((346962, 4294935824, 31488, 5), (346970, 4294935788, 32512, 1), (178012, 4294935788, 32512, 1)), register_word_literals=((347176, 4294964288, 32256, 36), (180788, 4294964800, 32000, 40), (178020, 4294964288, 32256, 36))),
     Region(key='jk08a-channel-pulse', rom='JK08A', source='stock_jk08a_channel_pulse.s', harness='harness-stock-jk08a-channel-pulse.c', start=322466, end=322530, pools=((36242, 1), (37338, 8), (76224, 6), (322568, 4), (322592, 4), (322912, 8), (322928, 20), (374916, 4)), ram_literals=(322568, 322592, 322928), cases=14132, boundary=False, return_address_offset=None, return_register=5, base_load=None, symbols=(('INHIBIT', 'fuel_inhibit_mask/ram'), ('COMPENSATED', 'injection_0/ram'), ('TRANSFORMED', 'handsome-spaniel/ram'), ('OPENING', 'portable-kingfisher/ram'), ('ADDITIVE', 'berserk-ocelot/ram'), ('SUBTRACTIVE', 'apricot-raven/ram'), ('MULTIPLIER', 'over_run_channel_multiplier/tbl')), bits=(), constants=(('EARLY_ONLY', 0),), callees=((322596, 322732), (374764, 374916), (140536, 140552)), ram_word_literals=()),
     Region(key='jk08a-injection-prologue', rom='JK08A', source='stock_jk08a_injection_prologue.s', harness='harness-stock-jk08a-injection-prologue.c', start=177738, end=177760, pools=((178012, 2), (178276, 4)), ram_literals=(178276,), cases=1036, boundary=True, return_address_offset=None, return_register=5, base_load=None, symbols=(('CONTROL', 'provocative-anteater/ram'),), bits=(), constants=(('EARLY_ONLY', 0), ('WORD_ALIAS', 32512)), callees=(), ram_word_literals=((178012, 4294935788, 32512, 1),)),
     Region(key='jk08a-injection-count', rom='JK08A', source='stock_jk08a_injection_count.s', harness='harness-stock-jk08a-injection-count.c', start=177870, end=177912, pools=((167584, 2), (178014, 6), (178276, 4), (178284, 4), (178292, 4)), ram_literals=(178276, 178292), cases=10252, boundary=True, return_address_offset=24, return_register=11, base_load=None, symbols=(('COUNT', 'huge-lori/ram'), ('PERIOD', 'spry-koel/ram'), ('REMAINDER', 'economic-collie/ram'), ('OUTPUT', 'amphibian-panda/ram'), ('SCRATCH', 'injection_offset_reciprocal_residue/ram')), bits=(), constants=(('EARLY_ONLY', 0),), callees=((167548, 167582), (177994, 178006))),
@@ -1119,14 +1131,94 @@ def ram_word_aliases(region,image):
             raise VerificationError(f"{region.key}: RAM word alias leaves the positive signed-word window")
         if overlaps(alias,alias+size,code+pools):
             raise VerificationError(f"{region.key}: RAM word alias overlaps stock code, pool or return boundary")
-        if any(alias<other_alias+other_size and other_alias<alias+size
-               or pool<other_pool+2 and other_pool<pool+2
-               or original<other_original+other_size and other_original<original+size
+        if any(pool<other_pool+2 and other_pool<pool+2
                for other_pool,other_original,other_alias,other_size in checked):
-            raise VerificationError(f"{region.key}: RAM word bindings overlap or repeat")
+            raise VerificationError(f"{region.key}: RAM word pool bindings overlap or repeat")
+        if any((alias<other_alias+other_size and other_alias<alias+size
+                or original<other_original+other_size and other_original<original+size)
+               and (original,alias,size)!=(other_original,other_alias,other_size)
+               for other_pool,other_original,other_alias,other_size in checked):
+            raise VerificationError(f"{region.key}: RAM word windows overlap or conflict")
         if any(pool<address+4 and address<pool+2
                or _word(image,address)==original for address in region.ram_literals):
             raise VerificationError(f"{region.key}: RAM word binding conflicts with a long RAM literal")
+        checked.append(row)
+    return tuple(checked)
+
+
+def register_word_aliases(region, image):
+    """Checked pool bindings to declared 16-bit I/O register storage."""
+    rows = region.register_word_literals
+    if not isinstance(rows, tuple):
+        raise VerificationError(f"{region.key}: register word bindings are a tuple")
+    if not rows:
+        return ()
+    layout_id = kb_targets.layout_of(region.rom, root=ROOT)
+    layout = kb_targets.repo.layout(layout_id, root=ROOT)
+    io_start, io_end = (int(value, 16) for value in
+                        kb_targets.repo.config(ROOT)['mcu'][layout.mcu]['io'])
+    code = list(region.code_spans)
+    if region.boundary:
+        code.append((region.end, region.end + len(return_stub(region))))
+    pools = [(start, start + size) for start, size in region.pools]
+    overlaps = lambda start, end, spans: any(start < right and left < end for left, right in spans)
+    ram_words = ram_word_aliases(region, image)
+    checked = []
+    for row in rows:
+        if (not isinstance(row, tuple) or len(row) != 4
+                or any(type(value) is not int for value in row)):
+            raise VerificationError(f"{region.key}: a register word binding has four integers")
+        pool, original, alias, size = row
+        if (pool < 0 or pool % 2 or pool + 2 > len(image)
+                or not any(left <= pool and pool + 2 <= right for left, right in pools)):
+            raise VerificationError(f"{region.key}: register word leaves its declared pool")
+        if overlaps(pool, pool + 2, code):
+            raise VerificationError(f"{region.key}: register word overlaps stock code or return boundary")
+        value = int.from_bytes(image[pool:pool + 2], 'big')
+        target = value | 0xffff0000 if value & 0x8000 else value
+        if (target != original or not 0xffff8000 <= original < 0x100000000
+                or not io_start <= original < io_end or original % 2):
+            raise VerificationError(f"{region.key}: register word does not bind its sign-extended I/O address")
+        if (size <= 0 or size % 2 or original + size > io_end or alias < 0 or alias % 2
+                or alias + size > 0x8000 or alias + size > len(image)):
+            raise VerificationError(f"{region.key}: register word alias leaves its aligned positive window")
+        if overlaps(alias, alias + size, code + pools):
+            raise VerificationError(f"{region.key}: register word alias overlaps stock code, pool or return boundary")
+        members = []
+        for _, ref in region.symbols:
+            if not ref.endswith('/reg'):
+                continue
+            try:
+                symbol = kb_targets.symbol(ref, layout_id, root=ROOT)
+                address = int(symbol['address'], 16)
+                if not original <= address < original + size:
+                    continue
+                name, _, kind = ref.rpartition('/')
+                document = kb_targets._document(kind, name, ROOT, None)
+                width = symbol.get('width', document.get('width'))
+            except (kb_targets.repo.KbError, KeyError, TypeError, ValueError) as error:
+                raise VerificationError(f"{region.key}: register word has no valid declared owner") from error
+            if type(width) is not int or width != 16 or address % 2 or address + 2 > original + size:
+                raise VerificationError(f"{region.key}: register window requires aligned 16-bit owners")
+            members.append(address)
+        if (not members or original not in members or len(set(members)) != len(members)
+                or max(members) + 2 != original + size):
+            raise VerificationError(f"{region.key}: register window lacks distinct endpoint owners")
+        for other_pool, other_original, other_alias, other_size in checked:
+            if pool < other_pool + 2 and other_pool < pool + 2:
+                raise VerificationError(f"{region.key}: register word pools overlap or repeat")
+            coherent = (original, alias, size) == (other_original, other_alias, other_size)
+            if not coherent and (alias < other_alias + other_size and other_alias < alias + size
+                                 or original < other_original + other_size and other_original < original + size):
+                raise VerificationError(f"{region.key}: register word windows conflict")
+        if any(pool < other_pool + 2 and other_pool < pool + 2
+               or alias < other_alias + other_size and other_alias < alias + size
+               for other_pool, _, other_alias, other_size in ram_words):
+            raise VerificationError(f"{region.key}: register word conflicts with a RAM word binding")
+        if any(pool < address + 4 and address < pool + 2
+               or original <= _word(image, address) < original + size
+               for address in region.ram_literals):
+            raise VerificationError(f"{region.key}: register word conflicts with a long RAM literal")
         checked.append(row)
     return tuple(checked)
 
@@ -1146,6 +1238,8 @@ def build_fixture(region, image):
         ).to_bytes(4, "big")
     for address,original,alias,size in ram_word_aliases(region,image):
         fixture[address:address+2] = alias.to_bytes(2,"big")
+    for address, original, alias, size in register_word_aliases(region, image):
+        fixture[address:address + 2] = alias.to_bytes(2, "big")
     if region.boundary:
         boundary = return_stub(region)
         end = region.end + len(boundary)
@@ -1181,7 +1275,17 @@ def harness_defines(region, image):
     return defines
 
 
+REGION_OBSERVERS = {'jk08a-full-programmer': 'stock_injection_scheduler_invoke.s', 'jk08a-oneshot': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-word': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-byte': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-copy': 'stock_oneshot_invoke.s', 'jk08a-event-isr': 'stock_injector_event_invoke.s', 'jk08a-end-angle': 'stock_oneshot_invoke.s', 'jk08a-full-dispatch': 'stock_oneshot_invoke.s'}
+
+
 def run_region(region, invoke, build_dir):
+    observer = REGION_OBSERVERS.get(region.key)
+    if observer is not None:
+        invoke = build_dir / f"{region.key}-invoke.o"
+        base_verifier.run_command([
+            base_verifier.AS, "--big", "--isa=sh2e", "-I", TOOL_DIR,
+            "-o", invoke, TOOL_DIR / observer,
+        ])
     image = stock_image(region.rom)
     instructions = require_reconstruction(region, image, build_dir)
     fixture = build_fixture(region, image)

@@ -1,0 +1,71 @@
+summary = """
+Unsigned byte scaling a selected inhibited secondary word before an \
+eight-bit shift."""
+block = "injector_output/block"
+width = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "000085f7"
+level = "code"
+width = 8
+signed = false
+note = """
+Unsigned byte scaling a selected inhibited secondary word before an \
+eight-bit shift."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00057228"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "reader"
+to = "abiding-mink/fn"
+via = ["abiding-mink/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte scaling a selected inhibited secondary word before an \
+eight-bit shift."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

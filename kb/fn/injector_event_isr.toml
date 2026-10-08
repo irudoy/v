@@ -102,6 +102,16 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0002be40"
+note = [
+    """
+The complete0002be40 handler executes real selection and one-shot and \
+returns through its original RTE. It clears the control byte, stages \
+pending, updates history/release and status/control raw words, and retains \
+all interrupted GPRs and complete SR/PR/SP/MAC/GBR. GNU16.3 implements \
+TRAPA/RTE withSPC/SSR without the SH-2E PC/SR exception stack. All192 frame \
+bytes follow that explicit GNU contract; equivalent SH-2E exception-stack \
+coverage is required before hardware eligibility.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -199,10 +209,66 @@ supports = "identity"
 to = "bulky-hound/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "depends"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "bulky-hound/fn"
+via = ["injector_event_isr/fn", "bulky-hound/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_oneshot_mask_scheduler/fn"
+via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""

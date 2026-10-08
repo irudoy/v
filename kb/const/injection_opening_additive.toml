@@ -1,0 +1,65 @@
+summary = "Unsigned raw additive byte after the signed opening-word shift."
+block = "fuel_quantity/block"
+width = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008c9e"
+level = "code"
+width = 8
+signed = false
+note = "Unsigned raw additive byte after the signed opening-word shift."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00056fde"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "reader"
+to = "fuel_output_override_word/fn"
+via = ["fuel_output_override_word/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned raw additive byte after the signed opening-word shift."
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

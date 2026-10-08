@@ -1,0 +1,59 @@
+summary = "Raw word receiving the selected delayed-start compare."
+block = "injector_output/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "7mfk"
+address = "fffff444"
+level = "code"
+note = """
+Raw word receiving the selected delayed-start compare. Physical peripheral \
+effects remain unverified."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b728"
+
+[[link]]
+type = "writer"
+to = "pumpkin-peacock/fn"
+via = ["pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete natural 0002b64a invocation wraps its argument to uint8. Normal \
+mode splits by10, adjusts count/remainder through the actual00028dc8 \
+normalizer and explicit positionffff13b2; modeffff24c9.bit6 instead splits \
+at120. Nonzero count retains compare/status/control raw words and incoming \
+offset. Zero count publishes \
+q=floor(uint32(6554*RAM16[ffff22bc]*rem)/65536). For \
+delta=(TCNT-capture)&65535, delta+2>q selects TCNT+2, otherwise capture+q; \
+the selected compare wraps to16bits, status ANDsfffe and control ORs1. The \
+zero-count path sets interrupt maskI8. All I/O is synthetic raw storage; \
+hardware compare delivery and peripheral timing retain separate evidence."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0002b728"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

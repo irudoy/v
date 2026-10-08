@@ -102,8 +102,10 @@ def chain_contract(model):
     step = publication.normalized(model,chain.steps[17])
     for field,value in {'from':'nippy-caribou/ram','to':'amphibian-panda/ram',
                         'effect':'converts','sign':'none',
-                        'via':['amigurumi-dormouse/fn',PROG],
-                        'specs':[publication.SPEC]}.items():
+                        'via':['amigurumi-dormouse/fn',PROG,
+                               'apc_command_phase_normalizer/fn',
+                               'split_u8_by_ten/fn'],
+                        'specs':['defs/JK08A.fuel.md',publication.SPEC]}.items():
         assert step[field] == value
 
 def owner_contract(model):

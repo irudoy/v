@@ -116,12 +116,24 @@ hardware atomicity retain separate evidence."""
 [[link]]
 type = "reader"
 to = "bulky-hound/fn"
+via = ["bulky-hound/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+The complete natural 00054d3e selector admits the low byte ofR4. Either \
+ffff418c.bit1 orffff24a0.bit6 fills six unsigned wordsffff224e+2*i \
+withffff23aa. Mode0 fillsffff238a. Modes1,2,4 cap \
+opening+floor(ROM16[94e8]*100/256), conditionally subtractffff238a \
+fromffff2386 whenffff2388 exceeds that cap, floor at0, and apply the \
+corresponding floorffff238c/238e/2392. Every other mode writes \
+max(snapshotffff2348+2*i,ffff2390). UnderROM8[8d92].bit3 the real 000571c0 \
+tail clears selected correction words and scales or copies the independent \
+secondary vector. No acquisition cadence follows from these consumer \
+contexts."""
 
 [[link]]
 type = "writer"

@@ -104,6 +104,19 @@ address = "ffff192e"
 former = ["nifty-meerkat/ram/7mfk-ffff192e"]
 width = 16
 signed = false
+note = [
+    """
+The complete natural 00056bd0 publisher executes the actual prefix, implicit \
+and explicit lookups, unsigned divider and fault predicate. Implicit lookup \
+uses eight unsigned cells, step32, last-cell clamp224 and a \
+positive-difference floor for either interpolation direction. Normal \
+publication reads updated selector/warm/prefix state: conditional1230a, \
+override8729, or base12302 plus updated unsigned bias340c; the selected \
+value is capped209 then doubled. Alternate and inhibited entries are \
+separately executed. Synthetic scalar and curve contexts expose branches \
+suppressed by the stock calibration. These raw-count contracts do not \
+establish physical angle, lifecycle or calibration validity.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -164,6 +177,26 @@ key = "test_injection_start_delay_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[symbol]]
 layout = "jk00c"
@@ -235,6 +268,45 @@ key = "test_injection_start_delay_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
+
+[[link]]
+type = "input"
+to = "orchid-angelfish/ram"
+via = ["enthusiastic-salmon/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete natural 00056bd0 publisher executes the actual prefix, implicit \
+and explicit lookups, unsigned divider and fault predicate. Implicit lookup \
+uses eight unsigned cells, step32, last-cell clamp224 and a \
+positive-difference floor for either interpolation direction. Normal \
+publication reads updated selector/warm/prefix state: conditional1230a, \
+override8729, or base12302 plus updated unsigned bias340c; the selected \
+value is capped209 then doubled. Alternate and inhibited entries are \
+separately executed. Synthetic scalar and curve contexts expose branches \
+suppressed by the stock calibration. These raw-count contracts do not \
+establish physical angle, lifecycle or calibration validity."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "lookup"

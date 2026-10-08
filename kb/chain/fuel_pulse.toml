@@ -189,8 +189,9 @@ effect = "scales"
 sign = "negative"
 via = ["fuel_output_override_word/fn"]
 note = """
-ffff2436 = clamp_u16(max(0, ((175 - ffff1108)*92 >> 7) + 70)) on battery \
-byte ffff1108: 0.70 ms at 14.0 V, 0.09 ms per V."""
+B = uint8(from); Q = ROM8[000084f6]; A = ROM8[00008c9e]; to = \
+min(65535,max(0,floor((175-B)*Q/128)+A))"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "portable-kingfisher/ram"
@@ -263,20 +264,32 @@ from = "berserk-terrier/ram"
 to = "portable-gecko/ram"
 effect = "selects"
 sign = "positive"
-via = ["bulky-hound/fn"]
+via = ["bulky-hound/fn", "abiding-mink/fn"]
 note = """
-Running: ffff224e+2i = max(ffff2348+2i, ffff2390); stopped, inhibited, and \
-start modes fill ffff23aa or the start words."""
+M = uint8(x); O = max((RAM8[ffff418c]>>1)&1,(RAM8[ffff24a0]>>6)&1); Z = \
+1-min(1,abs(M)); A = 1-min(1,abs(M-1)); B = 1-min(1,abs(M-2)); C = \
+1-min(1,abs(M-4)); S = A+B+C; K = \
+min(65535,RAM16[ffff23aa]+floor(ROM16[000094e8]*100/256)); D = \
+min(1,max(0,RAM16[ffff2388]-K)); F = \
+A*RAM16[ffff238c]+B*RAM16[ffff238e]+C*RAM16[ffff2392]; V = \
+max(max(0,RAM16[ffff2386]-D*RAM16[ffff238a]),F); R = \
+max(uint16(from),RAM16[ffff2390]); to = \
+O*RAM16[ffff23aa]+(1-O)*(Z*RAM16[ffff238a]+S*V+(1-Z-S)*R)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "portable-gecko/ram"
 to = "glossy-tarantula/reg"
 effect = "drives"
-sign = "positive"
+sign = "none"
 via = ["injector_oneshot_mask_scheduler/fn"]
 note = """
-DCNT8x += sat_u16(800*d >> 8), one duration count is 10 us; inhibited \
-channels take opening time ffff23aa."""
+M = uint32(x[0]); I = uint8(x[1]); E = (RAM8[ffff4184]>>7)&1; S = (M>>I)&1; \
+H = min(1,M&(RAM8[ffff22e0]|RAM8[ffff1935])); D = \
+(1-H)*uint16(from)+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
+max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
+(1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "portable-gecko/ram"
@@ -284,6 +297,5 @@ to = "imported-panther/reg"
 effect = "schedules"
 sign = "none"
 via = ["injector_oneshot_mask_scheduler/fn"]
-note = """
-0002c13c sets DSTR bit i to start the one-shot of channel i under the \
-aggregate channel mask."""
+note = "E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint32(from)&63))"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]

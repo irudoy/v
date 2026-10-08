@@ -176,6 +176,18 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0002c13c"
+note = [
+    """
+The complete natural 0002c13c invocation testsffff4184.bit7 and selects only \
+R4 bits0..5. If the whole low-byte mask intersects aggregateffff22e0 or \
+historyffff1935, every selected duration takes unsigned openingffff23aa and \
+history ORs the whole mask. An already-set rawDSTR bit subtracts opening \
+with floor0. The increment is min(65535,floor(800*d/256)), or1000 under \
+ffff4251.bit0. Addition to each raw counter wraps modulo65536; rawDSTR ORs \
+the selected bit underI15 and the incoming interrupt mask is restored. \
+Peripheral timing, duration units and physical output behavior remain \
+unverified.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -400,6 +412,26 @@ supports = "identity"
 at = "7mfk:0002c20c"
 value = {named = ["00028ea2", "0002be40", "0002c13c", "00051f1e", "00054a44", "ffff1568", "ffff1935", "ffff224e", "ffff22e0", "ffff23aa", "ffff4251", "fffff640", "fffff666"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "depends"

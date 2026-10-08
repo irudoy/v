@@ -54,6 +54,24 @@ supports = "identity"
 layout = "7mfk"
 address = "fffff640"
 name = "glossy-tarantula"
+width = 16
+signed = false
+note = [
+    """
+The masked scheduler uses raw aligned MOV.W storage at this I/O location. \
+Synthetic storage does not verify peripheral timing or physical output \
+behavior.""",
+    """
+The complete natural 0002c13c invocation testsffff4184.bit7 and selects only \
+R4 bits0..5. If the whole low-byte mask intersects aggregateffff22e0 or \
+historyffff1935, every selected duration takes unsigned openingffff23aa and \
+history ORs the whole mask. An already-set rawDSTR bit subtracts opening \
+with floor0. The increment is min(65535,floor(800*d/256)), or1000 under \
+ffff4251.bit0. Addition to each raw counter wraps modulo65536; rawDSTR ORs \
+the selected bit underI15 and the incoming interrupt mask is restored. \
+Peripheral timing, duration units and physical output behavior remain \
+unverified.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -81,6 +99,30 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-dcnt8"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002c1ee"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "input"
 to = "brilliant-dugong/ram"
@@ -91,9 +133,20 @@ supports = "identity"
 [[link]]
 type = "input"
 to = "portable-gecko/ram"
+via = ["injector_oneshot_mask_scheduler/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The complete natural 0002c13c invocation testsffff4184.bit7 and selects only \
+R4 bits0..5. If the whole low-byte mask intersects aggregateffff22e0 or \
+historyffff1935, every selected duration takes unsigned openingffff23aa and \
+history ORs the whole mask. An already-set rawDSTR bit subtracts opening \
+with floor0. The increment is min(65535,floor(800*d/256)), or1000 under \
+ffff4251.bit0. Addition to each raw counter wraps modulo65536; rawDSTR ORs \
+the selected bit underI15 and the incoming interrupt mask is restored. \
+Peripheral timing, duration units and physical output behavior remain \
+unverified."""
 
 [[link]]
 type = "writer"

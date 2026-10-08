@@ -403,9 +403,15 @@ supports = "scale"
 [[link]]
 type = "reader"
 to = "enthusiastic-salmon/fn"
+via = ["enthusiastic-salmon/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Base publication applies only to normal base path6; conditional, override, \
+alternate and inhibited paths do not consume this table."""
 
 [[link]]
 type = "reader"

@@ -45,6 +45,16 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00056fc0"
+note = [
+    """
+The complete natural 7mfk function 00056fc0 reads unsigned battery byte \
+ffff1108 and independent unsigned ROM bytes000084f6 and00008c9e. Its actual \
+seven-SHAR helper floors the signed product (175-B)*Q/128 before adding A \
+and clamping below0. The result atffff2436 is unsigned16; the maximum603 in \
+the complete byte domains makes the upper65535 clamp unreachable. \
+StockQ92/A70 give raw counts12..195. Physical voltage and duration \
+conversion retain their separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -118,3 +128,23 @@ kind = "trace"
 supports = "identity"
 to = "truthful-nightingale/fn/7mfk"
 relies = "contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"

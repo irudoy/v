@@ -2,11 +2,21 @@
 layout = "7mfk"
 address = "ffff8514"
 name = "transparent-grebe"
+width = 8
+signed = false
+note = """
+The injector event handler reads this exact byte and sets bit7 when the \
+unsigned mode byte at ffff2298 exceeds 3. The declared simulator alias \
+verifies raw byte operations only."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002be72"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002be74"
 
 [[link]]
 type = "writer"

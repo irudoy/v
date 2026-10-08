@@ -20,9 +20,8 @@ to = "daffodil-gibbon/ram"
 effect = "converts"
 sign = "positive"
 via = ["pearl-waxbill/fn", "perfect-agouti/fn", "coherent_snapshot/fn"]
-note = """
-000384fe writes ffff11e8 = ffff1196 >> 3, 000384cc writes ffff11eb = \
-min(255, ffff11e8 >> 4), and 00020dfe copies it to RPM/25 byte ffff11b3."""
+note = "to = min(255,floor(uint16(from)/128))"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "daffodil-gibbon/ram"
@@ -30,9 +29,8 @@ to = "tangible-gharial/tbl"
 effect = "indexes"
 sign = "none"
 via = ["enthusiastic-salmon/fn", "idle_ignition_lookup/fn"]
-note = """
-00056bd0 looks up the base table over 8-point implicit axis 00026370 (step \
-32, limit 224) at RPM/25 byte ffff11b3."""
+note = "to = min(7,floor(uint8(from)/32))"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "daffodil-gibbon/ram"
@@ -44,51 +42,64 @@ via = [
     "idle_ignition_lookup/fn",
     "didactic-civet/fn",
 ]
-note = """
-00056bd0 interpolates the conditional table over implicit axis 00026370 (8 \
-points, step 32) through 00026740 at ffff11b3."""
+note = "to = min(7,floor(uint8(from)/32))"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "tangible-gharial/tbl"
 to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["enthusiastic-salmon/fn"]
+via = [
+    "enthusiastic-salmon/fn",
+    "idle_ignition_lookup/fn",
+    "didactic-civet/fn",
+]
 note = """
-Base path: ffff192e = 2 * min(lookup + uint8[ffff340c], 209); one cell count \
-is 4 crank degrees, stock 133 in all 8 cells (532 degrees)."""
+I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
+2*min(Y+uint8(RAM8[ffff340c]),209)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "crouching-orca/tbl"
 to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["enthusiastic-salmon/fn"]
-note = """
-Conditional path: ffff192e = 2 * min(y, 209); stock cells 160..200 (640..800 \
-crank degrees) end the pulse 50..210 degrees after intake TDC."""
+via = [
+    "enthusiastic-salmon/fn",
+    "idle_ignition_lookup/fn",
+    "didactic-civet/fn",
+]
+note = "I = uint8(RAM8[ffff11b3]); Y = lookup(0001230a,I); to = 2*min(Y,209)"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "orchid-angelfish/ram"
 to = "injection_end_angle/ram"
 effect = "adds"
 sign = "positive"
-via = ["enthusiastic-salmon/fn"]
+via = [
+    "enthusiastic-salmon/fn",
+    "idle_ignition_lookup/fn",
+    "didactic-civet/fn",
+]
 note = """
-The base path adds uint8[ffff340c] to the table value before the 209-count \
-limit; the conditional path omits it."""
-specs = ["defs/JK08A.fuel.md"]
+I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
+2*min(Y+uint8(from),209)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "lurking-locust/ram"
 to = "injection_end_angle/ram"
 effect = "selects"
 sign = "none"
-via = ["enthusiastic-salmon/fn"]
+via = ["enthusiastic-salmon/fn", "agate-bull/fn"]
 note = """
-00056bd0 selects 0x1230A while ffff2484 bits 4 and 5 and warm latch \
-ffff41d0.bit1 are set; ffff24d0.bit1 selects a path that bypasses both \
-maps."""
+C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
+O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \
+uint8(RAM8[ffff11b3]); B = lookup(00012302,I)+uint8(RAM8[ffff340c]); Y = \
+lookup(0001230a,I); to = 2*min(C*Y+O*ROM8[00008729]+(1-C-O)*B,209)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "thick-orangutan/ram"
@@ -97,8 +108,11 @@ effect = "selects"
 sign = "none"
 via = ["enthusiastic-salmon/fn"]
 note = """
-Warm latch ffff41d0.bit1 sets at raw coolant ROM8[0x8770] = 120 (70 deg C) \
-and releases below 115; it enables the conditional table."""
+C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
+O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \
+uint8(RAM8[ffff11b3]); B = lookup(00012302,I)+uint8(RAM8[ffff340c]); Y = \
+lookup(0001230a,I); to = 2*min(C*Y+O*ROM8[00008729]+(1-C-O)*B,209)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "injection_end_angle/ram"
@@ -211,19 +225,31 @@ effect = "selects"
 sign = "none"
 via = ["amigurumi-dormouse/fn"]
 note = """
-For an accepted slot the pending mask ffff2228 = ROM8[0x22695 + slot] (02 04 \
-08 10 20 01); with no accepted slot it is 0."""
+S = uint8(from); F = (RAM8[ffff8513]>>5)&1; L = \
+F*uint8(RAM8[ffff2364])+(1-F)*3; D = uint8(RAM8[ffff221d])-L; N = \
+uint8(RAM8[ffff221e])+1; N = N*(1-min(1,max(0,N-5))); A = \
+min(1,max(0,D))+(1-min(1,abs(D)))*(1-min(1,abs(N-S))); to = \
+A*ROM8[00022695+S]"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "nippy-caribou/ram"
 to = "amphibian-panda/ram"
 effect = "converts"
 sign = "none"
-via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+via = [
+    "amigurumi-dormouse/fn",
+    "pumpkin-peacock/fn",
+    "apc_command_phase_normalizer/fn",
+    "split_u8_by_ten/fn",
+]
 note = """
-00054a44 passes angle 4*ffff2333 to 0002b64a, which splits it by 10 into \
-tooth count and remainder; offset ffff16c2 = ffff22bc * rem / 10."""
-specs = ["defs/JK08A.injection.md"]
+C = RAM8[ffff4251]&1; V = uint8((1-C)*4*uint8(from)+52*C); P = \
+uint8(RAM8[ffff13b2]); J = max(1-min(1,abs(P-4)),1-min(1,abs(P-9))); M = \
+(RAM8[ffff24c9]>>6)&1; K = 120*M+(1-M)*(40-20*J); Z = 1-min(1,max(0,V-K+1)); \
+Q = floor(uint32(6554*uint16(RAM16[ffff22bc])*V)/65536); to = \
+(1-Z)*uint16(prev)+Z*Q"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "spry-koel/ram"
@@ -246,8 +272,8 @@ via = [
     "injector_oneshot_mask_scheduler/fn",
 ]
 note = """
-With a zero tooth count 0002b64a sets GR1A = ffff158a + ffff16c2; on the \
-IMI1A match 0002be40 fires ffff2228 through 0002c13c into DSTR."""
+E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint8(RAM8[ffff2228])&63))"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "uber-deer/ram"
@@ -255,9 +281,8 @@ to = "imported-panther/reg"
 effect = "drives"
 sign = "none"
 via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
-note = """
-0002be40 copies ffff2228 to ffff1936 and calls 0002c13c, which sets DSTR bit \
-i to start the one-shot of each channel in the mask."""
+note = "E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint32(from)&63))"
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
 
 [[step]]
 from = "uber-deer/ram"
@@ -266,5 +291,9 @@ effect = "selects"
 sign = "none"
 via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
 note = """
-For each channel i in the mask 0002c13c adds sat_u16(800 * d >> 8) to DCNT8A \
-+ 2*i with interrupts masked."""
+M = uint32(from); I = uint8(x); E = (RAM8[ffff4184]>>7)&1; S = (M>>I)&1; H = \
+min(1,M&(RAM8[ffff22e0]|RAM8[ffff1935])); D = \
+(1-H)*RAM16[ffff224e+2*I]+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
+max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
+(1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
+specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]

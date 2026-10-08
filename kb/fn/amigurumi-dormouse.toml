@@ -284,6 +284,17 @@ words, both prepared T values and complete register/frame/RAM preservation. \
 R11 is the declared observer-boundary scratch. The earlier snapshot \
 producer, mode/delta selection, actual callee invocation, count/remainder \
 composition, other accessors and hardware retain separate evidence.""",
+    """
+The complete natural 00054a44 dispatcher executes its real selector, \
+one-shot and programmer calls. The enabled entry follows the optional \
+trigger setup. Equal lead accepts only the next cursor matching the staged \
+slot; negative lead clears pending. Positive lead accumulates the exact ROM \
+masks across every advanced cursor, updates queue/history, calls mode3 \
+selection and one-shot, then publishes the final slot mask. The programmer \
+argument is 4*unsigned8[ffff2333] or52 underffff4251.bit0 and wraps in the \
+callee. All register state,192 frame bytes,64k RAM and declared alias \
+neighbors are checked. Producer reachability and physical event timing are \
+not inferred.""",
 ]
 
 [[symbol.evidence]]
@@ -572,13 +583,101 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection pre-call argument preparation"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "depends"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "bulky-hound/fn"
+via = ["amigurumi-dormouse/fn", "bulky-hound/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_oneshot_mask_scheduler/fn"
+via = ["amigurumi-dormouse/fn", "injector_oneshot_mask_scheduler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link]]
+type = "depends"
+to = "pumpkin-peacock/fn"
+via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "selector"

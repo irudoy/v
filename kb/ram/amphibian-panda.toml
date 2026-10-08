@@ -64,6 +64,17 @@ helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
 P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
 full consumer-domain sign none. The preceding zero-count decision, physical \
 timer scale, compare programming and hardware remain separate evidence.""",
+    """
+The complete natural 0002b64a invocation wraps its argument to uint8. Normal \
+mode splits by10, adjusts count/remainder through the actual00028dc8 \
+normalizer and explicit positionffff13b2; modeffff24c9.bit6 instead splits \
+at120. Nonzero count retains compare/status/control raw words and incoming \
+offset. Zero count publishes \
+q=floor(uint32(6554*RAM16[ffff22bc]*rem)/65536). For \
+delta=(TCNT-capture)&65535, delta+2>q selects TCNT+2, otherwise capture+q; \
+the selected compare wraps to16bits, status ANDsfffe and control ORs1. The \
+zero-count path sets interrupt maskI8. All I/O is synthetic raw storage; \
+hardware compare delivery and peripheral timing retain separate evidence.""",
 ]
 
 [[symbol.evidence]]
@@ -106,6 +117,26 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection offset multiplication"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
 [[link]]
 type = "input"
 to = "economic-collie/ram"
@@ -137,6 +168,45 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection offset multiplication"
+
+[[link]]
+type = "input"
+to = "nippy-caribou/ram"
+via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete natural 0002b64a invocation wraps its argument to uint8. Normal \
+mode splits by10, adjusts count/remainder through the actual00028dc8 \
+normalizer and explicit positionffff13b2; modeffff24c9.bit6 instead splits \
+at120. Nonzero count retains compare/status/control raw words and incoming \
+offset. Zero count publishes \
+q=floor(uint32(6554*RAM16[ffff22bc]*rem)/65536). For \
+delta=(TCNT-capture)&65535, delta+2>q selects TCNT+2, otherwise capture+q; \
+the selected compare wraps to16bits, status ANDsfffe and control ORs1. The \
+zero-count path sets interrupt maskI8. All I/O is synthetic raw storage; \
+hardware compare delivery and peripheral timing retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "input"
@@ -176,6 +246,38 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection offset multiplication"
+
+[[link]]
+type = "selector"
+to = "injector_event_isr/fn"
+via = ["injector_event_isr/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Zero-count programming selects the raw compare with the late boundary \
+delta+2>q. This relation requires explicit ISR invocation; it does not \
+establish that hardware delivers the compare event."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "writer"

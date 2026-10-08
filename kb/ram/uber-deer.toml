@@ -71,6 +71,17 @@ pending mask. Negative-delta entry clears only the pending byte. Full \
 unsigned cursor and slot contexts do not imply service reachability. Earlier \
 mode exits, positive-delta catch-up, other calls, complete sequencer \
 execution and MMIO retain separate evidence.""",
+    """
+The complete natural 00054a44 dispatcher executes its real selector, \
+one-shot and programmer calls. The enabled entry follows the optional \
+trigger setup. Equal lead accepts only the next cursor matching the staged \
+slot; negative lead clears pending. Positive lead accumulates the exact ROM \
+masks across every advanced cursor, updates queue/history, calls mode3 \
+selection and one-shot, then publishes the final slot mask. The programmer \
+argument is 4*unsigned8[ffff2333] or52 underffff4251.bit0 and wraps in the \
+callee. All register state,192 frame bytes,64k RAM and declared alias \
+neighbors are checked. Producer reachability and physical event timing are \
+not inferred.""",
 ]
 
 [[symbol.evidence]]
@@ -145,6 +156,26 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "input"
@@ -228,6 +259,37 @@ to = "injector_oneshot_mask_scheduler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "selector"
+to = "injector_event_isr/fn"
+via = ["injector_event_isr/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Explicit ISR invocation stages the mask before the raw one-shot publication. \
+Physical event delivery and SH-2E exception stacking are unverified."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_connected_injection_chain.py"
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "writer"
