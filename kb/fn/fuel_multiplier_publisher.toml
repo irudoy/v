@@ -82,6 +82,16 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "000556ec"
+note = [
+    """
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) \
+by unsigned mixtureffff22e8 over16384. It executes special \
+multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, \
+floor/phase latches and normal/transition rates000084e6/0000840d. Transition \
+progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 \
+as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain \
+downward discontinuities, so both input views have sign none.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -152,3 +162,18 @@ supports = "identity"
 at = "7mfk:0005593c"
 value = {named = ["000556ec", "ffff18e4", "ffff22e0", "ffff22e6", "ffff22e8", "ffff231a", "ffff240a"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

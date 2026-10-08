@@ -2,11 +2,51 @@
 layout = "7mfk"
 address = "ffff230c"
 name = "beneficial-ringtail"
+width = 16
+note = [
+    """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence.""",
+    "The admitted accumulator context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004aba0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "lookup"
@@ -25,7 +65,16 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "fuel_base_accumulator/fn"
+via = ["fuel_base_accumulator/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence."""

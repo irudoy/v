@@ -1,12 +1,12 @@
 summary = """
-Transient additive-term coordinator. On the negative ffff1a66 branch it \
-halves the 0x12176 lookup into byte ffff150a; the nonnegative branch uses \
-constant 64. It then calls 00052902, which writes \
-clamp_s16(trunc_toward_zero(uint8(ffff150a)*int16(ffff1a66)/256)) to \
-ffff2300 unless a runtime gate forces zero."""
+Natural function000528be reads doubled normalized load, capped255, through \
+the actual eight-cell lookup00026370 atROM00012176. It publishes half the \
+cell atffff150a while signed RAM16[ffff1a66]<0, otherwise64. Its natural RTS \
+at000528f2 returns without calling00052902 or writingffff2300."""
 note = [
     """
-Select transient coefficient and invoke the signed additive-term producer""",
+Select the transient coefficient through the actual lookup and return \
+naturally.""",
     """
 Coordinator 000522c4 runs at scheduler index 42 immediately before pulse \
 precursor 0004e974. The physical transient qualifier remains unresolved.""",
@@ -26,16 +26,7 @@ registry = "funcs"
 order = 307
 fields = ["role", "semantics", "confidence"]
 notes = [1]
-identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
-[[ledger.dependency]]
-role = "consumer"
-to = "transient_fuel_additive/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
+identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "from_map"
@@ -62,17 +53,16 @@ end = "to"
 relies = "structure"
 supports = "identity"
 
-[[ledger.dependency]]
-role = "writes"
-to = "enigmatic-mouse/ram"
-type = "writer"
-end = "to"
-relies = "structure"
-supports = "identity"
-
 [[symbol]]
 layout = "7mfk"
 address = "000528be"
+note = [
+    """
+Natural function000528be reads doubled normalized load, capped255, through \
+the actual eight-cell lookup00026370 atROM00012176. It publishes half the \
+cell atffff150a while signed RAM16[ffff1a66]<0, otherwise64. Its natural RTS \
+at000528f2 returns without calling00052902 or writingffff2300.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -165,10 +155,17 @@ at = "7mfk:00052958"
 value = {named = ["00012176", "000528be", "00052902", "ffff150a", "ffff1a66", "ffff2300"], span = 1}
 key = "reference"
 
-[[link]]
-type = "depends"
-to = "transient_fuel_additive/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

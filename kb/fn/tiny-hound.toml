@@ -130,6 +130,14 @@ supports = "identity"
 layout = "7mfk"
 address = "000522c4"
 name = "tiny-hound"
+note = [
+    """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -283,6 +291,21 @@ at = "7mfk:0005255a"
 value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
 [[link]]
 type = "depends"
 to = "burrowing-muskox/fn"
@@ -338,3 +361,63 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "transient_fuel_additive/fn"
+via = ["tiny-hound/fn", "transient_fuel_additive/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "depends"
+to = "transient_fuel_term_coordinator/fn"
+via = ["tiny-hound/fn", "transient_fuel_term_coordinator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

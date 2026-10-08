@@ -1495,3 +1495,78 @@ aggregate mask and x[1] is channel0..5. The raw counter's previous value is
 prev. This specification fixes the meaning of lookup and staged-state
 boundaries; physical units, acquisition cadence and hardware validation
 require their separate evidence.
+
+## Upstream fuel pulse calculations
+
+Eleven mandatory Regions bind 2726 instructions, 6494 bound bytes
+and 696084 literal cases through the primary stock verifier. The sixteen
+formula-bearing fuel_pulse steps1..16 use raw operand widths and exact
+rounding, wrapping, latch and call boundaries.
+
+| Calculation | Region | Literal cases |
+|---|---|---|
+| base-accumulator | `jk08a-base-accumulator` | 132684 |
+| transient-coefficient | `jk08a-transient-coefficient` | 7440 |
+| transient-additive | `jk08a-transient-additive` | 87052 |
+| coolant-conditional | `jk08a-coolant-conditional` | 14261 |
+| transient-pair-1 | `jk08a-transient-pair-1` | 44640 |
+| transient-pair-2 | `jk08a-transient-pair-2` | 44640 |
+| fuel-multiplier | `jk08a-fuel-multiplier` | 77328 |
+| pulse-precursor | `jk08a-pulse-precursor` | 78272 |
+| common-gain | `jk08a-common-gain` | 68855 |
+| enrichment-prefix | `jk08a-enrichment-prefix` | 70800 |
+| enrichment-terminal | `jk08a-enrichment-terminal` | 70112 |
+
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], 16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the low32 result as signed, then clamps it to0..65535 atffff231a. The signed wrap seam prevents a universal positive input sign. Producer domains and physical units require independent evidence.
+
+Natural function000528be reads doubled normalized load, capped255, through the actual eight-cell lookup00026370 atROM00012176. It publishes half the cell atffff150a while signed RAM16[ffff1a66]<0, otherwise64. Its natural RTS at000528f2 returns without calling00052902 or writingffff2300.
+
+Natural function00052902 publishes signed16 atffff2300: trunc0(uint8(ffff150a)*int16(ffff1a66)/256), or0 whenffff245d.bit5 andROM8[00008b40].bit2 are both set. The admitted product bounds-32640..32639 make the explicit signed saturation unreachable. No physical transient qualifier or cadence is inferred.
+
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 in000522c4 execute their original BSR pairs to000528be and00052902 with both delay slots and natural returns. Each caller observes current coefficient then signed additive publication. The surrounding dispatcher is outside these bounded windows.
+
+Natural function0005525a updates threshold/hysteresis bits inffff2492/ffff2493, admits the actual gate, and uses uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell curve00012422. It publishes lookup byteffff15dd and selected coefficient byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. Optional signed difference rate limiting against oldffff15da precedes cap max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and retain lookup/coefficient bytes. Wrapped coordinates have sign none.
+
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) by unsigned mixtureffff22e8 over16384. It executes special multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, floor/phase latches and normal/transition rates000084e6/0000840d. Transition progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain downward discontinuities, so both input views have sign none.
+
+Natural function0004e974 selects unsigned BFSffff1024 orffff123e; optionalRPM cap uses max(ffff34f6,ROM32[000096e0]/RPMwordffff11bc), with all-ones quotient at zeroRPM. It publishes selected BFS atffff196a. H=floor(B*RAM16[ffff22e6]/131072). For bank0/1 it adds signedffff2300 to floor(H*RAM16[ffff40b6+2*b]/25600), then executes actual signed Q14 multiplication by unsigned gainffff165e, signed truncation toward zero, clamp0..65535 and floorROM16[000094e8]. Commonffff1876 uses H directly and updatesffff24a1.bit0 on its pre-floor clamp. Bank outputs areffff18c0/ffff18c2.
+
+Natural function00053698 alternatesffff2485.bit3: inactive entries set the bit and retain all gain intermediates; active entries clear it. Diagnostic argument-1 has a fixed false predicate. Raw P=floor(RAM16[ffff4524]*ROM8[000089fe]/128)+ROM16[000093c6] is retained for arithmetic after min(65535,P) publication atffff517c. Selected correction, ordered low/high clamps, BFS scaling and two16-cell curves000129e2/000129f2 precede saturated sum, complement load, ratio and floor((ratio*5259+1213696)/10000). Final gainffff165e=floor(byteffff160d*ROM16[00009332]/256). No temperature, pressure scale or acquisition cadence follows from these consumer contexts.
+
+Bounded original prefix0005594a..00055a52 executes wide-open hysteresis onffff3528 and16-cell curve0001214e, explicitRPM/load axis search00011cc0/00011ac7, and8x8 surface0000a9aa with horizontal then vertical positive-distance-floor interpolation. Optional00012552 correction uses true signed seven-SHAR flooring of the deviation from128. The rich latch uses unsigned32 hysteresis arithmetic with bytes00008b9b/00008b9f and publishes surface value or128 atffff15eb. Synthetic calibrations expose direction reversals and unsigned wrap; surface sign is none. The boundary preserves the live outer frame and does not execute the subsequent state machine.
+
+Bounded entry000562e2 resumes after the upstream state machine with an independently staged word atSP+12. Exact mode/phase/enable/tick branches update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The real0005651c auxiliary call updates curve/latches/countdown andffff123c. The terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 beforeffff22e8 publication. Untouched state-machine domains, physical mixture interpretation and tick cadence retain separate evidence.
+
+
+The transient coefficient function returns naturally without invoking the
+additive function. The bounded two-call windows of the real parent establish
+their composition. The enrichment prefix stops before the upstream state
+machine. The terminal resumes with a staged candidate at SP+12; it executes
+the actual auxiliary function and terminal publication without inferring
+the omitted state machine. These boundaries retain their original stock
+instruction bytes and expose the complete live frame state.
+
+All contexts compare complete GPRs, SR including M/Q/T and interrupt mask,
+PR/SP/GBR/MACH/MACL, immutable input records, 192 frame bytes and the complete
+64k RAM window. Natural calls and returns, original branch delay slots,
+declared lookup pools and the shared 16-bit RAM pointer's neighboring bytes
+are checked. Relocations affect declared data pointers only. The boundary
+observer restores the admitted outer stack through an explicit scratch
+register; it does not replace arithmetic under test.
+
+Before simulator entry, the linked big-endian ELF32 SH image is checked for
+every allocated section and every LOAD segment's virtual and physical memory
+extent, including uninitialized BSS. Storage that intersects the declared
+RAM window is rejected. Exact adjacency is admitted. Truncated, wrapping or
+missing storage declarations are rejected. Literal context compaction retains
+full register observations while placing executable fixture data outside RAM.
+
+The numerical contracts permit synthetic calibration contexts to expose
+otherwise inactive branches. They establish neither physical units nor
+acquisition cadence or live producer reachability. Hardware eligibility
+requires the corresponding bench and engine evidence; the existing GNU
+SPC/SSR exception contract does not establish the SH-2E exception stack.
+
+The named specification covers these exact chain members:
+
+`0000a9aa`, `00012176`, `00012422`, `000129e2`, `000129f2`, `0004e974`, `000528be`, `00052902`, `00053698`, `0005525a`, `000554ae`, `000556ec`, `0005594a`, `ffff1024`, `ffff102c`, `ffff106f`, `ffff11bc`, `ffff15da`, `ffff15eb`, `ffff165e`, `ffff18c0`, `ffff22e6`, `ffff22e8`, `ffff2300`, `ffff231a`.

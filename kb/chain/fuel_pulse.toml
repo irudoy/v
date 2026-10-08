@@ -20,8 +20,11 @@ effect = "indexes"
 sign = "none"
 via = ["large-tamarin/fn"]
 note = """
-Load axis 0x11AC7 reads normalized BFS ffff102c; wide-open latch \
-ffff2468.bit3 forces 0xFF."""
+W = \
+min(1,max(0,RAM8[ffff3528]+8*((RAM8[ffff2468]>>3)&1)-lookup(0001214e,RAM8[ffff11b3])+1)); \
+C = 255*W+(1-W)*uint8(from); to = \
+min(1,max(0,C-ROM8[00011ac8]+1))+min(1,max(0,C-ROM8[00011ac9]+1))+min(1,max(0,C-ROM8[00011aca]+1))+min(1,max(0,C-ROM8[00011acb]+1))+min(1,max(0,C-ROM8[00011acc]+1))+min(1,max(0,C-ROM8[00011acd]+1))+min(1,max(0,C-ROM8[00011ace]+1))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "rpm/ram"
@@ -29,17 +32,25 @@ to = "prudent-numbat/tbl"
 effect = "indexes"
 sign = "none"
 via = ["large-tamarin/fn"]
-note = "RPM axis 0x11CC0 at 50 rpm per count reads RPM/12.5 word ffff11bc."
+note = """
+R = uint16(from); to = \
+min(1,max(0,R-4*ROM8[00011cc1]+1))+min(1,max(0,R-4*ROM8[00011cc2]+1))+min(1,max(0,R-4*ROM8[00011cc3]+1))+min(1,max(0,R-4*ROM8[00011cc4]+1))+min(1,max(0,R-4*ROM8[00011cc5]+1))+min(1,max(0,R-4*ROM8[00011cc6]+1))+min(1,max(0,R-4*ROM8[00011cc7]+1))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "prudent-numbat/tbl"
 to = "inquisitive-crow/ram"
 effect = "looks-up"
-sign = "positive"
+sign = "none"
 via = ["large-tamarin/fn"]
 note = """
-Target Mixture - Main, Q7 with 128 = stoichiometric; ffff15eb = m while rich \
-latch ffff24a2.bit7 holds (set at m >= 130), else 128."""
+M = lookup(0000a9aa,x); C = lookup(00012552,RAM8[ffff11ae]); E = \
+(RAM8[ffff2466]>>6)&1; M = \
+(1-E)*M+E*max(0,min(255,128+floor((M-128)*C/128))); P = \
+(RAM8[ffff24a2]>>7)&1; H = \
+min(1,max(0,uint32(M+P*(ROM8[00008b9b]-ROM8[00008b9f]))-ROM8[00008b9b]+1)); \
+to = H*M+(1-H)*128"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "inquisitive-crow/ram"
@@ -48,18 +59,54 @@ effect = "limits"
 sign = "positive"
 via = ["large-tamarin/fn"]
 note = """
-ffff123a ramps from snapshot ffff1278 toward ffff15eb << 7; ffff22e8 = \
-max(ffff123a, ffff123c), 0x4000 below 400 rpm or while ffff2531 != 0."""
+P = RAM16[ffff1278]; T = 128*uint8(from); E = (RAM8[ffff84c3]>>7)&1; D = \
+(1-E)*P+E*max(16384,P-8*ROM8[0000849b]); U = \
+(1-E)*P+E*min(T,P+8*ROM8[0000849c]); M = RAM8[ffff1410]; F = RAM8[ffff2493]; \
+S = (1-((F>>4)&1))*((F>>3)&1); A = 1-min(1,abs(M-1)); B = 1-min(1,abs(M-2)); \
+C = 1-min(1,abs(M-3)); G = 1-min(1,abs(M-6)); V = 1-min(1,abs(M-4)); W = \
+1-min(1,abs(M-5)); Z = 1-min(1,abs(P-16384)); L = min(1,max(0,P-16384)); J = \
+(RAM8[ffff2485]>>5)&1; N = \
+J*T+(1-J)*(Z*128*ROM8[00008b9b]+L*U+(1-Z-L)*uint16(x)); K = \
+min(1,max(0,D-128*ROM8[00008b9f]+1)); Q = min(1,max(0,P-ROM16[0000929c])); R \
+= \
+A*16384+B*S*(K*D+(1-K)*16384)+G*S*(Z*128*ROM8[00008b9c]+(1-Z)*(Q*D+(1-Q)*U)) \
++(B*(1-S)+C+G*(1-S))*N+(V+W)*T+(1-A-B-C-G-V-W)*uint16(x); R = \
+min(uint16(R),T); B = RAM16[ffff127a]; K = ROM16[00008f86]; N = \
+min(1,max(0,RAM8[ffff102c]+((RAM8[ffff2474]>>7)&1)*ROM8[000086ea]-lookup(00011ede,RAM8[ffff11b3])+1)); \
+C = \
+min(1,max(0,ROM8[000087d9]-RAM8[ffff110e]-(1-((F>>2)&1))*ROM8[000086f3]+1)); \
+A = N*C*(1-min(1,RAM8[ffff24e9])); Z = 1-min(1,abs(B-16384)); L = \
+min(1,max(0,B-16384)); V = min(1,max(0,K-B)); W = min(1,max(0,B-K+1)); D = \
+min(1,max(0,B-128*ROM8[00008b9f])); U = min(1,max(0,K-B+1)); H = \
+A*(Z*128*ROM8[00008b9b]+(1-Z)*(L*V*min(K,B+8*ROM8[0000849c])+W*K+(1-L*V-W)*RAM16[ffff123c])) \
++(1-A)*(D*U*max(16384,B-8*ROM8[0000849b])+(1-D)*16384+D*(1-U)*RAM16[ffff123c]); \
+H = (1-E)*RAM16[ffff123c]+E*uint16(H); L = min(1,max(0,32-RAM8[ffff2700])); \
+D = L+(1-L)*min(1,RAM8[ffff2531]); R = D*16384+(1-D)*max(R,H); J = \
+(RAM8[ffff4252]>>1)&1; to = (1-J)*R+J*min(R,ROM16[000094ec])"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "af_state_factor/ram"
 to = "dazzling-sawfly/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["fuel_multiplier_publisher/fn"]
 note = """
-target = floor(min(65535, ffff231a + ffff240a)*ffff22e8/16384); gates, \
-bounds, and rate limits give ffff18e4, published as ffff22e6."""
+Q = floor(min(65535,RAM16[ffff231a]+RAM16[ffff240a])*uint16(from)/16384); S \
+= (RAM8[ffff4184]>>6)&1; F = min(1,max(0,RAM16[ffff15cc]-Q)); T = \
+S*min(65535,floor(Q*ROM8[0000838e]/64))+(1-S)*(F*RAM16[ffff15cc]+(1-F)*min(65535,Q)); \
+U = (1-S)*F+S*((RAM8[ffff246c]>>4)&1); Z = 1-min(1,abs(RAM8[ffff22e0]-63)); \
+E = \
+(1-(1-min(1,abs(RAM8[ffff22ee]-63))))*(1-Z)*(1-((RAM8[ffff4186]>>6)&1))*(1-S) \
+*(1-((RAM8[ffff2468]>>3)&1))*(1-min(1,abs(RAM16[ffff1414]-32768))); C = \
+min(T,256*ROM8[00008b9d]); O = RAM16[ffff22f4]; L = \
+max((RAM8[ffff24a2]>>6)&1,abs(((RAM8[ffff246f]>>4)&1)-U)); I = \
+(RAM8[ffff2473]>>6)&1; D = 16*((1-I)*ROM8[0000840d]+I*ROM8[0000840e]); J = \
+(RAM8[ffff84c3]>>7)&1; R = \
+(1-L)*min(min(65535,O+64*ROM8[000084e6]),max(max(0,O-64*ROM8[000084e7]),C)) \
++L*((1-J)*O+J*(U*min(C,min(65535,O+16*ROM8[00008412]))+(1-U)*max(C,max(0,O-D)))); \
+to = (1-Z)*((1-E)*T+E*R)"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "hasty-eel/ram"
@@ -67,9 +114,8 @@ to = "fair-horse/tbl"
 effect = "indexes"
 sign = "none"
 via = ["knowing-potoo/fn"]
-note = """
-The previous-cycle normalized coolant index ffff106f is the lookup \
-coordinate."""
+note = "to = uint8(4*max(0,uint8(from)+int16(ROM16[0005533c])))"
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "fair-horse/tbl"
@@ -78,26 +124,55 @@ effect = "looks-up"
 sign = "positive"
 via = ["knowing-potoo/fn"]
 note = """
-The lookup times selected ROM8[0x990a] is step-limited relative to ffff15da \
-and capped before it updates ffff15da."""
+A = min(1,max(0,RAM8[ffff11b3]+2*((RAM8[ffff2492]>>3)&1)-ROM8[000087a5]+1)); \
+B = \
+min(1,max(0,RAM8[ffff1107]+((RAM8[ffff2493]>>7)&1)*ROM8[000086eb]-ROM8[000087a7])); \
+C = \
+min(1,max(0,RAM8[ffff1107]+((RAM8[ffff2492]>>1)&1)*ROM8[000086eb]-ROM8[000087a6]+1)); \
+E = (1-((RAM8[ffff2458]>>5)&1))*(A*C+(1-A)*B); L = \
+1+min(1,max(0,RAM8[ffff102c]-ROM8[00011b1c]))+min(1,max(0,RAM8[ffff102c]-ROM8[00011b1d]))+min(1,max(0,RAM8[ffff102c]-ROM8[00011b1e])); \
+R = \
+1+min(1,max(0,RAM8[ffff11ae]-ROM8[00011b18]))+min(1,max(0,RAM8[ffff11ae]-ROM8[00011b19]))+min(1,max(0,RAM8[ffff11ae]-ROM8[00011b1a])); \
+V = \
+lookup(00012422,uint8(4*max(0,RAM8[ffff106f]+int16(ROM16[0005533c]))))*ROM8[0000990a+4*R+L-5]; \
+P = RAM16[ffff15da]; D = RAM8[ffff2492]&1; V = \
+(1-D)*V+D*min(P+ROM16[00009090],max(P-ROM16[00009090],V)); to = \
+E*min(V,max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "competent-pillbug/ram"
 to = "happy-curassow/ram"
 effect = "adds"
-sign = "positive"
+sign = "none"
 via = ["fuel_base_accumulator/fn"]
-note = "ffff231a = clamp_u16(ffff15f8 + 0x4000 + ffff230c + ffff15da)."
+note = """
+to = \
+max(0,min(65535,int32(uint32(RAM32[ffff15f8]+16384+RAM16[ffff230c]+uint16(from)))))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "happy-curassow/ram"
 to = "dazzling-sawfly/ram"
 effect = "multiplies"
-sign = "positive"
+sign = "none"
 via = ["fuel_multiplier_publisher/fn"]
 note = """
-The base term plus conditional term ffff240a is scaled by commanded mixture \
-ffff22e8 over 16384."""
+Q = floor(min(65535,uint16(from)+RAM16[ffff240a])*RAM16[ffff22e8]/16384); S \
+= (RAM8[ffff4184]>>6)&1; F = min(1,max(0,RAM16[ffff15cc]-Q)); T = \
+S*min(65535,floor(Q*ROM8[0000838e]/64))+(1-S)*(F*RAM16[ffff15cc]+(1-F)*min(65535,Q)); \
+U = (1-S)*F+S*((RAM8[ffff246c]>>4)&1); Z = 1-min(1,abs(RAM8[ffff22e0]-63)); \
+E = \
+(1-(1-min(1,abs(RAM8[ffff22ee]-63))))*(1-Z)*(1-((RAM8[ffff4186]>>6)&1))*(1-S) \
+*(1-((RAM8[ffff2468]>>3)&1))*(1-min(1,abs(RAM16[ffff1414]-32768))); C = \
+min(T,256*ROM8[00008b9d]); O = RAM16[ffff22f4]; L = \
+max((RAM8[ffff24a2]>>6)&1,abs(((RAM8[ffff246f]>>4)&1)-U)); I = \
+(RAM8[ffff2473]>>6)&1; D = 16*((1-I)*ROM8[0000840d]+I*ROM8[0000840e]); J = \
+(RAM8[ffff84c3]>>7)&1; R = \
+(1-L)*min(min(65535,O+64*ROM8[000084e6]),max(max(0,O-64*ROM8[000084e7]),C)) \
++L*((1-J)*O+J*(U*min(C,min(65535,O+16*ROM8[00008412]))+(1-U)*max(C,max(0,O-D)))); \
+to = (1-Z)*((1-E)*T+E*R)"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "kickass-mole/ram"
@@ -106,8 +181,14 @@ effect = "multiplies"
 sign = "positive"
 via = ["injection_pulse_precursor_builder/fn"]
 note = """
-S = current BFS ffff1024, or ffff123e while ffff245d.bit5 is set; H = \
-floor(S*ffff22e6/131072)."""
+A = (RAM8[ffff245d]>>5)&1; S = (1-A)*uint16(from)+A*RAM16[ffff123e]; Z = \
+1-min(1,RAM16[ffff11bc]); Q = \
+(1-Z)*floor(ROM32[000096e0]/max(1,RAM16[ffff11bc]))+Z*4294967295; C = \
+RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
+floor(uint32(S*RAM16[ffff22e6])/131072); B = \
+floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
+max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*RAM16[ffff165e]/16384))))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "dazzling-sawfly/ram"
@@ -116,8 +197,14 @@ effect = "multiplies"
 sign = "positive"
 via = ["injection_pulse_precursor_builder/fn"]
 note = """
-H = floor(S*ffff22e6/131072) with unity 0x4000; a full inhibit mask 0x3f \
-publishes ffff22e6 = 0."""
+A = (RAM8[ffff245d]>>5)&1; S = (1-A)*RAM16[ffff1024]+A*RAM16[ffff123e]; Z = \
+1-min(1,RAM16[ffff11bc]); Q = \
+(1-Z)*floor(ROM32[000096e0]/max(1,RAM16[ffff11bc]))+Z*4294967295; C = \
+RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
+floor(uint32(S*uint16(from))/131072); B = \
+floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
+max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*RAM16[ffff165e]/16384))))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "vegan-bittern/tbl"
@@ -126,8 +213,11 @@ effect = "scales"
 sign = "negative"
 via = ["transient_fuel_term_coordinator/fn", "transient_fuel_additive/fn"]
 note = """
-Only while ffff1a66 < 0: ffff150a = cell/2 and ffff2300 = \
-clamp_s16(trunc0(ffff150a*ffff1a66/256)), so a larger cell lowers ffff2300."""
+T = int16(RAM16[ffff1a66]); N = min(1,max(0,-T)); C = \
+N*floor(lookup(00012176,min(255,2*RAM8[ffff102c]))/2)+(1-N)*64; Z = \
+((RAM8[ffff245d]>>5)&1)*((ROM8[00008b40]>>2)&1); to = \
+(1-Z)*max(-32768,min(32767,trunc0(C*T/256)))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "enigmatic-mouse/ram"
@@ -135,7 +225,15 @@ to = "dainty-oriole/ram"
 effect = "adds"
 sign = "positive"
 via = ["injection_pulse_precursor_builder/fn"]
-note = "X_b = floor(H*ffff40b6/0x6400) + ffff2300, the signed transient term."
+note = """
+A = (RAM8[ffff245d]>>5)&1; S = (1-A)*RAM16[ffff1024]+A*RAM16[ffff123e]; Z = \
+1-min(1,RAM16[ffff11bc]); Q = \
+(1-Z)*floor(ROM32[000096e0]/max(1,RAM16[ffff11bc]))+Z*4294967295; C = \
+RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
+floor(uint32(S*RAM16[ffff22e6])/131072); B = \
+floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
+max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(from))*RAM16[ffff165e]/16384))))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "married-whippet/tbl"
@@ -144,8 +242,19 @@ effect = "scales"
 sign = "positive"
 via = ["fuel_common_gain_builder/fn"]
 note = """
-Curve 0x129E2 on load byte ffff13b1 adds to s; ffff31d8 = P*(256-s)>>8 \
-falls, so ffff17ee = (K<<18)/((K<<10)+ffff31d8) and the gain rise."""
+E = (RAM8[ffff2485]>>3)&1; P = \
+floor(RAM16[ffff4524]*ROM8[000089fe]/128)+ROM16[000093c6]; J = \
+(RAM8[ffff5aa3]>>7)&1; C = J*ROM8[00008b51]+(1-J)*RAM8[ffff2733]; A = \
+max(ROM8[000083c4],min(256,floor(P*256/51865))); Q = floor(76288/(C+223)); L \
+= ROM8[000083c5]+128; H = ROM8[000083c6]+128; B = min(1,max(0,L-Q)); D = \
+min(1,max(0,Q-H)); F = B*L+(1-B)*(D*H+(1-D)*Q); X = \
+min(255,floor(F*floor(A*RAM16[ffff1024]/256)/32768)); S = \
+min(255,lookup(000129e2,X)+lookup(000129f2,RAM8[ffff11b3])); V = \
+min(65535,floor(P*(256-S)/256)); K = ROM8[00008ae7]; R = \
+min(255,floor(K*262144/max(1,K*1024+V))); G = \
+floor(floor((R*5259+1213696)/10000)*ROM16[00009332]/256); to = \
+E*G+(1-E)*uint16(prev)"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "greedy-sunfish/tbl"
@@ -154,8 +263,19 @@ effect = "scales"
 sign = "positive"
 via = ["fuel_common_gain_builder/fn"]
 note = """
-Curve 0x129F2 on RPM/25 byte ffff11b3 adds to s; ffff165e = \
-ffff160d*ROM16[0x9332]/256 rises with s."""
+E = (RAM8[ffff2485]>>3)&1; P = \
+floor(RAM16[ffff4524]*ROM8[000089fe]/128)+ROM16[000093c6]; J = \
+(RAM8[ffff5aa3]>>7)&1; C = J*ROM8[00008b51]+(1-J)*RAM8[ffff2733]; A = \
+max(ROM8[000083c4],min(256,floor(P*256/51865))); Q = floor(76288/(C+223)); L \
+= ROM8[000083c5]+128; H = ROM8[000083c6]+128; B = min(1,max(0,L-Q)); D = \
+min(1,max(0,Q-H)); F = B*L+(1-B)*(D*H+(1-D)*Q); X = \
+min(255,floor(F*floor(A*RAM16[ffff1024]/256)/32768)); S = \
+min(255,lookup(000129e2,X)+lookup(000129f2,RAM8[ffff11b3])); V = \
+min(65535,floor(P*(256-S)/256)); K = ROM8[00008ae7]; R = \
+min(255,floor(K*262144/max(1,K*1024+V))); G = \
+floor(floor((R*5259+1213696)/10000)*ROM16[00009332]/256); to = \
+E*G+(1-E)*uint16(prev)"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "versatile-bobcat/ram"
@@ -164,8 +284,14 @@ effect = "multiplies"
 sign = "positive"
 via = ["injection_pulse_precursor_builder/fn"]
 note = """
-I_b = max(170, clamp_u16(trunc0(X_b*ffff165e/16384))); the common Q14 gain \
-spans 0.7495..0.8494."""
+A = (RAM8[ffff245d]>>5)&1; S = (1-A)*RAM16[ffff1024]+A*RAM16[ffff123e]; Z = \
+1-min(1,RAM16[ffff11bc]); Q = \
+(1-Z)*floor(ROM32[000096e0]/max(1,RAM16[ffff11bc]))+Z*4294967295; C = \
+RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
+floor(uint32(S*RAM16[ffff22e6])/131072); B = \
+floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
+max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*uint16(from)/16384))))"""
+specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "dainty-oriole/ram"

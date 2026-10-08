@@ -57,6 +57,16 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff231a"
 name = "happy-curassow"
+width = 16
+note = [
+    """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence.""",
+    "The admitted accumulator context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -93,6 +103,36 @@ at = "7mfk:000556fa"
 value = {named = ["000554ae", "000556ec", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
 [[link]]
 type = "input"
 to = "adept-bumblebee/ram"
@@ -117,18 +157,34 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "fuel_multiplier_publisher/fn"
+via = ["fuel_multiplier_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) \
+by unsigned mixtureffff22e8 over16384. It executes special \
+multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, \
+floor/phase latches and normal/transition rates000084e6/0000840d. Transition \
+progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 \
+as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain \
+downward discontinuities, so both input views have sign none."""
 
 [[link]]
 type = "writer"
 to = "fuel_base_accumulator/fn"
+via = ["fuel_base_accumulator/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence."""

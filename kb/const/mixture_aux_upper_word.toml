@@ -1,0 +1,82 @@
+summary = """
+Raw 16-bit operand at00008f86 in the exact admitted terminal contract. \
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence."""
+block = "fuel_quantity/block"
+width = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008f86"
+level = "code"
+width = 16
+signed = false
+note = """
+Raw 16-bit operand at00008f86 in the exact admitted terminal contract. \
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000565fc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "reader"
+to = "frisky-beluga/fn"
+via = ["frisky-beluga/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw 16-bit operand at00008f86 in the exact admitted terminal contract. \
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

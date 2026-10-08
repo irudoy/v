@@ -251,6 +251,28 @@ supports = "identity"
 layout = "7mfk"
 address = "0005594a"
 name = "large-tamarin"
+note = [
+    """
+Bounded original prefix0005594a..00055a52 executes wide-open hysteresis \
+onffff3528 and16-cell curve0001214e, explicitRPM/load axis \
+search00011cc0/00011ac7, and8x8 surface0000a9aa with horizontal then \
+vertical positive-distance-floor interpolation. Optional00012552 correction \
+uses true signed seven-SHAR flooring of the deviation from128. The rich \
+latch uses unsigned32 hysteresis arithmetic with bytes00008b9b/00008b9f and \
+publishes surface value or128 atffff15eb. Synthetic calibrations expose \
+direction reversals and unsigned wrap; surface sign is none. The boundary \
+preserves the live outer frame and does not execute the subsequent state \
+machine.""",
+    """
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -318,6 +340,69 @@ supports = "identity"
 at = "7mfk:00056508"
 value = {named = ["0000849b", "0000849c", "000087d6", "00008b9b", "00008b9f", "000094ec", "0000a9aa", "0001214e", "00012552", "000224f8", "0005594a", "ffff102c", "ffff11ae", "ffff11bc", "ffff123a", "ffff123c", "ffff1278", "ffff1410", "ffff1411", "ffff14ef", "ffff15eb", "ffff22e8", "ffff2466", "ffff2468", "ffff2485", "ffff2493", "ffff24a2", "ffff24a4", "ffff2531", "ffff2700", "ffff3528", "ffff4252", "ffff84c3"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "depends"
+to = "frisky-beluga/fn"
+via = ["large-tamarin/fn", "frisky-beluga/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "depends"

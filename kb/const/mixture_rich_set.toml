@@ -1,0 +1,85 @@
+summary = """
+Raw 8-bit operand at00008b9b in the exact admitted prefix contract. Bounded \
+original prefix0005594a..00055a52 executes wide-open hysteresis onffff3528 \
+and16-cell curve0001214e, explicitRPM/load axis search00011cc0/00011ac7, \
+and8x8 surface0000a9aa with horizontal then vertical positive-distance-floor \
+interpolation. Optional00012552 correction uses true signed seven-SHAR \
+flooring of the deviation from128. The rich latch uses unsigned32 hysteresis \
+arithmetic with bytes00008b9b/00008b9f and publishes surface value or128 \
+atffff15eb. Synthetic calibrations expose direction reversals and unsigned \
+wrap; surface sign is none. The boundary preserves the live outer frame and \
+does not execute the subsequent state machine."""
+block = "fuel_quantity/block"
+width = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008b9b"
+level = "code"
+width = 8
+signed = false
+note = """
+Raw 8-bit operand at00008b9b in the exact admitted prefix contract. Bounded \
+original prefix0005594a..00055a52 executes wide-open hysteresis onffff3528 \
+and16-cell curve0001214e, explicitRPM/load axis search00011cc0/00011ac7, \
+and8x8 surface0000a9aa with horizontal then vertical positive-distance-floor \
+interpolation. Optional00012552 correction uses true signed seven-SHAR \
+flooring of the deviation from128. The rich latch uses unsigned32 hysteresis \
+arithmetic with bytes00008b9b/00008b9f and publishes surface value or128 \
+atffff15eb. Synthetic calibrations expose direction reversals and unsigned \
+wrap; surface sign is none. The boundary preserves the live outer frame and \
+does not execute the subsequent state machine."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00055a10"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "reader"
+to = "large-tamarin/fn"
+via = ["large-tamarin/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw 8-bit operand at00008b9b in the exact admitted prefix contract. Bounded \
+original prefix0005594a..00055a52 executes wide-open hysteresis onffff3528 \
+and16-cell curve0001214e, explicitRPM/load axis search00011cc0/00011ac7, \
+and8x8 surface0000a9aa with horizontal then vertical positive-distance-floor \
+interpolation. Optional00012552 correction uses true signed seven-SHAR \
+flooring of the deviation from128. The rich latch uses unsigned32 hysteresis \
+arithmetic with bytes00008b9b/00008b9f and publishes surface value or128 \
+atffff15eb. Synthetic calibrations expose direction reversals and unsigned \
+wrap; surface sign is none. The boundary preserves the live outer frame and \
+does not execute the subsequent state machine."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

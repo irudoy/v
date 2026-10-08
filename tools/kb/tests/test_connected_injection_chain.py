@@ -107,7 +107,7 @@ def test_connected_stock_regions_contract(jk08a_stock_bytes):
     for key,row in selected.items():
         assert hashlib.sha256(module.build_fixture(row,jk08a_stock_bytes)).hexdigest()==contracts()['fixtures'][key]
         harness_contract(row,(TOOL_DIR/row.harness).read_text())
-    assert module.REGION_OBSERVERS==contracts()['observers']
+    assert {key:module.REGION_OBSERVERS[key] for key in contracts()['observers']}==contracts()['observers']
 
 def test_connected_retains_every_prior_region_and_fixture(jk08a_stock_bytes):
     module=publication.stock_module()

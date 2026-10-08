@@ -74,12 +74,23 @@ layout = "7mfk"
 address = "ffff22e6"
 name = "dazzling-sawfly"
 width = 16
-note = """
+note = [
+    """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \
 its stated legal bank context. Its unsigned16 reader interpretation is \
 explicit on typed reader/input/writer links; this storage-width fact does \
 not change producer signedness, units, physical identity, other readers or \
-layouts."""
+layouts.""",
+    """
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) \
+by unsigned mixtureffff22e8 over16384. It executes special \
+multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, \
+floor/phase latches and normal/transition rates000084e6/0000840d. Transition \
+progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 \
+as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain \
+downward discontinuities, so both input views have sign none.""",
+    "The admitted multiplier context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -134,6 +145,36 @@ key = "test_bank_base_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "input"
@@ -208,8 +249,17 @@ role = "indexed_by"
 [[link]]
 type = "writer"
 to = "fuel_multiplier_publisher/fn"
+via = ["fuel_multiplier_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) \
+by unsigned mixtureffff22e8 over16384. It executes special \
+multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, \
+floor/phase latches and normal/transition rates000084e6/0000840d. Transition \
+progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 \
+as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain \
+downward discontinuities, so both input views have sign none."""

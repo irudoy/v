@@ -66,12 +66,25 @@ layout = "7mfk"
 address = "ffff18c2"
 name = "famous-grouse"
 width = 16
-note = """
+note = [
+    """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \
 its stated legal bank context. Its unsigned16 reader interpretation is \
 explicit on typed reader/input/writer links; this storage-width fact does \
 not change producer signedness, units, physical identity, other readers or \
-layouts."""
+layouts.""",
+    """
+Natural function0004e974 selects unsigned BFSffff1024 orffff123e; \
+optionalRPM cap uses max(ffff34f6,ROM32[000096e0]/RPMwordffff11bc), with \
+all-ones quotient at zeroRPM. It publishes selected BFS atffff196a. \
+H=floor(B*RAM16[ffff22e6]/131072). For bank0/1 it adds signedffff2300 to \
+floor(H*RAM16[ffff40b6+2*b]/25600), then executes actual signed Q14 \
+multiplication by unsigned gainffff165e, signed truncation toward zero, \
+clamp0..65535 and floorROM16[000094e8]. Commonffff1876 uses H directly and \
+updatesffff24a1.bit0 on its pre-floor clamp. Bank outputs \
+areffff18c0/ffff18c2.""",
+    "The admitted precursor context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -119,6 +132,36 @@ key = "test_bank_base_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "base"
@@ -209,8 +252,19 @@ key = "Bounded bank base-pulse builder"
 [[link]]
 type = "writer"
 to = "injection_pulse_precursor_builder/fn"
+via = ["injection_pulse_precursor_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Natural function0004e974 selects unsigned BFSffff1024 orffff123e; \
+optionalRPM cap uses max(ffff34f6,ROM32[000096e0]/RPMwordffff11bc), with \
+all-ones quotient at zeroRPM. It publishes selected BFS atffff196a. \
+H=floor(B*RAM16[ffff22e6]/131072). For bank0/1 it adds signedffff2300 to \
+floor(H*RAM16[ffff40b6+2*b]/25600), then executes actual signed Q14 \
+multiplication by unsigned gainffff165e, signed truncation toward zero, \
+clamp0..65535 and floorROM16[000094e8]. Commonffff1876 uses H directly and \
+updatesffff24a1.bit0 on its pre-floor clamp. Bank outputs \
+areffff18c0/ffff18c2."""

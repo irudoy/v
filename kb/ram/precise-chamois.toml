@@ -2,11 +2,54 @@
 layout = "7mfk"
 address = "ffff15dd"
 name = "precise-chamois"
+width = 8
+note = [
+    """
+Natural function0005525a updates threshold/hysteresis bits \
+inffff2492/ffff2493, admits the actual gate, and uses \
+uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell \
+curve00012422. It publishes lookup byteffff15dd and selected coefficient \
+byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. \
+Optional signed difference rate limiting against oldffff15da precedes cap \
+max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and \
+retain lookup/coefficient bytes. Wrapped coordinates have sign none.""",
+    "The admitted coolant context binds this storage as 8-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:0005539e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "lookup"
@@ -18,6 +61,18 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "knowing-potoo/fn"
+via = ["knowing-potoo/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Natural function0005525a updates threshold/hysteresis bits \
+inffff2492/ffff2493, admits the actual gate, and uses \
+uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell \
+curve00012422. It publishes lookup byteffff15dd and selected coefficient \
+byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. \
+Optional signed difference rate limiting against oldffff15da precedes cap \
+max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and \
+retain lookup/coefficient bytes. Wrapped coordinates have sign none."""

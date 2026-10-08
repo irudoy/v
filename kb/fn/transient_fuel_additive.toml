@@ -63,6 +63,14 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00052902"
+note = [
+    """
+Natural function00052902 publishes signed16 atffff2300: \
+trunc0(uint8(ffff150a)*int16(ffff1a66)/256), or0 whenffff245d.bit5 \
+andROM8[00008b40].bit2 are both set. The admitted product \
+bounds-32640..32639 make the explicit signed saturation unreachable. No \
+physical transient qualifier or cadence is inferred.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -105,3 +113,18 @@ supports = "identity"
 at = "7mfk:00052958"
 value = {named = ["00052902", "ffff150a", "ffff1a66", "ffff2300", "ffff245d"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

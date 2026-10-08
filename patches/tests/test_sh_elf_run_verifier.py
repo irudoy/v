@@ -769,6 +769,17 @@ mov #0x5,r1
             "ENGINE_SPEED": 0xFFFF11CA,
         }
         expected = {
+            'jk08a-base-accumulator': {'REGION_ENTRY': 349358, 'TERM': 4294907384, 'CONDITIONAL': 4294910732, 'COOLANT': 4294907354, 'OUTPUT': 4294910746, 'EARLY_ONLY': 0},
+            'jk08a-transient-coefficient': {'REGION_ENTRY': 338110, 'TERM': 4294908518, 'NORMALIZED': 4294905900, 'OUTPUT': 4294907146, 'EARLY_ONLY': 0},
+            'jk08a-transient-additive': {'REGION_ENTRY': 338178, 'TERM': 4294908518, 'COEFFICIENT': 4294907146, 'FLAGS': 4294911069, 'OUTPUT': 4294910720, 'EARLY_ONLY': 0},
+            'jk08a-coolant-conditional': {'REGION_ENTRY': 348762, 'OUTPUT': 4294907354, 'EARLY_ONLY': 0},
+            'jk08a-transient-pair-1': {'REGION_ENTRY': 336956, 'TERM': 4294908518, 'NORMALIZED': 4294905900, 'OUTPUT': 4294910720, 'EARLY_ONLY': 0},
+            'jk08a-transient-pair-2': {'REGION_ENTRY': 337054, 'TERM': 4294908518, 'NORMALIZED': 4294905900, 'OUTPUT': 4294910720, 'EARLY_ONLY': 0},
+            'jk08a-fuel-multiplier': {'REGION_ENTRY': 349932, 'OUTPUT': 4294910694, 'SNAPSHOT': 4294908132, 'EARLY_ONLY': 0, 'WORD_ALIAS': 31232},
+            'jk08a-pulse-precursor': {'REGION_ENTRY': 321908, 'OUTPUT': 4294908022, 'BANKS': 4294908096, 'EARLY_ONLY': 0, 'SELECTED_BFS': 4294908266},
+            'jk08a-common-gain': {'REGION_ENTRY': 341656, 'OUTPUT': 4294907486, 'FACTOR': 4294907405, 'EARLY_ONLY': 0},
+            'jk08a-enrichment-prefix': {'REGION_ENTRY': 350712, 'OUTPUT': 4294907371, 'PREFIX_ENTRY': 350538, 'EARLY_ONLY': 0},
+            'jk08a-enrichment-terminal': {'REGION_ENTRY': 353288, 'OUTPUT': 4294910696, 'EARLY_ONLY': 0, 'TERMINAL_ENTRY': 352994, 'WORD_ALIAS': 31232},
             'jk08a-opening-word': {'REGION_ENTRY': 356288, 'BATTERY': 4294906120, 'OPENING': 4294911030, 'EARLY_ONLY': 0},
             'jk08a-pulse-selector': {'REGION_ENTRY': 347454, 'OUTPUT': 4294910542, 'SNAPSHOT': 4294910792, 'EARLY_ONLY': 0},
             'jk08a-full-programmer': {'REGION_ENTRY': 177738, 'CONTROL': 4294935788, 'COUNT': 4294906808, 'REMAINDER': 4294908219, 'MODE': 4294911177, 'POSITION': 4294906802, 'PERIOD': 4294910652, 'OUTPUT': 4294907586, 'SCRATCH': 4294907500, 'COUNTER_REGISTER': 4294964288, 'COMPARE_REGISTER': 4294964292, 'STATUS_REGISTER': 4294964318, 'CONTROL_REGISTER': 4294964322, 'EARLY_ONLY': 0, 'WORD_ALIAS': 32512, 'REGISTER_ALIAS': 32256},
@@ -1299,6 +1310,9 @@ mov #0x5,r1
                 elif key in ('jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch'):
                     from tools.kb.tests import test_connected_injection_chain as connected
                     connected.harness_contract(region,harness,STOCK_VERIFIER.TOOL_DIR)
+                elif key in ('jk08a-base-accumulator', 'jk08a-transient-coefficient', 'jk08a-transient-additive', 'jk08a-coolant-conditional', 'jk08a-transient-pair-1', 'jk08a-transient-pair-2', 'jk08a-fuel-multiplier', 'jk08a-pulse-precursor', 'jk08a-common-gain', 'jk08a-enrichment-prefix', 'jk08a-enrichment-terminal'):
+                    from tools.kb.tests import test_fuel_upstream_chain as upstream
+                    upstream.harness_contract(region,harness,STOCK_VERIFIER.TOOL_DIR)
                 elif key == "jk08a-injection-prologue":
                     header_name = "injection-prologue-cases.h"
                     self.assertEqual(re.findall(r'^#include "' + re.escape(header_name) + r'"$',
@@ -1571,6 +1585,7 @@ mov #0x5,r1
                         patch.object(STOCK_VERIFIER, "require_reconstruction", return_value=301), \
                         patch.object(STOCK_VERIFIER, "build_fixture", return_value=b"\x00" * 4), \
                         patch.object(STOCK_VERIFIER, "harness_defines", return_value={}), \
+                        patch.object(STOCK_VERIFIER, "require_separate_storage", return_value={}), \
                         patch.object(STOCK_VERIFIER.base_verifier, "run_command",
                                      return_value=SimpleNamespace(stdout=output)), \
                         self.assertRaisesRegex(STOCK_VERIFIER.VerificationError, "exact PASS marker"):
@@ -1579,6 +1594,7 @@ mov #0x5,r1
                     patch.object(STOCK_VERIFIER, "require_reconstruction", return_value=301), \
                     patch.object(STOCK_VERIFIER, "build_fixture", return_value=b"\x00" * 4), \
                     patch.object(STOCK_VERIFIER, "harness_defines", return_value={}), \
+                        patch.object(STOCK_VERIFIER, "require_separate_storage", return_value={}), \
                     patch.object(STOCK_VERIFIER.base_verifier, "run_command",
                                  return_value=SimpleNamespace(stdout="diagnostic\n" + marker + "\n")):
                 self.assertEqual(STOCK_VERIFIER.run_region(region, build / "invoke.o", build), 301)

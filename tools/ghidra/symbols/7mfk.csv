@@ -85,7 +85,7 @@ addr,name,note
 0004ead4,bank_base_pulse_builder,Apply bank trims and common additive word to form two parity bases
 0004ecac,six_channel_pulse_dispatch,Build two parity bases then calculate six compensated pulse channels
 000521a8,transformed_pulse_maximum,Reduce six transformed pulse words and derive scalar outputs
-000528be,transient_fuel_term_coordinator,Select transient coefficient and invoke the signed additive-term producer
+000528be,transient_fuel_term_coordinator,Select the transient coefficient through the actual lookup and return naturally.
 00052902,transient_fuel_additive,Publish signed current-pass pulse additive word ffff2300
 00053698,fuel_common_gain_builder,Publish common Q14 fuel gain ffff165e on alternating passes
 000554ae,fuel_base_accumulator,Publish saturated base accumulator ffff231a

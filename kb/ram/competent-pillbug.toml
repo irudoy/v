@@ -2,11 +2,54 @@
 layout = "7mfk"
 address = "ffff15da"
 name = "competent-pillbug"
+width = 16
+note = [
+    """
+Natural function0005525a updates threshold/hysteresis bits \
+inffff2492/ffff2493, admits the actual gate, and uses \
+uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell \
+curve00012422. It publishes lookup byteffff15dd and selected coefficient \
+byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. \
+Optional signed difference rate limiting against oldffff15da precedes cap \
+max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and \
+retain lookup/coefficient bytes. Wrapped coordinates have sign none.""",
+    "The admitted coolant context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00055402"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "lookup"
@@ -18,14 +61,35 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "fuel_base_accumulator/fn"
+via = ["fuel_base_accumulator/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence."""
 
 [[link]]
 type = "writer"
 to = "knowing-potoo/fn"
+via = ["knowing-potoo/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Natural function0005525a updates threshold/hysteresis bits \
+inffff2492/ffff2493, admits the actual gate, and uses \
+uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell \
+curve00012422. It publishes lookup byteffff15dd and selected coefficient \
+byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. \
+Optional signed difference rate limiting against oldffff15da precedes cap \
+max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and \
+retain lookup/coefficient bytes. Wrapped coordinates have sign none."""

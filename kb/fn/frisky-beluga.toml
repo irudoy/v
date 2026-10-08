@@ -97,6 +97,17 @@ supports = "identity"
 layout = "7mfk"
 address = "0005651c"
 name = "frisky-beluga"
+note = [
+    """
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -136,3 +147,18 @@ supports = "identity"
 at = "7mfk:00056566"
 value = {named = ["000086ea", "000087d9", "00008f86", "00011ede", "0005651c", "ffff102c", "ffff110e", "ffff11b3", "ffff123c", "ffff127a", "ffff12e7", "ffff2474", "ffff2493"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

@@ -62,6 +62,14 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "000554ae"
+note = [
+    """
+Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], \
+16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the \
+low32 result as signed, then clamps it to0..65535 atffff231a. The signed \
+wrap seam prevents a universal positive input sign. Producer domains and \
+physical units require independent evidence.""",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -125,3 +133,18 @@ supports = "identity"
 at = "7mfk:000554ea"
 value = {named = ["000554ae", "ffff15da", "ffff15f8", "ffff230c", "ffff231a"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

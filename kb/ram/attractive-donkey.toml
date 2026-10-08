@@ -2,11 +2,50 @@
 layout = "7mfk"
 address = "ffff150a"
 name = "attractive-donkey"
+width = 8
+note = [
+    """
+Natural function000528be reads doubled normalized load, capped255, through \
+the actual eight-cell lookup00026370 atROM00012176. It publishes half the \
+cell atffff150a while signed RAM16[ffff1a66]<0, otherwise64. Its natural RTS \
+at000528f2 returns without calling00052902 or writingffff2300.""",
+    "The admitted coefficient context binds this storage as 8-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:000528f4"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "lookup"
@@ -18,10 +57,19 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "transient_fuel_additive/fn"
+via = ["transient_fuel_additive/fn"]
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Natural function00052902 publishes signed16 atffff2300: \
+trunc0(uint8(ffff150a)*int16(ffff1a66)/256), or0 whenffff245d.bit5 \
+andROM8[00008b40].bit2 are both set. The admitted product \
+bounds-32640..32639 make the explicit signed saturation unreachable. No \
+physical transient qualifier or cadence is inferred."""
 
 [[link]]
 type = "writer"

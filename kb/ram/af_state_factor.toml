@@ -212,12 +212,24 @@ layout = "7mfk"
 address = "ffff22e8"
 former = ["vengeful-potoo/ram/7mfk-ffff22e8"]
 width = 16
-note = """
+note = [
+    """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \
 its stated legal bank context. Its unsigned16 reader interpretation is \
 explicit on typed reader/input/writer links; this storage-width fact does \
 not change producer signedness, units, physical identity, other readers or \
-layouts."""
+layouts.""",
+    """
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence.""",
+    "The admitted terminal context binds this storage as 16-bit raw data.",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -296,6 +308,36 @@ key = "test_bank_base_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[symbol]]
 layout = "jk00c"
@@ -384,12 +426,21 @@ key = "Bounded bank base-pulse builder"
 [[link]]
 type = "reader"
 to = "fuel_multiplier_publisher/fn"
+via = ["fuel_multiplier_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+note = """
+Natural function000556ec scales min(65535,RAM16[ffff231a]+RAM16[ffff240a]) \
+by unsigned mixtureffff22e8 over16384. It executes special \
+multiplier0000838e, floorffff15cc, cap byte00008b9d, eligibility gates, \
+floor/phase latches and normal/transition rates000084e6/0000840d. Transition \
+progress usesffff84c3.bit7. It writes workingffff18e4 and publishesffff22e6 \
+as0 only when aggregateffff22e0 equals0x3f. Full admitted contexts contain \
+downward discontinuities, so both input views have sign none."""
 
 [[link]]
 type = "reader"
@@ -431,8 +482,18 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "large-tamarin/fn"
+via = ["large-tamarin/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+note = """
+Bounded entry000562e2 resumes after the upstream state machine with an \
+independently staged word atSP+12. Exact mode/phase/enable/tick branches \
+update primaryffff123a, clamp it to mixture*128 and updateffff2485.bit5. The \
+real0005651c auxiliary call updates curve/latches/countdown andffff123c. The \
+terminal max(primary,auxiliary) is forced to16384 below rawRPM32 or \
+duringffff2531 delay, then capped byROM16[000094ec] underffff4252.bit1 \
+beforeffff22e8 publication. Untouched state-machine domains, physical \
+mixture interpretation and tick cadence retain separate evidence."""

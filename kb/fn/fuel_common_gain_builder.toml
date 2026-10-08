@@ -184,6 +184,20 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00053698"
+note = [
+    """
+Natural function00053698 alternatesffff2485.bit3: inactive entries set the \
+bit and retain all gain intermediates; active entries clear it. Diagnostic \
+argument-1 has a fixed false predicate. Raw \
+P=floor(RAM16[ffff4524]*ROM8[000089fe]/128)+ROM16[000093c6] is retained for \
+arithmetic after min(65535,P) publication atffff517c. Selected correction, \
+ordered low/high clamps, BFS scaling and two16-cell curves000129e2/000129f2 \
+precede saturated sum, complement load, ratio and \
+floor((ratio*5259+1213696)/10000). Final \
+gainffff165e=floor(byteffff160d*ROM16[00009332]/256). No temperature, \
+pressure scale or acquisition cadence follows from these consumer \
+contexts.""",
+]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -323,3 +337,53 @@ kind = "trace"
 supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+via = ["fuel_common_gain_builder/fn", "unsigned_divide/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Natural function00053698 alternatesffff2485.bit3: inactive entries set the \
+bit and retain all gain intermediates; active entries clear it. Diagnostic \
+argument-1 has a fixed false predicate. Raw \
+P=floor(RAM16[ffff4524]*ROM8[000089fe]/128)+ROM16[000093c6] is retained for \
+arithmetic after min(65535,P) publication atffff517c. Selected correction, \
+ordered low/high clamps, BFS scaling and two16-cell curves000129e2/000129f2 \
+precede saturated sum, complement load, ratio and \
+floor((ratio*5259+1213696)/10000). Final \
+gainffff165e=floor(byteffff160d*ROM16[00009332]/256). No temperature, \
+pressure scale or acquisition cadence follows from these consumer contexts."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

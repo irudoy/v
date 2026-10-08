@@ -90,6 +90,17 @@ supports = "identity"
 layout = "7mfk"
 address = "0005525a"
 name = "knowing-potoo"
+note = [
+    """
+Natural function0005525a updates threshold/hysteresis bits \
+inffff2492/ffff2493, admits the actual gate, and uses \
+uint8(4*max(0,uint8(ffff106f)+int16(ROM16[0005533c]))) for eight-cell \
+curve00012422. It publishes lookup byteffff15dd and selected coefficient \
+byteffff15dc fromROM0000990a, with load/RPM bins at00011b1b/00011b17. \
+Optional signed difference rate limiting against oldffff15da precedes cap \
+max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384); disabled entries publish0 and \
+retain lookup/coefficient bytes. Wrapped coordinates have sign none.""",
+]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -133,6 +144,21 @@ supports = "identity"
 at = "7mfk:0005539e"
 value = {named = ["00009090", "0000929a", "0000990a", "00012422", "00022590", "0005525a", "ffff106f", "ffff15da", "ffff15dd", "ffff2458", "ffff2492", "ffff2493"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_upstream_chain.py"
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "depends"
