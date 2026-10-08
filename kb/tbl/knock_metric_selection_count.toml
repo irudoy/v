@@ -1,0 +1,60 @@
+summary = "Raw byte count of admitted descending difference ranks."
+note = """
+The executed domain N is 0..8. N=0 publishes zero; ranks 0..N-1 contribute \
+unless excluded. Increasing N can add a negative value. Generic scalar \
+storage prescribes no stock value; N=9..255 is outside this proof."""
+block = "knock/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008870"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049e2a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte load 00049e2a supplies the declared mask/count context of the \
+complete selection helper. Mask is 0..255 and N is 0..8; generic shape \
+prescribes no stock value."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

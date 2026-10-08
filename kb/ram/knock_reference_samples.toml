@@ -34,6 +34,89 @@ path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
 [[link]]
+type = "input"
+to = "knock_normalization_bins/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+i=x in 0..7; X is the independently seeded unsigned input word. i = x; B = \
+uint8(ffff2154); P = uint16(ffff2152); F = min(1,uint8(ffff87e1)); Z = \
+min(1,B); X = uint16(RAM16[0xffff2132+2*i]); q = floor(X*P/(32*max(1,B))); \
+to = (1-Z)*65535+Z*((1-F)*uint16(q)+F*min(65535,8*q)). The full \
+ordinary/weighted/B-zero domain has sign none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "input"
+to = "knock_normalization_blocks/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+B is an independent uint8 value. B=0 selects eight ffff words; B>0 divides \
+by 32*B. Ordinary word publication may wrap; no joint negative count sign is \
+asserted."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "input"
+to = "knock_normalization_multiplier/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+P is an independent uint16 multiplier, 0..65535. X*P fits unsigned32. B=0 \
+bypasses P; ordinary uint16 quotient publication may wrap, so the joint \
+influence sign is none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
 type = "reader"
 to = "knock_reference_learning/fn"
 via = ["knock_reference_learning/fn"]
@@ -64,3 +147,120 @@ key = "test_knock_reference_learning_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The separate metric entry reads eight unsigned sample words through its \
+explicit SP+0 pointer at 0004a2d4/0004a4b2; EXTU.W supplies v[i]. The \
+pointer is bound to ffff20c2 by the fixture and static producer anchors. \
+Normalization, acquisition and full evaluator dispatch are not jointly \
+executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_normalization_mode/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only B>0 reads F. F=0 selects uint16(floor(X*P/(32*B))); F!=0 selects \
+min(65535,8*floor(X*P/(32*B))). B=0 bypasses F and publishes ffff. The byte \
+domain is 0..255; no live mode reachability is inferred."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "threshold"
+to = "knock_normalization_blocks/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned B=0 selects the all-ffff branch without reading numeric bins, \
+multiplier or mode; B>0 selects a positive word divisor. No divisor-zero or \
+wide-denominator helper arm is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For i=x in 0..7, the separate normalization entry publishes eight sample \
+words and the selected cache row using i = x; B = uint8(ffff2154); P = \
+uint16(ffff2152); F = min(1,uint8(ffff87e1)); Z = min(1,B); X = \
+uint16(RAM16[0xffff2132+2*i]); q = floor(X*P/(32*max(1,B))); to = \
+(1-Z)*65535+Z*((1-F)*uint16(q)+F*min(65535,8*q)). Both stores consume the \
+same live register, with no sample RAM readback. B=0 publishes ffff without \
+reading F, bins or P. With B>0 the reader consumes unsigned words X/P and \
+divisor 32*B. Ordinary word wrap forbids a joint positive sign; weighted \
+clamping is separate. The fixture ends before subtraction; metric execution \
+is an independent contract."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

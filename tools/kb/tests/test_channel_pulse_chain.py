@@ -245,7 +245,7 @@ def test_channel_pulse_scalar_mutation_is_rejected(scalar):
 def test_channel_pulse_all_accepted_region_fields_and_fixtures_remain_exact():
     from dataclasses import asdict
     module=publication.stock_module()
-    regions={row.key:row for row in module.REGIONS if row.key!=KEY and row.key not in ('jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch', 'jk08a-base-accumulator', 'jk08a-transient-coefficient', 'jk08a-transient-additive', 'jk08a-coolant-conditional', 'jk08a-transient-pair-1', 'jk08a-transient-pair-2', 'jk08a-fuel-multiplier', 'jk08a-pulse-precursor', 'jk08a-common-gain', 'jk08a-enrichment-prefix', 'jk08a-enrichment-terminal')}
+    regions={row.key:row for row in module.REGIONS if row.key!=KEY and row.key not in ('jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch', 'jk08a-base-accumulator', 'jk08a-transient-coefficient', 'jk08a-transient-additive', 'jk08a-coolant-conditional', 'jk08a-transient-pair-1', 'jk08a-transient-pair-2', 'jk08a-fuel-multiplier', 'jk08a-pulse-precursor', 'jk08a-common-gain', 'jk08a-enrichment-prefix', 'jk08a-enrichment-terminal', 'jk08a-knock-metric', 'jk08a-knock-normalization')}
     assert set(regions)==set(HELD_REGIONS)==set(HELD_FIXTURES) and len(regions)==49
     images={rom:module.stock_image(rom) for rom in {row.rom for row in regions.values()}}
     for key,region in regions.items():

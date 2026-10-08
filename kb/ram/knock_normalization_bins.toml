@@ -1,0 +1,59 @@
+summary = "Eight raw unsigned word inputs of software normalization."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2132"
+level = "code"
+width = 16
+signed = false
+note = """
+The bounded reader consumes eight uint16 words at ffff2132+2*i, i in 0..7. \
+The 16-byte consumer footprint is independent of complete allocation or \
+producer semantics."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a45a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+With B>0, loads 0004a45a/0004a546 consume X=uint16(RAM16[ffff2132+2*i]), i \
+in 0..7. B=0 bypasses numeric bins. No hardware or earlier producer is \
+executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

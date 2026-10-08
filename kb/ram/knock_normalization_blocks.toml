@@ -1,0 +1,85 @@
+summary = "Raw byte selecting denominator and zero-block publication."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2154"
+level = "code"
+width = 8
+signed = false
+note = """
+EXTU.B supplies independent B in 0..255. B=0 publishes eight ffff words; \
+positive B yields the exact positive word denominator 32*B. Its producer is \
+outside this proof."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a270"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "base"
+to = "wandering-earthworm/ram"
+offset = 0x160
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+B load uses the address base plus 0x160. The base numeric value is not an \
+arithmetic input."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Loads 0004a270/0004a3b6 supply unsigned B in 0..255. B=0 takes all-ffff \
+publication; B>0 forms exact positive denominator 32*B in 32..8160."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

@@ -302,6 +302,34 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "knock_metric_scaler/fn"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear. D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), \
+bit3 set selects uint8(ffff2143). The declared selected c is 1..6; the \
+unused channel byte is independently different and preserved. No caller \
+channel-zero guard or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
 to = "knock_reference_learning/fn"
 via = ["knock_reference_learning/fn"]
 layouts = ["7mfk"]
@@ -330,6 +358,34 @@ key = "test_knock_reference_learning_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
+
+[[link]]
+type = "reader"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear. D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), \
+bit3 set selects uint8(ffff2143). The declared selected c is 1..6; the \
+unused channel byte is independently different and preserved. No caller \
+channel-zero guard or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
 
 [[link]]
 type = "reader"

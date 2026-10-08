@@ -1,0 +1,60 @@
+summary = "Raw byte factor consumed by bounded metric gain calculation."
+note = """
+Unsigned byte factor b combines with a and c in \
+G=min(65535,floor(a*b*c/128)). The complete byte domain is independent of \
+stock or artificial calibration context."""
+block = "knock/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008694"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049ea6"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_metric_scaler/fn"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte load 00049ea6 supplies one factor of \
+G=min(65535,floor(a*b*c/128)). Generic storage does not fix a stock \
+calibration value; all arithmetic byte alternatives are explicit."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

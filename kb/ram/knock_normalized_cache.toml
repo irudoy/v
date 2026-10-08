@@ -1,0 +1,181 @@
+summary = "Selected-row cache of eight software-normalized raw words."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff20d2"
+level = "code"
+width = 16
+signed = false
+note = """
+Unsigned word cell. The executed writes address ffff20d2+16*(c-1)+2*i, legal \
+c in 1..6 and i in 0..7. Cache and sample stores use the same live register, \
+without a sample RAM readback. This writer footprint does not declare full \
+allocation, physical units or a hardware producer."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a28a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 set selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "input"
+to = "knock_reference_samples/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+to=uint16(from) is a parallel publication view: sample and selected cache \
+stores use the same live register. There is no numeric sample RAM readback \
+between the paired stores. Legal c is 1..6 and i is 0..7."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For i=x in 0..7, the separate normalization entry publishes eight sample \
+words and the selected cache row using i = x; B = uint8(ffff2154); P = \
+uint16(ffff2152); F = min(1,uint8(ffff87e1)); Z = min(1,B); X = \
+uint16(RAM16[0xffff2132+2*i]); q = floor(X*P/(32*max(1,B))); to = \
+(1-Z)*65535+Z*((1-F)*uint16(q)+F*min(65535,8*q)). Both stores consume the \
+same live register, with no sample RAM readback. B=0 publishes ffff without \
+reading F, bins or P. With B>0 the reader consumes unsigned words X/P and \
+divisor 32*B. Ordinary word wrap forbids a joint positive sign; weighted \
+clamping is separate. The fixture ends before subtraction; metric execution \
+is an independent contract."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

@@ -1,0 +1,289 @@
+summary = "Selected signed result of bounded software metric scaling."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff21f8"
+level = "code"
+width = 32
+signed = true
+note = """
+One signed cell at ffff21f8+4*(c-1), c in 1..6. The complete scaler accepts \
+independent signed32 A and clamps positive and negative magnitudes \
+asymmetrically. Store 00049f32 is followed by the genuine RAM readback \
+00049f3c before offset-binary publication. No physical metric scale is \
+inferred."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049f26"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 set selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_metric_gain_factor_a/tbl"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The independent byte factor contributes to G=min(65535,floor(a*b*c/128)). \
+Increasing G lowers negative A results and raises positive A results; the \
+full signed-domain factor view has sign none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_metric_gain_factor_b/tbl"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The independent byte factor contributes to G=min(65535,floor(a*b*c/128)). \
+Increasing G lowers negative A results and raises positive A results; the \
+full signed-domain factor view has sign none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_metric_gain_factor_c/tbl"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The independent byte factor contributes to G=min(65535,floor(a*b*c/128)). \
+Increasing G lowers negative A results and raises positive A results; the \
+full signed-domain factor view has sign none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_metric_sum/ram"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+A = int32(from); G = \
+min(65535,floor(ROM8[0x000086ac]*ROM8[0x00008694]*ROM8[0x000086a7]/128)); q \
+= floor(abs(A)*G/16384); Z = min(1,max(0,A+1)); to = \
+Z*min(2147483647,q)-(1-Z)*min(2147483648,q). A is an explicit signed32 \
+input; fixed gain gives a nondecreasing A view. Gain changes have sign none \
+over the signed input domain, independently of the two narrow chain signs."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_metric_scaler/fn"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+After signed store 00049f32, MOV.L 00049f3c genuinely reads the selected \
+signed cell ffff21f8+4*(c-1). ADD 00049f42 adds 0x80000000 before the raw \
+publication. This is RAM readback, not two parallel stores."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "writer"
+to = "knock_metric_scaler/fn"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+A = int32(from); G = \
+min(65535,floor(ROM8[0x000086ac]*ROM8[0x00008694]*ROM8[0x000086a7]/128)); q \
+= floor(abs(A)*G/16384); Z = min(1,max(0,A+1)); to = \
+Z*min(2147483647,q)-(1-Z)*min(2147483648,q). Legal c is 1..6 and store \
+00049f32 publishes ffff21f8+4*(c-1). Direct clamp cases and composite \
+non-clamping cases retain distinct boundaries."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

@@ -240,6 +240,34 @@ path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
 [[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Loads 0004a2da/0004a4b8 read uint16 references at ffff2178+16*(c-1)+2*i. \
+Legal c is 1..6 and i is 0..7. This metric entry preserves the complete \
+reference bank and does not execute the learner or its diagnostic/reset \
+path."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
 type = "selector"
 to = "diagnostic_record_byte1_bit7_predicate/fn"
 via = ["knock_reference_learning/fn"]

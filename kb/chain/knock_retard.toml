@@ -1,9 +1,10 @@
 title = "Knock retard"
 summary = """
-Samples ADC2 in a 50-degree window per cylinder, compares the rise over a \
-learned per-channel reference with the RPM threshold from 0x1108E, and \
-integrates the event count into Q8 knock timing state ffff121a, whose degree \
-byte ffff22fa enters event correction ffff11d6 of the advance sum."""
+Consumes post-acquisition software sample words, compares their signed rise \
+over a learned per-channel reference with the RPM threshold from 0x1108E, \
+and integrates the event count into Q8 knock timing state ffff121a, whose \
+degree byte ffff22fa enters event correction ffff11d6 of the advance sum. \
+Acquisition and physical cadence have separate evidence."""
 quantity = """
 Knock timing-state correction, crank degrees; negative values retard the \
 spark"""
@@ -13,18 +14,55 @@ home = "7mfk"
 order = 8
 
 [[step]]
-from = "vehement-hare/reg"
+from = "knock_reference_samples/ram"
 to = "knock_metric_base/ram"
 effect = "detects"
-sign = "none"
+sign = "positive"
 via = [
-    "bold-hummingbird/fn",
-    "meteoric-raptor/fn",
     "knock_slice_evaluator/fn",
+    "knock_selected_difference_sum/fn",
+    "knock_metric_scaler/fn",
 ]
 note = """
-Tooth 7 opens and tooth 0 closes the window; DMAC 2 reads ADDR24 (AN24/AN25 \
-scan); metric = sum of the 3 largest rises over the reference."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); \
+row = 0xffff2178+16*(c-1); M = ROM8[0x00008618]; N = ROM8[0x00008870]; E0 = \
+(M>>0)&1; V0 = \
+(1-E0)*(uint16(RAM16[0xffff20c2+0])-uint16(RAM16[row+0]))-E0*2147483648; E1 \
+= (M>>1)&1; V1 = \
+(1-E1)*(uint16(RAM16[0xffff20c2+2])-uint16(RAM16[row+2]))-E1*2147483648; E2 \
+= (M>>2)&1; V2 = \
+(1-E2)*(uint16(RAM16[0xffff20c2+4])-uint16(RAM16[row+4]))-E2*2147483648; E3 \
+= (M>>3)&1; V3 = \
+(1-E3)*(uint16(RAM16[0xffff20c2+6])-uint16(RAM16[row+6]))-E3*2147483648; E4 \
+= (M>>4)&1; V4 = \
+(1-E4)*(uint16(RAM16[0xffff20c2+8])-uint16(RAM16[row+8]))-E4*2147483648; E5 \
+= (M>>5)&1; V5 = \
+(1-E5)*(uint16(RAM16[0xffff20c2+10])-uint16(RAM16[row+10]))-E5*2147483648; \
+E6 = (M>>6)&1; V6 = \
+(1-E6)*(uint16(RAM16[0xffff20c2+12])-uint16(RAM16[row+12]))-E6*2147483648; \
+E7 = (M>>7)&1; V7 = \
+(1-E7)*(uint16(RAM16[0xffff20c2+14])-uint16(RAM16[row+14]))-E7*2147483648; H \
+= max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = \
+H; H = max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); \
+V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = \
+max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); \
+V5 = min(V4,V5); V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = \
+max(V2,V3); V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = \
+H; H = max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V6,V7); V7 = min(V6,V7); \
+V6 = H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = \
+min(V4,V5); V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); \
+V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = \
+max(V0,V1); V1 = min(V0,V1); V0 = H; A = \
+min(1,max(0,N-0))*min(1,max(0,V0+2147483648))*V0+min(1,max(0,N-1))*min(1,max(0,V1+2147483648))*V1+min(1,max(0,N-2))*min(1,max(0,V2+2147483648))*V2+min(1,max(0,N-3))*min(1,max(0,V3+2147483648))*V3+min(1,max(0,N-4))*min(1,max(0,V4+2147483648))*V4+min(1,max(0,N-5))*min(1,max(0,V5+2147483648))*V5+min(1,max(0,N-6))*min(1,max(0,V6+2147483648))*V6+min(1,max(0,N-7))*min(1,max(0,V7+2147483648))*V7; \
+G = \
+min(65535,floor(ROM8[0x000086ac]*ROM8[0x00008694]*ROM8[0x000086a7]/128)); q \
+= floor(abs(A)*G/16384); Z = min(1,max(0,A+1)); to = \
+uint32(Z*min(2147483647,q)-(1-Z)*min(2147483648,q)+0x80000000)"""
 
 [[step]]
 from = "knock_reference_samples/ram"
@@ -44,10 +82,51 @@ from = "gigantic-goshawk/ram"
 to = "knock_metric_base/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["knock_slice_evaluator/fn"]
+via = [
+    "knock_slice_evaluator/fn",
+    "knock_selected_difference_sum/fn",
+    "knock_metric_scaler/fn",
+]
 note = """
-d[i] = v[i] - reference[c][i] with the reference at 0xFFFF2178 + 16 * (c - \
-1); a higher reference lowers the metric."""
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); \
+row = 0xffff2178+16*(c-1); M = ROM8[0x00008618]; N = ROM8[0x00008870]; E0 = \
+(M>>0)&1; V0 = \
+(1-E0)*(uint16(RAM16[0xffff20c2+0])-uint16(RAM16[row+0]))-E0*2147483648; E1 \
+= (M>>1)&1; V1 = \
+(1-E1)*(uint16(RAM16[0xffff20c2+2])-uint16(RAM16[row+2]))-E1*2147483648; E2 \
+= (M>>2)&1; V2 = \
+(1-E2)*(uint16(RAM16[0xffff20c2+4])-uint16(RAM16[row+4]))-E2*2147483648; E3 \
+= (M>>3)&1; V3 = \
+(1-E3)*(uint16(RAM16[0xffff20c2+6])-uint16(RAM16[row+6]))-E3*2147483648; E4 \
+= (M>>4)&1; V4 = \
+(1-E4)*(uint16(RAM16[0xffff20c2+8])-uint16(RAM16[row+8]))-E4*2147483648; E5 \
+= (M>>5)&1; V5 = \
+(1-E5)*(uint16(RAM16[0xffff20c2+10])-uint16(RAM16[row+10]))-E5*2147483648; \
+E6 = (M>>6)&1; V6 = \
+(1-E6)*(uint16(RAM16[0xffff20c2+12])-uint16(RAM16[row+12]))-E6*2147483648; \
+E7 = (M>>7)&1; V7 = \
+(1-E7)*(uint16(RAM16[0xffff20c2+14])-uint16(RAM16[row+14]))-E7*2147483648; H \
+= max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = \
+H; H = max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); \
+V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = \
+max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); \
+V5 = min(V4,V5); V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = \
+max(V2,V3); V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = \
+H; H = max(V0,V1); V1 = min(V0,V1); V0 = H; H = max(V6,V7); V7 = min(V6,V7); \
+V6 = H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = \
+min(V4,V5); V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); \
+V3 = min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = \
+max(V0,V1); V1 = min(V0,V1); V0 = H; A = \
+min(1,max(0,N-0))*min(1,max(0,V0+2147483648))*V0+min(1,max(0,N-1))*min(1,max(0,V1+2147483648))*V1+min(1,max(0,N-2))*min(1,max(0,V2+2147483648))*V2+min(1,max(0,N-3))*min(1,max(0,V3+2147483648))*V3+min(1,max(0,N-4))*min(1,max(0,V4+2147483648))*V4+min(1,max(0,N-5))*min(1,max(0,V5+2147483648))*V5+min(1,max(0,N-6))*min(1,max(0,V6+2147483648))*V6+min(1,max(0,N-7))*min(1,max(0,V7+2147483648))*V7; \
+G = \
+min(65535,floor(ROM8[0x000086ac]*ROM8[0x00008694]*ROM8[0x000086a7]/128)); q \
+= floor(abs(A)*G/16384); Z = min(1,max(0,A+1)); to = \
+uint32(Z*min(2147483647,q)-(1-Z)*min(2147483648,q)+0x80000000)"""
 
 [[step]]
 from = "knock_channel_primary/ram"

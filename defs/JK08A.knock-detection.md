@@ -392,3 +392,138 @@ anchors do not execute acquisition or full evaluator dispatch. ADC/DMAC,
 digital-bin production, metric scaling, threshold/count updates,
 diagnostic producers, physical units, sensor mapping, scheduling and
 hardware behavior require their own evidence.
+
+## Bounded post-acquisition knock metric
+
+One mandatory Region binds 362 instructions, 874 bound bytes and 9404 literal
+cases. `jk08a-knock-metric` starts at 0004a2b6 and stops before threshold
+lookup at 0004a2ee. Its alternate subtraction span is 0004a496..0004a4c8;
+complete selection 00049d88..00049e96, complete scaler 00049e96..00049fc0,
+bitmap dispatcher 000221bc..000221d6 and ladder 000221e0..000221f8 retain
+their stock addresses and instruction bytes. A simulator-only boundary
+restores the external continuation from SP+24 through R1. Direct selection
+and scaler entries execute their natural returns.
+
+The caller supplies eight unsigned software sample words at ffff20c2 and
+the selected eight-word reference row at ffff2178+16*(c-1). Selector
+ROM8[00008b3d].bit3 chooses unsigned channel ffff11de or ffff2143; c is 1..6.
+Each signed difference is sample-reference in -65535..65535 and is published
+at ffff2158+4*i. The raw source path begins with these explicit post-acquisition
+words. ADC/DMAC, the channel-zero guard, filter/transform or bin production,
+full evaluator dispatch, ISR/RTE, physical channel order, physical units,
+asynchronous cadence and engine reachability remain separate evidence.
+
+ROM8[00008618] masks slots with INT32_MIN sentinels. The complete helper
+orders eight values descending and sums the first N ranks excluding
+sentinels, with N=ROM8[00008870] in 0..8. N=0 yields zero; N=9..255 is outside
+the contract. The selected signed sum is stored at ffff2274+4*(c-1), in
+-524280..524280 for legal word differences. A finite network of 28 min/max
+compare-exchanges expresses mathematical ordering with the existing
+arithmetic Grammar. It is independent of the instruction sequence.
+
+The complete scaler separately admits a full signed32 sum A. Its gain is
+G=min(65535,floor(ROM8[000086ac]*ROM8[00008694]*ROM8[000086a7]/128)). The
+gain factors are raw bytes; generic owners assign no stock value or scale.
+q=floor(abs(A)*G/16384); positive output is min(q,2147483647), and negative
+output is -min(q,2147483648). The signed cell at ffff21f8+4*(c-1) is stored
+at 00049f32 and read back at 00049f3c. Addition at 00049f42 and store at
+00049f4c publish uint32(metric+0x80000000) at ffff21d8+4*(c-1). The signed
+cell reader is genuine RAM readback, independently of the normalization
+sample/cache parallel stores.
+
+The literal matrix contains 6488 composite, 972 direct selection and 1944
+direct scaler contexts. Of the composite contexts, 386 retain the six stock
+calibration bytes: selector 0x82, mask 0, count 3 and gain bytes 128. Other
+calibrations are labelled artificial inputs. Mask 0..255, count 0..8, all
+six channels, unsigned word boundaries, ties, mixed and negative order,
+every maximum position, exact gain neighbors 65534/65535/65536 and both
+signed saturation neighbors are independently literal. No runtime output
+or instruction interpreter supplies an expectation.
+
+Every context checks fifteen GPRs, observed full SR, MACL/MACH/GBR, PR/SP,
+the outer C ABI, 112 frame bytes at incoming SP-80..SP+31, all declared
+outputs and the remaining 64 KiB RAM and bound data. Entry mode bits are
+retained; M/Q/T are cleared and independent T0/1 is seeded before STC
+records the prepared SR. Exit is (sr_before&~1)|expected_t. Composite T=0;
+direct selection T=((selector&8)==0); direct scaler
+T=(A>=0 && q>=2147483648). No arbitrary entry M/Q or runtime-mode change
+is claimed. Output capture and the SR observation lie outside the observed
+stock frame.
+
+Both subtraction loops, real BSR calls, eight real shift calls, helper
+return delay slots and selected stores execute through stock bytes. Shift
+indices are 0..7; the zero-result arm 000221e0..000221e4 has byte identity
+only. Other shift domains are outside this Region. The early product/carry
+branches 00049f12/00049f74 and late positive comparison branch 00049faa are
+unreachable under the declared signed32/gain bounds. The full scalar
+saturation contexts do not establish those inputs from acquisition.
+
+The sample and reference chain signs vary one word with channel, mask,
+count, gain and every other input fixed. The stated stock sign context
+uses mask 0, count 3 and gain bytes 128, with sum -196605..196605. Changing
+calibrations or channel has no joint monotonicity claim. Normalization and
+metric have separate execution boundaries and no joint-invocation claim.
+Hardware readiness is NO.
+
+## Bounded software knock normalization
+
+One mandatory Region binds 266 instructions, 631 bound bytes and 6563 literal
+cases. `jk08a-knock-normalization` begins at 0004a26a or alternate 0004a3b0,
+stops at 0004a2b6 before subtraction, and includes positive-word divider
+00021ce0..00021d6a with its natural returns. Additional stock spans are
+0004a3b0..0004a3fe, 0004a438..0004a496 and 0004a4fc..0004a58e. The
+last span includes the real delay-slot store at 0004a58c; alignment at
+0004a58e is outside the contract. Static selector and channel-guard anchors
+provide input-context identity and have no executed guard claim. The
+simulator-only SP+24/R1 continuation is outside stock instructions.
+
+Explicit inputs are legal selected channel c=1..6, unsigned byte
+B=ffff2154, unsigned word P=ffff2152, eight unsigned words
+X[i]=RAM16[ffff2132+2*i] and raw byte F=ffff87e1. Selector
+ROM8[00008b3d].bit3 chooses ffff11de or ffff2143. Primary R5=c/R11=0
+and alternate R14=c/R11=8 agree with the selected byte and ROM bit.
+The unused channel byte remains independently supplied and preserved.
+The producers of these post-acquisition software inputs and registers are outside the fixture.
+
+B=0 publishes 65535. B>0 gives q[i]=floor(X[i]*P/(32*B)); F=0 publishes
+uint16(q[i]), while F!=0 publishes min(65535,8*q[i]). Both sample words at
+ffff20c2 and cache words at ffff20d2+16*(c-1) use the same live register,
+without a sample RAM readback. Each context checks all sixteen outputs.
+Ordinary publication wraps the low word; it has no full-domain positive
+sign. Weighted publication saturates separately. B=0 reads neither bins,
+multiplier nor mode and calls no divider.
+
+For positive B the exact divisor 32*B is 32..8160. X*P is at most 4294836225,
+q at most 134213632, and 8*q at most 1073709056; no uint32 numerator or
+weighted shift overflow occurs. Each positive context executes eight real
+divider calls with MACL transferred in the delay slot. Fast and long
+returns, threshold q 255/256/257, low-word neighbors 65535/65536/65537,
+weighted neighbors 8191/8192/8193, both cache branches, both mode branches
+and the zero-block fallback are covered. Raw weighted equality 65535 is
+unreachable because 8*q is a multiple of eight. The zero and full 32-bit
+denominator alternatives are outside the tested divider span.
+
+The independent matrix contains 3281 primary and 3282 alternate contexts:
+522 zero-block, 2512 ordinary and 3529 weighted. Its 1325 stock software
+arithmetic contexts use selector 0x82, B<=8, P<=256 and F 0/1. These are
+software classifications, without a live acquisition claim. Other byte/
+word contexts and selector values are explicitly artificial inputs.
+
+Every context checks fifteen GPRs, actual prepared full SR, MACL/MACH/GBR,
+PR/SP, the outer ABI, 64 frame bytes at incoming SP-32..SP+31, bound data,
+input context and all remaining 64 KiB RAM. Entry retains runtime mode bits,
+clears M/Q/T, seeds independent T0/1 and observes SR after LDC. B=0 exits
+with (sr_before&~1)|1; B>0 exits with
+(sr_before&~0x301)|1|((1-(q[7]&1))<<8). Final Q uses the full quotient before
+word wrapping or weighted cap; equal FFFF outputs at q 8192/8193 retain
+different Q. Arbitrary incoming M/Q and new runtime modes are outside
+this contract. The saved R2 and conditional last-long R3 words, sample/
+cache pointer slots and all frame neighbors have literal expectations.
+
+Eleven high-RAM pool aliases are applied after exact GNU reconstruction;
+stock instruction bytes and natural calls/returns remain unchanged.
+Normalization ends before metric subtraction. The separately registered
+metric does not establish joint invocation. ADC/DMAC/MMIO completion,
+filter/transform and bin production, ISR/RTE, full dispatch, channel-zero
+guards, physical channel mapping, cadence, physical units and engine
+reachability have no proof from this CPU contract. Hardware readiness is NO.

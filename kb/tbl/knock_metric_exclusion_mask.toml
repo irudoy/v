@@ -1,0 +1,60 @@
+summary = "Raw byte exclusion mask of bounded signed-difference selection."
+note = """
+Bit i set substitutes INT32_MIN for d[i] before signed descending selection; \
+bit i clear admits d[i]. All eight mask bits are explicit software contexts; \
+mask byte ordering carries no uniform influence sign."""
+block = "knock/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008618"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049da2"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned byte load 00049da2 supplies the declared mask/count context of the \
+complete selection helper. Mask is 0..255 and N is 0..8; generic shape \
+prescribes no stock value."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

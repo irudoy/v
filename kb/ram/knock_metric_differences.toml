@@ -1,0 +1,235 @@
+summary = """
+Eight signed longword differences of unsigned software sample and reference \
+words."""
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2158"
+level = "code"
+width = 32
+signed = true
+note = """
+For i in 0..7, EXTU.W sample and reference operands yield d[i] in \
+-65535..65535, stored at ffff2158+4*i. The 32-byte writer/reader footprint \
+does not assign a hardware source, scale or complete allocation."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a2e0"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "gigantic-goshawk/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); i \
+= x; row = 0xffff2178+16*(c-1); to = \
+uint16(RAM16[0xffff20c2+2*i])-uint16(RAM16[row+2*i]). The per-word negative \
+view fixes c and the other unsigned operand. Each difference is \
+-65535..65535 and has no signed32 wrap."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 set selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_reference_samples/ram"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D = (ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); i \
+= x; row = 0xffff2178+16*(c-1); to = \
+uint16(RAM16[0xffff20c2+2*i])-uint16(RAM16[row+2*i]). The per-word positive \
+view fixes c and the other unsigned operand. Each difference is \
+-65535..65535 and has no signed32 wrap."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For each i in 0..7, mask bit i clear admits int32(RAM32[ffff2158+4*i]); set \
+substitutes INT32_MIN in the local frame. The admitted difference domain is \
+-65535..65535, not arbitrary signed32 sorting inputs."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "writer"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Stores 0004a2e0/0004a4be publish eight signed longwords using D = \
+(ROM8[0x00008b3d]>>3)&1; c = (1-D)*uint8(ffff11de)+D*uint8(ffff2143); i = x; \
+row = 0xffff2178+16*(c-1); to = \
+uint16(RAM16[0xffff20c2+2*i])-uint16(RAM16[row+2*i]). Both uint16 operands \
+are explicit; no acquisition or normalization producer is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

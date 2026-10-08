@@ -1,0 +1,90 @@
+summary = "Complete masked signed-difference selection and sum with natural return."
+note = """
+The complete 135-instruction entry masks eight bounded signed differences, \
+orders them descending and accumulates the first N admitted ranks. Inputs \
+are d[i] in -65535..65535, mask byte 0..255, count 0..8 and legal channel \
+1..6. The finite 28 compare-exchanges describe mathematical ordering with \
+existing min/max notation, not the stock instruction sequence. Shift calls \
+use indices 0..7; zero-result helper arm is identity-only. Acquisition and \
+full evaluator dispatch are separate evidence. M = ROM8[0x00008618]; N = \
+ROM8[0x00008870]; E0 = (M>>0)&1; V0 = \
+(1-E0)*(int32(RAM32[0xffff2158+0]))-E0*2147483648; E1 = (M>>1)&1; V1 = \
+(1-E1)*(int32(RAM32[0xffff2158+4]))-E1*2147483648; E2 = (M>>2)&1; V2 = \
+(1-E2)*(int32(RAM32[0xffff2158+8]))-E2*2147483648; E3 = (M>>3)&1; V3 = \
+(1-E3)*(int32(RAM32[0xffff2158+12]))-E3*2147483648; E4 = (M>>4)&1; V4 = \
+(1-E4)*(int32(RAM32[0xffff2158+16]))-E4*2147483648; E5 = (M>>5)&1; V5 = \
+(1-E5)*(int32(RAM32[0xffff2158+20]))-E5*2147483648; E6 = (M>>6)&1; V6 = \
+(1-E6)*(int32(RAM32[0xffff2158+24]))-E6*2147483648; E7 = (M>>7)&1; V7 = \
+(1-E7)*(int32(RAM32[0xffff2158+28]))-E7*2147483648; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = H; H = max(V3,V4); \
+V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); \
+V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = \
+min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V6,V7); V7 = min(V6,V7); V6 = H; H = \
+max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; A = \
+min(1,max(0,N-0))*min(1,max(0,V0+2147483648))*V0+min(1,max(0,N-1))*min(1,max(0,V1+2147483648))*V1+min(1,max(0,N-2))*min(1,max(0,V2+2147483648))*V2+min(1,max(0,N-3))*min(1,max(0,V3+2147483648))*V3+min(1,max(0,N-4))*min(1,max(0,V4+2147483648))*V4+min(1,max(0,N-5))*min(1,max(0,V5+2147483648))*V5+min(1,max(0,N-6))*min(1,max(0,V6+2147483648))*V6+min(1,max(0,N-7))*min(1,max(0,V7+2147483648))*V7; \
+to = A"""
+role = "consumer"
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00049d88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049d88"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "depends"
+to = "copper-crayfish/fn"
+via = ["knock_selected_difference_sum/fn", "copper-crayfish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Genuine JSR 00049db0 calls 000221bc; delay slot sets R0=1. Caller R1 is i in \
+0..7, yielding 1<<i for exclusion testing. Helper zero-result arm \
+000221e0..000221e4 is identity-only; other shift domains are not executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

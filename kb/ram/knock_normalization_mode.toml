@@ -1,0 +1,58 @@
+summary = "Raw byte selecting ordinary or weighted software word publication."
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff87e1"
+level = "code"
+width = 8
+signed = false
+note = """
+With B>0, byte F=0 selects uint16(q); F!=0 selects min(65535,8*q). B=0 \
+bypasses this selector and the numeric bins/multiplier. Full live mode \
+reachability is separate."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004a4fe"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"
+
+[[link]]
+type = "reader"
+to = "knock_slice_evaluator/fn"
+via = ["knock_slice_evaluator/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only B>0 reads mode byte at 0004a4fe. F=0 selects ordinary low16 quotient; \
+F!=0 selects the weighted capped result. B=0 bypasses mode."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

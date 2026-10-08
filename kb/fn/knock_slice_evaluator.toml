@@ -259,8 +259,92 @@ role = "consumer"
 
 [[link]]
 type = "depends"
+to = "knock_metric_scaler/fn"
+via = ["knock_slice_evaluator/fn", "knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Genuine BSR 0004a2ea and its NOP delay slot call the complete helper from \
+the post-acquisition slice. The surrounding coordinator, acquisition and \
+later comparison are not executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "depends"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_slice_evaluator/fn", "knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Genuine BSR 0004a2e6 and its NOP delay slot call the complete helper from \
+the post-acquisition slice. The surrounding coordinator, acquisition and \
+later comparison are not executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "depends"
 to = "knock_slice_threshold_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+via = ["knock_slice_evaluator/fn", "unsigned_divide/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+Genuine JSR 0004a466/0004a554 calls 00021ce0 with numerator transferred from \
+MACL in the delay slot. Positive word divisor is 32*B with B in 1..255. The \
+zero and wide-denominator alternatives are outside this fixture."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_normalization_chain.py"
+key = "test_knock_normalization_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded software knock normalization"

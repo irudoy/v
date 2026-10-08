@@ -1,0 +1,39 @@
+summary = """
+Complete signed gain and offset-binary metric publication with natural \
+return."""
+note = """
+The complete 149-instruction entry uses three unsigned byte factors and G in \
+0..65535. Its independent direct input A spans signed32; positive clamp is \
+2147483647 and negative magnitude clamp is 2147483648. The composite sum \
+domain cannot reach either clamp. Signed output 00049f32 is read from RAM at \
+00049f3c before adding 0x80000000 and publishing the raw unsigned word at \
+00049f4c. A = int32(from); G = \
+min(65535,floor(ROM8[0x000086ac]*ROM8[0x00008694]*ROM8[0x000086a7]/128)); q \
+= floor(abs(A)*G/16384); Z = min(1,max(0,A+1)); to = \
+Z*min(2147483647,q)-(1-Z)*min(2147483648,q)"""
+role = "consumer"
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00049e96"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049e96"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"

@@ -1022,6 +1022,28 @@ REGIONS = (
             ("CUT_DELAY", 0x00008C99),
         ),
     ),
+    Region(
+        key='jk08a-knock-metric', rom="JK08A",
+        source='stock_jk08a_knock_metric.s',
+        harness='harness-stock-jk08a-knock-metric.c',
+        start=0x0004a2b6, end=0x0004a2ee,
+        pools=((0x00049fc0, 60), (0x0004a4c8, 4), (0x0004a4cc, 4), (0x0004a4d0, 4), (0x0004a4d8, 4), (0x0004a4dc, 4), (0x0004a4e0, 4), (0x0002219c, 32), (0x000221d8, 8), (0x0004a24c, 12), (0x0004a296, 2), (0x0004a29c, 2), (0x0004a3da, 2), (0x0004a3e0, 2), (0x00008618, 1), (0x00008870, 1), (0x00008b3d, 1), (0x000086a7, 1), (0x00008694, 1), (0x000086ac, 1)),
+        ram_literals=(0x00049fd0, 0x00049fd4, 0x00049fd8, 0x00049fdc, 0x00049ff0, 0x00049ff4, 0x0004a4cc, 0x0004a4d0, 0x0004a4d8, 0x0004a4dc, 0x0004a4e0),
+        cases=9404, return_address_offset=24, return_register=1,
+        constants=(("TOP_THREE_ENTRY", 0x00049d88), ("SCALER_ENTRY", 0x00049e96)),
+        callees=((0x0004a496, 0x0004a4c8), (0x00049d88, 0x00049e96), (0x00049e96, 0x00049fc0), (0x000221bc, 0x000221d6), (0x000221e0, 0x000221f8)),
+    ),
+    Region(
+        key='jk08a-knock-normalization', rom="JK08A",
+        source='stock_jk08a_knock_normalization.s',
+        harness='harness-stock-jk08a-knock-normalization.c',
+        start=0x0004a26a, end=0x0004a2b6,
+        pools=((0x0004a4cc, 4), (0x0004a4d0, 4), (0x0004a4d4, 4), (0x0004a4d8, 4), (0x0004a4f4, 4), (0x0004a4f8, 4), (0x0004a590, 4), (0x0004a594, 4), (0x0004a598, 4), (0x0004a59c, 4), (0x0004a5a0, 4), (0x0004a5a4, 4), (0x0004a5a8, 4), (0x0004a24c, 12), (0x0004a25c, 14), (0x0004a3a0, 16), (0x0004a4c8, 4), (0x00008b3d, 1)),
+        ram_literals=(0x0004a4cc, 0x0004a4d0, 0x0004a4d4, 0x0004a4d8, 0x0004a4f4, 0x0004a590, 0x0004a594, 0x0004a598, 0x0004a59c, 0x0004a5a0, 0x0004a5a8),
+        cases=6563, return_address_offset=24, return_register=1,
+        constants=(("ALTERNATE_ENTRY", 0x0004a3b0),),
+        callees=((0x0004a3b0, 0x0004a3fe), (0x0004a438, 0x0004a496), (0x0004a4fc, 0x0004a58e), (0x00021ce0, 0x00021d6a)),
+    ),
 )
 
 
@@ -1287,6 +1309,12 @@ def harness_defines(region, image):
 
 
 REGION_OBSERVERS = {'jk08a-full-programmer': 'stock_injection_scheduler_invoke.s', 'jk08a-oneshot': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-word': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-byte': 'stock_oneshot_invoke.s', 'jk08a-rpm-phase-copy': 'stock_oneshot_invoke.s', 'jk08a-event-isr': 'stock_injector_event_invoke.s', 'jk08a-end-angle': 'stock_oneshot_invoke.s', 'jk08a-full-dispatch': 'stock_oneshot_invoke.s', 'jk08a-base-accumulator': 'stock_oneshot_invoke.s', 'jk08a-transient-coefficient': 'stock_oneshot_invoke.s', 'jk08a-transient-additive': 'stock_oneshot_invoke.s', 'jk08a-coolant-conditional': 'stock_oneshot_invoke.s', 'jk08a-transient-pair-1': 'stock_oneshot_invoke.s', 'jk08a-transient-pair-2': 'stock_oneshot_invoke.s', 'jk08a-fuel-multiplier': 'stock_oneshot_invoke.s', 'jk08a-pulse-precursor': 'stock_oneshot_invoke.s', 'jk08a-common-gain': 'stock_oneshot_invoke.s', 'jk08a-enrichment-prefix': 'stock_enrichment_prefix_invoke.s', 'jk08a-enrichment-terminal': 'stock_enrichment_terminal_invoke.s'}
+
+
+REGION_OBSERVERS.update({
+    'jk08a-knock-metric': 'invoke-knock-metric.s',
+    'jk08a-knock-normalization': 'invoke-knock-normalization.s',
+})
 
 
 def run_region(region, invoke, build_dir):

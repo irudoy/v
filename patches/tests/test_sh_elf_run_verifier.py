@@ -1209,6 +1209,12 @@ mov #0x5,r1
                 "CUT_DELAY": 0x00008C99,
             },
         }
+        expected.update({
+            'jk08a-knock-metric': {'REGION_ENTRY': 0x0004a2b6,
+                'TOP_THREE_ENTRY': 0x00049d88, 'SCALER_ENTRY': 0x00049e96},
+            'jk08a-knock-normalization': {'REGION_ENTRY': 0x0004a26a,
+                'ALTERNATE_ENTRY': 0x0004a3b0},
+        })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
             with self.subTest(region=key):
@@ -1221,7 +1227,30 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key == "jk08a-knock-reference-learning":
+                if key in ("jk08a-knock-metric", "jk08a-knock-normalization"):
+                    scope = key.rsplit("-", 1)[1]
+                    header_name = "stock-jk08a-knock-" + scope + "-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    macro = "KNOCK_" + scope.upper() + "_CASE_COUNT"
+                    self.assertEqual(re.findall(r'^#define ' + macro + r' (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    arrays = re.findall(scope + r'_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    self.assertEqual(len(arrays), 1)
+                    rows = [line.strip() for line in arrays[0].splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    self.assertTrue(all(re.fullmatch(r'[\s{},0-9a-fxU]+', row) for row in rows))
+                    self.assertRegex(harness, r'for\(i=0;i<ARRAY_SIZE\(' + scope + r'_cases\);\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&' + scope + r'_cases\[i\]\)')
+                    self.assertRegex(harness, r'\+\+completed;')
+                    if scope == "metric":
+                        self.assertRegex(harness, r'#define EARLY_ONLY 0')
+                        self.assertRegex(harness, r'EARLY_ONLY\?ARRAY_SIZE\(early_indices\):' + macro)
+                    else:
+                        self.assertRegex(harness, r'if\(completed!=' + macro + r'\)')
+                elif key == "jk08a-knock-reference-learning":
                     header_name = "stock-jk08a-knock-reference-learning-cases.h"
                     self.assertEqual(re.findall(
                         r'^#include "' + re.escape(header_name) + r'"$',

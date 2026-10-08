@@ -1,0 +1,307 @@
+summary = """
+Selected signed sum of the largest admitted unmasked software differences."""
+block = "knock/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff2274"
+level = "code"
+width = 32
+signed = true
+note = """
+One signed cell at ffff2274+4*(c-1), legal c in 1..6. With eight differences \
+in -65535..65535 and N in 0..8, A is in -524280..524280 without signed32 \
+overflow. Count 0 publishes zero; excluded INT32_MIN sentinels are omitted \
+from the accumulated sum. N=9..255 is outside this execution contract."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049e5e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_alternate/ram"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 set selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_channel_primary/ram"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+bit3 clear selects this independently seeded channel byte. \
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "input"
+to = "knock_metric_differences/ram"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+M = ROM8[0x00008618]; N = ROM8[0x00008870]; E0 = (M>>0)&1; V0 = \
+(1-E0)*(int32(RAM32[0xffff2158+0]))-E0*2147483648; E1 = (M>>1)&1; V1 = \
+(1-E1)*(int32(RAM32[0xffff2158+4]))-E1*2147483648; E2 = (M>>2)&1; V2 = \
+(1-E2)*(int32(RAM32[0xffff2158+8]))-E2*2147483648; E3 = (M>>3)&1; V3 = \
+(1-E3)*(int32(RAM32[0xffff2158+12]))-E3*2147483648; E4 = (M>>4)&1; V4 = \
+(1-E4)*(int32(RAM32[0xffff2158+16]))-E4*2147483648; E5 = (M>>5)&1; V5 = \
+(1-E5)*(int32(RAM32[0xffff2158+20]))-E5*2147483648; E6 = (M>>6)&1; V6 = \
+(1-E6)*(int32(RAM32[0xffff2158+24]))-E6*2147483648; E7 = (M>>7)&1; V7 = \
+(1-E7)*(int32(RAM32[0xffff2158+28]))-E7*2147483648; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = H; H = max(V3,V4); \
+V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); \
+V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = \
+min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V6,V7); V7 = min(V6,V7); V6 = H; H = \
+max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; A = \
+min(1,max(0,N-0))*min(1,max(0,V0+2147483648))*V0+min(1,max(0,N-1))*min(1,max(0,V1+2147483648))*V1+min(1,max(0,N-2))*min(1,max(0,V2+2147483648))*V2+min(1,max(0,N-3))*min(1,max(0,V3+2147483648))*V3+min(1,max(0,N-4))*min(1,max(0,V4+2147483648))*V4+min(1,max(0,N-5))*min(1,max(0,V5+2147483648))*V5+min(1,max(0,N-6))*min(1,max(0,V6+2147483648))*V6+min(1,max(0,N-7))*min(1,max(0,V7+2147483648))*V7; \
+to = A. For fixed mask/N/c, increasing one admitted difference cannot lower \
+A. All excluded sentinels are omitted; A fits signed32."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "reader"
+to = "knock_metric_scaler/fn"
+via = ["knock_metric_scaler/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Load 00049ee4 and the sign-dependent selected reads consume signed A at \
+ffff2274+4*(c-1). Composite A is -524280..524280; direct scaler contexts \
+independently seed full signed32 A and do not execute selection."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_metric_exclusion_mask/tbl"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit i set excludes d[i] by INT32_MIN; bit i clear admits d[i], i in 0..7. \
+The full mask-byte domain has no numeric-order monotonicity claim."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_metric_selection_count/tbl"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+N=0 publishes zero; N in 1..8 admits the first N descending local ranks \
+while omitting excluded sentinels. N=9..255 is outside the executed domain. \
+Increasing N can add a negative value, so the joint count view has sign \
+none."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "selector"
+to = "knock_selector_config/tbl"
+slot = "bit3"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+D=(ROM8[00008b3d]>>3)&1; bit3 clear selects uint8(ffff11de), bit3 set \
+selects uint8(ffff2143). The declared selected c is 1..6; the unused channel \
+byte is independently different and preserved. No caller channel-zero guard \
+or physical channel order is executed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
+
+[[link]]
+type = "writer"
+to = "knock_selected_difference_sum/fn"
+via = ["knock_selected_difference_sum/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+M = ROM8[0x00008618]; N = ROM8[0x00008870]; E0 = (M>>0)&1; V0 = \
+(1-E0)*(int32(RAM32[0xffff2158+0]))-E0*2147483648; E1 = (M>>1)&1; V1 = \
+(1-E1)*(int32(RAM32[0xffff2158+4]))-E1*2147483648; E2 = (M>>2)&1; V2 = \
+(1-E2)*(int32(RAM32[0xffff2158+8]))-E2*2147483648; E3 = (M>>3)&1; V3 = \
+(1-E3)*(int32(RAM32[0xffff2158+12]))-E3*2147483648; E4 = (M>>4)&1; V4 = \
+(1-E4)*(int32(RAM32[0xffff2158+16]))-E4*2147483648; E5 = (M>>5)&1; V5 = \
+(1-E5)*(int32(RAM32[0xffff2158+20]))-E5*2147483648; E6 = (M>>6)&1; V6 = \
+(1-E6)*(int32(RAM32[0xffff2158+24]))-E6*2147483648; E7 = (M>>7)&1; V7 = \
+(1-E7)*(int32(RAM32[0xffff2158+28]))-E7*2147483648; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = H; H = max(V3,V4); \
+V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); V2 = H; H = \
+max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = min(V0,V1); V0 = \
+H; H = max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); \
+V4 = H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = \
+min(V2,V3); V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); \
+V1 = min(V0,V1); V0 = H; H = max(V6,V7); V7 = min(V6,V7); V6 = H; H = \
+max(V5,V6); V6 = min(V5,V6); V5 = H; H = max(V4,V5); V5 = min(V4,V5); V4 = \
+H; H = max(V3,V4); V4 = min(V3,V4); V3 = H; H = max(V2,V3); V3 = min(V2,V3); \
+V2 = H; H = max(V1,V2); V2 = min(V1,V2); V1 = H; H = max(V0,V1); V1 = \
+min(V0,V1); V0 = H; A = \
+min(1,max(0,N-0))*min(1,max(0,V0+2147483648))*V0+min(1,max(0,N-1))*min(1,max(0,V1+2147483648))*V1+min(1,max(0,N-2))*min(1,max(0,V2+2147483648))*V2+min(1,max(0,N-3))*min(1,max(0,V3+2147483648))*V3+min(1,max(0,N-4))*min(1,max(0,V4+2147483648))*V4+min(1,max(0,N-5))*min(1,max(0,V5+2147483648))*V5+min(1,max(0,N-6))*min(1,max(0,V6+2147483648))*V6+min(1,max(0,N-7))*min(1,max(0,V7+2147483648))*V7; \
+to = A. Legal c is 1..6; the selected signed cell is ffff2274+4*(c-1). N=0 \
+writes zero. This finite arithmetic network is independent of the genuine \
+signed sorting loops."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_knock_metric_chain.py"
+key = "test_knock_metric_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Bounded post-acquisition knock metric"
