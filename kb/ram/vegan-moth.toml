@@ -7,3 +7,32 @@ name = "vegan-moth"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002e508"
+
+[[link]]
+type = "reader"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact post-feedback fragment consumes the addressed independent software \
+value."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005ca08"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_stft_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Post-feedback STFT publication"

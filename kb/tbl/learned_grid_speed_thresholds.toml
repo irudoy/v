@@ -1,0 +1,58 @@
+summary = "Eight byte thresholds of the learned-grid speed-byte search."
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "000126dc"
+level = "code"
+storage = "uint8"
+note = """
+The bounded software domain, storage footprint and reader interpretation do \
+not establish producer semantics, physical units, hardware permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000579f6"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[link]]
+type = "reader"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Eight byte thresholds of the learned-grid speed-byte search."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"

@@ -8,6 +8,12 @@ note = [
 The normal path preserves fractional Q8.8 content. UDS DIDs return only the \
 high bytes, while Mode 01 conversion uses the complete words. The upstream \
 closed-loop arithmetic is retained separately in FUN 0005cbec.""",
+    """
+The execution boundary is the post-feedback fragment 0005ca08..0005ca5e, \
+with its complete supplied 32-byte caller save frame and natural return. The \
+preceding feedback calculation and dispatch remain separate. F = \
+(RAM8[0xffff99c4]>>1)&1; to = \
+(1-F)*uint16(from)+F*256*min(125,max(75,RAM8[0xffff9925]))""",
 ]
 level = "code"
 role = "accessor"
@@ -76,6 +82,7 @@ supports = "identity"
 layout = "7mfk"
 address = "0005c910"
 name = "divergent-grasshopper"
+level = "code"
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -145,6 +152,25 @@ kind = "trace"
 supports = "identity"
 to = "strong-tarsier/fn/7mfk"
 relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005ca08"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_stft_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Post-feedback STFT publication"
 
 [[link]]
 type = "depends"

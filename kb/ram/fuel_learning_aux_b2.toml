@@ -1,0 +1,150 @@
+summary = """
+Bank-2 auxiliary byte grid with an executed 64-byte selector reset and \
+bounded cell update."""
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff49b0"
+level = "code"
+width = 8
+signed = false
+note = """
+The bounded software domain, storage footprint and reader interpretation do \
+not establish producer semantics, physical units, hardware permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00057ecc"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bank-2 auxiliary byte grid with an executed 64-byte selector reset and \
+bounded cell update."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "reader"
+to = "wisteria-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The real auxiliary helper consumes the addressed bank-local byte and \
+independent learning word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000580e8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "writer"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The reset call clears the complete selected bank auxiliary array through the \
+real stock helper."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[link]]
+type = "writer"
+to = "wisteria-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The real helper clears all 64 bank-local bytes for index 255 or updates one \
+explicit index in 0..63."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000580e8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"

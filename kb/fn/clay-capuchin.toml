@@ -1,3 +1,13 @@
+summary = """
+The real helper computes abs(W-25600) for explicit uint16 W in 0..65535. \
+Positive, negative and zero inputs execute the original branch, RTS and \
+delay slot. The INT32_MIN domain is outside this caller contract."""
+note = [
+    """
+The real helper computes abs(W-25600) for explicit uint16 W in 0..65535. \
+Positive, negative and zero inputs execute the original branch, RTS and \
+delay slot. The INT32_MIN domain is outside this caller contract.""",
+]
 role = "service"
 block = "library/block"
 contract = """
@@ -18,6 +28,7 @@ contract = [0]
 layout = "7mfk"
 address = "00022590"
 name = "clay-capuchin"
+level = "code"
 
 [[symbol.evidence]]
 kind = "spec"
@@ -28,3 +39,22 @@ key = "sh2-decode"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00022590"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00022590"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"

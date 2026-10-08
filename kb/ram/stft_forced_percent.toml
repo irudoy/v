@@ -1,0 +1,61 @@
+summary = """
+Raw forced STFT byte clamped to 75..125 before publication to both banks."""
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff9925"
+level = "code"
+width = 8
+signed = false
+note = """
+The bounded software domain, storage footprint and reader interpretation do \
+not establish producer semantics, physical units, hardware permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005ca16"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_stft_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Post-feedback STFT publication"
+
+[[link]]
+type = "reader"
+to = "divergent-grasshopper/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw forced STFT byte clamped to 75..125 before publication to both banks."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005ca08"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_stft_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Post-feedback STFT publication"

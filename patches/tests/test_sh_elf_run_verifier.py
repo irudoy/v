@@ -1214,6 +1214,10 @@ mov #0x5,r1
                 'TOP_THREE_ENTRY': 0x00049d88, 'SCALER_ENTRY': 0x00049e96},
             'jk08a-knock-normalization': {'REGION_ENTRY': 0x0004a26a,
                 'ALTERNATE_ENTRY': 0x0004a3b0},
+            'jk08a-stft-publication': {'REGION_ENTRY': 0x0005ca08,
+                'MODE_ALIAS': 0x7f40, 'FORCE_ALIAS': 0x7f50, 'EARLY_ONLY': 0},
+            'jk08a-grid-selection': {'REGION_ENTRY': 0x0005796c, 'EARLY_ONLY': 0},
+            'jk08a-grid-learning': {'REGION_ENTRY': 0x00057d1e, 'EARLY_ONLY': 0},
         })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
@@ -1227,7 +1231,25 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key in ("jk08a-knock-metric", "jk08a-knock-normalization"):
+                if key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning"):
+                    scope = key.removeprefix("jk08a-")
+                    header_name = "stock-jk08a-" + scope + "-cases.h"
+                    self.assertEqual(re.findall(
+                        r'^#include "' + re.escape(header_name) + r'"$',
+                        harness, re.MULTILINE), ['#include "' + header_name + '"'])
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding="utf-8")
+                    macro = scope.replace("-", "_").upper() + "_CASE_COUNT"
+                    self.assertEqual(re.findall(r'^#define ' + macro + r' (\d+)U$',
+                        header, re.MULTILINE), [str(region.cases)])
+                    [array] = re.findall(r'samples\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in array.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    self.assertTrue(all(re.fullmatch(r'[\s{},0-9a-fxU]+', row) for row in rows))
+                    self.assertRegex(harness, r'count=EARLY_ONLY\?16U:' + macro)
+                    self.assertRegex(harness, r'COUNT\(samples\)!=' + macro)
+                    self.assertRegex(harness, r'for\(i=0;i<count;\+\+i\)')
+                    self.assertRegex(harness, r'run_case\(i,&samples\[i\]\)')
+                elif key in ("jk08a-knock-metric", "jk08a-knock-normalization"):
                     scope = key.rsplit("-", 1)[1]
                     header_name = "stock-jk08a-knock-" + scope + "-cases.h"
                     self.assertEqual(re.findall(

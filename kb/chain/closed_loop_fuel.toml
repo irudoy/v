@@ -96,18 +96,30 @@ effect = "copies"
 sign = "positive"
 via = ["divergent-grasshopper/fn"]
 note = """
-The normal path copies ffff40ac to STFT ffff22dc, Q8.8 percent with neutral \
-0x6400; an alternate mode forces 75..125 percent."""
+F = (RAM8[0xffff99c4]>>1)&1; to = \
+(1-F)*uint16(from)+F*256*min(125,max(75,RAM8[0xffff9925]))"""
+specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "stft_b1/ram"
 to = "delectable-vole/ram"
 effect = "learns"
-sign = "positive"
+sign = "none"
 via = ["rousing-rhino/fn"]
 note = """
-A signed step from ffff134e, a region coefficient, and STFT updates the \
-selected cell in 90..110 percent; 492 of 518 changes follow the STFT sign."""
+B = uint8(x); I = RAM8[0xffff130a+B]; W = RAM16[0xffff134e+2*B]; S = \
+uint16(from); L = RAM16[0xffff2306+2*B]; V = RAM16[0xffff4b90-128*B+2*I]; C \
+= RAM8[0xffff49f0-64*B+I]; A = abs(W-25600); T0 = \
+min(1,max(0,(A)-(256*RAM8[0xffff2c21+0]))); T1 = \
+T0*min(1,max(0,(A)-(256*RAM8[0xffff2c21+1]))); T2 = \
+T1*min(1,max(0,(A)-(256*RAM8[0xffff2c21+2]))); R = T0+T1+T2; N = min(1,C); K \
+= N*ROM8[0x000129c6+R]+(1-N)*ROM8[0x00008a9d]; Q = trunc0((W-25600)*K/256); \
+E = min(1,abs(S-25600))*(1-min(1,abs(Q))); delta = \
+Q+E*(2*min(1,max(0,(W)-(25600)+1))-1); G = \
+((RAM8[0xffff1458]>>B)&1)*((RAM8[0xffff1457]>>B)&1); lo = \
+256*ROM8[0x00008a9e]; hi = 256*ROM8[0x00008a9f]; to = \
+(1-G)*V+G*max(lo,min(hi,L+delta))"""
+specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "kickass-mole/ram"
@@ -116,8 +128,31 @@ effect = "indexes"
 sign = "none"
 via = ["successful-tarantula/fn"]
 note = """
-BFS ffff1024 against byte thresholds 0x12592 forms one index of the 8x8 \
-learned grid, with hysteresis on the prior packed index."""
+B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
+RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
+floor(ROM8[0x0000881a]/4); A1 = min(1,max(0,(X)-(256*ROM8[0x00012593])+1)); \
+A2 = A1*min(1,max(0,(X)-(256*ROM8[0x00012594])+1)); A3 = \
+A2*min(1,max(0,(X)-(256*ROM8[0x00012595])+1)); A4 = \
+A3*min(1,max(0,(X)-(256*ROM8[0x00012596])+1)); A5 = \
+A4*min(1,max(0,(X)-(256*ROM8[0x00012597])+1)); A6 = \
+A5*min(1,max(0,(X)-(256*ROM8[0x00012598])+1)); A7 = \
+A6*min(1,max(0,(X)-(256*ROM8[0x00012599])+1)); C1 = \
+min(1,max(0,(S)-(1*ROM8[0x000126dd])+1)); C2 = \
+C1*min(1,max(0,(S)-(1*ROM8[0x000126de])+1)); C3 = \
+C2*min(1,max(0,(S)-(1*ROM8[0x000126df])+1)); C4 = \
+C3*min(1,max(0,(S)-(1*ROM8[0x000126e0])+1)); C5 = \
+C4*min(1,max(0,(S)-(1*ROM8[0x000126e1])+1)); C6 = \
+C5*min(1,max(0,(S)-(1*ROM8[0x000126e2])+1)); C7 = \
+C6*min(1,max(0,(S)-(1*ROM8[0x000126e3])+1)); R = A1+A2+A3+A4+A5+A6+A7; U = \
+C1+C2+C3+C4+C5+C6+C7; I = \
+R-min(1,max(0,(R)-(O)))*min(1,max(0,(256*(ROM8[0x00012592+min(7,O+1)]+H))-(X)))+min(1,max(0,(O)-(R)))*min(1,max(0,(X)-(256*(ROM8[0x00012592+O]-H)))); \
+J = \
+U-min(1,max(0,(U)-(V)))*min(1,max(0,(ROM8[0x000126dc+min(7,V+1)]+K)-(S)))+min(1,max(0,(V)-(U)))*min(1,max(0,(S)-(ROM8[0x000126dc+V]-K))); \
+L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
+256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
+F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
+1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
+specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "tough-earwig/ram"
@@ -126,18 +161,64 @@ effect = "indexes"
 sign = "none"
 via = ["successful-tarantula/fn"]
 note = """
-Engine speed ffff11ae against thresholds 0x126DC forms the other index, at \
-0, 1000, 1500, 2200, 3400, 4400, 5400, and 6400 rpm."""
+B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
+RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
+floor(ROM8[0x0000881a]/4); A1 = min(1,max(0,(X)-(256*ROM8[0x00012593])+1)); \
+A2 = A1*min(1,max(0,(X)-(256*ROM8[0x00012594])+1)); A3 = \
+A2*min(1,max(0,(X)-(256*ROM8[0x00012595])+1)); A4 = \
+A3*min(1,max(0,(X)-(256*ROM8[0x00012596])+1)); A5 = \
+A4*min(1,max(0,(X)-(256*ROM8[0x00012597])+1)); A6 = \
+A5*min(1,max(0,(X)-(256*ROM8[0x00012598])+1)); A7 = \
+A6*min(1,max(0,(X)-(256*ROM8[0x00012599])+1)); C1 = \
+min(1,max(0,(S)-(1*ROM8[0x000126dd])+1)); C2 = \
+C1*min(1,max(0,(S)-(1*ROM8[0x000126de])+1)); C3 = \
+C2*min(1,max(0,(S)-(1*ROM8[0x000126df])+1)); C4 = \
+C3*min(1,max(0,(S)-(1*ROM8[0x000126e0])+1)); C5 = \
+C4*min(1,max(0,(S)-(1*ROM8[0x000126e1])+1)); C6 = \
+C5*min(1,max(0,(S)-(1*ROM8[0x000126e2])+1)); C7 = \
+C6*min(1,max(0,(S)-(1*ROM8[0x000126e3])+1)); R = A1+A2+A3+A4+A5+A6+A7; U = \
+C1+C2+C3+C4+C5+C6+C7; I = \
+R-min(1,max(0,(R)-(O)))*min(1,max(0,(256*(ROM8[0x00012592+min(7,O+1)]+H))-(X)))+min(1,max(0,(O)-(R)))*min(1,max(0,(X)-(256*(ROM8[0x00012592+O]-H)))); \
+J = \
+U-min(1,max(0,(U)-(V)))*min(1,max(0,(ROM8[0x000126dc+min(7,V+1)]+K)-(S)))+min(1,max(0,(V)-(U)))*min(1,max(0,(S)-(ROM8[0x000126dc+V]-K))); \
+L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
+256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
+F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
+1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
+specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "delectable-vole/ram"
 to = "ltft_learned_b1/ram"
 effect = "selects"
-sign = "positive"
+sign = "none"
 via = ["successful-tarantula/fn"]
 note = """
-One of the 64 Q8.8-percent cells of bank-1 grid ffff4b90 is copied to \
-ffff2306."""
+B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
+RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
+floor(ROM8[0x0000881a]/4); A1 = min(1,max(0,(X)-(256*ROM8[0x00012593])+1)); \
+A2 = A1*min(1,max(0,(X)-(256*ROM8[0x00012594])+1)); A3 = \
+A2*min(1,max(0,(X)-(256*ROM8[0x00012595])+1)); A4 = \
+A3*min(1,max(0,(X)-(256*ROM8[0x00012596])+1)); A5 = \
+A4*min(1,max(0,(X)-(256*ROM8[0x00012597])+1)); A6 = \
+A5*min(1,max(0,(X)-(256*ROM8[0x00012598])+1)); A7 = \
+A6*min(1,max(0,(X)-(256*ROM8[0x00012599])+1)); C1 = \
+min(1,max(0,(S)-(1*ROM8[0x000126dd])+1)); C2 = \
+C1*min(1,max(0,(S)-(1*ROM8[0x000126de])+1)); C3 = \
+C2*min(1,max(0,(S)-(1*ROM8[0x000126df])+1)); C4 = \
+C3*min(1,max(0,(S)-(1*ROM8[0x000126e0])+1)); C5 = \
+C4*min(1,max(0,(S)-(1*ROM8[0x000126e1])+1)); C6 = \
+C5*min(1,max(0,(S)-(1*ROM8[0x000126e2])+1)); C7 = \
+C6*min(1,max(0,(S)-(1*ROM8[0x000126e3])+1)); R = A1+A2+A3+A4+A5+A6+A7; U = \
+C1+C2+C3+C4+C5+C6+C7; I = \
+R-min(1,max(0,(R)-(O)))*min(1,max(0,(256*(ROM8[0x00012592+min(7,O+1)]+H))-(X)))+min(1,max(0,(O)-(R)))*min(1,max(0,(X)-(256*(ROM8[0x00012592+O]-H)))); \
+J = \
+U-min(1,max(0,(U)-(V)))*min(1,max(0,(ROM8[0x000126dc+min(7,V+1)]+K)-(S)))+min(1,max(0,(V)-(U)))*min(1,max(0,(S)-(ROM8[0x000126dc+V]-K))); \
+L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
+256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
+F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
+1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
+specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "ltft_learned_b1/ram"

@@ -1750,3 +1750,53 @@ metric does not establish joint invocation. ADC/DMAC/MMIO completion,
 filter/transform and bin production, ISR/RTE, full dispatch, channel-zero
 guards, physical channel mapping, cadence, physical units and engine
 reachability have no proof from this CPU contract. Hardware readiness is NO.
+
+## Post-feedback STFT publication
+
+One mandatory Region binds 43 instructions, 98 bound bytes and 6160 literal
+cases. `jk08a-stft-publication` executes `0005ca08..0005ca5e` with its supplied
+32-byte caller save frame and natural epilogue. Normal mode copies the two
+independent unsigned working words; forced mode publishes the common clamped
+byte times 256. The literals contain every mode and forced-percent byte,
+word boundaries and both entry T values. Two 32-bit RAM pools and two declared
+16-bit pointers are relocated after exact stock reconstruction. Fifteen GPRs,
+special registers, full SR, PR/SP, the outer ABI, 64 frame bytes and the entire
+64 KiB RAM image are observed. Preceding feedback, producer semantics, physical
+units and cadence remain separate. Hardware readiness is NO.
+
+## Learned-grid selection
+
+One mandatory Region binds 326 instructions, 765 bound bytes and 10840 literal
+cases. `jk08a-grid-selection` executes the complete `0005796c` selector with
+the real word fill, auxiliary reset and diagnostic predicate helpers. Its
+domain is bank 0..1, unsigned word load, unsigned byte speed, every prior
+packed byte and independent byte calibrations. First-break searches admit
+unsorted axes and apply prior-index hysteresis. The selected cell either
+publishes its word or triggers full bank reset. Stock bound transition
+23039/23040 prevents a universal positive cell influence. The matrix has
+10621 normal and 219 reset calls; 10658 calls reach the real predicate with
+descriptor index 297. Twelve RAM pools relocate after byte identity checks.
+All GPRs, special registers, full SR, natural calls/returns and delay slots,
+the outer ABI, 112 frame bytes and all 64 KiB RAM remain observable. Producer
+semantics, physical units and cadence remain separate. Hardware readiness is NO.
+
+## Bounded learned-grid update
+
+One mandatory Region binds 267 instructions, 634 bound bytes and 9856 literal
+cases. `jk08a-grid-learning` executes complete `00057d1e` with the real absolute
+value, word fill and auxiliary helpers. Bank 0..1 and packed index 0..63 are
+explicit. Two independent permit bits enable a signed displacement times
+byte coefficient, division truncated toward zero, conditional minimum step
+and upper-then-lower bounds. STFT supplies only the neutral-value gate; the
+step direction follows an independent word. The auxiliary cell increments
+modulo 256, conditionally decays and clears outside its retention interval.
+There are 9340 enabled and 516 disabled calls, with 3179 conditional minimum
+steps, 1054 decay cases and 2421 auxiliary clears among enabled calls. Fourteen
+RAM pools relocate after exact reconstruction. Every GPR, special register,
+full SR, natural call/return, delay slot, outer ABI, 112 frame bytes and the
+complete 64 KiB RAM image are observed. Producer semantics, live permits,
+physical units and cadence remain separate. Hardware readiness is NO.
+
+The narrow mechanism and boundaries are in
+`defs/JK08A.closed-loop-publication.md`. The three Regions execute independently;
+their combined registration does not establish a jointly invoked feedback cycle.

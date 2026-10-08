@@ -1,0 +1,125 @@
+# JK08A bounded closed-loop publication and learning
+
+The stock `7mfk` contracts bind three independent execution boundaries to the
+stock image. The arithmetic describes software inputs, not their producers,
+physical units, permission cadence or a jointly executed feedback cycle.
+Hardware readiness is NO. Live permission and scheduling remain subject to
+CONSULT-III Plus observation or bench validation before hardware testing.
+
+## Post-feedback STFT publication
+
+One mandatory Region binds 43 instructions, 98 bound bytes and 6160 literal
+cases. The boundary is `0005ca08..0005ca5e`, the final publication fragment of
+`divergent-grasshopper/fn` at `0005c910`. Its preceding feedback calculation is
+outside this contract. The supplied 32-byte caller save frame contains the real
+saved PR and R8..R14. The original epilogue, RTS and delay slot execute.
+
+Let `M` be the independent byte at `ffff99c4`, `P` the independent byte at
+`ffff9925`, and `F = (M >> 1) & 1`. For each bank, the output is
+`(1-F)*W + F*256*min(125,max(75,P))`. Bank 1 copies the unsigned word at
+`ffff40ac` to `ffff22dc`; bank 2 copies `ffff40ae` to `ffff22de`.
+The held working word has positive influence on its output; the forced branch
+is constant in that word. Every mode byte and every forced-percent byte occurs
+in the literals. The matrix includes word boundaries and both entry T values;
+it does not exhaust all pairs of working words.
+
+The simulator relocates the two exact 32-bit RAM pools and two declared
+16-bit RAM pointers (`0005ca5e=99c4`, `0005ca6c=9924`). It preserves the
+instruction bytes and the addressed byte within each declared RAM footprint.
+The observer checks R0..R14, entry and exit SP, PR, SR including M/Q/T, MACH,
+MACL, GBR, the full 64-byte observed frame, the outer caller ABI and the entire
+64 KiB RAM image. The output stores and sibling input bytes are explicit.
+
+The mode and forced-percent bytes have a verified software reader. Their
+producer semantics, physical units and cadence are independent obligations.
+
+## Learned-grid selection
+
+One mandatory Region binds 326 instructions, 765 bound bytes and 10840 literal
+cases. The complete entry is `successful-tarantula/fn` at `0005796c`.
+It calls the real stock fill helper at `00058092`, auxiliary reset helper at
+`000580e8` and diagnostic byte-1 bit-7 predicate at `00025e20`. The predicate
+receives descriptor index 297. Other predicate indices have byte identity only.
+
+Let `b = uint8(R4)` in 0..1. Upper register bits are independent. The prior
+packed byte at `ffff130a+b` supplies load index `O = packed & 7` and speed
+index `O = (packed >> 3) & 7`; its upper two bits do not affect either search.
+The unsigned load word at `ffff1024` uses eight byte thresholds at `00012592`,
+scaled by 256, and unsigned hysteresis at `0000881b`. The speed byte at
+`ffff11ae` uses eight byte thresholds at `000126dc` and
+`floor(ROM8[0000881a]/4)` hysteresis.
+
+For either search, let `X` be its input, `A` its byte axis, `s` its scale and
+`H` its hysteresis. The first-break raw index is the number of consecutive
+thresholds `A[1]..A[7]` satisfying `X >= s*A[i]`. Subtract one when the raw
+index exceeds `O` and `X < s*(A[O+1]+H)`. Add one when it is below `O` and
+`X > s*(A[O]-H)`. Neither axis is required to be sorted. The addressed cell
+is `8*speed_index + load_index`, in 0..63.
+
+Bank 1 uses the 64-word grid at `ffff4b90`; bank 2 uses `ffff4b10`.
+The candidate cell must lie inclusively between `256*ROM8[00008a9e]` and
+`256*ROM8[00008a9f]`. Bit 0 at `ffff41b5` and bit 7 at `ffff5a94`
+independently force reset. The diagnostic predicate executes only after the
+range and control-byte checks permit it. Reset clears the selected bank's
+adjustment word at `ffff45a0+2*b`, fills all 64 learned words with 25600 and
+clears all 64 auxiliary bytes at `ffff49f0-64*b` through the real helpers.
+The selected output at `ffff2306+2*b` is the candidate word or 25600. The
+packed output byte is `8*speed_index + load_index` on both paths.
+
+The selected-cell influence has sign `none` over this unsigned domain. With
+the stock bounds, a cell of 23039 publishes 25600 through reset, while a cell
+of 23040 publishes 23040. The matrix covers all prior packed bytes, all speed
+bytes, threshold neighbors, stock and three independent synthetic calibration
+profiles, inverted bounds and the reset conditions. It contains 10621 normal
+and 219 reset calls; 10658 calls reach the diagnostic predicate.
+
+The simulator relocates 12 declared 32-bit RAM pools. Exact code, literal
+pools, tables and the descriptor index are bound to stock bytes before
+relocation. The observer checks every R0..R14 value, all relevant special
+registers and SR, natural call/return and delay slots, the full 112-byte
+observed frame, the outer ABI and the entire 64 KiB RAM image. Software byte
+storage does not establish physical units or scheduler cadence.
+
+## Bounded learned-grid update
+
+One mandatory Region binds 267 instructions, 634 bound bytes and 9856 literal
+cases. The complete entry is `rousing-rhino/fn` at `00057d1e`. It executes the
+real absolute-value helper at `00022590`, word fill helper at `00058092` and
+auxiliary helper at `000580e8`. Let `b = uint8(R4)` in 0..1 and the packed
+byte at `ffff130a+b` be explicitly in 0..63. The two independent permit bytes
+at `ffff1458` and `ffff1457` must each contain bit `b`.
+
+Let `W = RAM16[ffff134e+2*b]`, `S = RAM16[ffff22dc+2*b]` and
+`L = RAM16[ffff2306+2*b]`, each independently unsigned. The three bytes at
+`ffff2c21` select region 0..3 by the first-break search of
+`abs(W-25600) > 256*threshold[i]`. The coefficient is the addressed byte at
+`000129c6+region`, or `ROM8[00008a9d]` when the selected auxiliary cell is zero.
+Compute `q = trunc0((W-25600)*coefficient/256)`. If `q == 0` and `S != 25600`,
+add +1 for `W >= 25600` or -1 otherwise. The enabled cell receives
+`max(256*ROM8[00008a9e], min(256*ROM8[00008a9f], L+delta))`.
+The upper bound is applied before the lower bound, including inverted bounds.
+Disabled calls preserve the full RAM image, including the addressed cell.
+
+The STFT influence has sign `none`: STFT controls only the minimum-step gate,
+while its direction follows the independent `W`. The arithmetic does not
+identify the producer of `W` or infer a physical learning rate.
+
+For auxiliary byte `C`, set `N = uint8(C+1)` and `D = ROM8[000088f5]`.
+Its intermediate value is `max(0,N-D)` when `N+D > 255`, otherwise `N`.
+Retain that value only when
+`256*ROM8[0000839d] <= W < 256*ROM8[0000839c]`; otherwise clear the cell.
+The enabled call changes only one learned word and one auxiliary byte in the
+selected bank. The other 63 cells and the sibling bank remain observable.
+
+The matrix includes every coefficient byte, every auxiliary byte, every
+permit byte, all 64 indices, both banks and entry T values, quantization and
+threshold neighbors, stock and three synthetic profiles, and word boundaries.
+There are 9340 enabled and 516 disabled calls, 3179 conditional minimum steps,
+1054 decay cases and 2421 auxiliary clears among enabled calls.
+
+The simulator relocates 14 declared 32-bit RAM pools without changing the
+instructions under test. The absolute-value domain is -25600..39935 and does
+not include INT32_MIN. The observer checks R0..R14, SP, PR, full SR, MACH,
+MACL, GBR, the full 112-byte observed frame, the outer ABI and the entire
+64 KiB RAM image. Hardware readiness is NO: producer semantics, physical
+units, live permits and cadence require separate validation.

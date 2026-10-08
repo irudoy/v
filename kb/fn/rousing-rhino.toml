@@ -10,6 +10,25 @@ note = [
 The code establishes adaptive learned-grid maintenance and bank mapping. The \
 physical meaning of the operating-region coefficient and the exact learning \
 cadence remain unresolved.""",
+    """
+R4 supplies b=uint8(x) in 0..1; the addressed packed byte is explicitly in \
+0..63. Independent uint16 words, permit bytes, threshold bytes and \
+coefficients define the software domain. Truncation precedes the conditional \
+minimum step; bounds apply upper then lower. STFT controls the zero-step \
+gate, while the step direction follows ffff134e+2*b, so its full-domain sign \
+is none. Cadence and live hardware permission remain separate. B = uint8(x); \
+I = RAM8[0xffff130a+B]; W = RAM16[0xffff134e+2*B]; S = uint16(from); L = \
+RAM16[0xffff2306+2*B]; V = RAM16[0xffff4b90-128*B+2*I]; C = \
+RAM8[0xffff49f0-64*B+I]; A = abs(W-25600); T0 = \
+min(1,max(0,(A)-(256*RAM8[0xffff2c21+0]))); T1 = \
+T0*min(1,max(0,(A)-(256*RAM8[0xffff2c21+1]))); T2 = \
+T1*min(1,max(0,(A)-(256*RAM8[0xffff2c21+2]))); R = T0+T1+T2; N = min(1,C); K \
+= N*ROM8[0x000129c6+R]+(1-N)*ROM8[0x00008a9d]; Q = trunc0((W-25600)*K/256); \
+E = min(1,abs(S-25600))*(1-min(1,abs(Q))); delta = \
+Q+E*(2*min(1,max(0,(W)-(25600)+1))-1); G = \
+((RAM8[0xffff1458]>>B)&1)*((RAM8[0xffff1457]>>B)&1); lo = \
+256*ROM8[0x00008a9e]; hi = 256*ROM8[0x00008a9f]; to = \
+(1-G)*V+G*max(lo,min(hi,L+delta))""",
 ]
 level = "code"
 role = "driver"
@@ -96,6 +115,7 @@ supports = "identity"
 layout = "7mfk"
 address = "00057d1e"
 name = "rousing-rhino"
+level = "code"
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -161,3 +181,168 @@ kind = "trace"
 supports = "identity"
 to = "unique-aardwolf/fn/7mfk"
 relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "depends"
+to = "clay-capuchin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = "The three-threshold search calls the real bounded absolute-value helper."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00022590"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "depends"
+to = "nice-toad/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The real stock call, return, delay slot and relevant helper branch execute \
+with exact bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00058092"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "depends"
+to = "wisteria-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The real stock call, return, delay slot and relevant helper branch execute \
+with exact bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000580e8"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "selector"
+to = "fuel_learning_permit_a/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The addressed bank bit must be set in both independent software permit \
+bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "selector"
+to = "fuel_learning_permit_b/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The addressed bank bit must be set in both independent software permit \
+bytes."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"

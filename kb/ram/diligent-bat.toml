@@ -68,11 +68,59 @@ to = "nice-toad/fn/7mfk"
 relies = "structure"
 
 [[link]]
+type = "input"
+to = "stft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The zero-step gate reads the addressed bank STFT; step direction follows the \
+independent learning-input word."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005ca08"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
 type = "reader"
 to = "successful-tarantula/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
 
 [[link]]
 type = "writer"
@@ -82,3 +130,49 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "writer"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "The reset branch fills all 64 bank-local words through the real helper."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"

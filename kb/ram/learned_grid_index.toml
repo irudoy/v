@@ -1,0 +1,121 @@
+summary = """
+Two bank-indexed packed bytes: load index in bits 0..2 and speed index in \
+bits 3..5."""
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff130a"
+level = "code"
+width = 8
+signed = false
+note = """
+The bounded software domain, storage footprint and reader interpretation do \
+not establish producer semantics, physical units, hardware permission or \
+cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00057b10"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[link]]
+type = "reader"
+to = "rousing-rhino/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The learner consumes the explicitly bounded 0..63 cell index of the \
+addressed bank."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
+type = "reader"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Two bank-indexed packed bytes: load index in bits 0..2 and speed index in \
+bits 3..5."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[link]]
+type = "writer"
+to = "successful-tarantula/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The selector publishes the two three-bit indices in the addressed bank \
+byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
