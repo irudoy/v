@@ -127,8 +127,26 @@ effect = "feeds"
 sign = "none"
 via = ["strong-tarsier/fn"]
 note = """
-0005cbec runs the two-bank feedback state calculation into working Q8.8 word \
-ffff40ac; the ledger states neither its arithmetic nor a sign."""
+B = uint8(x); V = uint16(from); F = RAM8[0xffff88c0+B]; K = \
+RAM16[0xffff88b8+2*B]; C = \
+ROM8[0x00008822]*lookup(0x00023752,uint8(floor(RAM16[0xffff11bc]/2))); P = \
+min(1,(1-min(1,RAM8[0xffff14c1]))*min(1,RAM8[0xffff88cd])+(1-min(1,abs(RAM16[0xffff22e8]-16384)))*min(1,max(0,RAM16[0xffff88b4]-16384))+(1-min(1,RAM16[0xffff15da]))*min(1,RAM16[0xffff88b6])); \
+A = min(1,1-min(1,abs(F-1))+P); D = \
+uint16(RAM16[0xffff28b8+2*B]-ROM16[0x000092ee]); U = \
+uint16(RAM16[0xffff28b8+2*B]+ROM16[0x000092f0]); T = \
+A*(1-min(1,min(1,max(0,K-C))+(1-min(1,max(0,D-V)))*(1-min(1,max(0,V-U))))); \
+L = 1-min(1,abs(RAM8[0xffff88be+B]-1)); H = min(1,RAM8[0xffff89da+B]); J = \
+min(1,RAM8[0xffff89dc+B]); Q = min(1,RAM8[0xffff8964]); N = \
+min(1,RAM8[0xffff8967+B]); R = min(1,RAM8[0xffff8965+B]); E = \
+min(1,RAM8[0xffff8969+B]); W = \
+E*RAM16[0xffff8926+2*B]+(1-E)*RAM16[0xffff2898+2*B]; W = \
+R*RAM16[0xffff8922+2*B]+(1-R)*W; W = N*25600+(1-N)*W; W = \
+Q*RAM16[0xffff8920]+(1-Q)*W; W = T*25600+(1-T)*W; W = \
+J*RAM16[0xffff1628+2*B]+(1-J)*W; W = H*RAM16[0xffff2a1e+2*B]+(1-H)*W; W = \
+L*W+(1-L)*25600; I = (RAM8[0xffff88ec]>>4)&1; W = \
+I*W+(1-I)*RAM16[0xffff88b0+2*B]; to = \
+max(ROM16[0x00008fc4],min(ROM16[0x00008fc6],W))"""
+specs = ["defs/JK08A.closed-loop-feedback.md"]
 
 [[step]]
 from = "benevolent-bird/ram"

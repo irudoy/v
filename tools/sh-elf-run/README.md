@@ -24,6 +24,17 @@ the caller's configured context.
 `VQ_SH_ELF_SKIP_BUILD=1` skips the image build only when that image was already
 built from the current Dockerfile.
 
+`VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` declares the stock simulator's execution
+limit: `120` seconds by default, or an explicit `240`. The runner forwards the
+value to the same container and rejects every other value before invoking
+Docker. Assembly and compilation keep their existing limits; compilation
+remains limited to 120 seconds. The extended limit changes no image,
+instruction bytes, fixture, case, observation, or required PASS marker.
+
+```bash
+VQ_SH_ELF_STOCK_TIMEOUT_SECONDS=240 make verify
+```
+
 The gate performs these checks:
 
 1. Assemble every current Map Switching, Rolling Launch, and CAN telemetry
@@ -1841,3 +1852,19 @@ translation is identical. Identical windows may share distinct pool bindings.
 Duplicate or overlapping pool words, conflicting translations and different
 extents at the same origin are refused. Stock code, pools, return boundaries,
 register windows and long RAM literal restrictions remain checked.
+
+## Bounded whole closed-loop feedback
+
+`jk08a-closed-loop-feedback` executes natural entry `0005cbec`, both banks and
+fifteen real helpers. One mandatory Region binds 3067 instructions, 63998 bound
+bytes and 1829 literal cases. Ten final-source alternatives and 3658 bank
+observations bind transition, initialization, ordered limits and source
+precedence to independent raw-state equations. Full RAM, the 302-byte coherent
+workspace and neighbors, fifteen GPRs, actual prepared full SR, special
+registers, natural PR/SP, outer ABI and the 352-byte nested frame are compared.
+Forty-three long RAM pointers and seventeen word pointers use declared
+simulator relocations. Stock code has no stubs or changed instruction bytes.
+Physical units, producers, scheduling, cadence, peripherals and engine
+reachability require separate evidence. Hardware readiness is NO. Exact reader
+phases, literal boundaries and identity-only branches are specified in
+`defs/JK08A.closed-loop-feedback.md`.

@@ -1,7 +1,15 @@
 summary = """
 Working bank 2 closed-loop fuel-correction word written by FUN 0005cbec and \
 copied by FUN 0005c910 to ffff22de on the normal path."""
-note = ["The bank mapping follows the downstream standard PID and UDS paths."]
+note = [
+    "The bank mapping follows the downstream standard PID and UDS paths.",
+    """
+The bounded complete feedback invocation has independent memory, terminal \
+register and 352-byte frame equations for both banks and all declared source \
+alternatives. The explicit raw software invocation does not establish \
+physical units, upstream producers, permission, cadence, full ECU scheduling \
+or engine reachability.""",
+]
 level = "code"
 unit = "percent*256"
 
@@ -63,6 +71,25 @@ at = "7mfk:0005d64a"
 value = {named = ["0005c910", "0005cbec", "ffff22de", "ffff40ae"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
 [[link]]
 type = "depends"
 to = "stft_b2/ram"
@@ -70,6 +97,209 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "writes"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_backup_value/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff8920 only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_baseline_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff289a only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_elapsed_value_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff8928 only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_first_override_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff2a20 only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_neutral_value_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff8924 only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_second_override_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff162a only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_selected_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The bank output uses raw word ffff88b2 only under its declared precedence \
+and initialization condition, followed by upper then lower unsigned limits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d64a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
 
 [[link]]
 type = "reader"

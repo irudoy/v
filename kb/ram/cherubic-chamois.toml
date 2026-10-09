@@ -13,6 +13,12 @@ rounding and final output saturation are independently checked. The \
 independent software domain and reader interpretation do not establish \
 source producers, physical units, engine reachability, permission or \
 cadence.""",
+    """
+The bounded complete feedback invocation has independent memory, terminal \
+register and 352-byte frame equations for both banks and all declared source \
+alternatives. The explicit raw software invocation does not establish \
+physical units, upstream producers, permission, cadence, full ECU scheduling \
+or engine reachability.""",
 ]
 level = "code"
 block = "fuel_closed_loop/block"
@@ -95,6 +101,21 @@ key = "test_registered_conversion_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
 
 [[link]]
 type = "input"

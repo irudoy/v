@@ -120,5 +120,5 @@ def test_primary_stock_runner_checks_linked_elf_before_simulator(tmp_path,monkey
         assert stock.base_verifier.RUN not in [cmd for cmd,_ in calls]
     else:
         assert stock.run_region(region,tmp_path/'invoke.o',tmp_path)==301
-        assert calls[-1]==(stock.base_verifier.RUN,{'timeout':120})
+        assert calls[-1]==(stock.base_verifier.RUN,{'timeout':stock.stock_execution_timeout()})
     assert next(options for cmd,options in calls if cmd==stock.base_verifier.GCC)=={'timeout':120}

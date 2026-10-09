@@ -1,0 +1,117 @@
+summary = "Unsigned raw curve result of the bounded whole-feedback state equations."
+note = [
+    """
+The explicit raw software invocation does not establish physical units, \
+upstream producers, permission, cadence, full ECU scheduling or engine \
+reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8947"
+level = "code"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005cc2a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "lookup"
+to = "modest-catfish/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The raw byte equals the eight-point unsigned interpolation over the low byte \
+of half the incoming word ffff11bc."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cc2a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "reader"
+to = "strong-tarsier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned raw curve result of the bounded whole-feedback state equations."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cc2a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "writer"
+to = "strong-tarsier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned raw curve result of the bounded whole-feedback state equations."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cc2a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"

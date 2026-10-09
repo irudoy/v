@@ -8,6 +8,12 @@ note = [
 The function contains the full feedback-control state calculation. This \
 annotation establishes the output role and bank routing without assigning \
 unresolved physical names to its internal terms.""",
+    """
+The bounded complete feedback invocation has independent memory, terminal \
+register and 352-byte frame equations for both banks and all declared source \
+alternatives. The explicit raw software invocation does not establish \
+physical units, upstream producers, permission, cadence, full ECU scheduling \
+or engine reachability.""",
 ]
 level = "code"
 role = "driver"
@@ -64,6 +70,325 @@ at = "7mfk:0005d64a"
 value = {named = ["0005c910", "0005cbec", "ffff40ac", "ffff40ae"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "brilliant-ibis/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_backup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_disabled/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_elapsed_packet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_elapsed_ramp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_elapsed_state/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_neutral_ramp/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_transition/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "closed_loop_feedback_transition_packet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "didactic-civet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
 [[link]]
 type = "depends"
 to = "divergent-grasshopper/fn"
@@ -71,3 +396,691 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fortunate-adder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "funky-toucanet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "mahogany-dodo/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "depends"
+to = "uptight-tiger/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete bounded invocation executes this real helper in the declared \
+stock call closure."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_backup_flag/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8964 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_disabled_flag_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8967 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_disabled_flag_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8968 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_elapsed_flag_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8969 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_elapsed_flag_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff896a selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_first_override_flag_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff89da selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_first_override_flag_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff89db selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_initialization/ram"
+slot = "bit4"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+An unset incoming bit 4 preserves the prior bank selected words; a set bit \
+runs the current source selection."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_latch_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff88be selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_latch_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff88bf selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_neutral_flag_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8965 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_neutral_flag_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8966 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_second_override_flag_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff89dc selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_second_override_flag_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff89dd selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_transition_output_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8958 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "selector"
+to = "closed_loop_feedback_transition_output_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Current raw state at ffff8959 selects the explicit precedence alternative; \
+latch admission requires exactly one, other flags use zero/nonzero. See the \
+reader phases of the complete feedback specification."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "threshold"
+to = "closed_loop_feedback_lower_bound/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The final unsigned value applies the upper operation before the lower \
+operation."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "threshold"
+to = "closed_loop_feedback_upper_bound/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The final unsigned value applies the upper operation before the lower \
+operation."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cbec"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"

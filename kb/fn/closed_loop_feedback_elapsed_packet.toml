@@ -1,0 +1,34 @@
+summary = """
+Combined elapsed-state and ramp wrapper with exact helper output binding \
+order."""
+note = [
+    """
+The explicit raw software invocation does not establish physical units, \
+upstream producers, permission, cadence, full ECU scheduling or engine \
+reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005dcfa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005dcfa"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"

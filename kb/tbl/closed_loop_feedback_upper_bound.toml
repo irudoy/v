@@ -1,0 +1,60 @@
+summary = "Unsigned final upper bound applied before the lower-bound operation."
+note = [
+    """
+The explicit raw software invocation does not establish physical units, \
+upstream producers, permission, cadence, full ECU scheduling or engine \
+reachability.""",
+]
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008fc6"
+level = "code"
+storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005d518"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "reader"
+to = "strong-tarsier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "Unsigned final upper bound applied before the lower-bound operation."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d518"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"

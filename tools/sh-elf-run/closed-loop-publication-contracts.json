@@ -380,7 +380,8 @@
       "props": {
         "summary": "Working bank 1 closed-loop fuel-correction word written by FUN 0005cbec and copied by FUN 0005c910 to short-term fuel-trim diagnostic word ffff22dc on the normal path.",
         "note": [
-          "The output role and Q8.8-percent representation are exact; narrower names for the internal feedback terms in FUN 0005cbec remain unresolved."
+          "The output role and Q8.8-percent representation are exact; narrower names for the internal feedback terms in FUN 0005cbec remain unresolved.",
+          "The bounded complete feedback invocation has independent memory, terminal register and 352-byte frame equations for both banks and all declared source alternatives. The explicit raw software invocation does not establish physical units, upstream producers, permission, cadence, full ECU scheduling or engine reachability."
         ],
         "level": "code",
         "unit": "percent*256"
@@ -2553,7 +2554,8 @@
       "props": {
         "summary": "Working bank 2 closed-loop fuel-correction word written by FUN 0005cbec and copied by FUN 0005c910 to ffff22de on the normal path.",
         "note": [
-          "The bank mapping follows the downstream standard PID and UDS paths."
+          "The bank mapping follows the downstream standard PID and UDS paths.",
+          "The bounded complete feedback invocation has independent memory, terminal register and 352-byte frame equations for both banks and all declared source alternatives. The explicit raw software invocation does not establish physical units, upstream producers, permission, cadence, full ECU scheduling or engine reachability."
         ],
         "level": "code",
         "unit": "percent*256"

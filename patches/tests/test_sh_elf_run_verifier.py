@@ -1220,6 +1220,7 @@ mov #0x5,r1
             'jk08a-grid-learning': {'REGION_ENTRY': 0x00057d1e, 'EARLY_ONLY': 0},
             'jk08a-closed-loop-conversion': {'REGION_ENTRY': 0x0003edb4, 'EARLY_ONLY': 0},
             'jk08a-closed-loop-adjustment': {'REGION_ENTRY': 0x000a0ee8, 'EARLY_ONLY': 0},
+            'jk08a-closed-loop-feedback': {'REGION_ENTRY': 0x0005cbec},
         })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
@@ -1255,6 +1256,20 @@ mov #0x5,r1
                     self.assertRegex(harness, r'COUNT\(samples\)!=' + macro)
                     self.assertRegex(harness, r'for\(i=0;i<count;\+\+i\)')
                     self.assertRegex(harness, r'run_case\(i,&samples\[i\]\)')
+                elif key == 'jk08a-closed-loop-feedback':
+                    header_name = 'stock-jk08a-closed-loop-feedback-cases.h'
+                    self.assertIn('#include "' + header_name + '"', harness)
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding='utf-8')
+                    self.assertEqual(re.findall(r'^#define FEEDBACK_CASE_COUNT (\d+)U$', header,
+                        re.MULTILINE), [str(region.cases)])
+                    for name in ('memory_samples', 'cpu_samples'):
+                        [array] = re.findall(r'\b' + name + r'\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                        rows = [line.strip() for line in array.splitlines() if line.strip()]
+                        self.assertEqual(len(rows), region.cases)
+                        self.assertTrue(all(re.fullmatch(r'[\s{},0-9a-fxU]+', row) for row in rows))
+                    self.assertIn('COUNT(memory_samples)!=FEEDBACK_CASE_COUNT', harness)
+                    self.assertIn('COUNT(cpu_samples)!=FEEDBACK_CASE_COUNT', harness)
+                    self.assertIn('for(i=0;i<FEEDBACK_CASE_COUNT;++i)if(!run_case(i))return 1;', harness)
                 elif key in ("jk08a-knock-metric", "jk08a-knock-normalization"):
                     scope = key.rsplit("-", 1)[1]
                     header_name = "stock-jk08a-knock-" + scope + "-cases.h"

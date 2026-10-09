@@ -3,15 +3,13 @@ Unidentified raw uint8 parameter of FUN_0005d66c, selected by 1D \
 interpolation over (read_u16_be(ffff11bc) >> 1) & 0xff."""
 note = [
     """
-Code proves only the role of a raw second argument to FUN_0005d66c: the \
-interpolated result 20..1 is zero-extended, stored in RAM ffff8947, and \
-passed in r5/param_2. The physical meaning does not follow from consumer \
-code. The catalog contains 22 ambiguous matches of shape 1D-8, so no name or \
-physical scale is claimed. Result disposition: consumer. Blocking condition: \
-At 0005cc4c, the map result in r5 is passed to FUN_0005d66c, but the \
-artifact contains neither code nor a contract for FUN_0005d66c. The parallel \
-write at 0005cc2a to RAM ffff8947 has no proven reader, so the trace does \
-not reach semantically identified consumption.""",
+The unsigned eight-point curve result over uint8(floor(RAM16[ffff11bc]/2)) \
+is stored at ffff8947 and consumed by the real packet wrapper 0005d66c, \
+transition detector 0005ca8c and backup/neutral state paths. Its exact raw \
+software role is bound by the complete invocation; physical meaning and \
+catalog ambiguity remain unresolved. The explicit raw software invocation \
+does not establish physical units, upstream producers, permission, cadence, \
+full ECU scheduling or engine reachability.""",
 ]
 level = "candidate"
 role = "table"
@@ -128,6 +126,25 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005cc0a"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
 [[link]]
 type = "depends"
 to = "copper-ringtail/const"
@@ -135,3 +152,33 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "rpm/ram"
+slot = "x"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The coordinate is uint8(floor(uint16(ffff11bc)/2)); this relation does not \
+assign a physical scale to the result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005cc0a"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
