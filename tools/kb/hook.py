@@ -10,7 +10,7 @@ path, or names one in a shell command, with a reason that names the command to
 use. It uses only the standard library and reads its lists from
 tools/kb/config.toml (`[guard]`), tools/kb/projections.toml, and the stage of
 tools/kb/bench.toml: a projection whose `stage` lies ahead is still owned by
-its registry. A launcher records a session override; without an override,
+its registry. `kb guard` records a session override; without an override,
 `KB_GUARD=off` in the hook environment disables it.
 
 A shell command splits into simple commands at the shell operators and line
@@ -102,7 +102,7 @@ def session_mode(root, session_id):
 def set_session_mode(root, session_id, mode):
     """Atomically persist only this project's session override."""
     if mode not in ("on", "off"):
-        raise ValueError("KB_GUARD must be on or off")
+        raise ValueError("guard mode must be on or off")
     path = session_state_path(root, session_id)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     state = {"version": 1, "project": str(Path(root).resolve()),
@@ -646,9 +646,12 @@ def main():
     reason = Guard(ROOT, call.get("cwd")).decide(call.get("tool_name", ""),
                                                 call.get("tool_input") or {})
     if reason:
+        session = session_key(call.get("session_id"))
+        maintenance = (f"uv run kb guard off --session {session}" if session else
+                       "KB_GUARD=off in the hook environment")
         json.dump({"hookSpecificOutput": {
             "hookEventName": "PreToolUse", "permissionDecision": "deny",
-            "permissionDecisionReason": f"kb guard: {reason} (KB_GUARD=off disables the "
+            "permissionDecisionReason": f"kb guard: {reason} ({maintenance} disables the "
                                         "guard for maintenance)"}}, sys.stdout)
     return 0
 

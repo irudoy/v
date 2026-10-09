@@ -1326,6 +1326,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 
 | Command | Effect | Stage |
 |---|---|---|
+| `kb guard on\|off\|status --session <id> [--json]` | Saves or reads the project-local maintenance override of one root session; `status` writes nothing and reports `null` without a valid override | 6 |
 | `kb new <kind> <layout>:<address> --evidence <item>... [--name <semantic-name>] [--level <level>] [--note <text>] [--dry-run]` | A meaning with the symbol at a location that holds none and the evidence of its identity, named or with a generated name | 3 |
 | `kb new <kind> <slug> [--dry-run]` | A designed entity of a kind that the store holds | 3 |
 | `kb set <ref> [--layout <l>] <key>=<value>... [--dry-run]` | Keys of an entity, a symbol, or a feature target | 3 |
@@ -1732,7 +1733,7 @@ security boundary: the gates validate every file whatever wrote it.
   `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, and `Bash`.
   The tracked `.codex/hooks.json` registers the same tools and `apply_patch`;
   Codex sends shell calls as `Bash` and patches as `apply_patch`, with the
-  command in `tool_input.command`. Its launcher resolves the git root so
+  command in `tool_input.command`. The hook command resolves the git root so
   that starting a session in a subdirectory preserves the hook location.
   Project hooks require a trusted Codex project layer and review of their
   exact definition through `/hooks`, as specified by the
@@ -1783,15 +1784,18 @@ security boundary: the gates validate every file whatever wrote it.
   generator, or an evidence item never rests on their answers; `kb cypher`
   answers the same queries over the working tree's instance.
 - `KB_GUARD=off` in the hook environment disables the hook for maintenance
-  when no valid session override exists. `tools/kb/codex-launcher.py` preserves
-  the native client and records `KB_GUARD=on` or `off` for an explicit
-  `resume <root-session-UUID>` in this working tree. Its atomic local JSON
+  when no valid session override exists. `kb guard on|off --session <id>`
+  records an override for an explicit root session UUID in this working tree.
+  Its atomic local JSON
   record binds the canonical project path and session UUID. The hook reads
   it by the event's `session_id`; a valid record takes precedence over the
-  environment, and invalid records grant no exception. The launcher removes
-  the switch from the native client's environment, leaving a shared server
-  and other sessions unaffected. Subagents and forks with the same root
-  `session_id` share its override. Hook definitions remain unchanged.
+  environment, and invalid records grant no exception. `kb guard status
+  --session <id> [--json]` reads the saved override without writes or graph
+  access; `mode = null` states no valid override and makes no claim about a
+  remote hook's environment. The override applies to active sessions without
+  restarting them. Other sessions and hook definitions retain their settings.
+  Subagents and forks with the same root `session_id` share its override.
+  Codex uses its ordinary executable and launch command.
 - Hooks apply to subagents. Agents without hook support follow the generated
   section of `AGENTS.md`, and the gates catch the rest.
 

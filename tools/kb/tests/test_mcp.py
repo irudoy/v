@@ -5,7 +5,7 @@ import unittest
 from kb import cli, mcp
 
 # Commands that change state or serve, and so are no MCP read tools.
-NOT_READ = {"sync", "instance", "mcp", "project", "fmt", "new", "set", "bind", "absent",
+NOT_READ = {"sync", "instance", "guard", "mcp", "project", "fmt", "new", "set", "bind", "absent",
             "unresolved", "link", "set-link", "unlink", "select", "merge", "rename", "move", "apply"}
 
 
@@ -77,6 +77,9 @@ class ProtocolTest(unittest.TestCase):
         self.assertEqual(self.ask("ping"), {"jsonrpc": "2.0", "id": 1, "result": {}})
         self.assertEqual(self.ask("resources/list")["error"]["code"], -32601)
         self.assertEqual(self.ask("tools/call", {"name": "kb_sync"})["error"]["code"], -32602)
+        self.assertEqual(self.ask("tools/call", {"name": "kb_guard",
+                                                "arguments": {"action": "off"}})
+                         ["error"]["code"], -32602)
         self.assertEqual(mcp.handle({"id": 3, "method": "ping"}, {})["error"]["code"], -32600)
         self.assertIsNone(mcp.handle({"jsonrpc": "2.0", "method": "notifications/initialized"},
                                      {}))

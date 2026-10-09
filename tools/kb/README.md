@@ -11,6 +11,9 @@ uv run kb sync                       # compile, draw names of new symbols, load 
 uv run kb sync --full                # reload every element of the graph
 uv run kb instance up                # start the graph instance of this working tree
 uv run kb instance status            # instances of the repository and their state
+uv run kb guard off --session <id>   # disable only this project's root session guard
+uv run kb guard on --session <id>    # enable only this project's root session guard
+uv run kb guard status --session <id> --json   # the saved override, without querying the graph
 uv run kb cypher "MATCH (m:Meaning {name: \$n}) RETURN m" --param n=hcan1_init
 uv run kb check                      # every active check; exit 1 on a failure
 uv run kb check --only l0            # one check
@@ -877,30 +880,28 @@ Run `uv sync --frozen` to provide the working tree's supported interpreter.
 These hooks guide knowledge access; the source checks validate the resulting
 files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
 
-For a shared Codex app-server, install the session launcher over the native
-`~/.local/bin/codex` symlink. It preserves the native executable as
-`~/.local/bin/codex-native`:
+For a shared Codex app-server, manage the KB guard override directly:
 
 ```sh
-python3 tools/kb/codex-launcher.py --install
-KB_GUARD=off codex --remote unix:// resume <session-id>
-KB_GUARD=on codex --remote unix:// resume <session-id>
+uv run kb guard off --session <session-id>
+uv run kb guard on --session <session-id>
+uv run kb guard status --session <session-id> --json
 ```
 
-Run these commands in this working tree, or select it with `--cd`. The launcher
-requires an explicit root session UUID; session names, pickers, and `--last`
-cannot change the switch. It records `on` or `off` atomically under
-`~/.local/state/vq-kb-guard/<project-path-sha256>/<session-id>.json` and removes
-`KB_GUARD` before starting the native client. The hook reads the record using
-the event's `session_id`, so a remote server does not need the client's
-environment. A valid record overrides the hook environment; absent, unreadable,
-or malformed records retain the environment fallback. Other sessions,
+Run these commands in this working tree. `--session` requires an explicit root
+session UUID. The command records `on` or `off` atomically under
+`~/.local/state/vq-kb-guard/<project-path-sha256>/<session-id>.json`. The hook reads
+the record using the event's `session_id`, so an active session does not need
+to restart and a remote server does not need the client's environment. A valid
+record overrides the hook environment; absent, unreadable, or malformed records
+retain the environment fallback. Other sessions,
 working trees, and hook definitions retain their settings. Subagents and forks
 that share a root `session_id` share its switch. The switch persists until an
-explicit `on` or `off` command. Without `KB_GUARD`, arguments pass through and
-no switch changes. Reinstall the launcher if a native Codex update replaces
-the `codex` symlink; an incompatible existing `codex-native` is preserved and
-reported for manual review.
+explicit `on` or `off` command. `status` reads only the saved override and writes
+nothing. Its JSON `mode` is `null` without a valid record; this does not report
+the effective environment of a remote hook. The command does not access the
+graph or change hook definitions, the Codex executable, shell startup files, or
+`PATH`. Start or resume Codex with its ordinary command.
 
 ## Modules
 

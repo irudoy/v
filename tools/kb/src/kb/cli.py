@@ -151,6 +151,30 @@ def command_instance(args, root=repo.ROOT):
     return 0
 
 
+def command_guard(args, root=None):
+    """Manage only the saved guard override of one project and root session."""
+    root = Path(root or repo.ROOT).resolve()
+    try:
+        path = project.hook.session_state_path(root, args.session)
+        if args.action == "status":
+            mode = project.hook.session_mode(root, args.session)
+        else:
+            path = project.hook.set_session_mode(root, args.session, args.action)
+            mode = args.action
+    except ValueError as error:
+        raise KbError(str(error), code=2) from error
+    except OSError as error:
+        raise KbError(f"cannot update KB guard session state: {error}", code=6) from error
+    state = {"project": str(root), "session_id": path.stem,
+             "mode": mode, "state_path": str(path)}
+    if args.json:
+        print(json.dumps(state, sort_keys=True))
+    else:
+        saved = mode if mode is not None else "unset (hook environment fallback)"
+        print(f"KB guard {saved}: session {path.stem} in {root}")
+    return 0
+
+
 def _stderr(text):
     print(text, file=sys.stderr)
 
@@ -501,6 +525,12 @@ def build_parser():
     manage = commands.add_parser("instance", help="the graph instance of the working tree")
     manage.add_argument("action", choices=("up", "down", "status", "prune"))
     manage.set_defaults(handler=command_instance)
+
+    access = commands.add_parser("guard", help="the saved KB guard override of one session")
+    access.add_argument("action", choices=("on", "off", "status"))
+    access.add_argument("--session", required=True, help="explicit root session UUID")
+    access.add_argument("--json", action="store_true", help="structured saved state")
+    access.set_defaults(handler=command_guard)
 
     cypher = commands.add_parser("cypher", help="a read-only Cypher query")
     cypher.add_argument("query")
