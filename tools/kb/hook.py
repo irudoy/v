@@ -10,7 +10,8 @@ path, or names one in a shell command, with a reason that names the command to
 use. It uses only the standard library and reads its lists from
 tools/kb/config.toml (`[guard]`), tools/kb/projections.toml, and the stage of
 tools/kb/bench.toml: a projection whose `stage` lies ahead is still owned by
-its registry. `KB_GUARD=off` in the environment disables it.
+its registry. A launcher records a session override; without an override,
+`KB_GUARD=off` in the hook environment disables it.
 
 A shell command splits into simple commands at the shell operators and line
 breaks, and the body of a here-document belongs to the command that reads it.
@@ -23,12 +24,15 @@ subcommand of the allow list, `make`, or a repository script under `tools/` or
 """
 
 import fnmatch
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import shlex
 import sys
+import tempfile
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = Path("tools/kb/config.toml")
@@ -58,6 +62,61 @@ PATHLIKE = re.compile(r"[^\s'\"`()\[\]{},:;=<>|&$]+")
 BRACES = re.compile(r"\{([^{}]*)\}")
 # An edit reason lists the inputs of a projection up to this many.
 LISTED_INPUTS = 4
+
+
+def session_key(session_id):
+    """Canonical UUID of an explicit root session, or None."""
+    try:
+        return str(uuid.UUID(session_id)) if isinstance(session_id, str) else None
+    except ValueError:
+        return None
+
+
+def session_state_path(root, session_id):
+    """Local state keyed by the canonical project path and root session UUID."""
+    key = session_key(session_id)
+    if key is None:
+        raise ValueError("an explicit session UUID is required")
+    project = str(Path(root).resolve())
+    digest = hashlib.sha256(project.encode("utf-8")).hexdigest()
+    return Path.home() / ".local/state/vq-kb-guard" / digest / f"{key}.json"
+
+
+def session_mode(root, session_id):
+    """Read a valid override; missing or malformed state grants no exception."""
+    key = session_key(session_id)
+    if key is None:
+        return None
+    try:
+        state = json.loads(session_state_path(root, key).read_text(encoding="utf-8"))
+        if (isinstance(state, dict) and type(state.get("version")) is int
+                and state["version"] == 1
+                and state.get("project") == str(Path(root).resolve())
+                and state.get("session_id") == key and state.get("mode") in ("on", "off")):
+            return state["mode"]
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def set_session_mode(root, session_id, mode):
+    """Atomically persist only this project's session override."""
+    if mode not in ("on", "off"):
+        raise ValueError("KB_GUARD must be on or off")
+    path = session_state_path(root, session_id)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    state = {"version": 1, "project": str(Path(root).resolve()),
+             "session_id": session_key(session_id), "mode": mode}
+    descriptor, name = tempfile.mkstemp(prefix=".session-", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            json.dump(state, stream, sort_keys=True)
+            stream.write("\n")
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+    return path
 
 
 def load(root=ROOT):
@@ -580,9 +639,10 @@ def patched_text(text, body):
 
 
 def main():
-    if os.environ.get("KB_GUARD", "").lower() == "off":
-        return 0
     call = json.load(sys.stdin)
+    mode = session_mode(ROOT, call.get("session_id"))
+    if mode == "off" or (mode is None and os.environ.get("KB_GUARD", "").lower() == "off"):
+        return 0
     reason = Guard(ROOT, call.get("cwd")).decide(call.get("tool_name", ""),
                                                 call.get("tool_input") or {})
     if reason:

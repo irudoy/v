@@ -860,7 +860,7 @@ searches, and edits of `kb/` and
 and names the command that answers instead. A shell command passes when it
 changes the directory or runs `kb`, a git subcommand of the allow list,
 `make`, or a script under `tools/` or `patches/`. `KB_GUARD=off` in the
-environment of the session disables the guard for maintenance. Codex patch
+hook process environment disables the guard for maintenance. Codex patch
 checks include every added, updated, deleted, and moved file. An update of a
 file with a generated section passes only when that section stays intact;
 the check reconstructs its content without applying the patch. Shell checks
@@ -876,6 +876,31 @@ call, and the `python3` fallback must satisfy the Python requirement in
 Run `uv sync --frozen` to provide the working tree's supported interpreter.
 These hooks guide knowledge access; the source checks validate the resulting
 files. See the [Codex hook contract](https://learn.chatgpt.com/docs/hooks).
+
+For a shared Codex app-server, install the session launcher over the native
+`~/.local/bin/codex` symlink. It preserves the native executable as
+`~/.local/bin/codex-native`:
+
+```sh
+python3 tools/kb/codex-launcher.py --install
+KB_GUARD=off codex --remote unix:// resume <session-id>
+KB_GUARD=on codex --remote unix:// resume <session-id>
+```
+
+Run these commands in this working tree, or select it with `--cd`. The launcher
+requires an explicit root session UUID; session names, pickers, and `--last`
+cannot change the switch. It records `on` or `off` atomically under
+`~/.local/state/vq-kb-guard/<project-path-sha256>/<session-id>.json` and removes
+`KB_GUARD` before starting the native client. The hook reads the record using
+the event's `session_id`, so a remote server does not need the client's
+environment. A valid record overrides the hook environment; absent, unreadable,
+or malformed records retain the environment fallback. Other sessions,
+working trees, and hook definitions retain their settings. Subagents and forks
+that share a root `session_id` share its switch. The switch persists until an
+explicit `on` or `off` command. Without `KB_GUARD`, arguments pass through and
+no switch changes. Reinstall the launcher if a native Codex update replaces
+the `codex` symlink; an incompatible existing `codex-native` is preserved and
+reported for manual review.
 
 ## Modules
 

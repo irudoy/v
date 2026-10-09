@@ -1782,7 +1782,16 @@ security boundary: the gates validate every file whatever wrote it.
   instance. They read the graph without the fingerprint check, so a gate, a
   generator, or an evidence item never rests on their answers; `kb cypher`
   answers the same queries over the working tree's instance.
-- `KB_GUARD=off` in the environment disables the hook for maintenance.
+- `KB_GUARD=off` in the hook environment disables the hook for maintenance
+  when no valid session override exists. `tools/kb/codex-launcher.py` preserves
+  the native client and records `KB_GUARD=on` or `off` for an explicit
+  `resume <root-session-UUID>` in this working tree. Its atomic local JSON
+  record binds the canonical project path and session UUID. The hook reads
+  it by the event's `session_id`; a valid record takes precedence over the
+  environment, and invalid records grant no exception. The launcher removes
+  the switch from the native client's environment, leaving a shared server
+  and other sessions unaffected. Subagents and forks with the same root
+  `session_id` share its override. Hook definitions remain unchanged.
 - Hooks apply to subagents. Agents without hook support follow the generated
   section of `AGENTS.md`, and the gates catch the rest.
 
