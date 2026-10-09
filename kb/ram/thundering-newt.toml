@@ -1,7 +1,10 @@
 summary = """
-Current one-hot injector-event channel mask. Handler 0002be40 writes it from \
-the active event and DFCO state machine 000503e0 uses it as the seed for \
-six-channel rotation."""
+Current injector-event mask copied from pending byte ffff2228 by \
+handler0002be40 at0002beca. The bounded handler accepts every mask byte and \
+uses all its bits for history removal and optional history restoration; \
+one-shot output selection is restricted to bits0..5. DFCO state \
+machine000503e0 also reads this byte as a rotation seed. Upstream one-hot \
+production and physical channel assignment retain independent evidence."""
 note = [
     """
 Channel order is code-proven; physical cylinder order remains unresolved.""",
@@ -36,6 +39,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1936"
 name = "thundering-newt"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -50,6 +55,21 @@ supports = "identity"
 at = "7mfk:00050630"
 value = {named = ["0002be40", "000503e0", "ffff1936"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
 
 [[link]]
 type = "reader"

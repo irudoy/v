@@ -1,10 +1,11 @@
 summary = """
 Scheduler snapshot of injector opening time ffff2436, produced by the \
-140-byte ffff23bc -> ffff2330 copy in 00020dfe. ATU-II one-shot scheduler \
-0002c13c selects it per channel when ffff22e0 or ffff1935 contains the \
-channel bit, and subtracts it from the selected word when the DSTR start bit \
-is already set. FUN_00054d3e fills the whole duration array with it while \
-the engine is stopped or fuel is inhibited."""
+140-byte ffff23bc -> ffff2330 copy in 00020dfe. Enabled one-shot scheduler \
+0002c13c selects this unsigned16 word for every selected channel when the \
+whole incoming mask intersects ffff22e0 or entry history ffff1935. It \
+subtracts this word with floor0 when the selected channel already has its \
+DSTR bit set. FUN_00054d3e also selects it under its independently checked \
+override conditions."""
 note = [
     """
 One count is 10 us. Substituting the opening time for an inhibited channel \
@@ -120,6 +121,21 @@ key = "Connected injection calculation and raw scheduling"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
 
 [[link]]
 type = "input"

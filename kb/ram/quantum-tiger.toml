@@ -1,9 +1,12 @@
 summary = """
-Six-channel fallback-history mask shared by DFCO rotating release and ATU-II \
-scheduler 0002c13c. A channel uses fallback word ffff23aa when its ffff22e0 \
-bit or history bit is set. Injector-event handler 0002be40 clears the \
-current event bit and can add it again while rotating-release count ffff1937 \
-is nonzero."""
+Eight-bit fallback-history mask shared by DFCO rotating release and one-shot \
+scheduler0002c13c. Handler0002be40 clears the entire pending event mask, \
+then ORs it into history and decrements ffff1937 when the count and \
+aggregate inhibit ffff22e0 are both nonzero. The called enabled one-shot ORs \
+its whole incoming mask into history when any selected channel exists and \
+that mask intersects inhibit or entry history. An intersecting whole mask \
+selects opening word ffff23aa for every selected channel; an individual \
+channel-bit test does not express this consumer condition."""
 note = [
     """
 This history makes the rotating release tail injector-event synchronized. \
@@ -150,6 +153,21 @@ key = "test_injection_catchup_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection positive-delta mask accumulation"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
 
 [[link]]
 type = "input"

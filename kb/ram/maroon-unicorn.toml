@@ -84,6 +84,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2468"
 name = "maroon-unicorn"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -98,6 +100,21 @@ supports = "identity"
 at = "7mfk:00055994"
 value = {named = ["0001214e", "0004f282", "0005594a", "000bfdc0", "ffff2468", "ffff3528", "ffff5773"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "input"
@@ -134,6 +151,21 @@ to = "main_rpm_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "selector"

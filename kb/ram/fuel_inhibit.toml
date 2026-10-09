@@ -187,6 +187,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff2497"
 former = ["tomato-vulture/ram/7mfk-ffff2497"]
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -251,6 +253,21 @@ supports = "identity"
 at = "7mfk:00050c36"
 value = {named = ["00008710", "00008b52", "00008b53", "00008c69", "0000934e", "000420b8", "0004ed88", "0004f282", "0004f9c4", "00050b3c", "ffff2497"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[symbol]]
 layout = "jk00c"
@@ -533,6 +550,21 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "writer"

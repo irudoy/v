@@ -1,9 +1,11 @@
 summary = """
-Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. \
-Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation \
-threshold and row 1 is the exclusive release boundary. Stock delay zero \
-makes activation immediate. Active state bit 2 of ffff2497 reaches periodic \
-index-27 coordinator 0004ed88 and contributes full global mask 0x3f."""
+Engine-speed fuel-cut hysteresis table consumed by0004f282. Bit4 offfff2468 \
+selects column0 or1; row0 is inclusive activation and row1 is exclusive \
+release. A newly armed stock request loads zero delay and activates in that \
+invocation; an already armed nonzero counter waits. Equality at release \
+retains active cut. Active stateffff2497.bit2 reaches periodic index27 \
+coordinator0004ed88 and contributes full global mask0x3f under its \
+independently reviewed producer contract."""
 note = [
     """
 The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 \
@@ -282,6 +284,21 @@ supports = "scale"
 to = "pearl-waxbill/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
 [[symbol]]
 layout = "jk00c"
 address = "000093e6"
@@ -361,6 +378,21 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "accessor"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "selector"

@@ -1,14 +1,15 @@
 title = "Six-channel masked ATU-II one-shot scheduler"
 summary = """
 Masked six-channel ATU-II one-shot scheduler. Its callers supply duration \
-array ffff224e or ffff1568. For each set bit in the channel mask it selects \
-a 16-bit duration; ffff22e0 and ffff1935 substitute injector opening time \
-ffff23aa for that channel, and a DSTR start bit that is still set causes the \
-same opening time to be subtracted from the new duration. It scales the \
-selected value by 800/256 with uint16 saturation, optionally forces 1000 \
-through ffff4251 bit 0, adds the result to ATU-II channel 8 down-counter \
-DCNT8A..DCNT8F at fffff640..fffff64a with interrupts masked, and sets the \
-corresponding start bit in DSTR at fffff666."""
+array ffff224e or ffff1568. With ffff4184.bit7 set, it processes bits0..5 of \
+the incoming R4 mask. Any intersection of the whole mask with ffff22e0 or \
+entry history ffff1935 selects unsigned16 opening word ffff23aa for every \
+selected channel and ORs the whole mask into history. Otherwise it uses the \
+corresponding duration word. A set DSTR bit subtracts opening with floor0. \
+The increment is min(65535,floor(800*d/256)), or1000 when ffff4251.bit0 is \
+set. It adds the increment modulo65536 to DCNT8A..DCNT8F with interrupts \
+masked and ORs selected bits into DSTR. Peripheral timing and physical \
+actuation retain independent evidence."""
 note = [
     """
 The SH7059 hardware manual identifies the addressed registers as ATU-II \
@@ -433,6 +434,21 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"
@@ -467,7 +483,127 @@ role = "consumer"
 
 [[link]]
 type = "selector"
+to = "fuel_inhibit_mask/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The entire unsigned byte is intersected with the whole incoming R4 mask; any \
+intersection selects opening for every selected channel."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+slot = "bit7"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw bit7 clear preserves the counter words, start register and history; set \
+admits the explicit masked call."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[link]]
+type = "selector"
+to = "imported-panther/reg"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For selected channel i in0..5, bit i set subtracts unsigned opening with \
+floor0; the same raw start word is ORed with selected bits after each \
+channel."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[link]]
+type = "selector"
+to = "quantum-tiger/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The entire entry history byte is intersected with the whole incoming R4 \
+mask; any intersection selects opening for every selected channel."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[link]]
+type = "selector"
 to = "shaggy-nyala/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+Raw bit0 set replaces the capped arithmetic increment with1000; all other \
+bits leave this choice unchanged."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"

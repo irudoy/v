@@ -1221,6 +1221,9 @@ mov #0x5,r1
             'jk08a-closed-loop-conversion': {'REGION_ENTRY': 0x0003edb4, 'EARLY_ONLY': 0},
             'jk08a-closed-loop-adjustment': {'REGION_ENTRY': 0x000a0ee8, 'EARLY_ONLY': 0},
             'jk08a-closed-loop-feedback': {'REGION_ENTRY': 0x0005cbec},
+            'jk08a-main-rpm-fuel-cut': {'REGION_ENTRY': 0x0004f282,
+                'FUEL_INHIBIT': 0xffff2497, 'ENGINE_SPEED': 0xffff11bc,
+                'PAIR_SELECTOR': 0xffff2468, 'DELAY_COUNTER': 0xffff24f1, 'EARLY_ONLY': 0},
         })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
@@ -1256,6 +1259,19 @@ mov #0x5,r1
                     self.assertRegex(harness, r'COUNT\(samples\)!=' + macro)
                     self.assertRegex(harness, r'for\(i=0;i<count;\+\+i\)')
                     self.assertRegex(harness, r'run_case\(i,&samples\[i\]\)')
+                elif key == 'jk08a-main-rpm-fuel-cut':
+                    header_name = 'main-rpm-fuel-cut-cases.h'
+                    self.assertIn('#include "' + header_name + '"', harness)
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding='utf-8')
+                    self.assertEqual(re.findall(r'^#define MAIN_RPM_CASE_COUNT (\d+)U$', header,
+                        re.MULTILINE), [str(region.cases)])
+                    [array] = re.findall(r'\bmain_rpm_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in array.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    self.assertTrue(all(re.fullmatch(r'[\s{},0-9a-fxU]+', row) for row in rows))
+                    self.assertIn('limit=EARLY_ONLY?MAIN_RPM_EARLY_COUNT:MAIN_RPM_CASE_COUNT;', harness)
+                    self.assertIn('for(index=0;index<limit;++index)', harness)
+                    self.assertIn('if(!run_case(index,&main_rpm_cases[index]))return 1;', harness)
                 elif key == 'jk08a-closed-loop-feedback':
                     header_name = 'stock-jk08a-closed-loop-feedback-cases.h'
                     self.assertIn('#include "' + header_name + '"', harness)
@@ -1683,11 +1699,20 @@ mov #0x5,r1
             with self.subTest(region=region.key):
                 image = STOCK_VERIFIER.stock_image(region.rom)
                 defines = STOCK_VERIFIER.harness_defines(region, image)
-                (speed, _), (pool, _) = region.pools
-
                 def word(address):
                     return int.from_bytes(image[address:address + 4], "big")
 
+                if region.key == 'jk08a-main-rpm-fuel-cut':
+                    self.assertEqual(region.pools, ((0x4f460,20),(0x8b38,1),(0x8c69,1),(0x934e,12)))
+                    self.assertEqual(region.ram_literals, (0x4f460,0x4f46c))
+                    gbr = word(0x4f460)
+                    self.assertEqual(defines['FUEL_INHIBIT'], gbr+0x4b)
+                    self.assertEqual(defines['DELAY_COUNTER'], gbr+0xa5)
+                    self.assertEqual(defines['PAIR_SELECTOR'], gbr+0x1c)
+                    self.assertEqual(defines['ENGINE_SPEED'], word(0x4f46c)+0x20)
+                    self.assertEqual([word(at) for at in (0x4f464,0x4f468,0x4f470)], [0x8b38,0x934e,0x8c69])
+                    continue
+                (speed, _), (pool, _) = region.pools
                 gbr = word(pool)
                 self.assertEqual(defines["FUEL_INHIBIT"], gbr + 0x4F)
                 self.assertEqual(defines["DELAY_COUNTER"], gbr + 0xA9)

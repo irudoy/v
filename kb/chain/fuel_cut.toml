@@ -1,13 +1,20 @@
 title = "Fuel cut"
 summary = """
-Deceleration fuel cut, the main and stationary rev limiters, the \
-vehicle-speed cut, and P1217 overtemperature protection form six-channel \
-inhibit mask ffff22e0 in FUN_0004ED88 after the Power Balance replacement. \
-FUN_0002C13C gives each inhibited channel the no-fuel opening-time pulse on \
-DCNT8A..DCNT8F."""
+Deceleration, RPM, vehicle-speed and overtemperature producers form software \
+inhibit maskffff22e0 through coordinator0004ed88 and the runtime \
+replacement. Bounded main RPM0004f282 selects unsigned activation/release \
+pairs, loads delay only on a new arm, retains an existing arm counter and \
+publishes the complete state byte. Enabled one-shot0002c13c tests the whole \
+incoming mask against inhibit/history, selects opening for every selected \
+channel on any intersection and publishes wrapping counter additions. \
+Handler0002be40 clears the entire pending mask from history, optionally \
+decrements the rotating count and restores that mask, then executes the \
+actual one-shot. Periodic scheduling, peripheral timing and physical fuel \
+delivery retain their separate evidence."""
 quantity = """
-Six-channel fuel-injection inhibit mask; bit k set cuts fuel to injector \
-channel k, cylinder k + 1 by the Power Balance bit assignment"""
+Six-channel software inhibit mask ffff22e0 and bounded raw event/history and \
+counter-word transitions; physical injector assignment and fuel delivery \
+require independent validation"""
 output = "fuel_inhibit_mask/ram"
 specs = [
     "defs/JK08A.dfco.md",
@@ -134,8 +141,12 @@ effect = "compares"
 sign = "none"
 via = ["main_rpm_fuel_cut_state_machine/fn"]
 note = """
-ffff2468.bit4 selects a column; bit 2 sets at RPM/12.5 >= 612 (7650 RPM) and \
-clears below 596 in column 0, 596 and 368 in column 1."""
+F = uint8(prev); A = (F>>2)&1; B = (F>>1)&1; P = (RAM8[ffff2468]>>4)&1; Q = \
+(1-A)*uint16(from[P])+A*uint16(from[2+P]); R = uint16(x); G = \
+1-min(1,max(0,Q-R)); Z = 1-min(1,B*RAM8[ffff24f1]+(1-B)*ROM8[00008c69]); C = \
+G*(1-A+A*B); D = G*(A+(1-A)*Z); U = (1-A)*G*(1-B); K = \
+(1-U)*RAM8[ffff24f1]+U*ROM8[00008c69]; to = uint8((F&249)|(2*C)|(4*D))"""
+specs = ["defs/JK08A.main-rpm-fuel-cut.md"]
 
 [[step]]
 from = "rpm/ram"
@@ -144,8 +155,12 @@ effect = "compares"
 sign = "none"
 via = ["main_rpm_fuel_cut_state_machine/fn"]
 note = """
-0004f282 compares RPM/12.5 word ffff11bc with the active pair; equality with \
-the release word retains the cut, and the stock delay is zero."""
+F = uint8(prev); A = (F>>2)&1; B = (F>>1)&1; P = (RAM8[ffff2468]>>4)&1; Q = \
+(1-A)*ROM16[0000934e+2*P]+A*ROM16[00009352+2*P]; R = uint16(from); G = \
+1-min(1,max(0,Q-R)); Z = 1-min(1,B*RAM8[ffff24f1]+(1-B)*ROM8[00008c69]); C = \
+G*(1-A+A*B); D = G*(A+(1-A)*Z); U = (1-A)*G*(1-B); K = \
+(1-U)*RAM8[ffff24f1]+U*ROM8[00008c69]; to = uint8((F&249)|(2*C)|(4*D))"""
+specs = ["defs/JK08A.main-rpm-fuel-cut.md"]
 
 [[step]]
 from = "fuel_inhibit/ram"
@@ -270,8 +285,12 @@ effect = "gates"
 sign = "none"
 via = ["injector_oneshot_mask_scheduler/fn"]
 note = """
-For a channel bit set in ffff22e0, 0002c13c adds opening time ffff23aa, a \
-pulse that delivers no fuel, to DCNT8A + 2*i instead of the duration."""
+M = uint32(x[0]); I = uint8(x[1]); E = (RAM8[ffff4184]>>7)&1; S = (M>>I)&1; \
+H = min(1,M&(uint8(from)|RAM8[ffff1935])); D = \
+(1-H)*uint16(x[2])+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
+max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
+(1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
+specs = ["defs/JK08A.fuel-cut-consumer.md"]
 
 [[step]]
 from = "wealthy-toad/ram"
@@ -280,8 +299,11 @@ effect = "stores"
 sign = "none"
 via = ["injector_event_isr/fn"]
 note = """
-While rotating count ffff1937 and ffff22e0 are nonzero, 0002be40 decrements \
-the count and adds the current channel to history ffff1935."""
+M = uint8(RAM8[ffff1936]); F = min(1,uint8(from))*min(1,RAM8[ffff22e0]); R = \
+uint8(uint8(from)-F); H = (uint8(prev)&(255^M))|(F*M); E = \
+(RAM8[ffff4184]>>7)&1; K = E*min(1,M&63)*min(1,M&(RAM8[ffff22e0]|H)); to = \
+H|(K*M)"""
+specs = ["defs/JK08A.fuel-cut-consumer.md"]
 
 [[step]]
 from = "quantum-tiger/ram"
@@ -290,5 +312,9 @@ effect = "gates"
 sign = "none"
 via = ["injector_oneshot_mask_scheduler/fn"]
 note = """
-A channel set in rotating-release history ffff1935 also receives opening \
-time ffff23aa; the DFCO release tail follows injector events."""
+M = uint32(x[0]); I = uint8(x[1]); E = (RAM8[ffff4184]>>7)&1; S = (M>>I)&1; \
+H = min(1,M&(RAM8[ffff22e0]|uint8(from))); D = \
+(1-H)*uint16(x[2])+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
+max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
+(1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
+specs = ["defs/JK08A.fuel-cut-consumer.md"]

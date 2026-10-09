@@ -1,11 +1,15 @@
 summary = """
-Engine-speed fuel-cut state machine. Stock ROM8[00008b38] bit 7 is clear, so \
-ffff2468 bit 4 selects one activation/release pair from the 2x2 uint16 table \
-at 0000934e. With state ffff2497 bit 2 clear, RPM/12.5 word ffff11bc at or \
-above the activation threshold inclusively arms bit 1 and loads optional \
-delay ffff24f1; stock delay zero sets bit 2 in the same invocation. With bit \
-2 set, equality to the release threshold retains cut and only speed below it \
-clears bits 1 and 2. The function returns bit 2 as a Boolean."""
+Bounded main RPM fuel-cut state machine. Stock configuration00008b38=63 \
+selects the two-pair path; ffff2468.bit4 selects unsigned activation/release \
+words from0000934e. Inactive RPM at or above activation arms ffff2497.bit1 \
+and loads stock delay00008c69 only when the arm is clear. An already armed \
+invocation retains unsigned counterffff24f1; zero sets active bit2 and \
+nonzero waits. Active RPM at release or above retains cut; below release \
+clears arm and active. All other state bits, unrelated RAM, full natural \
+CPU/frame state and bound ROM data preserve their declared values. This \
+invocation does not decrement the counter. Physical RPM scale, scheduling, \
+decrement production and global inhibition retain their existing independent \
+evidence."""
 note = [
     """
 Apply calibrated activation and release thresholds to the main full fuel-cut \
@@ -195,6 +199,21 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"
@@ -203,9 +222,89 @@ relies = "structure"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "fuel_inhibit/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw bit2 chooses activation or release; bit1 retains the incoming counter \
+when already armed."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
 [[link]]
 type = "selector"
 to = "maroon-unicorn/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "sparkling-echidna/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+All unsigned counter bytes are admitted. Zero activates an armed request; \
+nonzero waits, without an in-call decrement."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"

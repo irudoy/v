@@ -1,14 +1,16 @@
 title = "Per-channel injector event handler and DFCO release-history update"
 summary = """
-ATU-II IMI1A compare-match handler, vector 96 at 00020184, for the delayed \
-injection start programmed by FUN 0002b64a, and per-channel injector-event \
-handler. It clears IMF1A in TSR1A and pending flag ffff84ec.bit7, copies \
-pending mask ffff2228 to current one-hot event mask ffff1936, removes that \
-bit from DFCO fallback history ffff1935, and, while active rotating count \
-ffff1937 and aggregate mask ffff22e0 are nonzero, decrements the count and \
-adds the current bit back to history before invoking masked one-shot \
-scheduler 0002c13c. It refills scheduled-duration array ffff224e through FUN \
-00054d3e before that call."""
+ATU-II IMI1A compare-match handler, vector96 at00020184, for delayed \
+injection start programmed by0002b64a. It clears IMF1A and pending flag \
+ffff84ec.bit7, refills scheduled durations through actual helper00054d3e, \
+and copies pending mask ffff2228 to current event mask ffff1936. It clears \
+all bits of that mask from history ffff1935. When both rotating count \
+ffff1937 and aggregate inhibit ffff22e0 are nonzero, it decrements the count \
+and ORs the whole event mask into history. The actual one-shot call0002c13c \
+can also OR the whole mask into history under its enabled \
+aggregate-intersection condition. The complete bounded consumer domain \
+admits all pending-mask bytes; upstream one-hot production, SPC/SSR \
+exception behavior and physical timing retain independent evidence."""
 note = [
     """
 The path proves that the DFCO rotating-release tail advances on injector \
@@ -229,6 +231,21 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
 [[link]]
 type = "depends"
 to = "bulky-hound/fn"
@@ -272,3 +289,54 @@ role = "consumer"
 note = """
 The connected contract executes the actual admitted callee path and natural \
 return; omitted entry domains retain separate evidence."""
+
+[[link]]
+type = "selector"
+to = "fuel_inhibit_mask/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The count/history transition tests the entire aggregate inhibit byte for \
+nonzero, independent of its intersection with the current mask."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[link]]
+type = "selector"
+to = "wealthy-toad/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Any nonzero unsigned count together with any nonzero aggregate inhibit \
+decrements the count once and ORs the entire current event mask into \
+history."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"

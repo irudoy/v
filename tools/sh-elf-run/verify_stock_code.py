@@ -1116,6 +1116,16 @@ REGIONS = (
         callees=((0x21bbc, 0x21cd6), (0x26474, 0x26496), (0x264a0, 0x264c2), (0x26740, 0x2676e), (0x26944, 0x26980), (0x26c78, 0x26d0e), (0x5ca8c, 0x5cbe8), (0x5cd50, 0x5ce24), (0x5ce2c, 0x5cfa8), (0x5cfb2, 0x5cfd2), (0x5d018, 0x5d09a), (0x5d0a0, 0x5d1ee), (0x5d1f2, 0x5d260), (0x5d284, 0x5d340), (0x5d346, 0x5d4cc), (0x5d4d6, 0x5d4ec), (0x5d500, 0x5d602), (0x5d604, 0x5d742), (0x5d74c, 0x5d786), (0x5d7ac, 0x5d86c), (0x5d86e, 0x5d9a6), (0x5d9b0, 0x5d9e6), (0x5da24, 0x5db54), (0x5db58, 0x5dc0a), (0x5dc24, 0x5dcf8), (0x5dcfa, 0x5de68), (0x5de70, 0x5dea0), (0x5deb8, 0x5dfac), (0x5dfae, 0x5e0ca), (0x5e0ce, 0x5e114), (0x5e12c, 0x5e1ec),),
         cases=1829, boundary=False,
     ),
+    Region(
+        key='jk08a-main-rpm-fuel-cut', rom='JK08A',
+        source='stock_jk08a_main_rpm_fuel_cut.s', harness='harness-stock-jk08a-main-rpm-fuel-cut.c',
+        start=0x4f282, end=0x4f324,
+        pools=((0x4f460,20),(0x8b38,1),(0x8c69,1),(0x934e,12)),
+        ram_literals=(0x4f460,0x4f46c), cases=6400, boundary=False,
+        symbols=(('FUEL_INHIBIT','fuel_inhibit/ram'),('ENGINE_SPEED','rpm/ram'),
+            ('PAIR_SELECTOR','maroon-unicorn/ram'),('DELAY_COUNTER','sparkling-echidna/ram')),
+        constants=(('EARLY_ONLY',0),),
+    ),
 )
 
 
@@ -1395,6 +1405,7 @@ REGION_OBSERVERS.update({
     'jk08a-closed-loop-conversion': 'invoke-closed-loop-conversion.s',
     'jk08a-closed-loop-adjustment': 'invoke-closed-loop-adjustment.s',
     'jk08a-closed-loop-feedback': 'invoke-closed-loop-feedback.s',
+    'jk08a-main-rpm-fuel-cut': 'invoke-main-rpm-fuel-cut.s',
 })
 
 

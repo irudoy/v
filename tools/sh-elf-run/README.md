@@ -1868,3 +1868,148 @@ Physical units, producers, scheduling, cadence, peripherals and engine
 reachability require separate evidence. Hardware readiness is NO. Exact reader
 phases, literal boundaries and identity-only branches are specified in
 `defs/JK08A.closed-loop-feedback.md`.
+
+## Fuel-cut consumer and event history
+
+Two existing mandatory Regions bind 679 instructions, 1582 bound bytes
+and 15266 literal cases with EARLY_ONLY=0. The complete one-shot function
+0002c13c has 8012 cases. The complete event handler 0002be40 and its real
+duration selector and one-shot callees have 7254 cases. Their instruction
+bytes, pools, declared simulator relocations, fixtures, literal headers,
+full CPU/RAM/frame observations and standard execution remain unchanged.
+Hardware readiness is NO.
+
+The one-shot takes the whole mask from independent R4 and six duration words
+from independent R5. The accepted domains include both ffff224e and ffff1568
+arrays. Channels are i in 0..5. Formula arguments x=[R4,i,duration[i]] bind
+the selected raw duration explicitly; they do not infer a producer or require
+a single duration-array base. The prior counter word is prev. Step23 uses
+from=inhibit byte ffff22e0; step25 uses from=entry history byte ffff1935.
+
+With ffff4184.bit7 clear, all counter words, DSTR and history are preserved.
+With the bit set, any intersection of the whole mask with the inhibit or
+entry-history byte selects unsigned16 opening word ffff23aa for every
+selected channel. The consumer ORs the whole low-byte mask into history.
+An individual channel-bit test does not express this selection condition.
+No selected bit in 0..5 means no counter, DSTR or one-shot history store,
+including a mask whose only set bits are 6/7.
+
+An already set DSTR bit i subtracts opening with floor 0. The increment is
+min(65535,floor(800*d/256)), or 1000 under ffff4251.bit0. The raw counter
+addition uses uint16 wrap, and DSTR ORs the selected bits. Other control
+bits do not change these conditions. Counter wrap and aggregate selection
+prevent a universal positive or negative influence; both step signs are none.
+
+For step24, from is the incoming rotating count ffff1937 and prev is incoming
+history ffff1935. RAM8[ffff1936] is read after the event handler copies pending
+byte ffff2228 into it, before its history operations. The handler always
+clears every bit of this current mask from history. If both the count and
+the entire inhibit byte are nonzero, it decrements the count once and ORs
+the entire mask into history, even when one-shot output is disabled or the
+mask does not intersect inhibition. Auxiliary R in the formula is the
+stored remaining count.
+
+The real one-shot call can OR that mask into history again. The final history
+formula includes its enable bit, the existence of a selected channel0..5,
+and the whole-mask intersection with inhibition or the history immediately
+before that call. It includes this call and the handler's
+earlier history store. Its sign is none.
+
+Mandatory arithmetic gates compare both counter formulas with 48072 raw
+counter observations each and the history/count formula with all 7254 complete
+event cases. Eight semantic mutations reject individual-bit intersection,
+counter saturation in place of wrap, omitted opening subtraction, altered
+diagnostic increment, omitted history clearing, inhibit bit0 in place of
+nonzero-byte admission, omitted called-consumer publication and ignored
+output enable. Explicit witnesses distinguish a multibit mask from an
+individual channel test, disabled-output count/history updates and a
+high-only mask without a selected channel.
+
+| Owned operand | Role in the bounded consumer |
+| --- | --- |
+| 0002c13c | Complete one-shot function |
+| 0002be40 | Complete event handler |
+| 00054d3e | Real event duration selector |
+| ffff22e0 | Entire aggregate inhibit byte |
+| ffff1935 | Incoming, intermediate and final history byte |
+| ffff1936 | Current mask copied before history operations |
+| ffff1937 | Incoming and decremented release count |
+| ffff23aa | Unsigned opening word |
+| ffff4184 | Output-enable bit7 |
+| ffff4251 | Diagnostic-increment bit0 |
+| ffff224e | Scheduled duration-array base |
+| ffff1568 | Alternate duration-array base |
+| ffff2228 | Pending mask copied by the event handler |
+| fffff640 | First counter word; six selected words at base+2*i |
+| fffff666 | Start-register bits0..5 |
+
+The event observer retains the accepted explicit return transport and complete
+SH-2E exception stack. SPC/SSR peripheral exception behavior is outside this
+software invocation. Synthetic register storage does not establish timer
+evolution, physical units, channel-to-cylinder wiring, injector timing or fuel
+delivery. Upstream inhibit/count/one-hot producers, physical reachability,
+operating cadence and engine hardware validation retain separate evidence.
+
+## Main RPM fuel-cut state
+
+The bounded entry 0004f282 binds 81 stock instructions and 196 bytes:
+162 instruction bytes, five long pool words, configuration byte 00008b38,
+delay byte 00008c69 and six threshold words at 0000934e..00009358.
+The two declared long RAM translations bind ffff244c and ffff119c to the
+positive simulator RAM window. The natural RTS delay slot restores GBR.
+Hardware readiness is NO.
+
+Stock configuration 00008b38=63 has bit 7 clear. Raw selector byte ffff2468.bit4
+chooses activation/release pairs (612,596) or (596,368). The third pair (0,0)
+and its guarded path have identity-only evidence in this stock domain;
+their execution is outside the contract. No calibration byte changes during
+the bounded invocation. Other configuration-byte consumers retain their own
+evidence.
+
+The raw state byte is ffff2497. Bit1 is the arm and bit2 is active. While active,
+RPM word ffff11bc at the release threshold or above preserves the state;
+only a value below release clears both bits. While inactive, a value below
+activation clears the arm. At activation or above, a clear arm loads the
+stock delay into ffff24f1 and sets the arm. An existing arm retains its
+incoming counter. Counter zero sets active; nonzero preserves the inactive
+state. The function does not decrement the counter in this invocation.
+All other state bits retain their incoming values.
+
+Step 11 takes from as the four row-major words of the owned 2x2 table,
+x=raw RPM and prev=incoming flags; bit 4 selects indices P and 2+P.
+Step 12 takes from=raw RPM and prev=incoming flags;
+its numerical expression reads the actual table pair through selector bit 4.
+Auxiliary K is the stored delay byte. Both output the complete raw flag byte
+and have sign none. Equality at activation admits the state transition;
+equality at release retains active state. A stock zero reload applies to
+a newly armed transition; an already armed nonzero counter still waits.
+
+The literal matrix has 6400 independent contexts. It covers all 256 incoming
+flag bytes, selector bytes and counter bytes; both table pairs; the raw RPM
+boundaries 0, release-1, release, activation-1, activation, activation+1,
+32768 and 65535; and all 128 supported incoming SR/MQT combinations.
+The first six contexts contain all six branch outcomes. These axes do not
+form the full Cartesian product and do not establish physical reachability.
+
+The observer compares all fifteen natural exit GPRs, full SR/MQT,
+MACH/MACL/GBR, PR/SP, a distinct C caller ABI, all 64 KiB RAM and all 34
+pool/configuration/threshold bytes. Its independent 80-byte SP-48..SP+31
+frame permits only the four-byte saved GBR at offsets 44..47. R7 is the
+declared driver call target; the stock entry preserves it. Full incoming
+GBR/MACH/MACL words include zero, all ones and both sign boundaries. The observer changes only
+T, IMASK, Q and M in the actual incoming SR, retains every other status bit,
+and independently compares the context pointer and R3 before and after
+status preparation. The complete exit SR uses the independently observed
+original status and the literal expected controls.
+
+The numerical contract compares both complete flag/counter views with the
+6400 literal contexts. Eight semantic mutations cover strict cut/release
+equality, ignored arm counter, wrong selector bit, lost other flag bits,
+signed RPM comparison, omitted delay loading and an in-call decrement.
+Executable acceptance requires the exact-stock fixture and the mandatory
+complete standard gate with EARLY_ONLY=0.
+
+Physical RPM scaling, periodic decrement production, upstream state/selector
+reachability, interrupt delivery, full ECU scheduling, invocation cadence,
+the global inhibit coordinator and actual fuel delivery require separate
+evidence. This entry does not establish those mechanisms.

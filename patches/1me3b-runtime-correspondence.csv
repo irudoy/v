@@ -29,7 +29,7 @@ map,over_run_fuel_restore,00012818,00014008,,,mapped,the target restore coordina
 map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves and scalar caps instead of the source 2x2 table
 map_native,rev_limit_fuel_cut_caps,,00009266,,activation_release,target-specific,Adjacent uint16 caps limit the activation and release interpolation results
 map_native,rev_limit_fuel_cut_curves,,000172b6,,activation_release,target-specific,Adjacent eight-point uint16 curves share the axis at 00017106 and retain independent activation and release rows
-map_native,rev_limit_fuel_cut_delay_calibration,,00008b40,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
+map_native,rev_limit_fuel_cut_delay_calibration,00008c69,00008b40,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
 map,rev_limit_throttle_cut,0000942c,0000935e,,,mapped,00030810/0003357c read the 0x2580 limiter scalar beside the shared compensation surface at call ordinals 887 and 890 and 000a8f02/000afe8c read it at ordinals 14 and 139 against 12 and 140
 map_hook,cruise_feedback_serializer,000c3fa4,001216e4,00123264,,mapped,Dispatcher literal resolves the exact 0x551 serializer
 map_hook,fuel_compensation_lookup_runtime,0003c388,00048b78,000298b4,,target-specific,Runtime coordinator literal calls the common lookup

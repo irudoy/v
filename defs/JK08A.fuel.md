@@ -931,8 +931,8 @@ q    = sat_u16((uint16[0xFFFF165E] * q) >> 13)
 
 ```text
 d = duration[i]
-if bit i of 0xFFFF22E0 or of history 0xFFFF1935:
-    d = uint16[0xFFFF23AA]; set bit i of 0xFFFF1935
+if mask & (uint8[0xFFFF22E0] | uint8[0xFFFF1935]):
+    d = uint16[0xFFFF23AA]; set every bit of mask in uint8[0xFFFF1935]
 if bit i of DSTR is already set:
     d = max(0, d - uint16[0xFFFF23AA])
 c = sat_u16((800 * d) >> 8)
@@ -940,9 +940,12 @@ if 0xFFFF4251.bit0: c = 1000
 DCNT8x += c with interrupts masked; set bit i of DSTR
 ```
 
-Substituting the injector opening time for an inhibited channel and removing it
-again when a pulse is already in flight are consistent only if the duration
-words and `0xFFFF23AA` share one unit.
+The selection predicate uses the entire incoming mask for every selected
+channel. When any bit of that mask intersects inhibition or history, all
+selected channels receive the opening word. The raw counter addition wraps
+modulo65536. Substituting the same opening word and subtracting it from an
+already started channel requires a common raw representation; physical
+opening, pulse delivery and peripheral timing retain independent evidence.
 
 ## Injection-pulse time scale
 

@@ -23,6 +23,30 @@ at = "1nd:00076b48"
 note = "Exact ROM8 value zero governs the native activation delay state"
 
 [[symbol]]
+layout = "7mfk"
+address = "00008c69"
+level = "code"
+note = """
+Exact stock zero byte loaded by0004f282 only when an inactive activation \
+request has a clear arm; an already armed invocation retains its incoming \
+counter."""
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
+[[symbol]]
 layout = "jk78c"
 address = "00008a1f"
 
@@ -31,3 +55,28 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0006af3e"
 note = "Exact ROM8 value zero governs the native activation delay state"
+
+[[link]]
+type = "reader"
+to = "main_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The exact zero ROM byte loads the working counter only for a newly armed \
+inactive request."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"

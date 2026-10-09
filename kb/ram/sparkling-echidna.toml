@@ -1,11 +1,14 @@
 summary = """
-Optional activation-delay countdown for engine-speed fuel-cut state machine \
-0004f282. On a new activation request it is loaded from ROM8[00008c69]; \
-state bit 2 in ffff2497 is set when the countdown is zero."""
+Unsigned activation-delay counter used by bounded main RPM entry0004f282. An \
+inactive request at activation or above loads ROM8[00008c69] only when \
+armffff2497.bit1 is clear. An existing arm retains the counter. Counter zero \
+sets active bit2; nonzero leaves it inactive. Active hold/release preserves \
+the incoming counter. This invocation does not decrement it; its periodic \
+producer and cadence require separate evidence."""
 note = [
     """
-Stock ROM8[00008c69]=0, so the working fuel cut activates without a \
-calibrated delay.""",
+Stock ROM8[00008c69]=0 activates a newly armed request immediately; an \
+already armed nonzero counter still waits.""",
 ]
 level = "code"
 unit = "count"
@@ -37,6 +40,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff24f1"
 name = "sparkling-echidna"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -71,12 +76,42 @@ at = "7mfk:0004f306"
 value = {named = ["00008c69", "0004f282", "ffff24f1"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
+
 [[link]]
 type = "reader"
 to = "main_rpm_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "writer"
@@ -86,3 +121,18 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+key = "test_main_rpm_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.main-rpm-fuel-cut.md"
+key = "Main RPM fuel-cut state"

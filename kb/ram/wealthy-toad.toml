@@ -49,6 +49,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff1937"
 name = "wealthy-toad"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -70,6 +72,21 @@ supports = "identity"
 at = "7mfk:000505f0"
 value = {named = ["0002be40", "000503e0", "ffff1937"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
 
 [[link]]
 type = "reader"
