@@ -1126,6 +1126,19 @@ REGIONS = (
             ('PAIR_SELECTOR','maroon-unicorn/ram'),('DELAY_COUNTER','sparkling-echidna/ram')),
         constants=(('EARLY_ONLY',0),),
     ),
+    Region(
+        key='jk08a-vehicle-speed-fuel-cut', rom='JK08A',
+        source='stock_jk08a_vehicle_speed_fuel_cut.s',
+        harness='harness-stock-jk08a-vehicle-fuel-cut.c',
+        start=0x4f19c, end=0x4f1d8, callees=((0x4f240,0x4f282),),
+        pools=((0x4f1fc,4),(0x4f224,4),(0x4f23c,4),(0x4f454,12),
+            (0x8db7,1),(0x8dc3,1),(0x8caf,1)),
+        ram_literals=(0x4f1fc,0x4f224,0x4f454), cases=12544, boundary=False,
+        symbols=(('STATE_FLAGS','xanthic-yak/ram'),('VEHICLE_SPEED','vehicle_speed/ram'),
+            ('CONTROL_FLAGS','flat-doberman/ram'),
+            ('DELAY_COUNTER','vehicle_speed_fuel_cut_delay_counter/ram')),
+        constants=(('EARLY_ONLY',0),),
+    ),
 )
 
 
@@ -1406,6 +1419,7 @@ REGION_OBSERVERS.update({
     'jk08a-closed-loop-adjustment': 'invoke-closed-loop-adjustment.s',
     'jk08a-closed-loop-feedback': 'invoke-closed-loop-feedback.s',
     'jk08a-main-rpm-fuel-cut': 'invoke-main-rpm-fuel-cut.s',
+    'jk08a-vehicle-speed-fuel-cut': 'invoke-vehicle-fuel-cut.s',
 })
 
 

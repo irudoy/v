@@ -1,0 +1,61 @@
+summary = """
+Inclusive unsigned coarse-speed activation threshold of natural entry \
+0004f19c."""
+note = [
+    """
+Physical units, counter production and cadence, ECU scheduling and engine \
+reachability require separate evidence.""",
+]
+block = "fuel_cut/block"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00008db7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0004f248"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "reader"
+to = "vehicle_speed_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Inclusive unsigned coarse-speed activation threshold of natural entry \
+0004f19c."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"

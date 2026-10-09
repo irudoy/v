@@ -96,7 +96,7 @@ def registered_stock_contract(packet, image):
 def previous_regions_contract():
     module = publication.stock_module()
     held = contracts()['previous_regions']
-    assert len(held) == 73 and len(module.REGIONS) == 80
+    assert len(held) == 73 and len(module.REGIONS) == 81
     assert json.loads(json.dumps([asdict(row) for row in module.REGIONS[:73]])) == held
     for key, name in contracts()['previous_observers'].items():
         assert module.REGION_OBSERVERS[key] == name

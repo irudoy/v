@@ -6584,7 +6584,10 @@
       "via": [
         "vehicle_speed_fuel_cut_state_machine/fn"
       ],
-      "note": "With RPM gate ffff24a7.bit5 clear, bit 0 arms at coarse speed >= 93 and holds at >= 91 (candidate 186 and 182 km/h); stock delay ROM8[0x8CAF] is 0."
+      "note": "F = uint8(prev); C = RAM8[ffff24a7]; A = F&1; B = (C>>7)&1; G = (C>>5)&1; S = uint8(from); L = ROM8[00008db7]; H = ROM8[00008dc3]; N = min(1,max(0,S-L+1)); V = min(1,max(0,S-H+1)); U = (1-A)*N*(1-B); K = (1-U)*RAM8[ffff24f6]+U*ROM8[00008caf]; Z = 1-min(1,K); E = A*V*B+(1-A)*N; J = uint8((C&127)|(128*E)); D = (1-G)*(A*V+(1-A)*N*Z); to = uint8((F&254)|D)",
+      "specs": [
+        "defs/JK08A.vehicle-speed-fuel-cut.md"
+      ]
     },
     "19": {
       "from": "xanthic-yak/ram",
@@ -16607,6 +16610,87 @@
       "callees": [],
       "ram_word_literals": [],
       "register_word_literals": []
+    },
+    {
+      "key": "jk08a-vehicle-speed-fuel-cut",
+      "rom": "JK08A",
+      "source": "stock_jk08a_vehicle_speed_fuel_cut.s",
+      "harness": "harness-stock-jk08a-vehicle-fuel-cut.c",
+      "start": 323996,
+      "end": 324056,
+      "pools": [
+        [
+          324092,
+          4
+        ],
+        [
+          324132,
+          4
+        ],
+        [
+          324156,
+          4
+        ],
+        [
+          324692,
+          12
+        ],
+        [
+          36279,
+          1
+        ],
+        [
+          36291,
+          1
+        ],
+        [
+          36015,
+          1
+        ]
+      ],
+      "ram_literals": [
+        324092,
+        324132,
+        324692
+      ],
+      "cases": 12544,
+      "boundary": false,
+      "return_address_offset": null,
+      "return_register": 5,
+      "base_load": null,
+      "symbols": [
+        [
+          "STATE_FLAGS",
+          "xanthic-yak/ram"
+        ],
+        [
+          "VEHICLE_SPEED",
+          "vehicle_speed/ram"
+        ],
+        [
+          "CONTROL_FLAGS",
+          "flat-doberman/ram"
+        ],
+        [
+          "DELAY_COUNTER",
+          "vehicle_speed_fuel_cut_delay_counter/ram"
+        ]
+      ],
+      "bits": [],
+      "constants": [
+        [
+          "EARLY_ONLY",
+          0
+        ]
+      ],
+      "callees": [
+        [
+          324160,
+          324226
+        ]
+      ],
+      "ram_word_literals": [],
+      "register_word_literals": []
     }
   ],
   "held_observers": {
@@ -16637,7 +16721,8 @@
     "jk08a-closed-loop-conversion": "invoke-closed-loop-conversion.s",
     "jk08a-closed-loop-adjustment": "invoke-closed-loop-adjustment.s",
     "jk08a-closed-loop-feedback": "invoke-closed-loop-feedback.s",
-    "jk08a-main-rpm-fuel-cut": "invoke-main-rpm-fuel-cut.s"
+    "jk08a-main-rpm-fuel-cut": "invoke-main-rpm-fuel-cut.s",
+    "jk08a-vehicle-speed-fuel-cut": "invoke-vehicle-fuel-cut.s"
   },
   "held_fixtures": {
     "jk08a-base-accumulator": "7e3bbf78fa6f0189fd2f85ad383f92ce7bae1b2d6ae93da05b307b81a0887b4c",
@@ -16719,6 +16804,7 @@
     "jk08a-closed-loop-conversion": "e3e3e403b43ef5a545ddba20ffec847b0f0d2887e39a20ecdb4249c0c7ec84b2",
     "jk08a-closed-loop-adjustment": "f41e4cf65abb4f2a3a5634bdb1e4e06437a133f2d81d97b24c66c664ed669877",
     "jk08a-closed-loop-feedback": "8830325133daa9f39ee30c1244489f6becd30022361632972b1887f8cb0af8a0",
-    "jk08a-main-rpm-fuel-cut": "dc09b74ac0c787498618a3617b2112cdebf7387c23d8ae38cacbeabab8878e90"
+    "jk08a-main-rpm-fuel-cut": "dc09b74ac0c787498618a3617b2112cdebf7387c23d8ae38cacbeabab8878e90",
+    "jk08a-vehicle-speed-fuel-cut": "45732925e5acdec302f7a9a7bb6c0ae0dc830be65abb70bb1db4fe42e69c3c48"
   }
 }

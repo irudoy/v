@@ -78,7 +78,7 @@ def registered_stock_contract(image):
 
 def previous_regions_contract():
     module=publication.stock_module()
-    assert len(module.REGIONS)==80 and len(contracts()['previous_regions'])==78
+    assert len(module.REGIONS)==81 and len(contracts()['previous_regions'])==78
     assert json.loads(json.dumps([asdict(row) for row in module.REGIONS[:78]]))==contracts()['previous_regions']
     for key,name in contracts()['previous_observers'].items(): assert module.REGION_OBSERVERS[key]==name
     images={rom:module.stock_image(rom) for rom in {row.rom for row in module.REGIONS[:78]}}

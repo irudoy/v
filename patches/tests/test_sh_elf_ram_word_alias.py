@@ -94,9 +94,11 @@ def test_word_alias_bfs_pc_observation_refuses_every_nonempty_binding(bindings):
 
 def test_word_alias_empty_default_preserves_every_original_registered_fixture():
     module=publication.stock_module()
-    regions={row.key:row for row in module.REGIONS if row.key not in ('jk08a-injection-prologue', 'jk08a-channel-pulse', 'jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch', 'jk08a-base-accumulator', 'jk08a-transient-coefficient', 'jk08a-transient-additive', 'jk08a-coolant-conditional', 'jk08a-transient-pair-1', 'jk08a-transient-pair-2', 'jk08a-fuel-multiplier', 'jk08a-pulse-precursor', 'jk08a-common-gain', 'jk08a-enrichment-prefix', 'jk08a-enrichment-terminal', 'jk08a-knock-metric', 'jk08a-knock-normalization', 'jk08a-stft-publication', 'jk08a-grid-selection', 'jk08a-grid-learning', 'jk08a-closed-loop-conversion', 'jk08a-closed-loop-adjustment', 'jk08a-closed-loop-feedback', 'jk08a-main-rpm-fuel-cut')}
+    regions={row.key:row for row in module.REGIONS if row.key not in ('jk08a-injection-prologue', 'jk08a-channel-pulse', 'jk08a-opening-word', 'jk08a-pulse-selector', 'jk08a-full-programmer', 'jk08a-oneshot', 'jk08a-rpm-phase-word', 'jk08a-rpm-phase-byte', 'jk08a-rpm-phase-copy', 'jk08a-event-isr', 'jk08a-end-angle', 'jk08a-full-dispatch', 'jk08a-base-accumulator', 'jk08a-transient-coefficient', 'jk08a-transient-additive', 'jk08a-coolant-conditional', 'jk08a-transient-pair-1', 'jk08a-transient-pair-2', 'jk08a-fuel-multiplier', 'jk08a-pulse-precursor', 'jk08a-common-gain', 'jk08a-enrichment-prefix', 'jk08a-enrichment-terminal', 'jk08a-knock-metric', 'jk08a-knock-normalization', 'jk08a-stft-publication', 'jk08a-grid-selection', 'jk08a-grid-learning', 'jk08a-closed-loop-conversion', 'jk08a-closed-loop-adjustment', 'jk08a-closed-loop-feedback', 'jk08a-main-rpm-fuel-cut', 'jk08a-vehicle-speed-fuel-cut')}
     [rpm]=[row for row in module.REGIONS if row.key=='jk08a-main-rpm-fuel-cut']
     assert rpm.ram_word_literals==()
+    [vehicle]=[row for row in module.REGIONS if row.key=='jk08a-vehicle-speed-fuel-cut']
+    assert vehicle.ram_word_literals==vehicle.register_word_literals==()
     assert len(GOLDEN_FIELDS)==len(GOLDEN_FIXTURES)==48 and set(regions)==set(GOLDEN_FIELDS)
     images={rom:module.stock_image(rom) for rom in {row.rom for row in regions.values()}}
     for key,row in regions.items():

@@ -2858,7 +2858,10 @@
       "via": [
         "vehicle_speed_fuel_cut_state_machine/fn"
       ],
-      "note": "With RPM gate ffff24a7.bit5 clear, bit 0 arms at coarse speed >= 93 and holds at >= 91 (candidate 186 and 182 km/h); stock delay ROM8[0x8CAF] is 0."
+      "note": "F = uint8(prev); C = RAM8[ffff24a7]; A = F&1; B = (C>>7)&1; G = (C>>5)&1; S = uint8(from); L = ROM8[00008db7]; H = ROM8[00008dc3]; N = min(1,max(0,S-L+1)); V = min(1,max(0,S-H+1)); U = (1-A)*N*(1-B); K = (1-U)*RAM8[ffff24f6]+U*ROM8[00008caf]; Z = 1-min(1,K); E = A*V*B+(1-A)*N; J = uint8((C&127)|(128*E)); D = (1-G)*(A*V+(1-A)*N*Z); to = uint8((F&254)|D)",
+      "specs": [
+        "defs/JK08A.vehicle-speed-fuel-cut.md"
+      ]
     },
     "19": {
       "from": "xanthic-yak/ram",

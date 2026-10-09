@@ -19,8 +19,10 @@ ROM8[00008dca]=0 with release offset 16, the stopped-engine condition of the \
 exhaust cam reference learning and of FUN 00090bd2."""
 note = [
     """
-Bit 5 gates the ffff24a6.bit0 active state; bit 7 records speed-threshold \
-entry while the stock activation delay runs.""",
+Bit5 gates active stateffff24a6.bit0. Bit7 records entry arming: a new arm \
+loads ROM8[00008caf], an existing arm retains its unsigned counter, and \
+active speed at release or above preserves this bit even with the RPM gate. \
+Other bit roles retain their independent evidence.""",
 ]
 level = "code"
 unit = "bitfield"
@@ -108,6 +110,8 @@ supports = "identity"
 layout = "7mfk"
 address = "ffff24a7"
 name = "flat-doberman"
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -211,6 +215,21 @@ at = "7mfk:000c05ec"
 value = {named = ["000086f4", "00008713", "00008715", "00008716", "0000871d", "00008dca", "00008dcb", "0004f050", "0004f19c", "00090a84", "000bd20a", "000bdb66", "000bdc66", "000bfe88", "ffff24a7"], span = 1}
 key = "reference"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
 [[link]]
 type = "reader"
 to = "amphibian-sponge/fn"
@@ -231,6 +250,21 @@ to = "vehicle_speed_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
 
 [[link]]
 type = "reader"
@@ -274,6 +308,21 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
 
 [[link]]
 type = "writer"

@@ -99,6 +99,8 @@ Homologous DFCO consumers compare this byte against the same raw threshold"""
 layout = "7mfk"
 address = "ffff110e"
 former = ["sociable-groundhog/ram/7mfk-ffff110e"]
+width = 8
+signed = false
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -196,6 +198,21 @@ supports = "identity"
 at = "7mfk:000b7a9c"
 value = {named = ["000085fa", "00020dfe", "0004f324", "00050018", "000b78da", "000b7a3c", "ffff110e", "ffff118e"], span = 1}
 key = "body"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
 
 [[symbol]]
 layout = "jk00c"
@@ -375,6 +392,21 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
 
 [[link]]
 type = "reader"

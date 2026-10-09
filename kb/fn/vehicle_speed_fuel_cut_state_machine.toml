@@ -1,8 +1,12 @@
 title = "Coarse vehicle-speed fuel-cut state with RPM gate"
 summary = """
-Vehicle-speed fuel-cut contributor. With RPM gate ffff24a7.bit5 clear, it \
-enters at coarse speed 93 and remains active until speed falls below 91; \
-stock activation delay is zero."""
+Bounded coarse vehicle-speed cut state. Inactive raw speed at activation or \
+above arms control bit7 and loads the zero delay only on a new arm; an \
+existing nonzero counter waits. Counter zero with control bit5 clear sets \
+state bit0. Active speed at release or above holds unless control bit5 gates \
+it; below release clears state bit0 and arm. Complete other state/control \
+bits, unrelated RAM, natural CPU/frame state and bound ROM retain their \
+declared values. This invocation does not decrement the counter."""
 note = [
     """
 The candidate speed conversion is approximately 186/182 km/h and requires \
@@ -96,6 +100,21 @@ at = "7mfk:0004f19c"
 value = {named = ["00008caf", "00008db7", "00008dc3", "0004ed88", "ffff110e", "ffff24a6", "ffff24a7"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"
@@ -104,9 +123,188 @@ relies = "structure"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+slot = "bit5"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit5 set clears statebit0 even while active; all other control bits retain \
+their independently owned roles."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+slot = "bit7"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bit7 clear at an inactive activation loads the stock delay and sets the arm; \
+a held arm retains the counter. At active speed at release or above, the \
+incoming arm remains even when bit5 gates active state."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
 [[link]]
 type = "selector"
 to = "flat-doberman/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Raw byte comparisons admit activation equality93 and retain active release \
+equality91; unsigned byte ordering includes128..255. Physical speed \
+conversion is outside this invocation."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "vehicle_speed_fuel_cut_delay_counter/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "xanthic-yak/ram"
+slot = "bit0"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Incoming bit0 selects release or activation comparison; every other state \
+bit is preserved."""
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"
+
+[[link]]
+type = "selector"
+to = "xanthic-yak/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+key = "Vehicle-speed fuel-cut state"

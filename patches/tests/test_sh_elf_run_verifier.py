@@ -1224,6 +1224,9 @@ mov #0x5,r1
             'jk08a-main-rpm-fuel-cut': {'REGION_ENTRY': 0x0004f282,
                 'FUEL_INHIBIT': 0xffff2497, 'ENGINE_SPEED': 0xffff11bc,
                 'PAIR_SELECTOR': 0xffff2468, 'DELAY_COUNTER': 0xffff24f1, 'EARLY_ONLY': 0},
+            'jk08a-vehicle-speed-fuel-cut': {'REGION_ENTRY': 0x0004f19c,
+                'STATE_FLAGS': 0xffff24a6, 'VEHICLE_SPEED': 0xffff110e,
+                'CONTROL_FLAGS': 0xffff24a7, 'DELAY_COUNTER': 0xffff24f6, 'EARLY_ONLY': 0},
         })
         self.assertEqual(set(regions), set(expected))
         for key, region in regions.items():
@@ -1259,6 +1262,19 @@ mov #0x5,r1
                     self.assertRegex(harness, r'COUNT\(samples\)!=' + macro)
                     self.assertRegex(harness, r'for\(i=0;i<count;\+\+i\)')
                     self.assertRegex(harness, r'run_case\(i,&samples\[i\]\)')
+                elif key == 'jk08a-vehicle-speed-fuel-cut':
+                    header_name = 'vehicle-fuel-cut-cases.h'
+                    self.assertIn('#include "' + header_name + '"', harness)
+                    header = (STOCK_VERIFIER.TOOL_DIR / header_name).read_text(encoding='utf-8')
+                    self.assertEqual(re.findall(r'^#define VEHICLE_FUEL_CUT_CASE_COUNT (\d+)U$', header,
+                        re.MULTILINE), [str(region.cases)])
+                    [array] = re.findall(r'\bvehicle_fuel_cut_cases\[\]\s*=\s*\{(.*?)\n\};', header, re.S)
+                    rows = [line.strip() for line in array.splitlines() if line.strip()]
+                    self.assertEqual(len(rows), region.cases)
+                    self.assertTrue(all(re.fullmatch(r'[\s{},0-9a-fxU]+', row) for row in rows))
+                    self.assertIn('limit=EARLY_ONLY?VEHICLE_FUEL_CUT_EARLY_COUNT:VEHICLE_FUEL_CUT_CASE_COUNT;', harness)
+                    self.assertIn('for(index=0;index<limit;++index)', harness)
+                    self.assertIn('if(!run_case(index,&vehicle_fuel_cut_cases[index]))return 1;', harness)
                 elif key == 'jk08a-main-rpm-fuel-cut':
                     header_name = 'main-rpm-fuel-cut-cases.h'
                     self.assertIn('#include "' + header_name + '"', harness)
