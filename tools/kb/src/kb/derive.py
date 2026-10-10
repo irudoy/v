@@ -11,6 +11,7 @@ such a literal in GBR yields the address that it takes into the register.
 import csv
 from dataclasses import dataclass
 from functools import lru_cache
+from pathlib import Path
 
 from kb import repo, sh2
 
@@ -220,12 +221,40 @@ def function_pairs(func, addresses, data):
     return pairs
 
 
-@lru_cache(maxsize=None)
-def literal_pairs(layout_id, root=repo.ROOT):
+@lru_cache(maxsize=32)
+def _literal_pairs(layout_id, root, digest):
     """Every literal pair of a layout, sorted."""
     layout = repo.layout(layout_id, root)
     data = image_bytes(layout, root)
     pairs = []
     for func, addresses in bodies(layout_id, root).items():
         pairs.extend(function_pairs(func, addresses, data))
+    if _pair_digest(layout_id, root) != digest:
+        raise repo.KbError('literal-pair inputs change during derivation', code=3)
     return tuple(sorted(pairs))
+
+
+def _pair_digest(layout_id, root):
+    """Bind the exact dependencies of literal-pair derivation."""
+    from kb import fingerprint
+    layout = repo.layout(layout_id, root)
+    image = repo.images(root)[layout.image]
+    paths = (repo.CONFIG, repo.HOMOLOGY, repo.CATALOG,
+             repo.L0 / layout_id / 'function_tokens.csv',
+             image.path.relative_to(root),
+             Path('tools/kb/src/kb/derive.py'), Path('tools/kb/src/kb/sh2.py'),
+             Path('tools/kb/src/kb/repo.py'))
+    hashes = fingerprint.Hashes(root)
+    digest = fingerprint.digest((path.as_posix(), hashes.of(path.as_posix())) for path in paths)
+    hashes.save()
+    return digest
+
+
+def literal_pairs(layout_id, root=repo.ROOT):
+    """Reuse pairs only for the exact L0, image and producer inputs."""
+    root = Path(root).resolve()
+    return _literal_pairs(layout_id, root, _pair_digest(layout_id, root))
+
+
+literal_pairs.cache_clear = _literal_pairs.cache_clear
+literal_pairs.cache_info = _literal_pairs.cache_info

@@ -2,6 +2,7 @@
 
 import argparse
 from contextlib import redirect_stdout
+from functools import wraps
 import csv
 import io
 import json
@@ -13,8 +14,8 @@ import subprocess
 import sys
 import tomllib
 
-from kb import (answer, catalog, checks, compile, family, graph, guard, instance, l0, lock, passes, project,
-                read, refs, repo, research, sites, spec, store, suggest, vocab, write)
+from kb import (answer, catalog, checks, compile, family, fingerprint, graph, guard, instance, l0, lock, passes, project,
+                read, reader, refs, repo, research, sites, spec, store, suggest, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -43,6 +44,23 @@ def budget_of(args, command, root=repo.ROOT):
     return repo.config(root).get("budget", {}).get(command)
 
 
+def _source_read(command):
+    """Keep source-only answers coherent and publish only a checked result."""
+    @wraps(command)
+    def run(args,root=repo.ROOT):
+        with lock.held(root):
+            before=fingerprint.compute(root)
+            output=io.StringIO()
+            with redirect_stdout(output):
+                code=command(args,root)
+            if fingerprint.compute(root)!=before:
+                raise KbError('the source fingerprint changes during the isolated read',code=6)
+            text=output.getvalue()
+        sys.stdout.write(text)
+        return code
+    return run
+
+
 def parse_location(text, layout_option=None, root=repo.ROOT):
     match = LOCATION_RE.fullmatch(text.strip())
     if not match:
@@ -67,14 +85,14 @@ def containing_function(layout, address, root=repo.ROOT):
     return f"{owners[0]:08x}"
 
 
-def code_target(args, root=repo.ROOT):
+def code_target(args, root=repo.ROOT,held=False):
     """The layout and the address that `kb code` shows, with the reference of
     their symbol: a location of the form `<layout>:<address>` as it stands,
     or else the function symbol that the reference names on `--layout`, or
     for a meaning on its home layout."""
     if refs.LOCATION.fullmatch(args.ref.strip()):
         return (*parse_location(args.ref, args.layout, root), None)
-    with graph.fresh(root, args.no_sync, log=_stderr) as session:
+    with reader.graph_session(root,args.no_sync,held=held) as session:
         ref = refs.resolve(session, args.ref, args.layout, root)
         if ref.kind == "meaning" and args.layout is None and ref.node.get("home"):
             ref = refs.resolve(session, args.ref, ref.node["home"], root)
@@ -88,8 +106,9 @@ def code_target(args, root=repo.ROOT):
     return repo.layout(ref.node["layout"], root), ref.node["address"], ref.text
 
 
+@_source_read
 def command_code(args, root=repo.ROOT):
-    layout, address, symbol = code_target(args, root)
+    layout, address, symbol = code_target(args, root,held=True)
     entry = containing_function(layout, address, root)
     command = [str(root / "tools/ghidra/decompile.sh"), "-r", layout.image]
     if args.listing:
@@ -120,6 +139,12 @@ def command_check(args, root=repo.ROOT):
     unknown = sorted(set(selected) - set(CHECKS))
     if unknown:
         raise KbError(f"unknown or inactive checks {unknown}; active: {', '.join(CHECKS)}", code=2)
+    return _checked_sources(args, root)
+
+
+@_source_read
+def _checked_sources(args, root=repo.ROOT):
+    selected = args.only or list(CHECKS)
     record = passes.Passes(root)
     failed = 0
     for name in selected:
@@ -227,18 +252,19 @@ def command_cypher(args, root=repo.ROOT):
     reason = graph.refusal(args.query)
     if reason:
         raise KbError(reason, code=2)
-    with graph.fresh(root, args.no_sync, log=_stderr) as session:
-        keys, records = graph.read_query(session, args.query, params)
-    if args.json:
-        print(json.dumps([{key: _plain(record[key]) for key in keys} for record in records],
-                         default=str, indent=1))
-        return 0
-    lines = ["\t".join(keys)]
-    lines.extend("\t".join(render(record[key]) for key in keys) for record in records)
-    lines.append(f"{len(records)} rows")
-    text = "\n".join(lines) + "\n"
-    sys.stdout.write(fit(text, budget_of(args, "cypher", root),
-                         "a narrower query, LIMIT, --budget <tokens>,"))
+    with reader.session(root,args.no_sync) as session:
+        result=session.run(args.query,params)
+        keys,records=result.keys(),list(result)
+        if args.json:
+            text = json.dumps([{key: _plain(record[key]) for key in keys} for record in records],
+                              default=str, indent=1) + '\n'
+        else:
+            lines = ["\t".join(keys)]
+            lines.extend("\t".join(render(record[key]) for key in keys) for record in records)
+            lines.append(f"{len(records)} rows")
+            text = fit("\n".join(lines) + "\n", budget_of(args, "cypher", root),
+                       "a narrower query, LIMIT, --budget <tokens>,")
+    sys.stdout.write(text)
     return 0
 
 
@@ -250,12 +276,13 @@ def _json_default(item):
 
 def _answer(args, command, build, root=repo.ROOT):
     """Print the answer of a read command within its budget, or its data."""
-    with graph.fresh(root, args.no_sync, log=_stderr) as session:
+    with reader.graph_session(root,args.no_sync) as session:
         found = build(session)
-    if args.json:
-        print(json.dumps(found.data, default=_json_default, indent=1, sort_keys=True))
-    else:
-        sys.stdout.write(found.text(budget_of(args, command, root)))
+        if args.json:
+            text = json.dumps(found.data, default=_json_default, indent=1, sort_keys=True) + '\n'
+        else:
+            text = found.text(budget_of(args, command, root))
+    sys.stdout.write(text)
     return 0
 
 
@@ -360,6 +387,7 @@ def command_bench(args, root=repo.ROOT):
     return 1 if failed else 0
 
 
+@_source_read
 def command_audit(args, root=repo.ROOT):
     found = checks.audit(compile.cached(root), args.section or checks.AUDIT_SECTIONS)
     for section, issues in found.items():
@@ -819,6 +847,7 @@ def build_parser():
 
 
 def main(argv=None):
+    from neo4j.exceptions import DriverError
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
@@ -826,6 +855,9 @@ def main(argv=None):
     except KbError as error:
         print(f"error: {error}", file=sys.stderr)
         return error.code
+    except DriverError as error:
+        print(f'error: graph connection or configuration failed ({error}); check KB_BOLT and the working-tree instance',file=sys.stderr)
+        return 6
     except BrokenPipeError:
         # A reader such as `head` closed the output; the rest of it is discarded.
         os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())

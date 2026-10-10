@@ -317,11 +317,30 @@ def audit_applied(path, root=repo.ROOT):
               'immutable existing facts and original chains preserved; no write or graph change')
 
 
+def _snapshot_path(output, root):
+    """Validate and prepare a new local receipt path before the source audit."""
+    output = Path(output).resolve()
+    if output.exists() or not output.is_relative_to(Path(root).resolve() / 'tmp'):
+        raise KbError('acceptance snapshot needs a new path under tmp/', code=2)
+    try:
+        output.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        raise KbError(f'cannot prepare acceptance snapshot directory {output.parent}: {error}', code=2) from None
+    return output
+
+
+def _write_snapshot(output, data):
+    """Keep an existing receipt intact, including a concurrent creation."""
+    try:
+        with output.open('x', encoding='utf-8') as target:
+            target.write(json.dumps(data, indent=2, sort_keys=True) + '\n')
+    except OSError as error:
+        raise KbError(f'cannot write acceptance snapshot {output}: {error}', code=2) from None
+
+
 def snapshot(source_commit, output, root=repo.ROOT):
     """Freeze acceptance inputs after proving immutable source preservation."""
-    output = Path(output).resolve()
-    if output.exists() or not output.is_relative_to(root / 'tmp'):
-        raise KbError('acceptance snapshot needs a new path under tmp/', code=2)
+    output = _snapshot_path(output, root)
     with lock.held(root):
         if head(root) != source_commit:
             raise KbError('acceptance snapshot source commit differs from HEAD', code=3)
@@ -345,11 +364,10 @@ def snapshot(source_commit, output, root=repo.ROOT):
                               capture_output=True, check=True).stdout
         if fingerprint.compute(root) != fp:
             raise KbError('acceptance inputs change during snapshot', code=3)
-        output.write_text(json.dumps(dict(source_commit=source_commit,
+        _write_snapshot(output, dict(source_commit=source_commit,
             fingerprint=fp.value, compiler_inputs=fp.blobs, files_sha256=source_hashes,
             tracked_diff_sha256=sha(diff), original_facts_preserved=True,
-            original_chains_restored=True, knowledge_written=False, graph_changed=False),
-            indent=2, sort_keys=True) + '\n')
+            original_chains_restored=True, knowledge_written=False, graph_changed=False))
         print(f'acceptance snapshot: {len(paths)} files; immutable facts and chains preserved; no write')
 
 

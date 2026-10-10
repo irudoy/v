@@ -116,5 +116,20 @@ def build(root=repo.ROOT, overlay=None, order=None):
 
 
 @lru_cache(maxsize=1)
+def _cached(root, digest):
+    from kb import fingerprint
+    model = build(root)
+    if fingerprint.compute(root).value != digest:
+        raise repo.KbError('compiler inputs change while building the cached model', code=3)
+    return model
+
+
 def cached(root=repo.ROOT):
-    return build(root)
+    """Reuse a model only while the exact compiler fingerprint is current."""
+    from kb import fingerprint
+    root = Path(root).resolve()
+    return _cached(root, fingerprint.compute(root).value)
+
+
+cached.cache_clear = _cached.cache_clear
+cached.cache_info = _cached.cache_info

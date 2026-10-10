@@ -50,7 +50,12 @@ WRITES = re.compile(
     re.IGNORECASE)
 LITERALS = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|`[^`]*`|//[^\n]*|/\*.*?\*/",
                       re.DOTALL)
-PROCEDURE = re.compile(r"\bCALL\s+([A-Za-z_][\w.]*)", re.IGNORECASE)
+PROCEDURE_CODE = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|//[^\n]*|/\*.*?\*/",
+                            re.DOTALL)
+CALL_TOKEN = re.compile(r"`(?:``|[^`])*`|\bCALL\b", re.IGNORECASE)
+PROCEDURE_NAME = re.compile(
+    r"CALL\s+((?:[A-Za-z_]\w*|`(?:``|[^`])+`)(?:\s*\.\s*(?:[A-Za-z_]\w*|`(?:``|[^`])+`))*)",
+    re.IGNORECASE)
 
 
 class Graph:
@@ -58,14 +63,16 @@ class Graph:
 
     def __init__(self, root=repo.ROOT):
         from neo4j import GraphDatabase
-        from neo4j.exceptions import ServiceUnavailable
+        from neo4j.exceptions import DriverError
 
         self.uri = instance.uri(root)
-        self.driver = GraphDatabase.driver(self.uri, auth=("", ""))
+        self.driver = None
         try:
+            self.driver = GraphDatabase.driver(self.uri, auth=("", ""))
             self.driver.verify_connectivity()
-        except (ServiceUnavailable, OSError) as error:
-            self.driver.close()
+        except (DriverError, OSError) as error:
+            if self.driver is not None:
+                self.driver.close()
             raise repo.KbError(f"no graph answers at {self.uri} ({error}); "
                                "start it with `uv run kb instance up`", code=6) from None
 
@@ -562,8 +569,19 @@ def refusal(query, write_procedures=()):
     if found:
         clause = " ".join(found.group(1).split()).upper()
         return f"the query writes ({clause}); kb cypher is read-only"
-    for name in PROCEDURE.findall(code):
-        if name in write_procedures:
+    writers = {name.casefold() for name in write_procedures}
+    procedure_code = PROCEDURE_CODE.sub(' ', query)
+    for token in CALL_TOKEN.finditer(procedure_code):
+        if token.group().startswith('`'):
+            continue
+        matched = PROCEDURE_NAME.match(procedure_code, token.start())
+        if matched is None:
+            continue
+        parts = re.findall(r'`((?:``|[^`])+)`|([A-Za-z_]\w*)', matched.group(1))
+        name = '.'.join((quoted or bare).replace('``', '`') for quoted, bare in parts)
+        if name.casefold().startswith('periodic.'):
+            return f"the procedure {name} executes nested queries; kb cypher is read-only"
+        if name.casefold() in writers:
             return f"the procedure {name} writes; kb cypher is read-only"
     return None
 

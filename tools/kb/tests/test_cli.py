@@ -53,11 +53,11 @@ class CodeTargetTest(unittest.TestCase):
             return found[(ref, on)]
 
         @contextlib.contextmanager
-        def fresh(root, no_sync, log):
+        def fresh(root, no_sync, held=False):
             yield None
 
         args = Namespace(ref=text, layout=layout, no_sync=True)
-        with mock.patch.object(cli.graph, "fresh", fresh), \
+        with mock.patch.object(cli.reader, "graph_session", fresh), \
                 mock.patch.object(cli.refs, "resolve", resolve):
             layout, address, symbol = cli.code_target(args)
         return layout.id, address, symbol, asked
@@ -104,7 +104,8 @@ class CypherCommandTest(unittest.TestCase):
 
 class CheckCommandTest(unittest.TestCase):
     def test_unknown_checks_are_a_usage_error(self):
-        with contextlib.redirect_stderr(io.StringIO()) as err:
+        with mock.patch.object(cli.lock, 'held', side_effect=AssertionError('invalid arguments must refuse before locking')), \
+                contextlib.redirect_stderr(io.StringIO()) as err:
             self.assertEqual(cli.main(["check", "--only", "missing_check"]), 2)
         self.assertIn("unknown or inactive checks", err.getvalue())
         self.assertIn("blocks", err.getvalue())

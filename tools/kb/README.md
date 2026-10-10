@@ -872,8 +872,21 @@ writes `Meta` last, and a failed layer leaves no accepted fingerprint.
   overrides the Bolt address for tests against a scratch server.
 - Graph consumers use `kb.reader.session`: it holds the primary writer lock,
   checks the fingerprint, refuses mutation clauses and discovered write
-  procedures, and rolls back its read transaction. A changed source
-  fingerprint during the read refuses the result.
+  procedures and every `periodic.*` procedure, and rolls back its read
+  transaction. CLI and MCP graph answers retain that boundary through
+  rendering; source-only checks, audits and code answers hold the same lock.
+  A changed source fingerprint refuses the complete buffered answer before
+  it reaches standard output. Compiler caches use the current fingerprint;
+  literal-pair caches bind their exact token, image and producer inputs.
+  A source change during construction refuses the result without caching it.
+- MCP validates required arguments and primitive and array shapes before
+  command dispatch. Invalid requests and unexpected command failures receive
+  individual errors; subsequent requests remain available. Driver connection
+  and configuration failures use graph error code 6.
+- Acceptance snapshots create missing output parents under `tmp/`, refuse
+  paths outside that directory and existing receipts, and report filesystem
+  failures with usage error code 2. Exclusive creation preserves a receipt
+  that appears after path validation.
 
 ## Projections and the access guard
 

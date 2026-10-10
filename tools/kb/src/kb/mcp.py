@@ -49,6 +49,8 @@ def _property(action):
         if action.choices:
             item["enum"] = list(action.choices)
         schema = {"type": "array", "items": item}
+        if action.nargs == "+":
+            schema = {"oneOf": [{"type": "string"}, {**schema, "minItems": 1}]}
     else:
         schema = {"type": "integer" if action.type is int else "string"}
         if action.choices:
@@ -88,27 +90,43 @@ def argv(name, arguments, parser=None):
     """The command line of a tool call; a `KeyError` or `ValueError` names an
     argument that the command does not take or a value of the wrong type."""
     parser = parser or cli.build_parser()
+    if not isinstance(arguments, dict) or any(not isinstance(key, str) for key in arguments):
+        raise ValueError("arguments is not an object with string keys")
     known = dict(_arguments(_subparsers(parser).choices[name]))
     unknown = sorted(set(arguments) - set(known))
     if unknown:
         raise KeyError(f"kb {name} takes no argument {', '.join(unknown)}")
     line, options = [name], []
     for dest, action in known.items():
-        if dest not in arguments or arguments[dest] is None:
+        if dest not in arguments:
+            if action.required or (not action.option_strings and action.nargs != '?'):
+                raise ValueError(f"kb {name} requires {dest}")
             continue
         value = arguments[dest]
+        if action.nargs == "+":
+            if isinstance(value, str):
+                value = value.split()
+            if not isinstance(value, list) or not value or any(type(item) is not str for item in value):
+                raise ValueError(f"{dest} is a nonempty string or an array of strings")
+        elif isinstance(action, argparse._AppendAction):
+            kind = int if action.type is int else str
+            if not isinstance(value, list) or any(type(item) is not kind for item in value):
+                raise ValueError(f"{dest} is an array of {kind.__name__} values")
+        elif isinstance(action, argparse._StoreTrueAction):
+            if type(value) is not bool:
+                raise ValueError(f"{dest} is a boolean")
+        elif type(value) is not (int if action.type is int else str):
+            raise ValueError(f"{dest} is an {'integer' if action.type is int else 'string'}")
         if not action.option_strings:
             if action.nargs == "+":
-                line.extend(value.split() if isinstance(value, str) else map(str, value))
+                line.extend(value)
             else:
                 line.append(str(value))
         elif isinstance(action, argparse._StoreTrueAction):
-            if not isinstance(value, bool):
-                raise ValueError(f"{dest} is a boolean")
             if value:
                 options.append(action.option_strings[-1])
         elif isinstance(action, argparse._AppendAction):
-            for item in value if isinstance(value, list) else [value]:
+            for item in value:
                 options.extend([action.option_strings[-1], str(item)])
         else:
             options.extend([action.option_strings[-1], str(value)])
@@ -124,8 +142,11 @@ def call(name, arguments):
         except SystemExit as stop:
             code = stop.code if isinstance(stop.code, int) else 2
         except (KeyError, ValueError) as error:
-            print(f"error: {error.args[0]}", file=sys.stderr)
+            print(f"error: {error.args[0] if error.args else type(error).__name__}", file=sys.stderr)
             code = 2
+        except Exception as error:
+            print(f"error: kb {name} failed ({type(error).__name__}): {error}", file=sys.stderr)
+            code = 1
     if code == 0:
         return 0, out.getvalue()
     return code, f"exit {code}\n{err.getvalue()}{out.getvalue()}"
@@ -142,9 +163,11 @@ def handle(message, state):
         return _error(message.get("id") if isinstance(message, dict) else None, -32600,
                       "Invalid Request")
     ident, method = message.get("id"), message["method"]
-    params = message.get("params") or {}
     if "id" not in message:
         return None
+    params = message.get("params", {})
+    if not isinstance(params, dict):
+        return _error(ident, -32602, "params is not an object")
     if method == "initialize":
         requested = params.get("protocolVersion")
         result = {"protocolVersion": requested if requested in VERSIONS else VERSIONS[0],
@@ -159,7 +182,7 @@ def handle(message, state):
         name = str(params.get("name", ""))
         if not name.startswith("kb_") or name[3:] not in COMMANDS:
             return _error(ident, -32602, f"Unknown tool: {name}")
-        arguments = params.get("arguments") or {}
+        arguments = params.get("arguments", {})
         if not isinstance(arguments, dict):
             return _error(ident, -32602, "arguments is not an object")
         code, text = call(name[3:], arguments)
@@ -178,6 +201,17 @@ def _version():
         return "0"
 
 
+def _response(message, state):
+    """Contain one request failure without terminating the transport."""
+    try:
+        return handle(message, state)
+    except Exception as error:
+        if isinstance(message, dict) and 'id' not in message:
+            return None
+        ident = message.get('id') if isinstance(message, dict) else None
+        return _error(ident, -32603, f"Internal error ({type(error).__name__}): {error}")
+
+
 def serve(source, sink):
     """Answer the messages of `source`, one JSON value per line, on `sink`."""
     state = {}
@@ -190,9 +224,11 @@ def serve(source, sink):
             responses = [_error(None, -32700, "Parse error")]
         else:
             batch = message if isinstance(message, list) else [message]
-            responses = [response for response in (handle(item, state) for item in batch)
+            if not batch:
+                batch = [None]
+            responses = [response for response in (_response(item, state) for item in batch)
                          if response is not None]
-            if isinstance(message, list) and responses:
+            if isinstance(message, list) and message and responses:
                 responses = [responses]
         for response in responses:
             sink.write(json.dumps(response, separators=(",", ":")) + "\n")

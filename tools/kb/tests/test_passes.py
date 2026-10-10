@@ -102,6 +102,13 @@ class PassesTest(PassesCase):
 
 
 class CheckCommandTest(PassesCase):
+    def setUp(self):
+        super().setUp()
+        self.write('tools/kb/config.toml', '[lock]\ntimeout = 2\n')
+        # The command boundary uses a real lock and hashes this fixture's inputs.
+        self.enterContext(mock.patch.object(cli.fingerprint, 'inputs', return_value=[
+            'a.txt', 'tools/kb/k.py', 'tools/kb/config.toml']))
+
     def test_changed_reports_the_checks_that_it_skips(self):
         with mock.patch.dict(cli.CHECKS, {"fake": self.check}, clear=True), \
                 contextlib.redirect_stdout(io.StringIO()) as out:

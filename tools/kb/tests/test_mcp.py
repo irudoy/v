@@ -1,6 +1,7 @@
 import io
 import json
 import unittest
+from unittest import mock
 
 from kb import cli, mcp
 
@@ -105,6 +106,41 @@ class ProtocolTest(unittest.TestCase):
             {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "Parse error"}},
             [{"jsonrpc": "2.0", "id": 2, "result": {}}],
         ])
+
+    def test_bad_calls_and_empty_batch_do_not_stop_the_following_ping(self):
+        bad = [
+            {"params": []}, {"params": None},
+            {"params": {"name": "kb_find", "arguments": {"words": 5}}},
+            {"params": {"name": "kb_find", "arguments": {"words": []}}},
+            {"params": {"name": "kb_path", "arguments": {"first": "a", "second": "b", "limit": True}}},
+            {"params": {"name": "kb_audit", "arguments": {"section": "levels"}}},
+            {"params": {"name": "kb_brief", "arguments": None}},
+            {"params": {"name": "kb_at", "arguments": {}}},
+        ]
+        for wrong in bad + [[]]:
+            with self.subTest(message=wrong), mock.patch.object(cli, "main") as command:
+                request = dict(jsonrpc="2.0", id=1, method="tools/call", **wrong) if isinstance(wrong, dict) else wrong
+                source = io.StringIO(json.dumps(request) + '\n' + json.dumps(dict(jsonrpc="2.0", id=2, method="ping")) + '\n')
+                sink = io.StringIO()
+                mcp.serve(source, sink)
+                failed, ping = map(json.loads, sink.getvalue().splitlines())
+                self.assertTrue("error" in failed or failed["result"]["isError"])
+                self.assertEqual(ping, dict(jsonrpc="2.0", id=2, result={}))
+                command.assert_not_called()
+
+    def test_unexpected_command_and_protocol_failures_are_contained(self):
+        requests = [dict(jsonrpc="2.0", id=1, method="tools/call", params=dict(name="kb_brief")),
+                    dict(jsonrpc="2.0", id=2, method="ping")]
+        for target in (cli, mcp):
+            attribute = "main" if target is cli else "_version"
+            if target is mcp:
+                requests[0] = dict(jsonrpc="2.0", id=1, method="initialize")
+            with mock.patch.object(target, attribute, side_effect=RuntimeError("probe failure")):
+                sink = io.StringIO()
+                mcp.serve(io.StringIO(''.join(json.dumps(item) + '\n' for item in requests)), sink)
+            failed, ping = map(json.loads, sink.getvalue().splitlines())
+            self.assertIn("probe failure", json.dumps(failed))
+            self.assertEqual(ping["result"], {})
 
 
 if __name__ == "__main__":
