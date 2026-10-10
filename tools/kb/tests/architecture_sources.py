@@ -23,9 +23,10 @@ def write_sources(root):
     Fixture specification evidence anchors these controlled identities; the
     source data carry no stock instruction or hardware claims.
     """
-    config = copy.deepcopy(repo.config())
+    config = copy.deepcopy(repo.config(repo.ROOT, {repo.OWNER_CONFIG: None}))
     config['writers']['review'] = []
     texts = {
+        Path('tools/kb/bench.toml'): 'stage = 6\nconverted = []\n',
         repo.CONFIG: ''.join(json.dumps(k) + ' = ' + _value(v) + '\n' for k, v in config.items()),
         repo.HOMOLOGY: '''[family.probe]
 kind = "exact-code"

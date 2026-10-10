@@ -11,9 +11,10 @@ import re
 import shlex
 import subprocess
 import sys
+import tomllib
 
-from kb import (answer, checks, compile, graph, guard, instance, l0, lock, passes, project,
-                read, refs, repo, sites, spec, store, suggest, vocab, write)
+from kb import (answer, catalog, checks, compile, family, graph, guard, instance, l0, lock, passes, project,
+                read, refs, repo, research, sites, spec, store, suggest, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -289,6 +290,10 @@ def command_brief(args, root=repo.ROOT):
 
 
 def command_gaps(args, root=repo.ROOT):
+    if args.catalog:
+        if args.feature:
+            raise KbError('gaps --catalog does not take --feature', code=2)
+        return _answer(args, 'gaps', lambda g: catalog.report(compile.cached(root), args.layout), root)
     return _answer(args, "gaps", lambda g: read.gaps(g, args.feature, args.layout, root), root)
 
 
@@ -301,7 +306,11 @@ def command_raw(args, root=repo.ROOT):
 
 
 def command_suggest(args, root=repo.ROOT):
-    return _answer(args, 'suggest', lambda g: suggest.blocks(g, args.layout, root), root)
+    if bool(args.blocks) == bool(args.ref):
+        raise KbError('suggest takes a reference or --blocks', code=2)
+    return _answer(args, 'suggest', lambda g: (
+        suggest.blocks(g, args.layout, root) if args.blocks
+        else suggest.symbols(g, args.ref, args.layout, root)), root)
 
 
 def baseline_tokens(steps, root=repo.ROOT):
@@ -360,6 +369,31 @@ def command_audit(args, root=repo.ROOT):
     return 0
 
 
+def command_prepare_research(args, root=repo.ROOT):
+    """Prepare a reviewable primary batch; knowledge and graph remain unchanged."""
+    target = Path(args.output).resolve()
+    allowed = ((root / 'tmp').resolve(), (root / repo.STATE).resolve())
+    if not any(target.is_relative_to(directory) for directory in allowed):
+        raise KbError('a prepared batch belongs under tmp/ or .kb/', code=2)
+    if target.exists():
+        raise KbError(f'{target}: a preparation artifact already exists', code=3)
+    with lock.held(root):
+        operations, inventory = research.operations(compile.cached(root), args.source_commit, root)
+        if not operations:
+            print('research: no unresolved prose needs transfer')
+            return 0
+        text = store.render_batch(operations)
+        if tomllib.loads(text) != {'op': operations}:
+            raise KbError('the prepared batch loses operation fields', code=3)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding='utf-8')
+    print(json.dumps({'batch': str(target.relative_to(root)), 'source_commit': args.source_commit,
+                      'inventory': inventory, 'operations': len(operations),
+                      'unresolved_statements': sum(row['statements'] for row in inventory),
+                      'knowledge_written': False, 'graph_changed': False}, sort_keys=True))
+    return 0
+
+
 def command_project(args, root=repo.ROOT):
     if args.check:
         found = project.write(root, args.paths, check=True)
@@ -405,6 +439,24 @@ def command_set(args, root=repo.ROOT):
     keys, unset = write.parse_assignments(args.assignments)
     return _write(args, [{"cmd": "set", "ref": args.ref, "layout": args.layout, "keys": keys,
                           "unset": unset}], root)
+
+
+def command_retire(args, root=repo.ROOT):
+    return _write(args, [{'cmd': 'retire', 'ref': args.ref}], root)
+
+
+def command_family(args, root=repo.ROOT):
+    metadata = None
+    if args.operation == 'new':
+        metadata = dict(kind=args.kind, mcu=args.mcu, flash_size=args.flash_size,
+                        software_ids=args.software_id)
+        if args.kind == 'exact-code':
+            if not args.calibration_region or not args.exact_range:
+                raise KbError('an exact-code family needs calibration region and exact ranges', code=2)
+            metadata.update(calibration_region=args.calibration_region, exact_ranges=args.exact_range)
+    print(family.apply(args.operation, args.family, args.image, args.layout, args.census,
+                       metadata, root=root, dry_run=args.dry_run, log=_stderr))
+    return 0
 
 
 def command_bind(args, root=repo.ROOT):
@@ -549,6 +601,12 @@ def build_parser():
                        help="compute and print one section; repeatable")
     audit.set_defaults(handler=command_audit)
 
+    preparation = commands.add_parser('prepare-research',
+        help='prepare a source-preserving unresolved-chain transfer batch without writing knowledge')
+    preparation.add_argument('source_commit', help='the complete immutable source commit')
+    preparation.add_argument('--output', required=True, help='a new TOML batch under tmp/ or .kb/')
+    preparation.set_defaults(handler=command_prepare_research)
+
     def reader(name, help_text, *positional, layout=True):
         command = commands.add_parser(name, help=help_text)
         for argument, argument_help in positional:
@@ -586,14 +644,16 @@ def build_parser():
         .set_defaults(handler=command_brief)
     gap = reader("gaps", "required meanings without a symbol, grouped by status")
     gap.add_argument("--feature", help="the meanings that one feature requires")
+    gap.add_argument('--catalog', action='store_true', help='parity acceptance and target status')
     gap.set_defaults(handler=command_gaps)
     reader("log", "the history of an entity through renames and redirects", reference,
            layout=False).set_defaults(handler=command_log)
     reader("raw", "the registry records of an entity", reference, layout=False) \
         .set_defaults(handler=command_raw)
-    candidates = reader('suggest', 'candidate blocks from calls and shared RAM', layout=False)
-    candidates.add_argument('--blocks', required=True, action='store_true')
-    candidates.add_argument('--layout', required=True, help='the layout of the call graph')
+    candidates = reader('suggest', 'candidate symbols by evidence channel or architecture blocks', layout=False)
+    candidates.add_argument('ref', nargs='?', help='the source symbol or meaning')
+    candidates.add_argument('--blocks', action='store_true')
+    candidates.add_argument('--layout', required=True, help='the target layout')
     candidates.set_defaults(handler=command_suggest)
 
     bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
@@ -732,6 +792,25 @@ def build_parser():
     move.set_defaults(handler=command_move)
     writer("apply", "a batch of write operations as one change",
            ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
+    writer('retire', 'make an unused owned entity inactive and reserve its names',
+           reference).set_defaults(handler=command_retire)
+    onboarding = commands.add_parser('family', help='record a family or image with a stock-bound census')
+    operations = onboarding.add_subparsers(dest='operation', required=True)
+    for name in ('new', 'add'):
+        command = operations.add_parser(name)
+        command.add_argument('family', help='the stable family id')
+        command.add_argument('--image', required=True, help='the registered target image')
+        command.add_argument('--layout', required=name == 'new', help='a new stable layout id')
+        command.add_argument('--census', required=True, help='the source-target census report under defs/')
+        command.add_argument('--dry-run', action='store_true')
+        if name == 'new':
+            command.add_argument('--kind', choices=('exact-code', 'near-code', 'distinct-code'), default='distinct-code')
+            command.add_argument('--mcu', required=True, choices=('SH7058', 'SH7059'))
+            command.add_argument('--flash-size', required=True, type=lambda text: int(text, 0))
+            command.add_argument('--software-id', action='append', required=True)
+            command.add_argument('--calibration-region')
+            command.add_argument('--exact-range', action='append')
+        command.set_defaults(handler=command_family)
 
     serve = commands.add_parser("mcp", help="serve the read commands and kb_apply over MCP "
                                 "on stdio")

@@ -18,9 +18,19 @@ to = "excellent-toucan/ram"
 effect = "converts"
 sign = "none"
 via = ["brawny-sheep/fn"]
-note = """
-Device-1 word (identifier 0x4000) received by 00040e6c; channel 2 gets (word \
->> 6) & 3, and a rejected word zeroes the channel bytes."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 1
+step_sha256 = "b0edffbeb847ccf1aedc03885542c2125e723c4ac9fae2f1562f86041a33e564"
+original = """
+{\"effect\":\"converts\",\"from\":\"divergent-koala/ram\",\"note\":\"Device-1 \
+word (identifier 0x4000) received by 00040e6c; channel 2 gets (word >> 6) & \
+3, and a rejected word zeroes the channel \
+bytes.\",\"sign\":\"none\",\"to\":\"excellent-toucan/ram\",\"via\":[\"brawny-sheep/fn\"]}"""
 
 [[step]]
 from = "excellent-toucan/ram"
@@ -28,9 +38,19 @@ to = "mauve-guillemot/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-Scheduler block copy ffff1114..ffff1193 -> ffff1094..ffff1113 at 0x20F56; \
-ffff109e and ffff109f are the bank-1 status bytes."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 2
+step_sha256 = "2a8f9bcc60e3524f012429ca7e48db86dab66b56d1d4c51b44454ecf1cee8e04"
+original = """
+{\"effect\":\"copies\",\"from\":\"excellent-toucan/ram\",\"note\":\"Scheduler \
+block copy ffff1114..ffff1193 -> ffff1094..ffff1113 at 0x20F56; ffff109e and \
+ffff109f are the bank-1 status \
+bytes.\",\"sign\":\"positive\",\"to\":\"mauve-guillemot/ram\",\"via\":[\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "mauve-guillemot/ram"
@@ -38,9 +58,19 @@ to = "magenta-nightingale/ram"
 effect = "integrates"
 sign = "none"
 via = ["cherubic-goose/fn"]
-note = """
-The counter increments with saturation on each evaluating pass with a bank \
-status byte equal to 1 and returns to zero otherwise."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 3
+step_sha256 = "c5e032027fd71e406d6b53e02d3c36a278727e106d6d3f677687425d3b32c68e"
+original = """
+{\"effect\":\"integrates\",\"from\":\"mauve-guillemot/ram\",\"note\":\"The \
+counter increments with saturation on each evaluating pass with a bank \
+status byte equal to 1 and returns to zero \
+otherwise.\",\"sign\":\"none\",\"to\":\"magenta-nightingale/ram\",\"via\":[\"cherubic-goose/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_duty_b1_word/ram"
@@ -48,9 +78,19 @@ to = "magenta-nightingale/ram"
 effect = "gates"
 sign = "none"
 via = ["cherubic-goose/fn"]
-note = """
-Evaluation needs duty word ffff1aac + 2b at zero, so the pair judges the \
-de-energized output; a non-zero duty zeroes the counter."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 4
+step_sha256 = "0d8cc73ccbd3b1481e62ba79748c9b1b190d0fb82965efc93a7dfd82d95e20f3"
+original = """
+{\"effect\":\"gates\",\"from\":\"exhaust_cvtc_duty_b1_word/ram\",\"note\":\"Evaluation \
+needs duty word ffff1aac + 2b at zero, so the pair judges the de-energized \
+output; a non-zero duty zeroes the \
+counter.\",\"sign\":\"none\",\"to\":\"magenta-nightingale/ram\",\"via\":[\"cherubic-goose/fn\"]}"""
 
 [[step]]
 from = "private-groundhog/ram"
@@ -58,9 +98,19 @@ to = "magenta-nightingale/ram"
 effect = "gates"
 sign = "none"
 via = ["paper-hippo/fn", "cherubic-goose/fn"]
-note = """
-The 0008f168 enable needs ffff1108 above 0x89 and at most 0xC8, ffff41c8 bit \
-7 clear, and ROM8[0x186DE] bit 1 for bank 1."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 5
+step_sha256 = "3af88f4d2a300b82bb4cd79a933c36d4d15cc1c1354fd5ff4221e15c707749c4"
+original = """
+{\"effect\":\"gates\",\"from\":\"private-groundhog/ram\",\"note\":\"The \
+0008f168 enable needs ffff1108 above 0x89 and at most 0xC8, ffff41c8 bit 7 \
+clear, and ROM8[0x186DE] bit 1 for bank \
+1.\",\"sign\":\"none\",\"to\":\"magenta-nightingale/ram\",\"via\":[\"paper-hippo/fn\",\"cherubic-goose/fn\"]}"""
 
 [[step]]
 from = "magenta-nightingale/ram"
@@ -68,7 +118,18 @@ to = "spiffy-pronghorn/ram"
 effect = "compares"
 sign = "none"
 via = ["cherubic-goose/fn"]
-note = "A count of ROM8[0x8B00] = 10 sets result bit b of ffff358d."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 6
+step_sha256 = "46e7721af65e6e7696c325a697bdd7ad9f0843ee5acaa4f5724b0aa1408b01da"
+original = """
+{\"effect\":\"compares\",\"from\":\"magenta-nightingale/ram\",\"note\":\"A \
+count of ROM8[0x8B00] = 10 sets result bit b of \
+ffff358d.\",\"sign\":\"none\",\"to\":\"spiffy-pronghorn/ram\",\"via\":[\"cherubic-goose/fn\"]}"""
 
 [[step]]
 from = "magenta-nightingale/ram"
@@ -76,9 +137,19 @@ to = "heretic-aardwark/ram"
 effect = "compares"
 sign = "none"
 via = ["cherubic-goose/fn"]
-note = """
-A count of ROM8[0x8B02] = 100 sets judged latch bit b; evaluation stops \
-while the latch bit is set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 7
+step_sha256 = "1f05b875d1de112978a31fdbcba2e7555c0229d504bcdb0d5c06da091be20070"
+original = """
+{\"effect\":\"compares\",\"from\":\"magenta-nightingale/ram\",\"note\":\"A \
+count of ROM8[0x8B02] = 100 sets judged latch bit b; evaluation stops while \
+the latch bit is \
+set.\",\"sign\":\"none\",\"to\":\"heretic-aardwark/ram\",\"via\":[\"cherubic-goose/fn\"]}"""
 
 [[step]]
 from = "spiffy-pronghorn/ram"
@@ -86,9 +157,19 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = ["paper-hippo/fn", "prehistoric-skua/fn"]
-note = """
-The 0008f168 routing calls 0008c2d2: byte 1 bit 7 of ffff5718 + 3*0x43 \
-(P0078) or 0x44 (P0084), bit 4 on a fresh fault."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 8
+step_sha256 = "e783f36eb9a44d2e7882ff4ad9b1c01686628b92ce65a6ebeeb7e58547682c73"
+original = """
+{\"effect\":\"stores\",\"from\":\"spiffy-pronghorn/ram\",\"note\":\"The \
+0008f168 routing calls 0008c2d2: byte 1 bit 7 of ffff5718 + 3*0x43 (P0078) \
+or 0x44 (P0084), bit 4 on a fresh \
+fault.\",\"sign\":\"none\",\"to\":\"hallowed-malkoha/ram\",\"via\":[\"paper-hippo/fn\",\"prehistoric-skua/fn\"]}"""
 
 [[step]]
 from = "heretic-aardwark/ram"
@@ -96,9 +177,19 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = ["paper-hippo/fn", "naughty-oxpecker/fn"]
-note = """
-0008f168 calls dispatcher 0007d8b8 with index 0x43 or 0x44 while the judged \
-latch bit is set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 9
+step_sha256 = "e797384be4fe801b1227ca130d9602d0b2a692c9098b28f0bac97ba08127576c"
+original = """
+{\"effect\":\"stores\",\"from\":\"heretic-aardwark/ram\",\"note\":\"0008f168 \
+calls dispatcher 0007d8b8 with index 0x43 or 0x44 while the judged latch bit \
+is \
+set.\",\"sign\":\"none\",\"to\":\"hallowed-malkoha/ram\",\"via\":[\"paper-hippo/fn\",\"naughty-oxpecker/fn\"]}"""
 
 [[step]]
 from = "hallowed-malkoha/ram"
@@ -109,16 +200,36 @@ via = [
     "diagnostic_record_byte1_bit7_predicate/fn",
     "boisterous-cuttlefish/fn",
 ]
-note = """
-A stored fault of 0x43 or 0x44 (00025e20, byte 1 bit 7) clears exhaust-VTC \
-electrical enable ffff248b bit 0 in 000bf630."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 10
+step_sha256 = "b6666ee36273fc4601c3aa6ccdabf24d4a43b60938b7d049e39bbe430e3bf289"
+original = """
+{\"effect\":\"gates\",\"from\":\"hallowed-malkoha/ram\",\"note\":\"A stored \
+fault of 0x43 or 0x44 (00025e20, byte 1 bit 7) clears exhaust-VTC electrical \
+enable ffff248b bit 0 in \
+000bf630.\",\"sign\":\"none\",\"to\":\"onyx-jerboa/ram\",\"via\":[\"diagnostic_record_byte1_bit7_predicate/fn\",\"boisterous-cuttlefish/fn\"]}"""
 
 [[step]]
 from = "hallowed-malkoha/ram"
 to = "khaki-narwhal/fn"
 effect = "transmits"
 sign = "none"
-note = """
-0003614c and 00036e2c publish the code while attribute bit 7 is set (0x00a0 \
-for P0078/P0084) and record byte 2 has bit 2 or 3."""
 specs = ["defs/README.md"]
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc_magnet_circuit.toml"
+source_sha256 = "527f21efcc8948f53d5bd39b611677b7e807a87d89cbcf05b526395e2f69bc23"
+order = 11
+step_sha256 = "ccbee716a6d320c5babe03a3c4c335bd8a5e103529fc39ffd9f016063d94c8dc"
+original = """
+{\"effect\":\"transmits\",\"from\":\"hallowed-malkoha/ram\",\"note\":\"0003614c \
+and 00036e2c publish the code while attribute bit 7 is set (0x00a0 for \
+P0078/P0084) and record byte 2 has bit 2 or \
+3.\",\"sign\":\"none\",\"specs\":[\"defs/README.md\"],\"to\":\"khaki-narwhal/fn\"}"""

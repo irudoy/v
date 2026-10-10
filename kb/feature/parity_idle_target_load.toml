@@ -1,0 +1,62 @@
+title = "Idle target load"
+summary = "Competitor inventory: Idle Target #1a - ??; Idle Target Low."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 122
+source = "refs/vendor/catalog.csv"
+sha256 = "45449ebd32efa4d5d393e2544ba2ea0f833de7328fce1f0e5138aca3108ef0d7"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-target-load\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle Target #1a - \
+??\",\"note\":\"verbatim: \\\"??\\\" is ProECU's own uncertainty \
+marker\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 341
+source = "refs/vendor/catalog.csv"
+sha256 = "35de5cbc9b0fdaa6945516263bd369116e05e22a2fc04d4fbcf02ef38a9550b6"
+original = """
+{\"axis_x\":\"Engine Coolant \
+Temperature\",\"axis_y\":\"\",\"concept\":\"idle-target-load\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Idle \
+Target Low\",\"note\":\"The axis is static. Target under additional HVAC, \
+electrical, and power-steering-pump load. ProECU does not name \
+it.\",\"origin\":\"factory\",\"output\":\"target idle \
+speed\",\"section\":\"Idle\",\"source\":\"Idle / Idle Target \
+Low\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,52 @@
+title = "Throttle Valve Opening Target 1"
+summary = "Competitor inventory: Throttle Valve Opening Target 1."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 329
+source = "refs/vendor/catalog.csv"
+sha256 = "ef65074b5da921518a399489aa39540b64a6946717eba8707b02b37348557a4e"
+original = """
+{\"axis_x\":\"Throttle Opening \
+(degrees)\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Throttle \
+Valve Opening Target 1\",\"note\":\"Works with Throttle Opening Area of Duct \
+Area Calculation; UpRev recommends preserving the ratio between \
+them.\",\"origin\":\"factory\",\"output\":\"target throttle \
+opening\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic \
+Throttle / Throttle Valve Opening Target\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

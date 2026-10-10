@@ -9,12 +9,13 @@ import hashlib
 import importlib.util
 import json
 import math
+from pathlib import Path
 import re
 import sys
 from types import SimpleNamespace
 
 import pytest
-from kb import compile, derive, repo, sh2
+from kb import compile, derive, repo, research, sh2, store
 from kb.arithmetic import Grammar
 from kb.model import SymbolKey
 
@@ -205,6 +206,25 @@ def normalized(model, value):
     if isinstance(value, dict):
         return {key: normalized(model, item) for key, item in value.items() if item is not None}
     return value
+
+
+def preserved_normalized(model, value):
+    """Bind an unchanged held step to its exact immutable unresolved source."""
+    if not isinstance(value, dict) or 'research' not in value:
+        return normalized(model, value)
+    record = value['research']
+    path, order = record['source_path'], record['order']
+    source = research.historical_source(model.root, record['source_commit'], path)
+    document = store.load(model.root, Path(path), model.overlay)
+    current = document['step'][order - 1]
+    assert current['research'] == record
+    failure = research.validate(record, current, source, Grammar(model.config), path, order,
+                                model=model, home=document.get('home', '7mfk'))
+    assert failure is None, failure
+    original = json.loads(record['original'])
+    held = {key: item for key, item in value.items() if key != 'research'}
+    held['note'] = original['note']
+    return normalized(model, held)
 
 
 def stored_value(value):

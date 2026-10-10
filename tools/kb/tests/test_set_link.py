@@ -34,7 +34,11 @@ def baseline(tmp_path_factory):
         'dependency'].append({**DEP, 'to': STATE, 'end': 'to'})
     overlay = {path: store.render(path.parent.name, doc) for path, doc in docs.items()}
     model = compile.build(root, overlay, order=(file_adapter,))
-    assert len(write.checks.CHECKS) == 16
+    assert set(write.checks.CHECKS) == {
+        'schema', 'canonical', 'names', 'references', 'symbols', 'homology',
+        'links', 'widths', 'image-bytes', 'statuses', 'writers', 'fields',
+        'levels', 'ledgers', 'blocks', 'chains', 'catalog', 'code', 'source-bindings',
+    }
     assert write._issues(model) == {}
     frozen = convert.dump(model)
     yield model, docs

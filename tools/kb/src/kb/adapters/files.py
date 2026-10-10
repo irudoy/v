@@ -41,7 +41,7 @@ from kb.model import MEANING_REF, Ref
 
 ADDRESS_KEYS = ("layout", "address", "name", "former", "evidence")
 MEANING_ARRAYS = ("symbol", "status", "link", "analog")
-TABLE_KEYS = ("editor", "logparam", "diagnostic", "ledger")
+TABLE_KEYS = ("editor", "logparam", "diagnostic", "ledger", "source")
 # Keys of a feature target whose entries hold a symbol reference: tables of
 # named entries, arrays of entries, tables of references, and lists of meaning
 # references, which name the home symbol of their meaning.
@@ -73,6 +73,12 @@ def declare(b, root):
             document = store.load(root, path, b.overlay)
         except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as error:
             b.issue("schema", src, f"{name}/{kind}", f"no TOML: {error}")
+            continue
+        if 'retired' in document and type(document['retired']) is not bool:
+            b.issue('schema', src, f'{name}/{kind}', 'retired must be boolean')
+        if document.get('retired') is True:
+            _unknown(b, src, f'{name}/{kind}', document, store.schema(kind))
+            b.stash.setdefault('retired', []).append((kind, name, document, src))
             continue
         if kind in vocab.MEANING_KINDS:
             _unknown(b, src, f"{name}/{kind}", document, store.schema(kind))
@@ -198,6 +204,8 @@ def _meaning(b, kind, name, document, src):
     b.props(group, _keys(props, src), src)
     if document.get("ledger"):
         b.stash.setdefault("ledger_rows", []).append((kind, name, document["ledger"], src))
+    for item in document.get('source', ()):
+        b.table(group, 'source', item, src)
     for binding in document.get("diagnostic", ()):
         b.table(group, "diagnostic", {**binding, "evidence": _evidence(
             binding.get("evidence", ()), src)}, src)
@@ -338,6 +346,8 @@ def _architecture(b, kind, slug, document, src):
                              'effect': step.get('effect'), 'sign': step.get('sign'),
                              'via': [Ref(ref, src, home, strict=True) for ref in via],
                              'note': step.get('note'), 'specs': step.get('specs')})
+        if 'research' in step:
+            entity.steps[-1]['research'] = step['research']
 
 
 def _feature(b, slug, document, src):

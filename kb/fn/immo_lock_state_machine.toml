@@ -1,0 +1,18 @@
+note = [
+    """
+dispatcher: reset-clear 000bf8e0 -> setter 000bf0ac -> DTC monitors \
+000bf53a/000bf756; controls reset gate 0xFFFEB8F7&2""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000bef44"
+
+[symbol.curated]
+order = 19
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bef44"

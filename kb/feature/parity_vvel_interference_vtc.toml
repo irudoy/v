@@ -1,0 +1,65 @@
+title = "Vvel interference vtc"
+summary = """
+Competitor inventory: DoNotAdjust: VTC Max Advance by VVEL CS Angle; VVEL \
+Intake Phasing."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 48
+source = "refs/vendor/catalog.csv"
+sha256 = "83fd175f9ed6ec1c9d207e470e97d52819467d8b4a0c1b4adffd4b491f2a66d6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-interference-vtc\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//DoNotAdjust\",\"level\":\"\",\"name\":\"DoNotAdjust: VTC Max Advance \
+by VVEL CS \
+Angle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 354
+source = "refs/vendor/catalog.csv"
+sha256 = "b457d83977e734c08100c14091b6ea1476681f6f22621fe09a8a24ca1e282ee7"
+original = """
+{\"axis_x\":\"VVEL \
+Duration\",\"axis_y\":\"\",\"concept\":\"vvel-interference-vtc\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Intake Phasing\",\"note\":\"The angle requested by Cam Advance WOT must not \
+exceed this table value. ProECU calls this 'VTC Max Advance by VVEL CS \
+Angle'.\",\"origin\":\"factory\",\"output\":\"maximum intake-cam \
+advance\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Intake \
+Phasing\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

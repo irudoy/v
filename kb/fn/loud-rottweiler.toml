@@ -1,3 +1,17 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Producers of the transmit words"]
+anchor = "FUN_0004D3CE"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_0004D3CE"
+
 [[symbol]]
 layout = "jk78c"
 address = "0004d3ce"

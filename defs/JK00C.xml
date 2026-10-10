@@ -1281,13 +1281,17 @@
 
     <!-- 0x12E12  16x6 uint16  map [code]
          scaling x*0.0015259 knock strength [candidate]
-         00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points
-         along axis 0x15340, and stores the threshold for comparison in 0004a238. Stock rows 3
-         and 5 are all 0xffff. Value 0xffff is the uint16 upper bound and makes exceeding the
-         threshold practically impossible. The catalog identifies the rows as cylinders, but
-         exact code does not establish their physical cylinder or sensor order. Definition
-         address projected from JK08A 0001108e through JK08A-JK00C.definition-addresses.csv:
-         target literals and reviewed homologous consumer topology.
+         On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16
+         cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its
+         bounded domain is 1 <= c <= 6; the accessor has no channel guard. JK08A stock rows 3
+         and 5 contain raw threshold 65535 at every cell. The selected raw word enters
+         comparison in 0004a238; metric production, comparison outcome and count publication are
+         outside the bounded lookup proof. Both neighboring cells are loaded, including 0001114e
+         on the last row endpoint. The catalog identifies rows as cylinders, but exact lookup
+         code does not establish physical cylinder or sensor order. The engineering threshold
+         scale remains candidate. Definition address projected from JK08A 0001108e through
+         JK08A-JK00C.definition-addresses.csv: target literals and reviewed homologous consumer
+         topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Knock Threshold by Evaluator Channel"
            category="Ignition Timing//Knock Control//Thresholds" storagetype="uint16"

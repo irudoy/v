@@ -1,0 +1,63 @@
+title = "Cranking initial"
+summary = """
+Competitor inventory: Cranking Fuel Injector Pulsewidth Initial; Cranking \
+Enrichment Initial Value."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 73
+source = "refs/vendor/catalog.csv"
+sha256 = "17e92f0f9d51f148baf43f047250e19257411770bb71de19f169a1adbbd0c9b9"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-initial\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth \
+Initial\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 300
+source = "refs/vendor/catalog.csv"
+sha256 = "25d4297affe3e387d7bd55552020708b736a3fe8577c585eec7b7e3b1663f5bb"
+original = """
+{\"axis_x\":\"coolant \
+temp\",\"axis_y\":\"\",\"concept\":\"cranking-initial\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Cranking \
+Enrichment Initial Value\",\"note\":\"The first injection event during \
+cranking. The axis is static. Incorrect calibration causes \
+P0300.\",\"origin\":\"factory\",\"output\":\"raw injector pulse \
+width\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Cranking Enrichment Initial Value\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -15,12 +15,11 @@
 import os
 import sys
 
-from neo4j import GraphDatabase
+from kb import reader
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mapkit import rom as romkit          # noqa: E402 - adjacent, uninstalled package
 
-BOLT = "bolt://localhost:7687"
 
 
 def hexa(a):
@@ -147,8 +146,7 @@ def main():
         img = romkit.load(rom)
     except ValueError as e:
         sys.exit(str(e))
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
-    with driver.session() as s:
+    with reader.session() as s:
         for a in args:
             addr = "%08x" % int(a, 16)
             m, x = fetch(s, rom, addr)
@@ -167,7 +165,6 @@ def main():
                     print("  also an axis for other maps:")
                 show_axis(dict(x["x"]), img)
             print()
-    driver.close()
 
 
 if __name__ == "__main__":

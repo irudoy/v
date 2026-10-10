@@ -1,0 +1,48 @@
+title = "Fuel Rail Pressure Correction by Engine Load"
+summary = "Competitor inventory: Fuel Rail Pressure Correction by Engine Load."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 82
+source = "refs/vendor/catalog.csv"
+sha256 = "2ec7f5b872a4dac2eceaafdd436efe9eb3790edf8ecd15d7b29085dc2aa42a6a"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Injectors\",\"level\":\"\",\"name\":\"Fuel \
+Rail Pressure Correction by Engine \
+Load\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

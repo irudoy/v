@@ -1,0 +1,16 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["HCAN0 scheduling and dispatch", "Received signal placement"]
+anchor = "FUN_000EE138"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ee138"
+name = "cheerful-bullmastiff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ee138"

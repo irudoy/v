@@ -18,9 +18,19 @@ to = "golden-rhino/ram"
 effect = "indexes"
 sign = "none"
 via = ["victorious-catfish/fn"]
-note = """
-RPM/50 snapshot is the row key of 0xB43A, 0xB53A, and 0xAB5A; the sign \
-follows the surface shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 1
+step_sha256 = "cee096b4c978da8903ec8ad8347a5fc3c736563d68cecf4c041e49bb530b7c94"
+original = """
+{\"effect\":\"indexes\",\"from\":\"tough-earwig/ram\",\"note\":\"RPM/50 \
+snapshot is the row key of 0xB43A, 0xB53A, and 0xAB5A; the sign follows the \
+surface \
+shape.\",\"sign\":\"none\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
 from = "normalized_load/ram"
@@ -28,9 +38,18 @@ to = "golden-rhino/ram"
 effect = "indexes"
 sign = "none"
 via = ["victorious-catfish/fn"]
-note = """
-Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three \
-intake surfaces."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 2
+step_sha256 = "99a4907f8c179711c85b67d3fb9f441f0773b76ad1ba9df6b7d18eb65973280b"
+original = """
+{\"effect\":\"indexes\",\"from\":\"normalized_load/ram\",\"note\":\"Normalized \
+BFS min(255, ffff1026*128/0x6A5A) is the column key of the three intake \
+surfaces.\",\"sign\":\"none\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
 from = "intake_cvtc_target/tbl"
@@ -38,9 +57,18 @@ to = "golden-rhino/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["victorious-catfish/fn"]
-note = """
-base_main = interpolate_u8(0xB43A, rpm50, load); 16x16, (raw-128)*0.5 degCA, \
-advance positive."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 3
+step_sha256 = "23f73c08240563d948ac95eb3b94816700bde10c9c784641b9af83b2efbee204"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"intake_cvtc_target/tbl\",\"note\":\"base_main \
+= interpolate_u8(0xB43A, rpm50, load); 16x16, (raw-128)*0.5 degCA, advance \
+positive.\",\"sign\":\"positive\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
 from = "humongous-skunk/tbl"
@@ -48,9 +76,19 @@ to = "golden-rhino/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["victorious-catfish/fn"]
-note = """
-With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); \
-otherwise main = base_main."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 4
+step_sha256 = "5e280d9a167dc77111b5ba3f024d98f1a085df14a344244e07938d2ae4afb3b3"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"humongous-skunk/tbl\",\"note\":\"With \
+ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); otherwise \
+main = \
+base_main.\",\"sign\":\"negative\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
 from = "cunning-jackrabbit/tbl"
@@ -58,7 +96,18 @@ to = "flawless-raccoon/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["victorious-catfish/fn"]
-note = "cold = interpolate_u8(0xB53A, rpm50, load); 8x8 over the same keys."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 5
+step_sha256 = "fedb98fd29adeef3a8bd185fb476ea30948872a1daefe2b420e3b77da493cc77"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"cunning-jackrabbit/tbl\",\"note\":\"cold \
+= interpolate_u8(0xB53A, rpm50, load); 8x8 over the same \
+keys.\",\"sign\":\"positive\",\"to\":\"flawless-raccoon/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
 from = "golden-rhino/ram"
@@ -66,9 +115,19 @@ to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "positive"
 via = ["radiant-cuckoo/fn"]
-note = """
-Raw coolant > 131 selects main; 106..131 blends cold + \
-trunc0((c-106)*(main-cold)/25); mode, rate, and offset logic follow."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 6
+step_sha256 = "d9c4c87756a1a5d9e13bf7bfecdff52b42766326765682f97f44f115c2c4be50"
+original = """
+{\"effect\":\"selects\",\"from\":\"golden-rhino/ram\",\"note\":\"Raw coolant \
+> 131 selects main; 106..131 blends cold + trunc0((c-106)*(main-cold)/25); \
+mode, rate, and offset logic \
+follow.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
 from = "flawless-raccoon/ram"
@@ -76,9 +135,18 @@ to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "positive"
 via = ["radiant-cuckoo/fn"]
-note = """
-Raw coolant <= 106 selects cold; the weight of cold falls from 1 to 0 across \
-106..131."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 7
+step_sha256 = "8e10df2bbdd44c9a3cb080c5a98172d6542ba9fa2782bef1afb1697decc8dc13"
+original = """
+{\"effect\":\"selects\",\"from\":\"flawless-raccoon/ram\",\"note\":\"Raw \
+coolant <= 106 selects cold; the weight of cold falls from 1 to 0 across \
+106..131.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
 from = "raspberry-dragon/ram"
@@ -86,9 +154,18 @@ to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "none"
 via = ["radiant-cuckoo/fn"]
-note = """
-Raw coolant snapshot chooses cold, blend, or main; the sign follows main - \
-cold."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 8
+step_sha256 = "46d2b9a013c897f6c3384cebd4a120dd4eab3f5062f0e36d5d9f34bf0e456bf8"
+original = """
+{\"effect\":\"selects\",\"from\":\"raspberry-dragon/ram\",\"note\":\"Raw \
+coolant snapshot chooses cold, blend, or main; the sign follows main - \
+cold.\",\"sign\":\"none\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
 from = "crimson-crane/ram"
@@ -96,9 +173,19 @@ to = "intake_cvtc_target/ram"
 effect = "gates"
 sign = "none"
 via = ["radiant-cuckoo/fn"]
-note = """
-Bit 6 clear stores neutral 0x80 unless ffff248b bit 1 and IOLID 0x19 test \
-bit ffff41fa bit 0 are both set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 9
+step_sha256 = "53f123e7aa0e520789e1eb961ed285f6ef12eb1ff07cc8a41600ae6941f6fb0b"
+original = """
+{\"effect\":\"gates\",\"from\":\"crimson-crane/ram\",\"note\":\"Bit 6 clear \
+stores neutral 0x80 unless ffff248b bit 1 and IOLID 0x19 test bit ffff41fa \
+bit 0 are both \
+set.\",\"sign\":\"none\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
 from = "gainful-tarsier/ram"
@@ -106,9 +193,19 @@ to = "intake_cvtc_target/ram"
 effect = "overrides"
 sign = "positive"
 via = ["radiant-cuckoo/fn"]
-note = """
-With ffff24a7 bit 1 set the target continues from idle source ffff1553; with \
-ffff247b bit 1 set a rise climbs one count per countdown."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 10
+step_sha256 = "3ae90cf2410fc415518d2ff5dada6e06e31c1ed49a5d3cefbc51484145828cf1"
+original = """
+{\"effect\":\"overrides\",\"from\":\"gainful-tarsier/ram\",\"note\":\"With \
+ffff24a7 bit 1 set the target continues from idle source ffff1553; with \
+ffff247b bit 1 set a rise climbs one count per \
+countdown.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
 from = "thankful-woodlouse/tbl"
@@ -116,9 +213,19 @@ to = "gainful-tarsier/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["amphibian-sponge/fn"]
-note = """
-S = interpolate_u8(0x122EA over axis 0x12F66, ffff11ae); ffff1553 = \
-clamp_u8(128 + trunc0((S-128)*W/128))."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 11
+step_sha256 = "9c8c525a302b4b43b550ae8bf685243b3a85420492718c0ba6961866a25eb9e4"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"thankful-woodlouse/tbl\",\"note\":\"S = \
+interpolate_u8(0x122EA over axis 0x12F66, ffff11ae); ffff1553 = clamp_u8(128 \
++ \
+trunc0((S-128)*W/128)).\",\"sign\":\"positive\",\"to\":\"gainful-tarsier/ram\",\"via\":[\"amphibian-sponge/fn\"]}"""
 
 [[step]]
 from = "stoic-ladybug/tbl"
@@ -126,9 +233,19 @@ to = "gainful-tarsier/ram"
 effect = "multiplies"
 sign = "none"
 via = ["amphibian-sponge/fn"]
-note = """
-W = 0x122F2 by coolant index ffff106f, 0..128; the sign of the product \
-follows S - 128."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 12
+step_sha256 = "1c88d969c635fce177055ff74cc8783b78d539228a8417a541f4eb26867e4535"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"stoic-ladybug/tbl\",\"note\":\"W = \
+0x122F2 by coolant index ffff106f, 0..128; the sign of the product follows S \
+- \
+128.\",\"sign\":\"none\",\"to\":\"gainful-tarsier/ram\",\"via\":[\"amphibian-sponge/fn\"]}"""
 
 [[step]]
 from = "capable-mamba/reg"
@@ -136,9 +253,19 @@ to = "evasive-degu/ram"
 effect = "converts"
 sign = "positive"
 via = ["quick-mantis/fn"]
-note = """
-GR1F: phase = 20*ffff13b2 + floor(20*(GR1F - ffff158a)/ffff22bc) - 60 or - \
-20, stored while ffff13c8 is 2, 4, 6; 0.5 degCA."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 13
+step_sha256 = "307c2f3de1aeb49dc4e3640c5a888ca3a2482ed5814bdce20557b85d75494f53"
+original = """
+{\"effect\":\"converts\",\"from\":\"capable-mamba/reg\",\"note\":\"GR1F: \
+phase = 20*ffff13b2 + floor(20*(GR1F - ffff158a)/ffff22bc) - 60 or - 20, \
+stored while ffff13c8 is 2, 4, 6; 0.5 \
+degCA.\",\"sign\":\"positive\",\"to\":\"evasive-degu/ram\",\"via\":[\"quick-mantis/fn\"]}"""
 
 [[step]]
 from = "inescapable-bullfinch/reg"
@@ -146,9 +273,19 @@ to = "portable-dachshund/ram"
 effect = "converts"
 sign = "positive"
 via = ["lovely-cuttlefish/fn"]
-note = """
-GR1E forms the second intake edge phase with the same arithmetic while event \
-state ffff13c8 is 1, 3, or 5."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 14
+step_sha256 = "d39769fbb2da08af94f7fb54038742b1b51698fa76150103a07294d6bbbed44e"
+original = """
+{\"effect\":\"converts\",\"from\":\"inescapable-bullfinch/reg\",\"note\":\"GR1E \
+forms the second intake edge phase with the same arithmetic while event \
+state ffff13c8 is 1, 3, or \
+5.\",\"sign\":\"positive\",\"to\":\"portable-dachshund/ram\",\"via\":[\"lovely-cuttlefish/fn\"]}"""
 
 [[step]]
 from = "evasive-degu/ram"
@@ -156,9 +293,19 @@ to = "intake_cvtc_actual_b1/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["hallowed-chameleon/fn"]
-note = """
-ffff2442 = clamp_u8(0x80 + ffff4799 - ffff22cc): an edge earlier than the \
-rest edge reads above 0x80; DID 0x1135."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 15
+step_sha256 = "d931b5911ec7250b2da44f271d9f317a0ff6969f86cfbb20d17a68e3368ccd9a"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"evasive-degu/ram\",\"note\":\"ffff2442 \
+= clamp_u8(0x80 + ffff4799 - ffff22cc): an edge earlier than the rest edge \
+reads above 0x80; DID \
+0x1135.\",\"sign\":\"negative\",\"to\":\"intake_cvtc_actual_b1/ram\",\"via\":[\"hallowed-chameleon/fn\"]}"""
 
 [[step]]
 from = "portable-dachshund/ram"
@@ -166,9 +313,18 @@ to = "intake_cvtc_actual_b2/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["hallowed-chameleon/fn"]
-note = """
-ffff2443 = clamp_u8(0x80 + ffff479a - ffff22cd), the same unit and sign as \
-ffff2442."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 16
+step_sha256 = "a161e749d6e669983d79fea34b64244ddfca374f77505654ee7f6ce7723c334c"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"portable-dachshund/ram\",\"note\":\"ffff2443 \
+= clamp_u8(0x80 + ffff479a - ffff22cd), the same unit and sign as \
+ffff2442.\",\"sign\":\"negative\",\"to\":\"intake_cvtc_actual_b2/ram\",\"via\":[\"hallowed-chameleon/fn\"]}"""
 
 [[step]]
 from = "intake_cvtc_duty_b1/ram"
@@ -176,9 +332,19 @@ to = "intake_cvtc_duty_command_b1/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-000BE814 stores the live byte at ffff23bc+0x84; the 140-byte copy ffff23bc \
--> ffff2330 at 0x21318 latches it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 17
+step_sha256 = "dd78c686770e0b44a3c05e3f4c604d5e2cc8f990b2375df01f16e25d43f43498"
+original = """
+{\"effect\":\"copies\",\"from\":\"intake_cvtc_duty_b1/ram\",\"note\":\"000BE814 \
+stores the live byte at ffff23bc+0x84; the 140-byte copy ffff23bc -> \
+ffff2330 at 0x21318 latches \
+it.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_duty_command_b1/ram\",\"via\":[\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "intake_cvtc_duty_b2/ram"
@@ -186,9 +352,19 @@ to = "intake_cvtc_duty_command_b2/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-The same block copy latches the second live cell; the bank order follows the \
-adjacent-pair convention, not code."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 18
+step_sha256 = "31dff6c8ffd000faa9d21bd7afb6a9e52b65cf8664aa560da23753ce7d642272"
+original = """
+{\"effect\":\"copies\",\"from\":\"intake_cvtc_duty_b2/ram\",\"note\":\"The \
+same block copy latches the second live cell; the bank order follows the \
+adjacent-pair convention, not \
+code.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_duty_command_b2/ram\",\"via\":[\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "intake_cvtc_duty_command_b1/ram"
@@ -196,9 +372,19 @@ to = "stalwart-ape/reg"
 effect = "converts"
 sign = "positive"
 via = ["smart-chicken/fn"]
-note = """
-BFR7B = u8*ROM8[0x8DFC]*39/80, duty = raw*39/100 percent of CYLR7B; ffff4247 \
-bit 0 forces 825 (20 percent)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 19
+step_sha256 = "cffb1ed10020c85b615a86a5ab6a416d1a63b01f2e28f8929395f9815dbc1d5c"
+original = """
+{\"effect\":\"converts\",\"from\":\"intake_cvtc_duty_command_b1/ram\",\"note\":\"BFR7B \
+= u8*ROM8[0x8DFC]*39/80, duty = raw*39/100 percent of CYLR7B; ffff4247 bit 0 \
+forces 825 (20 \
+percent).\",\"sign\":\"positive\",\"to\":\"stalwart-ape/reg\",\"via\":[\"smart-chicken/fn\"]}"""
 
 [[step]]
 from = "intake_cvtc_duty_command_b2/ram"
@@ -206,7 +392,18 @@ to = "outrageous-pug/reg"
 effect = "converts"
 sign = "positive"
 via = ["smart-chicken/fn"]
-note = "BFR7A = u8*ROM8[0x8DFC]*39/80; ffff4247 bit 0 forces 1238 (30 percent)."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 20
+step_sha256 = "31410351360e927659a55db93336578d9a75690b1447adbd64a42e043a9758bf"
+original = """
+{\"effect\":\"converts\",\"from\":\"intake_cvtc_duty_command_b2/ram\",\"note\":\"BFR7A \
+= u8*ROM8[0x8DFC]*39/80; ffff4247 bit 0 forces 1238 (30 \
+percent).\",\"sign\":\"positive\",\"to\":\"outrageous-pug/reg\",\"via\":[\"smart-chicken/fn\"]}"""
 
 [[step]]
 from = "imaginary-labradoodle/tbl"
@@ -214,7 +411,18 @@ to = "lime-tuna/reg"
 effect = "scales"
 sign = "positive"
 via = ["striped-tiger/fn"]
-note = "CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts, the intake PWM period."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 21
+step_sha256 = "fda97a0a109e00fa373382a11b70ec4fcfb76e53eb1ed732257bd48a685ea526"
+original = """
+{\"effect\":\"scales\",\"from\":\"imaginary-labradoodle/tbl\",\"note\":\"CYLR7B \
+= 125 * ROM8[0x8DFC] = 4125 counts, the intake PWM \
+period.\",\"sign\":\"positive\",\"to\":\"lime-tuna/reg\",\"via\":[\"striped-tiger/fn\"]}"""
 
 [[step]]
 from = "imaginary-labradoodle/tbl"
@@ -222,4 +430,15 @@ to = "visionary-saluki/reg"
 effect = "scales"
 sign = "positive"
 via = ["striped-tiger/fn"]
-note = "CYLR7A = 125 * ROM8[0x8DFC] = 4125 counts."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/intake_cvtc.toml"
+source_sha256 = "92b4609cce9eeade5243d978474b4a8def6aa62b552973436453cf76623bdd1f"
+order = 22
+step_sha256 = "235f853a5d9621c3e9ad9ba2e454db90443bfe4b98ee2704b0d9cf910662ecca"
+original = """
+{\"effect\":\"scales\",\"from\":\"imaginary-labradoodle/tbl\",\"note\":\"CYLR7A \
+= 125 * ROM8[0x8DFC] = 4125 \
+counts.\",\"sign\":\"positive\",\"to\":\"visionary-saluki/reg\",\"via\":[\"striped-tiger/fn\"]}"""

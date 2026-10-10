@@ -1,0 +1,127 @@
+title = "Vtc advance"
+summary = """
+Competitor inventory: VTC Valve Advance Cold; VTC Valve Advance Cold ETD; \
+VTC Valve Advance First Idle; VTC Valve Advance Main; VTC Valve Advance Main \
+ETD; VTC Valve Advance Overrun; VTC Valve Advance Wide Open Throttle; Cam \
+Phasing."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 50
+source = "refs/vendor/catalog.csv"
+sha256 = "1215c98bcfc65e099c80f9c9b21c9e3df3b1f76478887dc07c90e318d7712761"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 51
+source = "refs/vendor/catalog.csv"
+sha256 = "975c90d59a0e08f7cda93b428f92913177b7ef78003eb41b88ef0945332bc83a"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance Cold \
+ETD\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 52
+source = "refs/vendor/catalog.csv"
+sha256 = "842c9540efe446de4809ddbf25089693348666d162731418bd2b22860fa8facb"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance \
+First \
+Idle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 53
+source = "refs/vendor/catalog.csv"
+sha256 = "322610606ce101ab4a2e63b3b45360461a13ddd77d9b2fa2669c6e143fc3828b"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance \
+Main\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 54
+source = "refs/vendor/catalog.csv"
+sha256 = "bd4cb9d607b85fcb77352fa2362831c6a40edefccf43be67321ff3051e0a395e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance Main \
+ETD\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 55
+source = "refs/vendor/catalog.csv"
+sha256 = "b261da98b6e5f234c742427ee9a6a4a6c28c41a84941d2a1ba9f86eb8dbd6f86"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance \
+Overrun\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 56
+source = "refs/vendor/catalog.csv"
+sha256 = "77d7dcaef53485da3d2dc4b5819b62d2ca4d0bff49b7cd27413759e706fd7852"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vtc-advance\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VTC Valve Advance\",\"level\":\"\",\"name\":\"VTC Valve Advance Wide \
+Open \
+Throttle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 319
+source = "refs/vendor/catalog.csv"
+sha256 = "704dd3057d2daa53e43bed45ffdba2a769539441faa6e791499796874286cc1d"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"vtc-advance\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Cam \
+Phasing\",\"note\":\"ProECU calls this 'VTC Valve Advance' in \
+°Crank.\",\"origin\":\"factory\",\"output\":\"target cam \
+advance/retard\",\"section\":\"Cam Phasing\",\"source\":\"Cam \
+Phasing\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

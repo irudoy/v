@@ -1498,14 +1498,25 @@
 
     <!-- 0x11DFC  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
-         00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points
-         along axis 0x15340, and stores the threshold for comparison in 0004a238. Stock rows 3
-         and 5 are all 0xffff. Value 0xffff is the uint16 upper bound and makes exceeding the
-         threshold practically impossible. The catalog identifies the rows as cylinders, but
-         exact code does not establish their physical cylinder or sensor order. Definition
-         address projected from JK08A 0001108e through JK08A-1ME3B.definition-addresses.csv:
-         normalized-shape pair 0006e854/0007275c of 76 bytes loads the exact direct-row-major
-         second torque surface at the same call ordinal.
+         On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16
+         cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its
+         bounded domain is 1 <= c <= 6; the accessor has no channel guard. JK08A stock rows 3
+         and 5 contain raw threshold 65535 at every cell. The selected raw word enters
+         comparison in 0004a238; metric production, comparison outcome and count publication are
+         outside the bounded lookup proof. Both neighboring cells are loaded, including 0001114e
+         on the last row endpoint. The catalog identifies rows as cylinders, but exact lookup
+         code does not establish physical cylinder or sensor order. The engineering threshold
+         scale remains candidate. Definition address projected from JK08A 0001108e through
+         JK08A-1ME3B.definition-addresses.csv: The exact 1ME3B image loads table 00011dfc
+         through MOV.L at 00072786 and pool 000729a0. Accessor 0007275c selects row table +
+         32*(c-1), supplies unsigned word axis 00016c46 and coordinate fffe81d6 to 0002af88, and
+         stores the raw word at fffe9100 + 2*(c-1). Its sole interpolation call is ordinal 0 of
+         1. Caller 00072920 compares the selected uint32 metric against 0x80000000 +
+         uint16(threshold) using strict CMP/HI at 00072c6c. These operands and the consumer
+         support raw threshold-role homology with 7mfk:0001108e. The target axis ends at
+         464,504,544; fused leaf 0002af88 uses FLOAT/FMUL/FDIV/FTRC and a sign-extended zero-
+         fraction return. Target execution, full arithmetic and ABI equivalence, engineering
+         scale and physical channel identity remain unestablished..
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Knock Threshold by Evaluator Channel"
            category="Ignition Timing//Knock Control//Thresholds" storagetype="uint16"

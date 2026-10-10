@@ -34,6 +34,13 @@ end = "owner"
 relies = "structure"
 supports = "identity"
 
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+anchor = "0xFFFF3D33"
+role = "HCAN1 shadow base"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffeb0ef"

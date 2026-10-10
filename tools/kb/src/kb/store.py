@@ -133,12 +133,14 @@ LEDGER = Table(_plain("registry", "order", "binding", "fields", "notes", "storag
                sort=("registry",))
 BIT = Table(_plain("bit", "name", "summary", "level") + (("evidence", Array(EVIDENCE)),),
             sort=("bit",))
+CURATED = Table(_plain("order", "name", "title", "notes"))
+SOURCE = Table(_plain("layout", "path", "sha256", "sections", "anchor", "role"), sort=("path", "anchor"))
 VALUE = Table(_plain("value", "name", "summary", "reachable", "level")
               + (("evidence", Array(EVIDENCE)),), sort=("value",))
 SYMBOL = Table(_plain("layout", "address", "name", "level", "former", "images", "width",
                       "signed", "storage", "cols", "rows", "points", "count", "quantity",
                       *SCALE, "index", "attribute", "summary", "note")
-               + (("interp", INTERP), ("editor", EDITOR), ("bit", Array(BIT)),
+               + (("interp", INTERP), ("editor", EDITOR), ("curated", CURATED), ("bit", Array(BIT)),
                   ("evidence", Array(EVIDENCE))),
                sort=("layout", "address"))
 STATUS = Table(_plain("layout", "state", "method", "target", "count", "l0", "note")
@@ -149,7 +151,7 @@ LINK = Table(_plain("type", "to", "slot") + (("offset", HEX),)
              + (("evidence", Array(EVIDENCE)),), sort=("type", "to", "slot", "offset"))
 ANALOG = Table(_plain("to", "note"), sort=("to",))
 
-COMMON = ("title", "summary", "note", "level", "home", "role", "block", "former")
+COMMON = ("retired", "title", "summary", "note", "level", "home", "role", "block", "former")
 KIND_KEYS = {
     "fn": _plain("contract", "contract_level") + (("interp", INTERP),),
     "ram": _plain("width", "signed", *SCALE) + (("bit", Array(BIT)), ("value", Array(VALUE))),
@@ -162,13 +164,18 @@ KIND_KEYS = {
     "dtc": _plain("code", "group", "disabled"),
 }
 FEATURE_TABLES = (("editor", EDITOR), ("logparam", LOGPARAM),
-                  ("diagnostic", Array(DIAGNOSTIC)), ("ledger", Array(LEDGER)))
+                  ("diagnostic", Array(DIAGNOSTIC)), ("ledger", Array(LEDGER)),
+                  ("source", Array(SOURCE)))
 ARRAYS = (("symbol", Array(SYMBOL)), ("status", Array(STATUS)), ("link", Array(LINK)),
           ("analog", Array(ANALOG)))
 
 TARGET = Table(_plain("layout", "status", "note"), sort=("layout",))
+CATALOG = Table((("order", INTEGER),) + _text("source", "sha256", "original"), sort=("order",))
+RESEARCH = Table(_text("state", "source_commit", "source_path", "source_sha256")
+                 + (("order", INTEGER),) + _text("step_sha256", "original"))
 STEP = Table(_text("from", "to", "effect", "sign")
-             + (("via", STRINGS), ("note", TEXT), ("specs", STRINGS)))
+             + (("via", STRINGS), ("note", TEXT), ("specs", STRINGS),
+                ("research", RESEARCH)))
 FEED = Table(_plain("key", "name", "format", "minimum", "maximum", "step"))
 DASHBOARD = Table(_plain("label", "digits", "unit", "hexadecimal", "group", "panel",
                          "panel_label", "order", "description") + (("feed", FEED),))
@@ -188,15 +195,16 @@ DESIGNED = {
     "field": Table(_plain("signal", "source", "origin", "width", "signed", "scale",
                           "profiles", "page") + (("offset", HEX),)
                    + _plain("context", "position") + (("dashboard", DASHBOARD),)),
-    "feature": Table(_plain("title", "summary", "specs", "acceptance", "requires", "vendor")
-                     + (("target", Array(TARGET)),)),
+    "feature": Table(_plain("title", "summary", "specs", "acceptance", "requires", "vendor",
+                            "requirements_state")
+                     + (("catalog", Array(CATALOG)), ("target", Array(TARGET)))),
 }
 
 
 def schema(kind):
     """The schema of the files of a kind."""
     if kind in DESIGNED:
-        return DESIGNED[kind]
+        return Table((("retired", BOOLEAN),) + DESIGNED[kind].keys, sort=DESIGNED[kind].sort)
     if kind not in KIND_KEYS:
         raise KeyError(kind)
     return Table(_plain(*COMMON) + KIND_KEYS[kind] + FEATURE_TABLES + ARRAYS)
@@ -262,6 +270,16 @@ def render(kind, document):
     """The canonical text of an entity file of a kind."""
     lines = []
     _table(lines, (), document, schema(kind), None)
+    return "\n".join(lines) + "\n"
+
+
+def render_batch(operations):
+    """A primary writer batch without executing or promoting its operations."""
+    lines = []
+    keys = Table((("step", Array(STEP)),))
+    operation = Table(_text("cmd", "ref") + (("keys", keys),))
+    table = Table((("op", Array(operation)),))
+    _table(lines, (), {"op": operations}, table, None)
     return "\n".join(lines) + "\n"
 
 

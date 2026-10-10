@@ -1,0 +1,21 @@
+note = [
+    """
+immo channel conditioner (param ch 0/1): source is indirect getter \
+PTR_FUN=00022310/00022318; scale/offset/clamp from ROM calibrations \
+0x92d2/d4/d6 and 0x89a6/a7; output is 16-bit 0xFFFE880C[ch] plus \
+quality/saturation bits 0xFFFE8808-8816; input to immo_channel_evaluator; \
+NOT bytewise CAN ID reception""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "00078450"
+
+[symbol.curated]
+order = 30
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00078450"

@@ -147,10 +147,15 @@ The editor presentation (section 20.5):
 
 import argparse
 from collections import Counter, defaultdict
-from pathlib import Path
+from contextlib import contextmanager
+from contextvars import ContextVar
+import hashlib
+from pathlib import Path, PurePath
+import pickle
 import sys
+from types import MemberDescriptorType
 
-from kb import adapters, compile, graph, lock, match, repo, sites, store, tokens, write
+from kb import adapters, compile, fingerprint, graph, lock, match, repo, sites, store, tokens, write
 from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides, profiles,
                          signals, telemetry)
 from kb.model import Ref, SymbolKey
@@ -158,6 +163,126 @@ from kb.repo import KbError
 
 # Differences that a refusal lists.
 SHOWN = 20
+_PLANNING = ContextVar("kb_conversion_planning", default=None)
+
+
+def _model_digest(model):
+    """Hash every model value and shared reference without recursive traversal.
+
+    Meanings and links form a deep cyclic object graph. Small flat records
+    preserve its object types, attributes, container order and aliasing.
+    Unsupported values refuse sharing instead of omitting their state.
+    """
+    objects, indices = [model], {id(model): 0}
+    digest = hashlib.sha256()
+
+    def reference(value):
+        if type(value) in (type(None), bool, int, float, str, bytes):
+            return ("atom", type(value).__name__, value)
+        if isinstance(value, PurePath):
+            return ("path", type(value).__name__, str(value))
+        if isinstance(value, type):
+            return ("type", value.__module__, value.__qualname__)
+        key = id(value)
+        if key not in indices:
+            indices[key] = len(objects)
+            objects.append(value)
+        return ("ref", indices[key])
+
+    index = 0
+    while index < len(objects):
+        value = objects[index]
+        kind = (type(value).__module__, type(value).__qualname__)
+        if type(value) in (dict, defaultdict):
+            content = [(reference(key), reference(item)) for key, item in value.items()]
+            factory = reference(value.default_factory) if type(value) is defaultdict else None
+            record = (kind, content, factory)
+        elif type(value) in (list, tuple, set, frozenset):
+            record = (kind, [reference(item) for item in value])
+        elif hasattr(value, "__dict__") and not callable(value):
+            slots = []
+            for owner in type(value).__mro__:
+                for name, descriptor in vars(owner).items():
+                    if not isinstance(descriptor, MemberDescriptorType):
+                        continue
+                    identity = (owner.__module__, owner.__qualname__, name)
+                    try:
+                        item = descriptor.__get__(value, type(value))
+                    except AttributeError:
+                        slots.append((identity, False, None))
+                    else:
+                        slots.append((identity, True, reference(item)))
+            record = (kind, [(key, reference(item)) for key, item in vars(value).items()], slots)
+        else:
+            raise KbError(f"conversion model sharing does not support {kind!r}", code=3)
+        data = pickle.dumps(record, protocol=5)
+        digest.update(len(data).to_bytes(8, "big"))
+        digest.update(data)
+        index += 1
+    return digest.digest()
+
+
+class _Planning:
+    """One unchanged native model for a locked group of read-only plans."""
+
+    def __init__(self, root):
+        self.root = Path(root).resolve()
+        self.fingerprint = fingerprint.compute(self.root)
+        self.order = tuple(adapters.ADAPTERS)
+        self.model = None
+        self.digest = None
+
+    def check(self):
+        if (fingerprint.compute(self.root) != self.fingerprint
+                or tuple(adapters.ADAPTERS) != self.order):
+            raise KbError("conversion planning inputs change during the group", code=3)
+        if self.model is not None and self.digest is not None:
+            if self.model_digest() != self.digest:
+                raise KbError("the shared conversion result changes during the group", code=3)
+
+    def model_digest(self):
+        return _model_digest(self.model)
+
+    def result(self, overlay):
+        self.check()
+        if overlay:
+            return compile.build(self.root, overlay)
+        if self.model is not None and self.digest is None:
+            raise KbError("the previous shared conversion plan did not finish", code=3)
+        if self.model is None:
+            self.model = compile.build(self.root)
+        return self.model
+
+    def finish(self, model):
+        self.check()
+        if model is self.model and self.digest is None:
+            self.digest = self.model_digest()
+
+
+@contextmanager
+def planning(root=repo.ROOT):
+    """Plan conversions under the writer lock without retaining a result
+    outside the group. Only an empty overlay shares the native compilation;
+    each registry retains its own before model, fact and projection checks.
+    A changed source, adapter order, or returned model refuses the group."""
+    if _PLANNING.get() is not None:
+        raise KbError("conversion planning groups cannot nest", code=3)
+    with lock.held(root):
+        group = _Planning(root)
+        token = _PLANNING.set(group)
+        try:
+            yield
+            group.check()
+        finally:
+            _PLANNING.reset(token)
+
+
+def _result(root, overlay):
+    group = _PLANNING.get()
+    if group is not None and Path(root).resolve() == group.root:
+        return group.result(overlay)
+    return compile.build(root, overlay)
+
 # The keys of an unresolved status that a conversion states.
 UNRESOLVED = ("method", "target", "count", "l0", "note")
 # Identity items of the correspondence rows whose symbol no instruction of L0
@@ -334,6 +459,7 @@ class Conversion:
         # the comments of a registry that its projection drops.
         self.meaning_notes, self.changed, self.comments = {}, [], []
         self.ledger_tables = {}
+        self.curated_tables = {}
 
     def run(self):
         getattr(self, self.adapter.__name__.rsplit(".", 1)[1])()
@@ -345,6 +471,47 @@ class Conversion:
             _, found = self.change.document(meaning)
             self.documents[id(meaning)] = found
         return self.documents[id(meaning)]
+
+    def curated(self):
+        """Transfer remaining function names with exact CSV row selectors."""
+        for anchor, props, _ in self.facts.meaning_props:
+            meaning = self.before.meaning_of(anchor)
+            document = self._document(meaning)
+            for name in props:
+                document[name] = meaning.props[name]
+        for layout in sorted(self.before.layouts):
+            if layout == ledgers.LAYOUT:
+                continue
+            for ordinal, row in enumerate(curated.rows(self.root, layout)):
+                key = SymbolKey(layout, "fn", int(row["addr"], 16))
+                symbol = self.before.symbols[key]
+                document = self._document(symbol.meaning)
+                entry = self._entry(document, symbol)
+                marker = {"order": ordinal}
+                if row["name"] != symbol.meaning.name:
+                    marker["name"] = row["name"]
+                if row.get("note"):
+                    if len(row["note"]) <= curated.TITLE:
+                        marker["title"] = True
+                    else:
+                        marker["notes"] = [_notes(document.get("note")).index(row["note"])]
+                if "curated" in entry and entry["curated"] != marker:
+                    raise KbError(f"{key.key}: curated selector differs", code=3)
+                entry["curated"] = marker
+                self.curated_tables[key] = marker
+                anchored = any(item.get("supports", "identity") == "identity"
+                               and match.rank(item, symbol, self.before) >= match.CANDIDATE
+                               and match._complete(item)
+                               and match.verify(self.before, symbol, item) is None
+                               for item in entry.get("evidence", ()))
+                if not anchored:
+                    item = {"kind": "l0", "supports": "identity", "at": key.location}
+                    if match.verify(self.before, symbol, item) is not None:
+                        raise KbError(f"{key.key}: L0 does not place the named function entry",
+                                      code=3)
+                    entry.setdefault("evidence", []).append(item)
+                    self.evidence[key] = ([item], [])
+        self._profile_names()
 
     def ledgers(self):
         """Move ledger facts and retain selectors for the legacy CSV views."""
@@ -1501,6 +1668,11 @@ class Conversion:
         conversion applied."""
         before = self.before
         found = dump(before)
+        for key, selector in self.curated_tables.items():
+            where = (key.location, key.kind)
+            name, generated, former, props, evidence, meaning = found["symbols"][where]
+            props = tuple(sorted({**dict(props), "curated": _value(before, selector)}.items()))
+            found["symbols"][where] = (name, generated, former, props, evidence, meaning)
         for key, (items, raw) in self.evidence.items():
             name, generated, former, props, evidence, meaning = found["symbols"][key.location,
                                                                                 key.kind]
@@ -1715,6 +1887,9 @@ def plan(name, root=repo.ROOT):
     """(conversion, texts, result) of the conversion of a registry; exit code 3
     when the result differs from the model before it, adds an issue, or
     projects the registry differently."""
+    group = _PLANNING.get()
+    if group is not None and Path(root).resolve() == group.root:
+        group.check()
     adapter = next((item for item in adapters.CONVERTED
                     if item.__name__.rsplit(".", 1)[1] == name), None)
     if adapter is None:
@@ -1732,7 +1907,7 @@ def plan(name, root=repo.ROOT):
         before = compile.build(root, order=tuple(item for item in order if item is not adapter))
     conversion = Conversion(adapter, before, root)
     texts = conversion.run()
-    result = compile.build(root, {**before.overlay, **texts})
+    result = _result(root, {**before.overlay, **texts})
     lines = differences(conversion.expected(), dump(result))
     if lines:
         raise KbError("\n".join([f"the files differ from the model in {len(lines)} facts; "
@@ -1784,6 +1959,9 @@ def plan(name, root=repo.ROOT):
     if differ:
         raise KbError(f"the projections of {', '.join(differ)} differ from their files; "
                       "nothing is written", code=3)
+    group = _PLANNING.get()
+    if group is not None and Path(root).resolve() == group.root:
+        group.finish(result)
     return conversion, texts, result
 
 
@@ -1816,6 +1994,8 @@ def projections(adapter, model):
         from kb import architecture_projection
         return {architecture.ARCHITECTURE.as_posix(): architecture_projection.render(
             architecture_projection.document(model))}
+    if adapter is curated:
+        return curated.render(model)
     return {}
 
 

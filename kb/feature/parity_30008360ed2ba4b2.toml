@@ -1,0 +1,52 @@
+title = "Throttle Opening Area of Duct Area Calculation"
+summary = "Competitor inventory: Throttle Opening Area of Duct Area Calculation."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 328
+source = "refs/vendor/catalog.csv"
+sha256 = "02bf89a1d54ca178d574d169b48d347fb0addf649bb01d2c57be0279fbf43e8e"
+original = """
+{\"axis_x\":\"Throttle Opening \
+(Degrees)\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Throttle \
+Opening Area of Duct Area Calculation\",\"note\":\"Calibrated when \
+larger-diameter throttle bodies are \
+installed.\",\"origin\":\"factory\",\"output\":\"flow cross-sectional \
+area\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic Throttle \
+/ Throttle Opening Area of Duct Area Calculation\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

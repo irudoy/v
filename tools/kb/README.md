@@ -6,6 +6,46 @@ stage by stage; this document describes the commands and modules that exist.
 
 ## Commands
 
+`kb gaps --catalog` lists both project features and the complete competitor
+inventory, with acceptance criteria, per-layout status and unresolved ECU
+requirements. Catalog provenance does not establish an ECU implementation.
+`kb suggest <ref> --layout <layout>` reports the existing function-signature
+and instruction-alignment channels without binding or raising claim levels.
+
+`kb family new` and `kb family add` require a registered stock image, a
+source-target census report, matching exported L0 and the stock family gates.
+The family writer preserves unrelated facts and comments in the primary
+homology source. A distinct family has its own layout and meanings.
+
+`kb retire <ref> --dry-run` checks the incoming consumers of a whole owned
+meaning or designed entity. Retirement retains the complete canonical
+document and all names, and contributes only an inactive name index.
+
+The consolidated transition uses `uv run python -m kb.transition prepare
+--source-commit <commit> --output tmp/<plan>.json` to construct one in-memory
+overlay and check preservation and model gates. Its plan binds exact source
+bytes, the compiler fingerprint and the source commit. `uv run python -m
+kb.transition apply tmp/<plan>.json` checks the exact prepared payload, repeats
+source, existing-fact preservation and model gates, and writes the complete
+primary overlay; graph synchronization and final project
+gates follow the source write. Executable, semantic and hardware review debts
+remain independent of this representation transfer.
+
+`owners.toml` declares the remaining name owners and exact unresolved code
+and source-binding reviews. Its strict schema permits only these declarations;
+it cannot override export, census, MCU, or matcher settings in `config.toml`.
+The compiler fingerprints both sources. Separating these owners keeps the
+accepted L0 producer contract independent of its review inventory.
+
+The Python conversion API provides `convert.planning(root)` for a read-only
+group under the writer lock. Empty overlays share one native compilation and
+its model checks within that group. Each registry keeps its own before model,
+conversion, exact fact comparison, refusal comparison, and projection checks.
+Nonempty overlays compile independently. Source changes, changed default
+adapter order, and mutation of the shared model refuse the group; no result
+or check pass is retained by the context after exit. Its model digest uses
+an iterative traversal of values and shared references, including cycles.
+
 ```bash
 uv run kb sync                       # compile, draw names of new symbols, load the graph
 uv run kb sync --full                # reload every element of the graph
@@ -20,6 +60,8 @@ uv run kb check --only l0            # one check
 uv run kb check --changed            # the checks whose inputs differ from those of their last pass
 uv run kb audit                      # disagreements between registries and the levels of claims
 uv run kb audit --section levels     # one section, which the audit alone computes
+uv run kb audit --section research   # source-bound unresolved semantic statements
+uv run kb prepare-research <source-commit> --output tmp/transfer.toml
 uv run kb code 7mfk:00026742         # decompilation of the function whose body holds the address
 uv run kb code 7mfk:00026740 -l      # decompilation and listing
 uv run kb code hcan1_init --layout 1nd   # decompilation of a function symbol, or of the symbol of a meaning
@@ -73,7 +115,10 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   A check may print notes, lines marked `note:` that do not fail it.
   The schema checks RAM and register access widths in bits for meanings and
   per-layout symbol overrides before writes. Field widths keep their byte
-  contract; independent symbol-to-L0 width reconciliation remains stage-8 work.
+  contract. The `code` check compares declared RAM and register widths with
+  normalized L0 accesses and retains exact source-bound unresolved differences.
+  The `source-bindings` check verifies complete typed-anchor coverage of the
+  VVEL and CAN specifications against their exact bytes and declared layouts.
   `--changed` runs the checks whose inputs differ from those of their last
   pass: the files a check reads and the source and configuration of `kb`.
   `.kb/cache/checks.json` records the digest of the inputs of each check at
@@ -101,11 +146,22 @@ uv run kb apply <batch.toml>         # a batch of write operations as one change
   their generated view, positive order values, and repository-local named
   specification files. `chains` verifies symbols on the home layout,
   ordered function paths, effects, signs, a destination output, unique step
-  pairs, acyclic flow, and text notes. `kb audit --section chain-notes`
+  pairs, acyclic flow, and arithmetic notes. `kb audit --section chain-notes`
   checks arithmetic against `[chains.arithmetic]` of `config.toml`; writes
   refuse a new rejected note or a change to its exact text or step binding
-  (ends, ordered calls, effect, or sign). The complete migration of prose conditions and the
-  arithmetic requirement of the mandatory `chains` gate remain stage-6 work.
+  (ends, ordered calls, effect, or sign). The mandatory `chains` gate enforces
+  that grammar. A step can retain unresolved semantics in a separate research
+  record bound to every original field and immutable source bytes. Generic
+  batch replacement cannot drop or change that record. The research audit and
+  brief report this separate semantic queue; transfer supplies no proof or
+  typed condition and changes no layout search status or claim level.
+- `kb prepare-research <source-commit> --output tmp/transfer.toml` prepares one
+  primary writer batch for the unresolved prose in all chains. It checks the
+  complete original source document, preserves every ordered step field and
+  keeps valid arithmetic unchanged. The command writes only a new preparation
+  artifact under `tmp/` or `.kb/`; applying it uses the ordinary atomic writer
+  gate. A repeated transfer changes no record. The final package gate checks
+  original reconstruction and reports unresolved semantics separately.
 - `kb fmt` rewrites the entity files of `kb/`, or those it names, in the
   canonical form of section 4.2 of the specification under `.kb/lock`; the
   `canonical` check requires every file to equal the canonical rendering of
@@ -423,7 +479,6 @@ a reference that names nothing fails the `references` check.
 | Adapter | Registry | Symbols |
 |---|---|---|
 | `files` | `kb/<kind>/<name>.toml` | The meanings of the converted registries with their symbols, statuses, links, and evidence; the features with their targets; the telemetry fields with the `7mfk` symbols of their source meanings, which `can_telemetry` requires, and the source symbols whose unit their files state; the signals with the `7mfk` symbols of the meanings and the allocations that they observe; architecture stages, blocks, endpoints, and ordered chains |
-| `curated` | `tools/ghidra/symbols/1nd.csv` | `fn` symbols with curated names; the `7mfk` view belongs to the converted ledgers |
 | `layouts` | `patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml` | The `7mfk` hook words with their canonical keys, their `target` links, and their replacements in the `7mfk` targets; the `tbl` symbols of the map families in `families` of the `7mfk` target; the payload offset of the feedback record; the `did` symbols of the rolling DID slots with the allocations of `rolling_launch`; the RAM that each feature allocates on `7mfk`, whose addresses name no meaning |
 | `dids` | `tools/diagnostics/sid22_inventory.py` over the JK08A image | `did` symbols of the `7mfk` service 0x22 table with `source` links to the data they return |
 
@@ -469,6 +524,7 @@ a projection of the files.
 | `defs/JK08A.overrides.toml` | 4 | `[editor]` of the `7mfk` tables and axes with their masked views and `[logparam]` of the `7mfk` RAM; `default_emit` and the switches of `kb/feature/definitions.toml` and the JK08A entry of its `7mfk` target | `kb.adapters.overrides:presentation` |
 | `defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv`, `tools/ghidra/symbols/7mfk.csv` | 5 | Symbol properties, typed evidence, canonical links with both claiming ends, diagnostic tables, and curated names in the meaning files; `[[ledger]]` selectors retain the legacy views | `kb.ledger_projection:registries`, `kb.ledger_projection:curated_names` |
 | `defs/JK08A.architecture.toml` | 6 | Architecture stages, blocks, endpoints, ordered chains and their steps; meaning `block` placements | `kb.architecture_projection:registry` |
+| `tools/ghidra/symbols/1nd.csv` | 9 | Owned function names and exact row/prose selectors in the `1nd` symbol entries | `kb.adapters.curated:registry` |
 
 `uv run python -m kb.convert <registry> [--dry-run]` converts a registry
 under `.kb/lock`. It compiles the model with the adapters of the compiler and
@@ -774,9 +830,12 @@ collector, so that later compiles do not traverse it.
 
 ## Graph
 
-`kb sync` loads the model into the Memgraph instance of the working tree.
-Every node it writes carries the label `Kb`, and it deletes and replaces only
-`Kb` elements, so the graph of the loaders of `tools/memgraph/` stays intact.
+`kb sync` builds the model and compatibility layers in the Memgraph instance
+of the working tree. The compiler owns the load order and the writer lock;
+the former loader entry points expose their layer builders to it. The
+compatibility layers retain their established node and relationship contracts
+for definition, map, diagnostic, and provenance consumers. A complete build
+writes `Meta` last, and a failed layer leaves no accepted fingerprint.
 
 | Part | Elements | Reloads when |
 |---|---|---|
@@ -792,8 +851,10 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   for a `stc gbr` that takes the literal of GBR. One `ACCESS` per
   producer joins a function and a location, and its `sites` list holds one
   map per instruction.
-- A writer link of a symbol is verified by a store access of the function to
-  the symbol's location, and a reader link by any access. A block copy loads
+- A writer link of a symbol is verified by a normalized `store`, `update`,
+  `write`, or `read_write` access of the function to the symbol's location.
+  A reader link uses `load`, `update`, `read`, `read_write`, `literal`, `data`,
+  or `param`. A block copy loads
   only the destination address, so its writer stays unverified until
   `indirect` evidence explains it.
 - The fingerprint covers every input: the model inputs, the compiler
@@ -809,6 +870,10 @@ Every node it writes carries the label `Kb`, and it deletes and replaces only
   it in `.kb/instance.toml`; `prune`, which `up` runs first, removes the
   containers of vanished working trees and stops idle ones. `KB_BOLT`
   overrides the Bolt address for tests against a scratch server.
+- Graph consumers use `kb.reader.session`: it holds the primary writer lock,
+  checks the fingerprint, refuses mutation clauses and discovered write
+  procedures, and rolls back its read transaction. A changed source
+  fingerprint during the read refuses the result.
 
 ## Projections and the access guard
 

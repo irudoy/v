@@ -1,0 +1,49 @@
+title = "AFR Correction Timeout"
+summary = "Competitor inventory: AFR Correction Timeout."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 261
+source = "refs/vendor/catalog.csv"
+sha256 = "74b31db97dcb17a8e2ea59e807def9735373c33a1cfbdf865e074ab5f05a10d5"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"Failsafe\",\"level\":\"Beginner\",\"name\":\"AFR \
+Correction \
+Timeout\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Failsafe\",\"source\":\"images/image2020-5-15_16-13-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -7,15 +7,16 @@ in the source CSV, TOML, assembly, or specifications referenced by the loaders.
 
 ## Service
 
-The compose stack runs Memgraph MAGE and the optional Lab UI in Docker Desktop:
+The primary knowledge API runs Memgraph MAGE for the current working tree:
 
 ```bash
-docker context use desktop-linux
-docker compose -f tools/memgraph/docker-compose.yml up -d
-docker compose -f tools/memgraph/docker-compose.yml down
+uv run kb instance up
+uv run kb sync
+uv run kb instance down
 ```
 
-Bolt is available at `bolt://127.0.0.1:7687` with empty local authentication.
+The main working tree uses `bolt://127.0.0.1:7687` with empty local authentication.
+Linked working trees use the instance and port selected by `kb instance`.
 Lab is available at `http://127.0.0.1:3100`. Versions and all project ports are
 recorded once in `../README.md`.
 
@@ -47,8 +48,8 @@ Validate all tracked diagnostic source packs without changing the graph:
 uv run python tools/memgraph/ingest_diagnostics.py --dry-run
 ```
 
-Run the same command without `--dry-run` to replace the graph-owned diagnostic
-scope after validation. The source-preserving extraction and query contract is
+`uv run kb sync` replaces and audits the diagnostic scope before rebuilding
+dependent firmware bindings. The source-preserving extraction and query contract is
 in `../diagnostics/README.md`.
 
 ## ROM ingestion
@@ -59,7 +60,8 @@ Preflight one ROM without graph writes:
 uv run python tools/memgraph/ingest.py JK08A --strict --dry-run
 ```
 
-Run without `--dry-run` to execute the fixed owner order:
+`uv run kb sync` builds the diagnostic corpus, then each catalog ROM in the fixed
+owner order, followed by the vendor vocabulary and pinned A2L catalog:
 
 ```text
 load_graph.py
@@ -70,19 +72,23 @@ load_graph.py
   -> provenance_report.py audit
 ```
 
-Preflight validates headers, foreign keys, addresses, ROM identity, inherited
+The read-only ROM preflight validates headers, foreign keys, addresses, ROM identity, inherited
 code ranges, map geometry, diagnostic bindings, and claim dependencies before
 the first graph write. Preflight first holds the L0 of the ROM's layout to its
 manifest, the Ghidra pin, and the image catalog. `--l0-dir` reads another
 directory in the L0 format, such as a staged export, without that check.
 
-The diagnostic corpus must exist before a ROM ingest that loads diagnostic
-bindings. `ingest_diagnostics.py` owns the corpus and clears every
-`:DiagnosticBinding` node when it commits, so a corpus reload is followed by
-`load_diagnostic_bindings.py` for each bound ROM. Until that runs, definition
-projections omit their static diagnostic context and
-`tools/mapkit/validate_map_switching.py` reports a difference from the tracked
-common definitions. JK03A receives canonical semantic annotations through
+The compiler supplies one driver under the primary writer lock to every retained
+layer algorithm. Owned annotation and interpolation CSVs are private temporary
+views of its current model; the generated working-tree copies are not inputs.
+An absent manual catalog contributes no reviewed claims. Firmware structure and
+measurements still come from the declared L0 and exact image. The fingerprint
+covers the layer code, diagnostic corpus, external vocabularies, inheritance
+registry, pinned A2L bytes, and their owned knowledge sources. The compiler
+publishes Meta after all layers pass and the input fingerprint still matches.
+A failed layer leaves Meta absent, so isolated readers refuse the partial graph.
+Separate loader commands refuse writes and direct callers to `kb sync`.
+JK03A receives canonical semantic annotations through
 `defs/rom-inheritance.toml` and reads the L0 of layout `7mfk`, but retains its
 own ROM measurements and graph layer.
 
@@ -105,9 +111,10 @@ impact set. The schema and confidence rules are specified in
 
 ## Read-only agent access
 
-The project-scoped `mcp-memgraph` server connects to Bolt over stdio and blocks
-mutating Cypher. It is an optional query surface over a graph built by the
-tracked loaders. Schema discovery requires the compose option
+The `kb` MCP server checks freshness before answering queries. Tracked definition,
+diagnostic, map-tracker, and provenance readers use `kb.reader.session`, which
+holds the primary lock, checks the fingerprint, rejects mutation clauses and
+write procedures, and rolls back its read transaction. Schema discovery requires the compose option
 `--schema-info-enabled=true`, which is already set.
 
 Queries intended for repeatable review belong in `queries.cypher` or

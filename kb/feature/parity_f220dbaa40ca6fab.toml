@@ -1,0 +1,49 @@
+title = "Boost Limit Delay"
+summary = "Competitor inventory: Boost Limit Delay."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 24
+source = "refs/vendor/catalog.csv"
+sha256 = "b76f54f3c97d0e059cfbc36fcbad5dc694aee8249c3a1424156ca2287ad67a55"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"EcuTek \
+RaceROM Maps//Boost Control\",\"level\":\"\",\"name\":\"Boost Limit \
+Delay\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Boost \
+Control\",\"source\":\"images/image2022-3-28_15-14-14.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,61 @@
+title = "Torque actual"
+summary = "Competitor inventory: Torque Actual; Estimated Torque Delivered."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 192
+source = "refs/vendor/catalog.csv"
+sha256 = "69991dba94079229e07927fa0ded6b20d7b7d4d347cbad4e44f3839f8b98bfc4"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-actual\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Actual\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 333
+source = "refs/vendor/catalog.csv"
+sha256 = "f88815bff627d756765d7ee6aaf52f1d54b5c1f892a697d34d3ba4af06f800b2"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"torque-actual\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Estimated \
+Torque Delivered\",\"note\":\"Present in every ROM but used only with \
+automatic transmissions: the value is sent to the TCM for line-pressure \
+calculation. ProECU calls this 'Torque \
+Actual'.\",\"origin\":\"factory\",\"output\":\"engine torque in \
+Nm\",\"section\":\"Torque Management\",\"source\":\"Torque Management / \
+Estimated Torque Delivered\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

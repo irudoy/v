@@ -1,0 +1,51 @@
+title = "Oil Temp Gauge Type"
+summary = "Competitor inventory: Oil Temp Gauge Type."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 289
+source = "refs/vendor/catalog.csv"
+sha256 = "ce09f56a3a1a304e3ea534846218021c26552dd4fa39b3d43584c68cfdaeba56"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Oil Temp Gauge\",\"level\":\"\",\"name\":\"Oil Temp Gauge \
+Type\",\"note\":\"Celsius / \
+Fahrenheit\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM Oil \
+Temp \
+Gauge\",\"source\":\"images/image2019-8-27_13-23-36.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

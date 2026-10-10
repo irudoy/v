@@ -1,0 +1,48 @@
+title = "O2 Sensor Rear B2"
+summary = "Competitor inventory: O2 Sensor Rear B2."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 91
+source = "refs/vendor/catalog.csv"
+sha256 = "7f07bdfad87a1117a4092af2bd2f2e12623d2473952460eb7288427aafaf385e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//O2 \
+Sensors\",\"level\":\"\",\"name\":\"O2 Sensor Rear \
+B2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

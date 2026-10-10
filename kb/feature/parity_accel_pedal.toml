@@ -1,0 +1,154 @@
+title = "Accel pedal"
+summary = """
+Competitor inventory: Accel Map Normal Fast; Accel Map Normal Fast Trustful; \
+Accel Map Normal Slow; Accel Map Normal Slow Trustful; Accel Map Reverse \
+Gear Multiplier; Accel Map Reverse Gear Multiplier Trustful; Accel Map Snow \
+Fast; Accel Map Snow Fast Trustful; Accel Map Snow Slow; Accel Map Snow Slow \
+Trustful."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 0
+source = "refs/vendor/catalog.csv"
+sha256 = "b6a7bfa20c908ea84e84e7821cc5bc7e626fd073e37de3065321b0cf94d0955a"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Normal \
+Fast\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 1
+source = "refs/vendor/catalog.csv"
+sha256 = "e342749a935f93e03c9cbf0372738d83fe872b94bb07a91a5d5b5e39bcd15660"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Normal Fast \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 2
+source = "refs/vendor/catalog.csv"
+sha256 = "cf51ec9623fdb79c9a496d87d9ce4e4300384d6ff6e0a868269274f2c735cdc7"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Normal \
+Slow\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 3
+source = "refs/vendor/catalog.csv"
+sha256 = "f328515fbbad838204e5f0b1371586595496ae546936aa9aeeea116bcbcf716d"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Normal Slow \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 4
+source = "refs/vendor/catalog.csv"
+sha256 = "dd982fcd5a08b8722af0d6b6dfecb614e3c0c2b7395506eb62c36a335268afab"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Reverse Gear \
+Multiplier\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 5
+source = "refs/vendor/catalog.csv"
+sha256 = "94856b9142cb76ce46f5c38da3a5ebd22cef61340398cf592e5acc103e6a2d31"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Reverse Gear Multiplier \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 8
+source = "refs/vendor/catalog.csv"
+sha256 = "b0b995f09f7c651f95e1ad718f392ea2b1571e6eac0ffa5c7dd5cfcd4afbd019"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Snow \
+Fast\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 9
+source = "refs/vendor/catalog.csv"
+sha256 = "c25afb593095c18eeaa5fc85d0ed71a83305b93907f077f2d88fa02f3b811b52"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Snow Fast \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 10
+source = "refs/vendor/catalog.csv"
+sha256 = "17a944ac29634a271e585745f98b6930df6156f47943d4b64c32f27b935c5b6b"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Snow \
+Slow\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 11
+source = "refs/vendor/catalog.csv"
+sha256 = "dfb998bf602d1c104080367ee1822f60ed96a6a9cc7c4d3d3588ca296581790e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-pedal\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel Map Snow Slow \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

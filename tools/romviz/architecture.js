@@ -2077,6 +2077,7 @@
         heading(`${chain.name}, step ${Number(stepText) + 1}`, `${node(step.from).label} -> ${node(step.to).label}`),
         html("div", {className: "detail-badges"}, html("span", {className: "badge", text: step.effect}), html("span", {className: `badge sign-${step.sign}`, text: `sign ${step.sign}`}), html("span", {className: "badge", text: `${step.support}-bound`})),
         step.note ? html("p", {className: "detail-copy", text: step.note}) : null,
+        step.research ? section("Unresolved semantics", html("p", {className: "detail-copy", text: JSON.parse(step.research.original).note})) : null,
         section("From", html("div", {className: "arch-link-list"}, nodeButton(step.from))),
         section("To", html("div", {className: "arch-link-list"}, nodeButton(step.to))),
         step.via.length ? section("Performed by", linkList(step.via)) : null,
@@ -2170,7 +2171,7 @@
           html("td", {}, nodeButton(step.to)),
           html("td", {}, html("span", {className: `arch-sign-pill sign-${step.sign}`, text: SIGN_GLYPHS[step.sign], title: step.sign})),
           html("td", {}, ...step.via.map((via) => nodeButton(via))),
-          html("td", {className: "arch-step-note"}, step.note, step.support !== "graph" ? html("span", {className: "badge", text: step.support === "specification" ? "specification" : "declared"}) : null));
+          html("td", {className: "arch-step-note"}, step.note, step.research ? html("span", {className: "badge", text: "unresolved semantics"}) : null, step.support !== "graph" ? html("span", {className: "badge", text: step.support === "specification" ? "specification" : "declared"}) : null));
         row.addEventListener("click", (event) => {
           if (!event.target.closest("button")) select(key);
         });

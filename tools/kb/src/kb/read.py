@@ -665,7 +665,7 @@ STEP_ROWS = ("MATCH (s)-[:FROM]->(f:Kb:Meaning) MATCH (s)-[:TO]->(t:Kb:Meaning) 
              "WITH c, st, s, f, t, v, call.order AS via_order ORDER BY via_order "
              "WITH c, st, s, f, t, collect(v.key) AS via "
              "RETURN c.key AS chain, st.order AS order, f.key AS from, t.key AS to, "
-             "s.effect AS effect, s.sign AS sign, s.note AS note, via "
+             "s.effect AS effect, s.sign AS sign, s.note AS note, s.research AS research, via "
              "ORDER BY chain, order")
 
 
@@ -690,6 +690,8 @@ def step_text(row, chain=False):
         parts.append(f"via {', '.join(row['via'])}")
     if row["note"]:
         parts.append(row["note"])
+    if row.get('research'):
+        parts.append('unresolved semantics; the complete original statement remains source-bound')
     return "  ".join(parts)
 
 
@@ -1768,6 +1770,13 @@ def brief(graph, root=repo.ROOT):
         f"  by the registries that state their symbol when none converts: {stay or 'none'}",
         f"  reserving the name of a symbol that no registry states: {legacy['reserved']}"])
     data["names"] = legacy
+    research_rows = graph.run(
+        "MATCH (c:Kb:Entity {kind: 'chain'})-[:STEP]->(s:Kb:Step) "
+        "WHERE s.research IS NOT NULL RETURN c.key AS chain, count(s) AS n ORDER BY chain")
+    research_total = sum(row['n'] for row in research_rows)
+    answer.section(f"unresolved semantic review: {research_total} source-bound steps", FACTS,
+                   [f"  {row['chain']}: {row['n']}" for row in research_rows] or ['  none'])
+    data['research'] = {'total': research_total, 'chains': research_rows}
     required = gap_rows(graph)
     summary = gap_summary(required)
     priorities = gap_priorities(graph, required)

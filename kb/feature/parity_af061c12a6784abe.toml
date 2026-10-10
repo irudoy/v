@@ -1,0 +1,48 @@
+title = "Transient Comp A Accel Base (unused)"
+summary = "Competitor inventory: Transient Comp A Accel Base (unused)."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 96
+source = "refs/vendor/catalog.csv"
+sha256 = "e63183772ae0ee87c8d5173a0e621a32288f520a01a20e11b8d14a46d107ba78"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Transient\",\"level\":\"\",\"name\":\"Transient \
+Comp A Accel Base \
+(unused)\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

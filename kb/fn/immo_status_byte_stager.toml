@@ -1,0 +1,19 @@
+note = [
+    """
+reads immo-present 0xFFFE930E; stages status bytes \
+0xFFFEB3A2-A4/0xFFFEB440/0xFFFEB294 for frame cluster 0x000c8xxx; zero \
+hardware registers""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000c7bc4"
+
+[symbol.curated]
+order = 32
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c7bc4"

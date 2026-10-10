@@ -20,8 +20,18 @@ to = "elegant-guan/ram"
 effect = "indexes"
 sign = "none"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-RPM/50 byte ffff11ae indexes axis 0x1238A = 8..128, exactly 400..6400 RPM."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 1
+step_sha256 = "ae931faa0691120cf6ba8be3e901936ecb78e9fc75182348ec4de957a44047cd"
+original = """
+{\"effect\":\"indexes\",\"from\":\"tough-earwig/ram\",\"note\":\"RPM/50 byte \
+ffff11ae indexes axis 0x1238A = 8..128, exactly 400..6400 \
+RPM.\",\"sign\":\"none\",\"to\":\"elegant-guan/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "golden-goose/tbl"
@@ -29,9 +39,18 @@ to = "elegant-guan/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-M = interp(0x1236A, 0x1238A, ffff11ae), raw 74..125, shared by P0101 and \
-P010B."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 2
+step_sha256 = "1a6e099b3975d1a78952d79dab995c78deca398e1bda2d328e867a80a6890d03"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"golden-goose/tbl\",\"note\":\"M = \
+interp(0x1236A, 0x1238A, ffff11ae), raw 74..125, shared by P0101 and \
+P010B.\",\"sign\":\"positive\",\"to\":\"elegant-guan/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "elegant-guan/ram"
@@ -39,7 +58,18 @@ to = "idealistic-wren/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = "C = min(255, floor(M*A*B/16384))."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 3
+step_sha256 = "f41819ba1c23f59b7667703b94c8f72bf99769630439156af2a12cee19114b77"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"elegant-guan/ram\",\"note\":\"C = \
+min(255, \
+floor(M*A*B/16384)).\",\"sign\":\"positive\",\"to\":\"idealistic-wren/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "persimmon-crow/tbl"
@@ -47,7 +77,18 @@ to = "idealistic-wren/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = "A = lookup_u8_1d8(0x12AC2, ffff10f5), raw 108..154."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 4
+step_sha256 = "f3a4a5b41180f9bcca7e463aca78065c1517ace55141156c9f06ed271c43275e"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"persimmon-crow/tbl\",\"note\":\"A = \
+lookup_u8_1d8(0x12AC2, ffff10f5), raw \
+108..154.\",\"sign\":\"positive\",\"to\":\"idealistic-wren/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "feathered-boobook/ram"
@@ -55,9 +96,18 @@ to = "idealistic-wren/ram"
 effect = "indexes"
 sign = "none"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-Runtime byte ffff10f5 indexes factor A; the ledgers do not identify the \
-byte."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 5
+step_sha256 = "ceb41267092d0c53c2a92e741531694d1fde0d431144de097229c2d1d01d1bb9"
+original = """
+{\"effect\":\"indexes\",\"from\":\"feathered-boobook/ram\",\"note\":\"Runtime \
+byte ffff10f5 indexes factor A; the ledgers do not identify the \
+byte.\",\"sign\":\"none\",\"to\":\"idealistic-wren/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "smiling-piculet/tbl"
@@ -65,7 +115,18 @@ to = "idealistic-wren/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = "B = lookup_u8_1d8(0x12868, high8(ffff517c)), raw 56..148."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 6
+step_sha256 = "e72ee6a5d073080a513e43a5aa708868fc5d34255ae2859adcea6adec9aae26f"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"smiling-piculet/tbl\",\"note\":\"B = \
+lookup_u8_1d8(0x12868, high8(ffff517c)), raw \
+56..148.\",\"sign\":\"positive\",\"to\":\"idealistic-wren/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "wondrous-bumblebee/ram"
@@ -73,9 +134,19 @@ to = "idealistic-wren/ram"
 effect = "indexes"
 sign = "none"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-The pressure word high byte indexes factor B; stock slope ROM8[0x89FE] = 0 \
-holds the word at 51865, so B is constant in stock."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 7
+step_sha256 = "ac0a0b4b6b240d348d753dd93a016f72707393d5dfb9f55606fbfcc8f2e241cf"
+original = """
+{\"effect\":\"indexes\",\"from\":\"wondrous-bumblebee/ram\",\"note\":\"The \
+pressure word high byte indexes factor B; stock slope ROM8[0x89FE] = 0 holds \
+the word at 51865, so B is constant in \
+stock.\",\"sign\":\"none\",\"to\":\"idealistic-wren/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "idealistic-wren/ram"
@@ -83,9 +154,19 @@ to = "clay-dugong/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-G = floor(ffff1733*C/256); R0 = min(255, floor(W0*G/(W0+W1))); Q0 = \
-floor(ROM8[0x82BA]*R0/256) with stock 128."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 8
+step_sha256 = "a79ccb1c474e5e8a7ce8aa2bfab7088af6d008722f4d27236de87893b275749a"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"idealistic-wren/ram\",\"note\":\"G = \
+floor(ffff1733*C/256); R0 = min(255, floor(W0*G/(W0+W1))); Q0 = \
+floor(ROM8[0x82BA]*R0/256) with stock \
+128.\",\"sign\":\"positive\",\"to\":\"clay-dugong/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "provocative-axolotl/ram"
@@ -93,7 +174,18 @@ to = "clay-dugong/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = "Byte ffff1733 scales C into G = floor(ffff1733*C/256)."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 9
+step_sha256 = "46379b48d94ba5700b4ad46ed3045c8105ba82da1f633adccf7867cbb0f5d393"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"provocative-axolotl/ram\",\"note\":\"Byte \
+ffff1733 scales C into G = \
+floor(ffff1733*C/256).\",\"sign\":\"positive\",\"to\":\"clay-dugong/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "glittering-ostrich/ram"
@@ -101,9 +193,19 @@ to = "clay-dugong/ram"
 effect = "scales"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-First-bank weight W0: R0 = min(255, floor(W0*G/(W0+W1))); R0 is 255 when W0 \
-and W1 are both zero."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 10
+step_sha256 = "2dec9f0fea88cfd3f037a37e4c18a7acb2d4336375e313f305b0771394fce66f"
+original = """
+{\"effect\":\"scales\",\"from\":\"glittering-ostrich/ram\",\"note\":\"First-bank \
+weight W0: R0 = min(255, floor(W0*G/(W0+W1))); R0 is 255 when W0 and W1 are \
+both \
+zero.\",\"sign\":\"positive\",\"to\":\"clay-dugong/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "teal-gibbon/ram"
@@ -111,9 +213,19 @@ to = "clay-dugong/ram"
 effect = "scales"
 sign = "negative"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-Second-bank weight W1 enters only the denominator of R0 = W0*G/(W0+W1), so a \
-larger W1 lowers Q0."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 11
+step_sha256 = "33a7c1b0d6114022de10ca47130c15e3fca89bf180543f719190a674e7789f80"
+original = """
+{\"effect\":\"scales\",\"from\":\"teal-gibbon/ram\",\"note\":\"Second-bank \
+weight W1 enters only the denominator of R0 = W0*G/(W0+W1), so a larger W1 \
+lowers \
+Q0.\",\"sign\":\"negative\",\"to\":\"clay-dugong/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "spectral-corgi/tbl"
@@ -121,9 +233,19 @@ to = "friendly-poodle/ram"
 effect = "feeds"
 sign = "none"
 via = ["maf_range_model_byte_builder/fn"]
-note = """
-00082604 combines ffff1956, bank state, MAF Factor 0x8A27, K-Value 0x9284, \
-reference 0x9534, ROM8[0x88FB], and ffff10e0; conversion unresolved."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 12
+step_sha256 = "e465be07fec425f0de341362fdbe50a43556697e4cdc72a536f82a7b7140d69e"
+original = """
+{\"effect\":\"feeds\",\"from\":\"spectral-corgi/tbl\",\"note\":\"00082604 \
+combines ffff1956, bank state, MAF Factor 0x8A27, K-Value 0x9284, reference \
+0x9534, ROM8[0x88FB], and ffff10e0; conversion \
+unresolved.\",\"sign\":\"none\",\"to\":\"friendly-poodle/ram\",\"via\":[\"maf_range_model_byte_builder/fn\"]}"""
 
 [[step]]
 from = "active-caracal/tbl"
@@ -131,9 +253,19 @@ to = "friendly-poodle/ram"
 effect = "feeds"
 sign = "none"
 via = ["maf_range_model_byte_builder/fn"]
-note = """
-The Base Fuel Schedule K-Value enters model bytes ffff15bc (P0101) and \
-ffff15bd (P010B); the formula is not stated."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 13
+step_sha256 = "5762c64b2cf9f5eb564f0a2cc4beade4b07027e1e8b99130b6e361abaa130212"
+original = """
+{\"effect\":\"feeds\",\"from\":\"active-caracal/tbl\",\"note\":\"The Base \
+Fuel Schedule K-Value enters model bytes ffff15bc (P0101) and ffff15bd \
+(P010B); the formula is not \
+stated.\",\"sign\":\"none\",\"to\":\"friendly-poodle/ram\",\"via\":[\"maf_range_model_byte_builder/fn\"]}"""
 
 [[step]]
 from = "clay-dugong/ram"
@@ -141,9 +273,18 @@ to = "muscular-turaco/ram"
 effect = "copies"
 sign = "positive"
 via = ["maf_range_performance_bank_1_monitor/fn"]
-note = """
-Event-snapshot copy at 0x81C62, the stock terminal consumer of Q0; the model \
-byte goes to ffff4564."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 14
+step_sha256 = "f1fc6176b77cf4536e6c588f1e17f96dee4bfeb5f654226251715b0a14f59e61"
+original = """
+{\"effect\":\"copies\",\"from\":\"clay-dugong/ram\",\"note\":\"Event-snapshot \
+copy at 0x81C62, the stock terminal consumer of Q0; the model byte goes to \
+ffff4564.\",\"sign\":\"positive\",\"to\":\"muscular-turaco/ram\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\"]}"""
 
 [[step]]
 from = "clay-dugong/ram"
@@ -154,9 +295,19 @@ via = [
     "maf_range_performance_bank_1_monitor/fn",
     "dual_bank_maf_diagnostic_dispatch/fn",
 ]
-note = """
-Candidate ffff15bc < Q0 runs only with ROM8[0x8D92].bit5 clear (compare at \
-0x81942); stock 0x7A bypasses it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 15
+step_sha256 = "20b3b1dab9ad44926ec8d8d580d2ccd3a7a7d5d39c51a3a9635f21f11d0d005c"
+original = """
+{\"effect\":\"compares\",\"from\":\"clay-dugong/ram\",\"note\":\"Candidate \
+ffff15bc < Q0 runs only with ROM8[0x8D92].bit5 clear (compare at 0x81942); \
+stock 0x7A bypasses \
+it.\",\"sign\":\"none\",\"to\":\"naughty-oxpecker/fn\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\",\"dual_bank_maf_diagnostic_dispatch/fn\"]}"""
 
 [[step]]
 from = "friendly-poodle/ram"
@@ -167,9 +318,19 @@ via = [
     "maf_range_performance_bank_1_monitor/fn",
     "dual_bank_maf_diagnostic_dispatch/fn",
 ]
-note = """
-A true return of 0008152a makes 00080f82 call 0007d8b8 with record 0xBA \
-(P0101); the stock direct-condition branch is not described."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 16
+step_sha256 = "e2dc005e30cb4079c052e62284e13db524ea7633bef8be7d7593c97d31e964f7"
+original = """
+{\"effect\":\"compares\",\"from\":\"friendly-poodle/ram\",\"note\":\"A true \
+return of 0008152a makes 00080f82 call 0007d8b8 with record 0xBA (P0101); \
+the stock direct-condition branch is not \
+described.\",\"sign\":\"none\",\"to\":\"naughty-oxpecker/fn\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\",\"dual_bank_maf_diagnostic_dispatch/fn\"]}"""
 
 [[step]]
 from = "naughty-oxpecker/fn"
@@ -177,10 +338,20 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = ["prehistoric-skua/fn"]
-note = """
-0007d8b8 calls 0008c2d2 first for every index, which sets byte 1 bit 7 \
-(stored fault) of ffff5718 + 3*0xBA."""
 specs = ["defs/JK08A.cvtc.md"]
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 17
+step_sha256 = "6053e1f43560ecac88ffe111551f8bb7dbd5a7cb66288ad0d5ccd499a18f0fba"
+original = """
+{\"effect\":\"stores\",\"from\":\"naughty-oxpecker/fn\",\"note\":\"0007d8b8 \
+calls 0008c2d2 first for every index, which sets byte 1 bit 7 (stored fault) \
+of ffff5718 + \
+3*0xBA.\",\"sign\":\"none\",\"specs\":[\"defs/JK08A.cvtc.md\"],\"to\":\"hallowed-malkoha/ram\",\"via\":[\"prehistoric-skua/fn\"]}"""
 
 [[step]]
 from = "naughty-oxpecker/fn"
@@ -188,10 +359,20 @@ to = "succinct-worm/ram"
 effect = "stores"
 sign = "none"
 via = ["prehistoric-skua/fn"]
-note = """
-0008c2d2 sets event byte ffff48e0 for records with attribute bit 10, which \
-the six MAF records carry."""
 specs = ["defs/JK08A.cvtc.md"]
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 18
+step_sha256 = "5def00e9d9f0ffe270ffe95e820067c04841dbc908451ad1d1e29338e59c5619"
+original = """
+{\"effect\":\"stores\",\"from\":\"naughty-oxpecker/fn\",\"note\":\"0008c2d2 \
+sets event byte ffff48e0 for records with attribute bit 10, which the six \
+MAF records \
+carry.\",\"sign\":\"none\",\"specs\":[\"defs/JK08A.cvtc.md\"],\"to\":\"succinct-worm/ram\",\"via\":[\"prehistoric-skua/fn\"]}"""
 
 [[step]]
 from = "hallowed-malkoha/ram"
@@ -199,9 +380,19 @@ to = "tourmaline-jackal/ram"
 effect = "detects"
 sign = "none"
 via = ["diagnostic_group_summary_update/fn"]
-note = """
-Record 0x129 bytes 1 and 2 are the OR over records 0xBA, 0x07, 0xBB, 0x08, \
-0xBC, and 0x09 (P0101..P0103, P010B..P010D)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 19
+step_sha256 = "cffa76dea2c960e22e2a0e35096e8f3a9196a82c095e2dc3c10db75b268772ce"
+original = """
+{\"effect\":\"detects\",\"from\":\"hallowed-malkoha/ram\",\"note\":\"Record \
+0x129 bytes 1 and 2 are the OR over records 0xBA, 0x07, 0xBB, 0x08, 0xBC, \
+and 0x09 (P0101..P0103, \
+P010B..P010D).\",\"sign\":\"none\",\"to\":\"tourmaline-jackal/ram\",\"via\":[\"diagnostic_group_summary_update/fn\"]}"""
 
 [[step]]
 from = "tourmaline-jackal/ram"
@@ -213,9 +404,19 @@ via = [
     "dual_bank_maf_fault_rpm_inhibit/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-0003c3ac copies byte 1 bit 7 to ffff2449 bit 7 (snapshot ffff2448); 0004f736 \
-then requests the full fuel-inhibit mask at >= 2400 RPM."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 20
+step_sha256 = "58ebbadf8047ab05ea20499ee241e971e9e047b0e2dffa3344811833b0e32280"
+original = """
+{\"effect\":\"masks\",\"from\":\"tourmaline-jackal/ram\",\"note\":\"0003c3ac \
+copies byte 1 bit 7 to ffff2449 bit 7 (snapshot ffff2448); 0004f736 then \
+requests the full fuel-inhibit mask at >= 2400 \
+RPM.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"dual_bank_maf_diagnostic_coordinator/fn\",\"dual_bank_maf_fault_rpm_inhibit/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "succinct-worm/ram"
@@ -223,9 +424,18 @@ to = "merciful-bobcat/ram"
 effect = "copies"
 sign = "none"
 via = ["famous-platypus/fn"]
-note = """
-0008c272 sets ffff41d1 bits 7, 2, and 0 while ffff48e0 is nonzero and clears \
-them otherwise."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 21
+step_sha256 = "6f28255b93245891cd57d6054fd4e82cb63ef33f2826ebb5ca64336ccbd5828b"
+original = """
+{\"effect\":\"copies\",\"from\":\"succinct-worm/ram\",\"note\":\"0008c272 \
+sets ffff41d1 bits 7, 2, and 0 while ffff48e0 is nonzero and clears them \
+otherwise.\",\"sign\":\"none\",\"to\":\"merciful-bobcat/ram\",\"via\":[\"famous-platypus/fn\"]}"""
 
 [[step]]
 from = "merciful-bobcat/ram"
@@ -233,5 +443,15 @@ to = "onyx-jerboa/ram"
 effect = "gates"
 sign = "none"
 via = ["boisterous-cuttlefish/fn"]
-note = """
-A set bit 7 blocks exhaust-VTC operating enable ffff248b bit 2 in 000bf630."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/maf_range_monitor.toml"
+source_sha256 = "5215a597e345104b0bc9b925a1e8ff76a85d6245149843de246744ad0e314a89"
+order = 22
+step_sha256 = "6724c10b58abdfb2bf9a9e319fc66e4fa20f38f19695c1d60e6459bd3048a05c"
+original = """
+{\"effect\":\"gates\",\"from\":\"merciful-bobcat/ram\",\"note\":\"A set bit \
+7 blocks exhaust-VTC operating enable ffff248b bit 2 in \
+000bf630.\",\"sign\":\"none\",\"to\":\"onyx-jerboa/ram\",\"via\":[\"boisterous-cuttlefish/fn\"]}"""

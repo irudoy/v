@@ -25,8 +25,6 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
 
-from neo4j import GraphDatabase
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -41,8 +39,6 @@ from provenance import (  # noqa: E402
     target_property_allowed,
 )
 
-
-BOLT = "bolt://localhost:7687"
 
 FIELDS = [
     "id",
@@ -566,12 +562,12 @@ def report(rom: str, rows: list[dict[str, Any]]) -> None:
         )
 
 
-def load_source(rom: str) -> tuple[
+def load_source(rom: str, path=None, root=rom_sources.ROOT) -> tuple[
     rom_sources.SourceModel, Path, list[dict[str, Any]]
 ]:
-    model = rom_sources.resolve(rom)
-    rom_sources.verify_image_binding(model)
-    path = rom_sources.definition_paths(model)["DiagnosticBinding"]
+    model = rom_sources.resolve(rom, root / "defs/rom-inheritance.toml")
+    rom_sources.verify_image_binding(model, root / "rom-images/roms.csv")
+    path = path or rom_sources.definition_paths(model, root)["DiagnosticBinding"]
     rows = validate_rows(read_rows(path), path)
     rows = materialize_rows(model, rows)
     for row in rows:
@@ -579,38 +575,29 @@ def load_source(rom: str) -> tuple[
     return model, path, rows
 
 
-def main() -> int:
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
-    try:
-        model, path, rows = load_source(rom)
-    except (OSError, ValueError) as error:
-        print(error, file=sys.stderr)
-        return 1
-
+def load(driver, rom, path, root):
+    """Load static bindings after the compiler loads the diagnostic corpus."""
+    model, path, rows = load_source(rom, path, root)
     print(
         f"Preflight {rom}: source={model.source}, mode={model.kind}, "
         f"file={path}"
     )
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
-    try:
-        with driver.session() as session:
-            create_indexes(session)
-            tx = session.begin_transaction()
-            try:
-                resolved = resolve_rows(tx, rom, rows)
-                write_projection(tx, rom, resolved)
-                audit(tx, rom, len(resolved))
-                tx.commit()
-            except Exception:
-                tx.rollback()
-                raise
-    except Exception as error:
-        print(f"Diagnostic binding ingest failed: {error}", file=sys.stderr)
-        return 1
-    finally:
-        driver.close()
+    with driver.session() as session:
+        create_indexes(session)
+        tx = session.begin_transaction()
+        try:
+            resolved = resolve_rows(tx, rom, rows)
+            write_projection(tx, rom, resolved)
+            audit(tx, rom, len(resolved))
+            tx.commit()
+        except Exception:
+            tx.rollback()
+            raise
     report(rom, resolved)
-    return 0
+
+
+def main() -> int:
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

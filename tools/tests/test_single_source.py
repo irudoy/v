@@ -79,9 +79,9 @@ def test_benchmark_content_contracts_are_required_by_the_source_gate(monkeypatch
     [
         (
             single_source.check_graph_endpoint,
-            "tools/mapkit/show.py",
-            'BOLT = "bolt://localhost:7687"',
-            'BOLT = "bolt://localhost:7688"',
+            "tools/memgraph/docker-compose.yml",
+            '"127.0.0.1:7687:7687"',
+            '"127.0.0.1:7688:7687"',
         ),
         (
             single_source.check_graph_endpoint,

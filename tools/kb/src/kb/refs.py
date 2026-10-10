@@ -130,6 +130,7 @@ def resolve(graph, text, layout=None, root=repo.ROOT, many=False):
             ref = _symbol(found[0])
             ref.note = f"stale reference {text}; current {ref.text}"
             return ref
+        _retired(graph, text)
         raise KbError(f"no symbol {text}", code=5)
 
     match = LOCATION.fullmatch(text)
@@ -175,7 +176,15 @@ def resolve(graph, text, layout=None, root=repo.ROOT, many=False):
             refs = [Ref("location", layout=layout, address=address)]
         if refs:
             return refs if many else _single(text, refs)
+    _retired(graph, text)
     raise KbError(f"no entity {text!r}", code=5)
+
+
+def _retired(graph, text):
+    rows = graph.run('MATCH (n:Kb:Retired) WHERE n.key = $text OR $text IN n.references '
+                     'OR $text IN n.names RETURN n.key AS key', text=text)
+    if rows:
+        raise KbError(f'{rows[0]["key"]} is retired; its names remain reserved', code=5)
 
 
 def _named(graph, name, kind):

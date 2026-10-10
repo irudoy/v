@@ -1,0 +1,50 @@
+title = "Simplified Timing RPM Activation"
+summary = "Competitor inventory: Simplified Timing RPM Activation."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 370
+source = "refs/vendor/catalog.csv"
+sha256 = "f0e6e2a51a3e267219afcefa72f589568a76b2f39217697515607478893c76ca"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"0\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Simplified \
+Timing RPM Activation\",\"note\":\"ARC \
+patch.\",\"origin\":\"patch\",\"output\":\"engine-speed \
+threshold\",\"section\":\"Simplified Timing (ARC)\",\"source\":\"Simplified \
+Timing (ARC) / Settings -> Switchable Settings\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

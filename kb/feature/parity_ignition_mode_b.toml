@@ -1,0 +1,81 @@
+title = "Ignition mode b"
+summary = """
+Competitor inventory: Ignition Timing Mode B1 Cold; Ignition Timing Mode B1 \
+Safe #1; Ignition Timing Mode B1 Safe #2; Ignition Timing Mode B1 Warm."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 140
+source = "refs/vendor/catalog.csv"
+sha256 = "d110500f1924f486ada2cccaa6e764ce2b46f5e765695f392bfce75d07999663"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-mode-b\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode B1 \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 141
+source = "refs/vendor/catalog.csv"
+sha256 = "353e3d330e002fd1bd3effd28d09191eebb9f3d1db9483b301f25369eda0cd0e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-mode-b\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode B1 Safe \
+#1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 142
+source = "refs/vendor/catalog.csv"
+sha256 = "8d48ea1b89ea6eda04e3d0c069a6fe3396bf22cbbcd386b4d757608a0e6f292c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-mode-b\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode B1 Safe \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 143
+source = "refs/vendor/catalog.csv"
+sha256 = "bf0494d1510d99a9398cb08d8da15f966b187019db3b41975a3d17c62ecc6db9"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-mode-b\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode B1 \
+Warm\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

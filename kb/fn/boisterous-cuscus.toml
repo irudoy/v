@@ -1,0 +1,23 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["HCAN1 dispatch branches without a stock record"]
+anchor = "FUN_000EC214"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Data flow"]
+anchor = "FUN_000EC214"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ec214"
+name = "boisterous-cuscus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ec214"

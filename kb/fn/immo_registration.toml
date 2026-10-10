@@ -1,0 +1,20 @@
+note = [
+    """
+marriage/registration: latches registered bits 0xFFFEB852&0x01 and \
+0xFFFEB853&0x40 from source bits 0xFFFEA232/A233; attempt counter <0xb; \
+writes ID slots into arrays from 0xFFFEC7FA (logged value 0xFFFE880C); calls \
+immo_channel_evaluator""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000ccf08"
+
+[symbol.curated]
+order = 24
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ccf08"

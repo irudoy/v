@@ -1,0 +1,97 @@
+title = "Speed limit"
+summary = """
+Competitor inventory: Speed Limit - Fuel Cut Minimum RPM; Speed Limit - Fuel \
+Cut Off; Speed Limit - Fuel Cut On; Speed Limit - Throttle Off; Speed Limit \
+- Throttle On; Speed Limit."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 168
+source = "refs/vendor/catalog.csv"
+sha256 = "8f3a961e93dea967d684bef03b31c104d46b3e19a80781d2db1902d209dd6962"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Speed \
+Limit - Fuel Cut Minimum \
+RPM\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 169
+source = "refs/vendor/catalog.csv"
+sha256 = "f8babfa214a8155eecbc463bd40ef665adcfcd3ec50cb06712e8f29f0e676434"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Speed \
+Limit - Fuel Cut \
+Off\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 170
+source = "refs/vendor/catalog.csv"
+sha256 = "89523139fdb545fef4bd93be12d72d5a0047c1bc56c848a7903c63a0d68c45bb"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Speed \
+Limit - Fuel Cut \
+On\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 171
+source = "refs/vendor/catalog.csv"
+sha256 = "909f99823d75f4a4ce4dc9eecdea4d4abe6252502d2095ccfa0923e17a77e8f8"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Speed \
+Limit - Throttle \
+Off\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 172
+source = "refs/vendor/catalog.csv"
+sha256 = "7094c0c64b58017713ca023b6f9471337af3cbec3e5e16fe447607ca1d80182c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Speed \
+Limit - Throttle \
+On\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 322
+source = "refs/vendor/catalog.csv"
+sha256 = "352550880ec4341ef753cd802fec133e0a2b833cedd94f17765b7fbc63ac1eb8"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"speed-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Speed \
+Limit\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"exact limiting \
+speed\",\"section\":\"Rev & Speed Limits\",\"source\":\"Rev & Speed \
+Limits\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

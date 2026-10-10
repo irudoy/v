@@ -308,6 +308,9 @@ def parser():
 
 def main():
     args = parser().parse_args()
+    if not args.dry_run:
+        print("Graph construction belongs to the kb compiler; use `uv run kb sync`.", file=sys.stderr)
+        return 2
     try:
         if args.l0_dir:
             l0_dir = args.l0_dir.expanduser().resolve()
@@ -324,12 +327,6 @@ def main():
             f"[{number}/{len(steps)}] {shlex.join(display_command(command))}",
             flush=True,
         )
-        if args.dry_run:
-            continue
-        try:
-            subprocess.run(command, cwd=ROOT, check=True)
-        except subprocess.CalledProcessError as error:
-            return error.returncode
     return 0
 
 

@@ -1,0 +1,50 @@
+title = "Speed Density Activation MAF"
+summary = "Competitor inventory: Speed Density Activation MAF."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 251
+source = "refs/vendor/catalog.csv"
+sha256 = "3a8639d2319bdb61905760b286ee41e12dd2e6905596a0532980c0da1a2eba58"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"Speed \
+Density\",\"level\":\"\",\"name\":\"Speed Density Activation \
+MAF\",\"note\":\"hysteresis: first value enables and second \
+disables\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Speed \
+Density\",\"source\":\"images/image2019-8-27_13-19-29.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -24,7 +24,7 @@ NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "convert.py", "gua
                           "instance.py", "lock.py", "mcp.py", "passes.py", "project.py",
                           "read.py", "refs.py", "spec.py", "write.py", "legacy_reservation.py",
                           "architecture_projection.py", "ledger_projection.py", "history.py", "suggest.py",
-                          "arithmetic.py",
+                          "arithmetic.py", "research.py", "reader.py", "family.py",
                           *(f"adapters/{adapter.__name__.rsplit('.', 1)[1]}.py"
                             for adapter in adapters.CONVERTED)})
 
@@ -46,9 +46,12 @@ def functions(layouts, root=repo.ROOT):
     return found
 
 
-def calibration(layouts, root=repo.ROOT):
+def calibration(layouts, root=repo.ROOT, overlay=None):
     """{layout: (start, end)} of the calibration region its family declares."""
-    document = tomllib.loads((root / repo.HOMOLOGY).read_text(encoding="utf-8"))
+    text = (overlay or {}).get(repo.HOMOLOGY)
+    if text is None:
+        text = (root / repo.HOMOLOGY).read_text(encoding="utf-8")
+    document = tomllib.loads(text)
     found = {}
     for layout in layouts.values():
         region = document["family"][layout.family].get("calibration_region")
@@ -61,8 +64,14 @@ def calibration(layouts, root=repo.ROOT):
 def inputs(root=repo.ROOT):
     """Repository paths whose content the model depends on, excluding L0."""
     found = set(adapters.inputs(root))
+    from kb import compatibility
+    found.update(compatibility.inputs(root))
     found.update(names.inputs())
+    from kb import source_bindings
+    found.update(path.as_posix() for path in source_bindings.PATHS)
     found.update((repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix(), repo.CONFIG.as_posix()))
+    if (root / repo.OWNER_CONFIG).is_file():
+        found.add(repo.OWNER_CONFIG.as_posix())
     found.update(path.relative_to(root).as_posix()
                  for path in (root / PACKAGE).rglob("*.py")
                  if path.relative_to(root / PACKAGE).as_posix() not in NOT_COMPILER)
@@ -72,11 +81,12 @@ def inputs(root=repo.ROOT):
 def builder_of(root=repo.ROOT, overlay=None):
     """A builder over the layouts, functions, and regions of the working tree,
     whose adapters read the files of `overlay` in place of those on disk."""
-    config = repo.config(root)
-    layouts = repo.layouts(root)
+    overlay = {Path(path): text for path, text in (overlay or {}).items()}
+    config = repo.config(root, overlay)
+    layouts = repo.layouts(root, overlay)
     builder = Builder(layouts, spaces(config), functions(layouts, root),
-                      calibration(layouts, root), config)
-    builder.overlay = {Path(path): text for path, text in (overlay or {}).items()}
+                      calibration(layouts, root, overlay), config)
+    builder.overlay = overlay
     return builder
 
 

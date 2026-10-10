@@ -1202,6 +1202,20 @@ def format_counts(counts: dict[str, int]) -> str:
     return ", ".join(f"{label}={count}" for label, count in counts.items())
 
 
+def load(driver, root):
+    """Replace and audit the corpus through the primary compiler's connection."""
+    catalog = load_catalog(root)
+    projection = collect_projection(catalog)
+    counts = projection_counts(projection)
+    print("Projection: " + format_counts(counts))
+    with driver.session() as session:
+        create_indexes(session)
+        with session.begin_transaction() as tx:
+            replace_projection(tx, projection, counts)
+            tx.commit()
+    return counts
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--root", type=Path, default=DIAGNOSTICS)
@@ -1212,6 +1226,9 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = parser().parse_args()
+    if not args.dry_run:
+        print("This layer belongs to the kb compiler; use `uv run kb sync`.", file=sys.stderr)
+        return 2
     try:
         catalog = load_catalog(args.root)
         projection = collect_projection(catalog)
@@ -1224,31 +1241,6 @@ def main() -> int:
         f"({', '.join(catalog.dataset_ids)})"
     )
     print("Projection: " + format_counts(counts))
-    if args.dry_run:
-        return 0
-
-    try:
-        from neo4j import GraphDatabase
-    except ImportError:
-        print(
-            "neo4j package is required; run with "
-            "`uv run python tools/memgraph/ingest_diagnostics.py`",
-            file=sys.stderr,
-        )
-        return 1
-    driver = GraphDatabase.driver(args.bolt, auth=("", ""))
-    try:
-        with driver.session() as session:
-            create_indexes(session)
-            with session.begin_transaction() as tx:
-                replace_projection(tx, projection, counts)
-                tx.commit()
-    except Exception as error:
-        print(f"Memgraph ingest failed: {error}", file=sys.stderr)
-        return 1
-    finally:
-        driver.close()
-    print("Memgraph: diagnostic projection committed and audited")
     return 0
 
 

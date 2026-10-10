@@ -1,0 +1,18 @@
+note = [
+    """
+SET Lock 0xFFFEB852|2 when *0xFFFE81AC>0x1f; also immo condition/DTC bits \
+0xFFFEB852-859 and immo-present 0xFFFEB8C8&0x40""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000bf0ac"
+
+[symbol.curated]
+order = 20
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bf0ac"

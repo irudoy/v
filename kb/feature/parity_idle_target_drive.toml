@@ -1,0 +1,61 @@
+title = "Idle target drive"
+summary = "Competitor inventory: Idle Target #1 - Drive; Idle Target Gear."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 121
+source = "refs/vendor/catalog.csv"
+sha256 = "3c49707521b1471b98164365e0183ea5d0a24e11b303b47ffef8da15ef3365de"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-target-drive\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle Target #1 - \
+Drive\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 340
+source = "refs/vendor/catalog.csv"
+sha256 = "6752fa683fdc29cdd3c4a4e4d63bbfbc66666e7eda33c7915513b1ce36575cc7"
+original = """
+{\"axis_x\":\"Engine Coolant \
+Temperature\",\"axis_y\":\"\",\"concept\":\"idle-target-drive\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Idle \
+Target Gear\",\"note\":\"The axis is static. Target with a gear engaged, \
+excluding Neutral and Park; automatic transmissions \
+only.\",\"origin\":\"factory\",\"output\":\"target idle \
+speed\",\"section\":\"Idle\",\"source\":\"Idle / Idle Target \
+Gear\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

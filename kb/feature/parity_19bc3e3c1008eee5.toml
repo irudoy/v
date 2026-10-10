@@ -1,0 +1,50 @@
+title = "Rev Limit Per Gear Mode4"
+summary = "Competitor inventory: Rev Limit Per Gear Mode4."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 235
+source = "refs/vendor/catalog.csv"
+sha256 = "bf06d897c7aa53a1d2f9d9573a9a31d28c3c4b3b89918abf528de7d242d6cb3e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Rev \
+Limit Per Gear \
+Mode4\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Per \
+Gear Rev \
+Limits\",\"source\":\"images/image2019-8-27_13-18-19.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

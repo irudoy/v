@@ -1,0 +1,74 @@
+title = "Maf curve"
+summary = """
+Competitor inventory: MAF Sensor Scale Bank #1 (V to %); MAF Sensor Scale \
+Bank #2 (V to %); Mass Air Flow Sensor."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 180
+source = "refs/vendor/catalog.csv"
+sha256 = "1230825fc3c41e9c5a178808e92a281dc7d78db3decf2f044a8934c05a972ef3"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"maf-curve\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAF Sensor Scale Bank #1 (V to \
+%)\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 181
+source = "refs/vendor/catalog.csv"
+sha256 = "3708b009acf840f388496d622669fb491753a0893569d7598625012f7c534a17"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"maf-curve\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAF Sensor Scale Bank #2 (V to \
+%)\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 299
+source = "refs/vendor/catalog.csv"
+sha256 = "ebbe88eee3f5aa8880924d7f38e546b66a454cf21eafb563887a292775a22cf6"
+original = """
+{\"axis_x\":\"sensor \
+voltage\",\"axis_y\":\"\",\"concept\":\"maf-curve\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Mass \
+Air Flow Sensor\",\"note\":\"The axis is static and cannot be edited. \
+Corresponds to ProECU 'MAF Sensor Scaling Bank #1/#2 (V to \
+%)'.\",\"origin\":\"factory\",\"output\":\"% proportional to \
+airflow\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Mass Air Flow Sensor\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

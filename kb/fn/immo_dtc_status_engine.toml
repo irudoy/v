@@ -1,0 +1,14 @@
+title = "DTC status engine (group;bit) -> RAM status FFFED700; immo group 0x0d"
+
+[[symbol]]
+layout = "1nd"
+address = "000b741e"
+
+[symbol.curated]
+order = 6
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b741e"

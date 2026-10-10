@@ -1,0 +1,51 @@
+title = "Fuel Target Lookup Delay"
+summary = "Competitor inventory: Fuel Target Lookup Delay."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 311
+source = "refs/vendor/catalog.csv"
+sha256 = "3550bd146ef152d89d134b5ae1e3a3ba8e146ad9428bd397ec440365f09096d6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"0\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Fuel \
+Target Lookup Delay\",\"note\":\"Zero in most ROMs and nonzero in some V8 \
+ROMs. The delay applies when the AFR target differs from \
+14.7.\",\"origin\":\"factory\",\"output\":\"delay \
+constant\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Fuel Target Lookup Delay\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,7 +1,8 @@
 """The fingerprint of the compiler inputs (tools/kb/SPEC.md, section 9.4).
 
 The fingerprint is the SHA-256 of the sorted (path, git blob hash) pairs of
-every input, followed by the compiler and schema versions. It covers the
+every file input and the pinned reference checkout identity, followed by the
+compiler and schema versions. It covers the
 working tree: a modified input contributes the blob hash of its current
 content. `.kb/cache/hashes.json` keeps the hash of each input with its size
 and modification time, so a hash is recomputed only for a changed file.
@@ -10,6 +11,7 @@ and modification time, so a hash is recomputed only for a changed file.
 from dataclasses import dataclass
 import hashlib
 import json
+from pathlib import Path
 import subprocess
 
 import kb
@@ -91,8 +93,10 @@ class Fingerprint:
 
 
 def compute(root=repo.ROOT):
+    from kb import compatibility
     hashes = Hashes(root)
     blobs = {path: hashes.of(path) for path in inputs(root)}
+    blobs[compatibility.PIN] = compatibility.reference_commit(root)
     hashes.save()
     return Fingerprint(digest(blobs.items()), blobs)
 
@@ -115,6 +119,22 @@ def head(root=repo.ROOT):
         mode, kind, value = meta.decode().split()
         if kind == "blob":
             blobs[path.decode()] = value
+        elif kind == "commit":
+            from kb import compatibility
+            relative = Path(path.decode())
+            if relative == compatibility.REFERENCE:
+                blobs[compatibility.PIN] = value
+                source = compatibility.A2L.relative_to(relative).as_posix()
+                command = ["git", "-C", str(root / relative), "ls-tree", "-z", value, "--", source]
+                result = subprocess.run(command, capture_output=True)
+                if result.returncode:
+                    raise repo.KbError(f"pinned A2L object is unavailable: {result.stderr.decode().strip()}")
+                for row in result.stdout.split(b"\0"):
+                    if row:
+                        metadata, _, nested = row.partition(b"\t")
+                        _, nested_kind, digest = metadata.decode().split()
+                        if nested_kind == "blob":
+                            blobs[(relative / nested.decode()).as_posix()] = digest
     return commit, blobs
 
 

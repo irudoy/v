@@ -42,7 +42,7 @@ def owner_contract(model=None):
         assert publication.normalized(model,chain.steps[int(number)-1])==wanted
         assert wanted['sign']=='none' and Grammar(repo.config()).validate(wanted['note']) is None
     for number,wanted in contracts()['held_steps'].items():
-        assert publication.normalized(model,chain.steps[int(number)-1])==wanted
+        assert publication.preserved_normalized(model,chain.steps[int(number)-1])==wanted
 
 def registered_stock_contract(image):
     module=publication.stock_module()

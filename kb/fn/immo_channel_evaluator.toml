@@ -1,0 +1,20 @@
+note = [
+    """
+immo channel evaluator (param 0/1): counts/levels versus calibrated \
+thresholds -> source bits 0xFFFEA232&1 / 0xFFFEA233&2 (condition met) plus \
+event codes 0xa8..0xab through indirect PTR_000cd830; input to \
+immo_registration; NOT a bytewise cryptographic ID comparison""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000cd374"
+
+[symbol.curated]
+order = 25
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000cd374"

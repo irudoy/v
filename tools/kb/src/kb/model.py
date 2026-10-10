@@ -570,6 +570,7 @@ class Builder:
             for node in components[root]:
                 by_node[node] = meaning
         model = Model(self.layouts, self.symbols, self.entities, self.targets, self.issues)
+        model.config = self.config
         model.stash = self.stash
         model.meanings = list(meanings.values())
         model.files = {name: (by_node.get(group), src) for name, (group, src) in self.files.items()}
@@ -876,6 +877,7 @@ class Resolver:
 
 class Model:
     def __init__(self, layouts, symbols, entities, targets, issues):
+        self.config = {}
         self.layouts = layouts
         self.symbols = symbols
         self.entities = entities

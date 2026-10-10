@@ -1,0 +1,48 @@
+title = "Transient Ign Retard #3"
+summary = "Competitor inventory: Transient Ign Retard #3."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 155
+source = "refs/vendor/catalog.csv"
+sha256 = "ede3930d4f53336479ac07d6b622f470f64bf91f7e75771460881a89ad133139"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Transient\",\"level\":\"\",\"name\":\"Transient Ign Retard \
+#3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

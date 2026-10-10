@@ -1,0 +1,59 @@
+title = "Injector latency"
+summary = """
+Competitor inventory: Injector Lag Time Multiplier; Injector Lag Time \
+Offset."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 85
+source = "refs/vendor/catalog.csv"
+sha256 = "d5e32d7230bbb9f321c4ab213b0a060f775b6baf863a07bfc88f13ec0586c280"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"injector-latency\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Injectors\",\"level\":\"\",\"name\":\"Injector \
+Lag Time \
+Multiplier\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 86
+source = "refs/vendor/catalog.csv"
+sha256 = "c99cca3d169a2a0b88a0cd008965bf6a1d6d51171104677063ecb0061212b32e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"injector-latency\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Injectors\",\"level\":\"\",\"name\":\"Injector \
+Lag Time \
+Offset\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

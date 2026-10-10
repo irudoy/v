@@ -1,0 +1,50 @@
+title = "FF Cranking RPM Threshold"
+summary = "Competitor inventory: FF Cranking RPM Threshold."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 239
+source = "refs/vendor/catalog.csv"
+sha256 = "76a4179c7980170246e6de32b043fc90005d98f1891c79d6425b03a258892a5c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"FlexFuel\",\"level\":\"Advanced\",\"name\":\"FF \
+Cranking RPM \
+Threshold\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Flex \
+Fuel\",\"source\":\"images/image2020-5-15_16-0-28.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

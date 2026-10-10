@@ -14,8 +14,6 @@ import os
 import sys
 from collections import Counter
 
-from neo4j import GraphDatabase
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from load_xrefs import classify  # noqa: E402
@@ -34,8 +32,6 @@ from provenance import (  # noqa: E402
     parse_evidence,
     target_property_allowed,
 )
-
-BOLT = "bolt://localhost:7687"
 
 FUNC_ROLES = {
     "", "accessor", "consumer", "monitor", "driver", "init", "kernel",
@@ -613,29 +609,19 @@ def report_analysis(claims, dependencies, levels, grounded, gaps):
     return analysis
 
 
-def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
-    try:
-        model = rom_sources.resolve(rom)
-        rom_sources.verify_image_binding(model)
-        paths = rom_sources.definition_paths(model)
-        funcs = read_rows(paths["Func"], FUNC_FIELDS)
-        vars_ = read_rows(paths["Reg"], VAR_FIELDS)
-        maps = read_rows(paths["Map"], MAP_FIELDS)
-        axes = read_rows(paths["Axis"], AXIS_FIELDS)
-        funcs = rom_sources.materialize_rows(model, "Func", funcs)
-        vars_ = rom_sources.materialize_rows(model, "Reg", vars_)
-        maps = rom_sources.materialize_rows(model, "Map", maps)
-        axes = rom_sources.materialize_rows(model, "Axis", axes)
-        check_func_contracts(funcs, paths["Func"])
-        claims = source_claims(rom, [
-            ("Func", funcs, paths["Func"]),
-            ("Reg", vars_, paths["Reg"]),
-            ("Map", maps, paths["Map"]),
-            ("Axis", axes, paths["Axis"]),
-        ])
-    except ProvenanceError as error:
-        sys.exit(str(error))
+def load(driver, rom, paths, root):
+    """Load reviewed claims from views of the compiler's current model."""
+    model = rom_sources.resolve(rom, root / "defs/rom-inheritance.toml")
+    rom_sources.verify_image_binding(model, root / "rom-images/roms.csv")
+    funcs = rom_sources.materialize_rows(model, "Func", read_rows(paths["Func"], FUNC_FIELDS))
+    vars_ = rom_sources.materialize_rows(model, "Reg", read_rows(paths["Reg"], VAR_FIELDS))
+    maps = rom_sources.materialize_rows(model, "Map", read_rows(paths["Map"], MAP_FIELDS))
+    axes = rom_sources.materialize_rows(model, "Axis", read_rows(paths["Axis"], AXIS_FIELDS))
+    check_func_contracts(funcs, paths["Func"])
+    claims = source_claims(rom, [
+        ("Func", funcs, paths["Func"]), ("Reg", vars_, paths["Reg"]),
+        ("Map", maps, paths["Map"]), ("Axis", axes, paths["Axis"]),
+    ])
 
     print(
         f"Provenance layer {rom}: annotation source={model.source}, "
@@ -643,36 +629,27 @@ def main():
         f"{len(maps)} map findings, {len(axes)} axis findings"
     )
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
-    try:
-        with driver.session() as session:
-            tx = session.begin_transaction()
-            try:
-                ensure_sources(tx, rom, funcs, vars_, maps, axes)
-                project_properties(
-                    tx, rom, model.source, funcs, vars_, maps, axes
-                )
-                for label, rows in (
-                    ("Func", funcs), ("Reg", vars_),
-                    ("Map", maps), ("Axis", axes),
-                ):
-                    check_source_claim_properties(tx, rom, label, rows)
-                dependencies, gaps, levels, grounded = resolve_dependencies(
-                    tx, rom, claims
-                )
-                require_no_gaps(gaps)
-                project_edges(tx, rom, dependencies)
-                exact_audit(tx, rom, dependencies)
-                project_source_model(tx, model)
-                report_analysis(claims, dependencies, levels, grounded, gaps)
-                tx.commit()
-            except Exception:
-                tx.rollback()
-                raise
-    except ProvenanceError as error:
-        sys.exit(str(error))
-    finally:
-        driver.close()
+    with driver.session() as session:
+        tx = session.begin_transaction()
+        try:
+            ensure_sources(tx, rom, funcs, vars_, maps, axes)
+            project_properties(tx, rom, model.source, funcs, vars_, maps, axes)
+            for label, rows in (("Func", funcs), ("Reg", vars_), ("Map", maps), ("Axis", axes)):
+                check_source_claim_properties(tx, rom, label, rows)
+            dependencies, gaps, levels, grounded = resolve_dependencies(tx, rom, claims)
+            require_no_gaps(gaps)
+            project_edges(tx, rom, dependencies)
+            exact_audit(tx, rom, dependencies)
+            project_source_model(tx, model)
+            report_analysis(claims, dependencies, levels, grounded, gaps)
+            tx.commit()
+        except Exception:
+            tx.rollback()
+            raise
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

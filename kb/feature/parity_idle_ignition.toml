@@ -1,0 +1,126 @@
+title = "Idle ignition"
+summary = """
+Competitor inventory: Idle Ignition Timing #1; Idle Ignition Timing #2; Idle \
+Ignition Timing #3; Idle Ignition Timing #4; Idle Ignition Timing Drive; \
+Idle Ignition Timing Lean; Idle Ignition Timing Minimum Warm (Neutral); Idle \
+Ignition Timing Neutral; Idle Ignition Timing Stoich."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 126
+source = "refs/vendor/catalog.csv"
+sha256 = "780d1541aa0a0fed24d08c800a44a61e165a9cfdb12ec6abc1dc72f1057464c2"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing #1\",\"note\":\"duplicates the Idle group in \
+image2019-8-27_10-29-3.png \
+(verified)\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 127
+source = "refs/vendor/catalog.csv"
+sha256 = "b705e95e77437d7b0e442943d58b4f629a1d2ec0c416e2d2044cce5382b014f2"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 128
+source = "refs/vendor/catalog.csv"
+sha256 = "53c794eacf0cd1c4f393e5cb72fce2967c0cadb393315bc30373d64ef527647c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+#3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 129
+source = "refs/vendor/catalog.csv"
+sha256 = "24d55e10c108a1b812197bc36125d5c71151a707c430756c129522243b96de4e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+#4\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 130
+source = "refs/vendor/catalog.csv"
+sha256 = "a0d3221ddb57d4eab0fd79391d58faacbf3e409fdd5ab05d7b8a139059a0a9f6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+Drive\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 131
+source = "refs/vendor/catalog.csv"
+sha256 = "edf596bf8a5881e4c8b9a7dc8cc233ec3ab2dae491fccc54bb8000e4ee9f1ba2"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+Lean\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 132
+source = "refs/vendor/catalog.csv"
+sha256 = "607f0ee61788959382a74f1651102902a1c1f09b08ec6e3ce3e54f9e6b563427"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing Minimum Warm (Neutral)\",\"note\":\"complete name; cropped \
+in \
+image2019-8-27_10-29-3.png\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 133
+source = "refs/vendor/catalog.csv"
+sha256 = "d050404d8279b8e891651539e5c6b9d22ce8e454d3498ceae1f0e3248941da24"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+Neutral\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 134
+source = "refs/vendor/catalog.csv"
+sha256 = "8f84eae7c542df2640987cfc4eceeb433e02bbd7028ce61f69bdac52f3c3a6f9"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-ignition\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle\",\"level\":\"\",\"name\":\"Idle \
+Ignition Timing \
+Stoich\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2022-3-28_14-51-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

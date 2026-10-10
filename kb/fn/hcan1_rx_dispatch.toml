@@ -1,0 +1,14 @@
+title = "HCAN1 RX dispatch: RXPR -> msg-table FFFEAFAB"
+
+[[symbol]]
+layout = "1nd"
+address = "00113c7c"
+
+[symbol.curated]
+order = 2
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00113c7c"

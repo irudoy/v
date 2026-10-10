@@ -1,0 +1,50 @@
+title = "Crank Drag Crank Angle Pulse Width 4"
+summary = "Competitor inventory: Crank Drag Crank Angle Pulse Width 4."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 348
+source = "refs/vendor/catalog.csv"
+sha256 = "b5498abcf37ec98d4d0fac6dafd616f9830fdb8e59223cef099b88a5234bc23c"
+original = """
+{\"axis_x\":\"RPM\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Crank \
+Drag Crank Angle Pulse Width \
+4\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"crankshaft-speed \
+measurement\",\"section\":\"Misfire\",\"source\":\"Misfire / Crank Drag \
+Crank Angle Pulse Width 1-4\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

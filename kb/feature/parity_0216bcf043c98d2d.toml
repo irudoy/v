@@ -1,0 +1,53 @@
+title = "Throttle Flow Potential for Fuel Comp X Trace Low"
+summary = "Competitor inventory: Throttle Flow Potential for Fuel Comp X Trace Low."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 331
+source = "refs/vendor/catalog.csv"
+sha256 = "179653583d83aa9247775f4e2238a33811720d4be151c2b6902daaccfa4e9aa1"
+original = """
+{\"axis_x\":\"Throttle Duct Opening \
+Area\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Throttle \
+Flow Potential for Fuel Comp X Trace Low\",\"note\":\"Defines the Volumetric \
+Flow Ratio axis of the Fuel Compensation \
+map.\",\"origin\":\"factory\",\"output\":\"Fuel Compensation trace \
+position\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic \
+Throttle / Throttle Flow Potential for Fuel Comp X Trace (Low & \
+High)\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

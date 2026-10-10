@@ -1,0 +1,52 @@
+title = "Target Drive Force"
+summary = "Competitor inventory: Target Drive Force."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 334
+source = "refs/vendor/catalog.csv"
+sha256 = "67d7b9986df13eb9df9c88a7e6e207311c75b3ff5abf1a46438eb6db39926bb1"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Target \
+Drive Force\",\"note\":\"Influences gear selection by pedal position. Wheel \
+torque = Throttle A Torque * calculated gear ratio. Alt tables must match \
+exactly or P0605 is set. Sub Operation Mode is used for \
+towing.\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque \
+Management\",\"source\":\"Torque Management / Target Drive \
+Force\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,16 @@
+[[source]]
+layout = "1nd"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_0004C4B8"
+
+[[symbol]]
+layout = "1nd"
+address = "0004c4b8"
+name = "green-rook"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004c4b8"

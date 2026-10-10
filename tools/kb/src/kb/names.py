@@ -75,6 +75,50 @@ def render(rows):
     return out.getvalue()
 
 
+def owner_check(model):
+    """Remaining names belong to the decoder or an exact permanent reservation."""
+    from kb.adapters import dids
+    from kb.model import Issue, SymbolKey
+    configured = model.config.get('names', {})
+    if not configured.get('owners_checked'):
+        return []
+    reservations, issues = {}, []
+    for entry in configured.get('reserved', ()):
+        if (not isinstance(entry, dict) or set(entry) != {
+                'layout', 'kind', 'address', 'name', 'former', 'reason'}
+                or not isinstance(entry.get('reason'), str) or not entry['reason'].strip()):
+            issues.append(Issue('names', repo.OWNER_CONFIG.as_posix(), 'reserved',
+                                'a permanent reservation needs its full row and a reason'))
+            continue
+        key = entry['layout'], entry['kind'], entry['address']
+        if key in reservations:
+            issues.append(Issue('names', repo.OWNER_CONFIG.as_posix(), entry['name'],
+                                'duplicate permanent reservation owner'))
+        reservations[key] = entry
+    consumed = set()
+    for row in model.names:
+        symbol = model.symbols.get(SymbolKey(*row.key))
+        if symbol is not None:
+            if symbol.sources <= {dids.DECODER.as_posix()}:
+                continue
+            issues.append(Issue('names', PATH.as_posix(), row.name,
+                                'the remaining name has no declared decoder owner'))
+            continue
+        key = row.layout, row.kind, f'{row.address:08x}'
+        entry = reservations.get(key)
+        expected = dict(layout=row.layout, kind=row.kind, address=f'{row.address:08x}',
+                        name=row.name, former=list(row.former))
+        if entry is None or {name: value for name, value in entry.items()
+                             if name != 'reason'} != expected:
+            issues.append(Issue('names', PATH.as_posix(), row.name,
+                                'the inactive name lacks its exact permanent reservation owner'))
+        consumed.add(key)
+    for key in reservations.keys() - consumed:
+        issues.append(Issue('names', repo.OWNER_CONFIG.as_posix(), reservations[key]['name'],
+                            'the inactive reservation is absent or has an active owner'))
+    return issues
+
+
 def write(rows, root=repo.ROOT):
     path = root / PATH
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -218,4 +262,7 @@ def reserved(model, rows):
             found.update(name for name, _, _ in meaning.other_names)
     for entity in model.entities.values():
         found.add(entity.slug)
+    from kb import retirement
+    for kind, name, document, _ in retirement.records(model):
+        found.update(retirement.aliases(kind, name, document))
     return found

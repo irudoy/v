@@ -1,0 +1,49 @@
+title = "Knock Maximum"
+summary = "Competitor inventory: Knock Maximum."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 277
+source = "refs/vendor/catalog.csv"
+sha256 = "ad3fb8d468294746b26a673a51eafe93ad83e89f6a3d08ae416ba2d3e7cbd6ce"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"Failsafe\",\"level\":\"Intermediate\",\"name\":\"Knock \
+Maximum\",\"note\":\"value is retard; 5 triggers at -5 \
+degrees\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Failsafe\",\"source\":\"images/image2020-5-15_16-13-11.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

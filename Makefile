@@ -36,7 +36,7 @@ help:
 		'' \
 		'Targets:' \
 		'  help              Show this help.' \
-		'  setup             Synchronize the locked Python environment.' \
+		'  setup             Install dependencies, initialize pinned references, and build the graph.' \
 		'  check             Validate versions, tracked sources, L0 exports, projections, and the' \
 		'                    firmware architecture model, and rebuild the ROM atlas from them.' \
 		'  test-python       Run the complete Python test contract.' \
@@ -77,6 +77,9 @@ help:
 
 setup:
 	$(UV) sync --frozen
+	git submodule update --init --recursive
+	$(UV) run kb instance up
+	$(UV) run kb sync
 
 check:
 	$(PYTHON) tools/version_index.py --check

@@ -1,0 +1,14 @@
+title = "scan of the 331-record DTC table (stride 3) with threshold 0x28"
+
+[[symbol]]
+layout = "1nd"
+address = "000bf756"
+
+[symbol.curated]
+order = 23
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bf756"

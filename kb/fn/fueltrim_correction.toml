@@ -1,0 +1,18 @@
+note = [
+    """
+fuel-trim correction; sets 0xFFFEB852 bit 0x08 after a counter threshold; \
+reads Lock as RMW rather than a gate""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "0007cab0"
+
+[symbol.curated]
+order = 26
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007cab0"

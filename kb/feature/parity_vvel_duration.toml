@@ -1,0 +1,166 @@
+title = "Vvel duration"
+summary = """
+Competitor inventory: VVEL Valve Duration Cold; VVEL Valve Duration First \
+Idle; VVEL Valve Duration Main; VVEL Valve Duration Main ETD; VVEL Valve \
+Duration Overrun; VVEL Valve Duration Startup; VVEL Valve Duration Wide Open \
+Throttle; VVEL Decel; VVEL Main Drivability; VVEL Main Drivability High \
+Detonation; VVEL Duration WOT."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 64
+source = "refs/vendor/catalog.csv"
+sha256 = "0d5316853ba70d69c8fe62eb972f178e6bb0af88bfeac3196a7df01fd13061cd"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 65
+source = "refs/vendor/catalog.csv"
+sha256 = "2696a60e6335be43f8089b54165df117d960f2c5995c886334644ccdcfa6d714"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+First \
+Idle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 66
+source = "refs/vendor/catalog.csv"
+sha256 = "62587441d576ede9bb569601d041fafa25e847d45a1c19fdcdeed3eeba738a4a"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Main\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 67
+source = "refs/vendor/catalog.csv"
+sha256 = "fd6f9ce3c55b478bb11464b0c894b9725b79ceb58925ba4d07b1ab6dd6eaf48c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Main \
+ETD\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 68
+source = "refs/vendor/catalog.csv"
+sha256 = "3635c0b05e6beb99d059ecd53f1fcf955c98c30b46b32aedcd2e0d0ca2353441"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Overrun\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 69
+source = "refs/vendor/catalog.csv"
+sha256 = "c033a4e6daddf68e13ca2e999bec6dbfde3564a7ad38c3b7814e20040121631e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Startup\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 70
+source = "refs/vendor/catalog.csv"
+sha256 = "13870a8e506012b6093a5e0be846eae865416b78f3b9bcad440a24f9c6c28559"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Valve Duration \
+Wide Open \
+Throttle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 353
+source = "refs/vendor/catalog.csv"
+sha256 = "94191bfe8ac2df3096b25b3ca2640e3d1379e93ec3672a9055b803e7c4f1921e"
+original = """
+{\"axis_x\":\"Engine \
+RPM\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Decel\",\"note\":\"Engine-braking mode. ProECU calls this 'VVEL Valve \
+Duration Overrun'.\",\"origin\":\"factory\",\"output\":\"target valve \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL \
+Decel\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 356
+source = "refs/vendor/catalog.csv"
+sha256 = "76241e0de0f22446236878e38ab65ec544a210dfd36725c026204102c0e9ade8"
+original = """
+{\"axis_x\":\"BFS\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"vvel-duration\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Main Drivability\",\"note\":\"The primary normal-operation table. ProECU \
+calls it the 3D map 'VVEL Valve Duration \
+Main'.\",\"origin\":\"factory\",\"output\":\"VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Main \
+Drivability\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 357
+source = "refs/vendor/catalog.csv"
+sha256 = "7f045b8e8bce7e298de1c45ecb7c8d03b12001a09e250fd73986297c75dd63cb"
+original = """
+{\"axis_x\":\"BFS\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"vvel-duration\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Main Drivability High Detonation\",\"note\":\"High-detonation-mode variant \
+that ProECU does not name.\",\"origin\":\"factory\",\"output\":\"VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Main \
+Drivability\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 360
+source = "refs/vendor/catalog.csv"
+sha256 = "4db3b737905e6c2af9f37cb289ec8f702860153e417e1691dba98b3c12c67429"
+original = """
+{\"axis_x\":\"Engine \
+RPM\",\"axis_y\":\"\",\"concept\":\"vvel-duration\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Duration WOT\",\"note\":\"Full-throttle mode. ProECU calls this 'VVEL Valve \
+Duration WOT'.\",\"origin\":\"factory\",\"output\":\"target VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Duration \
+WOT\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

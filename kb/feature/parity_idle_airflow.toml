@@ -1,0 +1,78 @@
+title = "Idle airflow"
+summary = """
+Competitor inventory: Idle - target airflow rate #1 - Drive; Idle - target \
+airflow rate #1 - Neutral; Idle - target airflow rate #2 - Drive; Idle - \
+target airflow rate #2 - Neutral."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 117
+source = "refs/vendor/catalog.csv"
+sha256 = "cdc8beec0b5d1e03acbde2e1d2d37de621c2615b113deb9cbf11d868d0e1b4a6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-airflow\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle - target airflow rate #1 - \
+Drive\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 118
+source = "refs/vendor/catalog.csv"
+sha256 = "20b5bd80dae4721a40da94264b110a42083d9a42e9dd58dfb96e61a5f89bda06"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-airflow\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle - target airflow rate #1 - \
+Neutral\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 119
+source = "refs/vendor/catalog.csv"
+sha256 = "85e15d9c05a317f3a4af3b94b1a1eeb01041b480d88e52fad3a13c3904c38c99"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-airflow\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle - target airflow rate #2 - \
+Drive\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 120
+source = "refs/vendor/catalog.csv"
+sha256 = "e6989526815f6d7ab1fb0a3180423f164cd81ec1005036d175c1b3b5fc17e2ab"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"idle-airflow\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Idle \
+Control\",\"level\":\"\",\"name\":\"Idle - target airflow rate #2 - \
+Neutral\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Idle\",\"source\":\"images/image2019-8-27_10-26-0.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

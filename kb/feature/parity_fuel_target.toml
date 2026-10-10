@@ -1,0 +1,60 @@
+title = "Fuel target"
+summary = "Competitor inventory: Fuel Map; Fuel Targets."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 115
+source = "refs/vendor/catalog.csv"
+sha256 = "bdf99fcfd5b05b06598a7724e9b73e214e9b2c955125fd0018c442228d583c04"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"fuel-target\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling\",\"level\":\"\",\"name\":\"Fuel \
+Map\",\"note\":\"factory 8x8 according to the guide \
+text\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 295
+source = "refs/vendor/catalog.csv"
+sha256 = "29db538d0092de8d8469c84cd8efc543e9ae3d4981ceaec1358136145d628fc6"
+original = """
+{\"axis_x\":\"BFS\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"fuel-target\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Fuel \
+Targets\",\"note\":\"X is theoretical injector pulse width. ProECU calls the \
+same axis Engine Load (%).\",\"origin\":\"factory\",\"output\":\"AFR \
+target\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / Fuel \
+Targets\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

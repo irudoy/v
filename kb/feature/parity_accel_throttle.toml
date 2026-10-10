@@ -1,0 +1,139 @@
+title = "Accel throttle"
+summary = """
+Competitor inventory: Accel to Throttle Hi; Accel to Throttle Hi Trustful; \
+Accel to Throttle Lo; Accel To Throttle Lo Trustful; Acc. Throttle Request \
+Low Speed; Acc. Throttle Request Low Speed (Alt); Acc. Throttle Request High \
+Speed; Acc. Throttle Request High Speed (Alt)."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 12
+source = "refs/vendor/catalog.csv"
+sha256 = "53d7ee973a1eb6ee20ce429abd795a46734dbd6338858cc324eb05992f356f65"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel to Throttle \
+Hi\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 13
+source = "refs/vendor/catalog.csv"
+sha256 = "94449dc136f7f1289a731ebe9bab4b945732700e3215ebe2fcf2d4192ef60a15"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel to Throttle Hi \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 14
+source = "refs/vendor/catalog.csv"
+sha256 = "507a0ed69f93d6ad3abf967702911cc0e494e100bd6f42a9514ae5b78a7f9871"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel to Throttle \
+Lo\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 15
+source = "refs/vendor/catalog.csv"
+sha256 = "52820f2d6a24648fc0ddf193ad277af654ff2218804313a8a5967f612366eb1e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Accel \
+Pedal\",\"level\":\"\",\"name\":\"Accel To Throttle Lo \
+Trustful\",\"note\":\"To capitalization preserved \
+verbatim\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Accelerator \
+and \
+Throttle\",\"source\":\"images/image2019-8-27_10-19-22.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 324
+source = "refs/vendor/catalog.csv"
+sha256 = "12294fb909f7eea0a4c6e97fc75e2c3ccdc2ab7543a2c59f114c8375e99e48ce"
+original = """
+{\"axis_x\":\"Accel \
+Deg\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Acc. \
+Throttle Request Low Speed\",\"note\":\"The table set depends on the ROM, \
+ranging from two tables (Low/High Speed) to many tables (Low, High, Cold, \
+Warm, Idle, Snow, Sport, Eco).\",\"origin\":\"factory\",\"output\":\"target \
+throttle angle\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic \
+Throttle / Acc. Throttle Request\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 325
+source = "refs/vendor/catalog.csv"
+sha256 = "ef41a19ae2d3483871d76a5418f1f5c2058f38009f7be020a00421d200e5d225"
+original = """
+{\"axis_x\":\"Accel \
+Deg\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Acc. \
+Throttle Request Low Speed (Alt)\",\"note\":\"Validation copy: it must match \
+the main table or P0605 is set. ProECU calls the same mechanism \
+'Trustful'.\",\"origin\":\"factory\",\"output\":\"target throttle \
+angle\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic Throttle \
+/ Acc. Throttle Request\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 326
+source = "refs/vendor/catalog.csv"
+sha256 = "011dc597862c6fa9890596531b778417b0491b43cdbb01055712ff94d8b07124"
+original = """
+{\"axis_x\":\"Accel \
+Deg\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Acc. \
+Throttle Request High Speed\",\"note\":\"P0605 is set if Low Speed requests \
+a larger angle than High Speed; the reverse relation is \
+permitted.\",\"origin\":\"factory\",\"output\":\"target throttle \
+angle\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic Throttle \
+/ Acc. Throttle Request\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 327
+source = "refs/vendor/catalog.csv"
+sha256 = "027169b194ef052a16e98e6c45ebcc70ac5c114e373b0e272394a5d29705b694"
+original = """
+{\"axis_x\":\"Accel \
+Deg\",\"axis_y\":\"\",\"concept\":\"accel-throttle\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Acc. \
+Throttle Request High Speed (Alt)\",\"note\":\"Validation \
+copy.\",\"origin\":\"factory\",\"output\":\"target throttle \
+angle\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic Throttle \
+/ Acc. Throttle Request\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

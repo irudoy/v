@@ -101,6 +101,7 @@ COMMANDS = {
     "merge": ("meaning", "other", "evidence", "from"),
     "rename": ("meaning", "name"),
     "move": ("symbol", "to", "evidence", "from", "level", "note"),
+    'retire': ('ref',),
 }
 REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
             "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
@@ -108,7 +109,7 @@ REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
             "set-link": ("meaning", "type", "to"),
             "select": ("meaning", "registry", "order", "dependency"),
             "merge": ("meaning", "other"), "rename": ("meaning", "name"),
-            "move": ("symbol", "to")}
+            "move": ("symbol", "to"), 'retire': ('ref',)}
 SEARCH = ("method", "target", "count")
 # The keys of a link besides its type, target, and evidence, and those that
 # choose among the links of one type and target.
@@ -124,7 +125,7 @@ LINK_JOINED = (*LINK_LISTS, "supports", "reverse_supports")
 # The keys that commands other than `set` write: the former names, symbols,
 # statuses, links, and analogs of a meaning, and the place and the names of a
 # symbol entry. A feature target takes every key besides its layout.
-MEANING_OWNED = ("former", *(name for name, _ in store.ARRAYS))
+MEANING_OWNED = ("retired", "former", *(name for name, _ in store.ARRAYS))
 ENTRY_OWNED = ("layout", "address", "name", "former")
 SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other
@@ -232,7 +233,7 @@ def renamed(value, others, kind, target, key=None):
     references it rewrites. A reference is a whole string `<name>/<kind>`
     with an optional layout and address, or a `[[...]]` citation of prose,
     where a bare generated name counts too; `former` records names and stays."""
-    if key == "former":
+    if key in ("former", "research"):
         return value, 0
     if isinstance(value, dict):
         found, count = {}, 0
@@ -272,7 +273,7 @@ def relocated(value, moves, key=None):
     `moves` {old: new}, a whole string or a `[[...]]` citation, naming its new
     reference, and the count of the references it rewrites; `former` records
     references and stays."""
-    if key == "former":
+    if key in ("former", "research"):
         return value, 0
     if isinstance(value, dict):
         found, count = {}, 0
@@ -678,7 +679,7 @@ class Change:
         table, specs, subject = self._settable(op["ref"], op.get("layout"))
         whole = isinstance(specs, str)
         for name in [path.split(".", 1)[0] for path in unset] + list(keys):
-            refused = name == specs if whole else name not in specs
+            refused = name == 'retired' or (name == specs if whole else name not in specs)
             if refused:
                 allowed = f"every key besides {specs}" if whole else ", ".join(specs)
                 raise KbError(f"set writes no {name} of {subject}; it writes {allowed}", code=2)
@@ -1701,6 +1702,42 @@ class Change:
                 if entry.get("layout") != status["layout"]]
         document["status"] = kept + [status]
 
+    def retire(self, op):
+        """Mark an unused owned entity inactive while preserving its document."""
+        from kb import retirement
+        text = str(op['ref']).strip()
+        held = next((record for record in retirement.records(self.model)
+                     if text == f'{record[1]}/{record[0]}'), None)
+        if held is not None:
+            self.lines.append(f'retire {text}: inactive; names remain reserved')
+            return
+        reference = MEANING_REF.fullmatch(text)
+        entity_key = (reference['kind'], reference['name']) if reference else None
+        if entity_key in self.model.entities:
+            subject = self.model.entities[entity_key]
+            path, document = self.designed(*entity_key)
+        else:
+            subject, symbol = self.resolve(text)
+            if symbol is not None:
+                raise KbError('retire takes a whole meaning, not one layout symbol', code=2)
+            path, document = self.document(subject)
+        consumers = retirement.consumers(self.model, subject)
+        if consumers:
+            raise KbError(f'{subject.key}: retirement has consumers: ' + '; '.join(consumers), code=3)
+        if document.get('ledger') or any(entry.get('curated') for entry in document.get('symbol', ())):
+            raise KbError(f'{subject.key}: generated selectors prevent retirement', code=3)
+        document['retired'] = True
+        key = subject.key
+        def inactive(result):
+            records = retirement.records(result)
+            if not any(f'{name}/{kind}' == key for kind, name, _, _ in records):
+                return f'{key}: retirement must retain the inactive owner'
+            if any(meaning.key == key for meaning in result.meanings) or any(
+                    entity.key == key for entity in result.entities.values()):
+                return f'{key}: a retained source reconstructs the retired entity'
+        self.expected.append(inactive)
+        self.lines.append(f'retire {subject.key}: inactive; names remain reserved')
+
     @staticmethod
     def _keep_home(meaning, layouts, document):
         """Pin the home of an unnamed meaning, whose name is the generated name
@@ -1914,9 +1951,19 @@ def plan(ops, base, resolve, root=repo.ROOT):
         change.run(op, number if len(ops) > 1 else None)
     texts = change.texts()
     result = compile.build(root, {**base.overlay, **texts})
+    from kb import reconciliation
+    owner_text = (reconciliation.rebase(base, result, change.renamed)
+                  if change.renamed or any(op['cmd'] == 'unlink' for op in ops) else None)
+    if owner_text is not None:
+        texts[repo.OWNER_CONFIG] = owner_text
+        result = compile.build(root, {**base.overlay, **texts})
     refused = refusals(base, result)
     unmet = [message for expected in change.expected for message in [expected(result)]
              if message]
+    from kb import research
+    unmet += research.preservation(base, result)
+    from kb import retirement
+    unmet += retirement.preserved(base, result)
     if refused or unmet:
         parts = [f"adds {len(refused)} issues"] if refused else []
         parts += [f"contradicts {len(unmet)} of its operations"] if unmet else []

@@ -92,7 +92,7 @@ ENDPOINT_KEYS = frozenset(
     {"id", "name", "direction", "block", "peripheral", "summary", "registers", "functions", "specs"}
 )
 CHAIN_KEYS = frozenset({"id", "name", "summary", "quantity", "output", "specs", "step"})
-STEP_KEYS = frozenset({"from", "to", "effect", "sign", "via", "note", "specs"})
+STEP_KEYS = frozenset({"from", "to", "effect", "sign", "via", "note", "specs", "research"})
 # Evidence columns per ledger: (row kind, ranked property, evidence column).
 EVIDENCE_COLUMNS = {
     "functions": (("confidence", "evidence"), ("contract_conf", "contract_evidence")),
@@ -280,6 +280,7 @@ class Step:
     note: str
     specs: tuple
     support: str = ""
+    research: dict | None = None
 
 
 @dataclass
@@ -922,6 +923,13 @@ class Architecture:
                     self._error(f"{step_context} repeats {raw.get('from')} -> {raw.get('to')}")
                 pairs.add((source, target))
                 step = Step(source, target, effect, sign, via, " ".join(note.split()), step_specs)
+                if 'research' in raw:
+                    from kb import research
+                    record = raw['research']
+                    if not isinstance(record, dict) or set(record) != research.KEYS or record.get('state') != 'unresolved':
+                        self._error(f'{step_context}.research needs one unresolved source-bound record')
+                    else:
+                        step.research = record
                 members = (source, target, *via)
                 if self._connected(members):
                     step.support = "ledger"
@@ -1440,6 +1448,7 @@ class Architecture:
                             "note": step.note,
                             "support": step.support,
                             "specs": list(step.specs),
+                            **({'research': step.research} if step.research else {}),
                         }
                         for step in chain.steps
                     ],

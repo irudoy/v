@@ -24,10 +24,20 @@ to = "rare-weasel/ram"
 effect = "indexes"
 sign = "none"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-Row axis 0x11ECE: each point times four is compared with RPM/12.5 word \
-ffff11bc, so one count is 50 RPM over 400..7400 RPM."""
 specs = ["defs/JK08A.ignition-state.md"]
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 1
+step_sha256 = "143aa45ec9c0cf5dd04f659fb542bd0114cc8f6695e8af9f033e9679baf74d13"
+original = """
+{\"effect\":\"indexes\",\"from\":\"rpm/ram\",\"note\":\"Row axis 0x11ECE: \
+each point times four is compared with RPM/12.5 word ffff11bc, so one count \
+is 50 RPM over 400..7400 \
+RPM.\",\"sign\":\"none\",\"specs\":[\"defs/JK08A.ignition-state.md\"],\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "normalized_load/ram"
@@ -35,9 +45,18 @@ to = "rare-weasel/ram"
 effect = "indexes"
 sign = "none"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-Column axis 0x11EBE is Q7 normalized BFS ffff102c, the scheduler snapshot of \
-ffff1048."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 2
+step_sha256 = "eceb8bdb1402de3211902090a0b7af85ca2422a698fb1142f62230e7f930dec7"
+original = """
+{\"effect\":\"indexes\",\"from\":\"normalized_load/ram\",\"note\":\"Column \
+axis 0x11EBE is Q7 normalized BFS ffff102c, the scheduler snapshot of \
+ffff1048.\",\"sign\":\"none\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "ignition_gated_surface_1/tbl"
@@ -45,9 +64,19 @@ to = "rare-weasel/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-Cold surface, 16x16: bits 0..6 are an x - 64 crank-degree timing trim; bit 7 \
-enables the knock-state path."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 3
+step_sha256 = "16c78e546c5e8e1e925323bbb4fa28d72c637f44ea14cca252ecabb118c5d4b3"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"ignition_gated_surface_1/tbl\",\"note\":\"Cold \
+surface, 16x16: bits 0..6 are an x - 64 crank-degree timing trim; bit 7 \
+enables the knock-state \
+path.\",\"sign\":\"positive\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "high_octane_timing_state/tbl"
@@ -55,8 +84,18 @@ to = "rare-weasel/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-High-octane hot surface; it is the hot input while ffff2466 bit 6 is clear."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 4
+step_sha256 = "94c7889ec968f9906b94167093879606d4d8334e9cc7d634541ab337d94a84c2"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"high_octane_timing_state/tbl\",\"note\":\"High-octane \
+hot surface; it is the hot input while ffff2466 bit 6 is \
+clear.\",\"sign\":\"positive\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "high_detonation_timing_state/tbl"
@@ -64,9 +103,18 @@ to = "rare-weasel/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-High-detonation hot surface; it is the hot input while ffff2466 bit 6 is \
-set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 5
+step_sha256 = "bb4047edb1886fbc1b989f807ce32a5d896a0b9ac22ec9bd50e1299e034367a4"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"high_detonation_timing_state/tbl\",\"note\":\"High-detonation \
+hot surface; it is the hot input while ffff2466 bit 6 is \
+set.\",\"sign\":\"positive\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "raspberry-dragon/ram"
@@ -74,9 +122,19 @@ to = "rare-weasel/ram"
 effect = "selects"
 sign = "none"
 via = ["cold_hot_timing_map_selector/fn"]
-note = """
-Coolant raw ffff1071 (deg C = raw - 50) <= 106 uses the cold surface, \
-107..131 blends cold with the selected hot surface, above 131 uses hot."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 6
+step_sha256 = "6650630162e424ce8586c7a0f80b7843f5bd243436c89a72accecf11e3d9d4ee"
+original = """
+{\"effect\":\"selects\",\"from\":\"raspberry-dragon/ram\",\"note\":\"Coolant \
+raw ffff1071 (deg C = raw - 50) <= 106 uses the cold surface, 107..131 \
+blends cold with the selected hot surface, above 131 uses \
+hot.\",\"sign\":\"none\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "knock_surface_state/ram"
@@ -84,7 +142,18 @@ to = "rare-weasel/ram"
 effect = "selects"
 sign = "none"
 via = ["cold_hot_timing_map_selector/fn"]
-note = "Bit 6 selects the hot surface: clear 0x9A1A, set 0x9B1A."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 7
+step_sha256 = "83187df7fcda4b211235ff79a9a8cc1eca64a1afa4f98aeb51e5d67632b12c89"
+original = """
+{\"effect\":\"selects\",\"from\":\"knock_surface_state/ram\",\"note\":\"Bit \
+6 selects the hot surface: clear 0x9A1A, set \
+0x9B1A.\",\"sign\":\"none\",\"to\":\"rare-weasel/ram\",\"via\":[\"cold_hot_timing_map_selector/fn\"]}"""
 
 [[step]]
 from = "magnificent-crab/ram"
@@ -92,9 +161,19 @@ to = "knock_surface_state/ram"
 effect = "compares"
 sign = "none"
 via = ["knock_function/fn"]
-note = """
-Hysteresis: Q8 state ffff1382 <= ROM16[0x8F02] = -1792 sets bit 6; only a \
-value above ROM16[0x8F00] = 8192 clears it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 8
+step_sha256 = "758833d3c55972971146ca2fff6e06f526a82c0f7bd1a60e42431b06a9812cfc"
+original = """
+{\"effect\":\"compares\",\"from\":\"magnificent-crab/ram\",\"note\":\"Hysteresis: \
+Q8 state ffff1382 <= ROM16[0x8F02] = -1792 sets bit 6; only a value above \
+ROM16[0x8F00] = 8192 clears \
+it.\",\"sign\":\"none\",\"to\":\"knock_surface_state/ram\",\"via\":[\"knock_function/fn\"]}"""
 
 [[step]]
 from = "rare-weasel/ram"
@@ -102,9 +181,19 @@ to = "spicy-stoat/ram"
 effect = "masks"
 sign = "positive"
 via = ["selected_timing_state_terms/fn"]
-note = """
-ffff23bd = max((ffff160f & 0x7F) - ffff11af, 0); ffff11af is the snapshot of \
-adjustment follower ffff11e7."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 9
+step_sha256 = "b87786240b37393fddf168ac1ccec16970e591ce459aad3bfb14c8be77df786f"
+original = """
+{\"effect\":\"masks\",\"from\":\"rare-weasel/ram\",\"note\":\"ffff23bd = \
+max((ffff160f & 0x7F) - ffff11af, 0); ffff11af is the snapshot of adjustment \
+follower \
+ffff11e7.\",\"sign\":\"positive\",\"to\":\"spicy-stoat/ram\",\"via\":[\"selected_timing_state_terms/fn\"]}"""
 
 [[step]]
 from = "spicy-stoat/ram"
@@ -112,9 +201,19 @@ to = "obedient-civet/ram"
 effect = "adds"
 sign = "positive"
 via = ["timing_state_compositor/fn"]
-note = """
-Normal branch: ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc \
-- ffff15ea - 128 + ffff1a7d + ffff134a)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 10
+step_sha256 = "95cd2ca81eb7da14835cf65da845c08d69437778504674e9f432e837f07b5758"
+original = """
+{\"effect\":\"adds\",\"from\":\"spicy-stoat/ram\",\"note\":\"Normal branch: \
+ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc - ffff15ea - \
+128 + ffff1a7d + \
+ffff134a).\",\"sign\":\"positive\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "silky-agama/ram"
@@ -122,9 +221,19 @@ to = "obedient-civet/ram"
 effect = "adds"
 sign = "positive"
 via = ["timing_state_compositor/fn"]
-note = """
-Base angle of 0004ae6c: divider result r of ffff17b8, ffff14dc, ffff1630, \
-and ffff11bc, stored as r - 14 below 0x8E and 127 otherwise."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 11
+step_sha256 = "8d2aca15f9639a3f9f410779dd25055162c720c886808edf9fb702ea51c34f7a"
+original = """
+{\"effect\":\"adds\",\"from\":\"silky-agama/ram\",\"note\":\"Base angle of \
+0004ae6c: divider result r of ffff17b8, ffff14dc, ffff1630, and ffff11bc, \
+stored as r - 14 below 0x8E and 127 \
+otherwise.\",\"sign\":\"positive\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "purple-chihuahua/ram"
@@ -132,9 +241,19 @@ to = "obedient-civet/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["timing_state_compositor/fn"]
-note = """
-Unsigned retard sum clamp_u8(ffff22fe + ffff22f8 - (ffff1657 >> 4)) of \
-0004bb6a; both branches subtract it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 12
+step_sha256 = "74c1e348bcad9316f513d30349440c50132693f2a61defa347955608a48f680a"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"purple-chihuahua/ram\",\"note\":\"Unsigned \
+retard sum clamp_u8(ffff22fe + ffff22f8 - (ffff1657 >> 4)) of 0004bb6a; both \
+branches subtract \
+it.\",\"sign\":\"negative\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "fine-herring/ram"
@@ -142,9 +261,19 @@ to = "obedient-civet/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["timing_state_compositor/fn"]
-note = """
-Retard max(curve(RPM/25 ffff11b3) - curve(coolant index ffff106f), 0) of \
-0004bbac; the normal branch subtracts it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 13
+step_sha256 = "59bf303a5dfdc8b9d9cce3d509bbcfdf5db0776fa85ff1ef19439fd0c63aa913"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"fine-herring/ram\",\"note\":\"Retard \
+max(curve(RPM/25 ffff11b3) - curve(coolant index ffff106f), 0) of 0004bbac; \
+the normal branch subtracts \
+it.\",\"sign\":\"negative\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "unique-loon/ram"
@@ -152,9 +281,19 @@ to = "obedient-civet/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["timing_state_compositor/fn"]
-note = """
-Bounded ramp of 0004bbee from live load ffff1048 and ffff22e8; the normal \
-branch subtracts it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 14
+step_sha256 = "6b30198b132ac4dab9d474d73eb168662a26e99ff3eff3d15de6f4312fcb7ac0"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"unique-loon/ram\",\"note\":\"Bounded \
+ramp of 0004bbee from live load ffff1048 and ffff22e8; the normal branch \
+subtracts \
+it.\",\"sign\":\"negative\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "just-dog/ram"
@@ -162,9 +301,18 @@ to = "obedient-civet/ram"
 effect = "adds"
 sign = "positive"
 via = ["timing_state_compositor/fn"]
-note = """
-Centered cam-coordinate correction of 0004d2a6, neutral at 64; both branches \
-add it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 15
+step_sha256 = "254e08887bc8651381015f3442ae5bccfb887f76346abc6873f3812d941c32bc"
+original = """
+{\"effect\":\"adds\",\"from\":\"just-dog/ram\",\"note\":\"Centered \
+cam-coordinate correction of 0004d2a6, neutral at 64; both branches add \
+it.\",\"sign\":\"positive\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "cold_idle_ignition_timing/tbl"
@@ -172,9 +320,18 @@ to = "truthful-agama/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["signed_timing_state_accumulator/fn"]
-note = """
-Default/post-transition addend, the last selector choice; ffff1511 = x - 128 \
-of the selected 8-point map."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 16
+step_sha256 = "412efc4ab4ed71e5dc607f9632c69150d0d7a640471d3f37a6b78703c3df25c0"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"cold_idle_ignition_timing/tbl\",\"note\":\"Default/post-transition \
+addend, the last selector choice; ffff1511 = x - 128 of the selected 8-point \
+map.\",\"sign\":\"positive\",\"to\":\"truthful-agama/ram\",\"via\":[\"signed_timing_state_accumulator/fn\"]}"""
 
 [[step]]
 from = "idle_ignition_timing/tbl"
@@ -182,9 +339,19 @@ to = "truthful-agama/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["signed_timing_state_accumulator/fn"]
-note = """
-Warm DFCO-transition addend, second choice after stock-inert 0x121A6, while \
-window timer ffff2590 is nonzero."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 17
+step_sha256 = "0e75cddf9d80cf6757646effd2db60e86e1c235a96cb39d0abbdeb4f656856ed"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"idle_ignition_timing/tbl\",\"note\":\"Warm \
+DFCO-transition addend, second choice after stock-inert 0x121A6, while \
+window timer ffff2590 is \
+nonzero.\",\"sign\":\"positive\",\"to\":\"truthful-agama/ram\",\"via\":[\"signed_timing_state_accumulator/fn\"]}"""
 
 [[step]]
 from = "truthful-agama/ram"
@@ -192,9 +359,19 @@ to = "space-bird/ram"
 effect = "adds"
 sign = "positive"
 via = ["signed_timing_state_accumulator/fn"]
-note = """
-ffff23ee = clamp_s8(s8(ffff1514) + u8(ffff12db) + s8(ffff1511) + \
-u8(ffff1512) + u8(ffff1349) - 128)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 18
+step_sha256 = "139ab1734a1f347430acc8a6583f170662abab3b80e7a76bc7a8f0faeb8119a5"
+original = """
+{\"effect\":\"adds\",\"from\":\"truthful-agama/ram\",\"note\":\"ffff23ee = \
+clamp_s8(s8(ffff1514) + u8(ffff12db) + s8(ffff1511) + u8(ffff1512) + \
+u8(ffff1349) - \
+128).\",\"sign\":\"positive\",\"to\":\"space-bird/ram\",\"via\":[\"signed_timing_state_accumulator/fn\"]}"""
 
 [[step]]
 from = "space-bird/ram"
@@ -202,8 +379,18 @@ to = "obedient-civet/ram"
 effect = "adds"
 sign = "positive"
 via = ["timing_state_compositor/fn"]
-note = """
-Alternate branch: ffff1830 = clamp_s8(ffff1a7d + ffff23ee - ffff23c5 - 64)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 19
+step_sha256 = "5b9b6e342af41e5067f9d38276da4d02b9e27a3a1759b49090a447ec14e016fc"
+original = """
+{\"effect\":\"adds\",\"from\":\"space-bird/ram\",\"note\":\"Alternate \
+branch: ffff1830 = clamp_s8(ffff1a7d + ffff23ee - ffff23c5 - \
+64).\",\"sign\":\"positive\",\"to\":\"obedient-civet/ram\",\"via\":[\"timing_state_compositor/fn\"]}"""
 
 [[step]]
 from = "obedient-civet/ram"
@@ -211,7 +398,18 @@ to = "functional-corgi/ram"
 effect = "stores"
 sign = "positive"
 via = ["timing_state_latch/fn"]
-note = "Timing-state latch 0004c136 stores ffff1830 or ffff1831 into ffff2404."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 20
+step_sha256 = "617fc1a7b3a089430323a886ab26cdb61faa0edc7e0d38ad28c7feae915b8dbc"
+original = """
+{\"effect\":\"stores\",\"from\":\"obedient-civet/ram\",\"note\":\"Timing-state \
+latch 0004c136 stores ffff1830 or ffff1831 into \
+ffff2404.\",\"sign\":\"positive\",\"to\":\"functional-corgi/ram\",\"via\":[\"timing_state_latch/fn\"]}"""
 
 [[step]]
 from = "functional-corgi/ram"
@@ -219,9 +417,19 @@ to = "liberal-gorilla/ram"
 effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn"]
-note = """
-Scheduler block copy ffff23bc..ffff2447 -> ffff2330..ffff23bb; ffff2378 is \
-the previous-pass latched state."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 21
+step_sha256 = "92434b01539903061705b6cf48d4c8d34ba970d71c1248dcda998e38c85c4639"
+original = """
+{\"effect\":\"copies\",\"from\":\"functional-corgi/ram\",\"note\":\"Scheduler \
+block copy ffff23bc..ffff2447 -> ffff2330..ffff23bb; ffff2378 is the \
+previous-pass latched \
+state.\",\"sign\":\"positive\",\"to\":\"liberal-gorilla/ram\",\"via\":[\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "liberal-gorilla/ram"
@@ -275,9 +483,19 @@ to = "viridian-koel/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["event_timing_correction_builder/fn"]
-note = """
-Subtracted ffff1ff6 = byte coefficient * interp(0x147DA by ffff237e) / 100; \
-its operating-mode qualifier is unresolved."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 26
+step_sha256 = "05f707193b692c9287c9eea30866ef392db287e98ce6b7ae3648d62da8d406f7"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"sincere-dragonfly/tbl\",\"note\":\"Subtracted \
+ffff1ff6 = byte coefficient * interp(0x147DA by ffff237e) / 100; its \
+operating-mode qualifier is \
+unresolved.\",\"sign\":\"negative\",\"to\":\"viridian-koel/ram\",\"via\":[\"event_timing_correction_builder/fn\"]}"""
 
 [[step]]
 from = "viridian-koel/ram"
@@ -285,9 +503,18 @@ to = "holistic-mouflon/ram"
 effect = "adds"
 sign = "positive"
 via = ["final_timing_coordinate_builder/fn"]
-note = """
-ffff11da = clamp(ffff12d6 + gated ffff564c, ROM8[0x8221] = -7, ROM8[0x821E] \
-= 50)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 27
+step_sha256 = "649dfaed2fd5e6f97b9347f295a129c7e455f6a31b6773866b7d6afbe99ed2c5"
+original = """
+{\"effect\":\"adds\",\"from\":\"viridian-koel/ram\",\"note\":\"ffff11da = \
+clamp(ffff12d6 + gated ffff564c, ROM8[0x8221] = -7, ROM8[0x821E] = \
+50).\",\"sign\":\"positive\",\"to\":\"holistic-mouflon/ram\",\"via\":[\"final_timing_coordinate_builder/fn\"]}"""
 
 [[step]]
 from = "cryptic-honeybee/ram"
@@ -295,10 +522,20 @@ to = "holistic-mouflon/ram"
 effect = "adds"
 sign = "positive"
 via = ["final_timing_coordinate_builder/fn"]
-note = """
-Work-support adjustment TARGET IGN TIM ADJ, -5..0 degrees, added only while \
-ffff5b31 bits 1..5 are clear."""
 specs = ["defs/JK08A.work-support.md"]
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 28
+step_sha256 = "fd60d0a2b3ec8e6ee01e2ea66426e1ddb2edbcfa55d299d09fdbf79a83bda8d0"
+original = """
+{\"effect\":\"adds\",\"from\":\"cryptic-honeybee/ram\",\"note\":\"Work-support \
+adjustment TARGET IGN TIM ADJ, -5..0 degrees, added only while ffff5b31 bits \
+1..5 are \
+clear.\",\"sign\":\"positive\",\"specs\":[\"defs/JK08A.work-support.md\"],\"to\":\"holistic-mouflon/ram\",\"via\":[\"final_timing_coordinate_builder/fn\"]}"""
 
 [[step]]
 from = "holistic-mouflon/ram"
@@ -306,9 +543,19 @@ to = "final_timing/ram"
 effect = "limits"
 sign = "positive"
 via = ["final_timing_coordinate_builder/fn"]
-note = """
-Moves from the previous ffff11d4 by at most +4 (15 in flagged modes) or -15 \
-per pass, then -7..50, a coolant floor, and 70."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 29
+step_sha256 = "406d17698b9151dc557929834ddfb154298a477c5b8818900f19e5225140f35a"
+original = """
+{\"effect\":\"limits\",\"from\":\"holistic-mouflon/ram\",\"note\":\"Moves \
+from the previous ffff11d4 by at most +4 (15 in flagged modes) or -15 per \
+pass, then -7..50, a coolant floor, and \
+70.\",\"sign\":\"positive\",\"to\":\"final_timing/ram\",\"via\":[\"final_timing_coordinate_builder/fn\"]}"""
 
 [[step]]
 from = "final_timing/ram"
@@ -316,9 +563,19 @@ to = "apc_output/ram"
 effect = "converts"
 sign = "negative"
 via = ["apc_set_command_builder/fn"]
-note = """
-Normal path: command ffff2022 = uint8(110 - uint8(ffff11d4)), the spark \
-delay in crank degrees after tooth 7."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 30
+step_sha256 = "3cae4b88149e60343cc5e715387702e6edc9703a2f8887186121fa7903a3e682"
+original = """
+{\"effect\":\"converts\",\"from\":\"final_timing/ram\",\"note\":\"Normal \
+path: command ffff2022 = uint8(110 - uint8(ffff11d4)), the spark delay in \
+crank degrees after tooth \
+7.\",\"sign\":\"negative\",\"to\":\"apc_output/ram\",\"via\":[\"apc_set_command_builder/fn\"]}"""
 
 [[step]]
 from = "apc_output/ram"
@@ -331,10 +588,19 @@ via = [
     "apc_command_phase_normalizer/fn",
     "apc_set_compare_continuation/fn",
 ]
-note = """
-0002a892 stores command / 10 and the remainder at ffff1558 and ffff155a; \
-ffff1558 counts teeth down, then GR11A = ffff158a + ffff22bc * remainder / \
-10."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 31
+step_sha256 = "57626329cc29772868657194e4ab7c611f7ce2d448ddc7423a70b0fbf047dfd4"
+original = """
+{\"effect\":\"schedules\",\"from\":\"apc_output/ram\",\"note\":\"0002a892 \
+stores command / 10 and the remainder at ffff1558 and ffff155a; ffff1558 \
+counts teeth down, then GR11A = ffff158a + ffff22bc * remainder / \
+10.\",\"sign\":\"none\",\"to\":\"loyal-snail/reg\",\"via\":[\"stock_ignition_consumer/fn\",\"split_u8_by_ten/fn\",\"apc_command_phase_normalizer/fn\",\"apc_set_compare_continuation/fn\"]}"""
 
 [[step]]
 from = "apc_output/ram"
@@ -342,9 +608,19 @@ to = "steadfast-yak/reg"
 effect = "schedules"
 sign = "none"
 via = ["apc_reset_command_builder/fn", "apc_reset_compare_scheduler/fn"]
-note = """
-0004e080 adds 120 - dwell ffff237a to the command; 0002acba programs the \
-GR11B reset edge with the same divide-by-ten scheme."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 32
+step_sha256 = "95f803c1cec8afa36fa6abb90c4455fb58857f917792200078525946d7beabcd"
+original = """
+{\"effect\":\"schedules\",\"from\":\"apc_output/ram\",\"note\":\"0004e080 \
+adds 120 - dwell ffff237a to the command; 0002acba programs the GR11B reset \
+edge with the same divide-by-ten \
+scheme.\",\"sign\":\"none\",\"to\":\"steadfast-yak/reg\",\"via\":[\"apc_reset_command_builder/fn\",\"apc_reset_compare_scheduler/fn\"]}"""
 
 [[step]]
 from = "invaluable-weasel/ram"
@@ -352,9 +628,19 @@ to = "spry-uakari/reg"
 effect = "selects"
 sign = "none"
 via = ["stock_ignition_consumer/fn"]
-note = """
-Set mask ffff13bd = 1 << (cylinder - 1) enables the POPCR low-byte action \
-that drives the PULS pin high at GR11A."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 33
+step_sha256 = "7f6f324fcccaaed4fa28ce4d1f3b4ff8ccccd069747a8b71a455b62c0e0d5f44"
+original = """
+{\"effect\":\"selects\",\"from\":\"invaluable-weasel/ram\",\"note\":\"Set \
+mask ffff13bd = 1 << (cylinder - 1) enables the POPCR low-byte action that \
+drives the PULS pin high at \
+GR11A.\",\"sign\":\"none\",\"to\":\"spry-uakari/reg\",\"via\":[\"stock_ignition_consumer/fn\"]}"""
 
 [[step]]
 from = "pink-mustang/ram"
@@ -362,6 +648,16 @@ to = "spry-uakari/reg"
 effect = "selects"
 sign = "none"
 via = ["apc_reset_compare_scheduler/fn"]
-note = """
-Reset mask ffff13d1 of the next cylinder enables the POPCR high-byte action \
-that drives its PULS pin low at GR11B, which starts its dwell."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/ignition_advance.toml"
+source_sha256 = "dbcf3172dff4abaf5ec3b842a507809cc48c72ab61347f14fa57183797b460ab"
+order = 34
+step_sha256 = "72d8e9065e6333bc766c39efb35f37a342c89081cf7134dce30f004b87beeeec"
+original = """
+{\"effect\":\"selects\",\"from\":\"pink-mustang/ram\",\"note\":\"Reset mask \
+ffff13d1 of the next cylinder enables the POPCR high-byte action that drives \
+its PULS pin low at GR11B, which starts its \
+dwell.\",\"sign\":\"none\",\"to\":\"spry-uakari/reg\",\"via\":[\"apc_reset_compare_scheduler/fn\"]}"""

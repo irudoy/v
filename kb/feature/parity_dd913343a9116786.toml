@@ -1,0 +1,51 @@
+title = "Simplified Timing Load Activation"
+summary = "Competitor inventory: Simplified Timing Load Activation."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 369
+source = "refs/vendor/catalog.csv"
+sha256 = "f7deb1c1c8f8d7e44ded333568a4095b130e3af0ffacfe67d6e28aa54b82c103"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"0\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Simplified \
+Timing Load Activation\",\"note\":\"ARC patch. Simplified timing activates \
+when BFS is at or above the threshold, regardless of engine \
+speed.\",\"origin\":\"patch\",\"output\":\"BFS \
+threshold\",\"section\":\"Simplified Timing (ARC)\",\"source\":\"Simplified \
+Timing (ARC) / Settings -> Switchable Settings\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

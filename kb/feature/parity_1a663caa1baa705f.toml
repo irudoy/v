@@ -1,0 +1,48 @@
+title = "Torque Filtering Unknown Hi"
+summary = "Competitor inventory: Torque Filtering Unknown Hi."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 197
+source = "refs/vendor/catalog.csv"
+sha256 = "527fe480567d06232d00efdb520dced6182daf5f2dd7c4fb847aa661f76f5137"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Filtering Unknown \
+Hi\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

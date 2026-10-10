@@ -1,0 +1,49 @@
+title = "Wastegate Integral Step"
+summary = "Competitor inventory: Wastegate Integral Step."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 45
+source = "refs/vendor/catalog.csv"
+sha256 = "25e47e2c4049b87c002261a9aa149704be599dd5172503c55728575eac8c7003"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"EcuTek \
+RaceROM Maps//Boost Control\",\"level\":\"\",\"name\":\"Wastegate Integral \
+Step\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Boost \
+Control\",\"source\":\"images/image2022-3-28_15-14-14.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

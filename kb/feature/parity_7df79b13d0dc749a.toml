@@ -1,0 +1,52 @@
+title = "Enable Flat Foot Shifting (only SyncroRev models)"
+summary = "Competitor inventory: Enable Flat Foot Shifting (only SyncroRev models)."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 224
+source = "refs/vendor/catalog.csv"
+sha256 = "782827b0fb88c49b0f796e637bb98bea0f76136fc62b2699c061632001a5fdeb"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Flat Foot Shifting (only SyncroRev \
+models)\",\"level\":\"\",\"name\":\"Enable Flat Foot Shifting (only \
+SyncroRev \
+models)\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Flat \
+Foot \
+Shifting\",\"source\":\"images/image2019-8-27_13-17-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

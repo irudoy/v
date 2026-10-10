@@ -1,0 +1,77 @@
+title = "Overrun fuel cut"
+summary = """
+Competitor inventory: Overrun Fuel Cut #1; Overrun Fuel Cut #1 Restore; \
+Overrun Fuel Cut #2; Overrun Fuel Cut #2 Restore."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 92
+source = "refs/vendor/catalog.csv"
+sha256 = "97c1108d4148c612f1ecbfd628fefc18bad75dbcfc2442436e793dd0aabb9e5d"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"overrun-fuel-cut\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Overrun\",\"level\":\"\",\"name\":\"Overrun \
+Fuel Cut \
+#1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 93
+source = "refs/vendor/catalog.csv"
+sha256 = "c6a15da649271bce1b8d98a4ea37287ce78c77ce6c001d9e895bf3289d52bcde"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"overrun-fuel-cut\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Overrun\",\"level\":\"\",\"name\":\"Overrun \
+Fuel Cut #1 \
+Restore\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 94
+source = "refs/vendor/catalog.csv"
+sha256 = "cc920197067c1298a36415a4bc2ac591e2e59a857a6f44c2d482bf099e58e0d2"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"overrun-fuel-cut\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Overrun\",\"level\":\"\",\"name\":\"Overrun \
+Fuel Cut \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 95
+source = "refs/vendor/catalog.csv"
+sha256 = "591bef67a77c2929a442794dcd7d78140c91113cb2ef19ef97548c464789ee2c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"overrun-fuel-cut\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Overrun\",\"level\":\"\",\"name\":\"Overrun \
+Fuel Cut #2 \
+Restore\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

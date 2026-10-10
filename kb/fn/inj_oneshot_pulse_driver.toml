@@ -1,0 +1,18 @@
+note = [
+    """
+ATU ch8 one-shot; 6-cylinder loop -> DCNT8A-8F pulse width; enable \
+0xFFFEB7F3&0x40 plus override 0xFFFEB8FB&2 (both are NOT immo)""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000302b6"
+
+[symbol.curated]
+order = 12
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000302b6"

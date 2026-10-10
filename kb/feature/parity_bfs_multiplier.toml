@@ -1,0 +1,63 @@
+title = "Bfs multiplier"
+summary = "Competitor inventory: BFS Multiplier (K-Factor); K - Fuel Multiplier."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 174
+source = "refs/vendor/catalog.csv"
+sha256 = "48d0ec2fc80a7f595aba6d818a5b06a67171240b53f06401ede7f5af0b8adcc6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"bfs-multiplier\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"BFS Multiplier \
+(K-Factor)\",\"note\":\"default 26806 according to the guide; found in \
+dumps: 1ND0A/1ND3B 0x9106, JK78C 0x8F80, JK03A/JK08A 0x9284, JK00D \
+0x931C\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 298
+source = "refs/vendor/catalog.csv"
+sha256 = "e141837fa6e1e71473da33e73a5f9494b2a493c345fc65718018a6829e060029"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"bfs-multiplier\",\"dims\":\"0\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"K \
+- Fuel Multiplier\",\"note\":\"The same scalar that ProECU calls 'BFS \
+Multiplier (K-Factor)' and A2L calls 'K-Value'. A2L 'MAF Factor' is a \
+separate airflow scalar.\",\"origin\":\"factory\",\"output\":\"MAF -> BFS \
+multiplier\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+K - Fuel Multiplier\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

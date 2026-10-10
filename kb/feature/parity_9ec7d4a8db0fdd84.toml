@@ -1,0 +1,52 @@
+title = "Simplified Timing Map 1"
+summary = "Competitor inventory: Simplified Timing Map 1."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 364
+source = "refs/vendor/catalog.csv"
+sha256 = "efc35b9430a30d00f2bcf63813faf1f7c88af339cdabc9f6bede30da4300c262"
+original = """
+{\"axis_x\":\"independent load axis\",\"axis_y\":\"independent engine-speed \
+axis\",\"concept\":\"\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Simplified \
+Timing Map 1\",\"note\":\"ARC patch. The axes are fully independent from the \
+factory ignition table, allowing higher \
+resolution.\",\"origin\":\"patch\",\"output\":\"degrees \
+BTDC\",\"section\":\"Simplified Timing (ARC)\",\"source\":\"Simplified \
+Timing (ARC) / Simplified Timing (Map 1 - 5)\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

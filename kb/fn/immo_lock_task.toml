@@ -1,0 +1,18 @@
+note = [
+    """
+root of the periodic immo task -> immo_lock_state_machine plus indirect \
+PTR""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000bef34"
+
+[symbol.curated]
+order = 18
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bef34"

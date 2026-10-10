@@ -1,0 +1,18 @@
+note = [
+    """
+injection pulse-width scheduler; cylinder data 0xFFFE9210; override \
+0xFFFEB8FB&2 (NOT immo)""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "0007d3e8"
+
+[symbol.curated]
+order = 13
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007d3e8"

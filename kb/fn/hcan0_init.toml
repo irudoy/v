@@ -1,0 +1,14 @@
+title = "HCAN0 controller init"
+
+[[symbol]]
+layout = "1nd"
+address = "00113a3e"
+
+[symbol.curated]
+order = 1
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00113a3e"

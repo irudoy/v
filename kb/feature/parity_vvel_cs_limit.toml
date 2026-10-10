@@ -1,0 +1,119 @@
+title = "Vvel cs limit"
+summary = """
+Competitor inventory: VVEL Control Shaft Max; VVEL Control Shaft Min 1; VVEL \
+Control Shaft Min 1 Trustful; VVEL Control Shaft Min 2; VVEL Control Shaft \
+Min 2 Trustful; VVEL Max; VVEL Min."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 59
+source = "refs/vendor/catalog.csv"
+sha256 = "242f7af2a7e3591bfc27fa553be1566ec2ddf96f08ad1a174873c5c47bf0b562"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Max\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 60
+source = "refs/vendor/catalog.csv"
+sha256 = "29719028465fcf55ce7b6cd8ea16c4bc8635653d95d5d8d00c4742ef1101b2b6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Min \
+1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 61
+source = "refs/vendor/catalog.csv"
+sha256 = "2efdaecdc9f48ddc7b5a60b1aadb654636c0a841663aedb5d9a3a850cfef2689"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Min 1 \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 62
+source = "refs/vendor/catalog.csv"
+sha256 = "3b51716201483d604eb284ecd8a117eca072633361f3e0295dc98e0ef42b903a"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Min \
+2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 63
+source = "refs/vendor/catalog.csv"
+sha256 = "1e037bd8d508814c62ee1bfb30903d735d2bd72ff18ea8709dc1309ea9225df6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Min 2 \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 358
+source = "refs/vendor/catalog.csv"
+sha256 = "974e1d5bd7c8e6eb7edb33411a2afaf8a5e82c813528532bd4505d42396b6ba7"
+original = """
+{\"axis_x\":\"Engine \
+RPM\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Max\",\"note\":\"ProECU presents this as a control-shaft-angle limit by \
+engine speed.\",\"origin\":\"factory\",\"output\":\"maximum VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Max & VVEL \
+Min\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 359
+source = "refs/vendor/catalog.csv"
+sha256 = "c8f742ff64edead9b5f77b901fb82849804e2a5c85153a69783f48ba3096f6b8"
+original = """
+{\"axis_x\":\"Engine \
+RPM\",\"axis_y\":\"\",\"concept\":\"vvel-cs-limit\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Min\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"minimum VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL Max & VVEL \
+Min\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

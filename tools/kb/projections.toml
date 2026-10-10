@@ -323,6 +323,14 @@ consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/mem
 read = "guarded"
 
 [[projection]]
+path = "tools/ghidra/symbols/1nd.csv"
+generator = "kb.adapters.curated:registry"
+stage = 9
+inputs = ["kb/fn/", "tools/kb/src/kb/adapters/curated.py", "tools/kb/src/kb/store.py"]
+consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/memgraph/", "tools/romviz/"]
+read = "guarded"
+
+[[projection]]
 path = "defs/JK08A.architecture.toml"
 generator = "kb.architecture_projection:registry"
 stage = 6

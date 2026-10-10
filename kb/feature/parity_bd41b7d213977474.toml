@@ -1,0 +1,50 @@
+title = "Crank Drag C"
+summary = "Competitor inventory: Crank Drag C."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 344
+source = "refs/vendor/catalog.csv"
+sha256 = "b9edfdfff661daa4959accd59e072d874fb12d7d599bab844ea69be02e445556"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Crank \
+Drag C\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"crankshaft \
+rotational resistance\",\"section\":\"Misfire\",\"source\":\"Misfire / Crank \
+Drag A, B and C\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

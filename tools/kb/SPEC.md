@@ -157,7 +157,10 @@ tools/kb/
   registry without a semantic name and appends their rows. A row stays when
   the meaning of its symbol takes a semantic name, and its name then resolves
   as a former name. A symbol leaves `names.csv` in the conversion commit of
-  its registry; the file is removed in stage 11.
+  its registry. The decoder-owned rows and exact inactive reservations remain
+  primary names in stage 11. `[names] owners_checked` requires every remaining
+  row to have the SID 0x22 decoder as its only active declarer or an exact
+  `[names] reserved` entry with its full row and a permanent-reservation reason.
 - `.ignore` at the repository root lists `/kb/` and `/l0/`, anchored at the
   root so that `tools/kb/` stays searchable, and ripgrep-based search skips
   both trees.
@@ -743,7 +746,8 @@ Blocks:
 Chains:
 
 - `[[step]]` keys: `from`, `to`, `effect`, `sign` (`positive`, `negative`,
-  or `none`), `via` (an array of `fn` references), `note`, and `specs`.
+  or `none`), `via` (an array of `fn` references), `note`, `specs`, and
+  an optional `[step.research]` source record.
   Steps are ordered by their position in the array.
 - `effect` is one of `scales`, `looks-up`, `indexes`, `converts`, `adds`,
   `multiplies`, `selects`, `compares`, `subtracts`, `copies`, `gates`,
@@ -764,11 +768,26 @@ Chains:
   operators, and parentheses. Text conditions, comparisons, units, unknown
   variables, and malformed expressions fail. Syntax grants no evidence or
   claim level and does not evaluate an equation.
-  During the stage-6 migration, `kb audit --section chain-notes` reports
+  `kb audit --section chain-notes` reports
   rejected notes with their exact text and step binding. A write refuses a
   new rejection, including a change to a held note, its ends, ordered calls,
-  effect, or sign. The mandatory `chains` gate retains its
-  structural checks until every held note satisfies the arithmetic contract.
+  effect, or sign. The mandatory `chains` gate enforces the configured
+  arithmetic grammar for every present note.
+- `[step.research]` preserves an unresolved original prose statement outside
+  the arithmetic note. Its state is `unresolved`, not a layout search status
+  or a claim level. It contains `source_commit` (the complete immutable Git
+  commit), `source_path` (the same owning chain), `source_sha256`, `order`,
+  `step_sha256`, and `original` (canonical JSON of every original step field).
+  The source bytes, exact original text, ordered references, repeated calls,
+  effect, sign and specifications must agree with that historical source.
+  The current step preserves every original field except its prose `note`,
+  which the complete source record retains. The writer refuses removal or
+  modification of an existing unresolved record, including whole-array
+  replacement. Transfer provides no arithmetic or executable proof, typed
+  condition, physical identity, claim-level promotion or hardware readiness.
+  Deferred semantic review remains separately counted and source-bound.
+  Layout symbols and absent/unresolved search statuses retain their own
+  meanings; an unreviewed text does not create a search status.
 - `output` is a reference to the meaning the chain computes.
 
 Signals:
@@ -1058,7 +1077,8 @@ every `kb` command runs it first when the graph is stale.
 - L0 of every layout under `l0/`.
 - `rom-images/homology.toml`, `rom-images/roms.csv`, and the stock images the
   catalog lists.
-- `tools/kb/config.toml` and `tools/kb/projections.toml`.
+- `tools/kb/config.toml`, the restricted `tools/kb/owners.toml`, and
+  `tools/kb/projections.toml`.
 - Until a registry converts, the registry itself, read by its adapter
   ([Migration map](#20-migration-map)).
 - The modules of the compiler under `tools/kb/src/kb/`. The modules of the
@@ -1318,7 +1338,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb log <ref> [<read options>]` | Full former references of the entity's symbol entries and recorded profile address corrections, with their Git commits | 2 |
 | `kb raw <ref> [<read options>]` | The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included | 2 |
 | `kb cypher <query> [--param <name>=<value>]... [<read options>]` | A read-only Cypher query over the working tree's instance after the fingerprint check | 2 |
-| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check ([Levels](#71-levels)); `chain-notes` outside the configured arithmetic grammar during the stage-6 migration. `--section` restricts the audit to the named sections, which it alone computes | 2 |
+| `kb audit [--section <s>]...` | Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check ([Levels](#71-levels)); `chain-notes` outside the configured arithmetic grammar; `research` lists source-bound unresolved semantic statements separately. `--section` restricts the audit to the named sections, which it alone computes | 2 |
 | `kb bench [--all] [--only <id>]...` | The acceptance questions of the current stage, or all, against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions)) | 2 |
 | `kb check [--changed] [--only <check>]...` | The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass | 1 |
 
@@ -1326,6 +1346,7 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 
 | Command | Effect | Stage |
 |---|---|---|
+| `kb prepare-research <source-commit> --output <path>` | Prepares one source-preserving unresolved-chain transfer batch under `tmp/` or `.kb/`, without writing knowledge or changing the graph. Every original document must restore exactly from its ordered records; valid arithmetic stays unchanged. The primary writer applies the reviewed batch at the consolidated package boundary | 6 |
 | `kb guard on\|off\|status --session <id> [--json]` | Saves or reads the project-local maintenance override of one root session; `status` writes nothing and reports `null` without a valid override | 6 |
 | `kb new <kind> <layout>:<address> --evidence <item>... [--name <semantic-name>] [--level <level>] [--note <text>] [--dry-run]` | A meaning with the symbol at a location that holds none and the evidence of its identity, named or with a generated name | 3 |
 | `kb new <kind> <slug> [--dry-run]` | A designed entity of a kind that the store holds | 3 |
@@ -1343,7 +1364,8 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]` | Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves)) | 3 |
 | `kb move <symbol> <to> --legacy-reservation [--dry-run]` | Preserves one generated-name reservation after an accepted registered legacy/L0 entry repair, without entity adoption | 4 |
 | `kb retire <ref> [--dry-run]` | Retires a meaning or designed entity; its names stay reserved | 11 |
-| `kb family new`, `kb family add` | [Layouts and families](#3-layouts-and-families) | 9 |
+| `kb family new <family> --image <image> --layout <layout> --census <path> --mcu <mcu> --flash-size <size> --software-id <id>... [--kind <kind>] [--calibration-region <range>] [--exact-range <range>]... [--dry-run]` | Starts a family from a stock-bound census, explicit image identity and exported L0 | 9 |
+| `kb family add <family> --image <image> --census <path> [--layout <layout>] [--dry-run]` | Adds a stock-bound image; exact-code inheritance retains the layout, and other families require a new layout | 9 |
 | `kb apply <batch> [--dry-run]` | A batch of the operations above as one change | 3 |
 | `kb fmt [<path>...]` | Rewrites entity files in canonical form after a merge | 3 |
 | `kb project [--check] [<path>...]` | Renders under the lock the projections of `kb` functions that apply at the current stage, or those of the paths; `--check` writes nothing and exits with 1 when a projection differs from its rendering ([Projections](#14-projections)) | 2 |
@@ -1351,11 +1373,25 @@ the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
 | `kb instance up\|down\|status\|prune` | [Instances](#11-instances) | 2 |
 | `kb mcp` | Serves the read commands and `kb apply` over MCP ([MCP](#126-mcp)) | 2 |
 
-`kb retire` belongs to final retirement in stage 11 (#56). Its contract
-defines the inactive representation, incoming references, generated views,
-and permanent reservation of semantic and generated names before the command
-is implemented. Ledger conversion in stage 5 preserves active meanings and
-does not retire them.
+`kb retire` keeps the canonical owner document at its existing path and adds
+`retired = true`. The complete document retains its semantic, generated and
+former names, symbols, evidence, notes and outgoing relationships. Inactive
+documents contribute only a `Retired` name index, with no active meaning,
+symbol, designed entity, target or executable claim. Their names remain
+permanently reserved. A reference to an inactive name reports its state with
+exit code 5. A repeated retirement of its full meaning or entity key writes
+nothing.
+
+Retirement refuses an incoming relation, evidence dependency, architecture
+step, field source, feature requirement or target reference. It also refuses
+a remaining registry declarer or a generated consumer selector, including a
+ledger, curated CSV, editor/logger presentation, interpolation view,
+diagnostic binding or parity inventory. Consumers must leave through their
+owner operations before retirement. `set` cannot change `retired`; generic
+batches cannot rewrite, remove or reactivate an inactive owner. The writer
+lock, dry run, complete-model refusal gate and source preservation apply as
+they do to other writes. No active project entity is retired by the transfer
+of its representation.
 
 Every write:
 
@@ -1634,6 +1670,8 @@ gates keep running until the stage that replaces them.
 | `ledgers` | Every owned ledger view selects existing evidence and notes and a canonical dependency with the selected direction, layout, offset, role, and claim; the selected curated name is current or former | 5 |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) | Kinds from 2; holding from 8 |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source: on every layout that a feature requiring an `ecu_ram` field targets, the symbol that the field reads states a width of at least the bits of the field, and the allocation of a field of another origin holds at least its bytes | Fields from 4; symbols from 8 |
+| `code` | Declared writer and reader relations reproduce through normalized L0 accesses; wider RAM and register accesses have an exact unresolved review with a reason, claim digest and L0 digest; new, changed, duplicate and vanished differences fail | 8 |
+| `source-bindings` | Every typed function anchor and selected RAM role of the JK78C specifications has its exact owned source binding on the stated layout or a source-bound unresolved missing-function record; provenance grounds no claim level | 9 |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout | Hooks and DIDs from 3; all ROM symbols from 8 |
 | `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail | 3 |
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails | 3 |
@@ -2400,7 +2438,7 @@ that no registry states.
 | Ghidra export directories | Code structure | 1 | `l0/<layout>/` | Local cache of decompilations, listings, and research exports |
 | `tools/ghidra/symbols/7mfk.csv` | Curated function names of `7mfk` | 5 | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
 | `tools/ghidra/symbols/1nd.csv` | Curated function names of `1nd` | 9 | Names of `fn` meanings | Projection that `RenameFuncs.java` applies to Ghidra programs |
-| `kb/names.csv` | Generated names of symbols in legacy registries | created in 2 | itself, shrinking with each conversion | Removed in 11 |
+| `kb/names.csv` | Generated names of decoder-owned symbols and permanent inactive reservations | created in 2 | itself, with exact owner declarations in `tools/kb/owners.toml` | The `names` gate checks every remaining owner |
 | `patches/rom-address-profiles.toml` | Target symbols, hooks, DIDs, telemetry sources and their unavailability, runtime allocations and variants, and their evidence | 3 | Meanings and statuses; targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry` | Projection |
 | `patches/*-runtime-correspondence.csv` | Correspondence of source and target symbols by feature domain | 3 | Symbols and statuses | Projection |
 | Symbol and hook-key tables of `patches/runtime_targets.py` | `7mfk` symbols of the feature meanings and the per-layout hook keys | 3 | Symbols and feature targets | The module reads them through the `kb` API |
@@ -2417,7 +2455,7 @@ that no registry states.
 | `defs/JK08A.diagnostic-bindings.csv` | Diagnostic bindings | 5 | `[[diagnostic]]` tables | Projection |
 | `defs/JK08A.architecture.toml` | Stages, blocks, endpoints, and chains | 6 | `kb/stage/`, `kb/block/`, `kb/endpoint/`, `kb/chain/` | Projection |
 | Code graph of the `tools/memgraph/` loaders | Derived index | 7 | The compiler | The loaders move into the compiler |
-| `defs/JK78C.vvel.md`, `defs/JK78C.can.md` | Symbols of the VVEL and CAN code of `jk78c` | 9 | Meanings with `jk78c` symbols | Narrow specifications of the mechanisms |
+| `defs/JK78C.vvel.md`, `defs/JK78C.can.md` | Typed function anchors and selected RAM roles of the VVEL and CAN specifications, including explicit layout comparisons | 9 | Meanings with declared-layout symbols and exact `[[source]]` bindings | Prose remains in the narrow specifications; missing L0 entries remain source-bound unresolved records |
 | `defs/JK08A.maps.csv` | Map tracker | generated | `tools/maps/build_tracker.py`, which reads the graph from stage 7 | Projection |
 | `defs/1ND0A-1ME3B.census-correspondence.csv` | Census output | generated | Input of `kb family new` and `kb suggest` from stage 9 | Generated research output |
 | `defs/<ROM>.xml`, `defs/<ROM>.xdf`, RomRaider plugin files, the host decoder | Editor and logger definitions | generated | Their generators, which read `kb` from the stages of their inputs | Projections with `read = "open"` |
@@ -2427,6 +2465,40 @@ that no registry states.
 | Narrow specifications under `defs/` | Mechanisms in prose | not converted | themselves; `specs` keys and `spec` evidence cite them | |
 
 ## 20. Migration map
+
+The remaining owner transfer is one preservation-checked package. The
+primary transition writer prepares an exact overlay, checks every existing
+symbol, relation and target, restores every original chain document and
+checks all model gates before writing the complete overlay. Its local plan
+binds the source commit, compiler fingerprint and original owner hashes.
+Preparation changes no primary knowledge and no graph state. Application
+refuses changed sources and uses the primary store writer; graph loading and
+project acceptance follow the complete source write.
+
+`[[source]]` on a meaning records a source path, its complete SHA-256, typed
+function anchor or explicitly selected RAM role, and source sections. These
+records bind provenance and carry no claim level or executable evidence. The
+`source-bindings` gate compares complete anchor coverage with the two JK78C
+specifications. A documented function absent from normalized L0 stays in an
+exact `[source_bindings] review` record with the source, L0 digest, unresolved
+state and reason; it creates no fabricated function symbol.
+
+The `code` gate compares declared writer and reader relations with the same
+normalized accesses used by the primary graph loader and checks wider RAM
+and register accesses against declared widths. `[reconciliation] review`
+records retain exact unresolved differences, with a reason, a digest of the
+claim and the layout's L0 digest. A review never verifies a graph relation,
+changes its evidence or raises a level. New, changed, duplicate and vanished
+differences fail the gate. These reviews and name-owner declarations belong
+to `tools/kb/owners.toml`, whose strict schema cannot override executed L0,
+census, MCU, or matcher settings. Both configuration sources contribute to
+the compiler fingerprint. Representation acceptance leaves unresolved code,
+semantic and hardware claims open for their subsystem review.
+
+`[symbol.curated]` selects an exact `1nd` row order and an owned alias, title
+or note. The native owner retains all prior evidence and claim levels. Its
+CSV projection is byte-identical and remains available to Ghidra and external
+repository consumers.
 
 ### 20.1 Adapters and names
 
@@ -3243,13 +3315,28 @@ evidence column by its role, the kind of the row, and the kind of the target:
 - Every fact has one owner at every stage ([Ownership by
   stage](#19-ownership-by-stage)); `AGENTS.md` carries the table of the
   current stage.
-- A registry converts in one commit of an idempotent conversion script,
+- A registry converts through an idempotent conversion script,
   `uv run python -m kb.convert <registry>`. The script reruns on a rebased
   tree, and parallel sessions know the freeze window of that registry. It
   writes the files only when the model compiled from them holds the facts of
   the model before them by the rules of the registry, adds no issue, and
   projects the registry byte-identically.
-- Every stage leaves `make verify` green.
+- Remaining stages 6-11 form one consolidated local transfer package. Their
+  dependency order applies inside the package. The package freezes exact
+  sources, HEAD and toolchain/image and passes the mandatory final gates
+  before its local commit; no stage or chain creates a separate full run.
+  Changed-input preparation uses the smallest distinct syntax and structural
+  contracts with a 10-second command and 30-second coherent-cycle budget.
+  Checks with unknown duration or greater required cost belong to an explicit
+  longer acceptance boundary. A new executable or semantic input retains a
+  smallest early original-GNU execution before matrix expansion; accepted
+  exact-input receipts are reused. Formatting checks precede final freezing.
+- Transfer, converted consumers, passed final acceptance and unresolved ECU
+  research are separate completion measures. An original unsupported
+  statement retains its full source-bound representation and uncertainty.
+  Consolidation does not relax arithmetic, schema, levels, executable or
+  source-preservation checks, and does not satisfy incomplete semantic or
+  complete-Python cold/reuse/full acceptance criteria by counting fewer cases.
 
 ### 21.2 Order
 

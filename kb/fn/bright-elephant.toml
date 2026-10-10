@@ -1,0 +1,16 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Producers of the transmit words"]
+anchor = "FUN_00080ED6"
+
+[[symbol]]
+layout = "jk78c"
+address = "00080ed6"
+name = "bright-elephant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00080ed6"

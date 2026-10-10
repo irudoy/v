@@ -1,0 +1,20 @@
+note = [
+    """
+large periodic CAN-RAM destager 0xFFFEE2xx plus limit arbiter (clamps to \
+0x6400 = 100%); among hundreds of outputs are immo-present \
+0xFFFE930E/0xFFFE92E5; callee cluster 0x00088xxx contains destage/scale \
+substeps over slices of buffer fffee2xx and is NOT an ID comparator""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "0008719c"
+
+[symbol.curated]
+order = 29
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0008719c"

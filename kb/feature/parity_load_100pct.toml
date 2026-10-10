@@ -1,0 +1,52 @@
+title = "Load 100pct"
+summary = "Competitor inventory: Calculated Load."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 312
+source = "refs/vendor/catalog.csv"
+sha256 = "ca268e1ae68b5956cf6d97216e15706a479ab2db52ff6a583c919318a238c795"
+original = """
+{\"axis_x\":\"Engine \
+RPM\",\"axis_y\":\"\",\"concept\":\"load-100pct\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Calculated \
+Load\",\"note\":\"The axis is static. Load = current BFS / table value for \
+the current speed. ProECU calls this '100% Engine Load' and gives a factory \
+value of 39.8 BFS.\",\"origin\":\"factory\",\"output\":\"BFS corresponding \
+to 100% load\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters \
+/ Calculated Load\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

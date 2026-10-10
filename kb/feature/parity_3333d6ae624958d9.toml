@@ -1,0 +1,50 @@
+title = "Wastegate Integral Throttle Activation"
+summary = "Competitor inventory: Wastegate Integral Throttle Activation."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 46
+source = "refs/vendor/catalog.csv"
+sha256 = "167f2e51c8e636cebb109c46a9192af8c376a04cf4d037091b4955445d59b176"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"EcuTek \
+RaceROM Maps//Boost Control\",\"level\":\"\",\"name\":\"Wastegate Integral \
+Throttle \
+Activation\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Boost \
+Control\",\"source\":\"images/image2022-3-28_15-14-14.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -36,6 +36,13 @@ link_role = "consumer"
 relies = "level"
 supports = "identity"
 
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Producers of the transmit words"]
+anchor = "FUN_00028320"
+
 [[symbol]]
 layout = "1nd"
 address = "0002893c"

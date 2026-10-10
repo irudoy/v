@@ -1,0 +1,14 @@
+title = "DTC/MIL priority scan (331 rec x12); not the immo gate"
+
+[[symbol]]
+layout = "1nd"
+address = "00116ad6"
+
+[symbol.curated]
+order = 8
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00116ad6"

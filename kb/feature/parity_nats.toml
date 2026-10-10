@@ -1,0 +1,50 @@
+title = "Nats"
+summary = "Competitor inventory: NATS."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 350
+source = "refs/vendor/catalog.csv"
+sha256 = "ce1043817d36f92c1c45c566e1683656bc2aa38a8680b39f9bee911c3d10cda0"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"nats\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"NATS\",\"note\":\"JK03A/JK08A \
+contains a factory Developer Immobilizer flag at 0x8725: clearing bit0 \
+bypasses the state machine and releases motor \
+inhibit.\",\"origin\":\"patch\",\"output\":\"toggle\",\"section\":\"Settings\",\"source\":\"Settings \
+/ NATS\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

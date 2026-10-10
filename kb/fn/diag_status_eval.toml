@@ -1,0 +1,18 @@
+note = [
+    """
+diagnostic status (misfire/rationality) -> 0xFFFE94xx bits; Lock is one \
+input; does not touch actuators""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "00067cce"
+
+[symbol.curated]
+order = 27
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00067cce"

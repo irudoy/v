@@ -1,0 +1,48 @@
+title = "Torque Reduction Ramp after Shift [DUP]"
+summary = "Competitor inventory: Torque Reduction Ramp after Shift [DUP]."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 206
+source = "refs/vendor/catalog.csv"
+sha256 = "782c79998d1e21097b589301978e8015ff8f89a3e91efb94e4970a48b2f69e95"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Reduction Ramp after Shift [DUP]\",\"note\":\"second row of the \
+pair\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

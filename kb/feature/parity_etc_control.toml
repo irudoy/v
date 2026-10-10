@@ -1,0 +1,50 @@
+title = "Etc control"
+summary = "Competitor inventory: ETC Control."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 349
+source = "refs/vendor/catalog.csv"
+sha256 = "e89547521d16be318c141e38e188096ddcc759564b636d3dc41ba7dc547955c3"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"etc-control\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"ETC \
+Control\",\"note\":\"Disables electronic-throttle torque control so the \
+throttle follows the pedal linearly. Also disables cruise \
+control.\",\"origin\":\"factory\",\"output\":\"toggle\",\"section\":\"Settings\",\"source\":\"Settings \
+/ ETC Control\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

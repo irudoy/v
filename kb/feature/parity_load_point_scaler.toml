@@ -1,0 +1,52 @@
+title = "Load point scaler"
+summary = "Competitor inventory: Load Point Scaler."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 313
+source = "refs/vendor/catalog.csv"
+sha256 = "4a9f7c87f7813628f7086b70b2ceda4496e09e6a64037292480770ed0a12adf7"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"load-point-scaler\",\"dims\":\"0\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Load \
+Point Scaler\",\"note\":\"The primary parameter for injector changes; it \
+shifts every table whose load is expressed through BFS. UpRev recommends \
+changing this scalar instead of the load-axis \
+values.\",\"origin\":\"factory\",\"output\":\"expected BFS at full \
+throttle\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Load Point Scaler\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,85 @@
+title = "Map sensor scaling"
+summary = """
+Competitor inventory: MAP Sensor Multiplier; MAP Sensor Offset; Sensor \
+Multiplier Unk; Sensor Offset Unk."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 184
+source = "refs/vendor/catalog.csv"
+sha256 = "666e06e785e12ce4817e0be39b93110d97100bb3a0b4597eb7a206909542d639"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"map-sensor-scaling\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAP Sensor Multiplier\",\"note\":\"stock \
+370Z: 0.22 \
+bar/volt\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 185
+source = "refs/vendor/catalog.csv"
+sha256 = "85ef065c1cd7afeaec73eb35be2a9efd8db643207f38ff208cde5e4c5e6e64b5"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"map-sensor-scaling\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAP Sensor Offset\",\"note\":\"stock \
+370Z: 0.02 bar; negative values are \
+rejected\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 186
+source = "refs/vendor/catalog.csv"
+sha256 = "cce1e2c75de8a41ec522fa5bbf3ed527d369c9cad98a4a5d796a7bf7b1fbe445"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"map-sensor-scaling\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"Sensor Multiplier \
+Unk\",\"note\":\"verbatim \\\"Unk\\\"; unidentified by ProECU \
+itself\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 187
+source = "refs/vendor/catalog.csv"
+sha256 = "2694317432932f3f796149c0dca6e0a15f7610c889edcaaad507549522e27c93"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"map-sensor-scaling\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"Sensor Offset Unk\",\"note\":\"verbatim \
+\\\"Unk\\\"; unidentified by ProECU \
+itself\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,14 @@
+title = "immo/DTC fault counters saturating at 0xff"
+
+[[symbol]]
+layout = "1nd"
+address = "000bf53a"
+
+[symbol.curated]
+order = 22
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bf53a"

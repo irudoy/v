@@ -19,9 +19,19 @@ to = "illegal-husky/ram"
 effect = "indexes"
 sign = "none"
 via = ["divergent-mongrel/fn"]
-note = """
-RPM/50 snapshot is the row key of 0xB33A, 0xB2FA, and 0xAB4A; the sign \
-follows the surface shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 1
+step_sha256 = "6d7aae30f9654544fd7f403f65f019275e6c2441a19db43c7d929c51215bd39f"
+original = """
+{\"effect\":\"indexes\",\"from\":\"tough-earwig/ram\",\"note\":\"RPM/50 \
+snapshot is the row key of 0xB33A, 0xB2FA, and 0xAB4A; the sign follows the \
+surface \
+shape.\",\"sign\":\"none\",\"to\":\"illegal-husky/ram\",\"via\":[\"divergent-mongrel/fn\"]}"""
 
 [[step]]
 from = "normalized_load/ram"
@@ -29,9 +39,18 @@ to = "illegal-husky/ram"
 effect = "indexes"
 sign = "none"
 via = ["divergent-mongrel/fn"]
-note = """
-Normalized BFS min(255, ffff1026*128/0x6A5A) is the column key of the three \
-exhaust surfaces."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 2
+step_sha256 = "d842365805ae1826cfbbb83e57430c7666ac40217cf06ba7807b25973c464b21"
+original = """
+{\"effect\":\"indexes\",\"from\":\"normalized_load/ram\",\"note\":\"Normalized \
+BFS min(255, ffff1026*128/0x6A5A) is the column key of the three exhaust \
+surfaces.\",\"sign\":\"none\",\"to\":\"illegal-husky/ram\",\"via\":[\"divergent-mongrel/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_target/tbl"
@@ -39,9 +58,18 @@ to = "illegal-husky/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["divergent-mongrel/fn"]
-note = """
-base_main = interpolate_u8(0xB33A, rpm50, load); 16x16, (raw-128)*0.5 degCA, \
-retard positive."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 3
+step_sha256 = "eb2a319216d4fb0ef639069db81c18d3c611cd2b121f2d8215fe7cb7aa0cd5ae"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"exhaust_cvtc_target/tbl\",\"note\":\"base_main \
+= interpolate_u8(0xB33A, rpm50, load); 16x16, (raw-128)*0.5 degCA, retard \
+positive.\",\"sign\":\"positive\",\"to\":\"illegal-husky/ram\",\"via\":[\"divergent-mongrel/fn\"]}"""
 
 [[step]]
 from = "righteous-sparrow/tbl"
@@ -49,9 +77,19 @@ to = "illegal-husky/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["divergent-mongrel/fn"]
-note = """
-With ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); \
-otherwise main = base_main."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 4
+step_sha256 = "ff19cf043ab206bdc812c2201c2532cde3cc96157aa0614450ac3c43b542945f"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"righteous-sparrow/tbl\",\"note\":\"With \
+ffff2466 bit 6 set, main = clamp_u8(base_main - correction + 128); otherwise \
+main = \
+base_main.\",\"sign\":\"negative\",\"to\":\"illegal-husky/ram\",\"via\":[\"divergent-mongrel/fn\"]}"""
 
 [[step]]
 from = "meaty-guillemot/tbl"
@@ -59,9 +97,18 @@ to = "cornflower-millipede/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["divergent-mongrel/fn"]
-note = """
-cold = interpolate_u8(0xB2FA, rpm50, load); stock 0xB2FA is neutral 128 \
-throughout."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 5
+step_sha256 = "69073fe8ed77ec2b9c9708a23050f7c85d01c458278ebfca6d1c49299de8466f"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"meaty-guillemot/tbl\",\"note\":\"cold = \
+interpolate_u8(0xB2FA, rpm50, load); stock 0xB2FA is neutral 128 \
+throughout.\",\"sign\":\"positive\",\"to\":\"cornflower-millipede/ram\",\"via\":[\"divergent-mongrel/fn\"]}"""
 
 [[step]]
 from = "illegal-husky/ram"
@@ -69,9 +116,19 @@ to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "positive"
 via = ["wild-taipan/fn"]
-note = """
-Raw coolant > 131 selects main; 106..131 blends cold + \
-trunc0((c-106)*(main-cold)/25); the override stage passes it otherwise."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 6
+step_sha256 = "89211fafbdb1cc1d02861cc6d7524af67155144790e432f41f55fb6d5457ae6c"
+original = """
+{\"effect\":\"selects\",\"from\":\"illegal-husky/ram\",\"note\":\"Raw \
+coolant > 131 selects main; 106..131 blends cold + \
+trunc0((c-106)*(main-cold)/25); the override stage passes it \
+otherwise.\",\"sign\":\"positive\",\"to\":\"lovely-hyrax/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "cornflower-millipede/ram"
@@ -79,9 +136,19 @@ to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "positive"
 via = ["wild-taipan/fn"]
-note = """
-Raw coolant <= 106 selects cold/fallback; the weight of cold falls from 1 to \
-0 across 106..131."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 7
+step_sha256 = "81efc5e6ac2c62ece1a215e7ff40b3a38676f781a2f6c9e644aeeedef4cd4f10"
+original = """
+{\"effect\":\"selects\",\"from\":\"cornflower-millipede/ram\",\"note\":\"Raw \
+coolant <= 106 selects cold/fallback; the weight of cold falls from 1 to 0 \
+across \
+106..131.\",\"sign\":\"positive\",\"to\":\"lovely-hyrax/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "raspberry-dragon/ram"
@@ -89,9 +156,18 @@ to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "none"
 via = ["wild-taipan/fn"]
-note = """
-Raw coolant snapshot chooses cold, blend, or main; the sign follows main - \
-cold."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 8
+step_sha256 = "d5bfcb1cb30fbfe10896cdeceedb213f7d4da2667451311d260bfc31400041c5"
+original = """
+{\"effect\":\"selects\",\"from\":\"raspberry-dragon/ram\",\"note\":\"Raw \
+coolant snapshot chooses cold, blend, or main; the sign follows main - \
+cold.\",\"sign\":\"none\",\"to\":\"lovely-hyrax/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "umber-bull/tbl"
@@ -99,9 +175,19 @@ to = "lovely-hyrax/ram"
 effect = "overrides"
 sign = "positive"
 via = ["wild-taipan/fn"]
-note = """
-With ffff246c bit 1 set and latch ffff2478 bit 4 clear, byte = \
-clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 degCA)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 9
+step_sha256 = "f680a52b0b6bfa3514ca10c0d224979bc0a93622d9aa6ce76ba333a16b1c4914"
+original = """
+{\"effect\":\"overrides\",\"from\":\"umber-bull/tbl\",\"note\":\"With \
+ffff246c bit 1 set and latch ffff2478 bit 4 clear, byte = \
+clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 \
+degCA).\",\"sign\":\"positive\",\"to\":\"lovely-hyrax/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "lovely-hyrax/ram"
@@ -109,9 +195,19 @@ to = "voracious-cougar/ram"
 effect = "limits"
 sign = "positive"
 via = ["wild-taipan/fn"]
-note = """
-Limiter for bytes >= ROM8[0x8DE4] = 190 (counter ffff1954), then slew: rise \
-over previous ffff1c90 <= 4 or 20 * ffff11c0; store 0xC055C."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 10
+step_sha256 = "9c5c5b91542e7cc9bc358b60bc2a120f0c26d9b0f98e6c380aa1e30ce42ed92b"
+original = """
+{\"effect\":\"limits\",\"from\":\"lovely-hyrax/ram\",\"note\":\"Limiter for \
+bytes >= ROM8[0x8DE4] = 190 (counter ffff1954), then slew: rise over \
+previous ffff1c90 <= 4 or 20 * ffff11c0; store \
+0xC055C.\",\"sign\":\"positive\",\"to\":\"voracious-cougar/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "voracious-cougar/ram"
@@ -119,9 +215,19 @@ to = "exhaust_cvtc_target/ram"
 effect = "gates"
 sign = "positive"
 via = ["wild-taipan/fn"]
-note = """
-Demand bit ffff24a7.3 sets at ffff1c90 >= 142, holds to 140; set: the byte \
-continues to 0xC0CEE; clear: 140 while ffff1246 has a bank bit, then 128."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 11
+step_sha256 = "1b5669de5d9800bf807a290c3cff52e45418af4c603400479dd21b6b67db1f8d"
+original = """
+{\"effect\":\"gates\",\"from\":\"voracious-cougar/ram\",\"note\":\"Demand \
+bit ffff24a7.3 sets at ffff1c90 >= 142, holds to 140; set: the byte \
+continues to 0xC0CEE; clear: 140 while ffff1246 has a bank bit, then \
+128.\",\"sign\":\"positive\",\"to\":\"exhaust_cvtc_target/ram\",\"via\":[\"wild-taipan/fn\"]}"""
 
 [[step]]
 from = "almond-manul/reg"
@@ -129,9 +235,19 @@ to = "smooth-chicken/ram"
 effect = "converts"
 sign = "positive"
 via = ["complex-mongrel/fn", "clay-wasp/fn"]
-note = """
-IMI4D: phase = 20*segment + floor(20*(GR4D - ffff158a)/ffff22bc), stored at \
-0xC2E60 for cylinders 1, 3, 5; 0.5 degCA."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 12
+step_sha256 = "73cd8f5f9003b85a33f5819035d46f0ad06f735776fc7de0eab93bf4e4b99dd0"
+original = """
+{\"effect\":\"converts\",\"from\":\"almond-manul/reg\",\"note\":\"IMI4D: \
+phase = 20*segment + floor(20*(GR4D - ffff158a)/ffff22bc), stored at 0xC2E60 \
+for cylinders 1, 3, 5; 0.5 \
+degCA.\",\"sign\":\"positive\",\"to\":\"smooth-chicken/ram\",\"via\":[\"complex-mongrel/fn\",\"clay-wasp/fn\"]}"""
 
 [[step]]
 from = "smooth-chicken/ram"
@@ -139,9 +255,19 @@ to = "exhaust_cvtc_actual_b1/ram"
 effect = "filters"
 sign = "positive"
 via = ["coherent_snapshot/fn", "black-vulture/fn"]
-note = """
-Snapshot ffff11c8; out = 128 + filtered mean deviation of three edges from \
-rest edge ffff479b, curve 0x12F7E; DID 0x1164."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 13
+step_sha256 = "30f923dba34f68b8c84ebdaf2d16a6c204e5fc9eddba4b3c5f054d8f80b82e4c"
+original = """
+{\"effect\":\"filters\",\"from\":\"smooth-chicken/ram\",\"note\":\"Snapshot \
+ffff11c8; out = 128 + filtered mean deviation of three edges from rest edge \
+ffff479b, curve 0x12F7E; DID \
+0x1164.\",\"sign\":\"positive\",\"to\":\"exhaust_cvtc_actual_b1/ram\",\"via\":[\"coherent_snapshot/fn\",\"black-vulture/fn\"]}"""
 
 [[step]]
 from = "calculating-donkey/reg"
@@ -149,9 +275,19 @@ to = "invaluable-taipan/ram"
 effect = "converts"
 sign = "positive"
 via = ["perky-gopher/fn"]
-note = """
-IMI4C forms the bank-2 phase from GR4C with the same arithmetic, stored at \
-0xC2D2C for cylinders 2, 4, 6."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 14
+step_sha256 = "cef063955a383aa680345bf57ab6bc253ec096385af335e52a0209578b443cce"
+original = """
+{\"effect\":\"converts\",\"from\":\"calculating-donkey/reg\",\"note\":\"IMI4C \
+forms the bank-2 phase from GR4C with the same arithmetic, stored at 0xC2D2C \
+for cylinders 2, 4, \
+6.\",\"sign\":\"positive\",\"to\":\"invaluable-taipan/ram\",\"via\":[\"perky-gopher/fn\"]}"""
 
 [[step]]
 from = "invaluable-taipan/ram"
@@ -159,9 +295,18 @@ to = "exhaust_cvtc_actual_b2/ram"
 effect = "filters"
 sign = "positive"
 via = ["coherent_snapshot/fn", "black-vulture/fn"]
-note = """
-Snapshot ffff11c9 passes the same filter against learned rest edge ffff479c; \
-DID 0x1165."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 15
+step_sha256 = "18fcf7abda8c5f5e3abdba4e0b701cfa9361092e205a1ca09e7869644235d2cb"
+original = """
+{\"effect\":\"filters\",\"from\":\"invaluable-taipan/ram\",\"note\":\"Snapshot \
+ffff11c9 passes the same filter against learned rest edge ffff479c; DID \
+0x1165.\",\"sign\":\"positive\",\"to\":\"exhaust_cvtc_actual_b2/ram\",\"via\":[\"coherent_snapshot/fn\",\"black-vulture/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_target/ram"
@@ -169,9 +314,19 @@ to = "benign-aardwolf/ram"
 effect = "compares"
 sign = "positive"
 via = ["neon-beaver/fn"]
-note = """
-Bank-1 error ffff1240 = clamp_u8(ffff2327 - ffff2324 + 128) at 0xC0D62; bank \
-2 writes ffff1241 from ffff2325."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 16
+step_sha256 = "512a95258ca413c97beb5a3e3f7d8c8ca419c18e9565bd78f41d64cbde20e500"
+original = """
+{\"effect\":\"compares\",\"from\":\"exhaust_cvtc_target/ram\",\"note\":\"Bank-1 \
+error ffff1240 = clamp_u8(ffff2327 - ffff2324 + 128) at 0xC0D62; bank 2 \
+writes ffff1241 from \
+ffff2325.\",\"sign\":\"positive\",\"to\":\"benign-aardwolf/ram\",\"via\":[\"neon-beaver/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_actual_b1/ram"
@@ -179,9 +334,19 @@ to = "benign-aardwolf/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["neon-beaver/fn"]
-note = """
-The actual position enters the error negatively; an error outside 128 +/- 6 \
-also reloads settle countdown ffff25e7."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 17
+step_sha256 = "a616da34613d2f1a1dc0b6e1ffba26bd9bb85744e6b6b3a8eebd6427f2a9e8f7"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"exhaust_cvtc_actual_b1/ram\",\"note\":\"The \
+actual position enters the error negatively; an error outside 128 +/- 6 also \
+reloads settle countdown \
+ffff25e7.\",\"sign\":\"negative\",\"to\":\"benign-aardwolf/ram\",\"via\":[\"neon-beaver/fn\"]}"""
 
 [[step]]
 from = "benign-aardwolf/ram"
@@ -189,9 +354,19 @@ to = "aquatic-guillemot/ram"
 effect = "feeds"
 sign = "none"
 via = ["nice-chihuahua/fn"]
-note = """
-Error word = 0..65535 clamp of saturating sum 0x265C4, written only while \
-ffff1246 bit 0 is set; the sum operands are not stated."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 18
+step_sha256 = "e5f4d020f2dbf48547057c5548ac70ac8c789cf7f13ab98d858a55001ee1823a"
+original = """
+{\"effect\":\"feeds\",\"from\":\"benign-aardwolf/ram\",\"note\":\"Error word \
+= 0..65535 clamp of saturating sum 0x265C4, written only while ffff1246 bit \
+0 is set; the sum operands are not \
+stated.\",\"sign\":\"none\",\"to\":\"aquatic-guillemot/ram\",\"via\":[\"nice-chihuahua/fn\"]}"""
 
 [[step]]
 from = "aquatic-guillemot/ram"
@@ -199,9 +374,19 @@ to = "neon-fennec/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["orange-hamster/fn"]
-note = """
-P = floor(floor(u16*ROM16[0x9212])*gain*2/625), K = 8866, clamped to \
-0..0x04000000; control mode 0 forces P = 0."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 19
+step_sha256 = "b70ae16e58a446feb9bd7dcab3c5c361010d790e33f0fea38fa7745db85ee537"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"aquatic-guillemot/ram\",\"note\":\"P = \
+floor(floor(u16*ROM16[0x9212])*gain*2/625), K = 8866, clamped to \
+0..0x04000000; control mode 0 forces P = \
+0.\",\"sign\":\"positive\",\"to\":\"neon-fennec/ram\",\"via\":[\"orange-hamster/fn\"]}"""
 
 [[step]]
 from = "outgoing-cuttlefish/tbl"
@@ -209,9 +394,19 @@ to = "neon-fennec/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["orange-hamster/fn"]
-note = """
-Gain ffff143a = curve 0x1205A over axis 0x12850 by oil-temperature snapshot \
-ffff2772, stock 102..128; P scales with it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 20
+step_sha256 = "74282dd4b722e6b08ef96f84b8640a3e3531f32f33c3ce7fe843fda0610e80e4"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"outgoing-cuttlefish/tbl\",\"note\":\"Gain \
+ffff143a = curve 0x1205A over axis 0x12850 by oil-temperature snapshot \
+ffff2772, stock 102..128; P scales with \
+it.\",\"sign\":\"positive\",\"to\":\"neon-fennec/ram\",\"via\":[\"orange-hamster/fn\"]}"""
 
 [[step]]
 from = "neon-fennec/ram"
@@ -219,9 +414,19 @@ to = "exhaust_cvtc_duty_b1_word/ram"
 effect = "scales"
 sign = "positive"
 via = ["grinning-fulmar/fn"]
-note = """
-req = floor((P>>16)*150/batt) + rounded low byte, min 1024; mode 1 publishes \
-req, mode 2 ramps down; stored at 0xC213E."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 21
+step_sha256 = "6fb78f7f03272c007ad990964921db2e488ba0e6361364aebe219f3596715c46"
+original = """
+{\"effect\":\"scales\",\"from\":\"neon-fennec/ram\",\"note\":\"req = \
+floor((P>>16)*150/batt) + rounded low byte, min 1024; mode 1 publishes req, \
+mode 2 ramps down; stored at \
+0xC213E.\",\"sign\":\"positive\",\"to\":\"exhaust_cvtc_duty_b1_word/ram\",\"via\":[\"grinning-fulmar/fn\"]}"""
 
 [[step]]
 from = "private-groundhog/ram"
@@ -229,9 +434,19 @@ to = "exhaust_cvtc_duty_b1_word/ram"
 effect = "scales"
 sign = "negative"
 via = ["grinning-fulmar/fn"]
-note = """
-Battery-voltage snapshot ffff1108 divides the request: req = \
-floor((P>>16)*150/batt) plus the rounded low-byte term."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 22
+step_sha256 = "0c9949c60d12f71eff956d8d6e2cf0e2745db9d5ebeea253217a56f35397283b"
+original = """
+{\"effect\":\"scales\",\"from\":\"private-groundhog/ram\",\"note\":\"Battery-voltage \
+snapshot ffff1108 divides the request: req = floor((P>>16)*150/batt) plus \
+the rounded low-byte \
+term.\",\"sign\":\"negative\",\"to\":\"exhaust_cvtc_duty_b1_word/ram\",\"via\":[\"grinning-fulmar/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_actual_b2/ram"
@@ -244,9 +459,19 @@ via = [
     "orange-hamster/fn",
     "grinning-fulmar/fn",
 ]
-note = """
-Bank 2 (b = 1) repeats the loop: error ffff1241, error word ffff1b1a, P \
-ffff1aa8, duty ffff1aae; the error-word operands are not stated."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 23
+step_sha256 = "edd5f94e9c10d206c13b9daec6402c3bfef9aa176ed24aea152e358e67fa5ded"
+original = """
+{\"effect\":\"feeds\",\"from\":\"exhaust_cvtc_actual_b2/ram\",\"note\":\"Bank \
+2 (b = 1) repeats the loop: error ffff1241, error word ffff1b1a, P ffff1aa8, \
+duty ffff1aae; the error-word operands are not \
+stated.\",\"sign\":\"none\",\"to\":\"exhaust_cvtc_duty_b2_word/ram\",\"via\":[\"neon-beaver/fn\",\"nice-chihuahua/fn\",\"orange-hamster/fn\",\"grinning-fulmar/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_duty_b1_word/ram"
@@ -254,9 +479,19 @@ to = "fanatic-kingfisher/reg"
 effect = "converts"
 sign = "positive"
 via = ["precise-angelfish/fn"]
-note = """
-BFR7D = u16*ROM8[0x8DFD]*125/1024, duty = raw/1024 of CYLR7D; ffff4251 bit 0 \
-forces 1250 (50 percent)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 24
+step_sha256 = "327cfdb395dbf868ed33dac7ecc0c3c3b9d922ae977f7e44e6ce6ddd25c88e03"
+original = """
+{\"effect\":\"converts\",\"from\":\"exhaust_cvtc_duty_b1_word/ram\",\"note\":\"BFR7D \
+= u16*ROM8[0x8DFD]*125/1024, duty = raw/1024 of CYLR7D; ffff4251 bit 0 \
+forces 1250 (50 \
+percent).\",\"sign\":\"positive\",\"to\":\"fanatic-kingfisher/reg\",\"via\":[\"precise-angelfish/fn\"]}"""
 
 [[step]]
 from = "exhaust_cvtc_duty_b2_word/ram"
@@ -264,8 +499,18 @@ to = "glossy-squid/reg"
 effect = "converts"
 sign = "positive"
 via = ["precise-angelfish/fn"]
-note = """
-BFR7C = u16*ROM8[0x8DFD]*125/1024; ffff4251 bit 0 forces 1500 (60 percent)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 25
+step_sha256 = "81bfa452a1c4d2a04a2a519864b2fbaff284f2db91e12f98ca8dfcc352fefdec"
+original = """
+{\"effect\":\"converts\",\"from\":\"exhaust_cvtc_duty_b2_word/ram\",\"note\":\"BFR7C \
+= u16*ROM8[0x8DFD]*125/1024; ffff4251 bit 0 forces 1500 (60 \
+percent).\",\"sign\":\"positive\",\"to\":\"glossy-squid/reg\",\"via\":[\"precise-angelfish/fn\"]}"""
 
 [[step]]
 from = "imported-caracara/tbl"
@@ -273,7 +518,18 @@ to = "cryptic-potoo/reg"
 effect = "scales"
 sign = "positive"
 via = ["striped-tiger/fn"]
-note = "CYLR7D = 125 * ROM8[0x8DFD] = 2500 counts, the exhaust PWM period."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 26
+step_sha256 = "b816000fd9baa7ae9f5ae52c1877c8ced21505f5f7f72308dbd6b0585feb6a4e"
+original = """
+{\"effect\":\"scales\",\"from\":\"imported-caracara/tbl\",\"note\":\"CYLR7D \
+= 125 * ROM8[0x8DFD] = 2500 counts, the exhaust PWM \
+period.\",\"sign\":\"positive\",\"to\":\"cryptic-potoo/reg\",\"via\":[\"striped-tiger/fn\"]}"""
 
 [[step]]
 from = "imported-caracara/tbl"
@@ -281,6 +537,16 @@ to = "complex-hummingbird/reg"
 effect = "scales"
 sign = "positive"
 via = ["striped-tiger/fn"]
-note = """
-CYLR7C = 125 * ROM8[0x8DFD] = 2500 counts; 000C2152 reprograms both cycle \
-registers under ffff4251 bit 0."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/exhaust_cvtc.toml"
+source_sha256 = "1379e3dbb8577c29f1e5674a55a35c7e77274f21114ac996b90fcdbded09fecd"
+order = 27
+step_sha256 = "62d6d9ce1d740a1c5f423be5179fab95c76bca5a76d5fa102d7e631ef87968f3"
+original = """
+{\"effect\":\"scales\",\"from\":\"imported-caracara/tbl\",\"note\":\"CYLR7C \
+= 125 * ROM8[0x8DFD] = 2500 counts; 000C2152 reprograms both cycle registers \
+under ffff4251 bit \
+0.\",\"sign\":\"positive\",\"to\":\"complex-hummingbird/reg\",\"via\":[\"striped-tiger/fn\"]}"""

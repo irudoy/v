@@ -1,0 +1,50 @@
+title = "Launch Control Max Engage Speed"
+summary = "Competitor inventory: Launch Control Max Engage Speed."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 219
+source = "refs/vendor/catalog.csv"
+sha256 = "44b21ea1210ad21b4ef586096c4d9f8b6126366dca307a5a55daee206eca5427"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Launch Control (only SyncroRev models)\",\"level\":\"\",\"name\":\"Launch \
+Control Max Engage \
+Speed\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Launch \
+Control\",\"source\":\"images/image2019-8-27_13-15-42.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

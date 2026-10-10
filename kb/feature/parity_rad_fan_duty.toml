@@ -1,0 +1,51 @@
+title = "Rad fan duty"
+summary = "Competitor inventory: Radiator Fan Speed by Temp."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 335
+source = "refs/vendor/catalog.csv"
+sha256 = "9aaa83c3304221ba9a9cab910daa1ff310b8fe7be0d119fba1782f2d8e128996"
+original = """
+{\"axis_x\":\"Vehicle Speed\",\"axis_y\":\"Coolant \
+Temperature\",\"concept\":\"rad-fan-duty\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Radiator \
+Fan Speed by Temp\",\"note\":\"Nissan introduced this three-dimensional \
+table in 2009 for some applications. ProECU calls it 'Radiator Fan \
+Duty'.\",\"origin\":\"factory\",\"output\":\"fan duty \
+cycle\",\"section\":\"Cooling\",\"source\":\"Cooling\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

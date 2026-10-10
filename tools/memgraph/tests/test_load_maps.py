@@ -1,16 +1,10 @@
 import csv
 import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-if "neo4j" not in sys.modules:
-    neo4j = types.ModuleType("neo4j")
-    neo4j.GraphDatabase = object
-    sys.modules["neo4j"] = neo4j
 
 import load_maps  # noqa: E402
 

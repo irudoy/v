@@ -1,0 +1,18 @@
+note = [
+    """
+CLEAR Lock 0xFFFEB852&~2 plus condition bits +0x34..+0x3b and large DTC \
+structure 0xFFFED16C; gated by 0xFFFEB8F7&2""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000bf8e0"
+
+[symbol.curated]
+order = 21
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bf8e0"

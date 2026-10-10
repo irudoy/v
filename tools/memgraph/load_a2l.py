@@ -58,9 +58,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
-from neo4j import GraphDatabase
 
-BOLT = "bolt://localhost:7687"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -255,28 +253,26 @@ def build(path, family):
     return entries, skipped
 
 
-def vocabulary():
+def vocabulary(catalog=CATALOG):
     """Return the concept vocabulary defined by the vendor catalog."""
-    with open(CATALOG, newline="", encoding="utf-8") as f:
+    with open(catalog, newline="", encoding="utf-8") as f:
         return {r["concept"] for r in csv.DictReader(f) if r["concept"]}
 
 
-def check(entries):
+def check(entries, catalog=CATALOG):
     """Reject dead annotations before loading because the graph cannot distinguish them from omissions."""
     stale = sorted(set(A2L_CONCEPT) - {e["name"] for e in entries})
     if stale:
         sys.exit(f"concept references names absent from A2L: {stale}")
-    unknown = sorted(set(A2L_CONCEPT.values()) - vocabulary())
+    unknown = sorted(set(A2L_CONCEPT.values()) - vocabulary(catalog))
     if unknown:
         sys.exit(f"concepts are absent from the vendor catalog and would join to nothing: {unknown}")
 
 
-def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_XML
-    family = sys.argv[2] if len(sys.argv) > 2 else "HR"
-
+def load(driver, path, family, catalog):
+    """Load the pinned A2L source through the compiler's connection."""
     entries, skipped = build(path, family)
-    check(entries)
+    check(entries, catalog)
     kinds = {}
     for e in entries:
         kinds[e["kind"]] = kinds.get(e["kind"], 0) + 1
@@ -296,7 +292,6 @@ def main():
     if dup:
         print(f"WARNING: nonunique names ({len(dup)}): {dup[:5]}")
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         s.run("MATCH (n:A2LEntry {family:$f}) DETACH DELETE n", f=family)
         for prop in ("family", "name", "concept"):
@@ -371,7 +366,10 @@ def main():
         print(f"  total concepts: {len(rows)}; covered by both vendor vocabularies: {both}")
         print(f"  annotated A2L entries: {marked} of {len(entries)}")
 
-    driver.close()
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

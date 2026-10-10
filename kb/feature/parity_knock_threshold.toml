@@ -1,0 +1,63 @@
+title = "Knock threshold"
+summary = "Competitor inventory: Knock Sensitivity; Knock Listening Threshold."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 151
+source = "refs/vendor/catalog.csv"
+sha256 = "4de1628f30c97ddd965cbfb3296b80d0d08e1a8f0c1ec410c088fd30fb4ca9ad"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-threshold\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Knock Control\",\"level\":\"\",\"name\":\"Knock \
+Sensitivity\",\"note\":\"row = cylinder; values = \
+threshold\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 318
+source = "refs/vendor/catalog.csv"
+sha256 = "a1451c23bd9a1907fbf1a12a07d25c25e15abc947693afb75c1702f2271eda1a"
+original = """
+{\"axis_x\":\"Engine RPM\",\"axis_y\":\"Cylinder \
+Number\",\"concept\":\"knock-threshold\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Knock \
+Listening Threshold\",\"note\":\"Neither UpRev nor ProECU provides an exact \
+conversion to a kHz scale. Higher values filter more noise. ProECU calls \
+this 'Knock Sensitivity'.\",\"origin\":\"factory\",\"output\":\"0..100% \
+threshold\",\"section\":\"Ignition Advance \
+Parameters\",\"source\":\"Ignition Advance Parameters / Knock Listening \
+Threshold\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

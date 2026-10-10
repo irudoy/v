@@ -1,3 +1,5 @@
+title = "HCAN1 controller init (MCR/BCR/mailbox)"
+
 [[symbol]]
 layout = "1me3b"
 address = "0011f2ec"
@@ -13,12 +15,21 @@ note = "Primary and recovery callers share this initializer"
 layout = "1nd"
 address = "0011363c"
 
+[symbol.curated]
+order = 0
+title = true
+
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
 at = "1nd:0011363c"
 to = "7mfk:000c338a"
 note = "Primary and recovery callers share this initializer"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011363c"
 
 [[symbol]]
 layout = "7mfk"

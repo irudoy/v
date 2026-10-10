@@ -12,7 +12,7 @@ import argparse
 import os
 import sys
 
-from neo4j import GraphDatabase
+from kb import reader
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -41,7 +41,6 @@ from provenance import (  # noqa: E402
     reverse_impact,
 )
 
-BOLT = "bolt://localhost:7687"
 
 
 def read_source_claims(rom):
@@ -263,9 +262,8 @@ def parser():
 
 def main():
     args = parser().parse_args()
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     try:
-        with driver.session() as session:
+        with reader.session() as session:
             graph = load_claim_graph(session, args.rom)
         model, levels, dependencies, grounded, gaps, projection = graph
         print(
@@ -287,8 +285,6 @@ def main():
         )
     except ProvenanceError as error:
         sys.exit(str(error))
-    finally:
-        driver.close()
 
 
 if __name__ == "__main__":

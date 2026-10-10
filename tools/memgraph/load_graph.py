@@ -13,12 +13,10 @@ import csv
 import os
 from pathlib import Path
 import sys
-from neo4j import GraphDatabase
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import rom_sources  # noqa: E402
 
-BOLT = "bolt://localhost:7687"
 
 
 def read_csv(path):
@@ -26,11 +24,8 @@ def read_csv(path):
         return list(csv.DictReader(f))
 
 
-def main():
-    rom = sys.argv[2] if len(sys.argv) > 2 else "1ND0A"
-    outdir = sys.argv[1] if len(sys.argv) > 1 else str(rom_sources.l0_dir(rom))
-
-    names = rom_sources.function_names(rom)
+def load(driver, rom, outdir, names):
+    """Load one ROM from compiler-selected L0 and curated names."""
     funcs = [
         {**row, "name": rom_sources.function_name(names, row["addr"])}
         for row in read_csv(os.path.join(outdir, "funcs.csv"))
@@ -38,7 +33,6 @@ def main():
     calls = read_csv(os.path.join(outdir, "calls.csv"))
     print(f"CSV: {len(funcs)} funcs, {len(calls)} calls; rom={rom}")
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         s.run("MATCH (n:Func {rom:$rom}) DETACH DELETE n", rom=rom)
         for idx in ("CREATE INDEX ON :Func(addr)", "CREATE INDEX ON :Func(rom)"):
@@ -113,7 +107,10 @@ def main():
         for r in rows:
             print(f"  c={r['c']:>5}  n={r['n']:>4}  {', '.join(r['sample'])}")
 
-    driver.close()
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

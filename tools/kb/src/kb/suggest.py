@@ -1,8 +1,8 @@
-"""Read-only architecture candidates from the installed MAGE procedures."""
+"""Read-only symbol channels and architecture candidates."""
 
 from collections import Counter, defaultdict
 
-from kb import repo
+from kb import compile, match, repo, write
 from kb.answer import Answer, DETAIL, FACTS, IDENTITY
 from kb.repo import KbError
 
@@ -20,6 +20,52 @@ RETURN node.address AS address, community_id AS community,
        s.name AS name, m.key AS meaning, b.key AS block
 ORDER BY address
 '''
+
+
+def symbol_channels(result):
+    """Retain each independent search channel without promoting its candidates."""
+    channels = defaultdict(list)
+    for address, candidate in sorted(result.candidates.items(),
+                                     key=lambda item: (-item[1].votes, item[0])):
+        grouped = defaultdict(list)
+        for item in candidate.items or [candidate.evidence]:
+            if item not in grouped[item['kind']]:
+                grouped[item['kind']].append(item)
+        for kind, items in grouped.items():
+            channels[kind].append({'address': address, 'votes': candidate.votes,
+                                   'evidence': items, 'producer': 'candidate'})
+    return dict(sorted(channels.items()))
+
+
+def symbols(graph, reference, layout_id, root=repo.ROOT):
+    """Candidates from the primary L0 matchers, with explicit evidence channels."""
+    layout = repo.layout(layout_id, root).id
+    model = compile.cached(root)
+    meaning, origin = write.graph_resolver(graph, model, root, log=lambda message: None)(reference)
+    origin = origin or meaning.home_symbol
+    if origin is None:
+        raise KbError(f'{reference}: no source symbol for suggestions', code=5)
+    answer = Answer(f'kb suggest {reference} --layout {layout}')
+    answer.section(None, IDENTITY, [f'{origin.key.location} {meaning.key}: candidates on {layout}'])
+    held = meaning.symbols.get(layout)
+    if held is not None:
+        answer.section(None, FACTS, [f'Existing binding: {held.key.location}; no candidate is recorded.'])
+        answer.data = {'source': origin.key.location, 'layout': layout,
+                       'existing': held.key.location, 'channels': {}}
+        return answer
+    result = match.search(model, origin, layout)
+    channels = symbol_channels(result)
+    if not channels:
+        answer.section(None, FACTS, [f'No candidates from {result.method}; correspondence is unresolved.'])
+    for kind, rows in channels.items():
+        answer.section(None, FACTS, [f'[candidate] {kind}: {len(rows)} candidates; evidence kind {kind}'])
+        answer.section(None, DETAIL, [
+            f'  {layout}:{row["address"]:08x} votes {row["votes"]}; '
+            f'{len(row["evidence"])} source placements' for row in rows])
+    answer.section(None, FACTS, ['Suggestions do not bind symbols or change knowledge levels.'])
+    answer.data = {'source': origin.key.location, 'layout': layout,
+                   'method': result.method, 'channels': channels, 'producer': 'candidate'}
+    return answer
 
 
 def communities(rows):

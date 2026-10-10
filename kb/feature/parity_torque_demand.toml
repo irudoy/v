@@ -1,0 +1,71 @@
+title = "Torque demand"
+summary = """
+Competitor inventory: Torque Demand; Torque Demand - Trustful; Throttle A."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 194
+source = "refs/vendor/catalog.csv"
+sha256 = "be6138bbe8b75b5bb0cd6d55f7c458191ae5e685bcd37620af9062ef75ab571b"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-demand\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Demand\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 195
+source = "refs/vendor/catalog.csv"
+sha256 = "1ad11ff372f2ec6abfe65cc02d22d26bede841dba4597e6e75e00a50e0d4eccf"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-demand\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Demand - \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 323
+source = "refs/vendor/catalog.csv"
+sha256 = "4eae6239d0c1727ad4864b6b25a887057f8a26dd788abe9f3e917e58a72bdec4"
+original = """
+{\"axis_x\":\"Flow Potential\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"torque-demand\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Throttle \
+A\",\"note\":\"The ECU uses this torque to reduce throttle opening and \
+ignition advance during shifts. A ratio mismatch against Estimated Torque \
+Delivered causes P0605.\",\"origin\":\"factory\",\"output\":\"flywheel \
+torque estimate in Nm\",\"section\":\"Electronic \
+Throttle\",\"source\":\"Electronic Throttle / Throttle \
+A\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

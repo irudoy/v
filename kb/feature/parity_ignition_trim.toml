@@ -1,0 +1,135 @@
+title = "Ignition trim"
+summary = """
+Competitor inventory: Ignition Timing Mode A1 Adj Cold; Ignition Timing Mode \
+A1 Adj Safe #1; Ignition Timing Mode A1 Adj Safe #2; Ignition Timing Mode A1 \
+Adj Safe #3; Ignition Timing Mode A1 Adj Warm; Ignition Timing Trim Main; \
+Ignition Timing Trim High Det; Ignition Timing Trim Cold."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 135
+source = "refs/vendor/catalog.csv"
+sha256 = "bcd83d50aafbe26af8bdbf1dcc6916f4ef513e03e826e253a4ba1725bcb900c6"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode A1 Adj \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 136
+source = "refs/vendor/catalog.csv"
+sha256 = "2f1f5cc334818a1d1ba788e800ca1e2230fbdbedf23ef48643b5d4b43cf59c18"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode A1 Adj Safe \
+#1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 137
+source = "refs/vendor/catalog.csv"
+sha256 = "be330c8c14c8efe573886d1544b12ba9a2f32b986498325567521120a5b51f49"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode A1 Adj Safe \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 138
+source = "refs/vendor/catalog.csv"
+sha256 = "d5c6c091031810596919af71ed5bdfb4c7848dc3f9fc5f38815663085053c062"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode A1 Adj Safe \
+#3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 139
+source = "refs/vendor/catalog.csv"
+sha256 = "3b1436f01032c9bdf9225140945a7a4b13fab4738833d7fc71ad2162d4532742"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"ignition-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Ignition \
+Timing Mode A1 Adj \
+Warm\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 314
+source = "refs/vendor/catalog.csv"
+sha256 = "6c48f6d4237f39f5ecb9dc9ed16d5dc432066de1036a551394bc90abe5277db4"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"ignition-trim\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Ignition \
+Timing Trim Main\",\"note\":\"The main normal-operation table. UpRev \
+provides no conversion to degrees BTDC; A2L provides the 'Degrees Adjustment \
+(x-64)' scale.\",\"origin\":\"factory\",\"output\":\"correction to \
+calculated MBT\",\"section\":\"Ignition Advance \
+Parameters\",\"source\":\"Ignition Advance Parameters / Ignition Timing Trim \
+/ Burn Rate\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 315
+source = "refs/vendor/catalog.csv"
+sha256 = "be1d30324d06072711431ce680aa3a7233c9a124e123e95ef52600cb84ba302b"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"ignition-trim\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Ignition \
+Timing Trim High Det\",\"note\":\"Used when the ECU detects excessive \
+knock-sensor activity; the transition is visible in the logged High Det Flag \
+parameter (0 -> 1).\",\"origin\":\"factory\",\"output\":\"correction to \
+calculated MBT\",\"section\":\"Ignition Advance \
+Parameters\",\"source\":\"Ignition Advance Parameters / Ignition Timing Trim \
+/ Burn Rate\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 316
+source = "refs/vendor/catalog.csv"
+sha256 = "c513a300117bb2e147cc077bc6f1f0c3cba3b899a1cee53161a0c99660e19941"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"ignition-trim\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Ignition \
+Timing Trim Cold\",\"note\":\"Present only in later Nissan ECUs; used below \
+70 °C coolant temperature, after which the ECU switches to \
+Main.\",\"origin\":\"factory\",\"output\":\"correction to calculated \
+MBT\",\"section\":\"Ignition Advance Parameters\",\"source\":\"Ignition \
+Advance Parameters / Ignition Timing Trim / Burn \
+Rate\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

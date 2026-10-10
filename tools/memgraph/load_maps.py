@@ -100,13 +100,11 @@ import glob
 import os
 import re
 import sys
-from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mapkit import rom as romkit          # noqa: E402 - adjacent package is not installed
 import rom_sources  # noqa: E402
 
-BOLT = "bolt://localhost:7687"
 
 # ROM bounds: interrupt vectors lie below ROM_LO, while small values recovered from r6/r7
 # are runtime scalars (index or mask), not bases. ROM_HI is the image size.
@@ -649,24 +647,10 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
               f"{len(blank_ax)} axes, {len(blank_m)} maps")
 
 
-def main():
-    rom = sys.argv[2] if len(sys.argv) > 2 else "JK08A"
-    try:
-        outdir = sys.argv[1] if len(sys.argv) > 1 else str(rom_sources.l0_dir(rom))
-        source_model = rom_sources.resolve(rom)
-        rom_sources.verify_image_binding(source_model)
-    except ValueError as error:
-        sys.exit(str(error))
-    source_paths = rom_sources.definition_paths(source_model)
-    registry = (
-        sys.argv[3] if len(sys.argv) > 3 else str(source_paths["Interp"])
-    )
-    findings = (
-        sys.argv[4] if len(sys.argv) > 4 else str(source_paths["Map"])
-    )
-    axfile = (
-        sys.argv[5] if len(sys.argv) > 5 else str(source_paths["Axis"])
-    )
+def load(driver, rom, outdir, registry, findings, axfile, root):
+    """Load geometry and measurements from the compiler's current views."""
+    source_model = rom_sources.resolve(rom, root / "defs/rom-inheritance.toml")
+    rom_sources.verify_image_binding(source_model, root / "rom-images/roms.csv")
 
     reg = read_registry(registry)
     rows, taken = read_censuses(outdir, reg, registry)
@@ -674,10 +658,7 @@ def main():
     maps, axes, interps, kernels, accesses, dropped = build(rows)
     found = apply_findings(findings, maps, accesses, source_model)
     naxes = apply_axis_facts(axfile, axes, source_model)
-    try:
-        img = romkit.load(rom)
-    except ValueError as e:
-        sys.exit(str(e))
+    img = romkit.load(rom, root / "rom-images/roms.csv")
     characterize(img, maps, axes)
     print(f"rom={rom}; registry: {os.path.relpath(registry)} ({len(reg)} entries); "
           f"manual layer: {os.path.relpath(findings)}, {os.path.relpath(axfile)}")
@@ -687,7 +668,6 @@ def main():
     print(f"image: {os.path.relpath(img.path)} ({len(img)} B, SHA-256 verified)")
     report(rows, maps, axes, interps, kernels, accesses, dropped, taken, found, naxes)
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         for lbl in ("Map", "Axis", "Interp"):
             s.run(f"MATCH (n:{lbl} {{rom:$rom}}) DETACH DELETE n", rom=rom)
@@ -832,7 +812,10 @@ def main():
             print(f"  {r['family']:<8} entry {r['wrapper']}  {shape:<7}  "
                   f"maps {r['maps']:>3}")
 
-    driver.close()
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

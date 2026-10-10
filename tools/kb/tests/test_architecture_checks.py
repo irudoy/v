@@ -12,7 +12,8 @@ from kb.model import Builder, Link, SymbolKey
 def model():
     b = Builder(repo.layouts(), compile.spaces(repo.config()),
                 {'7mfk': frozenset({0x26740, 0x2642c}),
-                 'jk00d': frozenset({0x27344})}, {})
+                 'jk00d': frozenset({0x27344})}, {},
+                config=repo.config(repo.ROOT, {repo.OWNER_CONFIG: None}))
     source = b.symbol('7mfk', 'ram', 0xffff102c, 'fixture')
     result = b.symbol('7mfk', 'ram', 0xffff106a, 'fixture')
     function = b.symbol('7mfk', 'fn', 0x26740, 'fixture')

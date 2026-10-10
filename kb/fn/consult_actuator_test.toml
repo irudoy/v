@@ -1,0 +1,18 @@
+note = [
+    """
+CONSULT active test; param==3 forces injection override 0xFFFEB8FB|2; reads \
+immo DTC 0xFFFED704""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "0012604c"
+
+[symbol.curated]
+order = 17
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0012604c"

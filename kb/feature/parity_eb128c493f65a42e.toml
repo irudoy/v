@@ -1,0 +1,51 @@
+title = "Intake Air Temperature Correction"
+summary = "Competitor inventory: Intake Air Temperature Correction."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 368
+source = "refs/vendor/catalog.csv"
+sha256 = "ad549837c4bb5470ba5a105551508b2fd1dd2d473525f349d4c9f22a33db84a2"
+original = """
+{\"axis_x\":\"Intake Air \
+Temperature\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Intake \
+Air Temperature Correction\",\"note\":\"ARC \
+patch.\",\"origin\":\"patch\",\"output\":\"timing \
+correction\",\"section\":\"Simplified Timing (ARC)\",\"source\":\"Simplified \
+Timing (ARC) / Intake Air Temperature Correction\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

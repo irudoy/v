@@ -27,8 +27,10 @@ DIRECTORY = "directory"
 def model(root=repo.ROOT):
     """The files that a model check reads before its evidence names others:
     the inputs of the fingerprint and the census registries of L0."""
+    from kb import compatibility
     config = repo.config(root)
     return (set(fingerprint.inputs(root))
+            | {compatibility.PIN}
             | {settings["interp"] for settings in config["l0"].get("census", {}).values()})
 
 
@@ -88,6 +90,9 @@ class Passes:
 
     def value(self, path):
         """The blob hash of an input file, or the value of a directory."""
+        from kb import compatibility
+        if path == compatibility.PIN:
+            return compatibility.reference_commit(self.root)
         if (self.root / path).is_dir():
             return DIRECTORY
         return self.hashes.of(path)

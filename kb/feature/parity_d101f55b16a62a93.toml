@@ -1,0 +1,50 @@
+title = "Valet Mode Enable"
+summary = "Competitor inventory: Valet Mode Enable."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 292
+source = "refs/vendor/catalog.csv"
+sha256 = "45c2f7260278cdd794d68feb19404ebd799556b6958e09573709c05a14920cb1"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Valet Mode\",\"level\":\"\",\"name\":\"Valet Mode \
+Enable\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Valet \
+Mode\",\"source\":\"images/image2019-8-27_13-24-23.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

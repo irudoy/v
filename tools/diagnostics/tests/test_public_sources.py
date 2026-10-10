@@ -453,13 +453,7 @@ class PublicCatalogTest(unittest.TestCase):
             def close(self) -> None:
                 return None
 
-        class GraphDatabase:
-            @staticmethod
-            def driver(*args: object, **kwargs: object) -> OfflineDriver:
-                return OfflineDriver()
-
         neo4j_module = types.ModuleType("neo4j")
-        neo4j_module.GraphDatabase = GraphDatabase
         exceptions_module = types.ModuleType("neo4j.exceptions")
         exceptions_module.DriverError = DriverError
         exceptions_module.Neo4jError = Neo4jError
@@ -473,6 +467,7 @@ class PublicCatalogTest(unittest.TestCase):
                 },
             ),
             patch.object(sys, "argv", ["query.py", "coverage"]),
+            patch.object(query.reader, "session", return_value=OfflineSession()),
             redirect_stderr(error_output),
         ):
             self.assertEqual(1, query.main())

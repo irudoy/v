@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 
-BOLT = "bolt://localhost:7687"
+from kb import instance,reader,repo
 
 STATIC_BINDING_QUERY = """
 MATCH (binding:DiagnosticBinding)-[:BINDS_DIAGNOSTIC]->(diagnostic)
@@ -1060,7 +1060,7 @@ def render_dbc(rows: list[dict[str, Any]]) -> str:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument("--bolt", default=BOLT)
+    result.add_argument("--bolt", help="The configured working-tree URI; other endpoints are refused")
     result.add_argument("--json", action="store_true")
     subparsers = result.add_subparsers(dest="command", required=True)
 
@@ -1125,7 +1125,6 @@ def parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = parser().parse_args()
     try:
-        from neo4j import GraphDatabase
         from neo4j.exceptions import DriverError, Neo4jError
     except ImportError:
         print(
@@ -1135,10 +1134,10 @@ def main() -> int:
         )
         return 1
 
-    driver = None
     try:
-        driver = GraphDatabase.driver(args.bolt, auth=("", ""))
-        with driver.session(default_access_mode="READ") as session:
+        if args.bolt is not None and args.bolt != instance.uri():
+            raise ValueError('--bolt must match the configured working-tree kb instance')
+        with reader.session() as session:
             if args.command == "dtc":
                 code = canonical_dtc_code(args.code)
                 if code is None:
@@ -1241,12 +1240,9 @@ def main() -> int:
                 return 0
             else:
                 raise AssertionError(args.command)
-    except (DriverError, Neo4jError, OSError, ValueError) as error:
+    except (DriverError, Neo4jError, OSError, ValueError, repo.KbError) as error:
         print(error, file=sys.stderr)
         return 1
-    finally:
-        if driver is not None:
-            driver.close()
 
     if args.json:
         print(json.dumps(rows, ensure_ascii=False, indent=2, sort_keys=True))

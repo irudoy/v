@@ -119,6 +119,9 @@ def render(document):
                 for step in item.get('step', ()):
                     lines.extend(('', '[[chain.step]]'))
                     fields(step, ('from', 'to', 'effect', 'sign', 'via', 'note', 'specs'))
+                    if 'research' in step:
+                        lines.extend(('', '[chain.step.research]'))
+                        fields(step['research'], tuple(key for key, _ in store.RESEARCH.keys))
     return '\n'.join(lines) + '\n'
 
 

@@ -1,0 +1,19 @@
+note = [
+    """
+init-time mailbox-control configuration 0xFFFFD904 (=0x700); called from \
+hcan1_init; NOT a runtime TX serializer (mailbox data at 0xFFFFD900+ is \
+written through a base pointer)""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000d3ed0"
+
+[symbol.curated]
+order = 33
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d3ed0"

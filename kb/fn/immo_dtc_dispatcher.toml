@@ -1,0 +1,14 @@
+title = "DTC monitor dispatcher; immo struct base FFFEB81E"
+
+[[symbol]]
+layout = "1nd"
+address = "000b6988"
+
+[symbol.curated]
+order = 7
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b6988"

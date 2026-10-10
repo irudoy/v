@@ -43,7 +43,7 @@ BLOCK_KEYS = frozenset({"id", "name", "stage", "summary", "specs", "functions", 
 ENDPOINT_KEYS = frozenset({"id", "name", "direction", "block", "peripheral", "summary",
                            "registers", "functions", "specs"})
 CHAIN_KEYS = frozenset({"id", "name", "summary", "quantity", "output", "specs", "step"})
-STEP_KEYS = frozenset({"from", "to", "effect", "sign", "via", "note", "specs"})
+STEP_KEYS = frozenset({"from", "to", "effect", "sign", "via", "note", "specs", "research"})
 REFERENCE = re.compile(r"(?:(function|map|axis|signal|register):)?([0-9a-f]{8})")
 PREFIXES = {"function": "fn", "map": "tbl", "axis": "axis", "signal": "ram", "register": "reg"}
 CHAIN_KINDS = ("fn", "tbl", "axis", "ram", "reg", "const")
@@ -168,6 +168,8 @@ def _chain(b, src, item, order=1):
         entity.steps.append({"from": ends[0], "to": ends[1], "effect": step["effect"],
                              "sign": step["sign"], "via": via, "note": step.get("note"),
                              "specs": step.get("specs")})
+        if 'research' in step:
+            entity.steps[-1]['research'] = step['research']
 
 
 def _parse(b, src, subject, text):

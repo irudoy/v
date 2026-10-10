@@ -15,18 +15,38 @@ from = "functional-jackrabbit/axis"
 to = "lyrical-dragon/tbl"
 effect = "indexes"
 sign = "none"
-note = """
-Row axis 0x14B4A selects Engine Torque Map rows at RPM/3.125 coordinate \
-ffff11b6, 16 points from 400 to 7600 RPM."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 1
+step_sha256 = "84cc59c59077f96ec2f1c9ace442d3ddc03e68a289e23e5bd260022c57e7560e"
+original = """
+{\"effect\":\"indexes\",\"from\":\"functional-jackrabbit/axis\",\"note\":\"Row \
+axis 0x14B4A selects Engine Torque Map rows at RPM/3.125 coordinate \
+ffff11b6, 16 points from 400 to 7600 \
+RPM.\",\"sign\":\"none\",\"to\":\"lyrical-dragon/tbl\"}"""
 
 [[step]]
 from = "capable-buffalo/axis"
 to = "lyrical-dragon/tbl"
 effect = "indexes"
 sign = "none"
-note = """
-Column axis 0x2378C selects columns at q = min(65535, \
-floor(ffff1024*40960/ROM16[0x9534])), which 00065928 stores in ffff15c4."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 2
+step_sha256 = "faca206986516d32dc4dc733ebc0780d2f3a87f4a3c5268073dc8cf08f2a16b9"
+original = """
+{\"effect\":\"indexes\",\"from\":\"capable-buffalo/axis\",\"note\":\"Column \
+axis 0x2378C selects columns at q = min(65535, \
+floor(ffff1024*40960/ROM16[0x9534])), which 00065928 stores in \
+ffff15c4.\",\"sign\":\"none\",\"to\":\"lyrical-dragon/tbl\"}"""
 
 [[step]]
 from = "lyrical-dragon/tbl"
@@ -34,9 +54,19 @@ to = "engine_torque_state/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["primitive-lizard/fn", "white-malkoha/fn"]
-note = """
-00065928 writes ffff18ca = lookup - 32768; 000659ae writes ffff18cc = \
-sat_s16 of ffff18ca + ffff2408 times a Q14 and a Q8 (256 - 0x1245A) factor."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 3
+step_sha256 = "6eb9b77bad9b72b02fc3edbed2d516f80ff92d7a4143280a10db060acea9467f"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"lyrical-dragon/tbl\",\"note\":\"00065928 \
+writes ffff18ca = lookup - 32768; 000659ae writes ffff18cc = sat_s16 of \
+ffff18ca + ffff2408 times a Q14 and a Q8 (256 - 0x1245A) \
+factor.\",\"sign\":\"positive\",\"to\":\"engine_torque_state/ram\",\"via\":[\"primitive-lizard/fn\",\"white-malkoha/fn\"]}"""
 
 [[step]]
 from = "pink-vulture/ram"
@@ -44,9 +74,19 @@ to = "engine_torque_state/ram"
 effect = "adds"
 sign = "positive"
 via = ["white-malkoha/fn"]
-note = """
-Base term ffff2408 = sat_u16(lookup(0x154A0) - D + C) of 00065c26 enters the \
-sum with the centered map result before the factors."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 4
+step_sha256 = "afb0bb2f1422bdd4b4e6f945b2477948cbaadfed37e14fa705f950325431a0f7"
+original = """
+{\"effect\":\"adds\",\"from\":\"pink-vulture/ram\",\"note\":\"Base term \
+ffff2408 = sat_u16(lookup(0x154A0) - D + C) of 00065c26 enters the sum with \
+the centered map result before the \
+factors.\",\"sign\":\"positive\",\"to\":\"engine_torque_state/ram\",\"via\":[\"white-malkoha/fn\"]}"""
 
 [[step]]
 from = "engine_torque_state/ram"
@@ -54,9 +94,19 @@ to = "chubby-snake/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["silky-vulture/fn"]
-note = """
-On the stock ROM8[0x8710].bit5 branch ffff18ce = trunc0(ffff18cc*(256 - \
-F)/256); F <= 179 keeps the factor positive."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 5
+step_sha256 = "9608f695f6b42e043049b251337b454860a24292e8064851c701100ab1228ee6"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"engine_torque_state/ram\",\"note\":\"On \
+the stock ROM8[0x8710].bit5 branch ffff18ce = trunc0(ffff18cc*(256 - \
+F)/256); F <= 179 keeps the factor \
+positive.\",\"sign\":\"positive\",\"to\":\"chubby-snake/ram\",\"via\":[\"silky-vulture/fn\"]}"""
 
 [[step]]
 from = "carmine-potoo/tbl"
@@ -64,9 +114,19 @@ to = "chubby-snake/ram"
 effect = "multiplies"
 sign = "negative"
 via = ["silky-vulture/fn"]
-note = """
-F = table 0x11D24 at clamp_u8(ffff23f1 - ffff11a2), base ignition angle \
-minus latched timing sum; a larger F lowers a positive state."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 6
+step_sha256 = "732c40adcca11392de9c87f269125806a7114dc2bfb9740dcae38a377d4cb1f5"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"carmine-potoo/tbl\",\"note\":\"F = \
+table 0x11D24 at clamp_u8(ffff23f1 - ffff11a2), base ignition angle minus \
+latched timing sum; a larger F lowers a positive \
+state.\",\"sign\":\"negative\",\"to\":\"chubby-snake/ram\",\"via\":[\"silky-vulture/fn\"]}"""
 
 [[step]]
 from = "chubby-snake/ram"
@@ -74,9 +134,19 @@ to = "unbiased-pug/ram"
 effect = "scales"
 sign = "positive"
 via = ["messy-perch/fn"]
-note = """
-ffff18d0 = sat_i16(trunc0(ffff18ce*(6 - n)/6) - ffff2408 - ffff14e2), n = \
-inhibited-cylinder count of 00065d42."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 7
+step_sha256 = "5b61ece1e23893ac460a2b65492f742a4db999123d1b8c625ca706c51a2f33ab"
+original = """
+{\"effect\":\"scales\",\"from\":\"chubby-snake/ram\",\"note\":\"ffff18d0 = \
+sat_i16(trunc0(ffff18ce*(6 - n)/6) - ffff2408 - ffff14e2), n = \
+inhibited-cylinder count of \
+00065d42.\",\"sign\":\"positive\",\"to\":\"unbiased-pug/ram\",\"via\":[\"messy-perch/fn\"]}"""
 
 [[step]]
 from = "pink-vulture/ram"
@@ -84,9 +154,18 @@ to = "unbiased-pug/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["messy-perch/fn"]
-note = """
-00065cd8 subtracts the unscaled base term ffff2408 after the efficiency and \
-cylinder scaling."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 8
+step_sha256 = "944ed458fe22c3aacf5ec3d5b29a1d099de21f95db137f10e889560b1637cf31"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"pink-vulture/ram\",\"note\":\"00065cd8 \
+subtracts the unscaled base term ffff2408 after the efficiency and cylinder \
+scaling.\",\"sign\":\"negative\",\"to\":\"unbiased-pug/ram\",\"via\":[\"messy-perch/fn\"]}"""
 
 [[step]]
 from = "intelligent-chipmunk/tbl"
@@ -94,9 +173,19 @@ to = "voracious-stingray/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["augmented-limpet/fn"]
-note = """
-000658a4 writes ffff14e2 = lookup(0x14C1A) times a nonnegative byte \
-difference selected by ffff4181.bit7, divided by 256."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 9
+step_sha256 = "055479b15c206707de21162ab4880753ffee63cae3dd2d8e221e27a9f89e77c8"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"intelligent-chipmunk/tbl\",\"note\":\"000658a4 \
+writes ffff14e2 = lookup(0x14C1A) times a nonnegative byte difference \
+selected by ffff4181.bit7, divided by \
+256.\",\"sign\":\"positive\",\"to\":\"voracious-stingray/ram\",\"via\":[\"augmented-limpet/fn\"]}"""
 
 [[step]]
 from = "voracious-stingray/ram"
@@ -104,7 +193,18 @@ to = "unbiased-pug/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["messy-perch/fn"]
-note = "00065cd8 subtracts RPM-curve correction ffff14e2 from the scaled state."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 10
+step_sha256 = "b02de36c19177ffeaa0961f8aef9957c3b4930e3506b6aaffbc4bfec2c604f22"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"voracious-stingray/ram\",\"note\":\"00065cd8 \
+subtracts RPM-curve correction ffff14e2 from the scaled \
+state.\",\"sign\":\"negative\",\"to\":\"unbiased-pug/ram\",\"via\":[\"messy-perch/fn\"]}"""
 
 [[step]]
 from = "unbiased-pug/ram"
@@ -112,9 +212,19 @@ to = "fascinating-crow/ram"
 effect = "filters"
 sign = "positive"
 via = ["flashy-clam/fn"]
-note = """
-First-order filter ffff18d2 = trunc0((ffff18d0*w + ffff18d2*(256 - w))/256) \
-with stock w = ROM8[0x87ED] = 255."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 11
+step_sha256 = "3f17dcdebd5ea09c30f342b6f7e7f1309540b6217e004e6ca819b3b0dca4ff9e"
+original = """
+{\"effect\":\"filters\",\"from\":\"unbiased-pug/ram\",\"note\":\"First-order \
+filter ffff18d2 = trunc0((ffff18d0*w + ffff18d2*(256 - w))/256) with stock w \
+= ROM8[0x87ED] = \
+255.\",\"sign\":\"positive\",\"to\":\"fascinating-crow/ram\",\"via\":[\"flashy-clam/fn\"]}"""
 
 [[step]]
 from = "fascinating-crow/ram"
@@ -122,9 +232,19 @@ to = "fervent-bittern/ram"
 effect = "feeds"
 sign = "positive"
 via = ["terrestrial-nuthatch/fn"]
-note = """
-00065e2c writes net engine torque ffff240c = sat_i16(ffff18d2 - ffff2410), \
-the torque that CAN frame 0x180 carries."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 12
+step_sha256 = "ba7bb7d9827844641cdef2dd2d05f9ca7e4556135df4c2905a0c509666a0cbe9"
+original = """
+{\"effect\":\"feeds\",\"from\":\"fascinating-crow/ram\",\"note\":\"00065e2c \
+writes net engine torque ffff240c = sat_i16(ffff18d2 - ffff2410), the torque \
+that CAN frame 0x180 \
+carries.\",\"sign\":\"positive\",\"to\":\"fervent-bittern/ram\",\"via\":[\"terrestrial-nuthatch/fn\"]}"""
 
 [[step]]
 from = "cobalt-groundhog/ram"
@@ -132,9 +252,19 @@ to = "fervent-bittern/ram"
 effect = "subtracts"
 sign = "negative"
 via = ["terrestrial-nuthatch/fn"]
-note = """
-Accessory-load sum ffff2410 = sat_u16(ffff1818 + ffff196e + ffff1838) of \
-00065f9c, or zero while ffff11b3 is zero."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 13
+step_sha256 = "0150791f9e8d82350fec2f2601a888ecc1890e8fb993ca3c61c73f6bbdda652f"
+original = """
+{\"effect\":\"subtracts\",\"from\":\"cobalt-groundhog/ram\",\"note\":\"Accessory-load \
+sum ffff2410 = sat_u16(ffff1818 + ffff196e + ffff1838) of 00065f9c, or zero \
+while ffff11b3 is \
+zero.\",\"sign\":\"negative\",\"to\":\"fervent-bittern/ram\",\"via\":[\"terrestrial-nuthatch/fn\"]}"""
 
 [[step]]
 from = "fervent-bittern/ram"
@@ -142,10 +272,19 @@ to = "adaptable-orangutan/ram"
 effect = "converts"
 sign = "positive"
 via = ["coherent_snapshot/fn", "lyrical-pronghorn/fn"]
-note = """
-00020dfe latches ffff240c as ffff2380; 00079e70 writes \
-clamp(trunc0(ffff2380/5) + 800, 0, 4094), or 4095 while ffff4221.bit2 is \
-set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 14
+step_sha256 = "685d781e129b24a778a5d01f3fa465a6544d549e20d4ba513857427265ef0f73"
+original = """
+{\"effect\":\"converts\",\"from\":\"fervent-bittern/ram\",\"note\":\"00020dfe \
+latches ffff240c as ffff2380; 00079e70 writes clamp(trunc0(ffff2380/5) + \
+800, 0, 4094), or 4095 while ffff4221.bit2 is \
+set.\",\"sign\":\"positive\",\"to\":\"adaptable-orangutan/ram\",\"via\":[\"coherent_snapshot/fn\",\"lyrical-pronghorn/fn\"]}"""
 
 [[step]]
 from = "adaptable-orangutan/ram"
@@ -153,9 +292,19 @@ to = "feedback_payload_base/ram"
 effect = "stores"
 sign = "none"
 via = ["space-puma/fn", "kind-booby/fn"]
-note = """
-Coordinator 000c3de4 runs serializer 000c577a, which puts ffff3f96 into \
-0x180 byte 2 and byte 3 bits 7..4 of record 7 at ffff3ab5 + 70."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 15
+step_sha256 = "d83a90fb107e5dda61001e1989066717cfafeab074f952b1063dfe89977393ff"
+original = """
+{\"effect\":\"stores\",\"from\":\"adaptable-orangutan/ram\",\"note\":\"Coordinator \
+000c3de4 runs serializer 000c577a, which puts ffff3f96 into 0x180 byte 2 and \
+byte 3 bits 7..4 of record 7 at ffff3ab5 + \
+70.\",\"sign\":\"none\",\"to\":\"feedback_payload_base/ram\",\"via\":[\"space-puma/fn\",\"kind-booby/fn\"]}"""
 
 [[step]]
 from = "feedback_payload_base/ram"
@@ -163,9 +312,19 @@ to = "unyielding-bullfinch/reg"
 effect = "transmits"
 sign = "none"
 via = ["bright-octopus/fn", "free-coot/fn"]
-note = """
-000c38de calls submitter 000c3746, which copies record i into mailbox i + 1, \
-then writes TXPR0/TXPR1; mailboxes 8 and 9 lie in TXPR0."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 16
+step_sha256 = "f14b04eca6610339ea80a2d6063b92b5e477c5b2bc9795b3899401cd4fb20dae"
+original = """
+{\"effect\":\"transmits\",\"from\":\"feedback_payload_base/ram\",\"note\":\"000c38de \
+calls submitter 000c3746, which copies record i into mailbox i + 1, then \
+writes TXPR0/TXPR1; mailboxes 8 and 9 lie in \
+TXPR0.\",\"sign\":\"none\",\"to\":\"unyielding-bullfinch/reg\",\"via\":[\"bright-octopus/fn\",\"free-coot/fn\"]}"""
 
 [[step]]
 from = "engine_torque_state/ram"
@@ -173,10 +332,19 @@ to = "sepia-armadillo/ram"
 effect = "feeds"
 sign = "positive"
 via = ["vigorous-saluki/fn", "adorable-kudu/fn"]
-note = """
-Parallel channel 00065860 repeats stages 3 to 6 with F at latched \
-timing-state byte ffff2404 and writes ffff240e = sat_i16(ffff18d8 - \
-ffff2410)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 17
+step_sha256 = "b5f5c8f33f8c805edd8da683a5285268d015cf4416af6f17ac6b653515583a9d"
+original = """
+{\"effect\":\"feeds\",\"from\":\"engine_torque_state/ram\",\"note\":\"Parallel \
+channel 00065860 repeats stages 3 to 6 with F at latched timing-state byte \
+ffff2404 and writes ffff240e = sat_i16(ffff18d8 - \
+ffff2410).\",\"sign\":\"positive\",\"to\":\"sepia-armadillo/ram\",\"via\":[\"vigorous-saluki/fn\",\"adorable-kudu/fn\"]}"""
 
 [[step]]
 from = "sepia-armadillo/ram"
@@ -184,9 +352,19 @@ to = "great-fulmar/ram"
 effect = "converts"
 sign = "positive"
 via = ["coherent_snapshot/fn", "lyrical-pronghorn/fn"]
-note = """
-00020dfe latches ffff240e as ffff2382; 00079e70 packs max(min(ffff23a8, \
-ffff2382), ffff2374) like ffff3f96, 4095 while ffff4221.bit2 is set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 18
+step_sha256 = "3ed5d7d10c74eeb91861a728e51ac1d4ff80e10ccb884abc2dfc6081451cc448"
+original = """
+{\"effect\":\"converts\",\"from\":\"sepia-armadillo/ram\",\"note\":\"00020dfe \
+latches ffff240e as ffff2382; 00079e70 packs max(min(ffff23a8, ffff2382), \
+ffff2374) like ffff3f96, 4095 while ffff4221.bit2 is \
+set.\",\"sign\":\"positive\",\"to\":\"great-fulmar/ram\",\"via\":[\"coherent_snapshot/fn\",\"lyrical-pronghorn/fn\"]}"""
 
 [[step]]
 from = "great-fulmar/ram"
@@ -194,9 +372,19 @@ to = "feedback_payload_base/ram"
 effect = "stores"
 sign = "none"
 via = ["shapeless-eagle/fn", "kind-booby/fn"]
-note = """
-Serializer 000c590e puts ffff3f98 into 0x160 byte 1 bits 3..0 and byte 2 of \
-record 8 at ffff3ab5 + 80."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 19
+step_sha256 = "e660869f2e862088e4f2cff1733dd549e8c03da074152abf9479f4a645a03905"
+original = """
+{\"effect\":\"stores\",\"from\":\"great-fulmar/ram\",\"note\":\"Serializer \
+000c590e puts ffff3f98 into 0x160 byte 1 bits 3..0 and byte 2 of record 8 at \
+ffff3ab5 + \
+80.\",\"sign\":\"none\",\"to\":\"feedback_payload_base/ram\",\"via\":[\"shapeless-eagle/fn\",\"kind-booby/fn\"]}"""
 
 [[step]]
 from = "can_174_transmission_payload_decoder/fn"
@@ -208,9 +396,19 @@ via = [
     "psychedelic-lizard/fn",
     "coherent_snapshot/fn",
 ]
-note = """
-000c3b14 calls 000c47ea for CAN 0x174, which publishes status ffff3a2e; \
-0007724c sets ffff419b bits 3, 4 for value 3; 00020dfe latches ffff418f."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 20
+step_sha256 = "1787d2c8102d771cfb6e05641b3630f4a6ebf8bcbf43e9141a3d6502ede1fcd1"
+original = """
+{\"effect\":\"receives\",\"from\":\"can_174_transmission_payload_decoder/fn\",\"note\":\"000c3b14 \
+calls 000c47ea for CAN 0x174, which publishes status ffff3a2e; 0007724c sets \
+ffff419b bits 3, 4 for value 3; 00020dfe latches \
+ffff418f.\",\"sign\":\"none\",\"to\":\"prehistoric-horse/ram\",\"via\":[\"hcan1_receive_payload_dispatch/fn\",\"psychedelic-lizard/fn\",\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "prehistoric-horse/ram"
@@ -218,9 +416,19 @@ to = "accomplished-cockle/ram"
 effect = "gates"
 sign = "none"
 via = ["automatic_transmission_request_coordinator/fn"]
-note = """
-ffff4252.bit1 = ffff418f.bit4 with ffff1082 != ffff1083 and ffff4253.bit6 \
-clear; ffff41a6.bit3 is set while bit 1 or hold byte ffff4413 is set."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 21
+step_sha256 = "347be27f35ac44d9f1a56353e0e6fd4c6999f2d5d2ec22b01896521459f5be0e"
+original = """
+{\"effect\":\"gates\",\"from\":\"prehistoric-horse/ram\",\"note\":\"ffff4252.bit1 \
+= ffff418f.bit4 with ffff1082 != ffff1083 and ffff4253.bit6 clear; \
+ffff41a6.bit3 is set while bit 1 or hold byte ffff4413 is \
+set.\",\"sign\":\"none\",\"to\":\"accomplished-cockle/ram\",\"via\":[\"automatic_transmission_request_coordinator/fn\"]}"""
 
 [[step]]
 from = "can_174_transmission_payload_decoder/fn"
@@ -228,9 +436,19 @@ to = "notorious-malamute/ram"
 effect = "receives"
 sign = "none"
 via = ["psychedelic-lizard/fn", "coherent_snapshot/fn"]
-note = """
-000c47ea stores 0x174 word B in ffff3f8e; 0007724c writes min(5*B - 4000, \
-0x7FFF) to ffff2874; 00020dfe latches it as ffff2770."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 22
+step_sha256 = "7109f07ae31e37d9eedf0740c3e83769b9423194d0712fe3dcee88e4e9ec731d"
+original = """
+{\"effect\":\"receives\",\"from\":\"can_174_transmission_payload_decoder/fn\",\"note\":\"000c47ea \
+stores 0x174 word B in ffff3f8e; 0007724c writes min(5*B - 4000, 0x7FFF) to \
+ffff2874; 00020dfe latches it as \
+ffff2770.\",\"sign\":\"none\",\"to\":\"notorious-malamute/ram\",\"via\":[\"psychedelic-lizard/fn\",\"coherent_snapshot/fn\"]}"""
 
 [[step]]
 from = "notorious-malamute/ram"
@@ -238,9 +456,19 @@ to = "manipulative-coati/ram"
 effect = "limits"
 sign = "positive"
 via = ["automatic_transmission_request_coordinator/fn"]
-note = """
-On a ffff4252.bit1 pass ffff4162 = max(floor ffff34da, target term) limited \
-by ffff4138 and ffff2770; otherwise min(ffff34a4, ffff2770)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 23
+step_sha256 = "1b4d6b1f8357cbf5706a17ed092facd96b67fae6f2612277205513dcab88346c"
+original = """
+{\"effect\":\"limits\",\"from\":\"notorious-malamute/ram\",\"note\":\"On a \
+ffff4252.bit1 pass ffff4162 = max(floor ffff34da, target term) limited by \
+ffff4138 and ffff2770; otherwise min(ffff34a4, \
+ffff2770).\",\"sign\":\"positive\",\"to\":\"manipulative-coati/ram\",\"via\":[\"automatic_transmission_request_coordinator/fn\"]}"""
 
 [[step]]
 from = "accomplished-cockle/ram"
@@ -248,9 +476,19 @@ to = "spicy-smilodon/ram"
 effect = "gates"
 sign = "none"
 via = ["transmission_request_bound_publisher/fn"]
-note = """
-While ffff41a6.bit3 is set, 000777fa publishes candidate ffff4162 as upper \
-bound ffff3480 under ROM8[0x89C5].bit0; otherwise ffff3488."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 24
+step_sha256 = "9646fc9f2208e311a9302437dcfbc8589b99c5b72983841f68341bd2730099db"
+original = """
+{\"effect\":\"gates\",\"from\":\"accomplished-cockle/ram\",\"note\":\"While \
+ffff41a6.bit3 is set, 000777fa publishes candidate ffff4162 as upper bound \
+ffff3480 under ROM8[0x89C5].bit0; otherwise \
+ffff3488.\",\"sign\":\"none\",\"to\":\"spicy-smilodon/ram\",\"via\":[\"transmission_request_bound_publisher/fn\"]}"""
 
 [[step]]
 from = "manipulative-coati/ram"
@@ -258,9 +496,19 @@ to = "spicy-smilodon/ram"
 effect = "selects"
 sign = "positive"
 via = ["transmission_request_bound_publisher/fn"]
-note = """
-Upper bound ffff3480 equals candidate ffff4162 while ffff41a6.bit3 is set; \
-lower bound ffff3484 is min(ffff34c8, ffff4162)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 25
+step_sha256 = "fe1f895670d8a4a41606b8e7e08c35d9557a38ab6d65afeb5843a9e401884db6"
+original = """
+{\"effect\":\"selects\",\"from\":\"manipulative-coati/ram\",\"note\":\"Upper \
+bound ffff3480 equals candidate ffff4162 while ffff41a6.bit3 is set; lower \
+bound ffff3484 is min(ffff34c8, \
+ffff4162).\",\"sign\":\"positive\",\"to\":\"spicy-smilodon/ram\",\"via\":[\"transmission_request_bound_publisher/fn\"]}"""
 
 [[step]]
 from = "spicy-smilodon/ram"
@@ -268,6 +516,16 @@ to = "throttle_request_bounded/ram"
 effect = "limits"
 sign = "positive"
 via = ["signed_request_boundary/fn"]
-note = """
-00079030 caps its working request, duplicated selection ffff2438, at upper \
-bound ffff3480 before its other bounds and the store to ffff19c6."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/torque_can.toml"
+source_sha256 = "ef6692ebb6d1e58948a4e52171b0c1de9f0539a301bda42c976c2766e031db86"
+order = 26
+step_sha256 = "aa88bd23aada89aa3c3175b49e883cadd66d370bdfba29e45cecc418df070ce2"
+original = """
+{\"effect\":\"limits\",\"from\":\"spicy-smilodon/ram\",\"note\":\"00079030 \
+caps its working request, duplicated selection ffff2438, at upper bound \
+ffff3480 before its other bounds and the store to \
+ffff19c6.\",\"sign\":\"positive\",\"to\":\"throttle_request_bounded/ram\",\"via\":[\"signed_request_boundary/fn\"]}"""

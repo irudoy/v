@@ -10,7 +10,7 @@ import hashlib
 from pathlib import Path
 import re
 
-from kb import match, names, repo, store, vocab
+from kb import match, names, repo, research, store, vocab
 from kb.model import MEANING_REF, SYMBOL_REF, Issue, SymbolKey
 from kb.targets import CANONICAL
 
@@ -213,11 +213,23 @@ def names_check(model):
         if row.layout not in model.layouts or row.kind not in vocab.MEANING_KINDS:
             issues.append(Issue("names", where, subject, "unknown layout or kind"))
     issues.extend(_file_names(model, by_name, by_key, semantic_names))
+    from kb import retirement
+    active = {(meaning.kind, alias) for meaning in model.meanings
+              for alias in ({meaning.name} | {name for name, _, _ in meaning.other_names})}
+    active.update((kind, slug) for kind, slug in model.entities)
+    active.update((key.kind, alias) for key, (name, former, _) in model.file_names.items()
+                  for alias in (([name] if name else []) + list(former)))
+    for kind, slug, document, source in retirement.records(model):
+        for alias in retirement.aliases(kind, slug, document):
+            if (kind, alias) in active:
+                issues.append(Issue('names', source, f'{slug}/{kind}',
+                                    f'inactive reserved name {alias!r} is active'))
     lacking = names.missing(model, rows)
     if lacking:
         sample = ", ".join(key.key for key in lacking[:3])
         issues.append(Issue("names", names.PATH.as_posix(), f"{len(lacking)} symbols",
                             f"no generated name, among them {sample}; run `uv run kb sync`"))
+    issues.extend(names.owner_check(model))
     return issues
 
 
@@ -831,10 +843,12 @@ def blocks(model):
 def chains(model):
     """Ordered chain references, vocabulary, output, and acyclic flow.
 
-    Arithmetic-only notes and the migration of prose conditions remain a
-    separate stage-6 requirement. Connectivity never proves arithmetic.
+    Arithmetic notes remain strict; source-bound unresolved records preserve
+    open semantics separately. Connectivity and transfer prove no arithmetic.
     """
     issues = []
+    from kb.arithmetic import Grammar
+    grammar = Grammar(model.config)
     for (kind, _), entity in model.entities.items():
         if kind != 'chain':
             continue
@@ -851,6 +865,12 @@ def chains(model):
             subject = f'{entity.key} step {index}'
             if step.get('note') is not None and not isinstance(step['note'], str):
                 issues.append(Issue('chains', path, subject, 'note must be a string'))
+            elif step.get('note') is not None:
+                failure = grammar.validate(step['note'])
+                if failure:
+                    issues.append(Issue('chains', path, subject, f'arithmetic note: {failure}'))
+            if 'research' in step:
+                issues += _chain_research(model, entity, step, index, path, subject, grammar)
             issues += [Issue('chains', path, subject, message)
                        for message in _architecture_specs(step.get('specs'), model)]
             if step.get('effect') not in vocab.STEP_EFFECTS:
@@ -898,6 +918,45 @@ def chains(model):
     return issues
 
 
+def _chain_research(model, entity, step, order, path, subject, grammar):
+    """Bind an unresolved record to its exact original and current owner."""
+    record = step['research']
+    source_path = store.path_of('chain', entity.slug).as_posix()
+    if (not isinstance(record, dict) or not isinstance(record.get('source_commit'), str)
+            or not research.COMMIT.fullmatch(record['source_commit'])
+            or record.get('source_path') != source_path):
+        return [Issue('chains', path, subject, 'research has an invalid immutable owner source')]
+    root = getattr(model, 'root', repo.ROOT)
+    try:
+        historical = research.historical_source(root, record['source_commit'], source_path)
+        current = store.load(root, Path(source_path), getattr(model, 'overlay', {}))['step'][order-1]
+        failure = research.validate(record, current, historical, grammar, source_path, order,
+                                    model=model, home=entity.props.get('home', CANONICAL))
+    except (repo.KbError, OSError, ValueError, KeyError, IndexError, TypeError) as error:
+        failure = f'research source binding: {error}'
+    return [Issue('chains', path, subject, failure)] if failure else []
+
+
+def catalog_check(model):
+    """Complete source coverage is mandatory when parity owners exist."""
+    from kb import catalog, project
+    if project.stage(model.root) < 10 and not any(
+            kind == 'feature' and entity.props.get('catalog')
+            for (kind, _), entity in model.entities.items()):
+        return []
+    return catalog.check(model)
+
+
+def code_check(model):
+    from kb import reconciliation
+    return reconciliation.check(model)
+
+
+def source_bindings_check(model):
+    from kb import source_bindings
+    return source_bindings.check(model)
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -915,6 +974,9 @@ CHECKS = {
     "ledgers": ledgers_check,
     'blocks': blocks,
     'chains': chains,
+    'catalog': catalog_check,
+    'code': code_check,
+    'source-bindings': source_bindings_check,
 }
 
 # Reports of a check that do not fail it.
@@ -923,7 +985,7 @@ NOTES = {
 }
 
 
-AUDIT_SECTIONS = ("disagreements", "names", "untyped", "levels", "chain-notes")
+AUDIT_SECTIONS = ("disagreements", "names", "untyped", "levels", "chain-notes", "research")
 # The model issues that each section reports.
 AUDIT_ISSUES = {"audit": "disagreements", "untyped": "untyped"}
 
@@ -954,6 +1016,17 @@ def audit(model, sections=AUDIT_SECTIONS):
         found["levels"].update(levels.check(model))
     if 'chain-notes' in found:
         found['chain-notes'].update(chain_notes(model))
+    if 'research' in found:
+        for entity in model.entities.values():
+            if entity.kind != 'chain':
+                continue
+            for order, step in enumerate(entity.steps, 1):
+                record = step.get('research')
+                if record:
+                    found['research'].add(Issue('research', ';'.join(sorted(entity.sources)),
+                        f'{entity.key} step {order}',
+                        f"unresolved semantics; source {record.get('source_commit')}:{record.get('source_path')} "
+                        f"step {record.get('order')}; original {record.get('original')!r}"))
     return {section: sorted(issues) for section, issues in found.items()}
 
 

@@ -1,16 +1,10 @@
 from pathlib import Path
 import sys
-import types
 import unittest
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
-if "neo4j" not in sys.modules:
-    neo4j = types.ModuleType("neo4j")
-    neo4j.GraphDatabase = object
-    sys.modules["neo4j"] = neo4j
 
 import load_diagnostic_bindings as bindings  # noqa: E402
 import rom_sources  # noqa: E402

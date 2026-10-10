@@ -23,9 +23,8 @@ import csv
 import os
 import sys
 import tempfile
-from neo4j import GraphDatabase
+from kb import reader
 
-BOLT = "bolt://localhost:7687"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
@@ -145,11 +144,9 @@ def emit_tracker(rom, tracker=None, display_tracker=None):
     if tracker is None:
         tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
-    with driver.session() as s:
+    with reader.session() as s:
         rows = [r.data() for r in s.run(QUERY, rom=rom)]
         bindings = diagnostic_context.map_bindings(s, rom)
-    driver.close()
     if not rows:
         sys.exit(f"no maps for rom={rom} in graph; tools/memgraph/load_maps.py builds the layer")
     for row in rows:

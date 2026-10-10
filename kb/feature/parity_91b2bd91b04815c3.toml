@@ -1,0 +1,50 @@
+title = "FF Ethanol Content Override"
+summary = "Competitor inventory: FF Ethanol Content Override."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 242
+source = "refs/vendor/catalog.csv"
+sha256 = "63b331f783f1780caf4a73c75e2b3361ec3e26e0c11a376378e8e62f2d221bde"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"FlexFuel\",\"level\":\"Advanced\",\"name\":\"FF \
+Ethanol Content \
+Override\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Flex \
+Fuel\",\"source\":\"images/image2020-5-15_16-0-28.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

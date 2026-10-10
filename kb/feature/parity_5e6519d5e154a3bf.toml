@@ -1,0 +1,51 @@
+title = "Radiator Fan Speed by A/C Pressure (Upper)"
+summary = "Competitor inventory: Radiator Fan Speed by A/C Pressure (Upper)."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 336
+source = "refs/vendor/catalog.csv"
+sha256 = "9a1e3eb2e0c2ccf7c338abcc9db7b8dbeb654e7d9e3b50c5fe103079dff9563f"
+original = """
+{\"axis_x\":\"A/C \
+Pressure\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Radiator \
+Fan Speed by A/C Pressure (Upper)\",\"note\":\"Corresponds to ProECU \
+'Radiator Fan A/C ON' and 'Radiator Fan A/C \
+Related'.\",\"origin\":\"factory\",\"output\":\"fan \
+speed\",\"section\":\"Cooling\",\"source\":\"Cooling\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

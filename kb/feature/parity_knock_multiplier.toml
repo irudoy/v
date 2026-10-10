@@ -1,0 +1,58 @@
+title = "Knock multiplier"
+summary = """
+Competitor inventory: Knock Retard Multiplier 1; Knock Retard Multiplier 2."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 149
+source = "refs/vendor/catalog.csv"
+sha256 = "53034222872c401432ced3b5b525f0a33e0ce3d443e156259b89c06482380f4e"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-multiplier\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Knock Control\",\"level\":\"\",\"name\":\"Knock Retard Multiplier \
+1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 150
+source = "refs/vendor/catalog.csv"
+sha256 = "2a74bcc13db5381dc55e05b6b35adfe2afd1c45178572e3ae457dcbd88c8ad18"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-multiplier\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Knock Control\",\"level\":\"\",\"name\":\"Knock Retard Multiplier \
+2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

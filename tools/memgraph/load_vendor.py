@@ -42,9 +42,7 @@ import csv
 import os
 import sys
 
-from neo4j import GraphDatabase
 
-BOLT = "bolt://localhost:7687"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CATALOG = os.path.join(ROOT, "refs", "vendor", "catalog.csv")
@@ -64,9 +62,9 @@ def num(s):
     return int(s) if s and s.isdigit() else None
 
 
-def build_entries(family):
+def build_entries(family, catalog=CATALOG):
     rows = []
-    for r in read(CATALOG):
+    for r in read(catalog):
         rows.append(
             {
                 "vendor": r["vendor"],
@@ -89,9 +87,9 @@ def build_entries(family):
     return rows
 
 
-def build_facts(family):
+def build_facts(family, facts=FACTS):
     rows = []
-    for r in read(FACTS):
+    for r in read(facts):
         rows.append(
             {
                 "vendor": r["vendor"],
@@ -138,9 +136,10 @@ def check(entries, facts):
         sys.exit(f"facts.csv: nonunique (vendor, subject), {len(dup)}: {dup[:5]}")
 
 
-def main():
-    family = sys.argv[1] if len(sys.argv) > 1 else "HR"
-    entries, facts = build_entries(family), build_facts(family)
+def load(driver, family, catalog, facts_path):
+    """Load the tracked external vocabulary without creating a connection."""
+    entries = build_entries(family, catalog)
+    facts = build_facts(family, facts_path)
     check(entries, facts)
 
     vendors = sorted({e["vendor"] for e in entries})
@@ -150,7 +149,6 @@ def main():
     print(f"Vocabularies: {', '.join(vendors)}")
     print(f"origin=factory (usable for stock ROM): {factory} of {len(entries)}")
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         s.run("MATCH (n:VendorEntry {family:$f}) DETACH DELETE n", f=family)
         s.run("MATCH (n:VendorFact {family:$f}) DETACH DELETE n", f=family)
@@ -241,7 +239,10 @@ def main():
         ):
             print(f"  {r['kind']:<11} {r['vendor']:<8} {r['subject']}")
 
-    driver.close()
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

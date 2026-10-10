@@ -1,0 +1,50 @@
+title = "Wastegate Proportional"
+summary = "Competitor inventory: Wastegate Proportional."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 47
+source = "refs/vendor/catalog.csv"
+sha256 = "eae5993eea32d2c7909f334cfc44a8c9aa78737e18fb0606bc1305556f27251b"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"EcuTek \
+RaceROM Maps//Boost Control\",\"level\":\"\",\"name\":\"Wastegate \
+Proportional\",\"note\":\"last visible row; screenshot is cropped at the \
+bottom\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Boost \
+Control\",\"source\":\"images/image2022-3-28_15-14-14.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

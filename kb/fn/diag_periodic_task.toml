@@ -1,0 +1,18 @@
+note = [
+    """
+periodic diagnostic task; reads Lock; callees write only RAM 0xFFFE82xx (no \
+ATU)""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "00068104"
+
+[symbol.curated]
+order = 28
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00068104"

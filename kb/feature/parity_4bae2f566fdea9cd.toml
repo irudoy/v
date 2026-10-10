@@ -1,0 +1,49 @@
+title = "MAF Sensor lower voltage limit"
+summary = "Competitor inventory: MAF Sensor lower voltage limit."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 178
+source = "refs/vendor/catalog.csv"
+sha256 = "7d6c6f04d0815f373d10812ae00b8d813b5f23fbc0f43045495aa306223b6a70"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAF Sensor lower voltage \
+limit\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

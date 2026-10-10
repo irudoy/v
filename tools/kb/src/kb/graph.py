@@ -20,12 +20,12 @@ import re
 import time
 
 import kb
-from kb import compile, fingerprint, instance, l0graph, lock, names, repo
+from kb import compile, fingerprint, instance, l0graph, lock, names, repo, retirement
 from kb.model import SymbolKey
 from kb.values import properties
 
 BATCH = 5000
-LABELS = ("Meta", "Family", "Layout", "Image", "Meaning", "Symbol", "Entity", "Step",
+LABELS = ("Meta", "Family", "Layout", "Image", "Meaning", "Symbol", "Entity", "Step", "Retired",
           "Function", "Location", "Candidate")
 INDEXES = (
     ("Symbol", ("layout", "address")),
@@ -36,7 +36,7 @@ INDEXES = (
     ("Function", ("layout",)),
     ("Location", ("layout",)),
 )
-CLAIM_LABELS = ("Meaning", "Symbol", "Entity", "Step")
+CLAIM_LABELS = ("Meaning", "Symbol", "Entity", "Step", "Retired")
 STORE_MODES = ("store", "update", "write", "read_write")
 LOAD_MODES = ("load", "update", "read", "read_write", "literal", "data", "param")
 L0_VERIFIED = {"WRITER": STORE_MODES, "READER": LOAD_MODES}
@@ -301,6 +301,8 @@ def claim_rows(model):
             steps.append(properties({
                 "key": key, "effect": step["effect"], "sign": step["sign"],
                 "note": step.get("note"), "specs": step.get("specs"), **claim}))
+            if 'research' in step:
+                steps[-1].update(properties({'research': step['research']}))
             entity_links[("STEP", "Entity", "Step")].append(
                 {"from": entity.key, "to": key, "props": {"order": order, **claim}})
             for name, kind in STEP_LINKS:
@@ -481,6 +483,7 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
                              for (left, right), items in rows["cites"].items()),
             "entities": _create_nodes(graph, "Entity", rows["entities"]),
             "steps": _create_nodes(graph, "Step", rows["steps"]),
+            'retired': _create_nodes(graph, 'Retired', retirement.nodes(model)),
             "entity links": sum(_create_links(graph, kind, left, right, items)
                                 for (kind, left, right), items in rows["entity_links"].items()),
             "targets": _create_links(graph, "TARGETS", "Entity", "Layout", rows["targets"]),
@@ -499,6 +502,18 @@ def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
                 "SET r.verified = any(a IN accesses WHERE any(m IN a.modes WHERE m IN $modes))",
                 modes=list(modes))
         summary["at"] = ({"at": at}, 0.0, {})
+    return publish(graph, model, fp, root, summary,
+                   full or previous is None or previous.get("fingerprint") != fp.value, log)
+
+
+def publish(graph, model, fp, root, summary, changed, log=print):
+    """Publish freshness only after every retained layer and source check passes."""
+    if changed:
+        from kb import compatibility
+        summary.update(compatibility.load(graph, model, root, log))
+    after = fingerprint.compute(root)
+    if after.value != fp.value:
+        raise repo.KbError("compiler inputs change during graph construction; Meta is absent", code=6)
     commit, head = fingerprint.head(root)
     graph.run("CREATE (m:Kb:Meta) SET m = $props", props={
         "key": "meta", "fingerprint": fp.value, "commit": commit,

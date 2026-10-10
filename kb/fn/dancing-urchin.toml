@@ -1,0 +1,16 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Data flow"]
+anchor = "FUN_000AF340"
+
+[[symbol]]
+layout = "jk78c"
+address = "000af340"
+name = "dancing-urchin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000af340"

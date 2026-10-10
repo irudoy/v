@@ -1,0 +1,138 @@
+title = "Cranking decay"
+summary = """
+Competitor inventory: Cranking Fuel Injector Pulsewidth step 1; Cranking \
+Fuel Injector Pulsewidth step 2; Cranking Fuel Injector Pulsewidth step 3; \
+Cranking Fuel Injector Pulsewidth step 4; Cranking Fuel Injector Pulsewidth \
+step 5; Injector Priming Pulse Mode 1; Injector Priming Pulse Mode 2; \
+Injector Priming Pulse Mode 3; Injector Priming Pulse Mode 4."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 74
+source = "refs/vendor/catalog.csv"
+sha256 = "2005cc4298f7ed19e03c2cf1de1a7a7497856c2474f0cc2da787337767e4aff7"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth step \
+1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 75
+source = "refs/vendor/catalog.csv"
+sha256 = "87fe3a3df5e62c4e5b7a70550bff2e0d7e0ea80f353e21bda456cbbe7635bd25"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth step \
+2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 76
+source = "refs/vendor/catalog.csv"
+sha256 = "01b2772454edd0248923319e037f2550db24ba69b4a6d8bc7c39bbb956c5ffe4"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth step \
+3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 77
+source = "refs/vendor/catalog.csv"
+sha256 = "d157f5ede1bb2d5f897c2d3d1f84ba96b565aa5f0f4d930a57a2fbdc0e12b207"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth step \
+4\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 78
+source = "refs/vendor/catalog.csv"
+sha256 = "159f61e9c3430d23e7807df02c46feaa7bbfa2e19fef3cb16093a845fd878a28"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel Injector Pulsewidth step \
+5\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 301
+source = "refs/vendor/catalog.csv"
+sha256 = "1ba6a0de4ab9b5bb2d8854c0fd70d1fc75c225b224ce45859da76e2853879a82"
+original = """
+{\"axis_x\":\"coolant \
+temp\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse Mode 1\",\"note\":\"100% is the slowest decay and keeps the \
+mixture rich longer; 0% is the fastest transition to measured \
+airflow.\",\"origin\":\"factory\",\"output\":\"pulse decay rate \
+%\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / Injector \
+Priming Pulse Mode 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 302
+source = "refs/vendor/catalog.csv"
+sha256 = "a066ee0c1f116078160391cb4f1434e28f4c24bffe86f936c3b1996b97dca6d2"
+original = """
+{\"axis_x\":\"coolant \
+temp\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse Mode \
+2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"pulse decay rate \
+%\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / Injector \
+Priming Pulse Mode 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 303
+source = "refs/vendor/catalog.csv"
+sha256 = "a611382c59de9dea62bc0bf5bd77ccbb8921a783cfc20f28609bfb53b73644ac"
+original = """
+{\"axis_x\":\"coolant \
+temp\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse Mode \
+3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"pulse decay rate \
+%\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / Injector \
+Priming Pulse Mode 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 304
+source = "refs/vendor/catalog.csv"
+sha256 = "668d0597f7d692042c679ba6deb54afe64ce32f3a02572b44f78f96763437c5f"
+original = """
+{\"axis_x\":\"coolant \
+temp\",\"axis_y\":\"\",\"concept\":\"cranking-decay\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse Mode \
+4\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"pulse decay rate \
+%\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / Injector \
+Priming Pulse Mode 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

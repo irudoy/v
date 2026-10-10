@@ -12,12 +12,10 @@ import csv
 import os
 from pathlib import Path
 import sys
-from neo4j import GraphDatabase
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import rom_sources  # noqa: E402
 
-BOLT = "bolt://localhost:7687"
 
 CAN_OFFS = {0x00: "MCR", 0x02: "GSR", 0x04: "BCR1", 0x06: "BCR0", 0x08: "IRR",
             0x0A: "IMR", 0x20: "TXPR", 0x28: "TXCR", 0x30: "TXACK", 0x38: "ABACK",
@@ -51,9 +49,8 @@ def read_csv(path):
         return list(csv.DictReader(f))
 
 
-def main():
-    rom = sys.argv[2] if len(sys.argv) > 2 else "1ND0A"
-    outdir = sys.argv[1] if len(sys.argv) > 1 else str(rom_sources.l0_dir(rom))
+def load(driver, rom, outdir):
+    """Load the peripheral layer from the compiler-selected L0."""
 
     rows = read_csv(os.path.join(outdir, "xrefs.csv"))
     edges, regs = [], {}
@@ -64,7 +61,6 @@ def main():
         edges.append({"func": r["func_addr"], "reg": r["periph_addr"], "kind": r["kind"]})
     print(f"xrefs: {len(edges)} edges, {len(regs)} distinct registers; rom={rom}")
 
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         s.run("MATCH (r:Reg {rom:$rom}) DETACH DELETE r", rom=rom)
         try:
@@ -140,7 +136,10 @@ def main():
         for r in rows:
             print(f"  {r['addr']}  can={r['can']} sci={r['sci']}")
 
-    driver.close()
+
+
+def main():
+    raise SystemExit("This layer belongs to the kb compiler; use `uv run kb sync`.")
 
 
 if __name__ == "__main__":

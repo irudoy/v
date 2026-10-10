@@ -1,0 +1,106 @@
+title = "Knock enable"
+summary = """
+Competitor inventory: Knock Control Enable A1 Cold; Knock Control Enable A1 \
+Safe #1; Knock Control Enable A1 Safe #2; Knock Control Enable A1 Safe #3; \
+Knock Control Enable A1 Warm; Ignition Timing Knock Windows."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 144
+source = "refs/vendor/catalog.csv"
+sha256 = "dfc290b10cfb65cbaf6df7216e7df526f672927d4b51d38147e695bb039db0d8"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-enable\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Knock Control \
+Enable A1 \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 145
+source = "refs/vendor/catalog.csv"
+sha256 = "2d4e86fc31c5ddece3cc90fb4d1e4d54dda79d295fbb0679c80f516219f9d53d"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-enable\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Knock Control \
+Enable A1 Safe \
+#1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 146
+source = "refs/vendor/catalog.csv"
+sha256 = "c5466e0fe93de5a7cbb2f5545850df01624d5acd9534cd8f9f60bc5ae875a665"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-enable\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Knock Control \
+Enable A1 Safe \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 147
+source = "refs/vendor/catalog.csv"
+sha256 = "63eeeca922a8bdab8a81eab3034309601f4c796d921d8ca1c4fa6b392efe7275"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-enable\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Knock Control \
+Enable A1 Safe \
+#3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 148
+source = "refs/vendor/catalog.csv"
+sha256 = "10c66074d8f26bf88111a53cac824f334a76618fc5bc7ce2c61c74e831450934"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"knock-enable\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Ignition \
+Timing//Factory - Not Recommended\",\"level\":\"\",\"name\":\"Knock Control \
+Enable A1 \
+Warm\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Ignition\",\"source\":\"images/image2019-8-27_10-29-3.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 317
+source = "refs/vendor/catalog.csv"
+sha256 = "92f31e21f5bf267c3d033fa5f1a54e410fc3f6d91cbd9f6fd79c58aab8f08eae"
+original = """
+{\"axis_x\":\"Base Fuel Schedule\",\"axis_y\":\"Engine \
+RPM\",\"concept\":\"knock-enable\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Ignition \
+Timing Knock Windows\",\"note\":\"Shares axes with the ignition tables. \
+Available only to professional tuners. ProECU calls this 'Knock Control \
+Enable'.\",\"origin\":\"factory\",\"output\":\"1 enables knock control, 0 \
+disables it\",\"section\":\"Ignition Advance \
+Parameters\",\"source\":\"Ignition Advance Parameters / Ignition Timing \
+Knock Windows\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

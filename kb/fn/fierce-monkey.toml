@@ -1,0 +1,16 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Controllers"]
+anchor = "FUN_000EA6DE"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ea6de"
+name = "fierce-monkey"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ea6de"

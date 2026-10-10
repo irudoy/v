@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[4]
 CATALOG = Path("rom-images/roms.csv")
 HOMOLOGY = Path("rom-images/homology.toml")
 CONFIG = Path("tools/kb/config.toml")
+OWNER_CONFIG = Path("tools/kb/owners.toml")
 GHIDRA_PIN = Path("tools/ghidra/headless-analyze.sh")
 GHIDRA_SCRIPTS = Path("tools/ghidra")
 L0 = Path("l0")
@@ -51,9 +52,12 @@ def images(root=ROOT):
         }
 
 
-def layouts(root=ROOT):
+def layouts(root=ROOT, overlay=None):
     """Return {layout id: Layout} in canonical order, from the family registry."""
-    document = tomllib.loads((root / HOMOLOGY).read_text(encoding="utf-8"))
+    text = (overlay or {}).get(HOMOLOGY)
+    if text is None:
+        text = (root / HOMOLOGY).read_text(encoding="utf-8")
+    document = tomllib.loads(text)
     found = {}
     for family, row in document["family"].items():
         for layout, image in row["layouts"].items():
@@ -71,8 +75,37 @@ def layout(layout_id, root=ROOT):
     return known[layout_id]
 
 
-def config(root=ROOT):
-    return tomllib.loads((root / CONFIG).read_text(encoding="utf-8"))
+def config(root=ROOT, overlay=None):
+    """Execution settings plus narrowly scoped knowledge-owner declarations."""
+    overlay = overlay or {}
+    text = overlay.get(CONFIG)
+    if text is None:
+        text = (root / CONFIG).read_text(encoding="utf-8")
+    document = tomllib.loads(text)
+    if OWNER_CONFIG in overlay:
+        owner_text = overlay[OWNER_CONFIG]
+    elif (root / OWNER_CONFIG).is_file():
+        owner_text = (root / OWNER_CONFIG).read_text(encoding="utf-8")
+    else:
+        owner_text = None
+    if owner_text is not None:
+        owners = tomllib.loads(owner_text)
+        if (set(owners) != {'schema_version', 'names', 'reconciliation', 'source_bindings'}
+                or type(owners['schema_version']) is not int or owners['schema_version'] != 1
+                or not isinstance(owners['names'], dict)
+                or set(owners['names']) != {'owners_checked', 'reserved'}
+                or owners['names']['owners_checked'] is not True
+                or not isinstance(owners['names']['reserved'], list)
+                or any(not isinstance(owners[key], dict)
+                       or set(owners[key]) != {'enabled', 'review'}
+                       or owners[key]['enabled'] is not True
+                       or not isinstance(owners[key]['review'], list)
+                       for key in ('reconciliation', 'source_bindings'))):
+            raise KbError(f'{OWNER_CONFIG}: only name ownership and source-bound reviews are allowed')
+        document.setdefault('names', {}).update(owners['names'])
+        document['reconciliation'] = owners['reconciliation']
+        document['source_bindings'] = owners['source_bindings']
+    return document
 
 
 def signatures(layout_id, root=ROOT):

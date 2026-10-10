@@ -1,0 +1,51 @@
+title = "Maf volts min"
+summary = "Competitor inventory: MAF Voltage Min Allowed."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 183
+source = "refs/vendor/catalog.csv"
+sha256 = "37e9471749f947b2451a5247d967fe28f8962284e7ad459068fa27f096fa0edb"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"maf-volts-min\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"MAF Voltage Min \
+Allowed\",\"note\":\"text recommends 0.1 V for forced induction; below the \
+threshold the ECM enters safe/limp mode without a \
+DTC\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

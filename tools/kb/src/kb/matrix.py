@@ -44,6 +44,9 @@ def order(model):
     """The feature slugs of the model in the order of the build."""
     slugs = sorted({feature for feature, _ in model.targets}
                    | {slug for kind, slug in model.entities if kind == "feature"})
+    slugs = [slug for slug in slugs if not (
+        model.entities.get(('feature', slug))
+        and model.entities['feature', slug].props.get('catalog'))]
     first = (RUNTIME, *build.FEATURES)
     return [slug for slug in first if slug in slugs] + [slug for slug in slugs
                                                         if slug not in first]

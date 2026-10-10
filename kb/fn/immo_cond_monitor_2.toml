@@ -1,0 +1,14 @@
+title = "twin of immo_cond_monitor_1 (second channel)"
+
+[[symbol]]
+layout = "1nd"
+address = "000b955c"
+
+[symbol.curated]
+order = 10
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b955c"

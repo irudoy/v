@@ -1,0 +1,60 @@
+title = "Injector minimum"
+summary = "Competitor inventory: Injector Minimum Open Time; Injector Minimum."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 87
+source = "refs/vendor/catalog.csv"
+sha256 = "799d7b7fd9791a71b11fe10386d2f5665be2e0f6b169741146afc65242e8ec80"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"injector-minimum\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Injectors\",\"level\":\"\",\"name\":\"Injector \
+Minimum Open \
+Time\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 310
+source = "refs/vendor/catalog.csv"
+sha256 = "8826709253647dcc192899a952eb9b1e17ecb7b456b4ba13a94e212f40f06023"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"injector-minimum\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Minimum\",\"note\":\"The minimum pulse width that the ECU issues in normal \
+modes. ProECU calls this 'Injector Minimum Open \
+Time'.\",\"origin\":\"factory\",\"output\":\"minimum pulse \
+width\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Injector Minimum\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

@@ -1,0 +1,59 @@
+title = "Temp sensor scale"
+summary = "Competitor inventory: Coolant & AIT Sensor Scale; Eng Oil Temp Scale."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 175
+source = "refs/vendor/catalog.csv"
+sha256 = "7e3a585ff95cc658645f4179fb671e770e9c200054df29c6bf97789c42c3c0e8"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"temp-sensor-scale\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"Coolant & AIT Sensor \
+Scale\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 176
+source = "refs/vendor/catalog.csv"
+sha256 = "395e12276c2925a84169f17e8f086b7a9d8e1f1b159e08dc6b6a801f16fc1f50"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"temp-sensor-scale\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Sensor \
+Scaling\",\"level\":\"\",\"name\":\"Eng Oil Temp \
+Scale\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Sensor \
+Scaling\",\"source\":\"images/image2019-8-27_10-31-48.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

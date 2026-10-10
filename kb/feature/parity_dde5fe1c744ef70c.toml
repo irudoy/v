@@ -1,0 +1,51 @@
+title = "Flat Foot Shift Ignition Timing Adjustment"
+summary = "Competitor inventory: Flat Foot Shift Ignition Timing Adjustment."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 227
+source = "refs/vendor/catalog.csv"
+sha256 = "f7be043c5c10130b22fa98ffaf31952b1e8f7f0752f253eab368d50153edf98d"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Flat Foot Shifting (only SyncroRev models)\",\"level\":\"\",\"name\":\"Flat \
+Foot Shift Ignition Timing \
+Adjustment\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Flat \
+Foot \
+Shifting\",\"source\":\"images/image2019-8-27_13-17-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

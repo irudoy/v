@@ -7,6 +7,7 @@ dependencies = [
     "coolname>=2.2,<3",
     "neo4j>=5.28,<7",
     "rapidfuzz>=3.9,<4",
+    "tomlkit>=0.13,<1",
 ]
 
 [project.scripts]

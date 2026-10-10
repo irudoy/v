@@ -6,7 +6,8 @@ from kb import cli, mcp
 
 # Commands that change state or serve, and so are no MCP read tools.
 NOT_READ = {"sync", "instance", "guard", "mcp", "project", "fmt", "new", "set", "bind", "absent",
-            "unresolved", "link", "set-link", "unlink", "select", "merge", "rename", "move", "apply"}
+            "unresolved", "link", "set-link", "unlink", "select", "merge", "rename", "move", "apply",
+            "prepare-research", "retire", "family"}
 
 
 class ToolTest(unittest.TestCase):
@@ -33,7 +34,7 @@ class ToolTest(unittest.TestCase):
         self.assertEqual(path["properties"]["no_sync"]["type"], "boolean")
         self.assertEqual(tools["kb_find"]["required"], ["words"])
         self.assertEqual(tools["kb_audit"]["properties"]["section"]["items"]["enum"],
-                         ["disagreements", "names", "untyped", "levels", "chain-notes"])
+                         ["disagreements", "names", "untyped", "levels", "chain-notes", "research"])
         self.assertNotIn("required", tools["kb_brief"])
 
     def test_a_call_gives_the_command_line_of_its_command(self):

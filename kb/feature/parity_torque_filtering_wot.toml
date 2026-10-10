@@ -1,0 +1,77 @@
+title = "Torque filtering wot"
+summary = """
+Competitor inventory: Torque Filtering WOT Hi; Torque Filtering WOT Hi \
+Trustful; Torque Filtering WOT Lo; Torque Filtering WOT Lo Trustful."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 201
+source = "refs/vendor/catalog.csv"
+sha256 = "cd89c632b2bc9e2cb04b28c379331e99cc1ef9398b0920b825e8ad9c3255fe6c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-filtering-wot\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Filtering WOT Hi\",\"note\":\"keeps the throttle closed at low engine \
+speed\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 202
+source = "refs/vendor/catalog.csv"
+sha256 = "7d2478e851d27a2120b10b63d5aba195a26ecc34d31475ba95f68636944b55e4"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-filtering-wot\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Filtering WOT Hi \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 203
+source = "refs/vendor/catalog.csv"
+sha256 = "74a5daa0f93a7373e9198e1e11de07722163cf65e899954101efd1ab2e98642c"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-filtering-wot\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Filtering WOT \
+Lo\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 204
+source = "refs/vendor/catalog.csv"
+sha256 = "39b6cc2f3595e0c6a5fb4b4148c01c0ff0daa398158ce9a9e639c3d2bac94894"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"torque-filtering-wot\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Torque\",\"level\":\"\",\"name\":\"Torque \
+Filtering WOT Lo \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Torque\",\"source\":\"images/image2019-8-27_10-34-31.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

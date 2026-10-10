@@ -1,0 +1,60 @@
+title = "Rev limit throttle"
+summary = "Competitor inventory: Rev Limit - Throttle Cut; Throttle Cut Rev Limit."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 167
+source = "refs/vendor/catalog.csv"
+sha256 = "3bb6db536471751acab03bfdd2be2cb6b045932be89a85e973aceafac7fe9bf5"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"rev-limit-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Rev \
+Limit - Throttle \
+Cut\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 321
+source = "refs/vendor/catalog.csv"
+sha256 = "d3a0a6453bf511389165f8626b5c4300191bdd23461b43b9ba863aed508e6412"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"rev-limit-throttle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Throttle \
+Cut Rev Limit\",\"note\":\"UpRev recommends setting it at least 100 RPM \
+below fuel cut because throttle closure is safer than repeated fuel-cut \
+impacts.\",\"origin\":\"factory\",\"output\":\"exact throttle-closing \
+speed\",\"section\":\"Rev & Speed Limits\",\"source\":\"Rev & Speed \
+Limits\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

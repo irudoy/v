@@ -152,7 +152,7 @@ def registry(path=REGISTRY):
         rows = list(csv.DictReader(f))
     seen = {}
     for r in rows:
-        r["path"] = os.path.join(IMAGES, r["path"])
+        r["path"] = os.path.join(os.path.dirname(path), r["path"])
         if not r["sha256"]:
             raise ValueError(f"{path}: {r['path']} has no sha256; dumps are identified by it")
         if r["rom"]:

@@ -1,0 +1,19 @@
+note = [
+    """
+reads immo-present 0xFFFE930E among engine signals; writes status images \
+0xFFFE830E/0xFFFEA366 plus staged 0xFFFEB3A2/B440; feeds a status frame \
+under generic CAN TX; zero hardware registers""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "000812fa"
+
+[symbol.curated]
+order = 31
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000812fa"

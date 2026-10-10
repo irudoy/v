@@ -1,0 +1,18 @@
+note = [
+    """
+periodic copy 0xFFFEB7F4 -> 0xFFFEB7F3 (injection-enable byte); \
+unconditional; NOT immo""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "00021218"
+
+[symbol.curated]
+order = 16
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00021218"

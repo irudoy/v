@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from kb import adapters, convert, repo
-from kb.adapters import (architecture, definitions, interp, ledgers, native, overrides,
+from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
 from kb.model import Entity, SymbolKey
 from kb.repo import KbError
@@ -47,28 +47,29 @@ class ConvertTest(unittest.TestCase):
         self.assertTrue(convert._alone(symbol, inputs))
 
     def test_a_converted_registry_converts_to_no_change(self):
-        for registry, counts in (("interp", (247, 2)), ("native", (226, 23)),
-                                 ("definitions", (718, 50)), ("profiles", (459, 15)),
-                                 ("telemetry", (0, 0)), ("signals", (0, 0)),
-                                 ("overrides", (0, 0)), ("ledgers", None),
-                                 ("architecture", (0, 0))):
-            with self.subTest(registry=registry):
-                conversion, texts, _ = convert.plan(registry, repo.ROOT)
-                self.assertEqual(texts, {})
-                if counts is not None:
-                    self.assertEqual((len(conversion.evidence), len(conversion.statuses)), counts)
-                else:
-                    self.assertTrue(conversion.evidence)
-                    self.assertEqual(conversion.statuses, {})
+        with convert.planning(repo.ROOT):
+            for registry, counts in (("interp", (247, 2)), ("native", (226, 23)),
+                                     ("definitions", (718, 50)), ("profiles", (459, 15)),
+                                     ("telemetry", (0, 0)), ("signals", (0, 0)),
+                                     ("overrides", (0, 0)), ("ledgers", None),
+                                     ("architecture", (0, 0))):
+                with self.subTest(registry=registry):
+                    conversion, texts, _ = convert.plan(registry, repo.ROOT)
+                    self.assertEqual(texts, {})
+                    if counts is not None:
+                        self.assertEqual((len(conversion.evidence), len(conversion.statuses)), counts)
+                    else:
+                        self.assertTrue(conversion.evidence)
+                        self.assertEqual(conversion.statuses, {})
 
     def test_only_a_converted_registry_converts(self):
         self.assertEqual(adapters.CONVERTED,
-                         (interp, native, definitions, profiles, telemetry, signals,
+                         (curated, interp, native, definitions, profiles, telemetry, signals,
                           overrides, ledgers, architecture))
         with self.assertRaises(KbError) as error:
-            convert.plan("curated", repo.ROOT)
+            convert.plan("layouts", repo.ROOT)
         self.assertEqual(error.exception.code, 2)
-        self.assertIn("the conversions are interp, native, definitions, profiles, telemetry, "
+        self.assertIn("the conversions are curated, interp, native, definitions, profiles, telemetry, "
                       "signals, overrides, ledgers, architecture", str(error.exception))
 
     def test_a_registry_target_keeps_the_entries_of_its_file_that_it_lacks(self):

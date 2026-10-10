@@ -60,9 +60,8 @@ import sys
 import tempfile
 import textwrap
 import tomllib
-from neo4j import GraphDatabase
+from kb import reader
 
-BOLT = "bolt://localhost:7687"
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 DEFS = os.path.join(ROOT, "defs")
@@ -191,8 +190,7 @@ def scaling(units, expr, to_byte, conf, fmt, fine, coarse, indent):
 
 def fetch(rom):
     """Fetch calibration-layer facts: candidate maps, their axes, and context."""
-    driver = GraphDatabase.driver(BOLT, auth=("", ""))
-    with driver.session() as s:
+    with reader.session() as s:
         maps = {r["a"]: dict(r["m"]) for r in s.run(
             "MATCH (m:Map {rom:$rom}) RETURN m.addr AS a, m AS m", rom=rom)}
         for r in s.run(
@@ -227,7 +225,6 @@ def fetch(rom):
                     RETURN m.addr AS a, collect(DISTINCT x.addr) AS ax
                     """, rom=rom):
                 maps[r["a"]][edge.lower()] = r["ax"]
-    driver.close()
     for m in maps.values():
         for k in (
             "wrappers", "kernels", "steps", "accessors",

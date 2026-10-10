@@ -1,0 +1,65 @@
+title = "Vvel interference cs"
+summary = """
+Competitor inventory: DoNotAdjust: VVEL Control Shaft Max by VTC Angle; VVEL \
+Limit."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 49
+source = "refs/vendor/catalog.csv"
+sha256 = "5715868f960e1958481ae3dedf161cbc685e784372843931ee1233071dfb7040"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-interference-cs\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//DoNotAdjust\",\"level\":\"\",\"name\":\"DoNotAdjust: VVEL Control \
+Shaft Max by VTC \
+Angle\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 355
+source = "refs/vendor/catalog.csv"
+sha256 = "1836cc2e8208a68c77592e12aa9e05bc551dfac047003628ae750f34cd8deea2"
+original = """
+{\"axis_x\":\"Cam Timing (Intake \
+Phasing)\",\"axis_y\":\"\",\"concept\":\"vvel-interference-cs\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Limit\",\"note\":\"The inverse side of the same protection. ProECU calls \
+this 'VVEL Control Shaft Max by VTC \
+Angle'.\",\"origin\":\"factory\",\"output\":\"maximum VVEL \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL \
+Limit\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

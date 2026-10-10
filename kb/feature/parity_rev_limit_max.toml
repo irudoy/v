@@ -1,0 +1,50 @@
+title = "Rev limit max"
+summary = "Competitor inventory: Rev Limit - Fuel Cut Maximum."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 166
+source = "refs/vendor/catalog.csv"
+sha256 = "5bde96d4c108c28833faa7c63bf3595dce6f4d9a9ae5010ebcaddcac24b4a2fc"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"rev-limit-max\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Limiters\",\"level\":\"\",\"name\":\"Rev \
+Limit - Fuel Cut Maximum\",\"note\":\"not assigned to JK08A 0x8FDC/0x8FDE: \
+exact code identifies that pair as accelerator-pedal high-state hysteresis; \
+working fuel cut is at \
+0x934E\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Limiters\",\"source\":\"images/image2019-8-27_10-30-10.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

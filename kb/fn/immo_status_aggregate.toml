@@ -1,0 +1,18 @@
+note = [
+    """
+DTC aggregate: writes 0xFFFED704 bit0x10; clears when Lock 0xFFFEB852&2 is \
+valid plus 0xFFFEB8C8&0x40; sets from DTC faults 0xFFFED4F2/F5/0xFFFED32D""",
+]
+
+[[symbol]]
+layout = "1nd"
+address = "00045f30"
+
+[symbol.curated]
+order = 11
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045f30"

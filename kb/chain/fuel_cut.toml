@@ -36,9 +36,19 @@ via = [
     "dfco_restore_classify/fn",
     "dfco_state_machine/fn",
 ]
-note = """
-With snapshot ffff2458.bit5 of upstream DFCO mode bit ffff2459.bit5 clear, \
-0004fbe2 requests no cut and 00050018 returns inhibit class 1."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 1
+step_sha256 = "dcb7cfb1c10dd7ef01f4fe0499a741e44ec3e5bad599518e97dc31590fe7b2ce"
+original = """
+{\"effect\":\"gates\",\"from\":\"asparagus-cockle/ram\",\"note\":\"With \
+snapshot ffff2458.bit5 of upstream DFCO mode bit ffff2459.bit5 clear, \
+0004fbe2 requests no cut and 00050018 returns inhibit class \
+1.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_cut_request/fn\",\"dfco_restore_classify/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "over_run_fuel_cut/tbl"
@@ -46,9 +56,19 @@ to = "fortunate-sunfish/ram"
 effect = "compares"
 sign = "none"
 via = ["dfco_cut_request/fn", "dfco_state_machine/fn"]
-note = """
-On a rising edge (previous ffff245a.bit5 clear, coarse speed >= 4) 0004fbe2 \
-requests cut when ffff11b3 > Entry threshold, x*25 RPM by coolant."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 2
+step_sha256 = "6e0488bb00b98f5a230d57b6561c317f7392f57eb0bb7f101d4884d26bbd372b"
+original = """
+{\"effect\":\"compares\",\"from\":\"over_run_fuel_cut/tbl\",\"note\":\"On a \
+rising edge (previous ffff245a.bit5 clear, coarse speed >= 4) 0004fbe2 \
+requests cut when ffff11b3 > Entry threshold, x*25 RPM by \
+coolant.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_cut_request/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "over_run_fuel_hold/tbl"
@@ -56,9 +76,19 @@ to = "fortunate-sunfish/ram"
 effect = "compares"
 sign = "none"
 via = ["dfco_cut_request/fn", "dfco_state_machine/fn"]
-note = """
-While the mode bit is held, 0004fbe2 compares ffff11b3 with the Hold \
-threshold, x*25 RPM by coolant; a higher threshold needs more RPM to cut."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 3
+step_sha256 = "27150dacc5a50f5a1cc299613395deeacf3d28d6bfca7e66b4d5a962bb0d3e24"
+original = """
+{\"effect\":\"compares\",\"from\":\"over_run_fuel_hold/tbl\",\"note\":\"While \
+the mode bit is held, 0004fbe2 compares ffff11b3 with the Hold threshold, \
+x*25 RPM by coolant; a higher threshold needs more RPM to \
+cut.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_cut_request/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "daffodil-gibbon/ram"
@@ -70,9 +100,19 @@ via = [
     "dfco_restore_classify/fn",
     "dfco_state_machine/fn",
 ]
-note = """
-Cut request is 1 only while RPM/25 ffff11b3 is strictly above the selected \
-threshold; 00050018 compares the same byte with the restore thresholds."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 4
+step_sha256 = "350846e648102248f3fb96b9f46e93d2d8f755d5d9c9db21e27bc8b899a3db29"
+original = """
+{\"effect\":\"compares\",\"from\":\"daffodil-gibbon/ram\",\"note\":\"Cut \
+request is 1 only while RPM/25 ffff11b3 is strictly above the selected \
+threshold; 00050018 compares the same byte with the restore \
+thresholds.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_cut_request/fn\",\"dfco_restore_classify/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "over_run_fuel_restore/tbl"
@@ -80,9 +120,19 @@ to = "sassy-markhor/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["dfco_restore_classify/fn"]
-note = """
-00050018 interpolates Full Restore 0x12818 by coolant into lower threshold \
-ffff16aa, RPM/25, after runtime floors and offsets."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 5
+step_sha256 = "976309bae1e63b1d3a74ea88b26002e725ffe4bb1c3c7291e6c07d2a27492327"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"over_run_fuel_restore/tbl\",\"note\":\"00050018 \
+interpolates Full Restore 0x12818 by coolant into lower threshold ffff16aa, \
+RPM/25, after runtime floors and \
+offsets.\",\"sign\":\"positive\",\"to\":\"sassy-markhor/ram\",\"via\":[\"dfco_restore_classify/fn\"]}"""
 
 [[step]]
 from = "over_run_fuel_intermediate_restore/tbl"
@@ -90,9 +140,19 @@ to = "nocturnal-adder/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["dfco_restore_classify/fn"]
-note = """
-00050018 interpolates Intermediate Restore 0x1298C by coolant into upper \
-threshold ffff1778, RPM/25, after runtime floors and offsets."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 6
+step_sha256 = "7b6794608c36598017f7ac720934a7cd270192a0c77399398689ecb0ed86da04"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"over_run_fuel_intermediate_restore/tbl\",\"note\":\"00050018 \
+interpolates Intermediate Restore 0x1298C by coolant into upper threshold \
+ffff1778, RPM/25, after runtime floors and \
+offsets.\",\"sign\":\"positive\",\"to\":\"nocturnal-adder/ram\",\"via\":[\"dfco_restore_classify/fn\"]}"""
 
 [[step]]
 from = "teal-giraffe/ram"
@@ -100,9 +160,19 @@ to = "sassy-markhor/ram"
 effect = "limits"
 sign = "none"
 via = ["dfco_restore_classify/fn"]
-note = """
-The class of RPM-drop byte ffff106a at 0x11CB5 = [4, 8, 12] selects restore \
-floor 0x1299C = [36, 48, 54, 62] RPM/25 (900..1550 RPM)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 7
+step_sha256 = "423902c9f1929f1eaa5499a43be6db8e6fff98d2496c43e0124cb3a7fbadf7a6"
+original = """
+{\"effect\":\"limits\",\"from\":\"teal-giraffe/ram\",\"note\":\"The class of \
+RPM-drop byte ffff106a at 0x11CB5 = [4, 8, 12] selects restore floor 0x1299C \
+= [36, 48, 54, 62] RPM/25 (900..1550 \
+RPM).\",\"sign\":\"none\",\"to\":\"sassy-markhor/ram\",\"via\":[\"dfco_restore_classify/fn\"]}"""
 
 [[step]]
 from = "sassy-markhor/ram"
@@ -110,9 +180,19 @@ to = "fortunate-sunfish/ram"
 effect = "compares"
 sign = "none"
 via = ["dfco_restore_classify/fn", "dfco_state_machine/fn"]
-note = """
-ffff11b3 <= ffff16aa returns full-restore class 3; entry from idle needs \
-class 0, so a higher threshold vetoes DFCO up to a higher RPM."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 8
+step_sha256 = "a6ea0f3e0d5d0a2605512c394a39c2d9517a266219beaa8b11ad5f49eb601192"
+original = """
+{\"effect\":\"compares\",\"from\":\"sassy-markhor/ram\",\"note\":\"ffff11b3 \
+<= ffff16aa returns full-restore class 3; entry from idle needs class 0, so \
+a higher threshold vetoes DFCO up to a higher \
+RPM.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_restore_classify/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "nocturnal-adder/ram"
@@ -120,9 +200,19 @@ to = "fortunate-sunfish/ram"
 effect = "compares"
 sign = "none"
 via = ["dfco_restore_classify/fn", "dfco_state_machine/fn"]
-note = """
-Below coarse speed 4, ffff16aa < ffff11b3 <= ffff1778 returns intermediate \
-class 2; stock moving branches do not compare ffff1778."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 9
+step_sha256 = "a7367bd8fe7309ac072a352f3e3e7c6f6aff25578368a827fdf07b64ef97f2fc"
+original = """
+{\"effect\":\"compares\",\"from\":\"nocturnal-adder/ram\",\"note\":\"Below \
+coarse speed 4, ffff16aa < ffff11b3 <= ffff1778 returns intermediate class \
+2; stock moving branches do not compare \
+ffff1778.\",\"sign\":\"none\",\"to\":\"fortunate-sunfish/ram\",\"via\":[\"dfco_restore_classify/fn\",\"dfco_state_machine/fn\"]}"""
 
 [[step]]
 from = "fortunate-sunfish/ram"
@@ -130,9 +220,19 @@ to = "fuel_inhibit_mask/ram"
 effect = "masks"
 sign = "none"
 via = ["dfco_state_machine/fn", "fuel_output_inhibit_coordinator/fn"]
-note = """
-000503e0 steps idle, entry delays, full cut, and exit delay; table 0x2371C \
-gives D = 00, 00, 15, 3F, 15 and 0004ed88 forms P = G | D | C."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 10
+step_sha256 = "4a477c9fdee6d1d869d7296516d8914e1d7f1ee3df098db5624869eeeddf74ec"
+original = """
+{\"effect\":\"masks\",\"from\":\"fortunate-sunfish/ram\",\"note\":\"000503e0 \
+steps idle, entry delays, full cut, and exit delay; table 0x2371C gives D = \
+00, 00, 15, 3F, 15 and 0004ed88 forms P = G | D | \
+C.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"dfco_state_machine/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "rev_limit_fuel_cut/tbl"
@@ -171,9 +271,19 @@ via = [
     "main_rpm_fuel_cut_state_machine/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-Active main cut bit ffff2497.bit2 is one of the 15 global Booleans, so \
-0004ed88 sets G = 0x3F for all six channels."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 13
+step_sha256 = "344dec05127c36bd014a023ea5aac8d7d4b2a88cbeacf8fd5814e907136fc021"
+original = """
+{\"effect\":\"gates\",\"from\":\"fuel_inhibit/ram\",\"note\":\"Active main \
+cut bit ffff2497.bit2 is one of the 15 global Booleans, so 0004ed88 sets G = \
+0x3F for all six \
+channels.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"main_rpm_fuel_cut_state_machine/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "robust-meerkat/tbl"
@@ -181,9 +291,19 @@ to = "blue-oyster/ram"
 effect = "compares"
 sign = "none"
 via = ["stationary_rpm_fuel_cut_state_machine/fn"]
-note = """
-Readiness bit 4 sets when accumulator ffff16a6 reaches ROM16[0x911C] = 381; \
-any failed entry gate clears ffff16a6 and bits 3..5."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 14
+step_sha256 = "ac39bdd9d0b474e36a5fea0d2b9b1c66f9b078e56acb02b1da0b2c5cafd097c1"
+original = """
+{\"effect\":\"compares\",\"from\":\"robust-meerkat/tbl\",\"note\":\"Readiness \
+bit 4 sets when accumulator ffff16a6 reaches ROM16[0x911C] = 381; any failed \
+entry gate clears ffff16a6 and bits \
+3..5.\",\"sign\":\"none\",\"to\":\"blue-oyster/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\"]}"""
 
 [[step]]
 from = "wooden-moose/tbl"
@@ -191,9 +311,19 @@ to = "blue-oyster/ram"
 effect = "integrates"
 sign = "none"
 via = ["stationary_rpm_fuel_cut_state_machine/fn"]
-note = """
-Each 100-count expiry adds lookup(0x124D2 at clamp((ffff11bc - 160) / 2, 0, \
-255)) - 128 to ffff16a6; stock step 0 at <= 2000 RPM, 127 at the limiter."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 15
+step_sha256 = "a90778580b9724d5b0b614c0c59d7171a25639e469a72a3b08572d57d951fdb1"
+original = """
+{\"effect\":\"integrates\",\"from\":\"wooden-moose/tbl\",\"note\":\"Each \
+100-count expiry adds lookup(0x124D2 at clamp((ffff11bc - 160) / 2, 0, 255)) \
+- 128 to ffff16a6; stock step 0 at <= 2000 RPM, 127 at the \
+limiter.\",\"sign\":\"none\",\"to\":\"blue-oyster/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\"]}"""
 
 [[step]]
 from = "gifted-jackrabbit/tbl"
@@ -201,9 +331,19 @@ to = "blue-oyster/ram"
 effect = "compares"
 sign = "none"
 via = ["stationary_rpm_fuel_cut_state_machine/fn"]
-note = """
-With readiness set and coarse speed ffff110e = 0, RPM/50 ffff11ae >= \
-ROM8[0x85D9] = 36 (1800 RPM) sets bit 5; it clears below 30 (1500 RPM)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 16
+step_sha256 = "658e3c2b1409a9f99b8991ab7b15915b0c5d29afb1b951b44c745c6aa9e50bf8"
+original = """
+{\"effect\":\"compares\",\"from\":\"gifted-jackrabbit/tbl\",\"note\":\"With \
+readiness set and coarse speed ffff110e = 0, RPM/50 ffff11ae >= ROM8[0x85D9] \
+= 36 (1800 RPM) sets bit 5; it clears below 30 (1500 \
+RPM).\",\"sign\":\"none\",\"to\":\"blue-oyster/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\"]}"""
 
 [[step]]
 from = "blue-oyster/ram"
@@ -214,9 +354,19 @@ via = [
     "stationary_rpm_fuel_cut_state_machine/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-Stationary cut bit ffff247f.bit5 enters the same global Boolean group and \
-becomes a full 0x3F mask."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 17
+step_sha256 = "6f53c56c9c29043a9077603680b7b4bd5d6b5f6f99e4e0361d2c812e6fc8460a"
+original = """
+{\"effect\":\"gates\",\"from\":\"blue-oyster/ram\",\"note\":\"Stationary cut \
+bit ffff247f.bit5 enters the same global Boolean group and becomes a full \
+0x3F \
+mask.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "vehicle_speed/ram"
@@ -241,9 +391,18 @@ via = [
     "vehicle_speed_fuel_cut_state_machine/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-Active vehicle-speed cut bit ffff24a6.bit0 is a global Boolean and makes G = \
-0x3F."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 19
+step_sha256 = "7a3da727c5dbac5a3e1dc57e357bc5bcab2ef48019496ec96af8084734218470"
+original = """
+{\"effect\":\"gates\",\"from\":\"xanthic-yak/ram\",\"note\":\"Active \
+vehicle-speed cut bit ffff24a6.bit0 is a global Boolean and makes G = \
+0x3F.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"vehicle_speed_fuel_cut_state_machine/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "raspberry-dragon/ram"
@@ -251,9 +410,19 @@ to = "heavenly-whippet/ram"
 effect = "compares"
 sign = "none"
 via = ["engine_overtemperature_fuel_inhibit/fn"]
-note = """
-P1217: raw coolant ffff1071 >= ROM8[0x8D15] = 190 sets, >= 180 retains; bit \
-5 also needs 1900/1700 RPM hysteresis and ffff2458.bit5 clear."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 20
+step_sha256 = "fd920438b2471b311ac3601f5d6c20eccd4f915b3ac4de95957db2a52bd16fac"
+original = """
+{\"effect\":\"compares\",\"from\":\"raspberry-dragon/ram\",\"note\":\"P1217: \
+raw coolant ffff1071 >= ROM8[0x8D15] = 190 sets, >= 180 retains; bit 5 also \
+needs 1900/1700 RPM hysteresis and ffff2458.bit5 \
+clear.\",\"sign\":\"none\",\"to\":\"heavenly-whippet/ram\",\"via\":[\"engine_overtemperature_fuel_inhibit/fn\"]}"""
 
 [[step]]
 from = "heavenly-whippet/ram"
@@ -264,9 +433,18 @@ via = [
     "engine_overtemperature_fuel_inhibit/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-Overtemperature fuel-inhibit bit ffff41f2.bit5 is a global Boolean and makes \
-G = 0x3F."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 21
+step_sha256 = "ee17f90bf7f29769c0dd6456d8a4198edc553f87f4e94b7d4501fc5e775c7ee8"
+original = """
+{\"effect\":\"gates\",\"from\":\"heavenly-whippet/ram\",\"note\":\"Overtemperature \
+fuel-inhibit bit ffff41f2.bit5 is a global Boolean and makes G = \
+0x3F.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"engine_overtemperature_fuel_inhibit/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "cuddly-dragon/ram"
@@ -278,9 +456,19 @@ via = [
     "power_balance_mask_apply/fn",
     "fuel_output_inhibit_coordinator/fn",
 ]
-note = """
-While service 0x30 IOLID 0x0C is active, 00050a34 returns Power Balance mask \
-ffff2b2c in place of P; the ETC-fault mask A is ORed after it."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/fuel_cut.toml"
+source_sha256 = "5b85079b5ba29370830dfe2d71641797da1bc3bcc0c7aab1a77872698dae0176"
+order = 22
+step_sha256 = "46b6621435d37f3f26d0f7f983777cd9d6008fcd3af33b1566417896862c5e6c"
+original = """
+{\"effect\":\"overrides\",\"from\":\"cuddly-dragon/ram\",\"note\":\"While \
+service 0x30 IOLID 0x0C is active, 00050a34 returns Power Balance mask \
+ffff2b2c in place of P; the ETC-fault mask A is ORed after \
+it.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"power_balance_mask_update/fn\",\"power_balance_mask_apply/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
 from = "fuel_inhibit_mask/ram"

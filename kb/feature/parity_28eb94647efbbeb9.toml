@@ -1,0 +1,51 @@
+title = "Coolant Temp Fan Switch Point"
+summary = "Competitor inventory: Coolant Temp Fan Switch Point."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 338
+source = "refs/vendor/catalog.csv"
+sha256 = "73ab48f7e2bc5b8e2ebba6684ea28de414e82232973f7491451e813a3be83c75"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Coolant \
+Temp Fan Switch Point\",\"note\":\"Legacy layout: three switch-point windows \
+with Low and High constants. They remain in the ECU but are unused on some \
+models, providing a direct source of tables with the dead \
+role.\",\"origin\":\"factory\",\"output\":\"fan activation \
+points\",\"section\":\"Cooling\",\"source\":\"Cooling\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

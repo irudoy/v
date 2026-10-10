@@ -1,0 +1,50 @@
+title = "FF Quantity Multiplier"
+summary = "Competitor inventory: FF Quantity Multiplier."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 247
+source = "refs/vendor/catalog.csv"
+sha256 = "b21b32d8995907548d6c778847e1df4dd3016ee65a182ada8cc0b41692ab9a26"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"FlexFuel\",\"level\":\"Advanced\",\"name\":\"FF \
+Quantity Multiplier\",\"note\":\"typically +40% fuel at 100% E85 for the \
+same lambda\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"RaceROM \
+Flex \
+Fuel\",\"source\":\"images/image2020-5-15_16-0-28.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

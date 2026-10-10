@@ -1,0 +1,14 @@
+title = "dispatch -> inj_oneshot_pulse_driver; writes cylinder mask 0xFFFEB862"
+
+[[symbol]]
+layout = "1nd"
+address = "000799d4"
+
+[symbol.curated]
+order = 14
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000799d4"

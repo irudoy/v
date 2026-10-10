@@ -1,0 +1,14 @@
+title = "CAN1 link diagnostics"
+
+[[symbol]]
+layout = "1nd"
+address = "000d41da"
+
+[symbol.curated]
+order = 4
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d41da"

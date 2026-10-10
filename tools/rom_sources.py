@@ -262,8 +262,8 @@ def function_name(names, addr):
     return names.get(addr, f"FUN_{addr}")
 
 
-def definition_paths(model):
-    defs = ROOT / "defs"
+def definition_paths(model, root=ROOT):
+    defs = root / "defs"
     return {
         "Func": defs / f"{model.source}.funcs.csv",
         "Reg": defs / f"{model.source}.vars.csv",

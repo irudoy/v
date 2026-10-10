@@ -1,0 +1,16 @@
+[[source]]
+layout = "1me3b"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_00050310"
+
+[[symbol]]
+layout = "1me3b"
+address = "00050310"
+name = "deft-chowchow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00050310"

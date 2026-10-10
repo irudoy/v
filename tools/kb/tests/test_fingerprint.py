@@ -26,12 +26,15 @@ class BlobTest(unittest.TestCase):
         paths = set(compile.inputs())
         self.assertFalse(paths & {path.as_posix() for path in ledgers.PATHS.values()})
         self.assertNotIn("tools/ghidra/symbols/7mfk.csv", paths)
-        self.assertIn("tools/ghidra/symbols/1nd.csv", paths)
+        self.assertNotIn("tools/ghidra/symbols/1nd.csv", paths)
+        self.assertIn("tools/kb/owners.toml", paths)
 
-    def test_architecture_entities_own_the_view_and_read_modules_do_not_change_the_graph(self):
+    def test_architecture_entities_own_the_view_and_compiler_layers_bind_their_renderers(self):
         paths = set(compile.inputs())
         self.assertNotIn(architecture.ARCHITECTURE.as_posix(), paths)
         self.assertNotIn('tools/kb/src/kb/architecture_projection.py', paths)
+        self.assertIn('tools/kb/src/kb/ledger_projection.py', paths)
+        self.assertIn('tools/kb/src/kb/adapters/interp.py', paths)
         self.assertNotIn('tools/kb/src/kb/suggest.py', paths)
         self.assertIn('kb/chain/engine_speed.toml', paths)
         self.assertIn('tools/kb/src/kb/l0graph.py', paths)
@@ -104,14 +107,14 @@ class CompilerBoundaryTest(unittest.TestCase):
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(data)
 
-    def test_ledger_rendering_content_does_not_change_compiler_fingerprint(self):
+    def test_ledger_rendering_content_binds_the_managed_compatibility_layer(self):
         before = fingerprint.compute(self.root)
         path = f'{compile.PACKAGE}/ledger_projection.py'
         self.write(path, b'VALUE = 200\n')
         after = fingerprint.compute(self.root)
-        self.assertNotIn(path, before.blobs)
-        self.assertEqual(after.blobs, before.blobs)
-        self.assertEqual(after.value, before.value)
+        self.assertIn(path, before.blobs)
+        self.assertNotEqual(after.blobs[path], before.blobs[path])
+        self.assertNotEqual(after.value, before.value)
 
     def test_each_active_module_content_changes_compiler_fingerprint(self):
         for name in self.active_modules:
@@ -150,10 +153,9 @@ class CompilerBoundaryTest(unittest.TestCase):
         self.assertNotIn(path, after.blobs)
         self.assertNotEqual(after.value, before.value)
 
-    def test_removing_projection_modules_keeps_the_fingerprint(self):
+    def test_removing_the_architecture_only_view_keeps_the_fingerprint(self):
         before = fingerprint.compute(self.root)
-        for name in self.projection_modules:
-            (self.root / compile.PACKAGE / name).unlink()
+        (self.root / compile.PACKAGE / 'architecture_projection.py').unlink()
         after = fingerprint.compute(self.root)
         self.assertEqual(after.blobs, before.blobs)
         self.assertEqual(after.value, before.value)

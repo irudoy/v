@@ -74,7 +74,7 @@ def tools(parser=None):
         properties, required = {}, []
         for dest, action in _arguments(commands.choices[name]):
             properties[dest] = _property(action)
-            if not action.option_strings:
+            if action.required or (not action.option_strings and action.nargs != '?'):
                 required.append(dest)
         schema = {"type": "object", "properties": properties, "additionalProperties": False}
         if required:

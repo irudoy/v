@@ -1,0 +1,51 @@
+title = "Coolant Temperature Correction"
+summary = "Competitor inventory: Coolant Temperature Correction."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 367
+source = "refs/vendor/catalog.csv"
+sha256 = "193b810717e70e4dbbaf73041bf596487116d76eea852defe028700aaf0db07a"
+original = """
+{\"axis_x\":\"Coolant \
+Temperature\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Coolant \
+Temperature Correction\",\"note\":\"ARC \
+patch.\",\"origin\":\"patch\",\"output\":\"timing \
+correction\",\"section\":\"Simplified Timing (ARC)\",\"source\":\"Simplified \
+Timing (ARC) / Coolant Temperature Correction\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

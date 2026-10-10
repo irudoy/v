@@ -11,10 +11,12 @@
 # over the registries. A baseline step runs `run` from the repository root and
 # counts its output, or with `read = true` counts the files whose paths it
 # prints. Tokens are UTF-8 bytes divided by three, rounded up.
-stage = 6
+stage = 11
 converted = [
     "Ghidra export directories",
     "Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata",
+    "Code graph of the tools/memgraph/ loaders",
+    "defs/JK78C.vvel.md, defs/JK78C.can.md",
 ]
 
 [[question]]

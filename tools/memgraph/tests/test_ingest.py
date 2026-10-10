@@ -1,15 +1,9 @@
 import sys
 from pathlib import Path
 import tempfile
-import types
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-if "neo4j" not in sys.modules:
-    neo4j = types.ModuleType("neo4j")
-    neo4j.GraphDatabase = object
-    sys.modules["neo4j"] = neo4j
 
 import ingest  # noqa: E402
 import load_code  # noqa: E402

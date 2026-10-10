@@ -1,0 +1,112 @@
+title = "Cranking rpm comp"
+summary = """
+Competitor inventory: Cranking Fuel RPM Compensation #1; Cranking Fuel RPM \
+Compensation #2; Cranking Fuel RPM Compensation #3; Injector Priming Pulse \
+by RPM 1; Injector Priming Pulse by RPM 2; Injector Priming Pulse by RPM 3; \
+Injector Priming Pulse by RPM 4."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 79
+source = "refs/vendor/catalog.csv"
+sha256 = "e4afff29e9c18550c6841e23868e06e25dcd3c4ecb3fb4485ab6bc12959c4077"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel RPM Compensation \
+#1\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 80
+source = "refs/vendor/catalog.csv"
+sha256 = "e6fe72eb369df281c25fae899dc738377bb32027ef5bbe0a4cfcc745e9d57559"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel RPM Compensation \
+#2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 81
+source = "refs/vendor/catalog.csv"
+sha256 = "918d7e6a1694504b5ad79fd2f811cb25f2e767e9c62b6d199a370847d1e6ceba"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling//Cranking\",\"level\":\"\",\"name\":\"Cranking \
+Fuel RPM Compensation \
+#3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 305
+source = "refs/vendor/catalog.csv"
+sha256 = "61a91e102a96619505ca849f11d00b9f225695df675879bfc43f5e6f1b184e86"
+original = """
+{\"axis_x\":\"RPM\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse by RPM 1\",\"note\":\"The axis is static. 100% uses the entire \
+pulse width from Initial Value.\",\"origin\":\"factory\",\"output\":\"% \
+multiplier for Cranking Enrichment Initial Value\",\"section\":\"Fuel \
+Parameters\",\"source\":\"Fuel Parameters / Injector Priming Pulse by RPM 1 \
+- 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 306
+source = "refs/vendor/catalog.csv"
+sha256 = "bf357f20f6345532b9d85df257da33f0233e1f301bbc748accc936f20ab926b9"
+original = """
+{\"axis_x\":\"RPM\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse by RPM 2\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"% \
+multiplier\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Injector Priming Pulse by RPM 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 307
+source = "refs/vendor/catalog.csv"
+sha256 = "4f2d0274b3a684c3b86a4599a92a55e45b368eb5a0590814b8f6646c346824f9"
+original = """
+{\"axis_x\":\"RPM\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse by RPM 3\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"% \
+multiplier\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Injector Priming Pulse by RPM 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 308
+source = "refs/vendor/catalog.csv"
+sha256 = "01f2a49c6fc482acb25ceb81e16f478f922dcc68478dd54a5f8e00a9c94a1f31"
+original = """
+{\"axis_x\":\"RPM\",\"axis_y\":\"\",\"concept\":\"cranking-rpm-comp\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Injector \
+Priming Pulse by RPM 4\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"% \
+multiplier\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Injector Priming Pulse by RPM 1 - 4\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

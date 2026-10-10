@@ -1,0 +1,49 @@
+title = "Map Switch Mode 2 description (App)"
+summary = "Competitor inventory: Map Switch Mode 2 description (App)."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 208
+source = "refs/vendor/catalog.csv"
+sha256 = "e419434502d40b16fd1d1dd8d55799d66ecdd8aba8c4f98c6b698d6d52f5fc79"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"racerom-supplement\",\"group\":\"RaceROM \
+Map Switching\",\"level\":\"\",\"name\":\"Map Switch Mode 2 description \
+(App)\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Map \
+Switching\",\"source\":\"images/image2019-8-27_13-14-41.png\",\"vendor\":\"ecutek\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

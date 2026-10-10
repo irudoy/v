@@ -1,0 +1,50 @@
+title = "Single Bank Fuel Trim O2 Hack"
+summary = "Competitor inventory: Single Bank Fuel Trim O2 Hack."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 363
+source = "refs/vendor/catalog.csv"
+sha256 = "99e029ba304d73d8d68e4b03b0f5a9997ffa1681d8c4acb387208b5d41001401"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Single \
+Bank Fuel Trim O2 Hack\",\"note\":\"Disables closed-loop feedback from the \
+bank 2 oxygen sensor. Developed for \
+QR25.\",\"origin\":\"patch\",\"output\":\"toggle\",\"section\":\"Toggles\",\"source\":\"Toggles \
+/ Single Bank Fuel Trim O2 Hack\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

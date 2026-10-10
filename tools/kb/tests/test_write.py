@@ -285,9 +285,9 @@ class PlanTest(unittest.TestCase):
         self.assertIn("no meaning 'nothing/tbl'", self.refused(bind("nothing/tbl", "jk00c:0"),
                                                                 code=5))
         self.assertTrue(self.refused({"cmd": "unresolved", "meaning": TABLE, "layout": "jk00c",
-                                      "count": 2}, {"cmd": "retire"}, code=2).startswith("op 1: "))
-        self.assertTrue(self.refused(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"), {"cmd": "retire"},
-                                     code=2).startswith("op 2: cmd 'retire'"))
+                                      "count": 2}, {"cmd": "not-a-command"}, code=2).startswith("op 1: "))
+        self.assertTrue(self.refused(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"), {"cmd": "not-a-command"},
+                                     code=2).startswith("op 2: cmd 'not-a-command'"))
 
 
 def new(kind, ref, **keys):

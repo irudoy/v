@@ -1,0 +1,85 @@
+title = "Vvel cs angle"
+summary = """
+Competitor inventory: VVEL Control Shaft Angle to Duration; VVEL Control \
+Shaft Angle Trustful; VVEL Angle; VVEL Angle Alt."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 57
+source = "refs/vendor/catalog.csv"
+sha256 = "045b0fe9e70769dba210bff447cb2450d65c79499d242181d35c3bad5b385ebb"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-angle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Angle to \
+Duration\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 58
+source = "refs/vendor/catalog.csv"
+sha256 = "ac5667da30793e4e56da40bf78390b6e6e6484e4c0523b93b86c60a3b9049825"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-angle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Cam \
+Timing//VVEL Valve Duration\",\"level\":\"\",\"name\":\"VVEL Control Shaft \
+Angle \
+Trustful\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Camshaft \
+Timing\",\"source\":\"images/image2019-8-27_10-22-27.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 351
+source = "refs/vendor/catalog.csv"
+sha256 = "5ecf88a20b0d81475731baeccd6f80fc84f3604a2f05d00bb0387273feaaf19d"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-angle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Angle\",\"note\":\"Prevents valve contact. ProECU calls this 'VVEL Control \
+Shaft Angle to Duration'.\",\"origin\":\"factory\",\"output\":\"VVEL shaft \
+angle versus cam duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL \
+Angle\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 352
+source = "refs/vendor/catalog.csv"
+sha256 = "40cd912525055908d4d46dfd2a9d379ffb90cf192fa2693dd1ae5329a662e20f"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"vvel-cs-angle\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"VVEL \
+Angle Alt\",\"note\":\"Validation copy that must always match VVEL \
+Angle.\",\"origin\":\"factory\",\"output\":\"VVEL shaft angle versus cam \
+duration\",\"section\":\"VVEL\",\"source\":\"VVEL / VVEL \
+Angle\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

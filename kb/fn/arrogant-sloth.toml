@@ -1,0 +1,16 @@
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Recovered periodic entries"]
+anchor = "FUN_0003C348"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003c348"
+name = "arrogant-sloth"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c348"

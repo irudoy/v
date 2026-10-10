@@ -1,0 +1,50 @@
+title = "Enable Manual Transmission Swap"
+summary = "Competitor inventory: Enable Manual Transmission Swap."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 362
+source = "refs/vendor/catalog.csv"
+sha256 = "30b3ca65fcc74502219ef416add939ff71d4e0886c2f5d7f0d5bd458c72cb1e9"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Enable \
+Manual Transmission Swap\",\"note\":\"For 2003-2008 VQ35 and 2009+ VQ37VHR \
+ROMs: the ECU ignores automatic-transmission \
+tables.\",\"origin\":\"unknown\",\"output\":\"toggle\",\"section\":\"Toggles\",\"source\":\"Toggles \
+/ Enable Manual Transmission Swap\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

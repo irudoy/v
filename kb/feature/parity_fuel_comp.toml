@@ -1,0 +1,85 @@
+title = "Fuel comp"
+summary = """
+Competitor inventory: Fuel Enrichment - Cold; Fuel Enrichment - Hot; Fuel \
+Compensation Main; Fuel Compensation Cold."""
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 113
+source = "refs/vendor/catalog.csv"
+sha256 = "fb4d52236996c839e252ca207d1461f811fff46695683237c27ba65ad540a561"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"fuel-comp\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling\",\"level\":\"\",\"name\":\"Fuel \
+Enrichment - \
+Cold\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 114
+source = "refs/vendor/catalog.csv"
+sha256 = "7cf3a2428606396e9570ce4b701b5bb5feb49e30c4b46689ec708b45c8ee1bd5"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"fuel-comp\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling\",\"level\":\"\",\"name\":\"Fuel \
+Enrichment - \
+Hot\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 296
+source = "refs/vendor/catalog.csv"
+sha256 = "5da6b88b2287829ca8ff1ec58fb22d939451fdb0ffa2e6d4fcab73e39b4a3d61"
+original = """
+{\"axis_x\":\"Volumetric Flow \
+Ratio\",\"axis_y\":\"RPM\",\"concept\":\"fuel-comp\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Fuel \
+Compensation Main\",\"note\":\"100 means all measured plenum air; values \
+above 100 add pulse width and values below 100 subtract \
+it.\",\"origin\":\"factory\",\"output\":\"% of plenum air entering the \
+cylinder\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Fuel Compensation\",\"vendor\":\"uprev\"}"""
+
+[[catalog]]
+order = 297
+source = "refs/vendor/catalog.csv"
+sha256 = "ff00a8da6f8bd581562c4d29a23e5409cdd503853f2eb0894880598a9449bcec"
+original = """
+{\"axis_x\":\"Volumetric Flow \
+Ratio\",\"axis_y\":\"RPM\",\"concept\":\"fuel-comp\",\"dims\":\"2\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Fuel \
+Compensation Cold\",\"note\":\"Used during warm-up; the ECU switches to Main \
+at 70 °C coolant temperature.\",\"origin\":\"factory\",\"output\":\"% of \
+plenum air entering the cylinder\",\"section\":\"Fuel \
+Parameters\",\"source\":\"Fuel Parameters / Fuel \
+Compensation\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

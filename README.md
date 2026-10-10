@@ -104,7 +104,9 @@ engines.
 | PEAK PCAN-USB with the vendor driver | Live telemetry capture, logging, and the dashboard |
 | An external reflash tool with an OBD interface it supports | Reading a stock image and writing a built image |
 
-`make setup` installs the locked environment with `uv sync --frozen`. The
+`make setup` installs the locked environment with `uv sync --frozen`, initializes
+the pinned reference submodules, starts the working tree's Memgraph instance,
+and builds every graph layer from tracked inputs through `kb sync`. The
 workspace package `kb` supplies the knowledge API, graph client, name
 generator, and text matcher. The test runner is a development dependency. The dashboard
 installs its own platform dependencies from

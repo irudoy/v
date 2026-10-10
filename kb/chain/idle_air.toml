@@ -19,9 +19,19 @@ to = "analytic-mole/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["idle_opening_area_builder/fn"]
-note = """
-base = lookup(0x1465a, ffff106f << 8), stored in ffff1e74; ffff1340 = \
-min(sat_u16(base + correction), ffff133e)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 1
+step_sha256 = "8b0defc1f249c96d4af7e10016da8021d137d486a37189966f7a07717a4ead4e"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"neat-dalmatian/tbl\",\"note\":\"base = \
+lookup(0x1465a, ffff106f << 8), stored in ffff1e74; ffff1340 = \
+min(sat_u16(base + correction), \
+ffff133e).\",\"sign\":\"positive\",\"to\":\"analytic-mole/ram\",\"via\":[\"idle_opening_area_builder/fn\"]}"""
 
 [[step]]
 from = "hasty-eel/ram"
@@ -29,9 +39,19 @@ to = "analytic-mole/ram"
 effect = "indexes"
 sign = "none"
 via = ["idle_opening_area_builder/fn"]
-note = """
-Previous-cycle coolant index ffff106f (0..240 = -40..110 deg C) indexes \
-0x1465a; the sign follows the table shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 2
+step_sha256 = "680775f9f51f672340e5f2b2fc96d9eec73c1eb69df8e8a89bf24f2a0989e136"
+original = """
+{\"effect\":\"indexes\",\"from\":\"hasty-eel/ram\",\"note\":\"Previous-cycle \
+coolant index ffff106f (0..240 = -40..110 deg C) indexes 0x1465a; the sign \
+follows the table \
+shape.\",\"sign\":\"none\",\"to\":\"analytic-mole/ram\",\"via\":[\"idle_opening_area_builder/fn\"]}"""
 
 [[step]]
 from = "fierce-tamarin/tbl"
@@ -39,9 +59,19 @@ to = "analytic-mole/ram"
 effect = "adds"
 sign = "positive"
 via = ["idle_opening_area_builder/fn"]
-note = """
-correction = lookup(0x1469a, ffff11bc), stored in ffff12fc, adds to the base \
-with uint16 saturation into ffff12fa."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 3
+step_sha256 = "5c97fed1e30e8881f0a72fec3fb460221fed87b61150bc657924b46a0a5bf6a6"
+original = """
+{\"effect\":\"adds\",\"from\":\"fierce-tamarin/tbl\",\"note\":\"correction = \
+lookup(0x1469a, ffff11bc), stored in ffff12fc, adds to the base with uint16 \
+saturation into \
+ffff12fa.\",\"sign\":\"positive\",\"to\":\"analytic-mole/ram\",\"via\":[\"idle_opening_area_builder/fn\"]}"""
 
 [[step]]
 from = "rpm/ram"
@@ -49,9 +79,18 @@ to = "analytic-mole/ram"
 effect = "indexes"
 sign = "none"
 via = ["idle_opening_area_builder/fn"]
-note = """
-Engine-speed word ffff11bc (RPM/12.5) indexes correction 0x1469a; the sign \
-follows the table shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 4
+step_sha256 = "7d7999461f6d575f9775785d07625604e027d602705f4b8467c087e75ae3d446"
+original = """
+{\"effect\":\"indexes\",\"from\":\"rpm/ram\",\"note\":\"Engine-speed word \
+ffff11bc (RPM/12.5) indexes correction 0x1469a; the sign follows the table \
+shape.\",\"sign\":\"none\",\"to\":\"analytic-mole/ram\",\"via\":[\"idle_opening_area_builder/fn\"]}"""
 
 [[step]]
 from = "saffron-manul/ram"
@@ -59,9 +98,19 @@ to = "silky-parakeet/ram"
 effect = "indexes"
 sign = "none"
 via = ["vivid-peacock/fn"]
-note = """
-uint8 ffff22e4 indexes curves A and B over explicit axis 0x12778 while \
-ROM8[0x8710].bit3 is set; the sign follows the curve shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 5
+step_sha256 = "8557407c7af5926579d2332c02d354c0a83edb265d477b2bfbd82ebf99b430e9"
+original = """
+{\"effect\":\"indexes\",\"from\":\"saffron-manul/ram\",\"note\":\"uint8 \
+ffff22e4 indexes curves A and B over explicit axis 0x12778 while \
+ROM8[0x8710].bit3 is set; the sign follows the curve \
+shape.\",\"sign\":\"none\",\"to\":\"silky-parakeet/ram\",\"via\":[\"vivid-peacock/fn\"]}"""
 
 [[step]]
 from = "garrulous-civet/tbl"
@@ -69,9 +118,18 @@ to = "silky-parakeet/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["vivid-peacock/fn"]
-note = """
-Curve A while ffff244f.bit1 is clear: ffff1752 = 4 * lookup(0x127a8, \
-ffff22e4)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 6
+step_sha256 = "2ce22a175f6f49fbedcae3503dbdbcf6bf4a531b2cc0d48d702366b29f99e7ac"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"garrulous-civet/tbl\",\"note\":\"Curve A \
+while ffff244f.bit1 is clear: ffff1752 = 4 * lookup(0x127a8, \
+ffff22e4).\",\"sign\":\"positive\",\"to\":\"silky-parakeet/ram\",\"via\":[\"vivid-peacock/fn\"]}"""
 
 [[step]]
 from = "complex-condor/tbl"
@@ -79,9 +137,18 @@ to = "silky-parakeet/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["vivid-peacock/fn"]
-note = """
-Curve B while ffff244f.bit1 is set: ffff1752 = 4 * lookup(0x127e8, \
-ffff22e4)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 7
+step_sha256 = "1e6669cceab93d82de062a71d5073182232bbd912056ba4c7d66b90abfe2e3cc"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"complex-condor/tbl\",\"note\":\"Curve B \
+while ffff244f.bit1 is set: ffff1752 = 4 * lookup(0x127e8, \
+ffff22e4).\",\"sign\":\"positive\",\"to\":\"silky-parakeet/ram\",\"via\":[\"vivid-peacock/fn\"]}"""
 
 [[step]]
 from = "silky-parakeet/ram"
@@ -89,9 +156,19 @@ to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
 via = ["thick-lionfish/fn"]
-note = """
-S = ffff1752 + 4*ffff1765 + ffff1748 + s16 ffff1230 + ffff15ac + ffff13f7 + \
-s16 ffff170a; ffff173a = clamp(S, 0, 65535)."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 8
+step_sha256 = "737705d0d09cbe144e2cb732daa71ba1ab94f3c8aebe1ef3b0d3e688c3867291"
+original = """
+{\"effect\":\"adds\",\"from\":\"silky-parakeet/ram\",\"note\":\"S = ffff1752 \
++ 4*ffff1765 + ffff1748 + s16 ffff1230 + ffff15ac + ffff13f7 + s16 ffff170a; \
+ffff173a = clamp(S, 0, \
+65535).\",\"sign\":\"positive\",\"to\":\"mindful-mamba/ram\",\"via\":[\"thick-lionfish/fn\"]}"""
 
 [[step]]
 from = "scrupulous-yak/tbl"
@@ -99,9 +176,19 @@ to = "eminent-rottweiler/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["burrowing-peccary/fn"]
-note = """
-lookup(0x1296c, ffff106f), conditionally multiplied by ffff22e4 and divided \
-by nonzero ffff16b1, is saturated at 255 into ffff1765."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 9
+step_sha256 = "bbd1bfe4ae9cbabf7f471ab69aa6388cb3e63648d46b5335c2886d134f2345ff"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"scrupulous-yak/tbl\",\"note\":\"lookup(0x1296c, \
+ffff106f), conditionally multiplied by ffff22e4 and divided by nonzero \
+ffff16b1, is saturated at 255 into \
+ffff1765.\",\"sign\":\"positive\",\"to\":\"eminent-rottweiler/ram\",\"via\":[\"burrowing-peccary/fn\"]}"""
 
 [[step]]
 from = "hasty-eel/ram"
@@ -109,8 +196,18 @@ to = "eminent-rottweiler/ram"
 effect = "indexes"
 sign = "none"
 via = ["burrowing-peccary/fn"]
-note = """
-Coolant index ffff106f indexes 0x1296c; the sign follows the table shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 10
+step_sha256 = "472b22cfacdec49c1541cb0256fc4decdbd0b7d1a921c5a1fb488bcbd4cb4724"
+original = """
+{\"effect\":\"indexes\",\"from\":\"hasty-eel/ram\",\"note\":\"Coolant index \
+ffff106f indexes 0x1296c; the sign follows the table \
+shape.\",\"sign\":\"none\",\"to\":\"eminent-rottweiler/ram\",\"via\":[\"burrowing-peccary/fn\"]}"""
 
 [[step]]
 from = "eminent-rottweiler/ram"
@@ -118,7 +215,18 @@ to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
 via = ["thick-lionfish/fn"]
-note = "4 * u8 ffff1765 is a term of saturating aggregate ffff173a."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 11
+step_sha256 = "c6d9bc701c43cefbacfdb10d16f3eccf8c715622f91b3846cfca7a925937679a"
+original = """
+{\"effect\":\"adds\",\"from\":\"eminent-rottweiler/ram\",\"note\":\"4 * u8 \
+ffff1765 is a term of saturating aggregate \
+ffff173a.\",\"sign\":\"positive\",\"to\":\"mindful-mamba/ram\",\"via\":[\"thick-lionfish/fn\"]}"""
 
 [[step]]
 from = "kind-mouse/tbl"
@@ -126,7 +234,18 @@ to = "mahogany-otter/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["able-crow/fn"]
-note = "lookup(0x122e2, ffff1077) is extended to uint16 in ffff1230."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 12
+step_sha256 = "67586aa85a13db9b9a2c935fe21413a1730f8beb57b303ed93fc4167eb0dc761"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"kind-mouse/tbl\",\"note\":\"lookup(0x122e2, \
+ffff1077) is extended to uint16 in \
+ffff1230.\",\"sign\":\"positive\",\"to\":\"mahogany-otter/ram\",\"via\":[\"able-crow/fn\"]}"""
 
 [[step]]
 from = "coolant_index/ram"
@@ -134,9 +253,18 @@ to = "mahogany-otter/ram"
 effect = "indexes"
 sign = "none"
 via = ["able-crow/fn"]
-note = """
-Current coolant index ffff1077 indexes 0x122e2; the sign follows the table \
-shape."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 13
+step_sha256 = "1304eea0bfc95b562e5aa5a76ab9a11cd125cf5d0238a740e06ec97d95add2c1"
+original = """
+{\"effect\":\"indexes\",\"from\":\"coolant_index/ram\",\"note\":\"Current \
+coolant index ffff1077 indexes 0x122e2; the sign follows the table \
+shape.\",\"sign\":\"none\",\"to\":\"mahogany-otter/ram\",\"via\":[\"able-crow/fn\"]}"""
 
 [[step]]
 from = "mahogany-otter/ram"
@@ -144,7 +272,18 @@ to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
 via = ["thick-lionfish/fn"]
-note = "s16 ffff1230 is a term of saturating aggregate ffff173a."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 14
+step_sha256 = "6d1a2aaa82d0781b8b5404974525624de4590874e23ed07ecc51247309fc9e68"
+original = """
+{\"effect\":\"adds\",\"from\":\"mahogany-otter/ram\",\"note\":\"s16 ffff1230 \
+is a term of saturating aggregate \
+ffff173a.\",\"sign\":\"positive\",\"to\":\"mindful-mamba/ram\",\"via\":[\"thick-lionfish/fn\"]}"""
 
 [[step]]
 from = "mindful-mamba/ram"
@@ -152,9 +291,19 @@ to = "maroon-aardwolf/ram"
 effect = "converts"
 sign = "none"
 via = ["astonishing-macaw/fn"]
-note = """
-000474a4 uses ffff173a in the ffff122a calculation before the ffff171a \
-floor. Sign none: the ledger does not state this formula."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 15
+step_sha256 = "789c6512b56358149c304248c80b1cf03fac3e96e2769d8af57d5e383af8a48b"
+original = """
+{\"effect\":\"converts\",\"from\":\"mindful-mamba/ram\",\"note\":\"000474a4 \
+uses ffff173a in the ffff122a calculation before the ffff171a floor. Sign \
+none: the ledger does not state this \
+formula.\",\"sign\":\"none\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "manipulative-moose/tbl"
@@ -162,9 +311,19 @@ to = "urban-ammonite/ram"
 effect = "looks-up"
 sign = "positive"
 via = ["dramatic-roadrunner/fn"]
-note = """
-Floor curve 0x12908, or byte-identical 0x12918 while ffff4250.bit3 is clear, \
-is written to ffff171a."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 16
+step_sha256 = "88f08ef77ca56c87b608dfb9864b7cf8d8a91f875d2583aa01fd2afeff0a56bd"
+original = """
+{\"effect\":\"looks-up\",\"from\":\"manipulative-moose/tbl\",\"note\":\"Floor \
+curve 0x12908, or byte-identical 0x12918 while ffff4250.bit3 is clear, is \
+written to \
+ffff171a.\",\"sign\":\"positive\",\"to\":\"urban-ammonite/ram\",\"via\":[\"dramatic-roadrunner/fn\"]}"""
 
 [[step]]
 from = "urban-ammonite/ram"
@@ -172,9 +331,18 @@ to = "maroon-aardwolf/ram"
 effect = "limits"
 sign = "positive"
 via = ["astonishing-macaw/fn"]
-note = """
-000474a4 applies lower bound max(uVar4, ffff171a << 3) in the ffff122a \
-calculation."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 17
+step_sha256 = "709f1de8e5c5050c3031b651fd5f2baf0742e42526921e71fca7fbdf06fafe67"
+original = """
+{\"effect\":\"limits\",\"from\":\"urban-ammonite/ram\",\"note\":\"000474a4 \
+applies lower bound max(uVar4, ffff171a << 3) in the ffff122a \
+calculation.\",\"sign\":\"positive\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "quaint-lion/tbl"
@@ -182,9 +350,19 @@ to = "maroon-aardwolf/ram"
 effect = "adds"
 sign = "positive"
 via = ["sceptical-dingo/fn", "astonishing-macaw/fn"]
-note = """
-ffff15b1 = high byte of sat_u16((0x1234a << 8) + (0x12342 << 8)) by \
-ffff1070; 000474a4 adds 2 * ffff15b1 before saturation."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 18
+step_sha256 = "ac0051a4140f95f3bc5a997ba6f7eaf464a1d5e84a72815b9878aa8617a4ea8e"
+original = """
+{\"effect\":\"adds\",\"from\":\"quaint-lion/tbl\",\"note\":\"ffff15b1 = high \
+byte of sat_u16((0x1234a << 8) + (0x12342 << 8)) by ffff1070; 000474a4 adds \
+2 * ffff15b1 before \
+saturation.\",\"sign\":\"positive\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"sceptical-dingo/fn\",\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "archetypal-herring/tbl"
@@ -192,9 +370,19 @@ to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
-note = """
-000473ac writes lookup 0x1233a, or neutral 0x80 while ffff41d0.bit3 is set, \
-to ffff2fc0, a factor of the 000474a4 product."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 19
+step_sha256 = "4ab4c9d85e58079fc7bd9dbfa608d883e528371c6c0576c532fc6ce01c9d162e"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"archetypal-herring/tbl\",\"note\":\"000473ac \
+writes lookup 0x1233a, or neutral 0x80 while ffff41d0.bit3 is set, to \
+ffff2fc0, a factor of the 000474a4 \
+product.\",\"sign\":\"positive\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"evasive-ibis/fn\",\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "rugged-turkey/tbl"
@@ -202,9 +390,19 @@ to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
-note = """
-000473ac writes lookup(0x12352, ffff10f4) to ffff2fc1, which multiplies with \
-ffff2fc0 in the 000474a4 product."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 20
+step_sha256 = "60efa116f7f9970c5f3ce9d7ad8782bdd5f641571da0e57a6455adbf83a192dc"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"rugged-turkey/tbl\",\"note\":\"000473ac \
+writes lookup(0x12352, ffff10f4) to ffff2fc1, which multiplies with ffff2fc0 \
+in the 000474a4 \
+product.\",\"sign\":\"positive\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"evasive-ibis/fn\",\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "solid-peccary/tbl"
@@ -212,9 +410,19 @@ to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
 via = ["astonishing-macaw/fn"]
-note = """
-Correction multiplier 0x12dd2 scales the 000474a4 intermediate with ffff2fc0 \
-and ffff2fc1 before limiting into ffff122a."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 21
+step_sha256 = "24dce5dac0395c33f9f107bad5c099501490de0535a9b562ac6e03c03e004f80"
+original = """
+{\"effect\":\"multiplies\",\"from\":\"solid-peccary/tbl\",\"note\":\"Correction \
+multiplier 0x12dd2 scales the 000474a4 intermediate with ffff2fc0 and \
+ffff2fc1 before limiting into \
+ffff122a.\",\"sign\":\"positive\",\"to\":\"maroon-aardwolf/ram\",\"via\":[\"astonishing-macaw/fn\"]}"""
 
 [[step]]
 from = "maroon-aardwolf/ram"
@@ -222,9 +430,18 @@ to = "attractive-sambar/ram"
 effect = "scales"
 sign = "positive"
 via = ["opening_area_upper_builder/fn"]
-note = """
-ffff133e = sat_u16(ffff122a * ROM16[0x92fc] >> 13) with stock 0x92fc = \
-0x235f."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 22
+step_sha256 = "7f2fe069e0bdefb627ec4d869837b417db97105d38f68fd614d7fc210054aac6"
+original = """
+{\"effect\":\"scales\",\"from\":\"maroon-aardwolf/ram\",\"note\":\"ffff133e \
+= sat_u16(ffff122a * ROM16[0x92fc] >> 13) with stock 0x92fc = \
+0x235f.\",\"sign\":\"positive\",\"to\":\"attractive-sambar/ram\",\"via\":[\"opening_area_upper_builder/fn\"]}"""
 
 [[step]]
 from = "attractive-sambar/ram"
@@ -232,7 +449,18 @@ to = "analytic-mole/ram"
 effect = "limits"
 sign = "positive"
 via = ["idle_opening_area_builder/fn"]
-note = "ffff133e is the upper bound: ffff1340 = min(ffff12fa, ffff133e)."
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 23
+step_sha256 = "c5a64959f93759e5d3994b79ed2515ffb574a317bb84a4d1542829577d4addff"
+original = """
+{\"effect\":\"limits\",\"from\":\"attractive-sambar/ram\",\"note\":\"ffff133e \
+is the upper bound: ffff1340 = min(ffff12fa, \
+ffff133e).\",\"sign\":\"positive\",\"to\":\"analytic-mole/ram\",\"via\":[\"idle_opening_area_builder/fn\"]}"""
 
 [[step]]
 from = "analytic-mole/ram"
@@ -240,6 +468,16 @@ to = "throttle_target_shared/ram"
 effect = "adds"
 sign = "positive"
 via = ["throttle_area_compositor/fn"]
-note = """
-Normal composition ffff19b2 = clamp_u16(ffff183e + ffff1340 - (ffff120e >> \
-2)) carries the base into the throttle target area."""
+
+[step.research]
+state = "unresolved"
+source_commit = "41573cfbc925e6b41d67e4ff144a32002d4c2d2a"
+source_path = "kb/chain/idle_air.toml"
+source_sha256 = "9f4819d6caac1924ea7bcaabd1e7b4dc8efaa4b849ee20ac0647027f98a55930"
+order = 24
+step_sha256 = "bd09869ed61c786db4ccf0fc00d5a70edbbdc52a5f6f3fc4d0288d5a1b96d5e4"
+original = """
+{\"effect\":\"adds\",\"from\":\"analytic-mole/ram\",\"note\":\"Normal \
+composition ffff19b2 = clamp_u16(ffff183e + ffff1340 - (ffff120e >> 2)) \
+carries the base into the throttle target \
+area.\",\"sign\":\"positive\",\"to\":\"throttle_target_shared/ram\",\"via\":[\"throttle_area_compositor/fn\"]}"""

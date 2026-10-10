@@ -1,0 +1,61 @@
+title = "Cylinder trim"
+summary = "Competitor inventory: Fuel Trim Per Cyl; Cylinder Trim."
+acceptance = """
+Every listed catalog item has explicit ECU meaning bindings and a reviewed \
+mechanism. Bench or vehicle observations reproduce its documented behavior, \
+including the named input axes and output quantities where the source states \
+them."""
+vendor = ["ecutek", "uprev"]
+requirements_state = "unresolved"
+
+[[catalog]]
+order = 116
+source = "refs/vendor/catalog.csv"
+sha256 = "96364a55da43ec0611554fb0532d5cec4df5890932a960f7ee39ec42c4185ad5"
+original = """
+{\"axis_x\":\"\",\"axis_y\":\"\",\"concept\":\"cylinder-trim\",\"dims\":\"\",\"doc\":\"tuning-guide\",\"group\":\"Fuelling\",\"level\":\"\",\"name\":\"Fuel \
+Trim Per \
+Cyl\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
+
+[[catalog]]
+order = 309
+source = "refs/vendor/catalog.csv"
+sha256 = "b92366bf0a57c91b3fbcf0445346cc125630a50b573f872717ab49fbc7cb580a"
+original = """
+{\"axis_x\":\"cylinder\",\"axis_y\":\"\",\"concept\":\"cylinder-trim\",\"dims\":\"1\",\"doc\":\"tuning-guide\",\"group\":\"\",\"level\":\"\",\"name\":\"Cylinder \
+Trim\",\"note\":\"100 leaves the value unchanged, 80 multiplies the pulse by \
+0.8, and 120 multiplies it by 1.2. ProECU calls this 'Fuel Trim Per \
+Cylinder'; neither vendor is certain whether the index is cylinder number or \
+firing order.\",\"origin\":\"factory\",\"output\":\"final pulse-width \
+multiplier\",\"section\":\"Fuel Parameters\",\"source\":\"Fuel Parameters / \
+Cylinder Trim\",\"vendor\":\"uprev\"}"""
+
+[[target]]
+layout = "1me3b"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "1nd"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "7mfk"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk00d"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
+layout = "jk78c"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."

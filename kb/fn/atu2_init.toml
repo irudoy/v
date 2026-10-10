@@ -1,0 +1,14 @@
+title = "ATU-II full init (channels 0-11 plus ch8 one-shot DCNT/DSTR/OTR)"
+
+[[symbol]]
+layout = "1nd"
+address = "0002975a"
+
+[symbol.curated]
+order = 15
+title = true
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002975a"
