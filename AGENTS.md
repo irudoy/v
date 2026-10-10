@@ -41,6 +41,17 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 - Software gates complement static auditing and hardware validation; they do
   not replace either.
 
+## Work approach
+
+Full verification is expensive and rechecks broad shared coverage. Coherent
+packages spread this cost over more completed work.
+
+Prefer completing substantial, coherent pieces of work with a shared
+acceptance boundary. Choose package size and lightweight feedback checks
+according to the task's dependencies and risks, aiming to close more
+acceptance criteria per full verification run while preserving required
+evidence and coverage.
+
 ## Gates and commits
 
 - `make check` validates tracked sources and projections, `make test` runs the
