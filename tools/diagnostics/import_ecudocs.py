@@ -8,6 +8,7 @@ import json
 import math
 import re
 import sys
+from check_projection import check as check_projection
 from pathlib import Path
 from typing import Any
 
@@ -369,7 +370,7 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("source_root", type=Path)
     result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    result.add_argument("--check", action="store_true", help="validate without writing")
+    result.add_argument("--check", action="store_true", help="validate and byte-compare outputs without writing")
     return result
 
 
@@ -378,6 +379,8 @@ def main() -> int:
     source_root = args.source_root.expanduser().resolve()
     try:
         catalog = build(source_root)
+        if args.check:
+            check_projection(args.output, catalog, write)
     except (OSError, KeyError, ValueError, json.JSONDecodeError, CatalogError) as error:
         print(error, file=sys.stderr)
         return 1

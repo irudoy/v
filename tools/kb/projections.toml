@@ -518,6 +518,7 @@ inputs = [
     "refs/nissan-esm-2007-g35-sedan/",
     "refs/diagnostics/nissan-esm-2007-g35-sedan/source_pack.toml",
     "tools/diagnostics/extract_esm.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -529,6 +530,7 @@ inputs = [
     "refs/nissan-esm-2013-g37-sedan/",
     "refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml",
     "tools/diagnostics/extract_esm.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -540,6 +542,7 @@ inputs = [
     "refs/diagnostics/rom-dtc/layouts.toml",
     "rom-images/roms.csv",
     "tools/diagnostics/extract_rom_dtc.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -550,6 +553,7 @@ generator = "uv run python tools/diagnostics/import_370z_logger.py <checkout>"
 inputs = [
     "refs/diagnostics/public/370z-can-logger/source_pack.toml",
     "tools/diagnostics/import_370z_logger.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -560,6 +564,7 @@ generator = "uv run python tools/diagnostics/import_obd2tools.py <checkout>"
 inputs = [
     "refs/diagnostics/public/obd2tools/source_pack.toml",
     "tools/diagnostics/import_obd2tools.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -570,16 +575,19 @@ generator = "uv run python tools/diagnostics/import_ecudocs.py <checkout>"
 inputs = [
     "refs/diagnostics/public/ecudocs-p32m/source_pack.toml",
     "tools/diagnostics/import_ecudocs.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
 
 [[projection]]
 path = "refs/diagnostics/public/nissan-datatable/{*.csv,fragments.jsonl}"
-generator = "uv run python tools/diagnostics/import_nissan_datatable.py <pdf>"
+generator = "uv run python tools/diagnostics/import_nissan_datatable.py"
 inputs = [
+    "refs/nissan-datatable/",
     "refs/diagnostics/public/nissan-datatable/source_pack.toml",
     "tools/diagnostics/import_nissan_datatable.py",
+    "tools/diagnostics/catalog.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"

@@ -7,7 +7,9 @@ import argparse
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
+from check_projection import check as check_projection
 
 from catalog import (
     CatalogError,
@@ -27,7 +29,32 @@ from catalog import (
 DATASET_ID = "generic-nissan-datatable-2003-v1"
 VEHICLE_ID = "generic-nissan-legacy"
 DEFAULT_OUTPUT = REFS / "public" / "nissan-datatable"
+SOURCE_MANIFEST = REFS.parent / "nissan-datatable" / "source.toml"
 EXPECTED_PAGES = 7
+
+
+def source_pdf(path=None, *, manifest=SOURCE_MANIFEST):
+    """Bind this dataset to its declared immutable source PDF."""
+    with manifest.open('rb') as source:
+        pin = tomllib.load(source)
+    if set(pin) != {'filename', 'source_url', 'sha256', 'pages'}:
+        raise CatalogError(f'{manifest}: invalid source pin keys')
+    name = pin['filename']
+    digest = pin['sha256']
+    if not isinstance(name, str) or Path(name).name != name or not name.endswith('.pdf'):
+        raise CatalogError(f'{manifest}: filename must name one PDF')
+    if not isinstance(digest, str) or not re.fullmatch('[0-9a-f]{64}', digest):
+        raise CatalogError(f'{manifest}: invalid sha256')
+    if type(pin['pages']) is not int or pin['pages'] != EXPECTED_PAGES:
+        raise CatalogError(f'{manifest}: pages must match the dataset page contract')
+    if not isinstance(pin['source_url'], str) or not pin['source_url'].startswith('https://'):
+        raise CatalogError(f'{manifest}: source_url must be HTTPS')
+    path = (manifest.parent / name if path is None else path).expanduser().resolve()
+    if path.name != name:
+        raise CatalogError(f'{path}: filename differs from source pin {name}')
+    if sha256_file(path) != digest:
+        raise CatalogError(f'{path}: sha256 differs from source pin')
+    return path
 
 DOCUMENT_FIELDS = (
     "id",
@@ -485,18 +512,20 @@ def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument("source_path", type=Path)
+    result.add_argument("source_path", type=Path, nargs='?', help='PDF path; defaults to the tracked source pin')
     result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    result.add_argument("--check", action="store_true", help="validate without writing")
+    result.add_argument("--check", action="store_true", help="validate and byte-compare outputs without writing")
     return result
 
 
 def main() -> int:
     args = parser().parse_args()
-    source_path = args.source_path.expanduser().resolve()
     try:
+        source_path = source_pdf(args.source_path)
         catalog = build(source_path)
-    except (OSError, CatalogError) as error:
+        if args.check:
+            check_projection(args.output, catalog, write)
+    except (OSError, CatalogError, tomllib.TOMLDecodeError) as error:
         print(error, file=sys.stderr)
         return 1
     print(

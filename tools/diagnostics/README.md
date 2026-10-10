@@ -74,6 +74,12 @@ uv run python tools/diagnostics/import_370z_logger.py \
 
 Run the same command without `--check` only when intentionally regenerating its
 tracked source projection. Review the resulting diff before graph ingestion.
+All public importers and the ROM descriptor extractor compare every rendered
+CSV/JSONL file with its existing output in `--check` mode, including missing
+and unexpected files. A failed comparison preserves all existing outputs.
+`make check` runs both ESM corpora, ROM descriptors, and the pinned
+NissanDatatable source. The latter defaults to the tracked PDF and pin in
+`refs/nissan-datatable/`; an explicit PDF path must match the same identity.
 
 The exact JK08A service-0x22 response inventory is emitted to standard output
 and does not create a tracked projection:

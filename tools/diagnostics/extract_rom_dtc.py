@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import sys
+from check_projection import check as check_projection
 import tomllib
 from pathlib import Path
 
@@ -218,11 +219,18 @@ def source_projection(
     return documents, fragments
 
 
+def write(output: Path, rows: list[dict[str, object]]) -> None:
+    documents, fragments = source_projection(rows)
+    write_csv(output, FIELDS, rows)
+    write_csv(output.parent / "documents.csv", DOCUMENT_FIELDS, documents)
+    write_jsonl(output.parent / "fragments.jsonl", fragments)
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--layouts", type=Path, default=DEFAULT_LAYOUTS)
     result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    result.add_argument("--check", action="store_true", help="validate without writing")
+    result.add_argument("--check", action="store_true", help="validate and byte-compare outputs without writing")
     return result
 
 
@@ -230,6 +238,9 @@ def main() -> int:
     args = parser().parse_args()
     try:
         rows = build(args.layouts)
+        if args.check:
+            check_projection(args.output.parent, rows,
+                             lambda output, rows: write(output / args.output.name, rows))
     except (OSError, KeyError, CatalogError, tomllib.TOMLDecodeError) as error:
         print(error, file=sys.stderr)
         return 1
@@ -242,10 +253,7 @@ def main() -> int:
             f"unique_codes={len({item['code'] for item in items})}"
         )
     if not args.check:
-        documents, fragments = source_projection(rows)
-        write_csv(args.output, FIELDS, rows)
-        write_csv(args.output.parent / "documents.csv", DOCUMENT_FIELDS, documents)
-        write_jsonl(args.output.parent / "fragments.jsonl", fragments)
+        write(args.output, rows)
         try:
             shown = args.output.relative_to(ROOT)
         except ValueError:
