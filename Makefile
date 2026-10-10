@@ -83,6 +83,7 @@ setup:
 
 check:
 	$(PYTHON) tools/version_index.py --check
+	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/single_source.py --check
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check

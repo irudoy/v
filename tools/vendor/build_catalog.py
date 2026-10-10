@@ -15,11 +15,14 @@
 # All analysis goes into separate columns and no entry is discarded.
 #
 # Run: uv run python tools/vendor/build_catalog.py
+import argparse
 import csv
-import os
+import io
+from pathlib import Path
+import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-VENDOR = os.path.join(ROOT, "refs", "vendor")
+ROOT = Path(__file__).resolve().parents[2]
+VENDOR = ROOT / "refs" / "vendor"
 
 # --- origin: ProECU ---
 # The entire racerom-supplement documents RaceROM features. In tuning-guide, only the explicit
@@ -123,7 +126,6 @@ UPREV_EXACT = {
     'Rev Limit': 'rev-limit-fuel',
     'Throttle Cut Rev Limit': 'rev-limit-throttle',
     'Speed Limit': 'speed-limit',
-    'Throttle A': 'throttle-torque',
     'Estimated Torque Delivered': 'torque-actual',
     # The same map as EcuTek 'Torque Demand' and A2L 'QH0/ Torque Conversion Map': axes,
     # output scale, section, and presence of a check copy match. Vendor interpretations differ
@@ -161,48 +163,85 @@ def concept(name, exact, prefixes):
             return c
     return ''
 
-def read(name):
-    with open(os.path.join(VENDOR, name), newline='', encoding='utf-8') as f:
+def read(name, vendor=VENDOR):
+    with (vendor / name).open(newline='', encoding='utf-8') as f:
         return list(csv.DictReader(f))
 
 
-out = []
-for r in read('proecu-maps.csv'):
-    out.append(dict(
-        vendor='ecutek', doc=r['doc'], section=r['section'], group=r['group'],
-        name=r['name'], dims='', axis_x='', axis_y='', output='',
-        origin=proecu_origin(r), level=r['level'],
-        concept=concept(r['name'], PROECU_EXACT, PROECU_PREFIX),
-        source=r['source_image'], note=r['note']))
-for r in read('uprev-maps.csv'):
-    out.append(dict(
-        vendor='uprev', doc=r['doc'], section=r['section'], group='',
-        name=r['name'], dims=r['dims'], axis_x=r['axis_x'], axis_y=r['axis_y'],
-        output=r['output'], origin=r['origin'], level='',
-        concept=concept(r['name'], UPREV_EXACT, UPREV_PREFIX),
-        source=r['anchor'], note=r['note']))
+def build(vendor=VENDOR):
+    out = []
+    for r in read('proecu-maps.csv', vendor):
+        out.append(dict(
+            vendor='ecutek', doc=r['doc'], section=r['section'], group=r['group'],
+            name=r['name'], dims='', axis_x='', axis_y='', output='',
+            origin=proecu_origin(r), level=r['level'],
+            concept=concept(r['name'], PROECU_EXACT, PROECU_PREFIX),
+            source=r['source_image'], note=r['note']))
+    for r in read('uprev-maps.csv', vendor):
+        out.append(dict(
+            vendor='uprev', doc=r['doc'], section=r['section'], group='',
+            name=r['name'], dims=r['dims'], axis_x=r['axis_x'], axis_y=r['axis_y'],
+            output=r['output'], origin=r['origin'], level='',
+            concept=concept(r['name'], UPREV_EXACT, UPREV_PREFIX),
+            source=r['anchor'], note=r['note']))
 
-# An annotation that matches no name is a dictionary typo rather than harmless unused work:
-# it would silently omit the link and make the Stage 5 join undercount entries without failing.
-named = {r['name'] for r in out}
-stale = sorted((set(PROECU_EXACT) | set(UPREV_EXACT)) - named)
-if stale:
-    raise SystemExit(f"concept refers to names absent from the dictionaries: {stale}")
+    # Unmatched annotations would silently omit dictionary links.
+    named = {r['name'] for r in out}
+    stale = sorted((set(PROECU_EXACT) | set(UPREV_EXACT)) - named)
+    if stale:
+        raise ValueError(f"concept refers to names absent from the dictionaries: {stale}")
+    return out
 
-cols = ['vendor','doc','section','group','name','dims','axis_x','axis_y','output',
-        'origin','level','concept','source','note']
-with open(os.path.join(VENDOR, 'catalog.csv'), 'w', newline='', encoding='utf-8') as f:
-    w = csv.DictWriter(f, fieldnames=cols, quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-    w.writeheader(); w.writerows(out)
 
-origins = {o: sum(1 for r in out if r['origin'] == o) for o in ('factory', 'patch', 'unknown')}
-concepts = {r['concept'] for r in out if r['concept']}
-both = sum(1 for c in concepts
-           if len({r['vendor'] for r in out if r['concept'] == c}) > 1)
-print(f"catalog.csv: {len(out)} entries "
-      f"({sum(1 for r in out if r['vendor'] == 'ecutek')} ecutek, "
-      f"{sum(1 for r in out if r['vendor'] == 'uprev')} uprev)")
-print(f"origin: factory {origins['factory']}, patch {origins['patch']}, "
-      f"unknown {origins['unknown']} (Stage 5 matches only factory)")
-print(f"concept: {sum(1 for r in out if r['concept'])} entries, {len(concepts)} values, "
-      f"{both} covered by both dictionaries")
+def render(rows):
+    cols = ['vendor','doc','section','group','name','dims','axis_x','axis_y','output',
+            'origin','level','concept','source','note']
+    output = io.StringIO(newline='')
+    writer = csv.DictWriter(output, fieldnames=cols, quoting=csv.QUOTE_MINIMAL,
+                            lineterminator='\n')
+    writer.writeheader()
+    writer.writerows(rows)
+    return output.getvalue().encode('utf-8')
+
+
+def generate(vendor=VENDOR, *, check=False):
+    rows = build(vendor)
+    expected = render(rows)
+    path = vendor / 'catalog.csv'
+    if check:
+        if not path.is_file():
+            raise ValueError(f"{path}: missing (fix: make vendor-catalog)")
+        if path.read_bytes() != expected:
+            raise ValueError(f"{path}: differs from its rendering (fix: make vendor-catalog)")
+    else:
+        path.write_bytes(expected)
+    return rows
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--check', action='store_true',
+                        help='compare the catalog without writing')
+    args = parser.parse_args(argv)
+    try:
+        rows = generate(check=args.check)
+    except (OSError, ValueError) as error:
+        print(error, file=sys.stderr)
+        return 1
+    origins = {o: sum(r['origin'] == o for r in rows)
+               for o in ('factory', 'patch', 'unknown')}
+    concepts = {r['concept'] for r in rows if r['concept']}
+    both = sum(len({r['vendor'] for r in rows if r['concept'] == c}) > 1
+               for c in concepts)
+    print(f"catalog.csv: {len(rows)} entries "
+          f"({sum(r['vendor'] == 'ecutek' for r in rows)} ecutek, "
+          f"{sum(r['vendor'] == 'uprev' for r in rows)} uprev)")
+    print(f"origin: factory {origins['factory']}, patch {origins['patch']}, "
+          f"unknown {origins['unknown']} (Stage 5 matches only factory)")
+    print(f"concept: {sum(bool(r['concept']) for r in rows)} entries, "
+          f"{len(concepts)} values, {both} covered by both dictionaries")
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

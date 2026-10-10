@@ -28,6 +28,10 @@ three independent sources about one subject provides stronger confidence than an
 
 `catalog.csv` is generated from the first two files. Edit the source transcriptions rather
 than the generated catalog, then rebuild it with `make vendor-catalog`.
+`uv run python tools/vendor/build_catalog.py --check` renders the catalog in
+memory and compares its exact bytes without writing. `make check` runs this
+gate and rejects a missing or stale catalog, including changes to derived
+columns and source row order.
 
 ## Method
 
