@@ -470,8 +470,29 @@ read = "open"
 
 [[projection]]
 path = "patches/can-telemetry-payloads.toml"
-generator = "uv run python patches/can_telemetry_assembly.py --update-from <units>"
-inputs = ["patches/can-telemetry-layout.toml", "patches/can-telemetry-*.s"]
+generator = "tools/sh-elf-run/generate-targets.sh --telemetry"
+inputs = [
+    "patches/can-telemetry-layout.toml",
+    "patches/can-telemetry-*.s",
+    "patches/can-telemetry-identity.h",
+    "patches/{map-switching,rolling-launch}-layout.toml",
+    "patches/map-switching-payloads.toml",
+    "patches/rolling-launch-payloads.toml",
+    "patches/jk08a-runtime-reservations.toml",
+    "patches/checksum-layouts.toml",
+    "patches/*.py",
+    "tools/mapkit/",
+    "tools/logs/",
+    "tools/rom_sources.py",
+    "tools/sh-elf-run/Dockerfile",
+    "tools/sh-elf-run/generate-targets.sh",
+    "tools/sh-elf-run/generate_runtime_targets.py",
+    "tools/sh-elf-run/verify_map_switching.py",
+    "tools/kb/src/kb/",
+    "kb/",
+    "l0/",
+    "rom-images/",
+]
 consumers = [
     "patches/can_telemetry_compose.py",
     "patches/apply_can_telemetry.py",
@@ -502,6 +523,20 @@ inputs = [
     "patches/runtime_targets.py",
     "tools/kb/src/kb/targets.py",
     "tools/sh-elf-run/generate_runtime_targets.py",
+    "tools/sh-elf-run/Dockerfile",
+    "tools/sh-elf-run/generate-targets.sh",
+    "tools/sh-elf-run/verify_map_switching.py",
+    "patches/*.py",
+    "patches/can-telemetry-identity.h",
+    "patches/map-switching-payloads.toml",
+    "patches/rolling-launch-payloads.toml",
+    "patches/jk08a-runtime-reservations.toml",
+    "tools/mapkit/",
+    "tools/logs/",
+    "tools/rom_sources.py",
+    "tools/kb/src/kb/",
+    "l0/",
+    "rom-images/",
 ]
 consumers = [
     "patches/runtime_targets.py",

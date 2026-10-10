@@ -430,6 +430,16 @@ change with:
 make runtime-targets-generate
 ```
 
+The same entry point reconstructs the canonical JK08A telemetry manifest with
+`tools/sh-elf-run/generate-targets.sh --telemetry`. It assembles every unit with
+the existing fill-aware GNU assembler, applies the static instruction audit,
+and requires the existing unit and composition digests before rendering.
+Changing those byte locks remains a separate update operation.
+
+`make check` runs both payload families with `--check`. This mode reconstructs
+the complete manifest and compares its UTF-8 bytes without writing it; missing
+files, changed values, and different line endings fail the gate.
+
 ## Main fuel compensation
 
 The JK08A main-compensation region reconstructs 301 instructions and 962 bound

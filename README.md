@@ -165,6 +165,9 @@ is documented beside that tool.
 1ND0A, 1ND3B, and 1ME3B GNU SH-2E payload locks and capability-specific stage hashes
 from the registered address profiles.
 
+`make check` independently assembles and byte-compares that manifest and the
+canonical JK08A telemetry manifest using the same pinned GNU toolchain.
+
 Build the self-contained ROM atlas HTML with:
 
 ```bash

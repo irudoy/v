@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independently assemble and lock all projected runtime payloads."""
+"""Independently assemble and lock telemetry or relocated runtime payloads."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ from patches import rolling_launch_layout
 from patches import runtime_targets
 
 
-def _assemble(layout, parsed_by_unit, build_dir):
+def _assemble(layout, parsed_by_unit, build_dir, *, canonical=False):
     result = {}
     source_texts = layout.source_text_by_unit
     for unit in layout.assembly_units:
@@ -38,9 +38,21 @@ def _assemble(layout, parsed_by_unit, build_dir):
             unit,
             parsed_by_unit[unit.key],
             build_dir,
-            source_text=source_texts[unit.key],
+            source_text=None if canonical else source_texts[unit.key],
         )
     return result
+
+
+def build_telemetry():
+    """Reconstruct the canonical manifest with the existing GNU unit assembler."""
+    layout = can_telemetry_layout.load_layout()
+    can_telemetry_layout.validate_structure(layout)
+    parsed = can_telemetry_assembly.validate_assembly_sources(layout)
+    with tempfile.TemporaryDirectory(prefix="vq-telemetry-payloads-") as directory:
+        blobs = _assemble(layout, parsed, Path(directory), canonical=True)
+    can_telemetry_assembly.validate_instruction_semantics(layout, parsed, blobs)
+    can_telemetry_compose.compose(layout=layout, blobs=blobs)
+    return can_telemetry_assembly.render_payloads(layout, blobs)
 
 
 def build_locks(rom):
@@ -205,30 +217,38 @@ def main(argv=None):
     parser.add_argument(
         "--output",
         type=Path,
-        default=runtime_targets.DEFAULT_PAYLOADS,
+        help="manifest destination (defaults to the selected payload family)",
     )
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--telemetry", action="store_true",
+        help="reconstruct canonical JK08A telemetry instead of relocated targets",
+    )
     args = parser.parse_args(argv)
-    content = render([
-        build_locks(rom) for rom in runtime_targets.RELOCATED_ROMS
-    ])
+    output = args.output or (
+        can_telemetry_assembly.DEFAULT_PAYLOADS if args.telemetry
+        else runtime_targets.DEFAULT_PAYLOADS
+    )
+    if args.telemetry:
+        content = build_telemetry()
+        scope = "family=telemetry"
+    else:
+        content = render([
+            build_locks(rom) for rom in runtime_targets.RELOCATED_ROMS
+        ])
+        scope = f"targets={len(runtime_targets.RELOCATED_ROMS)}"
+    encoded = content.encode("utf-8")
     if args.check:
         try:
-            current = args.output.read_text(encoding="utf-8")
+            current = output.read_bytes()
         except OSError as error:
             parser.error(str(error))
-        if current != content:
-            parser.error(f"generated target payloads differ: {args.output}")
-        print(
-            f"status=PASS output={args.output} "
-            f"targets={len(runtime_targets.RELOCATED_ROMS)}"
-        )
+        if current != encoded:
+            parser.error(f"generated payloads differ: {output}")
+        print(f"status=PASS output={output} {scope}")
         return 0
-    args.output.write_text(content, encoding="utf-8")
-    print(
-        f"status=PASS output={args.output} "
-        f"targets={len(runtime_targets.RELOCATED_ROMS)}"
-    )
+    output.write_bytes(encoded)
+    print(f"status=PASS output={output} {scope}")
     return 0
 
 

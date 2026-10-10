@@ -100,6 +100,8 @@ check:
 	$(PYTHON) tools/mapkit/emit_def.py all --check
 	$(PYTHON) tools/maps/build_tracker.py all --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
+	tools/sh-elf-run/generate-targets.sh --telemetry --check
+	tools/sh-elf-run/generate-targets.sh --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(PYTHON) tools/romviz/architecture.py check
 	$(PYTHON) tools/romviz/build.py all --output "$(ROMVIZ_OUTPUT)"
