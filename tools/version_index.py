@@ -61,6 +61,11 @@ def dashboard_version():
     return _single("tools/can_dashboard/__init__.py", r'^__version__ = "(.+)"$')
 
 
+def poppler_version():
+    """Read the reference release reported by the ESM extraction entry point."""
+    return _single("tools/diagnostics/extract_esm.py", r'^REFERENCE_POPPLER_VERSION = "(.+)"$')
+
+
 def python_can_version():
     """Read the one `python-can` pin every platform package installs."""
     pins = {path: requirement_pin(path, "python-can") for path in REQUIREMENTS}
@@ -139,6 +144,7 @@ COMPONENTS = (
         *toolchain_versions(), simulator_version(),
     )),
     ("Python", "pyproject.toml", lambda: (python_version(),)),
+    ("Poppler", "tools/diagnostics/extract_esm.py", lambda: (poppler_version(),)),
     ("CAN dashboard", "tools/can_dashboard/__init__.py", lambda: (
         dashboard_version(),
     )),

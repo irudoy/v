@@ -38,11 +38,26 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 
 All importers validate exact source revision or PDF identity where their source
 manifest provides one. `--check` parses and validates without replacing tracked
-outputs. Source-specific expected inventory is stored in each
+outputs. The ESM check byte-compares every CSV and page-fragment output with
+the same renderer used for generation, and refuses missing, changed or extra
+CSV projections. Source-specific expected inventory is stored in each
 `source_pack.toml`, not duplicated here. `extract_esm.py` reads dataset
 identity, vehicle identity, the engine sections of a multi-engine manual,
 retained-document count, and its default output directory from the `--pack`
 source pack, so one extractor serves every retained ESM corpus.
+
+ESM extraction validates every declared expected inventory before writing:
+documents, unique ECM DTC codes, diagnostic parameters, operations and CAN
+signals. Unknown expected-inventory keys and invalid counts are errors.
+`discovery.csv` records recognized document sections and `unparsed.csv` records
+recognized sections without structured rows; both are extractor QA reports
+covered by the byte-comparison gate.
+
+PDF extraction requires Poppler's `pdftotext` and `pdfinfo` on PATH. The ESM
+entry point reports both installed releases and its reference release, whose
+project record is the deployment table in `../README.md`. Other releases must
+satisfy the same declared inventory and exact-output checks. A mismatch names
+the inventory count or projection path and leaves existing outputs intact.
 
 Examples:
 

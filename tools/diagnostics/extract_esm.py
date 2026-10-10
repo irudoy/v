@@ -8,6 +8,7 @@ import csv
 import re
 import subprocess
 import sys
+import tempfile
 import tomllib
 from collections import defaultdict
 from dataclasses import dataclass
@@ -32,14 +33,21 @@ from catalog import (
 DEFAULT_PACK = REFS / "nissan-esm-2007-g35-sedan" / "source_pack.toml"
 DATASET_ID = "nissan-esm-2007-g35-sedan-v1"
 VEHICLE_ID = "infiniti-g35-sedan-2007-usdm-vq35hr"
-EXPECTED_DOCUMENTS = 29
+REFERENCE_POPPLER_VERSION = "26.09.0"
+EXPECTED_COUNTS = {
+    "expected_documents": "documents",
+    "expected_ecm_dtc": "ecm_dtc",
+    "expected_parameters": "diagnostic_parameters",
+    "expected_operations": "diagnostic_operations",
+    "expected_can_signals": "can_signals",
+}
 ENGINE_TAG_RE = re.compile(r"\[([A-Z0-9]+)\]")
 HEADER_LINES = 4
 
 
 @dataclass(frozen=True)
 class SourcePack:
-    """Dataset identity, vehicle identities, and retained-document count for
+    """Dataset identity, vehicle identities, and declared inventory for
     one ESM corpus.
 
     ``engine_sections`` maps the engine tag that a multi-engine manual prints
@@ -52,6 +60,7 @@ class SourcePack:
     vehicle_id: str
     expected_documents: int
     engine_sections: tuple[tuple[str, str], ...] = ()
+    expected_counts: tuple[tuple[str, int], ...] = ()
 
     @property
     def output(self) -> Path:
@@ -68,6 +77,15 @@ def load_pack(path: Path) -> SourcePack:
     ]
     if missing:
         raise CatalogError(f"{path}: source pack omits {', '.join(missing)}")
+    expected = {}
+    for key, value in raw.items():
+        if not key.startswith("expected_"):
+            continue
+        if key not in EXPECTED_COUNTS:
+            raise CatalogError(f"{path}: unknown inventory key {key}")
+        if type(value) is not int or value < 0:
+            raise CatalogError(f"{path}: {key} must be a nonnegative integer")
+        expected[key] = value
     sections = raw.get("engine_sections", {})
     if not isinstance(sections, dict) or not all(
         isinstance(vehicle, str) and ENGINE_TAG_RE.fullmatch(f"[{tag}]")
@@ -86,7 +104,26 @@ def load_pack(path: Path) -> SourcePack:
         vehicle_id=str(raw["vehicle_id"]),
         expected_documents=int(raw["expected_documents"]),
         engine_sections=tuple(sorted(sections.items())),
+        expected_counts=tuple(sorted(expected.items())),
     )
+
+
+def validate_inventory(pack: SourcePack, catalog: dict[str, list[dict[str, object]]]) -> None:
+    """Refuse every declared inventory mismatch before publishing projections."""
+    expected = dict(pack.expected_counts)
+    expected["expected_documents"] = pack.expected_documents
+    counts = {key: len(rows) for key, rows in catalog.items()}
+    counts["ecm_dtc"] = len({
+        row["code"] for row in catalog["dtc_definitions"]
+        if str(row["ecu_id"]).endswith(":ecm")
+    })
+    failures = [
+        f"{key}: extracted {counts[EXPECTED_COUNTS[key]]}, expected {value}"
+        for key, value in sorted(expected.items())
+        if counts[EXPECTED_COUNTS[key]] != value
+    ]
+    if failures:
+        raise CatalogError(f"{pack.path}: inventory mismatch: " + "; ".join(failures))
 
 
 def page_vehicle_id(text: str, pack: SourcePack, where: str) -> str:
@@ -416,6 +453,24 @@ def run_text(command: list[str]) -> str:
         message = error.stderr.strip() or f"exit status {error.returncode}"
         raise CatalogError(f"{' '.join(command)}: {message}") from error
     return completed.stdout
+
+
+def poppler_versions() -> dict[str, str]:
+    """Identify the installed PDF producers without substituting a runner."""
+    versions = {}
+    for tool in ("pdftotext", "pdfinfo"):
+        try:
+            result = subprocess.run([tool, "-v"], check=True, capture_output=True,
+                                    text=True, encoding="utf-8", errors="replace")
+        except FileNotFoundError as error:
+            raise CatalogError(f"required command not found: {tool}; install Poppler") from error
+        except subprocess.CalledProcessError as error:
+            raise CatalogError(f"{tool} -v: {error.stderr.strip() or error.returncode}") from error
+        match = re.search(rf"(?m)^{tool} version (\S+)", result.stdout + result.stderr)
+        if match is None:
+            raise CatalogError(f"{tool} -v does not report its version")
+        versions[tool] = match.group(1)
+    return versions
 
 
 def pdf_page_count(path: Path) -> int:
@@ -3493,7 +3548,7 @@ def build(
         (unparsed, ("id",)),
     ):
         require_unique(rows, fields)
-    return {
+    catalog = {
         "documents": documents,
         "discovery": discoveries,
         "fragments": fragments,
@@ -3503,6 +3558,8 @@ def build(
         "can_signals": signals,
         "unparsed": unparsed,
     }
+    validate_inventory(pack, catalog)
+    return catalog
 
 
 def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
@@ -3524,6 +3581,26 @@ def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
     write_csv(output / "unparsed.csv", UNPARSED_FIELDS, catalog["unparsed"])
 
 
+def check(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
+    """Byte-compare every declared ESM output using the same renderer as write."""
+    with tempfile.TemporaryDirectory(prefix="vq-esm-check-") as directory:
+        rendered = Path(directory)
+        write(rendered, catalog)
+        names = {path.name for path in rendered.iterdir()}
+        actual = {path.name for path in output.glob("*.csv")}
+        if (output / "fragments.jsonl").exists():
+            actual.add("fragments.jsonl")
+        failures = [f"{output / name}: unexpected projection" for name in sorted(actual - names)]
+        for name in sorted(names):
+            path = output / name
+            if not path.is_file():
+                failures.append(f"{path}: missing projection")
+            elif path.read_bytes() != (rendered / name).read_bytes():
+                failures.append(f"{path}: differs from extraction")
+        if failures:
+            raise CatalogError("ESM projection drift: " + "; ".join(failures))
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("source_root", type=Path)
@@ -3539,7 +3616,7 @@ def parser() -> argparse.ArgumentParser:
         default=None,
         help="output directory; defaults to the source pack directory",
     )
-    result.add_argument("--check", action="store_true", help="extract without writing")
+    result.add_argument("--check", action="store_true", help="extract, validate inventory and compare output bytes without writing")
     return result
 
 
@@ -3548,7 +3625,15 @@ def main() -> int:
     source_root = args.source_root.expanduser().resolve()
     try:
         pack = load_pack(args.pack.expanduser().resolve())
+        versions = poppler_versions()
+        print("Poppler: " + ", ".join(f"{tool}={version}" for tool, version in versions.items())
+              + f"; reference={REFERENCE_POPPLER_VERSION}")
         catalog = build(source_root, pack)
+        output = args.output if args.output is not None else pack.output
+        if args.check:
+            check(output, catalog)
+        else:
+            write(output, catalog)
     except (OSError, CatalogError, tomllib.TOMLDecodeError) as error:
         print(error, file=sys.stderr)
         return 1
@@ -3563,8 +3648,6 @@ def main() -> int:
         f"unparsed={len(catalog['unparsed'])}"
     )
     if not args.check:
-        output = args.output if args.output is not None else pack.output
-        write(output, catalog)
         try:
             shown = output.relative_to(ROOT)
         except ValueError:

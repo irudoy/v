@@ -101,6 +101,7 @@ engines.
 | Docker in the `desktop-linux` context | Memgraph ingestion and the GNU SH-2E execution gate |
 | Node.js and npm | ROM-atlas validation and the pin-tracer contract |
 | Ghidra with JDK 21 | Headless structure export, decompilation, and p-code fixtures |
+| Poppler with `pdftotext` and `pdfinfo` on PATH | Factory ESM and legacy Nissan PDF extraction and projection checks |
 | PEAK PCAN-USB with the vendor driver | Live telemetry capture, logging, and the dashboard |
 | An external reflash tool with an OBD interface it supports | Reading a stock image and writing a built image |
 
