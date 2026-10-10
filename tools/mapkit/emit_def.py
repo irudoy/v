@@ -51,10 +51,12 @@
 # uv run python tools/mapkit/emit_def.py \
 #   [<rom>|all|--all] [<romraider-out>] [<tunerpro-out>]
 import copy
+from contextlib import nullcontext
 import csv
 from dataclasses import dataclass
 import html
 import os
+from pathlib import Path
 import re
 import sys
 import tempfile
@@ -67,6 +69,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 DEFS = os.path.join(ROOT, "defs")
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+from tools import projection_check
 if __package__:
     from . import (
         definition_targets,
@@ -188,9 +191,9 @@ def scaling(units, expr, to_byte, conf, fmt, fine, coarse, indent):
     return "\n".join(wrap(" " * indent, "<scaling", a, "/>"))
 
 
-def fetch(rom):
+def fetch(rom, *, graph=None):
     """Fetch calibration-layer facts: candidate maps, their axes, and context."""
-    with reader.session() as s:
+    with reader.session() if graph is None else nullcontext(graph) as s:
         maps = {r["a"]: dict(r["m"]) for r in s.run(
             "MATCH (m:Map {rom:$rom}) RETURN m.addr AS a, m AS m", rom=rom)}
         for r in s.run(
@@ -1228,6 +1231,7 @@ def emit_target(
     tunerpro_path=None,
     facts_cache=None,
     display_paths=None,
+    graph=None,
 ):
     """Generate one target-specific RomRaider XML and TunerPro XDF."""
     romraider_path = romraider_path or os.path.join(DEFS, f"{rom}.xml")
@@ -1246,11 +1250,12 @@ def emit_target(
         )
     logparam_bindings(ovr)
 
+    fetch_options = {} if graph is None else {"graph": graph}
     if facts_cache is None:
-        maps, axes = fetch(source_rom)
+        maps, axes = fetch(source_rom, **fetch_options)
     else:
         if source_rom not in facts_cache:
-            facts_cache[source_rom] = fetch(source_rom)
+            facts_cache[source_rom] = fetch(source_rom, **fetch_options)
         maps, axes = copy.deepcopy(facts_cache[source_rom])
     source_catalog_map_count = len(maps)
     if target.source_model.inherited:
@@ -1569,13 +1574,16 @@ def emit_target(
     print(f"    {nosem} table-role maps lack semantics and remain open ledger work")
 
 
-def emit_all(output_dir=DEFS):
+def emit_all(output_dir=DEFS, *, check=False, graph=None):
     """Generate every registered target without partial output on render failure."""
+    if check and graph is None:
+        with reader.session() as transaction:
+            return emit_all(output_dir, check=True, graph=transaction)
     output_dir = os.fspath(output_dir)
     targets = definition_targets.registered_targets()
     facts_cache = {}
     with tempfile.TemporaryDirectory(
-        prefix=".emit-def-", dir=output_dir
+        prefix=".emit-def-", dir=None if check else output_dir
     ) as stage_dir:
         staged = []
         for rom in targets:
@@ -1589,22 +1597,43 @@ def emit_all(output_dir=DEFS):
                 stage_xdf,
                 facts_cache=facts_cache,
                 display_paths=(final_xml, final_xdf),
+                **({"graph": graph} if graph is not None else {}),
             )
             staged.append((stage_xml, final_xml))
             staged.append((stage_xdf, final_xdf))
-        for staged_path, final_path in staged:
-            os.replace(staged_path, final_path)
+        if check:
+            projection_check.compare(
+                {Path(path).name: Path(path).read_bytes() for path, _ in staged},
+                output_dir, ("*.xml", "*.xdf"), regenerate="make defs-generate",
+            )
+        else:
+            for staged_path, final_path in staged:
+                os.replace(staged_path, final_path)
 
 
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
+    check = "--check" in args
+    if check:
+        if args.count("--check") != 1:
+            sys.exit("--check must appear once")
+        args.remove("--check")
     if not args:
         args = ["all"]
     if args[0].lower() in {"all", "--all"}:
         if len(args) != 1:
             sys.exit("all mode does not accept explicit output paths")
-        emit_all()
+        if check:
+            try:
+                emit_all(check=True)
+            except (OSError, ValueError) as error:
+                sys.exit(str(error))
+            print("status=PASS; every registered XML/XDF matches its rendering")
+        else:
+            emit_all()
         return
+    if check:
+        sys.exit("--check requires all targets and no explicit output paths")
     if len(args) > 3:
         sys.exit(
             "usage: emit_def.py [<rom>|all|--all] "

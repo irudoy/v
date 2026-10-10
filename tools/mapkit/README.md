@@ -134,8 +134,19 @@ ROM:
 uv run python tools/mapkit/definition_projections.py --check
 ```
 
-For a byte-for-byte regeneration check, emit XML and XDF into a temporary
-directory and compare them with the tracked files. The full Python unit contract
+Compare every registered XML/XDF pair and canonical map ledger with the same
+production renderer without replacing existing outputs:
+
+```bash
+uv run python tools/mapkit/emit_def.py all --check
+uv run python tools/maps/build_tracker.py all --check
+```
+
+Each command retains one primary read lock and read-only graph transaction
+through rendering and byte comparison. Temporary files are outside the output
+directory. Missing, changed, and unexpected projection files cause failure;
+regenerate with `make defs-generate`. `make check` runs both comparisons after
+the graph preflight. The full Python unit contract
 also exercises XML, XDF, DTC, map-switching, and TunerPro behavior:
 
 ```bash

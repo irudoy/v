@@ -20,7 +20,9 @@ Usage: uv run python tools/maps/build_tracker.py \
           [<rom>|all|--all] [<output.csv>]
 """
 import csv
+from contextlib import nullcontext
 import os
+from pathlib import Path
 import sys
 import tempfile
 from kb import reader
@@ -28,7 +30,7 @@ from kb import reader
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
-from tools import diagnostic_context, rom_sources  # noqa: E402
+from tools import diagnostic_context, projection_check, rom_sources  # noqa: E402
 from tools.mapkit import definition_targets  # noqa: E402
 
 FIELDS = ["table", "family", "via", "kernel", "dim", "storagetype", "vals", "scaling",
@@ -129,7 +131,7 @@ def report(out, tracker):
         print(f"WARNING: {empty} maps have no wrapper or accessor and are orphan graph nodes")
 
 
-def emit_tracker(rom, tracker=None, display_tracker=None):
+def emit_tracker(rom, tracker=None, display_tracker=None, *, graph=None):
     """Generate one canonical map ledger."""
     try:
         source_model = rom_sources.resolve(rom)
@@ -144,7 +146,7 @@ def emit_tracker(rom, tracker=None, display_tracker=None):
     if tracker is None:
         tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
 
-    with reader.session() as s:
+    with reader.session() if graph is None else nullcontext(graph) as s:
         rows = [r.data() for r in s.run(QUERY, rom=rom)]
         bindings = diagnostic_context.map_bindings(s, rom)
     if not rows:
@@ -160,12 +162,15 @@ def emit_tracker(rom, tracker=None, display_tracker=None):
     report(out, display_tracker or tracker)
 
 
-def emit_all(output_dir=None):
+def emit_all(output_dir=None, *, check=False, graph=None):
     """Generate all canonical ledgers without partial output on render failure."""
+    if check and graph is None:
+        with reader.session() as transaction:
+            return emit_all(output_dir, check=True, graph=transaction)
     output_dir = os.fspath(output_dir or os.path.join(ROOT, "defs"))
     sources = definition_targets.registered_sources()
     with tempfile.TemporaryDirectory(
-        prefix=".build-tracker-", dir=output_dir
+        prefix=".build-tracker-", dir=None if check else output_dir
     ) as stage_dir:
         staged = []
         for rom in sources:
@@ -175,21 +180,42 @@ def emit_all(output_dir=None):
                 rom,
                 tracker=stage_path,
                 display_tracker=final_path,
+                **({"graph": graph} if graph is not None else {}),
             )
             staged.append((stage_path, final_path))
-        for staged_path, final_path in staged:
-            os.replace(staged_path, final_path)
+        if check:
+            projection_check.compare(
+                {Path(path).name: Path(path).read_bytes() for path, _ in staged},
+                output_dir, ("*.maps.csv",), regenerate="make defs-generate",
+            )
+        else:
+            for staged_path, final_path in staged:
+                os.replace(staged_path, final_path)
 
 
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
+    check = "--check" in args
+    if check:
+        if args.count("--check") != 1:
+            sys.exit("--check must appear once")
+        args.remove("--check")
     if not args:
         args = ["all"]
     if args[0].lower() in {"all", "--all"}:
         if len(args) != 1:
             sys.exit("all mode does not accept an explicit output path")
-        emit_all()
+        if check:
+            try:
+                emit_all(check=True)
+            except (OSError, ValueError) as error:
+                sys.exit(str(error))
+            print("status=PASS; every canonical map ledger matches its rendering")
+        else:
+            emit_all()
         return
+    if check:
+        sys.exit("--check requires all canonical sources and no explicit output path")
     if len(args) > 2:
         sys.exit(
             "usage: build_tracker.py [<rom>|all|--all] [<output.csv>]"

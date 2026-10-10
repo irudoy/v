@@ -93,6 +93,8 @@ check:
 	$(PYTHON) tools/census_homology.py --check
 	$(PYTHON) tools/rom_homology.py --check
 	$(UV) run kb check
+	$(PYTHON) tools/mapkit/emit_def.py all --check
+	$(PYTHON) tools/maps/build_tracker.py all --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(PYTHON) tools/romviz/architecture.py check

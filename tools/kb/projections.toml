@@ -346,6 +346,13 @@ read = "guarded"
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 inputs = [
+    "kb/",
+    "l0/",
+    "tools/memgraph/",
+    "tools/kb/src/kb/",
+    "tools/diagnostic_context.py",
+    "tools/projection_check.py",
+    "rom-images/",
     "defs/JK08A.overrides.toml",
     "defs/rom-identities.toml",
     "defs/rom-inheritance.toml",
@@ -386,6 +393,13 @@ read = "open"
 path = "defs/JK08A.maps.csv"
 generator = "uv run python tools/maps/build_tracker.py all"
 inputs = [
+    "kb/",
+    "l0/",
+    "tools/memgraph/",
+    "tools/kb/src/kb/",
+    "tools/diagnostic_context.py",
+    "tools/projection_check.py",
+    "rom-images/",
     "defs/JK08A.{findings,axes,interp,funcs,diagnostic-bindings}.csv",
     "defs/rom-identities.toml",
     "defs/rom-inheritance.toml",
