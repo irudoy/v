@@ -10,6 +10,7 @@ outside the schema follow the known keys in alphabetical order. `canonical` is
 the `canonical` check: every file equals the rendering of its parse.
 """
 
+from collections import OrderedDict
 from dataclasses import dataclass
 import os
 from pathlib import Path
@@ -87,6 +88,41 @@ def _schema_index(keys):
         if name not in index:
             index[name] = spec
     return index
+
+
+_TABLE_SPEC, _TABLE_ORDER = Table.spec, Table.order
+_PROGRAM_SHAPES = 64
+
+
+def _table_program(table, present):
+    """Prepare schema lookups, retaining current values and nested specs."""
+    if (type(table) is not Table or Table.spec is not _TABLE_SPEC
+            or Table.order is not _TABLE_ORDER
+            or 'spec' in vars(table) or 'order' in vars(table)
+            or any(type(key) is not str for key in present)):
+        return None
+    held = vars(table).get('_programs')
+    if held is None or held[0] is not table.keys:
+        index = _schema_index(table.keys)
+        if index is None:
+            return None
+        held = (table.keys, index, OrderedDict())
+        object.__setattr__(table, '_programs', held)
+    index, programs = held[1:]
+    if any(key not in index for key in present):
+        return None
+    shape = frozenset(present)
+    if shape in programs:
+        programs.move_to_end(shape)
+        return programs[shape]
+    program = tuple((key, table.spec(key)) for key in table.order(present))
+    if any(spec is not None and type(spec) not in (str, Table, Array, Named)
+           for _, spec in program):
+        return None
+    while len(programs) >= _PROGRAM_SHAPES:
+        programs.popitem(last=False)
+    programs[shape] = program
+    return program
 
 
 @dataclass(frozen=True)
@@ -304,8 +340,13 @@ def _is_table(spec):
 
 def _table(lines, path, document, table, header):
     present = {key: value for key, value in document.items() if not _empty(value)}
-    order = table.order(present)
-    specs = {key: table.spec(key) or _infer(present[key]) for key in order}
+    program = _table_program(table, present)
+    if program is None:
+        order = table.order(present)
+        specs = {key: table.spec(key) or _infer(present[key]) for key in order}
+    else:
+        order = [key for key, _ in program]
+        specs = {key: spec or _infer(present[key]) for key, spec in program}
     plain = [key for key in order if not _is_table(specs[key])]
     nested = [key for key in order if _is_table(specs[key])]
     if header is not None and (plain or header.startswith("[[")):

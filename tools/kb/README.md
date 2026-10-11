@@ -55,6 +55,14 @@ Every call returns separate documents and validates the owner schema.
 Syntax errors are not retained, and a supplied parser executes directly.
 The test-local source preparation also scopes configuration reads by root
 and effective adapter order; original compilers and checks execute.
+Each scope parses its own first request. Equal text and serialized values
+share immutable retained storage; every hit returns a separate document.
+Scoped references and contents consume one bounded preparation budget.
+
+Canonical rendering prepares a bounded set of known-key schema traversals.
+Current values, inferred fields, nested specifications, and schema changes
+are inspected on every render. Custom schemas and changed methods retain
+their direct lookups. The renderer retains no document or check result.
 
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and
@@ -64,6 +72,9 @@ Nonempty overlays compile independently. Source changes, changed default
 adapter order, and mutation of the shared model refuse the group; no result
 or check pass is retained by the context after exit. Its model digest uses
 an iterative traversal of values and shared references, including cycles.
+The digest streams the same length-prefixed protocol-5 records through a
+bounded byte buffer; large records pass directly to the hasher. Its accepted
+packet hashes and current-state mutation contracts are gated.
 
 ```bash
 uv run kb sync                       # compile, draw names of new symbols, load the graph

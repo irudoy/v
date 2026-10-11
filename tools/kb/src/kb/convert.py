@@ -164,6 +164,8 @@ from kb.repo import KbError
 # Differences that a refusal lists.
 SHOWN = 20
 _PLANNING = ContextVar("kb_conversion_planning", default=None)
+_ATOM_TYPES = (type(None), bool, int, float, str, bytes)
+_DIGEST_BUFFER_BYTES = 64 << 10
 
 
 def _model_digest(model):
@@ -175,9 +177,10 @@ def _model_digest(model):
     """
     objects, indices = [model], {id(model): 0}
     digest = hashlib.sha256()
+    buffer = bytearray()
 
     def reference(value):
-        if type(value) in (type(None), bool, int, float, str, bytes):
+        if type(value) in _ATOM_TYPES:
             return ("atom", type(value).__name__, value)
         if isinstance(value, PurePath):
             return ("path", type(value).__name__, str(value))
@@ -216,9 +219,18 @@ def _model_digest(model):
         else:
             raise KbError(f"conversion model sharing does not support {kind!r}", code=3)
         data = pickle.dumps(record, protocol=5)
-        digest.update(len(data).to_bytes(8, "big"))
-        digest.update(data)
+        prefix = len(data).to_bytes(8, "big")
+        if len(buffer) + len(prefix) + len(data) > _DIGEST_BUFFER_BYTES:
+            digest.update(buffer)
+            buffer.clear()
+        if len(prefix) + len(data) > _DIGEST_BUFFER_BYTES:
+            digest.update(prefix)
+            digest.update(data)
+        else:
+            buffer.extend(prefix)
+            buffer.extend(data)
         index += 1
+    digest.update(buffer)
     return digest.digest()
 
 

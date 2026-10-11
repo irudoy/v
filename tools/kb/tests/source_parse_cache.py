@@ -9,6 +9,7 @@ root and effective adapter order partition the source preparation.
 from collections import OrderedDict
 from contextlib import contextmanager
 from contextvars import ContextVar
+from dataclasses import dataclass
 from functools import wraps
 from pathlib import Path
 import pickle
@@ -19,10 +20,22 @@ from weakref import WeakKeyDictionary
 from kb import adapters, compile, repo, store, write
 
 
+@dataclass
+class _Source:
+    text: str
+    packed: bytes
+    size: int
+    owners: int = 0
+
+
 class SourceParseCache:
+    # Scoped references consume the same budget as their shared contents.
+    REFERENCE_BYTES = 32
+
     def __init__(self, capacity=64 << 20):
         self.capacity = capacity
         self.entries = OrderedDict()
+        self.sources = {}
         self.bytes = 0
         self.hits = self.misses = self.evictions = 0
         self.scope_entries = 0
@@ -46,20 +59,33 @@ class SourceParseCache:
         key = context[:2], text
         if key in self.entries:
             self.hits += 1
-            packed, size = self.entries[key]
+            source = self.entries[key]
             self.entries.move_to_end(key)
-            return pickle.loads(packed)
+            return pickle.loads(source.packed)
         self.misses += 1
         document = tomllib.loads(text)
         packed = pickle.dumps(document, protocol=pickle.HIGHEST_PROTOCOL)
         size = len(text.encode('utf-8')) + len(packed)
-        if size <= self.capacity:
-            while self.entries and self.bytes + size > self.capacity:
-                _, (_, removed) = self.entries.popitem(last=False)
-                self.bytes -= removed
+        # Each new root/order still parses its own first request. Only exact
+        # immutable text/serialization pairs share retained storage.
+        content = (text, packed)
+        if size + self.REFERENCE_BYTES <= self.capacity:
+            while self.entries and self.bytes + self.REFERENCE_BYTES \
+                    + (0 if content in self.sources else size) > self.capacity:
+                _, removed = self.entries.popitem(last=False)
+                self.bytes -= self.REFERENCE_BYTES
+                removed.owners -= 1
+                if removed.owners == 0:
+                    del self.sources[removed.text, removed.packed]
+                    self.bytes -= removed.size
                 self.evictions += 1
-            self.entries[key] = packed, size
-            self.bytes += size
+            source = self.sources.get(content)
+            if source is None:
+                source = self.sources[content] = _Source(text, packed, size)
+                self.bytes += size
+            source.owners += 1
+            self.entries[context[:2], source.text] = source
+            self.bytes += self.REFERENCE_BYTES
         return document
 
     def stats(self):
