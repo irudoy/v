@@ -337,10 +337,8 @@ def _code(layout_id, root):
     gram = words_setting(repo.config(root))
     key = _cache_key(layout, root, gram)
     path = root / CACHE / f"{layout_id}.pickle"
-    # The collector would traverse the objects of the model on every pass
-    # while the index allocates, which slows a load several times. The index
-    # lives as long as the process, so it is frozen afterwards: later passes of
-    # the collector, such as those of a compile, skip it.
+    # Pause automatic collection while the index allocates. Restore the
+    # caller's mode after successful and failed loads.
     collecting = gc.isenabled()
     gc.disable()
     try:
@@ -359,9 +357,10 @@ def _code(layout_id, root):
         temporary.replace(path)
         return found
     finally:
-        gc.freeze()
         if collecting:
             gc.enable()
+        else:
+            gc.disable()
 
 
 def l0_digest(layout_id, root=repo.ROOT):

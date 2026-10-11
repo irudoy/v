@@ -871,8 +871,10 @@ aligned sites and function pairs that vote for it. `match.code` keeps the
 index of a layout in `.kb/cache/match/<layout>.pickle`, keyed by the L0
 manifest, the image digest, the census plan, `[match] words`, and the sources
 of the matcher and the derivations; a rebuild takes a few seconds per layout.
-A loaded index lives as long as the process and is frozen for the garbage
-collector, so that later compiles do not traverse it.
+A loaded index lives as long as the process. Loading pauses automatic garbage
+collection and restores the caller's collection mode on success and failure.
+The loader leaves the caller's frozen generation and collection thresholds
+unchanged; unrelated temporary models remain collectable.
 
 ## Graph
 
