@@ -345,6 +345,7 @@ read = "guarded"
 [[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
+check = ["uv","run","python","tools/mapkit/emit_def.py","all","--check"]
 inputs = [
     "kb/",
     "l0/",
@@ -380,7 +381,8 @@ read = "open"
 [[projection]]
 path = "defs/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B}.dtc.csv"
 generator = "uv run python tools/mapkit/dtc_projection.py --write"
-inputs = ["defs/JK08A.dtc.csv", "rom-images/roms.csv", "tools/mapkit/dtc_projection.py"]
+check = ["uv","run","python","tools/mapkit/dtc_projection.py","--check"]
+inputs = ["defs/JK08A.dtc.csv", "rom-images/", "tools/mapkit/dtc_projection.py", "tools/mapkit/rom.py", "tools/rom_sources.py", "tools/kb/src/kb/"]
 consumers = [
     "tools/mapkit/emit_def.py",
     "tools/romviz/model.py",
@@ -392,6 +394,7 @@ read = "open"
 [[projection]]
 path = "defs/JK08A.maps.csv"
 generator = "uv run python tools/maps/build_tracker.py all"
+check = ["uv","run","python","tools/maps/build_tracker.py","all","--check"]
 inputs = [
     "kb/",
     "l0/",
@@ -412,6 +415,7 @@ read = "open"
 [[projection]]
 path = "defs/1ND0A-1ME3B.census-correspondence.csv"
 generator = "uv run python tools/census_homology.py"
+check = ["uv","run","python","tools/census_homology.py","--check"]
 inputs = [
     "l0/1nd/",
     "l0/1me3b/",
@@ -421,6 +425,12 @@ inputs = [
     "rom-images/roms.csv",
     "rom-images/homology.toml",
     "tools/census_homology.py",
+    "tools/rom_homology.py",
+    "tools/rom_correspondence.py",
+    "tools/rom_sources.py",
+    "rom-images/",
+    "defs/rom-inheritance.toml",
+    "tools/kb/src/kb/",
 ]
 consumers = ["tools/tests/test_census_homology.py", "defs/README.md"]
 read = "open"
@@ -428,11 +438,13 @@ read = "open"
 [[projection]]
 path = "rom-images/homology.csv"
 generator = "uv run python tools/rom_homology.py"
+check = ["uv","run","python","tools/rom_homology.py","--check"]
 inputs = [
     "rom-images/roms.csv",
     "rom-images/homology.toml",
     "rom-images/README.md",
     "tools/rom_homology.py",
+    "rom-images/",
 ]
 consumers = ["tools/tests/test_rom_images_layout.py", "README.md"]
 read = "open"
@@ -440,6 +452,7 @@ read = "open"
 [[projection]]
 path = "refs/vendor/catalog.csv"
 generator = "uv run python tools/vendor/build_catalog.py"
+check = ["uv","run","python","tools/vendor/build_catalog.py","--check"]
 inputs = ["refs/vendor/{proecu,uprev}-maps.csv", "tools/vendor/build_catalog.py"]
 consumers = ["tools/memgraph/load_vendor.py", "tools/memgraph/load_a2l.py"]
 read = "open"
@@ -447,6 +460,7 @@ read = "open"
 [[projection]]
 path = "patches/can-telemetry-{tables.s,schema.json,identity.h}"
 generator = "uv run python patches/can_telemetry_profile.py"
+check = ["uv","run","python","patches/can_telemetry_profile.py","--check"]
 inputs = [
     "patches/can-telemetry-profile.toml",
     "patches/jk08a-runtime-reservations.toml",
@@ -454,6 +468,8 @@ inputs = [
     "patches/can_telemetry.py",
     "tools/logs/can_telemetry_schema.py",
     "tools/logs/can_telemetry.py",
+    "kb/",
+    "tools/kb/src/kb/",
 ]
 consumers = [
     "patches/can_telemetry_assembly.py",
@@ -471,6 +487,7 @@ read = "open"
 [[projection]]
 path = "patches/can-telemetry-payloads.toml"
 generator = "tools/sh-elf-run/generate-targets.sh --telemetry"
+check = ["tools/sh-elf-run/generate-targets.sh","--telemetry","--check"]
 inputs = [
     "patches/can-telemetry-layout.toml",
     "patches/can-telemetry-*.s",
@@ -505,6 +522,7 @@ read = "open"
 [[projection]]
 path = "patches/runtime-target-payloads.toml"
 generator = "tools/sh-elf-run/generate-targets.sh"
+check = ["tools/sh-elf-run/generate-targets.sh","--check"]
 inputs = [
     "patches/rom-address-profiles.toml",
     "patches/*-runtime-correspondence.csv",
@@ -549,6 +567,7 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/nissan-esm-2007-g35-sedan/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/extract_esm.py refs/nissan-esm-2007-g35-sedan"
+check = ["uv","run","python","tools/diagnostics/extract_esm.py","refs/nissan-esm-2007-g35-sedan","--check"]
 inputs = [
     "refs/nissan-esm-2007-g35-sedan/",
     "refs/diagnostics/nissan-esm-2007-g35-sedan/source_pack.toml",
@@ -561,6 +580,7 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/nissan-esm-2013-g37-sedan/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/extract_esm.py refs/nissan-esm-2013-g37-sedan --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml"
+check = ["uv","run","python","tools/diagnostics/extract_esm.py","refs/nissan-esm-2013-g37-sedan","--pack","refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml","--check"]
 inputs = [
     "refs/nissan-esm-2013-g37-sedan/",
     "refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml",
@@ -573,11 +593,14 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/rom-dtc/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/extract_rom_dtc.py"
+check = ["uv","run","python","tools/diagnostics/extract_rom_dtc.py","--check"]
 inputs = [
     "refs/diagnostics/rom-dtc/layouts.toml",
-    "rom-images/roms.csv",
+    "rom-images/",
     "tools/diagnostics/extract_rom_dtc.py",
     "tools/diagnostics/catalog.py",
+    "tools/diagnostics/check_projection.py",
+    "tools/projection_check.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -585,12 +608,15 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/public/370z-can-logger/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/import_370z_logger.py"
+check = ["uv","run","python","tools/diagnostics/import_370z_logger.py","--check"]
 inputs = [
     ".gitmodules",
     "refs/diagnostic-sources/370z-can-logger/",
     "refs/diagnostics/public/370z-can-logger/source_pack.toml",
     "tools/diagnostics/import_370z_logger.py",
     "tools/diagnostics/catalog.py",
+    "tools/diagnostics/check_projection.py",
+    "tools/projection_check.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -598,10 +624,13 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/public/obd2tools/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/import_obd2tools.py <checkout>"
+check = ["uv","run","python","tools/diagnostics/import_obd2tools.py","{VQ_OBD2TOOLS_SOURCE}","--check"]
 inputs = [
     "refs/diagnostics/public/obd2tools/source_pack.toml",
     "tools/diagnostics/import_obd2tools.py",
     "tools/diagnostics/catalog.py",
+    "tools/diagnostics/check_projection.py",
+    "tools/projection_check.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -609,12 +638,15 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/public/ecudocs-p32m/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/import_ecudocs.py"
+check = ["uv","run","python","tools/diagnostics/import_ecudocs.py","--check"]
 inputs = [
     ".gitmodules",
     "refs/diagnostic-sources/ecudocs/",
     "refs/diagnostics/public/ecudocs-p32m/source_pack.toml",
     "tools/diagnostics/import_ecudocs.py",
     "tools/diagnostics/catalog.py",
+    "tools/diagnostics/check_projection.py",
+    "tools/projection_check.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
@@ -622,11 +654,14 @@ read = "open"
 [[projection]]
 path = "refs/diagnostics/public/nissan-datatable/{*.csv,fragments.jsonl}"
 generator = "uv run python tools/diagnostics/import_nissan_datatable.py"
+check = ["uv","run","python","tools/diagnostics/import_nissan_datatable.py","--check"]
 inputs = [
     "refs/nissan-datatable/",
     "refs/diagnostics/public/nissan-datatable/source_pack.toml",
     "tools/diagnostics/import_nissan_datatable.py",
     "tools/diagnostics/catalog.py",
+    "tools/diagnostics/check_projection.py",
+    "tools/projection_check.py",
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"

@@ -6,6 +6,17 @@ stage by stage; this document describes the commands and modules that exist.
 
 ## Commands
 
+`uv run python tools/check_projection_contract.py` validates the read-only
+argument array declared for every command producer in `projections.toml`.
+`--run` executes the native projection check and every declared command check,
+then verifies that the compiler fingerprint is unchanged before publishing
+their output. It requires all source inputs before starting any checker.
+`VQ_OBD2TOOLS_SOURCE` supplies the original checkout at the importer's exact
+commit; an absent checkout blocks the complete run. `make check` validates
+these declarations and executes the comparisons with available tracked source
+packs. Its success does not establish reproduction of the missing obd2tools
+source pack.
+
 `kb gaps --catalog` lists both project features and the complete competitor
 inventory, with acceptance criteria, per-layout status and unresolved ECU
 requirements. Catalog provenance does not establish an ECU implementation.

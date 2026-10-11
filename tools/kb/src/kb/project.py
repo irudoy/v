@@ -39,8 +39,8 @@ from kb.repo import KbError
 PATH = Path("tools/kb/projections.toml")
 BENCH = Path("tools/kb/bench.toml")
 HOOK = Path("tools/kb/hook.py")
-KEYS = {"path", "generator", "stage", "inputs", "consumers", "read"}
-REQUIRED = KEYS - {"stage"}
+KEYS = {"path", "generator", "stage", "inputs", "consumers", "read", "check"}
+REQUIRED = KEYS - {"stage", "check"}
 READ = ("guarded", "open")
 # A tracked file whose first lines say this declares itself generated.
 GENERATED = re.compile(r"(?i)generated (?:by|from)|do not edit|not survive the next run")
@@ -112,7 +112,7 @@ def renderings(root, entry):
 def current(root, entry):
     """The current content of a projection that `kb` renders."""
     file, section = split(entry["path"])
-    text = (root / file).read_text(encoding="utf-8")
+    text = (root / file).read_bytes().decode("utf-8")
     if section is None:
         return text
     span = section_span(text, section)
@@ -138,13 +138,13 @@ def write(root=repo.ROOT, paths=(), check=False):
             changed = False
             for name, text in sorted(renderings(root, entry).items()):
                 path = root / name
-                if not path.is_file() or path.read_text(encoding="utf-8") != text:
+                if not path.is_file() or path.read_bytes() != text.encode("utf-8"):
                     if not check:
                         _replace(path, text)
                     changed = True
             done.append((entry["path"], changed))
             continue
-        old = (root / file).read_text(encoding="utf-8")
+        old = (root / file).read_bytes().decode("utf-8")
         span = section_span(old, section)
         if span is None:
             raise KbError(f"{file} has no markers {' '.join(markers(section))}", code=1)
@@ -195,7 +195,7 @@ def _compare(root, entry, found):
             failures.append(f"{name}: missing {fix}")
         elif name not in found:
             failures.append(f"{name}: not tracked (fix: git add {name})")
-        elif (root / name).read_text(encoding="utf-8") != text:
+        elif (root / name).read_bytes() != text.encode("utf-8"):
             failures.append(f"{name}: file: differs from its rendering {fix}")
     return failures
 

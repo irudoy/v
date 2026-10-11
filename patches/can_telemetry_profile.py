@@ -591,10 +591,10 @@ def generate(
     for path, content in outputs.items():
         if check:
             try:
-                actual = path.read_text(encoding="utf-8")
+                actual = path.read_bytes()
             except OSError:
                 actual = None
-            if actual != content:
+            if actual != content.encode("utf-8"):
                 stale.append(path)
         else:
             path.write_text(content, encoding="utf-8")

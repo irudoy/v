@@ -140,13 +140,17 @@ production renderer without replacing existing outputs:
 ```bash
 uv run python tools/mapkit/emit_def.py all --check
 uv run python tools/maps/build_tracker.py all --check
+uv run python tools/mapkit/dtc_projection.py --check
 ```
 
 Each command retains one primary read lock and read-only graph transaction
 through rendering and byte comparison. Temporary files are outside the output
 directory. Missing, changed, and unexpected projection files cause failure;
 regenerate with `make defs-generate`. `make check` runs both comparisons after
-the graph preflight. The full Python unit contract
+the graph preflight and compares the complete bytes of the relocated DTC
+registries, including CSV framing and line endings. DTC regeneration uses
+`uv run python tools/mapkit/dtc_projection.py --write`; `--check` and `--write`
+are mutually exclusive. The full Python unit contract
 also exercises XML, XDF, DTC, map-switching, and TunerPro behavior:
 
 ```bash

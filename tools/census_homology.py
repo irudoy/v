@@ -487,7 +487,7 @@ def main(argv=None):
         )
         if args.check:
             summary = validate_ledger(read_ledger(path), args.source, args.target, images)
-            if path.read_text(encoding="utf-8") != render_ledger(rows):
+            if path.read_bytes() != render_ledger(rows).encode("utf-8"):
                 raise CensusHomologyError(
                     f"{_shown(path)} differs from the ledger that "
                     f"{_shown(source_export)} and {_shown(target_export)} produce; "

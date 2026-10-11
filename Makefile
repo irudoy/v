@@ -82,6 +82,7 @@ setup:
 	$(UV) run kb sync
 
 check:
+	$(PYTHON) tools/check_projection_contract.py
 	$(PYTHON) tools/version_index.py --check
 	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/diagnostics/extract_rom_dtc.py --check
@@ -93,7 +94,7 @@ check:
 	$(PYTHON) tools/single_source.py --check
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check
-	$(PYTHON) tools/mapkit/dtc_projection.py
+	$(PYTHON) tools/mapkit/dtc_projection.py --check
 	$(PYTHON) tools/mapkit/definition_projections.py --check
 	$(PYTHON) tools/mapkit/presentation_audit.py --check
 	$(PYTHON) tools/census_homology.py --check

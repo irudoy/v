@@ -640,10 +640,10 @@ def main(argv=None):
         report = build_report()
         if args.check:
             try:
-                current = args.output.read_text(encoding="utf-8")
+                current = args.output.read_bytes()
             except OSError as error:
                 raise HomologyError(f"report not found: {args.output}") from error
-            if current != report:
+            if current != report.encode("utf-8"):
                 raise HomologyError(
                     f"{args.output}: report is stale; regenerate with "
                     f"{Path(__file__).relative_to(ROOT)}"
