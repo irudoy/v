@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
+from array import array
 from dataclasses import dataclass, fields
-from functools import lru_cache
+from functools import lru_cache, reduce
+from operator import xor
 from pathlib import Path
+import sys
 import tomllib
 
 
@@ -466,7 +469,35 @@ def _write_unsigned(data, offset, width, value):
     data[offset : offset + width] = value.to_bytes(width, "big")
 
 
+def _native_words(data, start, end, width, exclusions):
+    """Prepare current complete words without modifying the image.
+
+    Zero is neutral for both checksum operations. Exclusions therefore
+    require no per-word membership test after preparation. Other argument
+    shapes retain the scalar reader's partial-range and input behavior.
+    """
+    if (type(data) not in (bytes, bytearray)
+            or type(start) is not int or type(end) is not int
+            or type(exclusions) is not frozenset
+            or any(type(offset) is not int for offset in exclusions)
+            or not 0 <= start <= end <= len(data) or (end - start) % width):
+        return None
+    words = array('H' if width == 2 else 'I')
+    if words.itemsize != width:
+        return None
+    words.frombytes(memoryview(data)[start:end])
+    if sys.byteorder != 'big':
+        words.byteswap()
+    for offset in exclusions:
+        if start <= offset < end and (offset - start) % width == 0:
+            words[(offset - start) // width] = 0
+    return words
+
+
 def _sum16(data, start, end, exclusions=frozenset()):
+    words = _native_words(data, start, end, 2, exclusions)
+    if words is not None:
+        return sum(words) & 0xFFFF
     total = 0
     for offset in range(start, end, 2):
         if offset in exclusions:
@@ -476,6 +507,9 @@ def _sum16(data, start, end, exclusions=frozenset()):
 
 
 def _runtime32(data, start, end, exclusions=frozenset()):
+    words = _native_words(data, start, end, 4, exclusions)
+    if words is not None:
+        return reduce(xor, words, 0), sum(words) & 0xFFFFFFFF
     xor_value = 0
     sum_value = 0
     for offset in range(start, end, 4):

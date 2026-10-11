@@ -58,6 +58,11 @@ applicable to the selected image in its declared layout. Its meaning carries the
 cross-layout symbols, statuses, and analog hints. Analogs do not join meanings
 or inherit knowledge levels.
 Relations retain their origins: declared links, L0 calls, and L0 accesses.
+The snapshot selects an L0 call when both function addresses have declared
+function symbols in its layout. This is the architecture model's binding
+criterion; calls without either binding cannot form a displayed edge. The
+snapshot retains all meaning bindings, cross-layout symbols, statuses, and
+analogs. Each build reads the current graph under the same freshness check.
 A literal or a parameter is an address reference, distinct from an actual
 load or store. No citation or analog establishes a data-flow relationship.
 The details identify the home layout of shared summaries and notes when

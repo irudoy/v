@@ -136,7 +136,10 @@ def snapshot(root=repo.ROOT):
                     'RETURN a.key AS from, b.key AS to, type(r) AS kind, properties(r) AS relation')
                           if row['kind'].lower() in vocab.LINK_TYPES],
                 'calls': session.run(
+                    'MATCH (s:Kb:Symbol {kind: "fn"}) '
+                    'WITH collect([s.layout, s.address]) AS bound '
                     'MATCH (a:Kb:Function)-[:CALL]->(b:Kb:Function) '
+                    'WHERE [a.layout, a.address] IN bound AND [a.layout, b.address] IN bound '
                     'RETURN a.layout AS layout, a.address AS source, b.address AS target'),
                 'accesses': session.run(
                     'MATCH (s:Kb:Symbol)-[:AT]->(:Kb:Location)<-[a:ACCESS]-(f:Kb:Function) '

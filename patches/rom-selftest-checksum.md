@@ -13,6 +13,13 @@ supports code analysis and independent verification of ROM content.
 `jk08a_checksums.py` preserves the 7MFKAVN86 compatibility API used by the
 current builder. Component-stage tools use the same dependency order.
 
+Each checksum calculation prepares complete big-endian words from the current
+image in a separate native array. Excluded words become zero, the neutral
+operand of both SUM and XOR. The image remains unchanged, and every calculation
+reads its current bytes. Partial ranges, general buffers, and unsupported
+native word widths use the scalar reader. Independent scalar tests cover the
+registered image domains, exclusions, wraparound, and live input changes.
+
 ## 7MFKAVN86 shared layout
 
 ## SUM16
