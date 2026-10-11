@@ -320,6 +320,10 @@ def render_batch(operations):
 
 
 def _empty(value):
+    if type(value) in (str, list, dict, tuple):
+        return not value
+    if type(value) in (bool, int, float):
+        return False
     return value is None or value == "" or value == [] or value == {} or value == ()
 
 
@@ -464,14 +468,17 @@ def string_lines(text, prefix, suffix):
     close = '"""' + suffix
     words = escaped.split(" ")
     lines, current = [], [words[0]]
+    current_width = len(words[0])
     for index in range(1, len(words)):
         word = words[index]
-        width = len(" ".join(current)) + 1 + len(word)
+        width = current_width + 1 + len(word)
         if width + 2 > WIDTH and _breaks(current[-1], word):
             lines.append(current)
             current = [word]
+            current_width = len(word)
         else:
             current.append(word)
+            current_width = width
     if len(" ".join(current)) + len(close) > WIDTH:
         for cut in range(len(current) - 1, 0, -1):
             head, tail = current[:cut], current[cut:]

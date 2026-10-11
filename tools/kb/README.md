@@ -58,11 +58,17 @@ and effective adapter order; original compilers and checks execute.
 Each scope parses its own first request. Equal text and serialized values
 share immutable retained storage; every hit returns a separate document.
 Scoped references and contents consume one bounded preparation budget.
+Injection fixture checks compare the complete image before asserting the
+Boolean result. Expected corruption refusals retain a bounded explanation
+under ordinary and verbose pytest output.
 
 Canonical rendering prepares a bounded set of known-key schema traversals.
 Current values, inferred fields, nested specifications, and schema changes
 are inspected on every render. Custom schemas and changed methods retain
 their direct lookups. The renderer retains no document or check result.
+Built-in empty values use their direct container or scalar behavior, and
+wrapped strings accumulate their current line width. Comparable model values
+return exact immutable atoms directly; subclasses retain their general path.
 
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and

@@ -1802,6 +1802,8 @@ def _agree(document, props, subject):
 def _value(model, value):
     """A comparable form of a value: symbols as locations, tables as sorted
     pairs, and a kernel of `[interp]` as the key of its meaning."""
+    if type(value) in _ATOM_TYPES:
+        return value
     if isinstance(value, SymbolKey):
         return value.location
     if isinstance(value, Ref):

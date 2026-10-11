@@ -49,11 +49,15 @@ class Knowledge:
         self.refs = defaultdict(lambda: defaultdict(list))
         for row in rows.get('entity_refs', []):
             self.refs[row['from']][row['kind']].append(row['to'])
+        for groups in self.refs.values():
+            for targets in groups.values():
+                targets.sort()
         self.steps = defaultdict(list)
         for row in rows.get('steps', []):
             self.steps[row['chain']].append(row)
         self.step_refs = defaultdict(lambda: defaultdict(list))
-        for row in sorted(rows.get('step_refs', []), key=lambda row: row.get('order') or 0):
+        for row in sorted(rows.get('step_refs', []), key=lambda row:
+                          (row.get('order') or 0, row['from'], row['kind'], row['to'])):
             self.step_refs[row['from']][row['kind']].append(row['to'])
         self.links = rows.get('links', [])
         self.calls = rows.get('calls', [])
@@ -83,7 +87,7 @@ class Knowledge:
                         for key, item in sorted(self.symbols[meaning].items())],
             'statuses': sorted(self.statuses[meaning], key=lambda item: item['layout']),
             'analogs': [{**item, 'name': self.meanings[item['to']]['name']}
-                        for item in self.analogs[meaning]],
+                        for item in sorted(self.analogs[meaning], key=lambda item: item['to'])],
         }
 
     def model(self, layout, image=None):
@@ -176,7 +180,7 @@ class LayoutArchitecture(architecture_model.Architecture):
         self.ledgers = SimpleNamespace(paths={})
         self.errors, self.nodes, self.edges, self._spec_cache = [], {}, {}, {}
         self.by_meaning, self.by_symbol = {}, {}
-        for meaning, symbols in knowledge.symbols.items():
+        for meaning, symbols in sorted(knowledge.symbols.items()):
             if layout not in symbols:
                 continue
             symbol, facts = symbols[layout], knowledge.meanings[meaning]
@@ -206,6 +210,7 @@ class LayoutArchitecture(architecture_model.Architecture):
             self.by_meaning[meaning] = node_id
             self.by_symbol[symbol['key']] = node_id
         self._graph_edges()
+        self.edges = dict(sorted(self.edges.items()))
         self._index_edges()
         self.stages = [architecture_model.Stage(identifier(item['key']), item.get('title', ''),
                                                 item.get('lane', 'flow'), text(item.get('summary')))
@@ -342,5 +347,6 @@ class LayoutArchitecture(architecture_model.Architecture):
                       'source': 'kb graph', 'chainAvailability': self.chain_availability,
                       'edgeEvidence': [{'from': edge.source, 'to': edge.target,
                                         'kind': edge.kind, 'origins': sorted(edge.origins)}
-                                       for edge in self.edges.values()]})
+                                       for edge in sorted(self.edges.values(), key=lambda edge:
+                                                          (edge.source, edge.target, edge.kind))]})
         return found

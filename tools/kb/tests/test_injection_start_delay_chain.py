@@ -192,7 +192,8 @@ def verify_fixture(fixture, stock):
     for address in ALIASES:
         raw = int.from_bytes(stock[address:address + 4], 'big')
         expected[address:address + 4] = (0x01000000 + (raw & 65535)).to_bytes(4, 'big')
-    assert fixture == bytes(expected)
+    complete_match = fixture == bytes(expected)
+    assert complete_match, 'Full fixture byte equality failed'
     assert all(fixture[start:end] == expected for start, end, expected in SPANS[:3])
 
 

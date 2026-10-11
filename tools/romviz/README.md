@@ -63,6 +63,11 @@ function symbols in its layout. This is the architecture model's binding
 criterion; calls without either binding cannot form a displayed edge. The
 snapshot retains all meaning bindings, cross-layout symbols, statuses, and
 analogs. Each build reads the current graph under the same freshness check.
+Equivalent row orders produce the same bindings, derived ownership, flows,
+and edge inventories. Construction uses stable meaning and indexed-edge
+orders; unordered endpoint references, analog cards, and edge evidence have
+stable presentation orders. Declared chain-step and through-reference orders
+retain their explicit ordinal fields.
 A literal or a parameter is an address reference, distinct from an actual
 load or store. No citation or analog establishes a data-flow relationship.
 The details identify the home layout of shared summaries and notes when
