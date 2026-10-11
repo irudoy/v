@@ -1,10 +1,13 @@
 """Repository paths, the image catalog, the layouts, and the kb configuration."""
 
+from collections import OrderedDict
 from dataclasses import dataclass
 import csv
 import hashlib
 from pathlib import Path
+import pickle
 import re
+from threading import Lock
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -16,6 +19,61 @@ GHIDRA_PIN = Path("tools/ghidra/headless-analyze.sh")
 GHIDRA_SCRIPTS = Path("tools/ghidra")
 L0 = Path("l0")
 STATE = Path(".kb")
+
+
+class _ConfigurationDocuments:
+    """Bounded immutable preparation of exact configuration text.
+
+    Readers still select and read their sources on every call. Each result
+    is separate, and owner validation executes after preparation. The budget
+    counts UTF-8 source bytes and serialized documents, not object overhead.
+    """
+
+    def __init__(self, parser=tomllib.loads, capacity=64 << 20):
+        self.parser = parser
+        self.capacity = capacity
+        self.entries = OrderedDict()
+        self.bytes = 0
+        self.lock = Lock()
+
+    def loads(self, text):
+        if type(text) is not str:
+            return self.parser(text)
+        with self.lock:
+            held = self.entries.get(text)
+            if held is not None:
+                self.entries.move_to_end(text)
+        if held is not None:
+            return pickle.loads(held[0])
+        document = self.parser(text)
+        try:
+            packed = pickle.dumps(document, protocol=pickle.HIGHEST_PROTOCOL)
+        except (pickle.PicklingError, TypeError, RecursionError):
+            return document
+        try:
+            size = len(text.encode('utf-8')) + len(packed)
+        except UnicodeError:
+            return document
+        if size <= self.capacity:
+            with self.lock:
+                if text not in self.entries:
+                    while self.entries and self.bytes + size > self.capacity:
+                        _, (_, removed) = self.entries.popitem(last=False)
+                        self.bytes -= removed
+                    self.entries[text] = packed, size
+                    self.bytes += size
+                self.entries.move_to_end(text)
+        return document
+
+
+_CONFIG_DOCUMENTS = _ConfigurationDocuments()
+
+
+def _configuration_document(text):
+    # A supplied parser owns its preparation and must execute on every call.
+    if tomllib.loads is not _CONFIG_DOCUMENTS.parser:
+        return tomllib.loads(text)
+    return _CONFIG_DOCUMENTS.loads(text)
 
 
 class KbError(Exception):
@@ -81,7 +139,7 @@ def config(root=ROOT, overlay=None):
     text = overlay.get(CONFIG)
     if text is None:
         text = (root / CONFIG).read_text(encoding="utf-8")
-    document = tomllib.loads(text)
+    document = _configuration_document(text)
     if OWNER_CONFIG in overlay:
         owner_text = overlay[OWNER_CONFIG]
     elif (root / OWNER_CONFIG).is_file():
@@ -89,7 +147,7 @@ def config(root=ROOT, overlay=None):
     else:
         owner_text = None
     if owner_text is not None:
-        owners = tomllib.loads(owner_text)
+        owners = _configuration_document(owner_text)
         if (set(owners) != {'schema_version', 'names', 'reconciliation', 'source_bindings'}
                 or type(owners['schema_version']) is not int or owners['schema_version'] != 1
                 or not isinstance(owners['names'], dict)

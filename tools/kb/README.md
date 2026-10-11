@@ -48,6 +48,14 @@ it cannot override export, census, MCU, or matcher settings in `config.toml`.
 The compiler fingerprints both sources. Separating these owners keeps the
 accepted L0 producer contract independent of its review inventory.
 
+Configuration readers select and read current execution settings and owner
+declarations on every call. They reuse only immutable serialization of a
+successful TOML parse of exact source text, with a 64 MiB content budget.
+Every call returns separate documents and validates the owner schema.
+Syntax errors are not retained, and a supplied parser executes directly.
+The test-local source preparation also scopes configuration reads by root
+and effective adapter order; original compilers and checks execute.
+
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and
 its model checks within that group. Each registry keeps its own before model,

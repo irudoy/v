@@ -108,3 +108,10 @@ class SourceParseCache:
         monkeypatch.setattr(write, '_issues', issues)
         for name in ('load', 'canonical'):
             monkeypatch.setattr(store, name, rooted(getattr(store, name)))
+        original_config = rooted(repo.config)
+
+        @wraps(repo.config)
+        def configuration(root=repo.ROOT, overlay=None):
+            return original_config(root, overlay)
+
+        monkeypatch.setattr(repo, 'config', configuration)
