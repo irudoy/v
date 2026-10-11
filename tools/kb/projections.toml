@@ -584,8 +584,10 @@ read = "open"
 
 [[projection]]
 path = "refs/diagnostics/public/370z-can-logger/{*.csv,fragments.jsonl}"
-generator = "uv run python tools/diagnostics/import_370z_logger.py <checkout>"
+generator = "uv run python tools/diagnostics/import_370z_logger.py"
 inputs = [
+    ".gitmodules",
+    "refs/diagnostic-sources/370z-can-logger/",
     "refs/diagnostics/public/370z-can-logger/source_pack.toml",
     "tools/diagnostics/import_370z_logger.py",
     "tools/diagnostics/catalog.py",
@@ -606,8 +608,10 @@ read = "open"
 
 [[projection]]
 path = "refs/diagnostics/public/ecudocs-p32m/{*.csv,fragments.jsonl}"
-generator = "uv run python tools/diagnostics/import_ecudocs.py <checkout>"
+generator = "uv run python tools/diagnostics/import_ecudocs.py"
 inputs = [
+    ".gitmodules",
+    "refs/diagnostic-sources/ecudocs/",
     "refs/diagnostics/public/ecudocs-p32m/source_pack.toml",
     "tools/diagnostics/import_ecudocs.py",
     "tools/diagnostics/catalog.py",

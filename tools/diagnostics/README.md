@@ -68,8 +68,8 @@ uv run python tools/diagnostics/extract_esm.py \
   refs/nissan-esm-2013-g37-sedan \
   --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml --check
 uv run python tools/diagnostics/extract_rom_dtc.py --check
-uv run python tools/diagnostics/import_370z_logger.py \
-  /path/to/370Z-CAN-Logger --check
+uv run python tools/diagnostics/import_370z_logger.py --check
+uv run python tools/diagnostics/import_ecudocs.py --check
 ```
 
 Run the same command without `--check` only when intentionally regenerating its
@@ -77,8 +77,11 @@ tracked source projection. Review the resulting diff before graph ingestion.
 All public importers and the ROM descriptor extractor compare every rendered
 CSV/JSONL file with its existing output in `--check` mode, including missing
 and unexpected files. A failed comparison preserves all existing outputs.
-`make check` runs both ESM corpora, ROM descriptors, and the pinned
-NissanDatatable source. The latter defaults to the tracked PDF and pin in
+`make check` runs both ESM corpora, ROM descriptors, the 370Z CAN Logger and
+ecudocs corpora, and the pinned NissanDatatable source. The Git importers default
+to the source submodules in `refs/diagnostic-sources/`; `make setup` initializes
+their exact revisions. An explicit checkout must match the same pin.
+The PDF importer defaults to the tracked PDF and pin in
 `refs/nissan-datatable/`; an explicit PDF path must match the same identity.
 
 The exact JK08A service-0x22 response inventory is emitted to standard output

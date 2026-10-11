@@ -34,6 +34,7 @@ SOURCE_URL = "https://github.com/TihanPelser/370Z-CAN-Logger"
 VEHICLE_ID = "nissan-370z-z34-community"
 ECU_ID = f"{VEHICLE_ID}:ecm"
 DEFAULT_OUTPUT = REFS / "public" / "370z-can-logger"
+DEFAULT_SOURCE_ROOT = ROOT / "refs" / "diagnostic-sources" / "370z-can-logger"
 
 SOURCE_FILES = (
     "candata/consult.csv",
@@ -859,7 +860,7 @@ def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument("source_root", type=Path)
+    result.add_argument("source_root", type=Path, nargs="?", default=DEFAULT_SOURCE_ROOT)
     result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     result.add_argument("--check", action="store_true", help="validate and byte-compare outputs without writing")
     return result
@@ -869,6 +870,8 @@ def main() -> int:
     args = parser().parse_args()
     source_root = args.source_root.expanduser().resolve()
     try:
+        if source_root == DEFAULT_SOURCE_ROOT and not (source_root / ".git").exists():
+            raise CatalogError(f"{source_root}: pinned source submodule is unavailable; run make setup")
         catalog = build(source_root)
         if args.check:
             check_projection(args.output, catalog, write)

@@ -31,6 +31,7 @@ from catalog import (
 DATASET_ID = "ecudocs-p32m-997c5a9"
 REVISION = "997c5a98b4f7fe5a7dfebfeeaefce1710a11f385"
 SOURCE_URL = "https://github.com/laravelcompany/ecudocs.com"
+DEFAULT_SOURCE_ROOT = ROOT / "refs" / "diagnostic-sources" / "ecudocs"
 PROFILE_PATH = "public/ecus/N_P32M_ECM_TR25_20080313.json"
 VEHICLE_ID = "nissan-p32m-tr25-2008"
 ECU_ID = f"{VEHICLE_ID}:ecm"
@@ -368,7 +369,7 @@ def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument("source_root", type=Path)
+    result.add_argument("source_root", type=Path, nargs="?", default=DEFAULT_SOURCE_ROOT)
     result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     result.add_argument("--check", action="store_true", help="validate and byte-compare outputs without writing")
     return result
@@ -378,6 +379,8 @@ def main() -> int:
     args = parser().parse_args()
     source_root = args.source_root.expanduser().resolve()
     try:
+        if source_root == DEFAULT_SOURCE_ROOT and not (source_root / ".git").exists():
+            raise CatalogError(f"{source_root}: pinned source submodule is unavailable; run make setup")
         catalog = build(source_root)
         if args.check:
             check_projection(args.output, catalog, write)

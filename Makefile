@@ -88,6 +88,8 @@ check:
 	$(PYTHON) tools/diagnostics/extract_esm.py refs/nissan-esm-2007-g35-sedan --check
 	$(PYTHON) tools/diagnostics/extract_esm.py refs/nissan-esm-2013-g37-sedan --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml --check
 	$(PYTHON) tools/diagnostics/import_nissan_datatable.py --check
+	$(PYTHON) tools/diagnostics/import_370z_logger.py --check
+	$(PYTHON) tools/diagnostics/import_ecudocs.py --check
 	$(PYTHON) tools/single_source.py --check
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check
