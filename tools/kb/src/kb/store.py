@@ -12,6 +12,7 @@ the `canonical` check: every file equals the rendering of its parse.
 
 from collections import OrderedDict
 from dataclasses import dataclass
+from functools import lru_cache
 import os
 from pathlib import Path
 import re
@@ -246,6 +247,52 @@ def schema(kind):
     return Table(_plain(*COMMON) + KIND_KEYS[kind] + FEATURE_TABLES + ARRAYS)
 
 
+_NATIVE_SCHEMA, _NATIVE_PLAIN = schema, _plain
+_NATIVE_TABLE, _NATIVE_TABLE_INIT = Table, Table.__init__
+_NATIVE_ARRAY, _NATIVE_NAMED, _NATIVE_INLINE = Array, Named, Table.inline
+_RENDER_SCHEMAS = OrderedDict()
+
+
+def _render_schema(kind):
+    """Prepare private grammar traversals while public schemas stay separate."""
+    if (type(kind) is not str or schema is not _NATIVE_SCHEMA
+            or _plain is not _NATIVE_PLAIN or Table is not _NATIVE_TABLE
+            or Table.__init__ is not _NATIVE_TABLE_INIT
+            or Table.__getattribute__ is not object.__getattribute__
+            or Table.spec is not _TABLE_SPEC or Table.order is not _TABLE_ORDER
+            or _table is not _NATIVE_TABLE_RENDERER):
+        return schema(kind)
+    if kind in DESIGNED:
+        declared = DESIGNED[kind]
+        if type(declared) is not Table:
+            return schema(kind)
+        sources = (declared.keys, declared.sort, BOOLEAN)
+    elif kind in KIND_KEYS:
+        sources = (COMMON, KIND_KEYS[kind], FEATURE_TABLES, ARRAYS, PLAIN)
+    else:
+        return schema(kind)
+    held = _RENDER_SCHEMAS.get(kind)
+    if held is not None:
+        previous, keys, sort, table = held
+        if (len(previous) == len(sources)
+                and all(old is current for old, current in zip(previous, sources))
+                and table.keys is keys and table.sort is sort and table.inline is False
+                and 'spec' not in vars(table) and 'order' not in vars(table)):
+            _RENDER_SCHEMAS.move_to_end(kind)
+            return table
+    if kind in DESIGNED:
+        if _schema_index(declared.keys) is None or type(declared.sort) is not tuple:
+            return schema(kind)
+    elif (type(COMMON) is not tuple or any(type(name) is not str for name in COMMON)
+          or any(_schema_index(keys) is None for keys in sources[1:4])):
+        return schema(kind)
+    table = schema(kind)
+    while len(_RENDER_SCHEMAS) >= 32:
+        _RENDER_SCHEMAS.popitem(last=False)
+    _RENDER_SCHEMAS[kind] = sources, table.keys, table.sort, table
+    return table
+
+
 # Paths ---------------------------------------------------------------------
 
 
@@ -305,7 +352,7 @@ def write(root, changes):
 def render(kind, document):
     """The canonical text of an entity file of a kind."""
     lines = []
-    _table(lines, (), document, schema(kind), None)
+    _table(lines, (), document, _render_schema(kind), None)
     return "\n".join(lines) + "\n"
 
 
@@ -342,6 +389,33 @@ def _is_table(spec):
     return isinstance(spec, (Array, Named)) or (isinstance(spec, Table) and not spec.inline)
 
 
+_NATIVE_IS_TABLE = _is_table
+
+
+def _partition(order, specs):
+    if (_is_table is not _NATIVE_IS_TABLE or Table is not _NATIVE_TABLE
+            or Array is not _NATIVE_ARRAY or Named is not _NATIVE_NAMED
+            or Table.inline is not _NATIVE_INLINE
+            or Table.__getattribute__ is not object.__getattribute__):
+        return None
+    plain, nested = [], []
+    for key in order:
+        spec = specs[key]
+        kind = type(spec)
+        if kind is Table:
+            if type(spec.inline) is not bool:
+                return None
+            is_table = not spec.inline
+        elif kind in (Array, Named):
+            is_table = True
+        elif kind is str or spec is None:
+            is_table = False
+        else:
+            return None
+        (nested if is_table else plain).append(key)
+    return plain, nested
+
+
 def _table(lines, path, document, table, header):
     present = {key: value for key, value in document.items() if not _empty(value)}
     program = _table_program(table, present)
@@ -351,8 +425,12 @@ def _table(lines, path, document, table, header):
     else:
         order = [key for key, _ in program]
         specs = {key: spec or _infer(present[key]) for key, spec in program}
-    plain = [key for key in order if not _is_table(specs[key])]
-    nested = [key for key in order if _is_table(specs[key])]
+    partition = _partition(order, specs)
+    if partition is None:
+        plain = [key for key in order if not _is_table(specs[key])]
+        nested = [key for key in order if _is_table(specs[key])]
+    else:
+        plain, nested = partition
     if header is not None and (plain or header.startswith("[[")):
         if lines:
             lines.append("")
@@ -375,6 +453,9 @@ def _table(lines, path, document, table, header):
             _table(lines, inner, value, spec, f"[{_dotted(inner)}]")
 
 
+_NATIVE_TABLE_RENDERER = _table
+
+
 def _sorted(items, keys):
     if not keys:
         return list(items)
@@ -391,7 +472,17 @@ def _dotted(parts):
 
 
 def _key(name):
+    if type(name) is str and len(name) <= 128 and BARE_KEY is _NATIVE_BARE_KEY:
+        return name if _bare_key(name) else f'"{escape(name)}"'
     return name if BARE_KEY.fullmatch(name) else f'"{escape(name)}"'
+
+
+_NATIVE_BARE_KEY = BARE_KEY
+
+
+@lru_cache(maxsize=512)
+def _bare_key(name):
+    return _NATIVE_BARE_KEY.fullmatch(name) is not None
 
 
 def escape(text):
@@ -465,6 +556,21 @@ def string_lines(text, prefix, suffix):
     escaped = escape(text)
     if len(text) <= SHORT:
         return [f'{prefix}"{escaped}"{suffix}']
+    if (type(text) is str and type(escaped) is str
+            and type(prefix) is str and type(suffix) is str
+            and len(escaped) <= 1024 and len(prefix) <= 64 and len(suffix) <= 64
+            and type(WIDTH) is int and 1 <= WIDTH <= 256
+            and _breaks is _NATIVE_BREAKS and _wrap_lines is _NATIVE_WRAP_LINES):
+        return list(_string_program(escaped, prefix, suffix, WIDTH))
+    return _wrap_lines(escaped, prefix, suffix, WIDTH)
+
+
+@lru_cache(maxsize=2048)
+def _string_program(escaped, prefix, suffix, width):
+    return tuple(_wrap_lines(escaped, prefix, suffix, width))
+
+
+def _wrap_lines(escaped, prefix, suffix, limit):
     close = '"""' + suffix
     words = escaped.split(" ")
     lines, current = [], [words[0]]
@@ -472,17 +578,17 @@ def string_lines(text, prefix, suffix):
     for index in range(1, len(words)):
         word = words[index]
         width = current_width + 1 + len(word)
-        if width + 2 > WIDTH and _breaks(current[-1], word):
+        if width + 2 > limit and _breaks(current[-1], word):
             lines.append(current)
             current = [word]
             current_width = len(word)
         else:
             current.append(word)
             current_width = width
-    if len(" ".join(current)) + len(close) > WIDTH:
+    if len(" ".join(current)) + len(close) > limit:
         for cut in range(len(current) - 1, 0, -1):
             head, tail = current[:cut], current[cut:]
-            if _breaks(head[-1], tail[0]) and len(" ".join(tail)) + len(close) <= WIDTH:
+            if _breaks(head[-1], tail[0]) and len(" ".join(tail)) + len(close) <= limit:
                 lines.append(head)
                 current = tail
                 break
@@ -494,6 +600,9 @@ def string_lines(text, prefix, suffix):
 def _breaks(left, right):
     """A line may end between two words that one space separates."""
     return bool(left) and bool(right)
+
+
+_NATIVE_BREAKS, _NATIVE_WRAP_LINES = _breaks, _wrap_lines
 
 
 # The canonical check --------------------------------------------------------

@@ -12,12 +12,11 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from functools import wraps
 from pathlib import Path
-import pickle
 from types import SimpleNamespace
 import tomllib
 from weakref import WeakKeyDictionary
 
-from kb import adapters, compile, repo, store, write
+from kb import adapters, compile, repo, source_documents, store, write
 
 
 @dataclass
@@ -61,10 +60,10 @@ class SourceParseCache:
             self.hits += 1
             source = self.entries[key]
             self.entries.move_to_end(key)
-            return pickle.loads(source.packed)
+            return source_documents.thaw(source.packed)
         self.misses += 1
         document = tomllib.loads(text)
-        packed = pickle.dumps(document, protocol=pickle.HIGHEST_PROTOCOL)
+        packed = source_documents.freeze(document, native=tomllib.loads is source_documents.TOML_LOADS)
         size = len(text.encode('utf-8')) + len(packed)
         # Each new root/order still parses its own first request. Only exact
         # immutable text/serialization pairs share retained storage.

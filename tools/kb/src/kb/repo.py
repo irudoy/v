@@ -10,6 +10,8 @@ import re
 from threading import Lock
 import tomllib
 
+from kb import source_documents
+
 ROOT = Path(__file__).resolve().parents[4]
 CATALOG = Path("rom-images/roms.csv")
 HOMOLOGY = Path("rom-images/homology.toml")
@@ -44,10 +46,10 @@ class _ConfigurationDocuments:
             if held is not None:
                 self.entries.move_to_end(text)
         if held is not None:
-            return pickle.loads(held[0])
+            return source_documents.thaw(held[0])
         document = self.parser(text)
         try:
-            packed = pickle.dumps(document, protocol=pickle.HIGHEST_PROTOCOL)
+            packed = source_documents.freeze(document, native=self.parser is source_documents.TOML_LOADS)
         except (pickle.PicklingError, TypeError, RecursionError):
             return document
         try:

@@ -58,6 +58,9 @@ and effective adapter order; original compilers and checks execute.
 Each scope parses its own first request. Equal text and serialized values
 share immutable retained storage; every hit returns a separate document.
 Scoped references and contents consume one bounded preparation budget.
+Native TOML documents use the runtime's in-memory marshal encoding. Dates
+and supplied parsers retain pickle encoding, including aliases and cycles.
+Both encodings return separate mutable containers and retain float bits.
 Injection fixture checks compare the complete image before asserting the
 Boolean result. Expected corruption refusals retain a bounded explanation
 under ordinary and verbose pytest output.
@@ -69,6 +72,10 @@ their direct lookups. The renderer retains no document or check result.
 Built-in empty values use their direct container or scalar behavior, and
 wrapped strings accumulate their current line width. Comparable model values
 return exact immutable atoms directly; subclasses retain their general path.
+Private root schemas and string wrapping programs have bounded retention.
+Current grammar identities, classifiers, escaping and line widths select the
+rendering path; mutable declarations and changed callbacks execute directly.
+Public schemas remain independent of the renderer's private preparation.
 
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and
@@ -81,6 +88,9 @@ an iterative traversal of values and shared references, including cycles.
 The digest streams the same length-prefixed protocol-5 records through a
 bounded byte buffer; large records pass directly to the hasher. Its accepted
 packet hashes and current-state mutation contracts are gated.
+Ledger evidence requests the current manual prefixes only when its recognizer
+iterates them. Registry, trace, hardware and arithmetic terminals retain their
+own recognition paths without reading unused prefixes.
 
 ```bash
 uv run kb sync                       # compile, draw names of new symbols, load the graph

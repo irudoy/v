@@ -759,9 +759,12 @@ class Conversion:
             return dict(found[0])
         return None
 
+    def _manual_prefixes(self):
+        yield from repo.config(self.root).get("tokens", {}).get("manual", ())
+
     def _ledger_item(self, symbol, registry, row, token, supports=None):
         """Type one terminal without inventing a byte binding or a scale."""
-        manual = repo.config(self.root).get("tokens", {}).get("manual", ())
+        manual = self._manual_prefixes()
         if token.role == "trace":
             to = self.facts.resolve(symbol.layout, token.address, tokens.TARGET_KINDS["trace"],
                                     ledgers.PATHS[registry].as_posix())
