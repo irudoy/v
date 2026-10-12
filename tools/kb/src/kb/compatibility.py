@@ -6,16 +6,18 @@ stale generated files in the working tree cannot supply graph facts.
 """
 
 from contextlib import contextmanager, redirect_stdout
+from dataclasses import asdict
 import csv
 import io
 import hashlib
+import json
 from pathlib import Path
 import sys
 import subprocess
 import tempfile
 import time
 
-from kb import repo
+from kb import compatibility_state as state, repo
 
 REFERENCE = Path('defs/reference/Pytrex-NissanDefinitions')
 A2L = REFERENCE / 'Nissan Definitions/A2L.xml'
@@ -35,6 +37,16 @@ EXTERNAL = (
     'tools/memgraph/docker-compose.yml',
     'refs/vendor/catalog.csv', 'refs/vendor/facts.csv',
 )
+FRAMEWORK = (
+    'tools/kb/src/kb/compatibility.py', 'tools/kb/src/kb/compatibility_state.py',
+    'tools/memgraph/docker-compose.yml', 'pyproject.toml', 'uv.lock',
+)
+CORPUS_CODE = ('tools/memgraph/ingest_diagnostics.py', 'tools/diagnostics/catalog.py')
+EXTERNAL_CODE = ('tools/memgraph/load_vendor.py', 'tools/memgraph/load_a2l.py')
+ROM_CODE = tuple(path for path in MODULES if path not in CORPUS_CODE + EXTERNAL_CODE) + (
+    'tools/kb/src/kb/l0.py', 'tools/kb/src/kb/repo.py',
+)
+ROM_LABELS = ('DiagnosticBinding', 'Map', 'Axis', 'Interp', 'Reg', 'Func')
 
 
 def inputs(root=repo.ROOT):
@@ -146,21 +158,144 @@ def empty_views(paths, code):
         path.write_text(','.join(fields) + '\n', encoding='utf-8')
 
 
+def producer_files(root, code):
+    return [(f'producer:{name}', root / name) for name in FRAMEWORK + code]
+
+
+def group_inputs(files, values, code):
+    return state.Inputs(files, values,
+                        tuple(f'producer:{name}' for name in FRAMEWORK + code))
+
+
+def corpus_inputs(root):
+    def files():
+        found = producer_files(root, CORPUS_CODE)
+        directory = root / 'refs/diagnostics'
+        found.extend((f'corpus:{path.relative_to(directory).as_posix()}', path)
+                     for path in sorted(directory.rglob('*'))
+                     if path.is_file() and path.suffix in ('.toml', '.csv', '.jsonl'))
+        return found
+    return group_inputs(files, {'scope': 'diagnostic corpus'}, CORPUS_CODE)
+
+
+def external_inputs(root):
+    files = producer_files(root, EXTERNAL_CODE)
+    files.extend((name, root / name) for name in
+                 ('.gitmodules', A2L.as_posix(), 'refs/vendor/catalog.csv', 'refs/vendor/facts.csv'))
+    return group_inputs(tuple(files),
+                        lambda: {'family': 'HR', 'reference_commit': check_reference(root)},
+                        EXTERNAL_CODE)
+
+
+def rom_inputs(root, builders, rom, layout, source, declared, paths, names_path,
+               census, registry, corpus_digest, original_paths):
+    """Bind physical L0/images and logical, current-model catalog views."""
+    files = producer_files(root, ROM_CODE)
+    files.extend((name, root / name) for name in
+                 ('defs/rom-inheritance.toml', repo.CATALOG.as_posix()))
+    outdir = root / repo.L0 / layout.id
+    files.extend((f'l0:{layout.id}/{name}', outdir / name)
+                 for name in ('funcs.csv', 'calls.csv', 'xrefs.csv'))
+    files.append((f'names:{layout.id}', names_path))
+    files.extend((f'catalog:{label}', paths[label])
+                 for label in ('Func', 'Reg', 'Map', 'Axis', 'DiagnosticBinding'))
+    if census:
+        files.append(('interpolation', registry))
+    catalog = repo.images(root)
+    for image in sorted({rom, source.source}):
+        files.append((f'image:{image}', catalog[image].path))
+    def current_files():
+        found = list(files)
+        if census:
+            # The builder also refuses extra census filenames. Bind and capture
+            # their complete inventory, rather than selecting only declared cores.
+            selected = set(outdir.glob('accessors.*.csv'))
+            selected.update(Path(builders['maps'].census_path(outdir, entry['kernel']))
+                            for entry in builders['maps'].read_registry(registry))
+            found.extend((f'census:{layout.id}/{path.name}', path) for path in sorted(selected))
+        return found
+    def values():
+        return dict(rom=rom, layout=layout.id, source=asdict(source), census=census,
+                    catalogs={label: path.relative_to(root).as_posix()
+                              for label, path in declared.items()},
+                    image_paths={image: catalog[image].path.relative_to(root).as_posix()
+                                 for image in sorted({rom, source.source})},
+                    presence={label: path.exists() for label, path in original_paths.items()},
+                    diagnostic_corpus=corpus_digest)
+    return group_inputs(current_files, values, ROM_CODE)
+
+
+def rom_destinations(captured):
+    values = json.loads(captured.arguments)
+    found = {name: name for name in ('defs/rom-inheritance.toml', repo.CATALOG.as_posix())}
+    for name, data in captured.files:
+        if name.startswith('l0:'):
+            found[name] = repo.L0 / name.removeprefix('l0:')
+        elif name.startswith('census:'):
+            found[name] = repo.L0 / name.removeprefix('census:')
+        elif name.startswith('names:'):
+            found[name] = f'tools/ghidra/symbols/{name.removeprefix("names:")}.csv'
+        elif name.startswith('catalog:'):
+            found[name] = values['catalogs'][name.removeprefix('catalog:')]
+        elif name.startswith('image:'):
+            found[name] = values['image_paths'][name.removeprefix('image:')]
+        elif name == 'interpolation':
+            found[name] = values['census']['interp']
+    return found
+
+
+def clear_rom(graph, rom):
+    """Remove only this cohort's outputs, including absent optional stages."""
+    for label in ROM_LABELS:
+        graph.run(f'MATCH (n:{label} {{rom:$rom}}) DETACH DELETE n', rom=rom)
+    graph.run('MATCH (r:Rom {id:$rom})-[e:ANNOTATIONS_FROM]->() DELETE e', rom=rom)
+    graph.run('MATCH (r:Rom {id:$rom}) REMOVE r.annotation_source, r.source_kind, '
+              'r.source_evidence, r.target_sha256, r.source_sha256, r.source_ranges', rom=rom)
+
+
+def existing_roms(graph):
+    query = ' UNION '.join(f'MATCH (n:{label}) RETURN DISTINCT n.rom AS rom'
+                           for label in ROM_LABELS)
+    return {row['rom'] for row in graph.run(query) if row['rom'] is not None}
+
+
 def load(graph, model, root=repo.ROOT, log=print):
-    """Build every retained layer before the primary loader publishes Meta."""
+    """Reuse complete exact-input cohorts before publishing overall Meta."""
     check_reference(root)
     builders = modules(root)
+    completed = state.Completed(graph, log)
     summary = {}
     def run(name, function, *args):
         started = time.monotonic()
+        state.progress(log, f'graph layer: {name} loading')
         with redirect_stdout(io.StringIO()):
             result = function(graph.driver, *args)
         summary[name] = (result or {}, time.monotonic() - started, {})
-        log(f'graph layer: {name} complete')
+        state.progress(log, f'graph layer: {name} complete ({summary[name][1]:.1f} s)')
 
-    run('diagnostic corpus', builders['diagnostics'].load, root / 'refs/diagnostics')
+    # Even a missing corpus checkpoint with unchanged bytes requires rebuilding
+    # the corpus. Its builder deletes every ROM's DiagnosticBinding nodes.
+    corpus = corpus_inputs(root)
+    def build_corpus(captured):
+        destinations = {name: Path('refs/diagnostics') / name.removeprefix('corpus:')
+                        for name, data in captured.files if name.startswith('corpus:')}
+        with captured.tree(root, destinations) as frozen:
+            run('diagnostic corpus', builders['diagnostics'].load, frozen / 'refs/diagnostics')
+    completed.run('diagnostic corpus', corpus,
+                  build_corpus,
+                  kind='corpus', invalidates=completed.roms())
+    corpus_digest = corpus.digest()
     with views(model, root) as projected:
         sources = builders['sources']
+        wanted = {f'rom:{rom}' for layout in model.layouts.values() for rom in layout.images}
+        retired = existing_roms(graph) - {key.removeprefix('rom:') for key in wanted}
+        for key in completed.roms():
+            if key not in wanted:
+                rom = completed.records[key]['rom']
+                completed.invalidate(key)
+                retired.add(rom)
+        for rom in sorted(retired):
+            clear_rom(graph, rom)
         for layout in model.layouts.values():
             for rom in layout.images:
                 outdir = root / repo.L0 / layout.id
@@ -169,10 +304,10 @@ def load(graph, model, root=repo.ROOT, log=print):
                 declared = sources.definition_paths(source, root)
                 paths = {label: selected_path(projected, path, root)
                          for label, path in declared.items()}
-                run(f'{rom} functions', builders['functions'].load, rom, outdir,
-                    curated_names(projected, layout.id, root))
-                run(f'{rom} accesses', builders['accesses'].load, rom, outdir)
+                original_paths = dict(paths)
+                names_path = selected_path(projected, root / f'tools/ghidra/symbols/{layout.id}.csv', root)
                 census = model.config.get('l0', {}).get('census', {}).get(layout.id)
+                registry = None
                 if census:
                     registry = selected_path(projected, root / census['interp'], root)
                     if census['interp'] not in projected:
@@ -183,19 +318,49 @@ def load(graph, model, root=repo.ROOT, log=print):
                         if not paths[label].exists():
                             paths[label] = registry.parent / f'{source.source}.{label}.empty.csv'
                     empty_views(paths, builders['code'])
-                    run(f'{rom} maps', builders['maps'].load, rom, outdir, registry,
-                        paths['Map'], paths['Axis'], root)
                 if paths['Func'].exists():
                     missing = [label for label in ('Reg', 'Map', 'Axis')
                                if not paths[label].exists()]
                     if missing:
                         raise repo.KbError(f'{rom}: reviewed catalog lacks {missing}', code=3)
-                    run(f'{rom} claims', builders['code'].load, rom, paths, root)
-                if paths['DiagnosticBinding'].exists():
-                    run(f'{rom} bindings', builders['bindings'].load, rom,
-                        paths['DiagnosticBinding'], root)
-    run('vendor vocabulary', builders['vendor'].load, 'HR',
-        root / 'refs/vendor/catalog.csv', root / 'refs/vendor/facts.csv')
-    run('reference A2L', builders['a2l'].load, root / A2L, 'HR',
-        root / 'refs/vendor/catalog.csv')
+                inputs = rom_inputs(root, builders, rom, layout, source, declared, paths,
+                                    names_path, census, registry, corpus_digest, original_paths)
+
+                def build_rom(captured):
+                    arguments = json.loads(captured.arguments)
+                    with captured.tree(root, rom_destinations(captured)) as frozen:
+                        actual = sources.resolve(rom, frozen / 'defs/rom-inheritance.toml')
+                        if json.loads(json.dumps(asdict(actual))) != arguments['source']:
+                            raise repo.KbError(f'{rom}: captured inheritance differs from the plan', code=6)
+                        actual_images = repo.images(frozen)
+                        if any(actual_images[image].path.relative_to(frozen).as_posix() != path
+                               for image, path in arguments['image_paths'].items()):
+                            raise repo.KbError(f'{rom}: captured image paths differ from the plan', code=6)
+                        sources.verify_image_binding(actual, frozen / repo.CATALOG)
+                        selected = {label: frozen / path for label, path in arguments['catalogs'].items()}
+                        directory = frozen / repo.L0 / layout.id
+                        clear_rom(graph, rom)
+                        run(f'{rom} functions', builders['functions'].load, rom, directory,
+                            curated_names({}, layout.id, frozen))
+                        run(f'{rom} accesses', builders['accesses'].load, rom, directory)
+                        if arguments['census']:
+                            run(f'{rom} maps', builders['maps'].load, rom, directory,
+                                frozen / arguments['census']['interp'], selected['Map'], selected['Axis'], frozen)
+                        if selected['Func'].exists():
+                            run(f'{rom} claims', builders['code'].load, rom, selected, frozen)
+                        if selected['DiagnosticBinding'].exists():
+                            run(f'{rom} bindings', builders['bindings'].load, rom,
+                                selected['DiagnosticBinding'], frozen)
+
+                completed.run(f'rom:{rom}', inputs, build_rom, kind='rom', rom=rom)
+
+    def build_external(captured):
+        destinations = {name: name for name, data in captured.files if not name.startswith('producer:')}
+        with captured.tree(root, destinations) as frozen:
+            run('vendor vocabulary', builders['vendor'].load, 'HR',
+                frozen / 'refs/vendor/catalog.csv', frozen / 'refs/vendor/facts.csv')
+            run('reference A2L', builders['a2l'].load, frozen / A2L, 'HR',
+                frozen / 'refs/vendor/catalog.csv')
+    completed.run('external vocabularies', external_inputs(root),
+                  build_external, kind='external')
     return summary

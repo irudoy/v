@@ -20,13 +20,13 @@ import re
 import time
 
 import kb
-from kb import compile, fingerprint, instance, l0graph, lock, names, repo, retirement
+from kb import compatibility_state, compile, fingerprint, instance, l0graph, lock, names, repo, retirement
 from kb.model import SymbolKey
 from kb.values import properties
 
 BATCH = 5000
 LABELS = ("Meta", "Family", "Layout", "Image", "Meaning", "Symbol", "Entity", "Step", "Retired",
-          "Function", "Location", "Candidate")
+          "Function", "Location", "Candidate", compatibility_state.LABEL)
 INDEXES = (
     ("Symbol", ("layout", "address")),
     ("Symbol", ("name",)),

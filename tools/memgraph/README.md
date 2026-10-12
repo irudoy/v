@@ -87,6 +87,16 @@ covers the layer code, diagnostic corpus, external vocabularies, inheritance
 registry, pinned A2L bytes, and their owned knowledge sources. The compiler
 publishes Meta after all layers pass and the input fingerprint still matches.
 A failed layer leaves Meta absent, so isolated readers refuse the partial graph.
+Exact-input `CompatibilityState` records retain completed independent groups
+across a failed sync or a change to the common compiler fingerprint. Each ROM's
+coupled layer sequence reloads as a unit; vendor vocabulary and A2L reload
+together. Corpus replacement invalidates all dependent ROM records before its
+builder removes diagnostic bindings. A record is written only after the whole
+group passes a second input check. Builders consume private, read-only copies
+of captured bytes; restoration of a temporarily modified working file cannot
+change those inputs. The complete census filename inventory is captured so
+unexpected files retain the map builder's refusal. `kb sync --full`
+reconstructs every group.
 Separate loader commands refuse writes and direct callers to `kb sync`.
 JK03A receives canonical semantic annotations through
 `defs/rom-inheritance.toml` and reads the L0 of layout `7mfk`, but retains its

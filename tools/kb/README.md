@@ -893,6 +893,32 @@ compatibility layers retain their established node and relationship contracts
 for definition, map, diagnostic, and provenance consumers. A complete build
 writes `Meta` last, and a failed layer leaves no accepted fingerprint.
 
+Compatibility completion is independent of `Meta`. Each ROM is one coupled
+group: functions, memory accesses, maps, reviewed claims, and diagnostic
+bindings. A group reloads when the exact bytes or presence of its L0 files,
+images, logical current-model views, complete census inventory, source model,
+curated names, diagnostic corpus, or producer modules change. Temporary view
+directory names and the common compiler fingerprint do not identify a group.
+The external vendor vocabulary and pinned A2L form one group.
+
+`CompatibilityState` records completion only after every builder in its group
+returns and a second exact-input check passes. Its record is removed before
+destructive writes. A failed build retains completed independent groups for
+the next sync, while `Meta` remains absent. Rebuilding the diagnostic corpus
+invalidates every ROM completion before deleting shared diagnostic bindings,
+including a rebuild caused only by a missing corpus completion record.
+`kb sync --full` clears completion records and reconstructs every group.
+Group and layer progress reports loading, completion, and reuse immediately.
+
+Builders read private, read-only byte copies of every data input, with the
+same logical directory structure and without links to working files. The
+completion digest binds those consumed copies and captured arguments. A
+temporary working-file mutation followed by restoration cannot change a
+builder's inputs. The entire census filename inventory is captured, including
+unexpected files that the map builder must refuse. Final checks still compare
+the working inputs and the common fingerprint before accepting completion
+and publishing `Meta`.
+
 | Part | Elements | Reloads when |
 |---|---|---|
 | L0 of a layout | `Function`, `Location`, `CALL`, and `ACCESS` with producer `l0` or `derived` | the digest of its L0 files, its images, the address spaces of its MCU, or the modules `derive`, `l0graph`, `sh2`, and `values` changes |
