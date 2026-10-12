@@ -16,6 +16,9 @@ tmp/
 *.tmp
 *.log
 
+# Persistent local measurements, receipts, and experiment archives.
+/local-results/
+
 # ── Python ─────────────────────────────────────────────────────
 # Interpreter bytecode cache; recreated on import.
 __pycache__/
