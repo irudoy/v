@@ -11,6 +11,7 @@ from pathlib import Path
 import tomllib
 
 from kb import adapters, names, repo
+from kb.allocation import allocation_phase
 from kb.model import Builder, SymbolKey
 
 SCHEMA = 1
@@ -90,6 +91,7 @@ def builder_of(root=repo.ROOT, overlay=None):
     return builder
 
 
+@allocation_phase
 def build(root=repo.ROOT, overlay=None, order=None):
     """The model of the working tree, with the entity files and `kb/names.csv`
     of `overlay` ({repository path: text, or None}) in place of those on

@@ -156,6 +156,7 @@ import sys
 from types import MemberDescriptorType
 
 from kb import adapters, compile, fingerprint, graph, lock, match, repo, sites, store, tokens, write
+from kb.allocation import allocation_phase
 from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides, profiles,
                          signals, telemetry)
 from kb.model import Ref, SymbolKey
@@ -168,6 +169,7 @@ _ATOM_TYPES = (type(None), bool, int, float, str, bytes)
 _DIGEST_BUFFER_BYTES = 64 << 10
 
 
+@allocation_phase
 def _model_digest(model):
     """Hash every model value and shared reference without recursive traversal.
 

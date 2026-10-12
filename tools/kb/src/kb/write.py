@@ -84,6 +84,7 @@ import weakref
 from kb import (checks, compile, graph, ledger_projection, lock, match, names, refs, repo,
                 store, tokens, vocab)
 from kb.adapters import files as file_adapter
+from kb.allocation import allocation_phase
 from kb.model import MEANING_REF, Meaning, Symbol, SymbolKey
 from kb.repo import KbError
 
@@ -1920,6 +1921,7 @@ def _selection(model, key, registry, order, item):
     return path, marker
 
 
+@allocation_phase
 def _issues(model):
     """{(check, subject, message): issue} of model checks, disagreements,
     and rejected chain notes, computed once per model."""

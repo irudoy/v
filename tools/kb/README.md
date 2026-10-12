@@ -88,6 +88,14 @@ an iterative traversal of values and shared references, including cycles.
 The digest streams the same length-prefixed protocol-5 records through a
 bounded byte buffer; large records pass directly to the hasher. Its accepted
 packet hashes and current-state mutation contracts are gated.
+Independent model construction, complete model digests and writer model checks
+pause automatic collection for one synchronous allocation phase. Each phase
+restores the caller's collection mode on success and failure, including nested
+calls. A shared reentrant lock serializes these phases across threads before
+reading the caller's mode. Collection thresholds and the caller's frozen
+generation stay fixed;
+ordinary collection can release temporary model cycles after the phase.
+These phases retain no model or check result beyond their existing owners.
 Ledger evidence requests the current manual prefixes only when its recognizer
 iterates them. Registry, trace, hardware and arithmetic terminals retain their
 own recognition paths without reading unused prefixes.
