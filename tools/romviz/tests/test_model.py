@@ -21,6 +21,12 @@ REGISTERED_ROMS = (
 )
 
 
+@pytest.fixture(scope="module")
+def architecture_cache():
+    """Share a graph snapshot while each read-only test builds a fresh ROM model."""
+    return {}
+
+
 def test_dimension_contract():
     assert model._dimension("1D-16") == (16, 1)
     assert model._dimension("4x3") == (4, 3)
@@ -69,9 +75,9 @@ def test_all_models_build_with_exact_registered_identities():
         assert by_id[rom_id]["counts"]["maps"] == 134
 
 
-def test_1me3b_model_carries_definition_structure_and_checksum_layers():
+def test_1me3b_model_carries_definition_structure_and_checksum_layers(architecture_cache):
     """The Branch D image publishes its projection beside its own structure."""
-    rom = model.build_rom_model(model.resolve_manifest("1ME3B"))
+    rom = model.build_rom_model(model.resolve_manifest("1ME3B"), architecture_cache)
 
     assert rom["size"] == 0x180000
     assert rom["metadata"]["ECU ID"] == "11ME3B"
@@ -151,12 +157,12 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
 
 
 @pytest.mark.parametrize("rom_id", REGISTERED_ROMS)
-def test_every_registered_rom_carries_its_dtc_registry(rom_id):
+def test_every_registered_rom_carries_its_dtc_registry(rom_id, architecture_cache):
     """The DTC layer precedes analysis, so no target leaves it undeclared."""
     manifest = model._load_manifest(model.resolve_manifest(rom_id))
     registry = manifest["dtc"]
     rows = model._read_csv(model._repo_path(registry))
-    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    rom = model.build_rom_model(model.resolve_manifest(rom_id), architecture_cache)
     by_id = {item["id"]: item for item in rom["objects"]}
 
     assert rows
@@ -170,8 +176,8 @@ def test_every_registered_rom_carries_its_dtc_registry(rom_id):
             assert row["dtc"] in item["label"]
 
 
-def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
-    rom = model.build_rom_model(model.resolve_manifest("JK78C"))
+def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK78C"), architecture_cache)
     by_id = {item["id"]: item for item in rom["objects"]}
 
     assert rom["metadata"]["ECU ID"] == "1JK78C"
@@ -215,8 +221,8 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
 
-def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
-    rom = model.build_rom_model(model.resolve_manifest("JK08A"))
+def test_jk08a_model_covers_reviewed_sources_and_composed_patches(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
 
     assert rom["size"] == 0x100000
     assert rom["reviewedFunctions"] == 708
@@ -237,8 +243,8 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     assert by_id["checksum-field:sum16_a"]["start"] == 0x8200
 
 
-def test_jk08a_object_ids_and_ranges_are_valid():
-    rom = model.build_rom_model(model.resolve_manifest("JK08A"))
+def test_jk08a_object_ids_and_ranges_are_valid(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     ids = [item["id"] for item in rom["objects"]]
 
     assert len(ids) == len(set(ids))
@@ -247,8 +253,8 @@ def test_jk08a_object_ids_and_ranges_are_valid():
 
 
 @pytest.mark.parametrize("rom_id", ("1ND0A", "1ND3B"))
-def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
-    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest(rom_id), architecture_cache)
     maf_factor = next(
         item
         for item in rom["objects"]
@@ -326,8 +332,8 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
     }
 
 
-def test_exact_family_materializes_only_explicit_target_tokens():
-    rom = model.build_rom_model(model.resolve_manifest("JK00A"))
+def test_exact_family_materializes_only_explicit_target_tokens(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK00A"), architecture_cache)
     switch = next(
         item
         for item in rom["objects"]
@@ -344,9 +350,9 @@ def test_exact_family_materializes_only_explicit_target_tokens():
     (("JK00C", 0x0B7BE, 0x0B6BE), ("JK00D", 0x0B7CE, 0x0B6CE)),
 )
 def test_relocated_definitions_use_target_map_addresses(
-    rom_id, intake_address, exhaust_address
+    rom_id, intake_address, exhaust_address, architecture_cache
 ):
-    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    rom = model.build_rom_model(model.resolve_manifest(rom_id), architecture_cache)
     intake = next(
         item
         for item in rom["objects"]
@@ -376,8 +382,8 @@ def test_relocated_definitions_use_target_map_addresses(
     assert any(item["id"] == "checksum-field:sum16_a" for item in rom["objects"])
 
 
-def test_map_and_axis_extents_are_derived_from_geometry():
-    rom = model.build_rom_model(model.resolve_manifest("JK08A"))
+def test_map_and_axis_extents_are_derived_from_geometry(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     by_id = {item["id"]: item for item in rom["objects"]}
 
     exhaust_cvtc_target = by_id["map:0000b33a"]
@@ -412,15 +418,15 @@ def test_generated_document_is_self_contained(tmp_path):
     assert payload["roms"][0]["objects"]
 
 
-def test_telemetry_layout_is_labeled_composed():
-    rom = model.build_rom_model(model.resolve_manifest("JK08A"))
+def test_telemetry_layout_is_labeled_composed(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     telemetry = [item for item in rom["objects"] if item["patch"] == "can-telemetry"]
     assert telemetry
     assert {item["patchStatus"] for item in telemetry} == {"composed"}
 
 
-def test_custom_map_copies_remain_visible_as_patch_allocations_and_maps():
-    rom = model.build_rom_model(model.resolve_manifest("JK08A"))
+def test_custom_map_copies_remain_visible_as_patch_allocations_and_maps(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     custom_maps = [item for item in rom["objects"] if item["kind"] == "custom-map"]
     patch_copies = [item for item in rom["objects"] if item["kind"] == "patch-map-copy"]
 
