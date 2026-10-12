@@ -9,6 +9,10 @@ from kb import compatibility, fingerprint, graph
 from kb.repo import KbError
 
 
+def test_group_framework_inputs_are_covered_by_common_freshness():
+    assert set(compatibility.FRAMEWORK) <= set(fingerprint.inputs())
+
+
 @pytest.mark.parametrize('failure', ['loader', 'changed-source', None])
 def test_freshness_is_published_only_after_complete_exact_construction(monkeypatch, failure):
     events = []

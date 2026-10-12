@@ -30,6 +30,8 @@ def inputs(root=repo.ROOT):
     """Every input path of the compiler: the model inputs, the L0 of every
     layout, and the images of the catalog."""
     found = set(compile.inputs(root))
+    from kb import compatibility
+    found.update(compatibility.FRAMEWORK)
     for layout in repo.layouts(root):
         base = root / repo.L0 / layout
         found.update(path.relative_to(root).as_posix()
