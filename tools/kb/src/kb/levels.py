@@ -421,10 +421,14 @@ def analyze(model):
     grounded = {}
     for claim in claims:
         best = ranks[claim.symbol.key][0] if claim.symbol is not None else -1
+        from kb import test_evidence
+        if claim.name != 'identity' and test_evidence.identity_only(claim.symbol):
+            # This witness proves only its registered image-scanning identity.
+            best = -1
         for symbol, item in claim.items:
             if id(item) in failed or item.get("supports") == "homology":
                 continue
-            best = max(best, match.rank(item, symbol, model))
+            best = max(best, match.rank(item, symbol, model, claim))
         grounded[id(claim)] = best
     changed = True
     while changed:

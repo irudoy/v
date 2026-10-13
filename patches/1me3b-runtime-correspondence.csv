@@ -57,7 +57,7 @@ map_symbol,fuel_compensation_lookup,000261f0,000298b4,,,mapped,Both target acces
 map_symbol,idle_ignition_lookup,00026370,0002a9f4,,,mapped,Both target idle literal-pool hooks share this lookup
 map_symbol,ignition_coordinator_config_byte,,00008a7d,,,target-specific,Stock value 0x1c sets bit 3 and the ignition coordinator 0x797cc selects every surface by the state code alone
 map_symbol,ignition_lookup,00026230,00029ba8,,,mapped,Target ignition hooks share this lookup
-map_symbol,ignition_unreferenced_routine,,000791a4,,,target-specific,Second coordinator copy 000791a4..000797cb has no inbound pointer or branch in the occupied image and keeps its private lookup literals stock
+map_symbol,ignition_unreferenced_routine,,000791a4,,,target-specific,Stock-image scan for region 000791a4..000797cb rejects aligned inbound pointer values in occupied bytes and direct PC-relative branches from outside the region to entry 000791a4.
 map_symbol,rev_fuel_cut_delay,,fffe94e2,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008b40
 map_symbol,rev_fuel_cut_selector,,fffe80e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,fffe948a,,,target-specific,Bits 0x04 and 0x08 retain the armed and active hysteresis state

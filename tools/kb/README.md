@@ -89,6 +89,27 @@ a cache reset, while nested, method and async definitions retain their AST
 scope. This checks definition existence without executing the function; it
 does not establish a collected passing test or execution grounding.
 
+The registered 1ME3B image-scan TEST witness additionally requires a local
+qualified execution receipt to award code grounding. Its scope covers aligned
+pointer values in occupied bytes and direct PC-relative branches to the region
+entry. Interior control flow and private lookup-literal preservation remain
+unverified. Unregistered TEST items retain their legacy, unqualified behavior.
+Definition inspection and model construction do not require a receipt.
+
+Ordinary pytest hooks optionally write a candidate through
+`--kb-test-candidate=<path>` for the exact registered case. The candidate binds
+actual collection, parameters and terminal phases, the explicit supported
+facts, the captured profile preparation, consumed image bytes, current source
+inputs and portable public model values. A candidate is not a completed
+execution receipt. The bounded runner's actual process exit and stream hashes
+are supplied to `uv run python -m kb.test_evidence <candidate> --process
+<process.json> --stdout <stdout> --stderr <stderr>` after the process finishes.
+The finalizer validates the candidate's terminal-output hash before atomically
+publishing `.kb/test-receipts/1me3b-image-scan.json`. A failed invocation retains
+an earlier qualified record. Receipt and terminal bytes, source inputs, model
+values and exact identity-claim scope are checked again on reuse in both
+grounding paths; mismatches supply no CODE. Checking does not execute the case.
+
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and
 its model checks within that group. Each registry keeps its own before model,

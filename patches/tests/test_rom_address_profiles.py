@@ -239,7 +239,7 @@ def test_1nd_ignition_state_storage_mutation_is_rejected(
         rom_address_profiles.load_registry(registry)
 
 
-def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles):
+def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles, execution_witness):
     images = rom_homology.load_images()
     profile = profiles["1ME3B"]
     routine = profile.ignition_unreferenced_routine
@@ -263,3 +263,5 @@ def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles):
         match="enters the unreferenced ignition routine",
     ):
         rom_address_profiles.validate_stock_profile(profile, branched)
+    from kb import test_evidence
+    execution_witness(profiles, images, test_evidence.facts())

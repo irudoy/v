@@ -990,7 +990,7 @@ VERIFIERS = {
 
 # Grounding.
 
-def rank(item, symbol=None, model=None):
+def rank(item, symbol=None, model=None, claim=None):
     """The level rank that an evidence item of `symbol` grounds: its kind's
     level, `code` for `manual` identity evidence of a `reg` symbol from the
     hardware manual of the MCU, and at most `candidate` for a counted match
@@ -1000,6 +1000,10 @@ def rank(item, symbol=None, model=None):
     if level is None:
         return -1
     found = vocab.LEVEL_RANK[level]
+    if kind == 'test':
+        from kb import test_evidence
+        if test_evidence.failure(item, symbol, model, claim) is not None:
+            return -1
     if (kind == "manual" and symbol is not None and symbol.kind == "reg"
             and item.get("supports", "identity") == "identity"
             and mcu_manual(model, item.get("key"))):
@@ -1020,7 +1024,7 @@ def _anchor(model, symbol, failures):
     best = -1
     for item in symbol.evidence:
         if (item.get("supports", "identity") != "identity"
-                or rank(item, symbol, model) <= best):
+                or rank(item, symbol, model, 'identity') <= best):
             continue
         at = location(item.get("at"))
         if at is not None and at[0] != symbol.layout:
@@ -1031,7 +1035,7 @@ def _anchor(model, symbol, failures):
         if failure is not None:
             failures.append((item, failure))
             continue
-        best = rank(item, symbol, model)
+        best = rank(item, symbol, model, 'identity')
     meaning = symbol.meaning
     for link in meaning.links if meaning is not None else ():
         if (link.owner is not meaning or not link.props.get("relies")
