@@ -504,9 +504,11 @@ class DtcLedgerAdapterTest(unittest.TestCase):
         image.assert_called_once_with(repo.layout("7mfk"), root)
 
     def test_console_entrypoint_compiles_without_a_pythonpath_override(self):
-        completed = subprocess.run(["uv", "run", "kb", "project", "--check"],
+        completed = subprocess.run(["uv", "run", "kb", "project",
+                                    "defs/JK08A.architecture.toml", "--check"],
                                    cwd=repo.ROOT, capture_output=True, text=True, timeout=120)
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.assertEqual(completed.stdout, "defs/JK08A.architecture.toml: current\n")
 
 
 class ProfileAdapterTest(unittest.TestCase):

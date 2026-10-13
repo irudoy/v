@@ -1002,6 +1002,7 @@ def assert_compiled_vvel_temperature_axis_owner_contract(model) -> None:
     functions = {node.name for node in ast.parse((ROOT / THIS_TEST).read_text()).body
                  if isinstance(node, ast.FunctionDef)}
     assert {STARTUP_TEST, BLEND_TEST, RAMP_TEST} <= functions, "actual top-level scale tests"
+    level_issues = levels.check(model)
     for contract in OWNER_CONTRACTS:
         meaning = _meaning(model, contract)
         assert meaning.key == f"{contract['name']}/axis" and meaning.home == contract["home"]
@@ -1021,7 +1022,7 @@ def assert_compiled_vvel_temperature_axis_owner_contract(model) -> None:
                            for target, at in contract["readers"].items()}, "original reader/accessor links"
         for symbol in meaning.symbols.values():
             _owner_symbol(model, symbol, contract)
-        assert not [issue for issue in levels.check(model)
+        assert not [issue for issue in level_issues
                     if issue.subject == meaning.key and "scale" in issue.message], "actual grounded scale"
     assert_vvel_temperature_axis_specification((ROOT / SPEC).read_text())
 
