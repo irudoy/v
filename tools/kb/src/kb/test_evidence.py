@@ -10,7 +10,7 @@ import sys
 
 from kb import repo
 
-SCHEMA = 1
+SCHEMA = 2
 PATH = 'patches/tests/test_rom_address_profiles.py'
 KEY = 'test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image'
 NODEID = PATH + '::' + KEY
@@ -22,6 +22,19 @@ NOTE = ('Stock-image scan for region 000791a4..000797cb rejects aligned inbound 
 PROFILE = 'patches/rom-address-profiles.toml'
 RECEIPT = Path('.kb/test-receipts/1me3b-image-scan.json')
 PRODUCER_FILES = ('tools/kb/src/kb/test_evidence.py', 'tools/kb/src/kb/test_witness.py')
+EXECUTION_INPUTS = (
+    PATH, 'patches/tests/conftest.py', 'pyproject.toml', 'uv.lock',
+    'patches/rom_address_profiles.py', PROFILE,
+    'patches/map_switching_layout.py', 'patches/map-switching-layout.toml',
+    'patches/rolling_launch_layout.py', 'patches/rolling-launch-layout.toml',
+    'patches/can_telemetry_layout.py', 'patches/can-telemetry-layout.toml',
+    'patches/can_telemetry_profile.py', 'patches/can-telemetry-profile.toml',
+    'patches/can_telemetry.py', 'patches/rolling_launch.py',
+    'patches/jk08a-runtime-reservations.toml',
+    'tools/logs/can_telemetry.py', 'tools/logs/can_telemetry_schema.py',
+    'tools/mapkit/rom.py', 'tools/rom_homology.py',
+    'rom-images/roms.csv', 'rom-images/homology.toml',
+)
 
 
 def facts():
@@ -75,8 +88,71 @@ def model_digest(model):
                           **{name: getattr(model, name) for name in required}}))
 
 
+def scope_digest(model, symbol):
+    """Current identity facts and geometry; unrelated writer facts are independent.
+
+    The producer and finalizer bind the complete native snapshot separately.
+    An effective overlay may change other owned documents and review records;
+    it cannot substitute the test, profile, ROM, L0 or execution configuration.
+    """
+    from kb import convert
+    required = ('layouts', 'spaces', 'functions', 'config', 'names', 'overlay')
+    if any(not hasattr(model, name) for name in required):
+        raise ValueError('a complete compiled model is required')
+    for path in model.overlay:
+        path = Path(path)
+        if path.is_absolute() or '..' in path.parts or (
+                (not path.parts or path.parts[0] != 'kb') and path != repo.OWNER_CONFIG):
+            raise ValueError('the overlay changes an execution input')
+    meaning = symbol.meaning
+    value = lambda data: convert._value(model, data)
+    symbols = {key: {'key': member.key, 'name': member.name, 'generated': member.generated,
+                     'former': member.former, 'props': value(member.props),
+                     'evidence': value(member.evidence), 'sources': member.sources,
+                     'implicit': member.implicit}
+               for key, member in meaning.symbols.items()}
+    links = {(link.owner.key, link.type, link.to.key, link.slot, link.offset):
+             (value(link.props), value(link.evidence), link.stated, link.roles, link.sources)
+             for link in model.links if link.owner is meaning or link.to is meaning}
+    # These tables contain knowledge ownership and reviews, not execution settings.
+    settings = {key: data for key, data in model.config.items()
+                if key not in ('names', 'reconciliation', 'source_bindings')}
+    return digest(encode({
+        'meaning': {'key': meaning.key, 'kind': meaning.kind, 'semantic': meaning.semantic,
+                    'props': value(meaning.props), 'tables': value(meaning.tables),
+                    'names': meaning.other_names, 'sources': meaning.sources,
+                    'tier': meaning.tier, 'name_sources': meaning.name_sources,
+                    'groups': value(meaning.groups),
+                    'statuses': {layout: (status.state, value(status.props),
+                                         value(status.evidence), status.sources)
+                                 for layout, status in meaning.statuses.items()}},
+        'symbols': symbols, 'links': links, 'settings': settings,
+        'files': {key: src for key, (subject, src) in model.files.items()
+                  if subject is meaning or any(subject is member
+                                               for member in meaning.symbols.values())},
+        **{name: getattr(model, name) for name in ('layouts', 'spaces', 'functions')},
+    }))
+
+
 def inputs(root):
-    """A conservative closure of model inputs and the selected test's sources."""
+    """Execution closure and exact identity owner, independent of other KB facts.
+
+    Stock-profile validation consumes the profile/layout/telemetry manifests,
+    family/catalog declarations and catalog image bytes. Compiler code also
+    binds interpretation of the current typed scope; whole-model source inputs
+    belong to producer provenance, not the image-scan freshness boundary.
+    """
+    from kb import store
+    paths = set(EXECUTION_INPUTS)
+    paths.update(p.relative_to(root).as_posix()
+                 for p in (root / 'tools/kb/src/kb').rglob('*.py'))
+    paths.add(store.path_of('const', MEANING.split('/')[0]).as_posix())
+    paths.update(image.path.relative_to(root).as_posix() for image in repo.images(root).values())
+    return {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in sorted(paths)}
+
+
+def producer_inputs(root):
+    """Complete compiler provenance, independently finalized for the native run."""
     from kb import compatibility, fingerprint
     paths = set(fingerprint.inputs(root))
     paths.update(PRODUCER_FILES)
@@ -112,7 +188,7 @@ def public_packet(model, symbol, evidence):
 def context(model, symbol, evidence):
     root = Path(model.root).resolve()
     return {'root': str(root), 'public': public_packet(model, symbol, evidence),
-            'model': model_digest(model), 'inputs': inputs(root), 'runtime': runtime()}
+            'model': scope_digest(model, symbol), 'inputs': inputs(root), 'runtime': runtime()}
 
 
 def registered(evidence, symbol=None):
@@ -156,6 +232,13 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
             return 'TEST execution has missing, skipped, failed or unrelated phases'
         if not candidate['complete'] or candidate['exitstatus'] != 0:
             return 'TEST execution candidate is unfinished or failing'
+        native = record['native_model']
+        if (type(native) is not str or len(native) != 64
+                or any(char not in '0123456789abcdef' for char in native)
+                or candidate['native_model'] != native):
+            return 'TEST execution native snapshot lacks independent finalization'
+        if digest(encode(candidate['producer_inputs'])) != record['native_inputs']:
+            return 'TEST execution source provenance lacks independent finalization'
         if candidate['context'] != context(model, symbol, evidence):
             return 'TEST execution inputs or model context are stale'
         witness = candidate['witness']
@@ -215,11 +298,18 @@ def finalize(candidate_path, process_path, stdout_path, stderr_path, root=repo.R
         terminal[stream] = path.relative_to(Path(root).resolve()).as_posix()
     if ('kb-test-candidate sha256=' + digest(candidate)).encode() not in Path(stdout_path).read_bytes():
         raise ValueError('the candidate disagrees with terminal output')
-    record = {'schema': SCHEMA, 'candidate': candidate, 'terminal': terminal}
     from kb import compile
     from kb.model import SymbolKey
     model = compile.build(root)
     symbol = model.symbols[SymbolKey(*SYMBOL)]
+    native = model_digest(model)
+    if candidate.get('native_model') != native:
+        raise ValueError('the producer native snapshot disagrees with independent finalization')
+    original_inputs = producer_inputs(root)
+    if candidate.get('producer_inputs') != original_inputs:
+        raise ValueError('the producer source inputs disagree with independent finalization')
+    record = {'schema': SCHEMA, 'candidate': candidate, 'terminal': terminal,
+              'native_model': native, 'native_inputs': digest(encode(original_inputs))}
     # Validate before publication without replacing an earlier qualified pass.
     refused = failure(item(), symbol, model, 'identity', record=record)
     if refused:

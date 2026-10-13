@@ -108,7 +108,16 @@ The finalizer validates the candidate's terminal-output hash before atomically
 publishing `.kb/test-receipts/1me3b-image-scan.json`. A failed invocation retains
 an earlier qualified record. Receipt and terminal bytes, source inputs, model
 values and exact identity-claim scope are checked again on reuse in both
-grounding paths; mismatches supply no CODE. Checking does not execute the case.
+grounding paths; mismatches supply no CODE. The producer and independent
+finalizer bind the complete native model. An unrelated writer overlay retains
+grounding only while the supported meaning, symbols, evidence, relationships,
+geometry and execution settings agree with that record. Overlays of execution
+inputs refuse reuse. Knowledge ownership and unrelated review records remain
+independent of the image-scan identity. The same scope applies after a writer
+saves its result and the compiler rebuilds it without an overlay. Exact profile,
+layout, telemetry, family, catalog, ROM, program and identity-owner inputs govern
+reuse. The full producer input manifest remains independent finalized provenance.
+Checking does not execute the case.
 
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and

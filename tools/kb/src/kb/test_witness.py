@@ -86,6 +86,8 @@ class State:
         model = compile.build(self.root)
         symbol = model.symbols[SymbolKey(*evidence.SYMBOL)]
         self.model, self.symbol = model, symbol
+        self.native_model = evidence.model_digest(model)
+        self.producer_inputs = evidence.producer_inputs(self.root)
         self.context = evidence.context(model, symbol, evidence.item())
 
     def image_packets(self, images):
@@ -119,7 +121,9 @@ class State:
                         'images': image_packets, 'fixture_image_reads': self.image_reads}
 
     def finish(self, exitstatus):
-        stable = evidence.context(self.model, self.symbol, evidence.item()) == self.context
+        stable = (evidence.context(self.model, self.symbol, evidence.item()) == self.context
+                  and evidence.model_digest(self.model) == self.native_model
+                  and evidence.producer_inputs(self.root) == self.producer_inputs)
         complete = (exitstatus == 0 and self.collected == [evidence.NODEID]
                     and self.parameters == evidence.encode({}) and self.witness is not None
                     and self.reports == [['setup', 'passed', False], ['call', 'passed', False],
@@ -128,7 +132,9 @@ class State:
         candidate = {'schema': evidence.SCHEMA, 'run_id': str(uuid.uuid4()),
                      'nodeid': evidence.NODEID, 'collected': self.collected,
                      'parameters': self.parameters, 'reports': self.reports,
-                     'context': self.context, 'witness': self.witness,
+                     'context': self.context, 'native_model': self.native_model,
+                     'producer_inputs': self.producer_inputs,
+                     'witness': self.witness,
                      'complete': complete, 'exitstatus': int(exitstatus)}
         evidence.publish(self.output, candidate)
         print('kb-test-candidate sha256=' + evidence.digest(candidate))

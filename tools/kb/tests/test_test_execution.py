@@ -3,13 +3,17 @@
 from copy import deepcopy
 import hashlib
 import json
+import shutil
 from types import SimpleNamespace
 
 import pytest
 
-from kb import compile, levels, match, repo, test_evidence as execution
+from kb import compile, levels, match, repo, store, test_evidence as execution
 from kb.model import SymbolKey
 from tools.kb.tests.test_match import model_of
+from tools.kb.tests import writer_sources
+
+REAL_INPUTS = execution.inputs
 
 
 @pytest.fixture(scope='module')
@@ -42,6 +46,8 @@ def qualified(tmp_path, monkeypatch, native_model):
     monkeypatch.setattr(execution, 'RECEIPT', destination)
     stdout, stderr = tmp_path / 'stdout.txt', tmp_path / 'stderr.txt'
     candidate = {'schema': execution.SCHEMA, 'run_id': 'controlled',
+                 'native_model': execution.model_digest(model),
+                 'producer_inputs': execution.inputs(repo.ROOT),
                  'nodeid': execution.NODEID, 'collected': [execution.NODEID],
                  'parameters': execution.encode({}),
                  'reports': [['setup', 'passed', False], ['call', 'passed', False],
@@ -54,6 +60,8 @@ def qualified(tmp_path, monkeypatch, native_model):
                              'fixture_image_reads': [{'path': 'fixture.bin', 'sha256': image_hash}]}}
     candidate['witness']['profiles_digest'] = execution.digest(candidate['witness']['profiles'])
     record = {'schema': execution.SCHEMA, 'candidate': candidate,
+              'native_model': candidate['native_model'],
+              'native_inputs': execution.digest(execution.encode(candidate['producer_inputs'])),
               'terminal': {'actual_exit_code': 0, 'timed_out': False,
                            'command': ['pytest', execution.NODEID]}}
 
@@ -184,6 +192,142 @@ def test_model_value_mutation_invalidates_the_same_receipt(qualified):
         qualified.symbol.props.clear()
         qualified.symbol.props.update(original)
     assert match.rank(execution.item(), qualified.symbol, qualified.model, 'identity') == 2
+
+
+@pytest.mark.parametrize('route', ['anchor', 'direct'])
+def test_unrelated_writer_overlay_preserves_the_exact_identity(qualified, monkeypatch, route):
+    model = deepcopy(qualified.model)
+    model.overlay = {'kb/ram/independent.toml': 'summary = "Independent writer fact"\n'}
+    state = SimpleNamespace(model=model, symbol=model.symbols[qualified.symbol.key])
+    assert award(state, route, monkeypatch) == 2
+
+
+@pytest.mark.parametrize('route', ['anchor', 'direct'])
+def test_unrelated_review_rebase_preserves_the_exact_identity(qualified, monkeypatch, route):
+    model = deepcopy(qualified.model)
+    model.overlay = {repo.OWNER_CONFIG: 'Controlled unrelated review rebase'}
+    model.config['reconciliation'] = {'review': [{'subject': 'independent/ram'}]}
+    state = SimpleNamespace(model=model, symbol=model.symbols[qualified.symbol.key])
+    assert award(state, route, monkeypatch) == 2
+
+
+@pytest.fixture(scope='module')
+def saved_writer_root(tmp_path_factory):
+    """Real source compiler and writer with controlled terminal evidence."""
+    root = tmp_path_factory.mktemp('saved-test-identity')
+    writer_sources.write_sources(root)
+    for path in execution.EXECUTION_INPUTS:
+        target = root / path
+        if not target.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(repo.ROOT / path, target)
+    for source in (repo.ROOT / 'tools/kb/src/kb').rglob('*.py'):
+        target = root / source.relative_to(repo.ROOT)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    document = {'summary': 'Controlled registered identity.', 'storage': 'uint8', 'count': 1,
+                'symbol': [{'layout': execution.SYMBOL[0],
+                            'address': f'{execution.SYMBOL[2]:08x}',
+                            'evidence': [execution.item()]}]}
+    path = store.path_of('const', execution.MEANING.split('/')[0])
+    store.write(root, {path: store.render('const', document)})
+    return root, path, document
+
+
+@pytest.mark.parametrize('route', ['anchor', 'direct'])
+def test_saved_unrelated_writer_preserves_identity_and_changed_owner_refuses(
+        qualified, monkeypatch, saved_writer_root, route):
+    from kb import adapters, write
+    from kb.adapters import files
+    root, path, original = saved_writer_root
+    unrelated = store.path_of('signal', 'saved_unrelated')
+    store.write(root, {path: store.render('const', original), unrelated: None})
+    monkeypatch.setattr(adapters, 'ADAPTERS', (files,))
+    monkeypatch.setattr(execution, 'inputs', REAL_INPUTS)
+    model = compile.build(root)
+    symbol = model.symbols[SymbolKey(*execution.SYMBOL)]
+    value = deepcopy(qualified.record)
+    candidate = value['candidate']
+    candidate['native_model'] = execution.model_digest(model)
+    candidate['context'] = execution.context(model, symbol, execution.item())
+    candidate['producer_inputs'] = dict(candidate['context']['inputs'])
+    candidate['witness']['profile_origin'] = candidate['context']['inputs'][execution.PROFILE]
+    image = next((p, sha) for p, sha in candidate['context']['inputs'].items()
+                 if p.endswith('fixture.bin'))
+    image_packet = {'path': image[0], 'sha256': image[1]}
+    candidate['witness']['images'] = {'1ME3B': image_packet}
+    candidate['witness']['fixture_image_reads'] = [image_packet]
+    value['native_model'] = candidate['native_model']
+    value['native_inputs'] = execution.digest(execution.encode(candidate['producer_inputs']))
+    qualified.save(value)
+    try:
+        _, texts, planned = write.plan([
+            {'cmd': 'new', 'kind': 'signal', 'slug': 'saved_unrelated'},
+            {'cmd': 'set', 'ref': 'saved_unrelated/signal',
+             'keys': {'title': 'Unrelated saved observation'}}],
+            model, write.model_resolver(model), root=root)
+        assert award(SimpleNamespace(model=planned, symbol=planned.symbols[symbol.key]),
+                     route, monkeypatch) == 2
+        store.write(root, texts)
+        saved = compile.build(root)
+        assert saved.overlay == {}
+        assert execution.model_digest(saved) != candidate['native_model']
+        assert execution.inputs(root) == candidate['context']['inputs']
+        assert award(SimpleNamespace(model=saved, symbol=saved.symbols[symbol.key]),
+                     route, monkeypatch) == 2
+        for dependency in ('patches/can_telemetry.py', 'patches/rolling_launch.py'):
+            source = root / dependency
+            original_bytes = source.read_bytes()
+            try:
+                source.write_bytes(original_bytes + b'\n# Changed consumed calibration code.\n')
+                assert award(SimpleNamespace(model=saved, symbol=saved.symbols[symbol.key]),
+                             route, monkeypatch) < 2
+            finally:
+                source.write_bytes(original_bytes)
+            assert award(SimpleNamespace(model=saved, symbol=saved.symbols[symbol.key]),
+                         route, monkeypatch) == 2
+        changed = {**original, 'summary': 'Changed supported owner facts.'}
+        store.write(root, {path: store.render('const', changed)})
+        current = compile.build(root)
+        assert award(SimpleNamespace(model=current, symbol=current.symbols[symbol.key]),
+                     route, monkeypatch) < 2
+        assert award(SimpleNamespace(model=saved, symbol=saved.symbols[symbol.key]),
+                     route, monkeypatch) < 2
+    finally:
+        store.write(root, {path: store.render('const', original), unrelated: None})
+
+
+@pytest.mark.parametrize('route', ['anchor', 'direct'])
+@pytest.mark.parametrize('fault', ['symbol', 'meaning', 'evidence', 'functions', 'config',
+                                 'layout', 'space', 'execution-overlay', 'native-finalization'])
+def test_writer_overlay_cannot_change_witness_inputs_or_identity(qualified, monkeypatch, route, fault):
+    model = deepcopy(qualified.model)
+    model.overlay = {'kb/ram/independent.toml': 'summary = "Independent writer fact"\n'}
+    symbol = model.symbols[qualified.symbol.key]
+    if fault == 'symbol':
+        model.overlay[store.path_of('const', execution.MEANING.split('/')[0])] = (
+            'summary = "Changed supported value"\n')
+        symbol.props['summary'] = 'Changed supported value'
+    elif fault == 'meaning':
+        symbol.meaning.props['summary'] = 'Changed supported meaning'
+    elif fault == 'evidence':
+        symbol.evidence.clear()
+    elif fault == 'functions':
+        model.functions['7mfk'] = frozenset({3})
+    elif fault == 'config':
+        model.config['changed_execution_setting'] = True
+    elif fault == 'layout':
+        model.layouts.clear()
+    elif fault == 'space':
+        model.spaces.clear()
+    elif fault == 'execution-overlay':
+        model.overlay[execution.PROFILE] = 'Changed preparation input'
+    else:
+        value = deepcopy(qualified.record)
+        value['candidate']['native_model'] = 'c' * 64
+        qualified.save(value)
+    state = SimpleNamespace(model=model, symbol=symbol)
+    assert award(state, route, monkeypatch) < 2
 
 
 def test_unregistered_definition_keeps_the_unqualified_legacy_mode():
