@@ -58,6 +58,7 @@ and effective adapter order; original compilers and checks execute.
 Each scope parses its own first request. Equal text and serialized values
 share immutable retained storage; every hit returns a separate document.
 Scoped references and contents consume one bounded preparation budget.
+
 Native TOML documents use the runtime's in-memory marshal encoding. Dates
 and supplied parsers retain pickle encoding, including aliases and cycles.
 Both encodings return separate mutable containers and retain float bits.
@@ -76,6 +77,15 @@ Private root schemas and string wrapping programs have bounded retention.
 Current grammar identities, classifiers, escaping and line widths select the
 rendering path; mutable declarations and changed callbacks execute directly.
 Public schemas remain independent of the renderer's private preparation.
+
+Test-definition evidence reads the current UTF-8 file bytes on each request.
+Successful preparation reuses only immutable function names for the exact
+filename, bytes and active AST readers. Retention has an entry bound and a
+source-byte bound; larger files execute the same parsing directly. Syntax
+and decoding errors are not cached. Removed definitions are refused without
+a cache reset, while nested, method and async definitions retain their AST
+scope. This checks definition existence without executing the function; it
+does not establish a collected passing test or execution grounding.
 
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and

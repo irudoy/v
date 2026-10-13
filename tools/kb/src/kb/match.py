@@ -931,12 +931,24 @@ def _verify_manual(ctx):
     return None
 
 
-@lru_cache(maxsize=None)
-def _functions_of(path):
-    """The names of the functions that a Python file defines."""
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    return frozenset(node.name for node in ast.walk(tree)
+_TEST_FUNCTION_CACHE_ENTRIES = 128
+_TEST_FUNCTION_SOURCE_BYTES = 256 << 10
+
+
+@lru_cache(maxsize=_TEST_FUNCTION_CACHE_ENTRIES)
+def _functions_from_source(path, source, parse, walk):
+    """Immutable function names bound to exact UTF-8 bytes and AST readers."""
+    tree = parse(source.decode("utf-8"), filename=str(path))
+    return frozenset(node.name for node in walk(tree)
                      if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)))
+
+
+def _functions_of(path):
+    """Read the current file; retain only bounded successful preparations."""
+    source = path.read_bytes()
+    prepare = (_functions_from_source if len(source) <= _TEST_FUNCTION_SOURCE_BYTES
+               else _functions_from_source.__wrapped__)
+    return prepare(path, source, ast.parse, ast.walk)
 
 
 def _verify_test(ctx):
