@@ -19,6 +19,7 @@ from catalog import (
     keyed_slug,
     normalize_hex,
     require_pinned_git_tree,
+    require_pinned_snapshot,
     require_unique,
     sha256_file,
     sha256_text,
@@ -31,6 +32,7 @@ from catalog import (
 DATASET_ID = "370z-can-logger-2025-07-05"
 REVISION = "2decbc957523ee46dd39b3e3a7594e23ad7eee97"
 SOURCE_URL = "https://github.com/TihanPelser/370Z-CAN-Logger"
+SOURCE_LICENSE = "MIT"
 VEHICLE_ID = "nissan-370z-z34-community"
 ECU_ID = f"{VEHICLE_ID}:ecm"
 DEFAULT_OUTPUT = REFS / "public" / "370z-can-logger"
@@ -260,7 +262,7 @@ def build_documents(source_root: Path) -> list[dict[str, object]]:
                 "sha256": sha256_file(path),
                 "source_url": f"{SOURCE_URL}/blob/{REVISION}/{relative_path}",
                 "revision": REVISION,
-                "license": "MIT",
+                "license": SOURCE_LICENSE,
                 "applicability_status": "homologous_community",
             }
         )
@@ -795,7 +797,12 @@ def build_can_bindings(
 
 
 def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
-    require_pinned_git_tree(source_root, REVISION, SOURCE_FILES)
+    if source_root.resolve() == DEFAULT_SOURCE_ROOT.resolve():
+        require_pinned_snapshot(
+            source_root, REVISION, SOURCE_URL, SOURCE_FILES, expected_license=SOURCE_LICENSE
+        )
+    else:
+        require_pinned_git_tree(source_root, REVISION, SOURCE_FILES)
     documents = build_documents(source_root)
     parameters, requests, parameter_fragments = build_parameters_and_requests(
         source_root
@@ -870,8 +877,6 @@ def main() -> int:
     args = parser().parse_args()
     source_root = args.source_root.expanduser().resolve()
     try:
-        if source_root == DEFAULT_SOURCE_ROOT and not (source_root / ".git").exists():
-            raise CatalogError(f"{source_root}: pinned source submodule is unavailable; run make setup")
         catalog = build(source_root)
         if args.check:
             check_projection(args.output, catalog, write)

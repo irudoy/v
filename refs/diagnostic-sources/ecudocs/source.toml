@@ -1,0 +1,8 @@
+schema = 1
+source_url = "https://github.com/laravelcompany/ecudocs.com"
+revision = "997c5a98b4f7fe5a7dfebfeeaefce1710a11f385"
+license = "GPL-3.0"
+
+[files]
+"public/ecus/N_P32M_ECM_TR25_20080313.json" = "0d0daa78c405f6ff31032bdba0d8eda2263e242df533e64fe2b004b46af4b2b4"
+"LICENSE" = "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"

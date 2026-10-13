@@ -19,6 +19,7 @@ from catalog import (
     keyed_slug,
     normalize_hex,
     require_pinned_git_tree,
+    require_pinned_snapshot,
     require_unique,
     sha256_file,
     sha256_text,
@@ -31,6 +32,7 @@ from catalog import (
 DATASET_ID = "ecudocs-p32m-997c5a9"
 REVISION = "997c5a98b4f7fe5a7dfebfeeaefce1710a11f385"
 SOURCE_URL = "https://github.com/laravelcompany/ecudocs.com"
+SOURCE_LICENSE = "GPL-3.0"
 DEFAULT_SOURCE_ROOT = ROOT / "refs" / "diagnostic-sources" / "ecudocs"
 PROFILE_PATH = "public/ecus/N_P32M_ECM_TR25_20080313.json"
 VEHICLE_ID = "nissan-p32m-tr25-2008"
@@ -191,7 +193,13 @@ def request_kind(service: str) -> tuple[bool, str]:
 
 
 def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
-    require_pinned_git_tree(source_root, REVISION, (PROFILE_PATH,))
+    if source_root.resolve() == DEFAULT_SOURCE_ROOT.resolve():
+        require_pinned_snapshot(
+            source_root, REVISION, SOURCE_URL, (PROFILE_PATH, "LICENSE"),
+            expected_license=SOURCE_LICENSE,
+        )
+    else:
+        require_pinned_git_tree(source_root, REVISION, (PROFILE_PATH,))
     profile_path = source_root / PROFILE_PATH
     if not profile_path.is_file():
         raise CatalogError(f"{profile_path}: required source file is missing")
@@ -215,7 +223,7 @@ def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
             "sha256": sha256_file(profile_path),
             "source_url": f"{SOURCE_URL}/blob/{REVISION}/{PROFILE_PATH}",
             "revision": REVISION,
-            "license": "GPL-3.0",
+            "license": SOURCE_LICENSE,
             "applicability_status": "homologous_profile",
         }
     ]
@@ -379,8 +387,6 @@ def main() -> int:
     args = parser().parse_args()
     source_root = args.source_root.expanduser().resolve()
     try:
-        if source_root == DEFAULT_SOURCE_ROOT and not (source_root / ".git").exists():
-            raise CatalogError(f"{source_root}: pinned source submodule is unavailable; run make setup")
         catalog = build(source_root)
         if args.check:
             check_projection(args.output, catalog, write)

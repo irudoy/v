@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
@@ -30,6 +31,56 @@ HEX_RE = re.compile(r"^(?:0x)?[0-9a-fA-F]+$")
 
 class CatalogError(ValueError):
     """A source projection violates its deterministic contract."""
+
+
+def require_pinned_snapshot(
+    source_root: Path, revision: str, source_url: str, paths: Sequence[str],
+    *, expected_license: str,
+) -> None:
+    """Validate the manifest and retained files of a repository snapshot."""
+    manifest_path = source_root / "source.toml"
+    if not manifest_path.exists():
+        raise CatalogError(
+            f"{manifest_path}: pinned source snapshot is unavailable; "
+            "restore the source snapshot from this repository"
+        )
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise CatalogError(f"{manifest_path}: expected a regular non-symlink file")
+    try:
+        with manifest_path.open("rb") as source:
+            manifest = tomllib.load(source)
+    except (OSError, tomllib.TOMLDecodeError) as error:
+        raise CatalogError(f"{manifest_path}: cannot read source manifest: {error}") from error
+    if type(manifest.get("schema")) is not int or manifest["schema"] != 1:
+        raise CatalogError(f"{manifest_path}: expected source snapshot schema 1")
+    if manifest.get("source_url") != source_url:
+        raise CatalogError(f"{manifest_path}: source URL does not match {source_url}")
+    if manifest.get("revision") != revision:
+        raise CatalogError(f"{manifest_path}: revision does not match {revision}")
+    if manifest.get("license") != expected_license:
+        raise CatalogError(f"{manifest_path}: source license does not match {expected_license}")
+    files = manifest.get("files")
+    if not isinstance(files, dict) or set(files) != set(paths):
+        raise CatalogError(f"{manifest_path}: file keys do not match the required source files")
+    for relative, expected in files.items():
+        path = Path(relative)
+        if path.is_absolute() or ".." in path.parts or path.as_posix() != relative:
+            raise CatalogError(f"{manifest_path}: invalid source-relative path {relative!r}")
+        if not isinstance(expected, str) or not re.fullmatch(r"[0-9a-f]{64}", expected):
+            raise CatalogError(f"{manifest_path}: invalid SHA-256 for {relative}")
+        source_path = source_root
+        for part in path.parts:
+            source_path = source_path / part
+            if source_path.is_symlink():
+                raise CatalogError(f"{source_path}: expected a non-symlink source path")
+        if not source_path.is_file():
+            raise CatalogError(f"{source_path}: required regular source file is missing")
+        try:
+            actual = sha256_file(source_path)
+        except OSError as error:
+            raise CatalogError(f"{source_path}: cannot read source file: {error}") from error
+        if actual != expected:
+            raise CatalogError(f"{source_path}: SHA-256 does not match the source manifest")
 
 
 def require_pinned_git_tree(

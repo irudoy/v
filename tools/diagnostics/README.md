@@ -29,9 +29,9 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 |---|---|---|
 | `extract_esm.py` | Retained Nissan V36 factory ESM PDFs | Documents, page fragments, DTCs, monitors, operations, CAN routes, and extraction gaps |
 | `extract_rom_dtc.py` | Exact registered ROM images and descriptor layout | Per-ROM DTC descriptor and attribute records |
-| `import_370z_logger.py` | Pinned 370Z CAN Logger checkout | Parameters, requests, CAN frames, and payload bindings |
+| `import_370z_logger.py` | Retained 370Z CAN Logger snapshot | Parameters, requests, CAN frames, and payload bindings |
 | `import_obd2tools.py` | Pinned obd2tools checkout | Nissan-family parameter and request candidates |
-| `import_ecudocs.py` | Pinned ecudocs checkout | Structured ECU profile claims and request placement |
+| `import_ecudocs.py` | Retained ecudocs profile snapshot | Structured ECU profile claims and request placement |
 | `import_nissan_datatable.py` | Legacy Nissan data-table PDF | Consult I registers, requests, and operation definitions |
 | `sid22_inventory.py` | Exact SHA-locked JK08A ROM | Semantic-free service-0x22 DID, width, and response-source inventory |
 | `tuning_signal_coverage.py` | Exact DID inventory and custom-CAN schema | Validated current and unresolved tuning-observation coverage |
@@ -78,9 +78,12 @@ All public importers and the ROM descriptor extractor compare every rendered
 CSV/JSONL file with its existing output in `--check` mode, including missing
 and unexpected files. A failed comparison preserves all existing outputs.
 `make check` runs both ESM corpora, ROM descriptors, the 370Z CAN Logger and
-ecudocs corpora, and the pinned NissanDatatable source. The Git importers default
-to the source submodules in `refs/diagnostic-sources/`; `make setup` initializes
-their exact revisions. An explicit checkout must match the same pin.
+ecudocs corpora, and the pinned NissanDatatable source. The public importers
+default to tracked snapshots in `refs/diagnostic-sources/`. Each snapshot's
+`source.toml` binds its upstream URL, revision, license and exact file hashes.
+The importers reject missing, changed or incorrectly pinned retained inputs.
+An explicit external Git checkout must match the same revision and preserve
+the selected source files. Restore damaged snapshots from the repository.
 The PDF importer defaults to the tracked PDF and pin in
 `refs/nissan-datatable/`; an explicit PDF path must match the same identity.
 

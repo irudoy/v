@@ -5,9 +5,3 @@
 	path = defs/reference/a33b-NissanDefs
 	url = https://github.com/a33b/NissanDefs
 	ignore = dirty
-[submodule "refs/diagnostic-sources/370z-can-logger"]
-	path = refs/diagnostic-sources/370z-can-logger
-	url = https://github.com/TihanPelser/370Z-CAN-Logger
-[submodule "refs/diagnostic-sources/ecudocs"]
-	path = refs/diagnostic-sources/ecudocs
-	url = https://github.com/laravelcompany/ecudocs.com

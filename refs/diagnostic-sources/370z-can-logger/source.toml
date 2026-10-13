@@ -1,0 +1,15 @@
+schema = 1
+source_url = "https://github.com/TihanPelser/370Z-CAN-Logger"
+revision = "2decbc957523ee46dd39b3e3a7594e23ad7eee97"
+license = "MIT"
+
+[files]
+"candata/consult.csv" = "fd4a26d18a895b4637aec9b68d6a0fc4ae7e32db54dc84966b41182d7126b496"
+"candata/extended_pids.csv" = "11e45919ed068b3e5b46e25ced35a49b7db576d5300034fd45be30790db6b629"
+"candata/standard_pids.csv" = "70ae5d56e2d52acdd3217a15fbc4c61f9a3e41361e2d6ae778133100694c304e"
+"candata/370z_can.csv" = "528067e88195b6c339fb317d4f0630a35ed55f55fa16d0649b00c99418c1eb06"
+"candata/ids.csv" = "3a02789a363a36eef009be4999764fe855412a80881502d60de2c7edbac3b3a8"
+"candata/signals.csv" = "59fa551159411718d41fc2fd153a47a50bad85a5ee91fa71f7b17f1411cb3d89"
+"candata/more_signals.csv" = "4a4ad03088b5f278ddb876cb906f6c149d1bb3d63b1be602d17fe79c8ec4959c"
+"can_decoder_cli.py" = "f44d0bf5cf8bb3cce4041cd1ab25095bb821dce7c261c052007b51d3beb8a14e"
+"LICENSE" = "853c21a3509a7489419166722e480204620dacfb1811374bdea31a4ad831a76d"
