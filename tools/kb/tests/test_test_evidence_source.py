@@ -2,6 +2,7 @@
 
 import ast
 import os
+import sys
 from types import SimpleNamespace
 
 import pytest
@@ -65,21 +66,25 @@ def test_unchanged_bytes_reuse_one_parse_and_keep_read_dependencies(evidence, mo
     original = ast.parse
     parsed = []
 
-    def parse(source, **kwargs):
-        parsed.append((source, kwargs["filename"]))
-        return original(source, **kwargs)
+    def profile(frame, event, arg):
+        if event == "call" and frame.f_code is original.__code__:
+            parsed.append((frame.f_locals["source"], frame.f_locals["filename"]))
 
-    monkeypatch.setattr(ast, "parse", parse)
-    assert match._verify_test(context) is None
-    first = match._functions_of(path)
-    assert match._verify_test(context) is None
-    assert match._functions_of(path) is first
+    held = sys.getprofile()
+    try:
+        sys.setprofile(profile)
+        assert match._verify_test(context) is None
+        first = match._functions_of(path)
+        assert match._verify_test(context) is None
+        assert match._functions_of(path) is first
+        path.write_text("def test_other():\n    return True\n", encoding="utf-8")
+        assert match._verify_test(context) is not None
+    finally:
+        sys.setprofile(held)
     assert isinstance(first, frozenset)
-    assert parsed == [(path.read_text(encoding="utf-8"), str(path))]
+    assert parsed == [("def test_first():\n    return True\n", str(path)),
+                      (path.read_text(encoding="utf-8"), str(path))]
     assert path.name in match.READ
-    path.write_text("def test_other():\n    return True\n", encoding="utf-8")
-    assert match._verify_test(context) is not None
-    assert len(parsed) == 2
 
 
 @pytest.mark.parametrize("invalid", ["syntax", "utf8"])
@@ -110,6 +115,38 @@ def test_changed_ast_reader_owns_its_preparation(evidence, monkeypatch, reader):
     else:
         monkeypatch.setattr(ast, "walk", lambda tree: ())
     assert match._verify_test(context) == "evidence.py defines no function test_first"
+
+
+@pytest.mark.parametrize("reader", ["parse", "walk"])
+@pytest.mark.parametrize("hashable", [True, False])
+def test_stateful_custom_reader_executes_directly_without_hashing(evidence, monkeypatch,
+                                                                reader, hashable):
+    _, context = evidence
+    assert match._verify_test(context) is None
+    info = match._functions_from_source.cache_info()
+    original_parse, original_walk = ast.parse, ast.walk
+
+    class Reader:
+        def __init__(self):
+            self.current, self.calls = True, 0
+
+        def __call__(self, source, **kwargs):
+            self.calls += 1
+            if reader == "parse":
+                return original_parse(source if self.current else "", **kwargs)
+            return original_walk(source) if self.current else ()
+
+    if not hashable:
+        Reader.__hash__ = None
+    custom = Reader()
+    monkeypatch.setattr(ast, reader, custom)
+    assert match._verify_test(context) is None
+    custom.current = False
+    assert match._verify_test(context) == "evidence.py defines no function test_first"
+    custom.current = True
+    assert match._verify_test(context) is None
+    assert custom.calls == 3
+    assert match._functions_from_source.cache_info() == info
 
 
 def test_cache_retention_is_bounded_and_large_sources_execute_directly(evidence, monkeypatch):

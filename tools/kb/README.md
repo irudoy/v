@@ -79,9 +79,11 @@ rendering path; mutable declarations and changed callbacks execute directly.
 Public schemas remain independent of the renderer's private preparation.
 
 Test-definition evidence reads the current UTF-8 file bytes on each request.
-Successful preparation reuses only immutable function names for the exact
-filename, bytes and active AST readers. Retention has an entry bound and a
-source-byte bound; larger files execute the same parsing directly. Syntax
+Successful preparation with the standard AST readers reuses only immutable
+function names for the exact filename and bytes. Supplied AST readers execute
+directly without hashing or retaining their callables or results. Retention
+has an entry bound and a source-byte bound; larger files execute parsing
+directly. Syntax
 and decoding errors are not cached. Removed definitions are refused without
 a cache reset, while nested, method and async definitions retain their AST
 scope. This checks definition existence without executing the function; it
