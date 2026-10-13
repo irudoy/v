@@ -19,7 +19,11 @@ CHAIN_FILE = store.path_of('chain', 'engine_speed')
 
 pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
 
+# The stock step-replacement case retains complete-repository integration.
 ISOLATED_CASES = {
+    'test_new_and_set_start_a_complete_chain_in_one_batch',
+    'test_one_batch_replaces_steps_and_adds_a_typed_condition',
+    'test_invalid_chain_prevents_condition_files_and_graph_writes',
     'test_unset_refuses_the_required_chain_summary',
     'test_invalid_home_is_refused_before_reference_resolution',
     'test_typed_metadata_is_checked_before_canonical_omission',
@@ -28,7 +32,8 @@ ISOLATED_CASES = {
     'test_held_prose_remains_reported_without_blocking_an_unrelated_metadata_edit',
     'test_a_changed_step_cannot_reuse_a_held_prose_rejection',
 }
-ISOLATED_NOTES = {'to = min(from)', 'to = from; use alternate input',
+ISOLATED_NOTES = {'to = from while the gate is clear',
+                  'to = min(from)', 'to = from; use alternate input',
                   'to = lookup(from, selected)'}
 
 

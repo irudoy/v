@@ -55,12 +55,15 @@ jk78c = "FOREIGN"
         document = {'summary': 'Fixture ' + name + '.', 'width': 16, 'signed': False,
                     'symbol': [{'layout': '7mfk', 'address': f'{0xffff1000 + 2*i:08x}',
                                 'evidence': copy.deepcopy(proof)}]}
+        if name == 'rpm':
+            document['level'] = 'pattern'
         if name == 'unrelated_probe':
             document['note'] = 'Preserve unrelated metadata.'
         texts[store.path_of('ram', name)] = store.render('ram', document)
     for i, name in enumerate(('capture_copy', 'capture_convert')):
         texts[store.path_of('fn', name)] = store.render('fn', {
             'summary': 'Fixture call ' + name + '.', 'block': 'capture/block',
+            'level': 'code',
             'symbol': [{'layout': '7mfk', 'address': f'{0x10000 + 2*i:08x}',
                         'evidence': copy.deepcopy(proof)}]})
     texts[store.path_of('fn', 'accelerator_pedal_pair_selector')] = store.render('fn', {
@@ -71,12 +74,15 @@ jk78c = "FOREIGN"
         'title': 'Capture', 'summary': 'Fixture capture stage.', 'lane': 'flow', 'order': 1})
     texts[store.path_of('block', 'capture')] = store.render('block', {
         'title': 'Capture', 'summary': 'Fixture capture block.', 'stage': 'capture/stage', 'order': 1})
+    effects = ('copies', 'converts', 'scales', 'adds', 'selects', 'filters', 'stores')
     steps = [{'from': ram[i] + '/ram', 'to': ram[i+1] + '/ram',
-              'via': ['capture_copy/fn' if i % 2 == 0 else 'capture_convert/fn'],
-              'effect': 'copies', 'sign': 'positive', 'note': 'to = from'} for i in range(7)]
+              'via': ['capture_copy/fn' if i % 2 == 0 and i != 6 else 'capture_convert/fn'],
+              'effect': effects[i], 'sign': 'none' if i == 4 else 'positive',
+              'note': 'to = from', 'specs': ['defs/fixture.md']} for i in range(7)]
     texts[store.path_of('chain', 'engine_speed')] = store.render('chain', {
         'title': 'Capture', 'summary': 'Fixture ordered capture.', 'quantity': 'Capture counts',
-        'home': '7mfk', 'order': 1, 'output': 'engine_speed_result/ram', 'step': steps})
+        'home': '7mfk', 'order': 1, 'specs': ['defs/fixture.md'],
+        'output': 'engine_speed_result/ram', 'step': steps})
     for path, text in texts.items():
         target = root / path
         target.parent.mkdir(parents=True, exist_ok=True)

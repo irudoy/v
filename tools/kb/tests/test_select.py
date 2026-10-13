@@ -16,6 +16,9 @@ from tools.kb.tests import selector_sources
 pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
 
 ISOLATED_CASES = {
+    'test_unique_exact_repeat_is_idempotent_in_one_batch_and_on_the_result',
+    'test_symbol_references_select_the_meanings_home_ledger_row',
+    'test_a_late_refusal_writes_no_file_or_graph',
     'test_an_offset_must_match_the_canonical_relation',
     'test_final_batch_refuses_a_relation_replaced_without_its_selected_claim',
     'test_final_batch_refuses_marker_removal_and_incompatible_replacement',
@@ -350,7 +353,7 @@ class SelectTest(unittest.TestCase):
                 mock.patch.object(write.store, "write") as written, \
                 mock.patch.object(write.graph, "sync_held") as synced:
             with self.assertRaises(KbError):
-                write.apply([*OPS, UNLINK], log=lambda _: None)
+                write.apply([*OPS, UNLINK], log=lambda _: None, root=self.base.root)
         written.assert_not_called()
         synced.assert_not_called()
 

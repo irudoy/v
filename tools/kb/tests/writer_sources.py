@@ -45,7 +45,9 @@ def write_sources(root):
         ('ram', 'fuel_inhibit'): ram('Controlled named state without a raw conversion.',
             symbol('7mfk', 'ffff2497'), symbol('jk00c', 'ffff251f')),
         ('tbl', 'astute-toad'): {'summary': 'Controlled unnamed table.', 'storage': 'uint8',
-            'cols': 1, 'rows': 1, 'symbol': [symbol('7mfk', '00011ff6', name='astute-toad')]},
+            'cols': 1, 'rows': 1, 'symbol': [symbol('7mfk', '00011ff6', name='astute-toad'),
+                symbol('jk00c', '000142d3', name='probe-hare'),
+                symbol('jk00d', '000162d3', name='quiet-lynx')]},
         ('fn', 'accelerator_pedal_pair_selector'): function('Controlled input consumer.',
             symbol('7mfk', '0006ec68'), symbol('jk78c', '0008d384')),
         ('fn', 'rev_fuel_cut_state_machine'): function('Controlled named reader.',
@@ -61,6 +63,16 @@ def write_sources(root):
             'symbol': [symbol('7mfk', '00030000')], 'link': [
                 {'type': 'axis', 'to': 'fascinating-hog/axis', 'slot': 'x'},
                 {'type': 'reader', 'to': 'asparagus-scallop/fn', 'role': 'accessor'}]},
+        ('ram', 'alpha_n_flow'): ram('Controlled batch-link input.',
+            symbol('7mfk', 'ffff1170')),
+        ('ram', 'coolant'): {'summary': 'Controlled unsigned temperature source.',
+            'width': 8, 'signed': False, 'symbol': [symbol('7mfk', 'ffff1090')]},
+        ('signal', 'temperatures'): {'title': 'Controlled temperatures',
+            'priority': 'core', 'coverage': 'fixed', 'basis': 'patch-design',
+            'observes': ['coolant/ram']},
+        ('signal', 'table_observation'): {'title': 'Controlled table observation',
+            'priority': 'research', 'coverage': 'fixed', 'basis': 'patch-design',
+            'observes': ['astute-toad/tbl']},
         ('feature', 'map_switching'): {},
     }
     documents[('fn', 'accelerator_pedal_pair_selector')]['level'] = 'code'
@@ -83,7 +95,7 @@ def write_sources(root):
         Path('tools/kb/SPEC.md'): (repo.ROOT / 'tools/kb/SPEC.md').read_text(encoding='utf-8'),
         Path('l0/7mfk/funcs.csv'): 'addr\n00010000\n00010002\n000493e8\n0006ec68\n'
                                   '00020000\n00020004\n0002000a\n',
-        Path('l0/1nd/funcs.csv'): 'addr\n00020002\n00020006\n',
+        Path('l0/1nd/funcs.csv'): 'addr\n00020002\n00020006\n000493ea\n',
         Path('l0/1me3b/funcs.csv'): 'addr\n00020008\n',
         Path('l0/jk00c/funcs.csv'): 'addr\n',
         Path('l0/jk00d/funcs.csv'): 'addr\n',

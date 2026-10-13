@@ -21,6 +21,14 @@ from tools.kb.tests import writer_sources
 pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
 
 ISOLATED_CASES = {
+    ('PlanTest', 'test_set_refuses_to_remove_the_block_of_a_reviewed_function'),
+    ('PlanTest', 'test_set_refuses_a_block_that_no_entity_declares'),
+    ('NewTest', 'test_new_starts_a_meaning_with_the_generated_name_of_its_row'),
+    ('NewTest', 'test_a_batch_sets_and_links_a_new_meaning_without_mutating_its_source'),
+    ('NewTest', 'test_a_batch_starts_a_field_with_its_keys'),
+    ('SetTest', 'test_set_refuses_a_code_bit_without_its_own_evidence'),
+    ('RenameMeaningTest',
+     'test_rename_names_an_unnamed_meaning_and_keeps_its_generated_names_as_former_references'),
     ('NewTest', 'test_a_failed_batch_with_a_new_meaning_writes_no_files_or_graph'),
     ('NewTest', 'test_a_named_meaning_keeps_the_names_of_the_row_as_former_references'),
     ('NewTest', 'test_a_new_location_does_not_shadow_an_existing_kind'),
@@ -138,7 +146,7 @@ class PlanTest(unittest.TestCase):
                                              selector_path: store.render("fn", selector)})
 
     def plan(self, *ops):
-        return write.plan(list(ops), self.base, write.model_resolver(self.base))
+        return write.plan(list(ops), self.base, write.model_resolver(self.base), root=self.base.root)
 
     def refused(self, *ops, code=3):
         with self.assertRaises(KbError) as caught:
@@ -689,7 +697,7 @@ class SetTest(unittest.TestCase):
     def test_set_refuses_a_code_bit_without_its_own_evidence(self):
         with self.assertRaises(KbError) as caught:
             write.plan([assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "code"}]})],
-                       self.base, write.model_resolver(self.base))
+                       self.base, write.model_resolver(self.base), root=self.base.root)
         self.assertEqual(caught.exception.code, 3)
         self.assertIn("bit active: the bit level code lacks grounding", str(caught.exception))
 
