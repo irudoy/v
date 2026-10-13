@@ -1142,9 +1142,11 @@ def test_first_axis_unsigned_extension_has_an_observable_independent_negative(im
 
 @pytest.fixture(scope="module")
 def compiled_running_rpm_owners():
-    """Compile actual sources without inserting proposed notes or evidence."""
+    """Compile and verify actual owners before independent mutations."""
     from kb import compile, repo
-    return compile.build(repo.ROOT)
+    model = compile.build(repo.ROOT)
+    assert_compiled_vq37_running_rpm_owner_contract(model)
+    return model
 
 
 def test_actual_running_rpm_axis_owners_are_integrated(compiled_running_rpm_owners) -> None:
@@ -1159,7 +1161,6 @@ def test_actual_running_rpm_owner_requires_its_named_test_even_with_spec(
     from kb import match
     from kb.model import SymbolKey
     model = compiled_running_rpm_owners
-    assert_compiled_vq37_running_rpm_owner_contract(model)
     field = "vvel_axis" if claim == "vvel_duration_running_axis" else "cvtc_axis"
     meaning = model.symbols[SymbolKey("jk78c", "axis", JK[field])].meaning
     symbol, original = meaning.symbols[layout], meaning.symbols[layout].evidence
@@ -1200,7 +1201,6 @@ def test_actual_1nd_running_rpm_notes_keep_each_boundary(
         compiled_running_rpm_owners, claim: str, image_index: int, token: str) -> None:
     from kb.model import SymbolKey
     model = compiled_running_rpm_owners
-    assert_compiled_vq37_running_rpm_owner_contract(model)
     field = "vvel_axis" if claim == "vvel_duration_running_axis" else "cvtc_axis"
     symbol = model.symbols[SymbolKey("jk78c", "axis", JK[field])].meaning.symbols["1nd"]
     original = symbol.props["note"]
