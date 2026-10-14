@@ -75,7 +75,7 @@ def test_live_compiled_owner_preserves_identity_and_editor_contract(model):
     assert {(link.type, link.to.key, next(iter(link.roles)) if len(link.roles) == 1 else None): link.evidence
             for link in meaning.links if OWNER in link.sources} == expected_links
     subjects = {symbol.key.key for symbol in meaning.symbols.values()}
-    assert not [issue for issue in checks.homology(model) if issue.subject in subjects]
+    assert not [issue for issue in checks.homology(model, subjects=subjects) if issue.subject in subjects]
     assert not [issue for issue in levels.check(model)
                 if issue.subject == meaning.key and "scale" in issue.message]
 
@@ -110,7 +110,8 @@ def test_missing_top_level_scale_key_is_rejected(model, layout):
         assert "defines no function" in match.verify(model, symbol, missing)
         symbol.evidence = [missing if item == actual[0] else item for item in original]
         assert any("test_missing_vvel_cold_axis_scale" in issue.message
-                   for issue in checks.homology(model) if issue.subject == symbol.key.key)
+                   for issue in checks.homology(model, subjects={symbol.key.key})
+                   if issue.subject == symbol.key.key)
         with pytest.raises(AssertionError):
             assert_compiled_vvel_cold_axis_owner_contract(model)
     finally:

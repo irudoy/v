@@ -1186,6 +1186,12 @@ ignored by git.
 
 ## Tests
 
+`checks.homology(model, subjects=...)` queries exact `Issue.subject` values
+on the complete model. Its result equals the full audit filtered to those
+subjects, including bit subjects and explicit terminals of non-file-owned
+symbols. Grounding follows every reachable homology donor. Omitting `subjects`
+retains the complete audit; an empty selection returns no issues.
+
 ```bash
 uv run pytest -q tools/kb/tests
 KB_TEST_BOLT=bolt://localhost:<port> uv run pytest -q tools/kb/tests/test_graph.py

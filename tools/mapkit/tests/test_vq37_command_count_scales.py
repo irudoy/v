@@ -665,7 +665,9 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
             for symbol in meaning.symbols.values():
                 valid = symbol.evidence
                 symbol.evidence = [broken if e == item else e for e in valid]
-                assert any("test_missing_command_count_scale" in i.message for i in checks.homology(model) if i.subject == symbol.key.key)
+                assert any("test_missing_command_count_scale" in i.message
+                           for i in checks.homology(model, subjects={symbol.key.key})
+                           if i.subject == symbol.key.key)
                 symbol.evidence = valid
             for symbol in meaning.symbols.values():
                 symbol.evidence = [e for e in symbol.evidence if e.get("supports") != "scale"]

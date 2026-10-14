@@ -416,10 +416,11 @@ def test_compiled_owner_binds_scale_evidence_and_ast() -> None:
     assert "defines no function" in match.verify(model, symbol, missing)
     original = symbol.evidence
     try:
-        assert not [issue for issue in checks.homology(model)
+        assert not [issue for issue in checks.homology(model, subjects={symbol.key.key})
                     if issue.subject == symbol.key.key and SCALE_KEY in issue.message]
         symbol.evidence = [e for e in original if e not in actual] + [missing]
-        issues = [issue for issue in checks.homology(model) if issue.subject == symbol.key.key]
+        issues = [issue for issue in checks.homology(model, subjects={symbol.key.key})
+                  if issue.subject == symbol.key.key]
         assert any("test_missing_ramp_delay_scale" in issue.message for issue in issues)
     finally:
         symbol.evidence = original

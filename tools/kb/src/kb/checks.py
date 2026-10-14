@@ -326,12 +326,14 @@ def _bit_evidence(meaning):
                        meaning.symbols.get(at[0]) if at else None, item)
 
 
-def _bits(model):
+def _bits(model, subjects=None):
     """Each typed evidence item of a named bit whose kind L0 decides holds
     for the symbol of the meaning on the layout of its `at`."""
     issues = []
     for meaning in model.meanings:
         for path, subject, symbol, item in _bit_evidence(meaning):
+            if subjects is not None and subject not in subjects:
+                continue
             if "legacy" in item:
                 continue
             if symbol is None:
@@ -353,16 +355,27 @@ def _explicit_terminal(item):
         item.get("kind") == "indirect" and item.get("mode") == "base")
 
 
-def homology(model):
+def homology(model, *, subjects=None):
     """File-owned symbols reach an anchor through verified identity or homology
     evidence (section 7.3). Every typed base, test, and context item of a symbol holds,
     including ledger-owned symbols; other ledger items retain their scope.
-    Typed evidence of a named bit holds for the symbol of its layout."""
-    issues = _bits(model)
-    keys = sorted(key for key, symbol in model.symbols.items() if _owned(model, symbol))
+    Typed evidence of a named bit holds for the symbol of its layout.
+
+    With subjects, return exactly the full result filtered to those Issue
+    subjects. Grounding retains every reachable donor on the complete model;
+    explicit terminals remain checked for selected non-file-owned symbols.
+    An empty selection differs from the default complete audit.
+    """
+    subjects = None if subjects is None else frozenset(subjects)
+    if subjects == frozenset():
+        return []
+    issues = _bits(model, subjects)
+    symbols = sorted((key, symbol) for key, symbol in model.symbols.items()
+                     if subjects is None or key.key in subjects)
+    keys = [key for key, symbol in symbols if _owned(model, symbol)]
     owned = set(keys)
     ranks = match.grounded(model, keys) if keys else {}
-    for key, symbol in sorted(model.symbols.items()):
+    for key, symbol in symbols:
         path = _files(symbol.sources) if key in owned else ";".join(sorted(symbol.sources))
         for item in symbol.evidence:
             supports = item.get("supports", "identity")

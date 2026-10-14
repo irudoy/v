@@ -488,7 +488,8 @@ def test_compiled_axis_owners_bind_typed_scale_tests_and_ast():
         original = symbol.evidence
         try:
             symbol.evidence = [broken if existing is item else existing for existing in original]
-            issues = [issue for issue in checks.homology(model) if issue.subject == symbol.key.key]
+            issues = [issue for issue in checks.homology(model, subjects={symbol.key.key})
+                      if issue.subject == symbol.key.key]
             assert any("test_missing_rpm_axis_scale" in issue.message for issue in issues)
         finally:
             symbol.evidence = original

@@ -555,13 +555,14 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
         assert "defines no function" in match.verify(model, symbol, broken)
     assert not [issue for issue in levels.check(model)
                 if issue.subject == meaning.key and "scale" in issue.message]
-    assert not [issue for issue in checks.homology(model)
+    assert not [issue for issue in checks.homology(model, subjects={symbol.key.key for symbol in meaning.symbols.values()})
                 if issue.subject in {symbol.key.key for symbol in meaning.symbols.values()}]
     for symbol in meaning.symbols.values():
         valid = symbol.evidence
         try:
             symbol.evidence = [broken if existing == item else existing for existing in valid]
-            issues = [issue for issue in checks.homology(model) if issue.subject == symbol.key.key]
+            issues = [issue for issue in checks.homology(model, subjects={symbol.key.key})
+                      if issue.subject == symbol.key.key]
             assert any("test_missing_timing_state_scale" in issue.message for issue in issues)
         finally:
             symbol.evidence = valid

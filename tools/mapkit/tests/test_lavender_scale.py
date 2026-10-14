@@ -474,7 +474,8 @@ def test_compiled_owner_binds_candidate_scale_evidence_and_ast() -> None:
     original = symbol.evidence
     try:
         symbol.evidence = [broken if existing is item else existing for existing in original]
-        issues = [issue for issue in checks.homology(model) if issue.subject == symbol.key.key]
+        issues = [issue for issue in checks.homology(model, subjects={symbol.key.key})
+                  if issue.subject == symbol.key.key]
         assert any("test_missing_lavender_scale" in issue.message for issue in issues)
     finally:
         symbol.evidence = original
