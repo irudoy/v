@@ -390,8 +390,27 @@ def _bound(dep, effective):
     return SILICON if dep.held else PATTERN
 
 
-def analyze(model):
-    """The `Levels` of the claims of a model."""
+def _claim_scope(claims, subjects):
+    """Selected claims and every donor, in the collector's original order."""
+    known = {id(claim) for claim in claims}
+    pending = [claim for claim in claims if claim.subject in subjects]
+    selected = {id(claim) for claim in pending}
+    while pending:
+        for dependency in pending.pop().deps:
+            donor = dependency.claim
+            if donor is not None and id(donor) in known and id(donor) not in selected:
+                selected.add(id(donor))
+                pending.append(donor)
+    return [claim for claim in claims if id(claim) in selected]
+
+
+def analyze(model, *, subjects=None):
+    """The `Levels` of all claims, or selected subjects and their donors.
+
+    Collection, DID structure and hardware/arithmetic failures use the full
+    model. Selection limits claim evaluation, keeping original dependency
+    order, causes and external homology grounding. Failures remain complete.
+    """
     claims = _Collector(model).collect()
     records = hardware(model.root)
     failed, failures = set(), []
@@ -400,6 +419,8 @@ def analyze(model):
         if failure:
             failed.add(id(item))
             failures.append(Issue("levels", path, subject, failure))
+    if subjects is not None:
+        claims = _claim_scope(claims, frozenset(subjects))
     effective = {id(claim): vocab.LEVEL_RANK[claim.declared] for claim in claims}
     # The dependency of the last decrease of each claim. A claim decreases
     # only to the level that the claim of its cause holds already, so the
@@ -502,9 +523,14 @@ def _grounds(rank):
     return f"grounds {vocab.LEVELS[rank]}" if rank >= 0 else "grounds no level"
 
 
-def check(model):
-    """The issues of the `levels` check."""
-    found = analyze(model)
+def check(model, *, subjects=None):
+    """The complete issues, or exactly those of selected Issue subjects.
+
+    Every call prepares fresh claims and failures on the complete model.
+    Dependencies retain all donors; no earlier check result is reused.
+    """
+    subjects = None if subjects is None else frozenset(subjects)
+    found = analyze(model) if subjects is None else analyze(model, subjects=subjects)
     issues = list(found.failures)
     for claim in found.claims:
         declared = vocab.LEVEL_RANK[claim.declared]
@@ -520,4 +546,5 @@ def check(model):
             issues.append(Issue("levels", claim.path, claim.subject,
                                 f"{what} lacks grounding: its evidence "
                                 f"{_grounds(found.grounded[id(claim)])}"))
-    return sorted(set(issues))
+    return sorted(set(issues)) if subjects is None else sorted(
+        {issue for issue in issues if issue.subject in subjects})

@@ -1002,7 +1002,8 @@ def assert_compiled_vvel_temperature_axis_owner_contract(model) -> None:
     functions = {node.name for node in ast.parse((ROOT / THIS_TEST).read_text()).body
                  if isinstance(node, ast.FunctionDef)}
     assert {STARTUP_TEST, BLEND_TEST, RAMP_TEST} <= functions, "actual top-level scale tests"
-    level_issues = levels.check(model)
+    level_issues = levels.check(model, subjects={f"{contract['name']}/axis"
+                                                for contract in OWNER_CONTRACTS})
     for contract in OWNER_CONTRACTS:
         meaning = _meaning(model, contract)
         assert meaning.key == f"{contract['name']}/axis" and meaning.home == contract["home"]
@@ -1160,7 +1161,8 @@ def test_owner_preview_identity_and_homology_do_not_ground_scale(compiled_owner_
                 assert match.verify(model, symbol, homology) is None
                 symbol.evidence.append(homology)
         assert all(rank >= levels.CODE for rank, _ in match.grounded(model, [symbol.key for symbol in meaning.symbols.values()]).values())
-        assert any(issue.subject == meaning.key and "scale level code lacks grounding" in issue.message for issue in levels.check(model))
+        assert any(issue.subject == meaning.key and "scale level code lacks grounding" in issue.message
+                   for issue in levels.check(model, subjects={meaning.key}))
         with pytest.raises(AssertionError, match="actual named scale TEST"):
             _owner_symbol(model, meaning.home_symbol, contract)
         assert meaning.props == props and meaning.tables == tables

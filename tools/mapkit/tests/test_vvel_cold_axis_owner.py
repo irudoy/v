@@ -76,7 +76,7 @@ def test_live_compiled_owner_preserves_identity_and_editor_contract(model):
             for link in meaning.links if OWNER in link.sources} == expected_links
     subjects = {symbol.key.key for symbol in meaning.symbols.values()}
     assert not [issue for issue in checks.homology(model, subjects=subjects) if issue.subject in subjects]
-    assert not [issue for issue in levels.check(model)
+    assert not [issue for issue in levels.check(model, subjects={meaning.key})
                 if issue.subject == meaning.key and "scale" in issue.message]
 
 
@@ -175,7 +175,7 @@ def test_identity_and_byte_homology_do_not_ground_the_scale(model):
         assert all(rank >= levels.CODE for rank, _ in match.grounded(
             model, [symbol.key for symbol in meaning.symbols.values()]).values())
         assert any(issue.subject == meaning.key and "scale level code lacks grounding" in issue.message
-                   for issue in levels.check(model))
+                   for issue in levels.check(model, subjects={meaning.key}))
         with pytest.raises(AssertionError):
             assert_compiled_vvel_cold_axis_owner_contract(model)
         assert meaning.props == props and meaning.tables == tables

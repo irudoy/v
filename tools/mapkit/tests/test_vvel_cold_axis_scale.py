@@ -979,7 +979,8 @@ def assert_compiled_vvel_cold_axis_owner_contract(model) -> None:
                 actual_contract(symbol)
         finally:
             symbol.evidence = saved
-    assert not [i for i in levels.check(model) if i.subject == meaning.key and "scale" in i.message]
+    assert not [i for i in levels.check(model, subjects={meaning.key})
+                if i.subject == meaning.key and "scale" in i.message]
     assert_vvel_cold_axis_specification((ROOT / SPEC).read_text())
 
 

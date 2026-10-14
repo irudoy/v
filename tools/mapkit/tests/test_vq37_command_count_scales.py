@@ -661,7 +661,8 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
                 assert actual == [item]
                 assert match.verify(model, symbol, item) is None
                 assert "defines no function" in match.verify(model, symbol, broken)
-            assert not [i for i in levels.check(model) if i.subject == meaning.key and "scale" in i.message]
+            assert not [i for i in levels.check(model, subjects={meaning.key})
+                        if i.subject == meaning.key and "scale" in i.message]
             for symbol in meaning.symbols.values():
                 valid = symbol.evidence
                 symbol.evidence = [broken if e == item else e for e in valid]
@@ -677,7 +678,8 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
                     assert match.verify(model, symbol, identity) is None
                     symbol.evidence.append(identity)
             assert all(rank >= levels.CODE for rank, _ in match.grounded(model, [s.key for s in meaning.symbols.values()]).values())
-            assert any(i.subject == meaning.key and "scale level code lacks grounding" in i.message for i in levels.check(model))
+            assert any(i.subject == meaning.key and "scale level code lacks grounding" in i.message
+                       for i in levels.check(model, subjects={meaning.key}))
             assert meaning.props == props and meaning.tables == tables and meaning.statuses == statuses
             assert links == [(link.type, link.to.key, link.props, link.evidence, set(link.sources)) for link in meaning.links]
         finally:

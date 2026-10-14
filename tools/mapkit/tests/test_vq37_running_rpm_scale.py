@@ -1047,7 +1047,8 @@ def assert_compiled_vq37_running_rpm_owner_contract(model) -> None:
         expected_links = {(link["type"], link["to"], (link["role"],)): link["evidence"]
                           for link in expected["links"]}
         assert actual_links == expected_links, "all original reader roles and evidence are preserved"
-    assert not [i for i in levels.check(model) if i.subject in subjects and "scale" in i.message]
+    assert not [i for i in levels.check(model, subjects=subjects)
+                if i.subject in subjects and "scale" in i.message]
     assert_vq37_running_rpm_specification((ROOT / SPEC).read_text())
 
 
@@ -1259,7 +1260,7 @@ def test_actual_running_rpm_identity_and_homology_do_not_ground_scale(
                 assert match.verify(model, symbol, item) is None
                 symbol.evidence.append(item)
         assert any(i.subject == meaning.key and "scale level code lacks grounding" in i.message
-                   for i in levels.check(model))
+                   for i in levels.check(model, subjects={meaning.key}))
         with pytest.raises(AssertionError, match="actual named scale TEST"):
             assert_compiled_vq37_running_rpm_owner_contract(model)
         assert meaning.props == props and meaning.tables == tables

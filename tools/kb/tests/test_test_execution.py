@@ -99,6 +99,34 @@ def test_current_qualified_receipt_reuses_without_executing_the_case(qualified, 
     assert match.verify(qualified.model, qualified.symbol, execution.item()) is None
 
 
+@pytest.mark.parametrize('fault', ['missing', 'changed-source', 'scale'])
+def test_scoped_levels_require_current_execution_and_identity_scope(qualified, monkeypatch, fault):
+    claim = levels.Claim('controlled', execution.MEANING, 'identity', 'code',
+                         items=[(qualified.symbol, execution.item())], symbol=qualified.symbol)
+    monkeypatch.setattr(levels._Collector, 'collect', lambda self: [claim])
+    monkeypatch.setattr(levels, 'hardware', lambda root: {})
+    monkeypatch.setattr(levels, '_all_items', lambda model: ())
+    subjects = {execution.MEANING}
+    assert levels.check(qualified.model, subjects=subjects) == []
+    saved_source = qualified.source.read_bytes()
+    try:
+        if fault == 'missing':
+            qualified.destination.unlink()
+        elif fault == 'changed-source':
+            qualified.source.write_bytes(b'changed')
+        else:
+            claim.name = 'scale'
+        complete = levels.check(qualified.model)
+        selected = levels.check(qualified.model, subjects=subjects)
+        assert selected == [issue for issue in complete if issue.subject in subjects]
+        assert any('lacks grounding' in issue.message for issue in selected)
+    finally:
+        qualified.source.write_bytes(saved_source)
+        qualified.save()
+        claim.name = 'identity'
+    assert levels.check(qualified.model, subjects=subjects) == []
+
+
 @pytest.mark.parametrize('route', ['anchor', 'direct'])
 @pytest.mark.parametrize('fault', ['missing', 'failed', 'skipped', 'xfail', 'unrelated',
                                  'parameters', 'facts', 'origin', 'model', 'incomplete',

@@ -84,4 +84,4 @@ def test_identity_cannot_ground_a_restored_native_scale(monkeypatch, level, reas
     monkeypatch.setattr(meaning, "props", {**meaning.props, "unit": "RPM", "scale": "x*50",
                                           "to_raw": "x/50", "scale_level": level})
     assert any(issue.subject == meaning.key and reason in issue.message
-               for issue in levels.check(model))
+               for issue in levels.check(model, subjects={meaning.key}))

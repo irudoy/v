@@ -119,6 +119,14 @@ layout, telemetry, family, catalog, ROM, program and identity-owner inputs gover
 reuse. The full producer input manifest remains independent finalized provenance.
 Checking does not execute the case.
 
+The Python claim-level API accepts `levels.check(model, subjects={...})` to
+return exactly the full audit filtered to those Issue subjects. Each call
+prepares fresh claims, global DID structure and hardware/arithmetic failures
+from the complete model. Claim evaluation follows every transitive donor in
+the original order, including cycles and external homology anchors. The
+default check and analysis retain the full audit; selection reuses no prior
+model or verdict. Scoped analysis retains the complete failure inventory.
+
 The Python conversion API provides `convert.planning(root)` for a read-only
 group under the writer lock. Empty overlays share one native compilation and
 its model checks within that group. Each registry keeps its own before model,

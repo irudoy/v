@@ -553,7 +553,7 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
         assert match.verify(model, symbol, item) is None
         broken = {**item, "key": "test_missing_timing_state_scale"}
         assert "defines no function" in match.verify(model, symbol, broken)
-    assert not [issue for issue in levels.check(model)
+    assert not [issue for issue in levels.check(model, subjects={meaning.key})
                 if issue.subject == meaning.key and "scale" in issue.message]
     assert not [issue for issue in checks.homology(model, subjects={symbol.key.key for symbol in meaning.symbols.values()})
                 if issue.subject in {symbol.key.key for symbol in meaning.symbols.values()}]
@@ -571,7 +571,7 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
         symbol.evidence = [existing for existing in symbol.evidence
                            if existing.get("supports") != "scale"]
     assert any(issue.subject == meaning.key and "scale level code lacks grounding" in issue.message
-               for issue in levels.check(model))
+               for issue in levels.check(model, subjects={meaning.key}))
     identity_only = {layout: list(symbol.evidence) for layout, symbol in meaning.symbols.items()}
     try:
         for symbol in meaning.symbols.values():
@@ -587,7 +587,7 @@ def test_compiled_owner_scale_evidence_and_ast_contract() -> None:
         assert all(rank >= levels.CODE for rank, _ in match.grounded(
             model, [symbol.key for symbol in meaning.symbols.values()]).values())
         assert any(issue.subject == meaning.key and "scale level code lacks grounding" in issue.message
-                   for issue in levels.check(model))
+                   for issue in levels.check(model, subjects={meaning.key}))
     finally:
         for layout, symbol in meaning.symbols.items():
             symbol.evidence = identity_only[layout]
