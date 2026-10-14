@@ -12,7 +12,7 @@ from tools.kb.tests.test_derive import image
 
 
 @pytest.fixture
-def compiler_inputs(tmp_path, monkeypatch):
+def compiler_inputs(tmp_path, monkeypatch, isolated_compiler_cache):
     source = tmp_path / 'source.txt'
     source.write_text('first')
     monkeypatch.setattr(fingerprint, 'inputs', lambda root: ['source.txt'])
@@ -56,7 +56,7 @@ def test_model_changed_during_build_is_refused_and_never_cached(tmp_path, monkey
 
 
 @pytest.fixture
-def pair_inputs(tmp_path, monkeypatch):
+def pair_inputs(tmp_path, monkeypatch, isolated_literal_pair_cache):
     tokens = tmp_path / repo.L0 / 'fixture' / 'function_tokens.csv'
     tokens.parent.mkdir(parents=True)
     tokens.write_text('func_addr,ins_addr\n00000100,00000100\n00000100,00000102\n')

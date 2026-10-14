@@ -14,7 +14,7 @@ from kb import match
 @pytest.mark.parametrize('collecting', [False, True])
 @pytest.mark.parametrize('failure', [False, True])
 def test_index_load_restores_caller_gc_state_on_every_path(tmp_path, monkeypatch,
-                                                         collecting, failure):
+                                                         collecting, failure, isolated_match_cache):
     original_mode, thresholds = gc.isenabled(), gc.get_threshold()
     monkeypatch.setattr(match.repo, 'layout', lambda layout, root: SimpleNamespace(id=layout))
     monkeypatch.setattr(match.repo, 'config', lambda root: {})
