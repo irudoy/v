@@ -117,13 +117,33 @@ def publication_contract():
     assert 'Selector-3 constants retain stock zero' in text
     assert 'ffff29e2' in text and 'requires its own whole-path evidence' in text
 
+def numeric_array(body):
+    """Decode ordinary numeric lists without constructing a Python AST.
+
+    The original literal reader preserves rare accepted forms and diagnostic
+    failures. Deep lists retain its nesting boundary instead of JSON's limit.
+    """
+    assert re.fullmatch(r'[\s{},0-9a-fxU]+',body)
+    body = re.sub(r'(0x[0-9a-f]+|\d+)U\b',r'\1',body)
+    original = '['+body.replace('{','[').replace('}',']')+']'
+    if re.search(r'[\[,]\s*,',original):
+        return ast.literal_eval(original)
+    depth = 0
+    for brace in re.finditer(r'[{}]',body):
+        depth += 1 if brace[0] == '{' else -1
+        if depth > 100:
+            return ast.literal_eval(original)
+    try:
+        text = re.sub(r'\b0x[0-9a-f]+\b',lambda value:str(int(value[0],16)),original)
+        return json.loads(re.sub(r',(\s*\])',r'\1',text))
+    except (ValueError, RecursionError):
+        return ast.literal_eval(original)
+
 @cache
 def array(name):
     text = (TOOL/HEADER).read_text()
     [body] = re.findall(r'\b'+name+r'\[\]\s*=\s*\{(.*?)\};',text,re.S)
-    assert re.fullmatch(r'[\s{},0-9a-fxU]+',body)
-    body = re.sub(r'(0x[0-9a-f]+|\d+)U\b',r'\1',body)
-    return ast.literal_eval('['+body.replace('{','[').replace('}',']')+']')
+    return numeric_array(body)
 
 def literals():
     return array('samples')
