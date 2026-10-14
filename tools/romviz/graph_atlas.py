@@ -105,7 +105,7 @@ def snapshot(root=repo.ROOT):
         with graph.fresh(root, held=True) as session:
             def nodes(label):
                 return [dict(row['node']) for row in session.run(
-                    f'MATCH (n:Kb:{label}) RETURN n AS node')]
+                    f'MATCH (n:Kb:{label}) RETURN properties(n) AS node')]
 
             rows = {
                 'fingerprint': graph.meta(session)['fingerprint'],
@@ -115,7 +115,7 @@ def snapshot(root=repo.ROOT):
                                       'RETURN i.key AS image, l.key AS layout'),
                 'symbols': [{'meaning': row['meaning'], 'props': dict(row['symbol'])}
                             for row in session.run('MATCH (m:Kb:Meaning)-[:HAS]->(s:Kb:Symbol) '
-                                                   'RETURN m.key AS meaning, s AS symbol')],
+                                                   'RETURN m.key AS meaning, properties(s) AS symbol')],
                 'statuses': [{'meaning': row['meaning'], 'layout': row['layout'],
                               'props': dict(row['relation'])} for row in session.run(
                     'MATCH (m:Kb:Meaning)-[r:STATUS]->(l:Kb:Layout) '
@@ -130,7 +130,7 @@ def snapshot(root=repo.ROOT):
                 'steps': [{'chain': row['chain'], 'order': row['order'],
                            'props': dict(row['step'])} for row in session.run(
                     'MATCH (e:Kb:Entity {kind: "chain"})-[r:STEP]->(s:Kb:Step) '
-                    'RETURN e.key AS chain, r.order AS order, s AS step')],
+                    'RETURN e.key AS chain, r.order AS order, properties(s) AS step')],
                 'step_refs': session.run(
                     'MATCH (s:Kb:Step)-[r:FROM|TO|THROUGH]->(m:Kb:Meaning) '
                     'RETURN s.key AS from, type(r) AS kind, r.order AS order, m.key AS to'),
