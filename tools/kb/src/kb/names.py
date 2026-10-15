@@ -15,10 +15,6 @@ from pathlib import Path
 import random
 import re
 
-import coolname
-from rapidfuzz import process
-from rapidfuzz.distance import DamerauLevenshtein
-
 from kb import repo, vocab
 
 PATH = Path("kb/names.csv")
@@ -171,6 +167,8 @@ class Taken:
     def near(self, name, distance=2):
         if name in self.names:
             return name
+        from rapidfuzz import process
+        from rapidfuzz.distance import DamerauLevenshtein
         found = process.extractOne(name, self._list, scorer=DamerauLevenshtein.distance,
                                    score_cutoff=distance)
         return found[0] if found else None
@@ -193,6 +191,7 @@ def rejection(candidate, taken, domain):
 
 def draw(taken, domain, attempts, rand=None):
     """A generated name that passes every rule; it joins `taken`."""
+    import coolname
     rand = rand or random.SystemRandom()
     coolname.replace_random(rand)
     for _ in range(attempts):

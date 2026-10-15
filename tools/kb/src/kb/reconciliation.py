@@ -70,6 +70,9 @@ def differences(model):
         actual = index(layout)[0].get((function.key.location, storage.key.location), ())
         if any(site['mode'] in modes for site in actual):
             continue
+        from kb import copy_evidence
+        if copy_evidence.accepted(model, storage, function, claim) is not None:
+            continue
         found.append(dict(kind='access', subject=storage.key.key, layout=layout,
             claim_sha256=digest(claim), l0=digests[layout],
             detail=f'{claim["type"]} {storage.key.key} -> {function.key.key}: no matching '
@@ -98,7 +101,7 @@ def reviews(model):
     return [{**item, 'state': 'unresolved', 'reason': item['detail']} for item in differences(model)]
 
 
-def rebase(before, after, renames):
+def rebase(before, after, renames, *, proof_attachments=False):
     """Rebind exact renamed claims or withdraw reviews of deleted access claims.
 
     New differences and changed conditions, evidence, widths or L0 never gain
@@ -158,8 +161,14 @@ def rebase(before, after, renames):
             updated = {**record, **candidate}
             found.append(updated)
             changed |= updated != record
-        elif claim is not None and claim_identity(claim) not in remaining:
+        elif claim is not None and not proof_attachments and claim_identity(claim) not in remaining:
             changed = True
+        elif claim is not None:
+            from kb import copy_evidence
+            if not renames and copy_evidence.retires(before, after, claim):
+                changed = True
+            else:
+                found.append(record)
         else:
             found.append(record)
     if not changed:

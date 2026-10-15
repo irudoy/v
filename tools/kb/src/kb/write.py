@@ -1925,7 +1925,16 @@ def _selection(model, key, registry, order, item):
 def _issues(model):
     """{(check, subject, message): issue} of model checks, disagreements,
     and rejected chain notes, computed once per model."""
-    if model not in _CHECKED:
+    from kb import copy_evidence
+    with copy_evidence.consuming(model.root):
+        return _issues_consumed(model)
+
+
+def _issues_consumed(model):
+    from kb import copy_evidence
+    state = copy_evidence.model_state(model)
+    previous = _CHECKED.get(model)
+    if previous is None or previous[0] != state:
         found = {}
         for check in checks.CHECKS.values():
             for issue in check(model):
@@ -1933,8 +1942,8 @@ def _issues(model):
         for section, issues in checks.audit(model, ('disagreements', 'chain-notes')).items():
             for issue in issues:
                 found.setdefault((section, issue.subject, issue.message), issue)
-        _CHECKED[model] = found
-    return _CHECKED[model]
+        _CHECKED[model] = (state, found)
+    return _CHECKED[model][1]
 
 
 def refusals(base, result):
@@ -1954,8 +1963,12 @@ def plan(ops, base, resolve, root=repo.ROOT):
     texts = change.texts()
     result = compile.build(root, {**base.overlay, **texts})
     from kb import reconciliation
-    owner_text = (reconciliation.rebase(base, result, change.renamed)
-                  if change.renamed or any(op['cmd'] == 'unlink' for op in ops) else None)
+    from kb import copy_evidence
+    attached_copy = any(op['cmd'] == 'link' and any(copy_evidence.registered(item)
+                        for item in op.get('evidence', ())) for op in ops)
+    owner_text = (reconciliation.rebase(base, result, change.renamed,
+                                       proof_attachments=attached_copy)
+                  if change.renamed or attached_copy or any(op['cmd'] == 'unlink' for op in ops) else None)
     if owner_text is not None:
         texts[repo.OWNER_CONFIG] = owner_text
         result = compile.build(root, {**base.overlay, **texts})

@@ -26,6 +26,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+from dataclasses import replace
 
 TOOL_DIR = Path(__file__).resolve().parent
 ROOT = TOOL_DIR.parents[1]
@@ -39,6 +40,7 @@ import verify_map_switching as base_verifier
 from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from kb import targets as kb_targets
+import can_latch_copy
 
 
 RETURN_STUB = bytes.fromhex("000b0009")
@@ -1142,6 +1144,14 @@ REGIONS = (
 )
 
 
+REGIONS = (*REGIONS, Region(
+    key='jk08a-can-latch-copy', rom='JK08A', source='stock_jk08a_can_latch_copy.s',
+    harness='harness-stock-jk08a-can-latch-copy.c', start=0x21094, end=0x2109a,
+    pools=((0x210f4, 4), (0x21234, 4), (0x2125c, 4)), ram_literals=(0x2125c,),
+    cases=can_latch_copy.case_count(ROOT), constants=(('EARLY_ONLY', 0),),
+    callees=((0x22558, 0x22590),)))
+
+
 class VerificationError(RuntimeError):
     """Raised when a stock-code executable contract fails."""
 
@@ -1174,7 +1184,7 @@ def base_register(region, image):
     return _word(image, pool)
 
 
-def require_reconstruction(region, image, build_dir):
+def require_reconstruction(region, image, build_dir, *, source_path=None, captured=None):
     """Link on the four-byte boundary at or before the first code or pool and require
     the image bytes of the region and of its pool words. A two-byte-aligned
     entry has two padding bytes before its reconstruction, outside the region.
@@ -1185,7 +1195,7 @@ def require_reconstruction(region, image, build_dir):
     stem = build_dir / region.key
     base_verifier.run_command([
         base_verifier.AS, "--big", "--isa=sh2e",
-        "-o", stem.with_suffix(".o"), TOOL_DIR / region.source,
+        "-o", stem.with_suffix(".o"), source_path or TOOL_DIR / region.source,
     ])
     base_verifier.run_command([
         base_verifier.LD, "-EB", f"-Ttext={origin:#x}",
@@ -1208,6 +1218,11 @@ def require_reconstruction(region, image, build_dir):
                 f"{region.key}: the reconstruction of {start:#010x}.."
                 f"{end:#010x} differs from the {region.rom} image"
             )
+    if captured is not None:
+        captured['code'] = [dict(start=start, end=end, stock=image[start:end].hex(),
+            reconstructed=raw[start - origin:end - origin].hex()) for start, end in region.code_spans]
+        captured['pools'] = [dict(address=start, stock=image[start:start + size].hex(),
+            reconstructed=raw[start - origin:start + size - origin].hex()) for start, size in region.pools]
     return sum((end - start) // 2 for start, end in region.code_spans)
 
 
@@ -1354,7 +1369,7 @@ def register_word_aliases(region, image):
     return tuple(checked)
 
 
-def build_fixture(region, image):
+def build_fixture(region, image, *, boundary_bytes=None):
     """The simulator-only fixture of a region; the region bytes stay stock."""
     fixture = bytearray(image)
     for address in region.ram_literals:
@@ -1372,7 +1387,7 @@ def build_fixture(region, image):
     for address, original, alias, size in register_word_aliases(region, image):
         fixture[address:address + 2] = alias.to_bytes(2, "big")
     if region.boundary:
-        boundary = return_stub(region)
+        boundary = return_stub(region) if boundary_bytes is None else boundary_bytes
         end = region.end + len(boundary)
         if end > len(fixture) or any(region.end < address + size and address < end
                                      for address, size in region.pools):
@@ -1410,6 +1425,7 @@ REGION_OBSERVERS = {'jk08a-full-programmer': 'stock_injection_scheduler_invoke.s
 
 
 REGION_OBSERVERS.update({
+    'jk08a-can-latch-copy': 'invoke-can-latch-copy.s',
     'jk08a-knock-metric': 'invoke-knock-metric.s',
     'jk08a-knock-normalization': 'invoke-knock-normalization.s',
     'jk08a-stft-publication': 'invoke-stft-publication.s',
@@ -1423,18 +1439,29 @@ REGION_OBSERVERS.update({
 })
 
 
-def run_region(region, invoke, build_dir):
+def run_region(region, invoke, build_dir, *, copy_capture=None):
     execution_timeout = stock_execution_timeout()
     observer = REGION_OBSERVERS.get(region.key)
+    captured = can_latch_copy.snapshot(ROOT, build_dir) if region.key == 'jk08a-can-latch-copy' else None
+    source_dir = captured['source_dir'] if captured else TOOL_DIR
+    boundary_bytes = None
     if observer is not None:
         invoke = build_dir / f"{region.key}-invoke.o"
         base_verifier.run_command([
             base_verifier.AS, "--big", "--isa=sh2e", "-I", TOOL_DIR,
-            "-o", invoke, TOOL_DIR / observer,
+            "-o", invoke, source_dir / observer,
         ])
+        if captured:
+            boundary_bytes = can_latch_copy.boundary(invoke, build_dir)
     image = stock_image(region.rom)
-    instructions = require_reconstruction(region, image, build_dir)
-    fixture = build_fixture(region, image)
+    reconstruction = {}
+    if captured:
+        instructions = require_reconstruction(region, image, build_dir,
+            source_path=source_dir / region.source, captured=reconstruction)
+        fixture = build_fixture(region, image, boundary_bytes=boundary_bytes)
+    else:
+        instructions = require_reconstruction(region, image, build_dir)
+        fixture = build_fixture(region, image)
     fixture_path = build_dir / f"{region.key}.sim-fixture"
     rom_object = build_dir / f"{region.key}-rom.o"
     fixture_path.write_bytes(fixture)
@@ -1455,7 +1482,7 @@ def run_region(region, invoke, build_dir):
             f"-Wl,-Ttext-segment={text_base:#x}",
             "-Wl,--section-start=.rom=0",
             "-o", output,
-            TOOL_DIR / region.harness, invoke, rom_object,
+            source_dir / region.harness, invoke, rom_object,
         ],
         timeout=120,
     )
@@ -1463,6 +1490,7 @@ def run_region(region, invoke, build_dir):
         require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"{region.key}: ELF storage separation: {error}") from error
+    executable = output.read_bytes() if captured else None
     result = base_verifier.run_command(
         [
             base_verifier.RUN,
@@ -1475,15 +1503,34 @@ def run_region(region, invoke, build_dir):
         f"VQ_SH_ELF_STOCK_CODE status=PASS region={region.key} "
         f"cases={region.cases}"
     )
+    early = bool(captured and dict(region.constants).get('EARLY_ONLY'))
+    if early:
+        marker = f'VQ_SH_ELF_CAN_COPY_SUBSET status=PASS region={region.key} cases={region.cases} production=false'
     if marker not in result.stdout.splitlines():
         raise VerificationError(
             f"{region.key}: zero exit without the exact PASS marker"
             + (f"\n{result.stdout.rstrip()}" if result.stdout else "")
         )
+    if captured:
+        if output.read_bytes() != executable:
+            raise VerificationError('the actual CAN ELF changes during execution')
+        observations = can_latch_copy.observe(result.stdout, captured, early=early)
+        if copy_capture is not None:
+            copy_capture.update(region=region.key, cases=captured['cases'], observations=observations,
+                consumed={path: data.hex() for path, data in captured['consumed'].items()},
+                code=reconstruction['code'], pools=reconstruction['pools'],
+                image_sha256=hashlib.sha256(image).hexdigest(),
+                fixture_sha256=hashlib.sha256(fixture).hexdigest(),
+                elf_sha256=hashlib.sha256(executable).hexdigest(),
+                aliases=[[0x2125c, 0xffff4194, 0x01004194]],
+                boundary=dict(address=region.end, bytes=boundary_bytes.hex()),
+                entry=dict(r1=0x01004188, r11=0x22558, caller=0x21094,
+                           callsite=0x21096, delay_slot=0x21098, length=12),
+                toolchain=can_latch_copy.toolchain())
     return instructions
 
 
-def verify(verbose=False):
+def verify(verbose=False, *, copy_capture=None):
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-stock-") as directory:
         build_dir = Path(directory)
         invoke = build_dir / "stock-invoke.o"
@@ -1493,7 +1540,8 @@ def verify(verbose=False):
         ])
         instructions = 0
         for region in REGIONS:
-            count = run_region(region, invoke, build_dir)
+            count = (run_region(region, invoke, build_dir) if copy_capture is None
+                     else run_region(region, invoke, build_dir, copy_capture=copy_capture))
             instructions += count
             if verbose:
                 print(
@@ -1511,6 +1559,28 @@ def verify(verbose=False):
         f"instructions={instructions} cases={result['dynamic_cases']}"
     )
     return result
+
+
+def verify_can_copy_early():
+    """Fixed non-production feedback for new CAN inputs, without a full witness."""
+    from kb import copy_evidence, copy_matrix
+    base_verifier.require_toolchain_version()
+    region = next(region for region in REGIONS if region.key == copy_evidence.REGION)
+    cases = copy_matrix.cases(copy_evidence.descriptor(ROOT))
+    selected = copy_matrix.early_indices(cases)
+    inputs = copy_evidence.inputs(ROOT)
+    print('CAN_COPY_EARLY_CASES production=false ids=' + ','.join(cases[index]['id'] for index in selected))
+    region = replace(region, cases=len(selected), constants=(('EARLY_ONLY', 1),))
+    captured = {}
+    with tempfile.TemporaryDirectory(prefix='vq-sh-elf-stock-') as directory:
+        run_region(region, None, Path(directory), copy_capture=captured)
+    if copy_evidence.inputs(ROOT) != inputs:
+        raise VerificationError('CAN copy inputs change during the subset run')
+    captured['cases'] = [cases[index] for index in selected]
+    print('kb-copy-subset ' + copy_evidence.json_text(dict(schema=copy_evidence.SCHEMA,
+        key=copy_evidence.KEY, mode='early', production=False, complete=False,
+        inputs=inputs, witness=captured)))
+    print(f'VQ_SH_ELF_CAN_COPY_SUBSET status=PASS cases={len(selected)} production=false')
 
 
 def main(argv=None):

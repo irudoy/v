@@ -1,0 +1,77 @@
+schema = 1
+id = "can-copy-v1:jk08a-latch-12"
+layout = "7mfk"
+image = "JK08A"
+
+[copy]
+source = 0xffff4194
+destination = 0xffff4188
+length_bytes = 12
+member_offset_bytes = 7
+overlap = false
+
+[caller]
+meaning = "coherent_snapshot/fn"
+function = 0x00020dfe
+entry = 0x00021094
+call = 0x00021096
+delay_slot = 0x00021098
+end = 0x0002109a
+callee = 0x00022558
+callee_end = 0x00022590
+r1_load = 0x00021066
+r11_load = 0x00020eea
+context_end = 0x00021094
+entry_contract = "R1 is the destination, R11 is the callee; the stock entry loads R2 and its JSR delay slot sets R0 to 12."
+liveness = "The exact straight-line R1-load-to-entry context contains no call or R1/R11 overwrite. The earlier R11 load is an origin binding, not proof of every scheduler path."
+
+[[code]]
+start = 0x00021066
+bytes = "d1732620d6736260d67326206240d6722620d6726260d67224206260d672d47226206240d6722620d67262602420d2714b0be00c"
+
+[[code]]
+start = 0x00022558
+bytes = "2f262f362f46880089126423340c6024210034268b0c6024801134268b086024801234268b04602480133426710489ee64f663f6000b62f6"
+
+[[pool]]
+address = 0x00021234
+value = 0xffff4188
+
+[[pool]]
+address = 0x0002125c
+value = 0xffff4194
+
+[[pool]]
+address = 0x000210f4
+value = 0x00022558
+
+[[member]]
+direction = "reader"
+meaning = "tunneling-swift/ram"
+address = 0xffff419b
+width_bits = 8
+declared_width = "unset"
+
+[[member]]
+direction = "writer"
+meaning = "prehistoric-horse/ram"
+address = 0xffff418f
+width_bits = 8
+declared_width = "unset"
+
+[simulation]
+ram_base = 0x01000000
+ram_size = 65536
+boundary = 0x0002109a
+frame_bytes_below_sp = 64
+boundary_contract = "Capture all GPRs above SP before using a scratch register; capture SR, PR, GBR, MACH and MACL before returning to the observer. Helper-frame bytes below SP remain untouched by observation."
+relocation_contract = "Only the source/destination pointer pool and explicit entry RAM addresses use high-RAM aliases; all caller/helper instructions under test retain exact stock bytes."
+scope = "Bounded caller and helper execution, without a whole-scheduler, cadence, physical-unit, other-layout or hardware claim."
+
+[matrix]
+raw_byte_values = 256
+isolated_positions = 12
+incoming_mq_states = [0, 256, 512, 768]
+incoming_t_states = [0, 1]
+register_variants = 2
+helper_control_lengths = [0, 1, 2, 3, 4, 5, 13]

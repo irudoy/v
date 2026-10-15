@@ -22,6 +22,8 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+if str(ROOT / 'tools/kb/src') not in sys.path:
+    sys.path.insert(0, str(ROOT / 'tools/kb/src'))
 
 from patches import apply_map_switching
 from patches import map_switching_assembly as assembly_model
@@ -478,7 +480,7 @@ def require_toolchain_version():
     return first_line, gcc
 
 
-def verify(verbose=False):
+def verify(verbose=False, *, copy_capture=None):
     simulator, gcc_version = require_toolchain_version()
     layout = layout_model.load_layout()
     parsed_by_unit = assembly_model.validate_assembly_sources(layout)
@@ -529,7 +531,8 @@ def verify(verbose=False):
     try:
         import verify_stock_code
 
-        stock_result = verify_stock_code.verify(verbose=verbose)
+        stock_result = (verify_stock_code.verify(verbose=verbose) if copy_capture is None
+                        else verify_stock_code.verify(verbose=verbose, copy_capture=copy_capture))
     except Exception as error:
         raise VerificationError(
             f"stock-code executable gate failed: {error}"
@@ -575,9 +578,25 @@ def main(argv=None):
         action="store_true",
         help="print each independently assembled unit digest",
     )
+    copy_mode = parser.add_mutually_exclusive_group()
+    copy_mode.add_argument('--can-copy-early', action='store_true',
+        help='run the fixed non-production CAN copy subset without a qualified witness')
+    copy_mode.add_argument('--can-copy-witness', action='store_true',
+        help='emit the CAN copy candidate after the complete primary GNU pipeline')
     args = parser.parse_args(argv)
     try:
-        verify(verbose=args.verbose)
+        if args.can_copy_early:
+            import verify_stock_code
+            verify_stock_code.verify_can_copy_early()
+        elif args.can_copy_witness:
+            from kb import copy_evidence, copy_witness
+            candidate = copy_witness.begin(ROOT)
+            captured = {}
+            verify(verbose=args.verbose, copy_capture=captured)
+            packet = copy_witness.finish(candidate, captured, ROOT)
+            print(copy_evidence.MARKER + copy_evidence.json_text(packet))
+        else:
+            verify(verbose=args.verbose)
     except (OSError, ValueError, VerificationError) as error:
         print(f"VQ_SH_ELF_VERIFY status=FAIL error={error}", file=sys.stderr)
         return 1

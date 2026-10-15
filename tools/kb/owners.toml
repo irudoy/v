@@ -7560,34 +7560,12 @@ reason = "writer 7mfk-ffff418c/ram -> 7mfk-00027ac0/fn: no matching normalized L
 kind = "access"
 subject = "7mfk-ffff418f/ram"
 layout = "7mfk"
-claim_sha256 = "3cc1324c506da4727f760afdf3c9b027b0538a7b7e103e392b31ee085c07b07b"
-l0 = "014e30840503f771"
-detail = "writer 7mfk-ffff418f/ram -> 7mfk-00020dfe/fn: no matching normalized L0 access; the original claim remains unresolved"
-sources = ["kb/ram/prehistoric-horse.toml"]
-state = "unresolved"
-reason = "writer 7mfk-ffff418f/ram -> 7mfk-00020dfe/fn: no matching normalized L0 access; the original claim remains unresolved"
-
-[[reconciliation.review]]
-kind = "access"
-subject = "7mfk-ffff418f/ram"
-layout = "7mfk"
 claim_sha256 = "e850041347ce0f45994f06a57f4ca42512680a580c3f0fea53b7934165f15ffb"
 l0 = "014e30840503f771"
 detail = "writer 7mfk-ffff418f/ram -> 7mfk-00027ac0/fn: no matching normalized L0 access; the original claim remains unresolved"
 sources = ["kb/ram/prehistoric-horse.toml"]
 state = "unresolved"
 reason = "writer 7mfk-ffff418f/ram -> 7mfk-00027ac0/fn: no matching normalized L0 access; the original claim remains unresolved"
-
-[[reconciliation.review]]
-kind = "access"
-subject = "7mfk-ffff419b/ram"
-layout = "7mfk"
-claim_sha256 = "4ed0823f8fceebd96733a51e985be56af721f1796a1c15d766ad4ed236727bfb"
-l0 = "014e30840503f771"
-detail = "reader 7mfk-ffff419b/ram -> 7mfk-00020dfe/fn: no matching normalized L0 access; the original claim remains unresolved"
-sources = ["kb/ram/tunneling-swift.toml"]
-state = "unresolved"
-reason = "reader 7mfk-ffff419b/ram -> 7mfk-00020dfe/fn: no matching normalized L0 access; the original claim remains unresolved"
 
 [[reconciliation.review]]
 kind = "access"
@@ -8787,7 +8765,6 @@ detail = "jk78c-ffff227a/ram: declared 8 bits; normalized L0 includes wider acce
 sources = ["kb/ram/intake_cvtc_target.toml"]
 state = "unresolved"
 reason = "jk78c-ffff227a/ram: declared 8 bits; normalized L0 includes wider accesses of [16] bits"
-
 [source_bindings]
 enabled = true
 

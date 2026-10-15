@@ -8,6 +8,51 @@ p-code.
 The default gate is fully repository-contained. Verification of the separate
 npkern project is optional, external, and revision-locked.
 
+## Bounded CAN latch-copy witness
+
+The registered `jk08a-can-latch-copy` region executes the exact JK08A caller
+at `00021094`, its JSR and length-setting delay slot, and the natural helper
+at `00022558`. `defs/JK08A.can-latch-copy.toml` owns the mechanism, entry
+assumptions and simulation boundary; `kb.copy_matrix` owns its ordered cases.
+The generated `can-latch-copy-cases.h` is regenerated with:
+
+```bash
+uv run python tools/sh-elf-run/can_latch_copy.py --write-cases
+```
+
+The source gate compares the header and region count with the executed matrix.
+The observer captures every live GPR before scratch use, SR/PR/GBR/MACH/MACL,
+natural SP/return effects, the helper's lower frame, and all RAM outside the
+destination. Only the source pointer pool uses a RAM alias; R1/R11 are explicit
+bounded-entry inputs. Whole-scheduler reachability and hardware behavior are
+separate claims.
+
+The fixed feedback command uses the primary container and a non-production
+subset. It emits `kb-copy-subset` with the exact consumed private source bytes
+and ordered actual observations, and `VQ_SH_ELF_CAN_COPY_SUBSET production=false`.
+It emits no full-pipeline PASS or qualified candidate:
+
+```bash
+tools/sh-elf-run/run.sh --can-copy-early
+```
+
+`tools/sh-elf-run/run.sh --can-copy-witness` runs the complete primary pipeline
+and full matrix. Only after success does it emit `kb-copy-candidate`, binding
+actual private compilation inputs, image/reconstruction/fixture/ELF/toolchain,
+observations, native model and complete producer provenance. The mount remains
+read-only. Save the original bounded process receipt and streams under
+`local-results/`, then independently finalize them:
+
+```bash
+uv run python -m kb.copy_evidence finalize \
+  --process local-results/<run>-process.json \
+  --stdout local-results/<run>.stdout --stderr local-results/<run>.stderr
+```
+
+The local `.kb/copy-receipts/jk08a-latch-12.json` is not committed. Failed,
+partial, skipped, stale or subset runs cannot publish it; failed finalization
+preserves an earlier receipt. The independent 1ME3B TEST protocol is separate.
+
 ## Repository-contained gate
 
 Run the complete current runtime gate from the repository root:

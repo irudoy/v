@@ -71,6 +71,8 @@ class Passes:
         except (OSError, ValueError):
             self.passed = {}
         self.hashes = fingerprint.Hashes(root)
+        from kb import copy_evidence
+        self.copy_inputs = copy_evidence.dependencies(root)
         self.lists = {}
 
     def inputs(self, name):
@@ -93,6 +95,12 @@ class Passes:
         from kb import compatibility
         if path == compatibility.PIN:
             return compatibility.reference_commit(self.root)
+        if path in self.copy_inputs:
+            try:
+                from kb import copy_evidence
+                return fingerprint.blob(copy_evidence._read(self.root, path))
+            except FileNotFoundError:
+                return fingerprint.ABSENT
         if (self.root / path).is_dir():
             return DIRECTORY
         return self.hashes.of(path)
@@ -112,6 +120,17 @@ class Passes:
         """The failures of a check, or None when `changed` and its inputs are
         those of its last pass; record the digest of a pass and forget the
         check after a failure."""
+        from kb import copy_evidence
+        with copy_evidence.consuming(self.root):
+            self.copy_inputs.update(copy_evidence.dependencies(self.root))
+            original = copy_evidence.proof_state(self.root)
+            result = self._run_consumed(name, check, changed)
+            if copy_evidence.proof_state(self.root, live=True) != original:
+                self.passed.pop(name, None)
+                raise repo.KbError('copy execution proof changes during the check', code=6)
+            return result
+
+    def _run_consumed(self, name, check, changed):
         digest = self.digest(name)
         if changed and self.unchanged(name, digest):
             return None

@@ -44,6 +44,8 @@ def session(root=repo.ROOT,no_sync=False,held=False):
     with nullcontext() if held else lock.held(root):
         with graph.fresh(root,no_sync=no_sync,held=True,log=lambda text:print(text,file=sys.stderr)) as source:
             original=graph.meta(source)
+            if graph.proof_stale(original, root):
+                raise repo.KbError('the copy execution proof changes before the isolated read', code=6)
             writers={row['name'] for row in source.run(
                 'CALL mg.procedures() YIELD name, is_write WHERE is_write RETURN name')}
             with source.driver.session(default_access_mode='READ') as connection:
@@ -52,6 +54,8 @@ def session(root=repo.ROOT,no_sync=False,held=False):
                     yield ReadTransaction(transaction,writers,getattr(source,'uri',None))
                     if graph.stale(original,fingerprint.compute(root)):
                         raise repo.KbError('the source fingerprint changes during the isolated read',code=6)
+                    if graph.proof_stale(original, root):
+                        raise repo.KbError('the copy execution proof changes during the isolated read', code=6)
                 except Neo4jError as error:
                     # Result consumption can report a server error after run().
                     raise repo.KbError(f'cypher: {error.message}',code=2) from None

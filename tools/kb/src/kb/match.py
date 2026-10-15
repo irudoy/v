@@ -463,6 +463,9 @@ def context(model, symbol, item):
 def verify(model, symbol, item):
     """None when the evidence item holds on L0 and the images, else what
     fails. Kinds that L0 and the images do not decide hold here."""
+    from kb import copy_evidence
+    if copy_evidence.registered(item, symbol):
+        return copy_evidence.failure(item, symbol, model, 'identity')
     check = VERIFIERS.get(item.get("kind"))
     if check is None:
         return None
@@ -479,6 +482,9 @@ def verify_status(model, layout, item):
     images, else what fails: an `l0` item places an instruction of the L0 of
     the layout at `at`, and a `rom-bytes` item finds `value` at `at` in every
     image of the layout. Other kinds hold here."""
+    from kb import copy_evidence
+    if copy_evidence.registered(item):
+        return 'registered copy evidence requires its owning access and identity context, not a status'
     kind = item.get("kind")
     if kind not in ("l0", "rom-bytes") or "legacy" in item:
         return None
@@ -995,6 +1001,10 @@ def rank(item, symbol=None, model=None, claim=None):
     level, `code` for `manual` identity evidence of a `reg` symbol from the
     hardware manual of the MCU, and at most `candidate` for a counted match
     whose count is not 1."""
+    from kb import copy_evidence
+    if copy_evidence.registered(item, symbol) and copy_evidence.failure(
+            item, symbol, model, claim) is not None:
+        return -1
     kind = item.get("kind")
     _, level = vocab.EVIDENCE_KINDS.get(kind, ((), None))
     if level is None:
@@ -1044,7 +1054,15 @@ def _anchor(model, symbol, failures):
         for item in link.evidence:
             at = location(item.get("at"))
             if at is not None and at[0] == symbol.layout and _complete(item):
-                best = max(best, rank(item))
+                from kb import copy_evidence
+                if copy_evidence.registered(item, symbol):
+                    failure = copy_evidence.failure(item, symbol, model, 'identity')
+                    if failure is not None:
+                        failures.append((item, failure))
+                    else:
+                        best = max(best, rank(item, symbol, model, 'identity'))
+                else:
+                    best = max(best, rank(item))
     return best
 
 

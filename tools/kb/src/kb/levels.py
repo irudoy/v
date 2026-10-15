@@ -240,7 +240,11 @@ def held(model, symbol, pointed=frozenset()):
         return symbol.address in model.functions.get(symbol.layout, ())
     if symbol.key in pointed:
         return True
-    if any(item.get("kind") == "indirect" and "legacy" not in item for item in symbol.evidence):
+    from kb import copy_evidence
+    if any(item.get("kind") == "indirect" and "legacy" not in item
+           and (not copy_evidence.registered(item, symbol)
+                or copy_evidence.failure(item, symbol, model, 'identity') is None)
+           for item in symbol.evidence):
         return True
     referenced = sites.referenced(symbol.layout, model.root)
     span = match.storage_size(symbol) or 1
@@ -442,8 +446,9 @@ def analyze(model, *, subjects=None):
     grounded = {}
     for claim in claims:
         best = ranks[claim.symbol.key][0] if claim.symbol is not None else -1
-        from kb import test_evidence
-        if claim.name != 'identity' and test_evidence.identity_only(claim.symbol):
+        from kb import copy_evidence, test_evidence
+        if claim.name != 'identity' and (test_evidence.identity_only(claim.symbol)
+                                       or copy_evidence.identity_only(claim.symbol)):
             # This witness proves only its registered image-scanning identity.
             best = -1
         for symbol, item in claim.items:

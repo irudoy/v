@@ -165,6 +165,16 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021096"
+to = "coherent_snapshot/fn/7mfk"
+value = {direction = "reader", offset_bytes = 7, width_bits = 8}
+mode = "block-copy"
+path = "defs/JK08A.can-latch-copy.toml"
+key = "can-copy-v1:jk08a-latch-12"
+
 [[link]]
 type = "writer"
 to = "amphibian-frigatebird/fn"

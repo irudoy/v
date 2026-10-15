@@ -813,6 +813,7 @@ mov #0x5,r1
                 "ANGLE_SNAPSHOT": 0xFFFF2333,
                 "EARLY_ONLY": 0,
             },
+            'jk08a-can-latch-copy': {'REGION_ENTRY': 0x21094, 'EARLY_ONLY': 0},
             "jk08a-injection-start-delay": {
                 "REGION_ENTRY": 0x000521A8,
                 "PRIMARY_SPEED": 0xFFFF11BC,
@@ -1240,7 +1241,16 @@ mov #0x5,r1
                     ROOT / "tools/sh-elf-run" / region.harness
                 ).read_text(encoding="utf-8")
                 cases = re.findall(r'\b\w+_cases\[\]\s*=\s*\{(.*?)\};', harness, re.S)
-                if key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning", "jk08a-closed-loop-conversion", "jk08a-closed-loop-adjustment"):
+                if key == 'jk08a-can-latch-copy':
+                    helper = STOCK_VERIFIER.can_latch_copy
+                    descriptor = helper.proof.descriptor(ROOT)
+                    header = (STOCK_VERIFIER.TOOL_DIR / 'can-latch-copy-cases.h').read_text()
+                    self.assertEqual(header, helper.render_header(descriptor))
+                    self.assertEqual(region.cases, len(helper.copy_matrix.cases(descriptor)))
+                    self.assertIn('if (completed != ARRAY_SIZE(can_copy_cases)) return 1;', harness)
+                    self.assertIn('if (completed != ARRAY_SIZE(can_copy_early_indices)) return 1;', harness)
+                    self.assertIn('production=false', harness)
+                elif key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning", "jk08a-closed-loop-conversion", "jk08a-closed-loop-adjustment"):
                     scope = key.removeprefix("jk08a-")
                     header_name = "stock-jk08a-" + scope + "-cases.h"
                     self.assertEqual(re.findall(

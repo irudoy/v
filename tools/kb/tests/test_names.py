@@ -1,4 +1,7 @@
 import random
+import builtins
+import importlib.util
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -48,6 +51,30 @@ class FileTest(unittest.TestCase):
             self.assertEqual([line.split(",")[0:2] for line in text.splitlines()[1:]],
                              [["7mfk", "fn"], ["7mfk", "tbl"], ["jk00d", "ram"]])
             self.assertEqual(sorted(names.read(root)), sorted(rows))
+
+
+def test_saved_name_compilation_does_not_import_optional_generators(monkeypatch):
+    from kb import compile
+    from kb.model import SymbolKey
+    original = builtins.__import__
+    def importing(name, *args, **kwargs):
+        if name.split('.')[0] in ('coolname', 'rapidfuzz'):
+            raise ModuleNotFoundError(name)
+        return original(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, '__import__', importing)
+    spec = importlib.util.spec_from_file_location('_controlled_saved_names', names.__file__)
+    module = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, spec.name, module)
+    spec.loader.exec_module(module)
+    model = compile.build()
+    module.assign(model, model.names)
+    assert model.symbols[SymbolKey('7mfk', 'ram', 0xffff419b)].meaning.name == 'tunneling-swift'
+    assert model.symbols[SymbolKey('7mfk', 'ram', 0xffff418f)].meaning.name == 'prehistoric-horse'
+    assert module.Taken({'known'}).near('known') == 'known'
+    with unittest.TestCase().assertRaises(ModuleNotFoundError):
+        module.Taken({'known'}).near('other')
+    with unittest.TestCase().assertRaises(ModuleNotFoundError):
+        module.draw(module.Taken(()), set(), 1)
 
 
 if __name__ == "__main__":

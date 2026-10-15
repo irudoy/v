@@ -96,6 +96,26 @@ entry. Interior control flow and private lookup-literal preservation remain
 unverified. Unregistered TEST items retain their legacy, unqualified behavior.
 Definition inspection and model construction do not require a receipt.
 
+The reserved `can-copy-v1:jk08a-latch-12` indirect/block-copy item requires its
+own qualified primary GNU receipt. The descriptor
+`defs/JK08A.can-latch-copy.toml` binds exactly the source reader and destination
+writer through the bounded caller. Copied-byte width is independent of the
+owners' unset declared widths and relation slot/offset. One validator supplies
+reconciliation, graph verification, verify/rank/anchor, held-object and direct
+identity grounding. It grants no scale/contract, cadence or hardware evidence.
+Unknown block-copy items and malformed reserved markers fail closed; unrelated
+legacy evidence keeps its separate unqualified behavior. See
+`tools/sh-elf-run/README.md` for the primary producer and independent finalizer.
+
+Receipt, original process and stream bytes are live check dependencies, even
+when absent. Verdicts and pass-cache publication consume one primitive output
+snapshot; graph Meta binds the same snapshot and readers fence its freshness.
+Removal or change refuses a stale graph under `--no-sync`; primary sync only
+recomputes the proof-dependent projection, keeping unchanged ROM accesses.
+Ordinary reads, checks and sync do not execute GNU implicitly. A proof attachment
+uses `link`, with exact full semantic BEFORE/AFTER CAS and narrow review rebase.
+The lock-validated batch does not guarantee rollback across per-file I/O failure.
+
 Ordinary pytest hooks optionally write a candidate through
 `--kb-test-candidate=<path>` for the exact registered case. The candidate binds
 actual collection, parameters and terminal phases, the explicit supported
