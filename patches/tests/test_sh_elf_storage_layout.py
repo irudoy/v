@@ -122,3 +122,68 @@ def test_primary_stock_runner_checks_linked_elf_before_simulator(tmp_path,monkey
         assert stock.run_region(region,tmp_path/'invoke.o',tmp_path)==301
         assert calls[-1]==(stock.base_verifier.RUN,{'timeout':stock.stock_execution_timeout()})
     assert next(options for cmd,options in calls if cmd==stock.base_verifier.GCC)=={'timeout':120}
+
+
+@pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059'])
+@pytest.mark.parametrize('layout', ['data', 'bss', 'virtual', 'physical', 'before', 'after', 'malformed', 'missing'])
+def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monkeypatch, route, layout):
+    import importlib
+    from types import SimpleNamespace
+
+    modules = {
+        'map': 'verify_map_switching', 'rolling': 'verify_rolling_launch',
+        'telemetry': 'verify_can_telemetry',
+        'relocated-sh7058': 'verify_runtime_targets',
+        'relocated-sh7059': 'verify_runtime_targets',
+    }
+    module = importlib.import_module(modules[route])
+    base = module if route == 'map' else module.base_verifier
+    marker = {
+        'map': ('VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 '
+                'adapters=91 limiter=14 feedback=9 feedback_invocations=17 entries=12'),
+        'rolling': ('VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=123 '
+                    'structural=11 gates=27 config=24 threshold=4 activation=6 '
+                    'active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 entries=8'),
+        'telemetry': getattr(module, 'REQUIRED_DYNAMIC_MARKER', ''),
+    }.get(route, 'controlled relocated feature marker')
+    overlap = layout in ('data', 'bss', 'virtual', 'physical')
+    begin = RAM if overlap else RAM - 4 if layout == 'before' else RAM + 65536
+    data = image(section=(begin, 4, 8 if layout == 'bss' else 1, 2))
+    if layout in ('virtual', 'physical'):
+        data = image(load=(RAM if layout == 'virtual' else 0x110000,
+                           RAM if layout == 'physical' else 0x110000, 0, 4))
+    if layout == 'malformed':
+        data = b'not an ELF'
+    calls = []
+    linked = []
+
+    def command(args, **options):
+        calls.append((args, options))
+        if args[0] == base.GCC:
+            output = Path(args[args.index('-o') + 1])
+            linked.append(output)
+            if layout != 'missing':
+                output.write_bytes(data)
+        return SimpleNamespace(stdout=marker + '\n')
+
+    monkeypatch.setattr(base, 'run_command', command)
+
+    def execute():
+        if route.startswith('relocated-'):
+            size = 0x180000 if route.endswith('sh7059') else 0x100000
+            target = SimpleNamespace(rom='CONTROLLED', stock_image=SimpleNamespace(data=bytes(size)))
+            return module._compile_and_run(target, 'feature', tmp_path / 'harness.c',
+                tmp_path / 'rom.o', [tmp_path / 'invoke.o'], tmp_path, marker)
+        return module.build_and_run_dynamic_harness(b'controlled fixture', tmp_path)
+
+    if overlap or layout in ('malformed', 'missing'):
+        with pytest.raises(module.VerificationError, match='ELF storage separation'):
+            execute()
+        assert base.RUN not in [args[0] for args, _ in calls]
+    else:
+        assert execute() == marker
+        args, options = calls[-1]
+        assert args == [base.RUN, f'--memory-region={RAM:#x},64k', linked[0]]
+        assert options == {'timeout': 120 if route == 'map' else 180}
+    assert len(linked) == 1
+    assert next(options for args, options in calls if args[0] == base.GCC) == {'timeout': 120}

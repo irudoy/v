@@ -19,7 +19,7 @@ from kb.allocation import allocation_phase
 @pytest.mark.parametrize('collecting', [False, True])
 @pytest.mark.parametrize('failure', [False, True])
 def test_original_phase_callbacks_and_exceptions_restore_caller_state(
-        monkeypatch, phase, collecting, failure):
+        monkeypatch, tmp_path, phase, collecting, failure):
     original_mode, thresholds = gc.isenabled(), gc.get_threshold()
     calls = []
     error = ValueError('controlled allocation failure')
@@ -61,7 +61,9 @@ def test_original_phase_callbacks_and_exceptions_restore_caller_state(
         expected = None
     else:
         class Model:
-            pass
+            root = tmp_path
+            links = ()
+            symbols = {}
 
         model = Model()
         monkeypatch.setattr(checks, 'CHECKS', {'controlled': lambda model: (callback(model) or [])})

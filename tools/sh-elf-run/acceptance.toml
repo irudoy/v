@@ -1,0 +1,292 @@
+schema = 1
+scope = "Primary GNU groups and evidence/publication contracts; group metadata does not authorize selective qualification."
+full_matrix_minimality = "unproved"
+qualification_policy = "Required repository gates and exact current receipt protocols apply."
+
+[[group]]
+id = "toolchain"
+category = "pipeline"
+property = "A required executable is unavailable, or sh-elf-run does not report simulator version 16.3."
+repeat_triggers = ["GNU executable or PATH resolution changes.", "Container/runtime-library or ISA/endian/build/run argument changes."]
+overlap = "Source-level Python checks do not establish the installed toolchain identity or simulator behavior."
+minimum_boundary = "require_toolchain_version() checks the simulator version and reads the GCC version."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/sh-elf-run/verify_map_switching.py"]
+regions = []
+limits = ["The function enforces simulator version 16.3 but only reports the GCC version; it does not require a particular GCC version.", "Version strings alone do not establish binary, library, or semantic equivalence."]
+
+[[group]]
+id = "delay_slot_probe"
+category = "pipeline"
+property = "The exact BRA/MOV.L incident does not produce the required illegal-instruction stop, or the BRA/NOP control fails."
+repeat_triggers = ["delay_slot_probe.s or delay_slot_main.c changes.", "Incident words, linked section addresses, linker options, or toolchain/runtime behavior changes."]
+overlap = "test_incident_fixture_keeps_exact_failed_words checks the source words and constants without executing the CPU behavior."
+minimum_boundary = "verify_delay_slot_incident(build_dir) assembles both probes, verifies the incident bytes, executes the safe control, and requires exit 4 plus the SIGILL marker for the unsafe probe."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/sh-elf-run/verify_map_switching.py", "patches/tests/test_sh_elf_run_verifier.py"]
+regions = []
+limits = ["GNU execution provides an independent instruction executor relative to the repository's source parser.", "The result describes the GNU simulator and does not establish behavior on the physical SH7058/SH7059."]
+
+[[group]]
+id = "reconstruction_fixture"
+category = "pipeline"
+property = "GNU assembles bytes that differ from tracked payloads, composition hashes/counts disagree, or simulator-only transformations change checked instructions or undeclared data."
+repeat_triggers = ["Assembly sources or transitive includes, payload bytes/locks, layouts, composers, stock image bytes, pools, relocation rules, or stock stubs change.", "GNU assembly/link/objcopy binaries or their effective options change."]
+overlap = "Python parsing, composition, transform, and negative tests cover overlapping structural properties. Independent GNU assembly checks the repository parser/dialect assumptions against the actual toolchain."
+minimum_boundary = "assemble_all_units(), require_composition(), and build_dynamic_fixture() for the affected feature, including its instruction-semantics audit."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/sh-elf-run/verify_map_switching.py", "patches/tests/test_sh_elf_run_verifier.py"]
+regions = []
+limits = ["GNU reconstruction is independent of the repository parser, but composition locks and allowed fixture transformations remain project-defined contracts.", "Preparation proves byte and layout properties; it does not execute feature behavior."]
+
+[[group]]
+id = "elf_storage"
+category = "pipeline"
+property = "Allocated sections or virtual/physical LOAD memory extents, including BSS extents, overlap declared test RAM; malformed ELF geometry is also rejected."
+repeat_triggers = ["The actual ELF bytes or declared RAM ranges change.", "The ELF storage-checking contract changes."]
+overlap = "This is a static Python inspection of the actual compiled ELF, not a simulator behavior test. Source-layout checks do not replace inspection of the linked result."
+minimum_boundary = "require_separate_storage(elf_path, ram_ranges) on each affected ELF."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/sh-elf-run/elf_storage_layout.py", "tools/sh-elf-run/verify_stock_code.py", "tools/sh-elf-run/sid22_pointer_read.py", "tools/sh-elf-run/verify_map_switching.py", "tools/sh-elf-run/verify_rolling_launch.py", "tools/sh-elf-run/verify_can_telemetry.py", "tools/sh-elf-run/verify_runtime_targets.py"]
+regions = []
+limits = ["Stock, SID22, map-switching, rolling-launch, telemetry, and relocated-runtime runners inspect their actual linked ELF before entering the simulator with declared test RAM.", "Storage separation does not establish harness semantics or require execution of unrelated matrices."]
+
+[[group]]
+id = "map_switching"
+category = "pipeline"
+property = "Selector, adapter, limiter, or feedback behavior produces incorrect results or RAM writes, damages guarded RAM, or fails to execute the required entries."
+repeat_triggers = ["Map-switching composition or fixture changes.", "map_switching_harness.c, invoke.s, expected map values, stock stubs, or the execution environment changes."]
+overlap = "Python checks layout, composition, and fixture transformations. The C harness checks actual SH instruction execution, expected outputs, and RAM behavior."
+minimum_boundary = "The map preparation/audit chain followed by build_and_run_dynamic_harness(fixture, build_dir)."
+minimality = "existing_boundary_identified_minimality_unproven"
+source_anchors = ["tools/sh-elf-run/verify_map_switching.py", "tools/sh-elf-run/map_switching_harness.c"]
+regions = []
+limits = ["Expected results are specified by the harness independently of the GNU simulator, but this is not an independently recovered hardware specification.", "Some stock callees are replaced by documented simulator stubs."]
+
+[[group]]
+id = "rolling_launch"
+category = "pipeline"
+property = "Gate/configuration evaluation, thresholds, activation, active/cooldown transitions, ignition output, wrappers, or feedback behaves incorrectly."
+repeat_triggers = ["Rolling assembly/layout/payload or lower map layout/composition changes.", "rolling_launch_harness.c, invoke.s, serializer/stock stubs, fixture transformations, or the execution environment changes."]
+overlap = "Python checks composition locks, authoritative stub sets, and preservation of instruction bytes. GNU execution adds state-transition, output, and RAM behavior checks."
+minimum_boundary = "verify_rolling_launch.verify(check_toolchain=True), including its preparation and complete 123-case harness."
+minimality = "existing_boundary_identified_minimality_unproven"
+source_anchors = ["tools/sh-elf-run/verify_rolling_launch.py", "patches/tests/test_sh_elf_run_verifier.py"]
+regions = []
+limits = ["The matrix executes a simulator composition with documented stock stubs.", "It does not establish engine behavior or hardware readiness."]
+
+[[group]]
+id = "can_telemetry"
+category = "pipeline"
+property = "Profile handling, context-specific processing, telemetry outputs, or ISR/RTE paths fail the declared harness expectations."
+repeat_triggers = ["Telemetry or lower map/rolling compositions change.", "Generated identity/configuration header, telemetry harness, invoke.s, invoke_exception.s, TRAPA vector, aliases/stubs, or the execution environment changes."]
+overlap = "Python checks profile/header binding, configuration use, layout, and preservation of instruction bytes. GNU executes CPU and exception paths against harness assertions."
+minimum_boundary = "verify_can_telemetry.verify(check_toolchain=True), including preparation, generated-configuration binding, and the complete 80-case harness."
+minimality = "existing_boundary_identified_minimality_unproven"
+source_anchors = ["tools/sh-elf-run/verify_can_telemetry.py", "patches/tests/test_sh_elf_run_verifier.py"]
+regions = []
+limits = ["Some configuration is shared with the generator, so expected configuration identity is not a wholly independent oracle.", "Documented stock stubs limit what the dynamic result establishes."]
+
+[[group]]
+id = "relocated_runtime_targets"
+category = "pipeline"
+property = "Relocated target addresses, map variants, rolling coordinator/hold paths, or telemetry tail-chain behavior fail after composition into a selected target ROM."
+repeat_triggers = ["The selected stock ROM, target profile/KB addresses, native fuel-cut facts, family variants, relocated payloads/locks, or lower assemblies change.", "Rendered harness substitutions/defines, aliases/stubs, compilation/linking arguments, or the execution environment change."]
+overlap = "Python tests cover target bindings, family variants, payload tampering, and exact composition. GNU executes the target-specific relocated bytes and variant-specific harnesses."
+minimum_boundary = "verify_runtime_targets.verify_target(rom, locks[rom]) for an affected target, with toolchain qualification provided by the caller."
+minimality = "existing_boundary_identified_minimality_unproven"
+source_anchors = ["tools/sh-elf-run/verify_runtime_targets.py", "patches/tests/test_runtime_targets.py"]
+regions = []
+limits = ["Harness templates are reused and some target addresses are transformed by the same renderer that prepares target-specific sources; address semantics therefore lack a fully independent oracle.", "Per-target case counts vary with the selected variants; no single fixed count is asserted for this group."]
+
+[[group]]
+id = "upstream_fuel"
+category = "stock"
+property = "Detects signed low32 wrap before clamp, truncation toward zero, byte/word contamination, directional interpolation, latch/rate ordering and real two-call composition. Concrete witnesses include accumulator 0x7fffbfff -> 65535 versus 0x7fffc000 -> 0, and additive 1*(-1)/256 -> 0. Natural GBR/MACL restoration and unintended stores are independent execution properties."
+repeat_triggers = ["Changed arithmetic instructions, consumed calibrations, operand-width/address bindings, real callees, input matrix/oracle, aliases or invoke/link/toolchain closure."]
+overlap = "test_fuel_upstream_chain checks equations over the same model matrices, exact bytes/fixtures/source hashes and owner facts. Those checks do not execute instruction side effects. Arithmetic oracles use separate Python integer formulas; register expectations retain manual instruction interpretation."
+minimum_boundary = "Affected natural entry or bounded caller, its real helpers and relevant full matrix. No public group selector exists; the primary runner executes the complete pipeline. The need for every exhaustive operand sweep remains unproved."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/stock_accumulator_model.py", "tools/sh-elf-run/stock_transient_additive_model.py", "tools/sh-elf-run/harness-stock-jk08a-base-accumulator.c", "tools/kb/tests/test_fuel_upstream_chain.py", "tools/sh-elf-run/README.md"]
+regions = ["jk08a-base-accumulator", "jk08a-transient-coefficient", "jk08a-transient-additive", "jk08a-coolant-conditional", "jk08a-transient-pair-1", "jk08a-transient-pair-2", "jk08a-fuel-multiplier", "jk08a-pulse-precursor", "jk08a-common-gain", "jk08a-enrichment-prefix", "jk08a-enrichment-terminal"]
+limits = ["Not all combinations of the 32/16/16-bit accumulator inputs. Additive signed saturation is unreachable in its admitted domain. No physical units or producer reachability."]
+
+[[group]]
+id = "airflow_bfs"
+category = "stock"
+property = "Detects ADC low-bit handling and bank swaps, unsigned transfer/filter arithmetic, normalization/division boundaries, copy source/destination errors and BFS latch/timer updates. Main compensation checks column-first surface interpolation and directional rounding; BFS rate distinguishes natural query behavior from separately supplied post-query outcomes."
+repeat_triggers = ["Changed conversion/filter/lookup instructions, table or scaling constants, bank/source/target addresses, latch/timer predicates, snapshot helper or common execution closure."]
+overlap = "Airflow/load Python tests and exact fixture/byte checks overlap numeric equations and source identity. Runtime stores, caller arguments, helper composition and retained neighboring state add independent information. Some direct kernels also appear in the interpolation group as separate caller contexts."
+minimum_boundary = "Affected publisher/accessor and actual called kernels, with its declared bank, bypass and arithmetic contexts. No public group selector; current primary CLI runs all groups."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/stock_maf_adc_harness.c", "tools/sh-elf-run/stock_maf_filter_harness.c", "tools/sh-elf-run/stock_load_normalization_harness.c", "tools/sh-elf-run/README.md", "tools/kb/tests/test_airflow_fuel_compensation.py", "tools/kb/tests/test_load_snapshot.py", "tools/kb/tests/test_load_normalization.py"]
+regions = ["jk08a-bfs-rate", "jk08a-fuel-compensation", "jk08a-bfs-limit", "jk08a-bfs-base", "jk08a-maf-contribution", "jk08a-load-snapshot", "jk08a-load-normalization", "jk08a-maf-aggregate", "jk08a-maf-filter", "jk08a-maf-transfer", "jk08a-maf-compensation", "jk08a-battery-scaling", "jk08a-maf-scaling", "jk08a-maf-adc"]
+limits = ["Observation strength differs by harness: older fixtures protect declared windows rather than every RAM byte. Artificial post-query outcomes do not prove stock reachability or hardware acquisition."]
+
+[[group]]
+id = "interpolation"
+category = "stock"
+property = "Detects incorrect first/last-cell handling, coordinate truncation, cell/fraction selection, ascending versus descending rounding and signed exact-byte returns. Named vectors include descending first-count/midpoint cases and high argument bits that must be truncated."
+repeat_triggers = ["Changed axis/curve/search/divider instructions, table formats or neighboring cells, wrapper argument-width rules or common invoke/link/toolchain inputs."]
+overlap = "Python interpolation arithmetic and static ROM/table bindings overlap results. Direct GNU calls independently exercise actual wrapper/search/finisher ABI. Caller groups also execute these kernels with their own composition context; sharing a kernel does not make those assertions identical."
+minimum_boundary = "Affected kernel and wrapper over knots, adjacent coordinates, both directions and admitted argument formats; callers only when their consumed integration inputs change. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/stock_implicit_byte_curve_harness.c", "tools/sh-elf-run/stock_direct_byte_axis_harness.c", "tools/sh-elf-run/stock_byte_axis_harness.c", "tools/sh-elf-run/stock_word_axis_harness.c"]
+regions = ["jk08a-direct-byte-axis", "jk08a-implicit-byte-curve", "jk08a-byte-axis", "jk08a-word-axis"]
+limits = ["Selected stock/artificial tables are finite examples, not proof for every malformed axis or all table data. No sensor scale follows from interpolation alone."]
+
+[[group]]
+id = "crank_rpm"
+category = "stock"
+property = "Detects first-capture sentinel/flag errors, unsigned timer wrap, high-bit or zero-divisor mistakes, median tie handling and drop-history saturation. RPM phase views check word/byte truncation, capped scaling and the real copy. Capture vectors distinguish 0x8000-0x7fff from the reverse subtraction."
+repeat_triggers = ["Changed capture/period/RPM instructions, MMIO aliases, dividers, timer constants, history storage, phase-copy source/destination or common executor inputs."]
+overlap = "Python crank/RPM scale and state tests overlap equations, addresses and calibration assumptions. GNU adds actual memory writes, return values and divider fault behavior. Full acquisition/simultaneity is not established by separate phase views."
+minimum_boundary = "Affected natural publisher or bounded representation plus real divider/copy helper and wrap/zero/tie contexts. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/stock_crank_capture_harness.c", "tools/sh-elf-run/stock_rpm_division_harness.c", "tools/sh-elf-run/stock_rpm_median_harness.c", "tools/sh-elf-run/stock_rpm_drop_harness.c", "tools/sh-elf-run/harness-stock-jk08a-rpm-phase.c", "tools/kb/tests/test_engine_speed_crank_capture.py"]
+regions = ["jk08a-crank-capture", "jk08a-tooth-normalization", "jk08a-tooth-fallback", "jk08a-event-interval", "jk08a-rpm-median", "jk08a-rpm-division", "jk08a-rpm-drop-arithmetic", "jk08a-rpm-phase-word", "jk08a-rpm-phase-byte", "jk08a-rpm-phase-copy"]
+limits = ["Software contexts do not establish physical timer delivery, sensor waveform or sample simultaneity. Individual older harnesses check specific memory windows and return registers."]
+
+[[group]]
+id = "injection_calculation"
+category = "stock"
+property = "Detects negative-SHAR flooring, override/stopped/start/running precedence, bank/trim selection, word truncation and reciprocal-product wrap. The reciprocal splitter preserves low32 multiplication and byte residue; replacing it with exact division by ten is not equivalent for every admitted input."
+repeat_triggers = ["Changed duration/angle arithmetic, bank/mode selectors, reciprocal constants, real arithmetic helpers, calibration/operand widths or common frame/alias executor."]
+overlap = "Chain/equation tests overlap numerical formulas and immutable byte bindings. GNU adds exact call/delay behavior, full intermediate register values and output/frame footprints where declared."
+minimum_boundary = "Affected arithmetic entry plus its actual helpers and legal selector/overflow/boundary contexts. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_connected_injection_chain.py"]
+regions = ["jk08a-opening-word", "jk08a-pulse-selector", "jk08a-channel-pulse", "jk08a-bank-base-pulse", "jk08a-end-angle", "jk08a-injection-start-delay", "jk08a-injection-reciprocal", "jk08a-injection-tooth", "jk08a-injection-offset"]
+limits = ["Explicit staged inputs are not proof of upstream production, cadence, physical timing units or whole-dispatcher reachability. Some numerical clamp branches are unreachable under the admitted raw widths."]
+
+[[group]]
+id = "injection_scheduler"
+category = "stock"
+property = "Detects saved-frame/RTS-delay restoration errors, wrong dispatch arguments, stale slot/cursor masks, pending-history corruption, count-zero versus saved-return behavior and incorrect event consumer ordering. Catch-up N=0 must retain RAM; N>=6 accumulates all six mask bits while preserving unrelated history bits. The snapshot executes its own 140-byte helper contract, separate from CAN12."
+repeat_triggers = ["Changed programmer/dispatcher/ISR instructions, slot/mask tables, MMIO stores, explicit frame layouts, copy span, actual consumers or common invoke/fixture code."]
+overlap = "Python sequencing/snapshot/dispatch chains overlap masks, equations and source identity. Connected execution supplies real BSR/JSR/delay order and natural frame composition missing from isolated formulas."
+minimum_boundary = "Affected composed path plus its separately required direct-entry boundaries; retain quiet/event and count-zero/nonzero views. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_injection_sequencing_chain.py"]
+regions = ["jk08a-full-programmer", "jk08a-oneshot", "jk08a-event-isr", "jk08a-full-dispatch", "jk08a-injection-prologue", "jk08a-injection-count", "jk08a-injection-dispatch", "jk08a-injection-catchup", "jk08a-injection-pending", "jk08a-injection-slot", "jk08a-injection-snapshot"]
+limits = ["Prepared frames and bounded direct entries do not prove all scheduler paths. GNU TRAPA/RTE does not establish the physical SH-2E exception-stack contract; hardware eligibility remains separate."]
+
+[[group]]
+id = "knock"
+category = "stock"
+property = "Detects normalization/zero-domain errors, signed sample-reference subtraction, wrong threshold interpolation, strict comparison equality, saturation and no-store companion paths. Timing-byte conversion distinguishes truncation toward zero from flooring. Event and quiet integration are alternative entries, not a dispatch inferred from event count zero."
+repeat_triggers = ["Changed software input widths, legal channel/context, lookup/scaler/divider code, threshold/reference tables, gate/mode bytes, learning/retard stores or common executor inputs."]
+overlap = "Knock Python chains and model equations overlap arithmetic, selector identity and byte locks. GNU adds real helper execution, signed scratch values, branch/delay stores and declared ABI/RAM preservation. Some state-selection lookup results are explicitly supplied, not executed."
+minimum_boundary = "Affected bounded producer/comparison/learner with its consumed real helpers and channel/gate/saturation contexts. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_knock_metric_chain.py"]
+regions = ["jk08a-knock-reference-learning", "jk08a-knock-state-selection", "jk08a-knock-event-publication", "jk08a-knock-event-retard", "jk08a-knock-integration", "jk08a-knock-timing-byte", "jk08a-knock-comparison", "jk08a-knock-threshold", "jk08a-knock-metric", "jk08a-knock-normalization"]
+limits = ["Post-acquisition software words do not prove ADC/DMAC, physical knock order/units or engine reachability. Timing-byte sweep observes full RAM at 256-case block boundaries, not every sweep case; compensating within-block writes remain outside that observation."]
+
+[[group]]
+id = "closed_loop"
+category = "stock"
+property = "Detects signed/unsigned trim publication, neutral/bypass conditions, hysteretic cell selection, reset/retention, signed learning steps and ordered bounds. Whole feedback executes both banks and fifteen real helpers; source precedence, initialization and workspace/frame preservation are independent of final scalar equations."
+repeat_triggers = ["Changed selector/admission/learning/feedback code, actual helper closure, grid axes or values, packed-index/calibration rules, workspace mappings, publication widths or executor/toolchain."]
+overlap = "Python closed-loop and LTFT chains check equations, reader phases, ownership and exact contracts. GNU verifies the actual helper composition, delays, nested frames and complete admitted memory effects."
+minimum_boundary = "Affected natural entry and its real helper closure; use whole-feedback composition when the inter-helper or bank-state contract changes. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_closed_loop_feedback_chain.py"]
+regions = ["jk08a-ltft-publication", "jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning", "jk08a-closed-loop-conversion", "jk08a-closed-loop-adjustment", "jk08a-closed-loop-feedback"]
+limits = ["The adjustment admission product is not the Cartesian product of every raw input. Literal counts are not dynamic instruction coverage. Producers, permits, cadence and hardware remain separate."]
+
+[[group]]
+id = "cut_control"
+category = "stock"
+property = "Detects activation versus release equality, arm/delay/active transitions, unrelated-bit damage and incorrect counter decrement. ASCD distinguishes button and alternate-state MAIN sources plus the coolant-threshold flag. RPM and vehicle-speed cut have different state/control gates and are not one interchangeable limiter."
+repeat_triggers = ["Changed layout-specific threshold/configuration bytes, state/counter addresses, actual branch/store instructions, feature masks or common fixture/invoker inputs."]
+overlap = "Python fuel-cut/state and meaning/scale tests overlap transition equations and address/byte checks. GNU adds natural return and exact selected-bit/state stores in each layout."
+minimum_boundary = "Affected layout-specific state entry with activation/release neighbors and arm/counter/control combinations; ASCD requires its own source-select contexts. No public group selector."
+minimality = "unproved"
+source_anchors = ["tools/sh-elf-run/stock_rpm_fuel_cut_harness.c", "tools/sh-elf-run/stock_ascd_main_harness.c", "tools/sh-elf-run/README.md", "tools/kb/tests/test_main_rpm_fuel_cut_chain.py", "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"]
+regions = ["jk08a-main-rpm-fuel-cut", "jk08a-vehicle-speed-fuel-cut", "jk00c-rpm-fuel-cut", "jk00d-rpm-fuel-cut", "jk78c-ascd-main"]
+limits = ["Counter decrement and physical injector suppression are not established by one state-update invocation. Main JK08A third threshold-pair path is identity-only in its stock configuration. ASCD slice is not whole cruise-control behavior."]
+
+[[group]]
+id = "can_copy"
+category = "stock"
+property = "Detects wrong caller arguments/delay-slot length, source/destination reversal, offset-seven confusion, sign-byte effects, live-register/frame corruption and writes outside the 12-byte destination. Full matrix executes 732 ordered caller/helper cases with independent byte/register expectations."
+repeat_triggers = ["Changed exact caller/helper bytes or pools, descriptor/member/width scope, case/header/oracle, ABI observer, ROM/L0 or current shared execution-input closure."]
+overlap = "Static descriptor/CAS and protocol tests prove bindings and fail-closed acceptance, not actual copying. GNU supplies the actual ordered observations. The 140-byte injection snapshot proves a different call context."
+minimum_boundary = "Public --can-copy-early is 27 non-production cases only. Existing full qualification CLI is tools/sh-elf-run/run.sh --can-copy-witness and executes all registered stock regions plus the primary pipeline; it is not a region-only command."
+minimality = "unproved"
+source_anchors = ["defs/JK08A.can-latch-copy.toml", "tools/kb/src/kb/copy_matrix.py", "tools/kb/src/kb/copy_witness.py", "tools/sh-elf-run/can_latch_copy.py", "tools/sh-elf-run/README.md"]
+regions = ["jk08a-can-latch-copy"]
+limits = ["Only the two exact reader/writer identities qualify. Declared widths remain unset. Explicit R1/R11 entry does not prove every scheduler path, CAN cadence, physical units or hardware operation."]
+
+[[group]]
+id = "sid22_pointer"
+category = "stock"
+property = "Detects wrong DID table stride/selector, distinct paired-pointer order, sequential byte order, response-ring wrap and incorrect transport/error arguments. Natural return, callee-saved state, frame and admitted RAM footprint are checked. Family13 loads the first pointer before its bound; families11/12 have no invented general bound."
+repeat_triggers = ["Changed publisher ranges/pools/tables, 50 reader claim identities, 55 source bindings, exact widths, descriptor/matrix/header/stubs, actual ROM or current interpreter/executor closure."]
+overlap = "Five inventory tests and static ownership/protocol tests lock bytes, pointer placement and refusals. They do not execute the publisher. The early packet establishes only five representative positive DIDs and four refusal contexts."
+minimum_boundary = "Public --sid22-early is nine non-production cases. The prepared full protocol requires all 1700 cases via tools/sh-elf-run/run.sh --can-copy-witness --sid22-witness plus independent finalization; no public SID-only full qualification CLI exists."
+minimality = "unproved"
+source_anchors = ["defs/JK08A.sid22-pointer-read.toml", "tools/kb/src/kb/sid22_matrix.py", "tools/kb/src/kb/sid22_witness.py", "tools/diagnostics/tests/test_sid22_inventory.py", "tools/sh-elf-run/README.md"]
+regions = ["jk08a-sid22-pointer-read"]
+limits = ["Full 1700-case execution is not established by the saved early9 result. Exact oracle covers R0/R8..R14 and SR outside T, not volatile-register/T equivalence. No acceptance of 120B, families14..16, four ROM claims, width debt, physical units or hardware."]
+
+[[group]]
+id = "pipeline_integration"
+category = "evidence_and_acceptance"
+property = "Lost or misrouted capture arguments, skipped or duplicated regions, shared build-directory collisions, incorrect aggregate counts, or candidate publication before overall success."
+repeat_triggers = ["Dispatcher, region registration/order, candidate orchestration, shared build paths or failure handling changes."]
+overlap = "Controlled integration keeps main, verify, the stock loop and run_region real while controlling GNU boundaries. It checks ordinary/CAN/combined routing, omission, replacement, alias, duplicates and failure; it does not execute instruction semantics."
+minimum_boundary = "Real dispatcher/stock-loop positive and refusal contracts, exact-child lifecycle checks and the current mandatory complete primary executable integration boundary."
+minimality = "unproven"
+source_anchors = ["tools/sh-elf-run/verify_map_switching.py", "tools/sh-elf-run/verify_stock_code.py", "tools/kb/tests/test_sid22_evidence.py", "patches/tests/test_sh_elf_run_verifier.py", "patches/tests/test_sh_elf_witness_dispatch.py", "tools/sh-elf-run/docker_lifecycle.py"]
+regions = []
+limits = ["One-time whole-pipeline integration has value; this does not prove that every numeric case of unchanged regions must be executed for a SID22 change."]
+
+[[group]]
+id = "qualified_receipt_protocol"
+category = "evidence_and_acceptance"
+property = "Accepting incomplete or non-production observations, wrong owner/claim/width/slot/layout, stale inputs, forged or failed terminals, changed streams or an unexecuted candidate."
+repeat_triggers = ["Receipt schema, validator, source provenance, owning claim context, consumer rank/graph/reconciliation logic, or stored terminal/streams change."]
+overlap = "GNU provides actual execution observations. Negative Python contracts check whether invalid evidence is refused; a successful positive GNU run does not test refusal of production=false."
+minimum_boundary = "Affected negative protocol/consumer tests plus fresh qualification of the exact original executed evidence. Repeat GNU only when consumed execution inputs or required observations change; current finalizers still require the global full terminal."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/kb/src/kb/sid22_witness.py", "tools/kb/src/kb/copy_witness.py", "tools/kb/tests/test_sid22_receipts.py"]
+regions = []
+limits = ["Controlled test receipts prove refusal logic, not production execution. Broad provenance currently couples semantic changes to the full protocol."]
+
+[[group]]
+id = "registered_python_test_evidence"
+category = "evidence_and_acceptance"
+property = "Reusing a deleted or changed test, a different nodeid or parameters, incomplete setup/call/teardown reports, failed terminal or changed image/source context."
+repeat_triggers = ["Registered test source, collection/nodeid/parameters, fixture/dependency inputs, TEST protocol or subject claim context change."]
+overlap = "Receipt integrity overlaps the previous group. GNU does not prove that a Python function was collected and actually executed."
+minimum_boundary = "TEST protocol negative contracts and one actual registered test invocation when its execution inputs change. Reuse must validate current source/collection/context and original terminal; it must not launch GNU implicitly."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/kb/src/kb/test_evidence.py", "tools/kb/tests/test_test_execution.py", "tools/kb/src/kb/test_contract.py", "tools/kb/src/kb/test_witness.py", "tools/kb/src/kb/passes.py"]
+regions = []
+limits = ["Registered cases require independent fact adapters and actual qualified execution. Other native TEST attachments require complete semantic and execution qualification under issue #53."]
+
+[[group]]
+id = "native_publication_and_reuse"
+category = "evidence_and_acceptance"
+property = "Adding, deleting or duplicating unrelated claims; changing canonical properties or widths; retiring unrelated reviews; publishing unqualified evidence; silently executing producers during ordinary reads."
+repeat_triggers = ["Batch operations, writer/atomic link API, canonical identity/digest rules, owning source facts, qualified consumers or graph projection change."]
+overlap = "Unit refusal tests cover controlled mutations. Native BEFORE/AFTER comparison checks the actual publication; GNU does not validate preservation of unrelated knowledge claims."
+minimum_boundary = "Primary dry-run/apply with exact native identity Counters, source-bound original claim/review/width comparison and no-child qualified reuse. Simulator execution does not establish preservation of unrelated knowledge claims."
+minimality = "scoped_contract_identified"
+source_anchors = ["tools/kb/src/kb/write.py", "tools/kb/src/kb/reconciliation.py", "tools/kb/src/kb/graph.py", "tools/kb/tests/test_write.py", "tools/kb/tests/test_reader.py"]
+regions = []
+limits = ["Publication inventory counts belong to their exact source-bound task; they are not universal constants."]
+
+[[group]]
+id = "generated_projection_contracts"
+category = "evidence_and_acceptance"
+property = "A generated output disagrees with its declared source, lacks a registered generator/check recipe, or publishes inconsistent counts, identities or addresses."
+repeat_triggers = ["Declared source data, generator, projection registry, consumer contract or relevant shared generation logic changes."]
+overlap = "Python projection tests exercise refusal behavior. Read-only generator checks compare real outputs. Executing a present but unregistered header does not prove its generation/ownership contract."
+minimum_boundary = "Read-only checks for every affected registered output and projection ownership. Shared generator changes can affect many outputs. The repository's current pre-commit make check requirement remains in force."
+minimality = "affected_output_boundary_identified_aggregate_minimum_unproven"
+source_anchors = ["Makefile", "tools/kb/projections.toml", "tools/tests/test_projection_contract.py"]
+regions = []
+limits = ["The minimal aggregate subset of all make check consumers has not been established; passing this group is not machine-execution evidence."]

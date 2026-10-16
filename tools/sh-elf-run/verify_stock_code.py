@@ -37,6 +37,7 @@ for _path in (TOOL_DIR, ROOT / "tools" / "kb" / "src", ROOT):
         sys.path.insert(0, str(_path))
 
 import verify_map_switching as base_verifier
+from execution_report import stage
 from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from kb import targets as kb_targets
@@ -1543,11 +1544,12 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
         ])
         instructions = 0
         for region in REGIONS:
-            if sid22_capture is not None:
-                count = run_region(region, invoke, build_dir, copy_capture=copy_capture, sid22_capture=sid22_capture)
-            else:
-                count = (run_region(region, invoke, build_dir) if copy_capture is None
-                         else run_region(region, invoke, build_dir, copy_capture=copy_capture))
+            with stage(region.key, kind='stock'):
+                if sid22_capture is not None:
+                    count = run_region(region, invoke, build_dir, copy_capture=copy_capture, sid22_capture=sid22_capture)
+                else:
+                    count = (run_region(region, invoke, build_dir) if copy_capture is None
+                             else run_region(region, invoke, build_dir, copy_capture=copy_capture))
             instructions += count
             if verbose:
                 print(

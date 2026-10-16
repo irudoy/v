@@ -18,6 +18,7 @@ for item in (TOOL_DIR, ROOT):
 import verify_can_telemetry as can_verifier
 import verify_map_switching as base_verifier
 import verify_rolling_launch as rolling_verifier
+from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
@@ -481,6 +482,10 @@ def _compile_and_run(
         rom_object,
     ])
     base_verifier.run_command(command, timeout=120)
+    try:
+        require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
+    except (ELFStorageError, OSError) as error:
+        raise VerificationError(f"{target.rom}.{name}: ELF storage separation: {error}") from error
     result = base_verifier.run_command(
         [
             base_verifier.RUN,

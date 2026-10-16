@@ -366,9 +366,10 @@ def test_primary_reader_rolls_back_when_receipt_changes_during_read(tmp_path, mo
     assert transaction.rolled_back == 1
 
 
-@pytest.mark.parametrize('fault', ['none', 'exit', 'timeout', 'early', 'bound', 'unfinished',
+@pytest.mark.parametrize('fault', ['none', 'exit', 'timeout', 'interrupted', 'early', 'bound', 'unfinished',
                                   'full-marker', 'duplicate-packet', 'native', 'scope', 'stream-race'])
-def test_independent_finalizer_refuses_and_preserves_the_previous_record(qualified, monkeypatch, fault):
+@pytest.mark.parametrize('storage', ['native', 'external'])
+def test_independent_finalizer_refuses_and_preserves_the_previous_record(qualified, monkeypatch, fault, storage):
     candidate = deepcopy(qualified.candidate)
     current = {key: value for key, value in deepcopy(candidate).items() if key != 'witness'}
     current['complete'] = False
@@ -382,13 +383,20 @@ def test_independent_finalizer_refuses_and_preserves_the_previous_record(qualifi
     terminal = deepcopy(qualified.record['terminal'])
     if fault == 'exit': terminal['actual_exit_code'] = 1
     if fault == 'timeout': terminal['timed_out'] = True
+    if fault == 'interrupted': terminal['interrupted'] = True
     if fault == 'early': terminal['command'] = ['tools/sh-elf-run/run.sh', '--can-copy-early']
     if fault == 'bound': terminal.pop('declared_limit_seconds')
-    stdout, stderr = qualified.root / 'later.stdout', qualified.root / 'later.stderr'
+    directory = qualified.root
+    if storage == 'external':
+        directory = qualified.root.parent / (qualified.root.name + '-data')
+        directory.mkdir()
+        (qualified.root / 'tmp').mkdir()
+        (qualified.root / 'tmp/local-results').symlink_to(directory, target_is_directory=True)
+    stdout, stderr = directory / 'later.stdout', directory / 'later.stderr'
     stdout.write_text(output); stderr.write_bytes(b'')
     for stream, path in (('stdout', stdout), ('stderr', stderr)):
         terminal[stream + '_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
-    process = qualified.root / 'later-process.json'
+    process = directory / 'later-process.json'
     process.write_text(json.dumps(terminal))
     previous = (qualified.root / proof.RECEIPT).read_bytes()
     if fault == 'stream-race':
@@ -399,12 +407,21 @@ def test_independent_finalizer_refuses_and_preserves_the_previous_record(qualifi
         def read(path):
             nonlocal changed
             data = original_read(path)
-            if path == stdout and not changed:
+            if path.resolve() == stdout.resolve() and not changed:
                 changed = True
                 stdout.write_text(replacement)
             return data
         monkeypatch.setattr(Path, 'read_bytes', read)
     if fault == 'none':
+        from kb import lock
+        with lock.held(qualified.root, timeout=1):
+            prepared = copy_witness.prepare(process, stdout, stderr, qualified.root)
+        assert prepared['candidate'] == candidate
+        if storage == 'external':
+            assert prepared['process_path'] == 'tmp/local-results/later-process.json'
+            assert prepared['terminal']['stdout'] == 'tmp/local-results/later.stdout'
+            assert prepared['terminal']['stderr'] == 'tmp/local-results/later.stderr'
+        assert (qualified.root / proof.RECEIPT).read_bytes() == previous
         copy_witness.finalize(process, stdout, stderr, qualified.root)
         assert award(qualified, 'access')
     else:

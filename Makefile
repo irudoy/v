@@ -44,7 +44,7 @@ help:
 		'  test              Run the Python and JavaScript test contracts.' \
 		'  verify-firmware   Run the repository-contained GNU SH-2E executable gate.' \
 		'  verify-npkern     Run the optional exact-revision external npkern gate.' \
-		'  verify            Run check, test, and verify-firmware in sequence.' \
+		'  verify            Qualify firmware evidence, then run check and test.' \
 		'  vendor-catalog    Rebuild the machine-readable vendor catalog.' \
 		'  romviz            Rebuild the self-contained ROM atlas HTML.' \
 		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
@@ -85,6 +85,7 @@ check:
 	$(PYTHON) tools/check_projection_contract.py
 	$(PYTHON) tools/sh-elf-run/can_latch_copy.py --check
 	$(PYTHON) tools/sh-elf-run/sid22_pointer_read.py --check
+	$(PYTHON) tools/sh-elf-run/acceptance.py --check
 	$(PYTHON) tools/version_index.py --check
 	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/diagnostics/extract_rom_dtc.py --check
@@ -122,7 +123,7 @@ test-js:
 test: test-python test-js
 
 verify-firmware:
-	tools/sh-elf-run/run.sh --verbose
+	$(PYTHON) tools/sh-elf-run/qualified_gate.py
 
 verify-npkern:
 	tools/sh-elf-run/run-npkern.sh --verbose
@@ -131,9 +132,9 @@ vendor-catalog:
 	$(PYTHON) tools/vendor/build_catalog.py
 
 verify:
+	+$(MAKE) verify-firmware
 	+$(MAKE) check
 	+$(MAKE) test
-	+$(MAKE) verify-firmware
 
 romviz:
 	@test -n "$(strip $(ROMVIZ_OUTPUT))" || { printf '%s\n' 'ROMVIZ_OUTPUT is required' >&2; exit 2; }

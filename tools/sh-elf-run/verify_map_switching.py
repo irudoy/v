@@ -17,11 +17,15 @@ import re
 import subprocess
 import sys
 import tempfile
+import traceback
 
 
 ROOT = Path(__file__).resolve().parents[2]
+TOOL_DIR = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+if str(TOOL_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOL_DIR))
 if str(ROOT / 'tools/kb/src') not in sys.path:
     sys.path.insert(0, str(ROOT / 'tools/kb/src'))
 
@@ -29,9 +33,10 @@ from patches import apply_map_switching
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
+from execution_report import stage
+from elf_storage_layout import ELFStorageError, require_separate_storage
 
 
-TOOL_DIR = Path(__file__).resolve().parent
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
     "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
@@ -376,6 +381,10 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         ],
         timeout=120,
     )
+    try:
+        require_separate_storage(harness_elf, ((TEST_RAM_BASE, 65536),))
+    except (ELFStorageError, OSError) as error:
+        raise VerificationError(f"map-switching: ELF storage separation: {error}") from error
     result = run_command(
         [
             RUN,
@@ -481,31 +490,36 @@ def require_toolchain_version():
 
 
 def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
-    simulator, gcc_version = require_toolchain_version()
-    layout = layout_model.load_layout()
-    parsed_by_unit = assembly_model.validate_assembly_sources(layout)
+    with stage('toolchain'):
+        simulator, gcc_version = require_toolchain_version()
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-run-") as directory:
         build_dir = Path(directory)
-        blobs = assemble_all_units(
-            layout, parsed_by_unit, build_dir, verbose=verbose
-        )
-        audit = assembly_model.validate_instruction_semantics(
-            layout, parsed_by_unit, blobs
-        )
-        composition = require_composition(layout, blobs)
-        fixture, relocated, differentiated, stubs = build_dynamic_fixture(
-            composition, layout, parsed_by_unit
-        )
-        dynamic_marker = build_and_run_dynamic_harness(fixture, build_dir)
-        incident_signal = verify_delay_slot_incident(build_dir)
+        with stage('reconstruction_fixture'):
+            layout = layout_model.load_layout()
+            parsed_by_unit = assembly_model.validate_assembly_sources(layout)
+            blobs = assemble_all_units(
+                layout, parsed_by_unit, build_dir, verbose=verbose
+            )
+            audit = assembly_model.validate_instruction_semantics(
+                layout, parsed_by_unit, blobs
+            )
+            composition = require_composition(layout, blobs)
+            fixture, relocated, differentiated, stubs = build_dynamic_fixture(
+                composition, layout, parsed_by_unit
+            )
+        with stage('map_switching'):
+            dynamic_marker = build_and_run_dynamic_harness(fixture, build_dir)
+        with stage('delay_slot_probe'):
+            incident_signal = verify_delay_slot_incident(build_dir)
 
     print(dynamic_marker)
     try:
         import verify_rolling_launch
 
-        rolling_result = verify_rolling_launch.verify(
-            verbose=verbose, check_toolchain=False
-        )
+        with stage('rolling_launch'):
+            rolling_result = verify_rolling_launch.verify(
+                verbose=verbose, check_toolchain=False
+            )
     except Exception as error:
         raise VerificationError(
             f"Rolling Launch executable gate failed: {error}"
@@ -513,9 +527,10 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
     try:
         import verify_can_telemetry
 
-        telemetry_result = verify_can_telemetry.verify(
-            verbose=verbose, check_toolchain=False
-        )
+        with stage('can_telemetry'):
+            telemetry_result = verify_can_telemetry.verify(
+                verbose=verbose, check_toolchain=False
+            )
     except Exception as error:
         raise VerificationError(
             f"CAN telemetry executable gate failed: {error}"
@@ -523,7 +538,8 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
     try:
         import verify_runtime_targets
 
-        runtime_results = verify_runtime_targets.verify(verbose=verbose)
+        with stage('relocated_runtime_targets'):
+            runtime_results = verify_runtime_targets.verify(verbose=verbose)
     except Exception as error:
         raise VerificationError(
             f"relocated runtime-target executable gate failed: {error}"
@@ -596,10 +612,12 @@ def main(argv=None):
     try:
         if args.sid22_early:
             import sid22_pointer_read
-            sid22_pointer_read.verify_early()
+            with stage('feedback:sid22_pointer'):
+                sid22_pointer_read.verify_early()
         elif args.can_copy_early:
             import verify_stock_code
-            verify_stock_code.verify_can_copy_early()
+            with stage('feedback:can_copy'):
+                verify_stock_code.verify_can_copy_early()
         elif args.can_copy_witness:
             from kb import copy_evidence, copy_witness
             candidate = copy_witness.begin(ROOT)
@@ -621,6 +639,7 @@ def main(argv=None):
         else:
             verify(verbose=args.verbose)
     except (OSError, ValueError, VerificationError) as error:
+        traceback.print_exc(file=sys.stderr)
         print(f"VQ_SH_ELF_VERIFY status=FAIL error={error}", file=sys.stderr)
         return 1
     return 0

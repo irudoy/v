@@ -1,19 +1,18 @@
 """Qualified local execution of the registered 1ME3B image-scan witness."""
 
-from dataclasses import fields, is_dataclass
 import hashlib
 import json
 from pathlib import Path
 import platform
-import struct
 import sys
 
-from kb import repo
+from kb import repo, test_contract
+from kb.test_contract import SCHEMA, digest, encode, exact, json_text
 
-SCHEMA = 2
 PATH = 'patches/tests/test_rom_address_profiles.py'
 KEY = 'test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image'
 NODEID = PATH + '::' + KEY
+CONTRACT = test_contract.Contract('1me3b-image-scan', (test_contract.Case(NODEID, {}),))
 MEANING = 'ignition_unreferenced_routine/const'
 SYMBOL = ('1me3b', 'const', 0x791A4)
 NOTE = ('Stock-image scan for region 000791a4..000797cb rejects aligned inbound '
@@ -46,36 +45,6 @@ def facts():
 
 def item():
     return {'kind': 'test', 'supports': 'identity', 'path': PATH, 'key': KEY, 'note': NOTE}
-
-
-def encode(value):
-    """Portable typed values; no model identities, reprs or set iteration."""
-    if value is None or type(value) in (bool, int, str):
-        return [type(value).__name__, value]
-    if type(value) is float:
-        return ['float64', struct.pack('>d', value).hex()]
-    if isinstance(value, Path):
-        return ['path', str(value)]
-    if type(value) is bytes:
-        return ['bytes', value.hex()]
-    if type(value) in (list, tuple):
-        return [type(value).__name__, [encode(v) for v in value]]
-    if type(value) in (set, frozenset):
-        return [type(value).__name__, sorted((encode(v) for v in value), key=json_text)]
-    if type(value) is dict:
-        return ['dict', sorted(([encode(k), encode(v)] for k, v in value.items()), key=json_text)]
-    if is_dataclass(value) and not isinstance(value, type):
-        return [type(value).__module__ + '.' + type(value).__qualname__,
-                [[f.name, encode(getattr(value, f.name))] for f in fields(value)]]
-    raise ValueError(f'unsupported witness value {type(value).__name__}')
-
-
-def json_text(value):
-    return json.dumps(value, sort_keys=True, ensure_ascii=True, separators=(',', ':'), allow_nan=False)
-
-
-def digest(value):
-    return hashlib.sha256(json_text(value).encode()).hexdigest()
 
 
 def model_digest(model):
@@ -167,7 +136,7 @@ def producer_inputs(root):
 def runtime():
     from importlib.metadata import version
     return {'python': sys.version, 'implementation': platform.python_implementation(),
-            'pytest': version('pytest')}
+            'pytest': version('pytest'), 'python_optimize': sys.flags.optimize}
 
 
 def public_packet(model, symbol, evidence):
@@ -179,7 +148,7 @@ def public_packet(model, symbol, evidence):
         raise ValueError('the registered witness supports another symbol')
     if symbol.meaning is None or symbol.meaning.key != MEANING:
         raise ValueError('the registered witness supports another meaning')
-    if evidence != item() or evidence not in symbol.evidence:
+    if not exact(evidence, item()) or not any(exact(evidence, entry) for entry in symbol.evidence):
         raise ValueError('the registered witness supports another role or fact scope')
     return {'meaning': MEANING, 'symbol': list(SYMBOL), 'support': 'identity',
             'evidence': dict(evidence), 'facts': facts()}
@@ -208,6 +177,20 @@ def receipt_path(root):
     return Path(root) / RECEIPT
 
 
+def dependencies(root, *, receipt=None):
+    """A missing receipt, original process or stream remains a live dependency."""
+    paths = {str(RECEIPT)}
+    try:
+        record = json.loads(test_contract._read(root, RECEIPT) if receipt is None else receipt)
+        named = [record['process_path'], *(record['terminal'][name] for name in ('stdout', 'stderr'))]
+        if any(type(path) is not str or '..' in Path(path).parts for path in named):
+            raise ValueError('invalid TEST output path')
+        paths.update(named)
+    except (OSError, ValueError, TypeError, KeyError):
+        pass
+    return paths
+
+
 def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
     """None only for a qualified receipt or an unregistered legacy witness."""
     if not registered(evidence, symbol):
@@ -216,22 +199,22 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
         public_packet(model, symbol, evidence)
         if claim != 'identity':
             from kb import checks
-            if (claim is None or claim.name != 'identity' or claim.symbol is not symbol
-                    or claim.subject not in (MEANING, symbol.key.key,
-                                             checks._subject(symbol.meaning))):
+            meaning_claim = (claim is not None and claim.symbol is None
+                             and symbol.meaning.home_symbol is symbol
+                             and claim.subject in (MEANING, checks._subject(symbol.meaning)))
+            symbol_claim = (claim is not None and claim.symbol is symbol
+                            and claim.subject in (MEANING, symbol.key.key,
+                                                  checks._subject(symbol.meaning)))
+            if claim is None or claim.name != 'identity' or not (meaning_claim or symbol_claim):
                 return 'the registered TEST requires its exact identity-claim context'
         if record is None:
-            record = json.loads(receipt_path(model.root).read_bytes())
+            record = json.loads(test_contract._read(model.root, RECEIPT))
         candidate = record['candidate']
-        if record['schema'] != SCHEMA or candidate['schema'] != SCHEMA:
+        if type(record['schema']) is not int or record['schema'] != SCHEMA:
             return 'incompatible TEST execution receipt'
-        if candidate['nodeid'] != NODEID or candidate['parameters'] != encode({}):
-            return 'wrong collected case or parameters in TEST execution receipt'
-        if candidate['collected'] != [NODEID] or candidate['reports'] != [
-                ['setup', 'passed', False], ['call', 'passed', False], ['teardown', 'passed', False]]:
-            return 'TEST execution has missing, skipped, failed or unrelated phases'
-        if not candidate['complete'] or candidate['exitstatus'] != 0:
-            return 'TEST execution candidate is unfinished or failing'
+        refused = CONTRACT.failure(candidate)
+        if refused:
+            return refused
         native = record['native_model']
         if (type(native) is not str or len(native) != 64
                 or any(char not in '0123456789abcdef' for char in native)
@@ -239,10 +222,10 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
             return 'TEST execution native snapshot lacks independent finalization'
         if digest(encode(candidate['producer_inputs'])) != record['native_inputs']:
             return 'TEST execution source provenance lacks independent finalization'
-        if candidate['context'] != context(model, symbol, evidence):
+        if not exact(candidate['context'], context(model, symbol, evidence)):
             return 'TEST execution inputs or model context are stale'
         witness = candidate['witness']
-        if witness['facts'] != facts() or witness['profile_origin'] != candidate['context']['inputs'][PROFILE]:
+        if not exact(witness['facts'], facts()) or witness['profile_origin'] != candidate['context']['inputs'][PROFILE]:
             return 'TEST execution has wrong facts or unknown profile preparation origin'
         if digest(witness['profiles']) != witness['profiles_digest']:
             return 'TEST execution profile values are inconsistent'
@@ -251,19 +234,7 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
                 return 'TEST execution image bytes lack exact input binding'
         if '1ME3B' not in witness['images'] or not witness['fixture_image_reads']:
             return 'TEST execution lacks its stock image'
-        terminal = record['terminal']
-        if terminal['actual_exit_code'] != 0 or terminal['timed_out']:
-            return 'TEST execution process did not finish successfully'
-        if NODEID not in terminal['command']:
-            return 'TEST execution process names another case'
-        for stream in ('stdout', 'stderr'):
-            data = (Path(model.root) / terminal[stream]).read_bytes()
-            if hashlib.sha256(data).hexdigest() != terminal[stream + '_sha256']:
-                return 'TEST execution terminal streams are stale'
-        marker = ('kb-test-candidate sha256=' + digest(candidate)).encode()
-        if marker not in (Path(model.root) / terminal['stdout']).read_bytes():
-            return 'TEST execution candidate is not bound to terminal output'
-        return None
+        return test_contract.terminal_failure(record, model.root, CONTRACT)
     except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, ImportError):
         return 'missing or invalid qualified TEST execution context'
 
@@ -278,26 +249,21 @@ def publish(path, value):
 
 
 def finalize(candidate_path, process_path, stdout_path, stderr_path, root=repo.ROOT):
+    from kb import lock
+    with lock.held(root):
+        record = prepare(candidate_path, process_path, stdout_path, stderr_path, root)
+        publish(receipt_path(root), record)
+        return record
+
+
+def prepare(candidate_path, process_path, stdout_path, stderr_path, root=repo.ROOT):
+    """Validate a native candidate under the caller's source lock, without publication."""
     candidate = json.loads(Path(candidate_path).read_bytes())
-    process = json.loads(Path(process_path).read_bytes())
-    if process['actual_exit_code'] != 0 or process['timed_out']:
-        raise ValueError('the actual process did not finish successfully')
-    if candidate['exitstatus'] != 0 or not candidate['complete']:
-        raise ValueError('the pytest candidate did not finish successfully')
-    if NODEID not in process['command']:
-        raise ValueError('the actual process names another case')
-    option = '--kb-test-candidate=' + str(candidate_path)
-    if option not in process['command']:
-        raise ValueError('the actual process names another candidate')
-    terminal = dict(process)
-    for stream, path in (('stdout', stdout_path), ('stderr', stderr_path)):
-        path = Path(path).resolve()
-        data = path.read_bytes()
-        if hashlib.sha256(data).hexdigest() != process[stream + '_sha256']:
-            raise ValueError('terminal stream hash disagrees with the original runner')
-        terminal[stream] = path.relative_to(Path(root).resolve()).as_posix()
-    if ('kb-test-candidate sha256=' + digest(candidate)).encode() not in Path(stdout_path).read_bytes():
-        raise ValueError('the candidate disagrees with terminal output')
+    refused = CONTRACT.failure(candidate)
+    if refused:
+        raise ValueError(refused)
+    record = test_contract.bind_terminal(candidate, process_path, stdout_path, stderr_path,
+                                         root, CONTRACT, candidate_path)
     from kb import compile
     from kb.model import SymbolKey
     model = compile.build(root)
@@ -308,13 +274,12 @@ def finalize(candidate_path, process_path, stdout_path, stderr_path, root=repo.R
     original_inputs = producer_inputs(root)
     if candidate.get('producer_inputs') != original_inputs:
         raise ValueError('the producer source inputs disagree with independent finalization')
-    record = {'schema': SCHEMA, 'candidate': candidate, 'terminal': terminal,
-              'native_model': native, 'native_inputs': digest(encode(original_inputs))}
+    record.update(schema=SCHEMA, native_model=native,
+                  native_inputs=digest(encode(original_inputs)))
     # Validate before publication without replacing an earlier qualified pass.
     refused = failure(item(), symbol, model, 'identity', record=record)
     if refused:
         raise ValueError(refused)
-    publish(receipt_path(root), record)
     return record
 
 

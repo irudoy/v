@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from kb import copy_evidence as proof, copy_matrix, repo, test_evidence
+from kb import copy_evidence as proof, copy_matrix, local_paths, repo, test_evidence
 
 CONSUMED = (proof.DESCRIPTOR,
     'tools/sh-elf-run/stock_jk08a_can_latch_copy.s',
@@ -14,11 +14,24 @@ CONSUMED = (proof.DESCRIPTOR,
 
 
 def provenance(root):
+    """Native inputs and producer source bytes, separate from proof freshness.
+
+    Feature composers, renderers and their assembly/header/configuration inputs
+    execute in the complete primary pipeline. Shared Python tools include
+    transitive imports beyond the compiler's own source closure. Test fixtures
+    and human documentation do not belong to this producer source manifest.
+    Runtime binaries, linked ELF and fixture identities remain execution data.
+    """
     from kb import fingerprint
     paths = set(fingerprint.inputs(root)) | set(proof.EXECUTION_FILES)
     paths.update(path.relative_to(root).as_posix() for path in
                  (root / 'tools/sh-elf-run').rglob('*')
                  if path.is_file() and path.suffix in ('.py', '.c', '.s', '.h', '.sh'))
+    for directory, suffixes in ((root / 'patches', {'.py', '.s', '.h', '.toml', '.json'}),
+                                 (root / 'tools', {'.py'})):
+        paths.update(path.relative_to(root).as_posix() for path in directory.rglob('*')
+                     if path.is_file() and path.suffix in suffixes
+                     and 'tests' not in path.relative_to(directory).parts)
     return {path: hashlib.sha256((root / path).read_bytes()).hexdigest() for path in sorted(paths)}
 
 
@@ -105,19 +118,30 @@ def finalize(process_path, stdout_path, stderr_path, root=repo.ROOT):
 
 
 def _finalize(process_path, stdout_path, stderr_path, root):
+    record = prepare(process_path, stdout_path, stderr_path, root)
+    proof.publish(Path(root) / proof.RECEIPT, record)
+    return record
+
+
+def prepare(process_path, stdout_path, stderr_path, root=repo.ROOT):
+    """Independently validate a completed original, without publishing a receipt.
+
+    The caller holds the native source lock for this preparation. A coordinator
+    publishing later separately fences sources and original output bytes.
+    """
     root = Path(root).resolve()
-    process_path = Path(process_path).resolve()
+    process_path = local_paths.owned(process_path, root).resolve()
     original = process_path.read_bytes()
     process = json.loads(original)
     proof.terminal_check(process)
     terminal = dict(process)
     streams = {}
     for stream, path in (('stdout', stdout_path), ('stderr', stderr_path)):
-        path = Path(path).resolve()
+        path = local_paths.owned(path, root).resolve()
         data = path.read_bytes()
         if hashlib.sha256(data).hexdigest() != process[stream + '_sha256']:
             raise ValueError('the original bounded process stream hash disagrees')
-        terminal[stream] = path.relative_to(root).as_posix()
+        terminal[stream] = local_paths.relative(path, root)
         streams[stream] = data
     lines = streams['stdout'].decode('utf-8').splitlines()
     packets = [line[len(proof.MARKER):] for line in lines if line.startswith(proof.MARKER)]
@@ -129,14 +153,13 @@ def _finalize(process_path, stdout_path, stderr_path, root):
         raise ValueError('copy producer provenance disagrees with independent finalization')
     validate(candidate, root)
     record = dict(schema=proof.SCHEMA, candidate=candidate, terminal=terminal,
-        process_path=process_path.relative_to(root).as_posix(), process_sha256=hashlib.sha256(original).hexdigest(),
+        process_path=local_paths.relative(process_path, root), process_sha256=hashlib.sha256(original).hexdigest(),
         native_model=candidate['native_model'], native_inputs=proof.digest(candidate['producer_inputs']))
     if process_path.read_bytes() != original:
         raise ValueError('the original process receipt changes before publication')
     for stream in ('stdout', 'stderr'):
         if (root / terminal[stream]).read_bytes() != streams[stream]:
             raise ValueError('the consumed terminal stream changes before publication')
-    proof.publish(root / proof.RECEIPT, record)
     return record
 
 

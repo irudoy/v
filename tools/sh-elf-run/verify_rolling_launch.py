@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import verify_map_switching as base_verifier
+from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from patches import map_switching_assembly
 from patches import map_switching_layout
@@ -226,6 +227,10 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         ],
         timeout=120,
     )
+    try:
+        require_separate_storage(harness_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+    except (ELFStorageError, OSError) as error:
+        raise VerificationError(f"rolling-launch: ELF storage separation: {error}") from error
     result = base_verifier.run_command(
         [
             base_verifier.RUN,

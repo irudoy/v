@@ -9,7 +9,7 @@ import math
 from contextlib import contextmanager
 from contextvars import ContextVar
 
-from kb import repo, sh2
+from kb import local_paths, repo, sh2
 from kb.model import SymbolKey
 from kb.test_evidence import digest, encode, json_text, publish
 
@@ -24,9 +24,11 @@ MEMBERS = {'reader': ('tunneling-swift/ram', 0xffff419b),
            'writer': ('prehistoric-horse/ram', 0xffff418f)}
 MEMBER_KEYS = frozenset(SymbolKey('7mfk', 'ram', address) for _, address in MEMBERS.values())
 EXECUTION_FILES = (
-    DESCRIPTOR, 'tools/kb/src/kb/copy_evidence.py',
-    'tools/sh-elf-run/run.sh', 'tools/sh-elf-run/Dockerfile',
+    DESCRIPTOR, 'tools/kb/src/kb/copy_evidence.py', 'tools/kb/src/kb/local_paths.py',
+    'tools/sh-elf-run/run.sh', 'tools/sh-elf-run/docker_lifecycle.py', 'tools/sh-elf-run/Dockerfile',
     'tools/sh-elf-run/verify_map_switching.py',
+    'tools/sh-elf-run/execution_report.py',
+    'tools/sh-elf-run/qualified_gate.py', 'tools/sh-elf-run/process_record.py',
     'tools/sh-elf-run/verify_stock_code.py',
     'tools/sh-elf-run/elf_storage_layout.py',
     'tools/sh-elf-run/stock_jk08a_can_latch_copy.s',
@@ -58,10 +60,18 @@ def item(direction):
 
 
 def _read(root, path):
-    from kb import match
     path = Path(path)
     if path.is_absolute() or '..' in path.parts:
         raise ValueError('a copy proof input must be inside the repository')
+    return read_output(root, path)
+
+
+def read_output(root, path):
+    """Read one local proof output from the verdict's primitive snapshot."""
+    from kb import match
+    path = Path(path)
+    if '..' in path.parts:
+        raise ValueError('a local proof output cannot traverse parent directories')
     match.READ.add(path.as_posix())
     bound = _CONSUMED.get()
     if bound is not None and Path(root).resolve() == bound[0] and path.as_posix() in bound[1]:
@@ -69,7 +79,7 @@ def _read(root, path):
         if data is None:
             raise FileNotFoundError(path)
         return data
-    return (Path(root) / path).read_bytes()
+    return local_paths.read_path(path, root).read_bytes()
 
 
 def descriptor(root):
@@ -231,20 +241,24 @@ def _dependencies(root, *, receipt=None):
 
 
 def dependencies(root, *, receipt=None):
-    from kb import sid22_evidence
-    return _dependencies(root, receipt=receipt) | sid22_evidence.dependencies(root)
+    from kb import sid22_evidence, test_evidence
+    return (_dependencies(root, receipt=receipt) | sid22_evidence.dependencies(root)
+            | test_evidence.dependencies(root))
 
 
 def _snapshot(root):
     def read(path):
         try:
-            return (Path(root) / path).read_bytes()
-        except OSError:
+            return local_paths.read_path(path, root).read_bytes()
+        except (OSError, ValueError):
             return None
-    from kb import sid22_evidence
-    receipts = {path: read(path) for path in (RECEIPT, sid22_evidence.RECEIPT)}
+    from kb import sid22_evidence, test_evidence
+    test_receipt = str(test_evidence.RECEIPT)
+    receipts = {path: read(path) for path in (RECEIPT, sid22_evidence.RECEIPT, test_receipt)}
     paths = set(receipts)
-    for path, dependency in ((RECEIPT, _dependencies), (sid22_evidence.RECEIPT, sid22_evidence.dependencies)):
+    for path, dependency in ((RECEIPT, _dependencies),
+                             (sid22_evidence.RECEIPT, sid22_evidence.dependencies),
+                             (test_receipt, test_evidence.dependencies)):
         if receipts[path] is not None:
             paths.update(dependency(root, receipt=receipts[path]))
     return {path: receipts[path] if path in receipts else read(path) for path in sorted(paths)}
@@ -362,6 +376,7 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
 def terminal_check(process):
     if (type(process['actual_exit_code']) is not int or process['actual_exit_code'] != 0
             or process['timed_out'] is not False
+            or process.get('interrupted', False) is not False
             or process['command'] not in (
                 ['tools/sh-elf-run/run.sh', '--can-copy-witness'],
                 ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness'])):

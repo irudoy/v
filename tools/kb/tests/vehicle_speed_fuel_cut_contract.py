@@ -57,10 +57,10 @@ def registered_stock_contract(image):
 
 def earlier_region_contract():
     stock = publication.stock_module()
-    earlier = [row for row in stock.REGIONS if row.key != KEY]
+    earlier = [row for row in stock.REGIONS if row.key not in (KEY,'jk08a-can-latch-copy','jk08a-sid22-pointer-read')]
     assert len(earlier) == 80
     assert json.loads(json.dumps([asdict(row) for row in earlier])) == contracts()['held_regions']
-    assert {key:value for key,value in stock.REGION_OBSERVERS.items() if key != KEY} == contracts()['held_observers']
+    assert {key:value for key,value in stock.REGION_OBSERVERS.items() if key not in (KEY,'jk08a-can-latch-copy','jk08a-sid22-pointer-read')} == contracts()['held_observers']
     for row in earlier:
         assert hashlib.sha256(stock.build_fixture(row,stock.stock_image(row.rom))).hexdigest() == contracts()['held_fixtures'][row.key]
 

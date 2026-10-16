@@ -98,7 +98,7 @@ class Passes:
         if path in self.copy_inputs:
             try:
                 from kb import copy_evidence
-                return fingerprint.blob(copy_evidence._read(self.root, path))
+                return fingerprint.blob(copy_evidence.read_output(self.root, path))
             except FileNotFoundError:
                 return fingerprint.ABSENT
         if (self.root / path).is_dir():

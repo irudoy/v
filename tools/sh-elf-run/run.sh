@@ -22,13 +22,13 @@ DOCKER_CONTEXT=default
 export DOCKER_CONTEXT
 unset DOCKER_HOST
 
-if [ "${VQ_SH_ELF_SKIP_BUILD:-0}" != "1" ]; then
-    docker build --tag "$image_name" "$tool_dir"
+if [ "${VQ_SH_ELF_SKIP_BUILD:-0}" = "1" ]; then
+    python3 "$tool_dir/docker_lifecycle.py" --image "$image_name" \
+        --stock-timeout "$stock_timeout" --skip-build -- "$@"
+else
+    python3 "$tool_dir/docker_lifecycle.py" --image "$image_name" \
+        --stock-timeout "$stock_timeout" -- "$@"
 fi
-docker run --rm \
-    --env "VQ_SH_ELF_STOCK_TIMEOUT_SECONDS=$stock_timeout" \
-    --mount "type=bind,src=$repo_root,dst=/workspace,readonly" \
-    "$image_name" "$@"
 
 if [ "$with_npkern" -eq 1 ]; then
     "$tool_dir/run-npkern.sh" "$@"

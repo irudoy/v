@@ -364,12 +364,15 @@ mov #0x5,r1
         external_source = (
             ROOT / "tools/sh-elf-run/run-npkern.sh"
         ).read_text(encoding="utf-8")
-        for source in (main_source, external_source):
+        for source, entry in (
+            (main_source, 'python3 "$tool_dir/docker_lifecycle.py"'),
+            (external_source, 'docker build'),
+        ):
             with self.subTest(source=source.splitlines()[0]):
                 context = source.index("DOCKER_CONTEXT=default")
                 export = source.index("export DOCKER_CONTEXT")
                 unset = source.index("unset DOCKER_HOST")
-                first_docker = source.index("docker build")
+                first_docker = source.index(entry)
                 self.assertLess(context, export)
                 self.assertLess(export, unset)
                 self.assertLess(unset, first_docker)

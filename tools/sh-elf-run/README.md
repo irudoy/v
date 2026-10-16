@@ -8,6 +8,149 @@ p-code.
 The default gate is fully repository-contained. Verification of the separate
 npkern project is optional, external, and revision-locked.
 
+## Primary container lifecycle
+
+`run.sh` uses the local `default` Docker context through `docker_lifecycle.py`.
+The host bookkeeping uses Python 3's standard library and a POSIX file lock.
+The host lock, persistent owner, attempt records and CID files live under
+`tmp/local-results/sh-elf-run/`. The container has a unique attempt label, a stable
+owner name and the checkout label, and mounts the checkout read-only at
+`/workspace`. Both registered witness input manifests include the lifecycle
+source.
+
+`tmp/local-results` may be a symbolic link to a physical directory on another
+disk. A root-level `local-results` directory or link is not required. The runner
+exposes that linked directory read-only at its absolute host path inside the container, so links from
+`/workspace` remain reachable. Process and stream names in qualified records
+remain checkout-relative. A missing results target or a nested link escaping
+that target refuses execution; the rest of the checkout keeps its existing
+storage boundary.
+
+Before building and before creating a container, the runner reads actual Docker
+state. A running matching child refuses a repeat with `kind=live`; an unavailable,
+incomplete or ambiguous state refuses it with `kind=unknown`. Matching also
+includes an old unlabeled container with the same checkout mounted at
+`/workspace`, so loss of the client before CID publication or deletion of a local
+owner record cannot hide that child. A host lock serializes primary runs of one
+checkout. Containers of other checkouts are retained.
+
+The configured image is resolved to its immutable Docker image ID after build.
+The container starts that ID with `--pull=never`; an absent or ambiguous image
+identity refuses execution. The original stream's `VQ_SH_ELF_CONTAINER` record
+binds the image, exact attempt/CID, checkout, arguments, client exit and observed
+absent/stopped state. It includes no container environment variables.
+
+The normal terminal binds the original client exit and the exact CID to confirmed
+`absent` or `stopped` state. A zero exit without a valid identity or with a live
+child refuses lifecycle completion. Interrupted attempts retain their last
+record; TERM or SIGKILL can leave a Docker child running. The next primary start
+detects it before another gate executes. Inspect the reported exact identity in
+the same context and resolve its state before retrying. Removing a record does
+not resolve a running container. The runner performs no broad container cleanup.
+
+Lifecycle completion is distinct from GNU instruction/observation acceptance.
+Original failed or interrupted process terminals remain unsuccessful; their
+logs cannot supply a qualified witness. A repeat needs its own complete terminal
+and independent finalization under the evidence contract.
+
+## Shared required gate and qualification
+
+`make verify-firmware` runs `qualified_gate.py`. It records one bounded original
+`run.sh --can-copy-witness --sid22-witness` child and its exact stdout/stderr,
+checks the complete stage order and runtime binding, and executes the registered
+Python TEST witness once. Each independent CAN, SID22 and TEST validator runs in
+its own bounded `uv run python -m kb.prepare_evidence` process. Native models and
+caches retain their validator-process ownership; the coordinator holds records
+and source maps rather than shared compiled models. No GC or sleep policy changes.
+
+The job directory under `tmp/local-results/sh-elf-run/qualification-*` retains
+started/terminal records, live streams, source inputs, runtime identity, prepared
+record hashes and prior receipt bytes. Missing, failing, timed-out or interrupted
+children do not qualify. An outer zero exit, a feedback subset, or successful
+timing pairs cannot replace the exact original successful GNU terminal. Prepared
+outputs require their independent original terminal and exact hash marker.
+
+All records validate before native publication. The native source lock, exact
+source comparisons and prior-receipt CAS fence publication and readback. Each
+receipt replacement is atomic; a per-file I/O failure can leave independently
+validated replacements, which the job journals without claiming a complete pass.
+Prior bytes remain archived. A source change during publication also prevents a
+completed gate. Jobs serialize without removing another job's lock or container.
+
+`make verify` runs this qualified firmware gate before `make check` and `make test`.
+Consumers can require current receipts after execution inputs change; no second
+full GNU invocation follows those checks. The native validators still require
+their complete existing byte/fixture/observation and claim contracts. Other TEST
+attachment qualification remains tracked separately under issue #53. Full current
+repository acceptance, physical validation requirements and open gate questions
+are not satisfied by the controlled orchestration tests.
+
+## Verification boundaries, inputs and diagnostics
+
+`acceptance.toml` owns the reviewed group properties, repeat triggers, overlap
+and evidence limits. `acceptance.py --check`, included in `make check`, checks
+the group vocabulary, exact stock-region partition and local source/includes
+against the registry the verifier executes. Counts come from that registry.
+
+`uv run python tools/sh-elf-run/acceptance.py --manifest` emits exact direct
+group source hashes and the input maps of the existing CAN, SID22 and TEST
+protocols. Direct source anchors are not a complete physical execution closure.
+The GNU source provenance also binds feature Python, assembly, headers and
+configuration under `patches/` and shared Python tools. Native model inputs
+remain part of that provenance. Runtime binaries/libraries, actual linked ELF,
+prepared fixtures, aliases and ordered cases remain separate execution inputs;
+CAN/SID22 packets bind their declared artifact identities and observations.
+Timing records for other regions do not establish all those artifact identities.
+
+The stock, SID22 and feature harness runners inspect the actual linked ELF before
+simulator entry with declared test RAM. Allocated sections and both virtual and
+physical LOAD extents, including BSS, must remain disjoint from that RAM window.
+Missing or malformed ELF and storage intersections refuse execution. Exact
+adjacency is allowed. This inspection preserves the linked instruction bytes;
+ordinary feature execution and semantic assertions remain required independently.
+
+A semantic reason to repeat execution is a changed consumed instruction,
+calibration, address/width binding, real callee, fixture, oracle, matrix,
+execution environment, or a concrete regression/non-determinism hypothesis.
+Protocol freshness can bind a wider shared source set. Unchanged source anchors
+do not establish unchanged ELF or toolchain/runtime behavior. Neither the group
+metadata nor timing output authorizes selective qualification or removal of a
+required gate. Complete matrix minimality remains unproved for the stock groups.
+The current full-PASS finalizers and repository acceptance commands apply.
+
+The primary verifier flushes `VQ_SH_ELF_STAGE` JSON start/finish records for its
+preparation/feature stages and each registered stock region. Each pair has a
+unique identity, exact stage name, terminal status and elapsed counter duration.
+An exception emits a failed terminal and propagates; the primary entrypoint
+prints its ordinary complete traceback. Abrupt process loss leaves a flushed
+start without a successful terminal. The last started region identifies the
+observed boundary, not an inferred missing stack or a successful execution.
+
+`uv run python tools/sh-elf-run/acceptance.py --stages <stdout-path>` checks
+successful complete timing pairs in the primary registry order. This is a
+diagnostic structure check. Qualification still needs the exact original
+successful process, stream hashes, candidate and independent fact validation.
+Stage durations are not per-numeric-case durations. Case counts are not cost,
+and nested/overlapping evidence boundaries must not be summed as new work.
+
+Ordinary pytest diagnostics use verbose node IDs, complete traceback, JUnit and
+per-case durations, for example:
+
+```bash
+uv run pytest -vv --tb=long --durations=0 \
+  --junitxml=tmp/local-results/verification/pytest.xml \
+  --basetemp=tmp/local-results/verification/pytest-work \
+  patches/tests/test_sh_elf_execution_report.py
+```
+
+Keep the original bounded process and streams beside these reports. JUnit's
+testsuite outcome count can include passing subtests beyond its testcase
+elements; report both accurately. A hard timeout can leave JUnit unfinished.
+Missing terminal output is not a pass. Historical truncated timer/SIGINT stack
+diagnostics supply no acceptance; the supported route uses ordinary traceback,
+flushed progress, original terminal and the exact-child lifecycle check. No
+extra stack timer or altered sleep/GC policy is required by this route.
+
 ## Bounded CAN latch-copy witness
 
 The registered `jk08a-can-latch-copy` region executes the exact JK08A caller
@@ -41,12 +184,12 @@ and full matrix. Only after success does it emit `kb-copy-candidate`, binding
 actual private compilation inputs, image/reconstruction/fixture/ELF/toolchain,
 observations, native model and complete producer provenance. The mount remains
 read-only. Save the original bounded process receipt and streams under
-`local-results/`, then independently finalize them:
+`tmp/local-results/`, then independently finalize them:
 
 ```bash
 uv run python -m kb.copy_evidence finalize \
-  --process local-results/<run>-process.json \
-  --stdout local-results/<run>.stdout --stderr local-results/<run>.stderr
+  --process tmp/local-results/<run>-process.json \
+  --stdout tmp/local-results/<run>.stdout --stderr tmp/local-results/<run>.stderr
 ```
 
 The local `.kb/copy-receipts/jk08a-latch-12.json` is not committed. Failed,
@@ -101,8 +244,8 @@ independent CAN and SID22 candidates only after success:
 ```bash
 tools/sh-elf-run/run.sh --can-copy-witness --sid22-witness
 uv run python -m kb.sid22_witness finalize \
-  --process local-results/<run>-process.json \
-  --stdout local-results/<run>.stdout --stderr local-results/<run>.stderr
+  --process tmp/local-results/<run>-process.json \
+  --stdout tmp/local-results/<run>.stdout --stderr tmp/local-results/<run>.stderr
 ```
 
 The CAN finalizer consumes the same original full process and streams using its

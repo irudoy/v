@@ -1062,7 +1062,7 @@ def _anchor(model, symbol, failures):
                     else:
                         best = max(best, rank(item, symbol, model, 'identity'))
                 else:
-                    best = max(best, rank(item))
+                    best = max(best, rank(item, symbol, model, 'identity'))
     return best
 
 

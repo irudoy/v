@@ -311,11 +311,11 @@ ROW_TESTS = {
 
 def _location(item):
     """An evidence item as the files state it: a symbol `to` as its location,
-    with test and specification paths but without registry origin metadata
+    with test, specification and indirect descriptor paths but without registry origin metadata
     or legacy tokens."""
     return {key: value.location if isinstance(value, SymbolKey) else value
             for key, value in item.items()
-            if key != "legacy" and (key != "path" or item.get("kind") in ("test", "spec"))}
+            if key != "legacy" and (key != "path" or item.get("kind") in ("test", "spec", "indirect"))}
 
 
 def _notes(value):
@@ -584,7 +584,12 @@ class Conversion:
                 entry["role"] = next(iter(link.roles))
             entry["layouts"] = sorted(link.stated)
             if link.evidence:
-                entry["evidence"] = [_location(item) for item in link.evidence]
+                held = [evidence for item in document.get("link", ())
+                        if (item.get("type"), item.get("to"), item.get("slot"),
+                            item.get("offset")) == (link.type, link.to.key, link.slot,
+                                                   link.offset)
+                        for evidence in item.get("evidence", ())]
+                entry["evidence"] = [self._ledger_evidence(item, held) for item in link.evidence]
             existing = [item for item in document.get("link", ())
                         if (item.get("type"), item.get("to"), item.get("slot"),
                             item.get("offset")) != (link.type, link.to.key, link.slot,
@@ -729,6 +734,21 @@ class Conversion:
             converted, raw = self.evidence.setdefault(key, ([], []))
             converted.append(item)
             self.changed.append((key.location, "identity evidence", repr(item)))
+
+    def _ledger_evidence(self, item, held):
+        """Retain an owned target reference when every evidence fact agrees."""
+        found = _location(item)
+        target = item.get("to")
+        symbol = self.before.symbols.get(target) if isinstance(target, SymbolKey) else None
+        if symbol is not None and symbol.meaning is not None:
+            reference = f"{symbol.meaning.key}/{symbol.layout}"
+            for other in held:
+                normalized = _location(other)
+                if normalized.get("to") == reference:
+                    normalized = {**normalized, "to": target.location}
+                if normalized == found:
+                    return _location(other)
+        return found
 
     def _ledger_reference(self, reference):
         symbol = self.before.symbols.get(reference)

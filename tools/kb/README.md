@@ -130,16 +130,25 @@ other-family and hardware claims require their own evidence. The primitive
 receipt/process/stream snapshot covers both access witness protocols.
 
 Ordinary pytest hooks optionally write a candidate through
-`--kb-test-candidate=<path>` for the exact registered case. The candidate binds
+`--kb-test-candidate=<path>` for the exact registered case. The shared
+`test_contract` envelope declares every collected node ID and typed parameter
+set. It requires each case's successful setup, call and teardown, enabled
+assertion rewriting, and an unoptimized interpreter. Missing, duplicate,
+unrelated, skipped, failing, xfail and xpass cases refuse qualification.
+The registered adapter separately validates the supported facts; an execution
+envelope alone grants no claim. Other native TEST attachments retain their
+pending qualification boundary under issue #53.
+The candidate binds
 actual collection, parameters and terminal phases, the explicit supported
 facts, the captured profile preparation, consumed image bytes, current source
 inputs and portable public model values. A candidate is not a completed
 execution receipt. The bounded runner's actual process exit and stream hashes
 are supplied to `uv run python -m kb.test_evidence <candidate> --process
 <process.json> --stdout <stdout> --stderr <stderr>` after the process finishes.
-The finalizer validates the candidate's terminal-output hash before atomically
+The finalizer validates the candidate's unique terminal-output marker, the
+original process bytes, finite execution bound and stream hashes before atomically
 publishing `.kb/test-receipts/1me3b-image-scan.json`. A failed invocation retains
-an earlier qualified record. Receipt and terminal bytes, source inputs, model
+an earlier qualified record. Receipt, original process and terminal bytes, source inputs, model
 values and exact identity-claim scope are checked again on reuse in both
 grounding paths; mismatches supply no CODE. The producer and independent
 finalizer bind the complete native model. An unrelated writer overlay retains
@@ -151,6 +160,27 @@ saves its result and the compiler rebuilds it without an overlay. Exact profile,
 layout, telemetry, family, catalog, ROM, program and identity-owner inputs govern
 reuse. The full producer input manifest remains independent finalized provenance.
 Checking does not execute the case.
+
+`kb.prepare_evidence` runs one existing CAN, SID22 or TEST validator under the
+native source lock and writes a fresh validated job artifact under `tmp/local-results`.
+That directory may be a symbolic link to storage on another disk. Original
+process and stream names remain relative to the checkout. Physical paths are
+accepted only inside the configured results
+directory; nested links cannot escape it. A missing linked directory refuses
+the operation. Unrelated external TEST artifacts retain their existing explicit
+caller contract. Historical receipt paths beginning with `local-results/`
+are resolved under `tmp/local-results/` for reading without rewriting receipts
+or creating a root-level link. New artifacts reject the historical prefix.
+It does not publish a native receipt. The shared required firmware gate runs
+each validator in a separate process, binds its original terminal and prepared
+output hash, and validates every record before publication. `make verify` orders
+that single actual qualified GNU invocation before source and Python consumers.
+Existing standalone finalizers retain their original publication contracts.
+
+TEST receipt, process and stream bytes participate in the same primitive
+snapshot and publication fence as CAN/SID22 proofs. Their deletion or change
+invalidates cached check passes and graph Meta even when file size and
+modification time agree. A change during a check refuses pass publication.
 
 The Python claim-level API accepts `levels.check(model, subjects={...})` to
 return exactly the full audit filtered to those Issue subjects. Each call

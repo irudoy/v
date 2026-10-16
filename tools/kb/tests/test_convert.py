@@ -35,6 +35,53 @@ class ConvertTest(unittest.TestCase):
             "kind": "byte-identical", "at": "7mfk:00026388", "to": "jk00c:00026564",
             "sha256": "a" * 64, "supports": "identity"})
 
+    def test_indirect_descriptor_paths_survive_evidence_conversion(self):
+        from kb import copy_evidence, sid22_evidence
+        for item in (copy_evidence.item("reader"), copy_evidence.item("writer"),
+                     sid22_evidence.item("abstract-newt/ram")):
+            with self.subTest(mode=item["mode"], value=item["value"]):
+                self.assertEqual(convert._location(item), {**item, "to": item["to"].location})
+
+    def test_indirect_descriptor_paths_survive_target_normalization(self):
+        from kb import copy_evidence
+        item = copy_evidence.item("reader")
+        target = SymbolKey("7mfk", "fn", 0x20DFE)
+        converted = convert._location({**item, "to": target, "legacy": "origin-token"})
+        self.assertEqual(converted, {**item, "to": target.location})
+
+    def test_ledger_evidence_keeps_an_equivalent_owned_target_reference(self):
+        from kb import copy_evidence, sid22_evidence
+        for item, meaning in ((copy_evidence.item("reader"), "coherent_snapshot/fn"),
+                              (copy_evidence.item("writer"), "coherent_snapshot/fn"),
+                              (sid22_evidence.item("abstract-newt/ram"), "married-moth/fn")):
+            target = item["to"]
+            symbol = SimpleNamespace(meaning=SimpleNamespace(key=meaning), layout=target.layout)
+            conversion = object.__new__(convert.Conversion)
+            conversion.before = SimpleNamespace(symbols={target: symbol})
+            held = {**item, "to": f"{meaning}/{target.layout}"}
+            with self.subTest(mode=item["mode"], value=item["value"]):
+                self.assertEqual(conversion._ledger_evidence(item, [held]), held)
+                located = {**item, "to": target.location}
+                self.assertEqual(conversion._ledger_evidence(item, [located]), located)
+                self.assertEqual(conversion._ledger_evidence(item, []), located)
+
+    def test_ledger_evidence_does_not_retain_a_different_fact_or_target(self):
+        from kb import copy_evidence
+        item = copy_evidence.item("reader")
+        target = item["to"]
+        symbol = SimpleNamespace(meaning=SimpleNamespace(key="coherent_snapshot/fn"),
+                                 layout=target.layout)
+        conversion = object.__new__(convert.Conversion)
+        conversion.before = SimpleNamespace(symbols={target: symbol})
+        held = {**item, "to": "coherent_snapshot/fn/7mfk"}
+        for change in ({"to": "coherent_snapshot/fn/1me3b"}, {"to": "other/fn/7mfk"},
+                       {"path": "defs/other.toml"}, {"key": "other"},
+                       {"at": "7mfk:00021098"}, {"supports": "scale"},
+                       {"value": {**item["value"], "width_bits": 16}}):
+            with self.subTest(change=change):
+                self.assertEqual(conversion._ledger_evidence(item, [{**held, **change}]),
+                                 {**item, "to": target.location})
+
     def test_a_converted_home_declaration_remains_a_distinct_source(self):
         meaning = SimpleNamespace(home='7mfk', tables={}, props={})
         symbol = SimpleNamespace(layout='7mfk', meaning=meaning,

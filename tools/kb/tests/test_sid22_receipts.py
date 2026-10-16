@@ -263,9 +263,10 @@ def test_pass_cache_preserves_invalid_SID22_snapshot_under_ABA(qualified, monkey
     assert 'code' not in json.loads((qualified.root / passes.RECORD).read_text())
 
 
-@pytest.mark.parametrize('fault', ['none', 'timeout', 'exit', 'early', 'missing-marker',
+@pytest.mark.parametrize('fault', ['none', 'timeout', 'interrupted', 'exit', 'early', 'missing-marker',
     'duplicate', 'provenance', 'scope', 'source-race', 'stream-race', 'non-production'])
-def test_independent_finalizer_preserves_previous_record_on_refusal(qualified, monkeypatch, fault):
+@pytest.mark.parametrize('storage', ['native', 'external'])
+def test_independent_finalizer_preserves_previous_record_on_refusal(qualified, monkeypatch, fault, storage):
     current = {key: deepcopy(value) for key, value in qualified.candidate.items() if key != 'witness'}
     current['complete'] = False
     monkeypatch.setattr(producer, 'begin', lambda root: deepcopy(current))
@@ -278,14 +279,21 @@ def test_independent_finalizer_preserves_previous_record_on_refusal(qualified, m
     if fault == 'duplicate': text += proof.MARKER + json_text(candidate) + '\n'
     terminal = deepcopy(qualified.record['terminal'])
     if fault == 'timeout': terminal['timed_out'] = True
+    if fault == 'interrupted': terminal['interrupted'] = True
     if fault == 'exit': terminal['actual_exit_code'] = 1
     if fault == 'early': terminal['command'] = ['tools/sh-elf-run/run.sh', '--sid22-early']
-    stdout, stderr = qualified.root / 'later.stdout', qualified.root / 'later.stderr'
+    directory = qualified.root
+    if storage == 'external':
+        directory = qualified.root.parent / (qualified.root.name + '-data')
+        directory.mkdir()
+        (qualified.root / 'tmp').mkdir()
+        (qualified.root / 'tmp/local-results').symlink_to(directory, target_is_directory=True)
+    stdout, stderr = directory / 'later.stdout', directory / 'later.stderr'
     stdout.write_text(text)
     stderr.write_bytes(b'')
     for stream, path in (('stdout', stdout), ('stderr', stderr)):
         terminal[stream + '_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
-    process = qualified.root / 'later-process.json'
+    process = directory / 'later-process.json'
     process.write_text(json.dumps(terminal))
     previous = (qualified.root / proof.RECEIPT).read_bytes()
     if fault in ('source-race', 'stream-race'):
@@ -294,13 +302,22 @@ def test_independent_finalizer_preserves_previous_record_on_refusal(qualified, m
         def read(path):
             nonlocal changed
             data = original_read(path)
-            if path == stdout and not changed:
+            if path.resolve() == stdout.resolve() and not changed:
                 changed = True
                 if fault == 'stream-race': stdout.write_text(text + 'changed\n')
                 else: current['producer_inputs']['controlled'] = 'f' * 64
             return data
         monkeypatch.setattr(Path, 'read_bytes', read)
     if fault == 'none':
+        from kb import lock
+        with lock.held(qualified.root, timeout=1):
+            prepared = producer.prepare(process, stdout, stderr, qualified.root)
+        assert prepared['candidate'] == candidate
+        if storage == 'external':
+            assert prepared['process_path'] == 'tmp/local-results/later-process.json'
+            assert prepared['terminal']['stdout'] == 'tmp/local-results/later.stdout'
+            assert prepared['terminal']['stderr'] == 'tmp/local-results/later.stderr'
+        assert (qualified.root / proof.RECEIPT).read_bytes() == previous
         producer.finalize(process, stdout, stderr, qualified.root)
         assert award(qualified, 'verify')
     else:

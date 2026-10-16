@@ -3,12 +3,12 @@
 import hashlib
 from functools import wraps
 from pathlib import Path
+import sys
 import tomllib
-import uuid
 
 import pytest
 
-from kb import compile, lock, repo, test_evidence as evidence
+from kb import compile, lock, repo, test_contract, test_evidence as evidence
 from kb.model import SymbolKey
 
 
@@ -32,7 +32,8 @@ class State:
         self.output = Path(config.getoption('--kb-test-candidate'))
         if self.output.exists():
             raise ValueError('a TEST candidate output already exists')
-        self.collected, self.reports, self.parameters = [], [], None
+        self.capture = test_contract.Capture(evidence.CONTRACT, {
+            'mode': config.getoption('assertmode'), 'python_optimize': sys.flags.optimize})
         self.witness = None
         self.profile_origins = []
         self.preparations = {}
@@ -98,7 +99,7 @@ class State:
     def observe(self, profiles, images, facts):
         if self.witness is not None:
             raise ValueError('the registered TEST witness is emitted more than once')
-        if facts != evidence.facts():
+        if not test_contract.exact(facts, evidence.facts()):
             raise ValueError('the TEST witness names other supported facts')
         origin = self.context['inputs'][evidence.PROFILE]
         if not self.profile_origins or set(self.profile_origins) != {origin}:
@@ -121,23 +122,15 @@ class State:
                         'images': image_packets, 'fixture_image_reads': self.image_reads}
 
     def finish(self, exitstatus):
-        stable = (evidence.context(self.model, self.symbol, evidence.item()) == self.context
+        stable = (test_contract.exact(evidence.context(self.model, self.symbol, evidence.item()), self.context)
                   and evidence.model_digest(self.model) == self.native_model
                   and evidence.producer_inputs(self.root) == self.producer_inputs)
-        complete = (exitstatus == 0 and self.collected == [evidence.NODEID]
-                    and self.parameters == evidence.encode({}) and self.witness is not None
-                    and self.reports == [['setup', 'passed', False], ['call', 'passed', False],
-                                        ['teardown', 'passed', False]]
-                    and stable)
-        candidate = {'schema': evidence.SCHEMA, 'run_id': str(uuid.uuid4()),
-                     'nodeid': evidence.NODEID, 'collected': self.collected,
-                     'parameters': self.parameters, 'reports': self.reports,
-                     'context': self.context, 'native_model': self.native_model,
-                     'producer_inputs': self.producer_inputs,
-                     'witness': self.witness,
-                     'complete': complete, 'exitstatus': int(exitstatus)}
+        candidate = self.capture.candidate(exitstatus,
+                     complete=self.witness is not None and stable,
+                     context=self.context, native_model=self.native_model,
+                     producer_inputs=self.producer_inputs, witness=self.witness)
         evidence.publish(self.output, candidate)
-        print('kb-test-candidate sha256=' + evidence.digest(candidate))
+        print('\n' + test_contract.MARKER + evidence.digest(candidate))
 
     def close(self):
         self.patch.undo()
@@ -158,11 +151,9 @@ def pytest_configure(config):
 def pytest_collection_finish(session):
     state = getattr(session.config, '_kb_test_witness', None)
     if state is not None:
-        state.collected = [item.nodeid for item in session.items]
-        for item in session.items:
-            if item.nodeid == evidence.NODEID:
-                callspec = getattr(item, 'callspec', None)
-                state.parameters = evidence.encode(callspec.params if callspec else {})
+        state.capture.collect([(item.nodeid, getattr(item, 'callspec', None).params
+                                if hasattr(item, 'callspec') else {})
+                               for item in session.items])
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -170,8 +161,8 @@ def pytest_runtest_makereport(item, call):
     result = yield
     report = result.get_result()
     state = getattr(item.config, '_kb_test_witness', None)
-    if state is not None and item.nodeid == evidence.NODEID:
-        state.reports.append([report.when, report.outcome, hasattr(report, 'wasxfail')])
+    if state is not None:
+        state.capture.report(item.nodeid, report.when, report.outcome, hasattr(report, 'wasxfail'))
 
 
 @pytest.fixture

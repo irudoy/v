@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from kb import copy_witness, repo, sid22_evidence as proof, sid22_matrix as matrix
+from kb import copy_witness, local_paths, repo, sid22_evidence as proof, sid22_matrix as matrix
 from kb.test_evidence import digest, encode, model_digest, publish
 
 CONSUMED = (proof.DESCRIPTOR,
@@ -85,18 +85,25 @@ def finalize(process_path, stdout_path, stderr_path, root=repo.ROOT):
 
 
 def _finalize(process_path, stdout_path, stderr_path, root):
+    record = prepare(process_path, stdout_path, stderr_path, root)
+    publish(Path(root) / proof.RECEIPT, record)
+    return record
+
+
+def prepare(process_path, stdout_path, stderr_path, root=repo.ROOT):
+    """Validate the complete original under the caller's lock; do not publish."""
     root = Path(root).resolve()
-    process_path = Path(process_path).resolve()
+    process_path = local_paths.owned(process_path, root).resolve()
     original = process_path.read_bytes()
     process = json.loads(original)
     proof.terminal_check(process)
     terminal, streams = dict(process), {}
     for stream, path in (('stdout', stdout_path), ('stderr', stderr_path)):
-        path = Path(path).resolve()
+        path = local_paths.owned(path, root).resolve()
         data = path.read_bytes()
         if hashlib.sha256(data).hexdigest() != process[stream + '_sha256']:
             raise ValueError('the original SID22 bounded process stream hash disagrees')
-        terminal[stream], streams[stream] = path.relative_to(root).as_posix(), data
+        terminal[stream], streams[stream] = local_paths.relative(path, root), data
     lines = streams['stdout'].decode().splitlines()
     packets = [line[len(proof.MARKER):] for line in lines if line.startswith(proof.MARKER)]
     if len(packets) != 1 or sum(line.startswith('VQ_SH_ELF_VERIFY status=PASS ') for line in lines) != 1:
@@ -107,14 +114,13 @@ def _finalize(process_path, stdout_path, stderr_path, root):
         raise ValueError('SID22 producer provenance disagrees with independent finalization')
     validate(candidate, root)
     record = dict(schema=proof.SCHEMA, candidate=candidate, terminal=terminal,
-        process_path=process_path.relative_to(root).as_posix(), process_sha256=hashlib.sha256(original).hexdigest(),
+        process_path=local_paths.relative(process_path, root), process_sha256=hashlib.sha256(original).hexdigest(),
         native_model=candidate['native_model'], native_inputs=digest(candidate['producer_inputs']))
     # Recheck live inputs and the exact consumed buffers before atomic publication.
     if current != begin(root) or process_path.read_bytes() != original:
         raise ValueError('SID22 source or original process changes before publication')
     if any((root / terminal[name]).read_bytes() != data for name, data in streams.items()):
         raise ValueError('the consumed SID22 stream changes before publication')
-    publish(root / proof.RECEIPT, record)
     return record
 
 

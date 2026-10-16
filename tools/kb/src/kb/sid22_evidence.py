@@ -32,8 +32,10 @@ MEMBERS_DIGEST = '5f5b383d5aa037828329c0df244526a30db52478813eb8d21cc3a3a9d4e90a
 BINDINGS_DIGEST = '6b0bfd6233fbe91727809ee42fa15c2349aa0ef34057d9b1e7e00cb406ea6040'
 EXECUTION_FILES = (
     DESCRIPTOR, 'tools/diagnostics/sid22_inventory.py',
-    'tools/sh-elf-run/run.sh', 'tools/sh-elf-run/Dockerfile',
+    'tools/sh-elf-run/run.sh', 'tools/sh-elf-run/docker_lifecycle.py', 'tools/sh-elf-run/Dockerfile',
     'tools/sh-elf-run/verify_map_switching.py', 'tools/sh-elf-run/verify_stock_code.py',
+    'tools/sh-elf-run/execution_report.py',
+    'tools/sh-elf-run/qualified_gate.py', 'tools/sh-elf-run/process_record.py',
     'tools/sh-elf-run/elf_storage_layout.py', 'tools/sh-elf-run/can_latch_copy.py',
     'defs/JK08A.can-latch-copy.toml',
     'tools/sh-elf-run/sid22_pointer_read.py',
