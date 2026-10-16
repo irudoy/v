@@ -610,7 +610,7 @@ A link is stored at one end and read in both directions.
 | `count` | Number of matches: for `masked-match` and `function-match`, the occurrences of the words or of the hash on the layout of `at` times those on the layout of `to`; for `call-ordinal`, the addresses that the call at `to` relates in the way that the call at `at` relates the symbol |
 | `value` | The observed value: bytes, a literal, an ordinal, a hash class, or an equation |
 | `sha256` | Digest of compared bytes |
-| `mode` | For `indirect`: `pointer`, `gbr`, `window`, `block-copy`, or `base` |
+| `mode` | For `indirect`: `pointer`, `gbr`, `window`, `block-copy`, `did-pointer`, or `base` |
 | `path` | A repository path |
 | `key` | An identifier inside `path`, a source pack, or a registry |
 | `note` | Prose |

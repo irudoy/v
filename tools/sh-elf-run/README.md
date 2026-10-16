@@ -53,6 +53,67 @@ The local `.kb/copy-receipts/jk08a-latch-12.json` is not committed. Failed,
 partial, skipped, stale or subset runs cannot publish it; failed finalization
 preserves an earlier receipt. The independent 1ME3B TEST protocol is separate.
 
+## SID22 pointer-read witness
+
+`defs/JK08A.sid22-pointer-read.toml` fixes the JK08A publisher at `0003235c`,
+its five disjoint body ranges, all PC-relative pools and the three pointer
+tables. The sum of instruction bytes is 1256; the complete contiguous backing
+is `[0003235c,000328c0)`. The natural epilogue, RTS and delay slot remain under
+test. The descriptor pins 50 original RAM reader claims and 55 SOURCE bindings
+at 53 selected DIDs. Offsets 0 and 1 select independent pointer slots. DID
+`130d` reads `ffff2a83` before `ffff2a81`.
+
+`kb.sid22_matrix` defines 1700 ordered cases, including independent source
+values, request lengths, signed starting indices, response wrap and actual
+error paths. Families `11` and `12` have no general upper-index check. Family
+`13` loads its first pointer before the `low <= 0x14` check. Selection of the
+registered proof scope does not add firmware bounds checks. The source gate
+compares the generated header, descriptor and registered region with this
+matrix. Regenerate the header with:
+
+```bash
+uv run python tools/sh-elf-run/sid22_pointer_read.py --write-cases
+```
+
+The simulator relocates RAM pointers and signed-word RAM aliases, and replaces
+only the external transport/error callees with explicit observing stubs. All
+tested publisher instruction bytes match independent SH-2E assembly and remain
+unchanged in the complete fixture. The real helper arguments, actual source
+bytes and complete response ring are observed. The observer checks the complete
+RAM footprint, natural SP/PR return, saved frame and independent C caller ABI.
+Its exact register oracle covers R0 and R8..R14, GBR/MACH/MACL and SR outside T.
+R1..R7 and T are captured without a final-value equivalence claim. This boundary
+supports the selected RAM reader identities through source-byte publication;
+it does not establish complete processor-state equivalence, scale or hardware
+behavior. The four separate DID ROM access claims, dynamic DID `120b`, other
+families and all declared-width reviews retain their independent scope.
+
+The fixed non-production feedback command emits nine ordered observations and
+no qualified full candidate:
+
+```bash
+tools/sh-elf-run/run.sh --sid22-early
+```
+
+One combined full invocation runs the complete primary pipeline and emits the
+independent CAN and SID22 candidates only after success:
+
+```bash
+tools/sh-elf-run/run.sh --can-copy-witness --sid22-witness
+uv run python -m kb.sid22_witness finalize \
+  --process local-results/<run>-process.json \
+  --stdout local-results/<run>.stdout --stderr local-results/<run>.stderr
+```
+
+The CAN finalizer consumes the same original full process and streams using its
+separate protocol. The SID22 receipt at
+`.kb/sid22-receipts/jk08a-pointer-read.json` is a local generated output.
+Independent finalization verifies complete ordered observations, private
+consumed source bytes, exact reconstruction, fixture/ELF/toolchain identity,
+native facts, source provenance and the original bounded process streams.
+Refusal preserves the preceding receipt. Ordinary reads, checks and sync never
+execute a producer implicitly.
+
 ## Repository-contained gate
 
 Run the complete current runtime gate from the repository root:

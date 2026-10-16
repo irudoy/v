@@ -116,6 +116,19 @@ Ordinary reads, checks and sync do not execute GNU implicitly. A proof attachmen
 uses `link`, with exact full semantic BEFORE/AFTER CAS and narrow review rebase.
 The lock-validated batch does not guarantee rollback across per-file I/O failure.
 
+The reserved `sid22-v1:jk08a-pointer-read` indirect/did-pointer item follows the
+same shared access qualification routes with its own descriptor, full primary
+GNU candidate and independently finalized receipt. Its exact scope is the
+50 original RAM reader claims through `married-moth/fn` at `7mfk:0003235c`, with
+55 decoder-owned SOURCE bindings. The validator preserves each original claim,
+declared width and pointer-slot offset. Graph relations carry `pointer_proof`,
+`pointer_publisher` and `verification_scope=did-pointer-read`; normalized direct
+L0 accesses remain independent. Only exact one-item attachments can retire their
+matching source-bound reviews. Malformed, absent, changed, partial or stale
+evidence cannot supply identity grounding. Scale/contract, declared-width,
+other-family and hardware claims require their own evidence. The primitive
+receipt/process/stream snapshot covers both access witness protocols.
+
 Ordinary pytest hooks optionally write a candidate through
 `--kb-test-candidate=<path>` for the exact registered case. The candidate binds
 actual collection, parameters and terminal phases, the explicit supported

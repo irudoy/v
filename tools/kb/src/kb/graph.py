@@ -288,8 +288,10 @@ def claim_rows(model):
                     "layout": layout, "role": link.roles, "slot": link.slot,
                     "offset": link.offset,
                     "verified": bool(proof) or kind not in L0_VERIFIED and bool(siblings),
-                    "copy_proof": proof['proof'] if proof else None,
-                    "copy_callsite": proof['callsite'] if proof else None,
+                    "copy_proof": proof['proof'] if proof and proof['scope'] == 'bounded-copy' else None,
+                    "copy_callsite": proof.get('callsite') if proof else None,
+                    "pointer_proof": proof['proof'] if proof and proof['scope'] == 'did-pointer-read' else None,
+                    "pointer_publisher": proof.get('publisher') if proof else None,
                     "verification_scope": proof['scope'] if proof else None,
                     "producer": "derived", "src": "links"})})
     entities, steps = [], []
@@ -526,7 +528,7 @@ def _load(graph, model, fp, root, full, log):
                 f"MATCH (d:Kb:Symbol)-[r:{kind}]->(g:Kb:Symbol) "
                 "OPTIONAL MATCH (d)-[:AT]->(:Location)<-[a:ACCESS]-(:Function)<-[:AT]-(g) "
                 "WITH r, collect(a) AS accesses "
-                "SET r.verified = coalesce(r.copy_proof, '') <> '' OR "
+                "SET r.verified = coalesce(r.copy_proof, '') <> '' OR coalesce(r.pointer_proof, '') <> '' OR "
                 "any(a IN accesses WHERE any(m IN a.modes WHERE m IN $modes))",
                 modes=list(modes))
         summary["at"] = ({"at": at}, 0.0, {})

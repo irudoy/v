@@ -1,4 +1,4 @@
-"""Qualified execution of the registered bounded JK08A CAN latch copy."""
+"""Shared qualification entry points and local snapshots for access witnesses."""
 
 import hashlib
 import json
@@ -39,11 +39,16 @@ MARKER = 'kb-copy-candidate '
 _CONSUMED = ContextVar('can_copy_consumed_outputs', default=None)
 
 
-def registered(item, symbol=None):
+def _registered(item, symbol=None):
     key = item.get('key')
     return ((isinstance(key, str) and key.startswith(PREFIX))
             or item.get('path') == DESCRIPTOR
             or item.get('mode') == 'block-copy')
+
+
+def registered(item, symbol=None):
+    from kb import sid22_evidence
+    return _registered(item, symbol) or sid22_evidence.registered(item, symbol)
 
 
 def item(direction):
@@ -210,7 +215,7 @@ def inputs(root):
     return {path: hashlib.sha256(_read(root, path)).hexdigest() for path in sorted(paths)}
 
 
-def dependencies(root, *, receipt=None):
+def _dependencies(root, *, receipt=None):
     """Local outputs are read dependencies even before they exist."""
     paths = {RECEIPT}
     try:
@@ -225,15 +230,24 @@ def dependencies(root, *, receipt=None):
     return paths
 
 
+def dependencies(root, *, receipt=None):
+    from kb import sid22_evidence
+    return _dependencies(root, receipt=receipt) | sid22_evidence.dependencies(root)
+
+
 def _snapshot(root):
     def read(path):
         try:
             return (Path(root) / path).read_bytes()
         except OSError:
             return None
-    receipt = read(RECEIPT)
-    paths = dependencies(root, receipt=receipt) if receipt is not None else {RECEIPT}
-    return {path: receipt if path == RECEIPT else read(path) for path in sorted(paths)}
+    from kb import sid22_evidence
+    receipts = {path: read(path) for path in (RECEIPT, sid22_evidence.RECEIPT)}
+    paths = set(receipts)
+    for path, dependency in ((RECEIPT, _dependencies), (sid22_evidence.RECEIPT, sid22_evidence.dependencies)):
+        if receipts[path] is not None:
+            paths.update(dependency(root, receipt=receipts[path]))
+    return {path: receipts[path] if path in receipts else read(path) for path in sorted(paths)}
 
 
 @contextmanager
@@ -269,18 +283,31 @@ def identity_only(symbol):
 
 def model_state(model):
     from itertools import chain
-    if not any(registered(entry) for entries in chain(
+    from kb import sid22_evidence
+    entries = [entry for entries in chain(
             (link.evidence for link in model.links),
-            (symbol.evidence for symbol in model.symbols.values())) for entry in entries):
+            (symbol.evidence for symbol in model.symbols.values())) for entry in entries]
+    has_copy = any(_registered(entry) for entry in entries)
+    has_sid22 = any(sid22_evidence.registered(entry) for entry in entries)
+    if not has_copy and not has_sid22:
         return None
     try:
-        return proof_state(model.root), scope_digest(model), inputs(model.root)
+        if not has_sid22:
+            return proof_state(model.root), scope_digest(model), inputs(model.root)
+        return (proof_state(model.root),
+                (scope_digest(model), inputs(model.root)) if has_copy else None,
+                sid22_evidence.scope_digest(model), sid22_evidence.inputs(model.root))
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         from kb import convert
         return proof_state(model.root), 'invalid', digest(encode(convert.dump(model)))
 
 
 def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
+    from kb import sid22_evidence
+    if sid22_evidence.registered(evidence, symbol):
+        if _registered(evidence, symbol):
+            return 'ambiguous reserved access execution proof'
+        return sid22_evidence.failure(evidence, symbol, model, claim, record=record)
     if not registered(evidence, symbol):
         return None
     try:
@@ -335,7 +362,9 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
 def terminal_check(process):
     if (type(process['actual_exit_code']) is not int or process['actual_exit_code'] != 0
             or process['timed_out'] is not False
-            or process['command'] != ['tools/sh-elf-run/run.sh', '--can-copy-witness']):
+            or process['command'] not in (
+                ['tools/sh-elf-run/run.sh', '--can-copy-witness'],
+                ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness'])):
         raise ValueError('the complete primary CAN witness process did not succeed')
     bound, elapsed = process['declared_limit_seconds'], process['inclusive_process_seconds']
     if (type(bound) is not int or bound <= 0 or type(elapsed) not in (int, float)
@@ -347,6 +376,9 @@ def terminal_check(process):
 
 
 def accepted(model, symbol, function, claim):
+    from kb import sid22_evidence
+    if function.key == sid22_evidence.FUNCTION:
+        return sid22_evidence.accepted(model, symbol, function, claim)
     if function.key != FUNCTION:
         return None
     entries = [entry for entry in claim['evidence'] if registered(entry, symbol)]
@@ -370,6 +402,9 @@ def claim_fields(link, layout):
 def retires(before, after, old_claim):
     """Exact semantic CAS for one proof attachment, never absence-based retirement."""
     try:
+        from kb import sid22_evidence
+        if old_claim['to'] == sid22_evidence.FUNCTION_MEANING:
+            return sid22_evidence.retires(before, after, old_claim)
         from kb import reconciliation
         if any(registered(entry) for entry in old_claim['evidence']):
             return False

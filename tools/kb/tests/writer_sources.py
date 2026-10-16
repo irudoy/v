@@ -31,14 +31,39 @@ def write_sources(root):
     def function(summary, *symbols):
         return {'summary': summary, 'block': 'capture/block', 'symbol': list(symbols)}
 
+    def marker(registry, order, dependency):
+        return {'registry': registry, 'order': order, 'fields': ['semantics'],
+                'dependency': dependency}
+
     rpm = ram('Controlled reader source.', symbol('7mfk', 'ffff11bc'),
               symbol('1nd', 'ffff11bc'), symbol('1me3b', 'ffff11bc'),
               note='Retain unrelated reader metadata.', link=[
                   {'type': 'reader', 'to': 'rev_fuel_cut_state_machine/fn',
                    'note': 'Retain held reader metadata.', 'evidence': [copy.deepcopy(identity)]},
                   {'type': 'reader', 'to': 'cryptic-heron/fn'}])
+    rpm['link'].extend([
+        {'type': 'reader', 'to': 'idle_opening_area_builder/fn', 'role': 'indexed_by',
+         'layouts': ['7mfk'], 'relies': 'structure', 'supports': 'identity',
+         'reverse_relies': 'structure', 'reverse_supports': 'identity'},
+        {'type': 'writer', 'to': 'coherent_snapshot/fn', 'layouts': ['7mfk'],
+         'relies': 'structure', 'supports': 'identity',
+         'reverse_relies': 'structure', 'reverse_supports': 'identity'},
+    ])
+    rpm['ledger'] = [marker('vars', 1001, [
+        {'role': 'writes', 'to': 'coherent_snapshot/fn', 'type': 'writer',
+         'end': 'owner', 'relies': 'structure', 'supports': 'identity'}])]
+    builder = function('Controlled indexed reader.', symbol('7mfk', '0002000c'))
+    builder['ledger'] = [marker('funcs', 501, [
+        {'role': 'indexed_by', 'to': 'rpm/ram', 'type': 'reader', 'end': 'to',
+         'link_role': 'indexed_by', 'relies': 'structure', 'supports': 'identity'}])]
+    snapshot = function('Controlled projected writer.', symbol('7mfk', '00020dfe'))
+    snapshot['ledger'] = [marker('funcs', 502, [
+        {'role': 'writes', 'to': 'rpm/ram', 'type': 'writer', 'end': 'to',
+         'relies': 'structure', 'supports': 'identity'}])]
     documents = {
         ('ram', 'rpm'): rpm,
+        ('fn', 'idle_opening_area_builder'): builder,
+        ('fn', 'coherent_snapshot'): snapshot,
         ('ram', 'throttle_runtime'): ram('Controlled contract-free input.',
             symbol('7mfk', 'ffff1796'), symbol('jk78c', 'ffff17a4'),
             note='Retain unrelated input metadata.'),
@@ -94,7 +119,7 @@ def write_sources(root):
                                            'probe-heron', ('probe-otter',))]),
         Path('tools/kb/SPEC.md'): (repo.ROOT / 'tools/kb/SPEC.md').read_text(encoding='utf-8'),
         Path('l0/7mfk/funcs.csv'): 'addr\n00010000\n00010002\n000493e8\n0006ec68\n'
-                                  '00020000\n00020004\n0002000a\n',
+                                  '00020000\n00020004\n0002000a\n0002000c\n00020dfe\n',
         Path('l0/1nd/funcs.csv'): 'addr\n00020002\n00020006\n000493ea\n',
         Path('l0/1me3b/funcs.csv'): 'addr\n00020008\n',
         Path('l0/jk00c/funcs.csv'): 'addr\n',

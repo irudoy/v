@@ -16,6 +16,30 @@
 # be registered.
 
 [[projection]]
+path = "tools/sh-elf-run/can-latch-copy-cases.h"
+generator = "uv run python tools/sh-elf-run/can_latch_copy.py --write"
+check = ["uv", "run", "python", "tools/sh-elf-run/can_latch_copy.py", "--check"]
+inputs = [
+    "defs/JK08A.can-latch-copy.toml", "tools/kb/src/kb/",
+    "tools/sh-elf-run/can_latch_copy.py", "rom-images/roms.csv",
+    "rom-images/23710-JK08A/1JK08A-20260726-stock.bin",
+]
+consumers = ["tools/sh-elf-run/harness-stock-jk08a-can-latch-copy.c"]
+read = "open"
+
+[[projection]]
+path = "tools/sh-elf-run/sid22-pointer-read-cases.h"
+generator = "uv run python tools/sh-elf-run/sid22_pointer_read.py --write"
+check = ["uv", "run", "python", "tools/sh-elf-run/sid22_pointer_read.py", "--check"]
+inputs = [
+    "defs/JK08A.sid22-pointer-read.toml", "tools/kb/src/kb/",
+    "tools/sh-elf-run/sid22_pointer_read.py", "rom-images/roms.csv",
+    "rom-images/23710-JK08A/1JK08A-20260726-stock.bin",
+]
+consumers = ["tools/sh-elf-run/harness-stock-jk08a-sid22-pointer-read.c"]
+read = "open"
+
+[[projection]]
 path = "AGENTS.md#kb"
 generator = "kb.project:agents"
 stage = 2

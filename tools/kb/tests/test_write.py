@@ -44,6 +44,7 @@ ISOLATED_CASES = {
     ('LinkTest', 'test_link_refuses_reliance_on_a_missing_contract'),
     ('LinkTest', 'test_links_refuse_what_the_schema_or_the_files_contradict'),
     ('LinkTest', 'test_unlink_removes_the_link_that_its_keys_choose'),
+    ('LinkTest', 'test_unlink_withdraws_converted_dependency_tokens_at_both_claiming_ends'),
     ('RenameMeaningTest', 'test_a_batch_renames_a_meaning_after_its_other_operations'),
     ('RenameMeaningTest', 'test_renames_refuse_the_names_that_the_model_holds'),
 }
@@ -865,6 +866,7 @@ class LinkTest(unittest.TestCase):
                       self.refused(axis, {**axis, "cmd": "unlink", "keys": {}}, code=4))
 
     def test_unlink_withdraws_converted_dependency_tokens_at_both_claiming_ends(self):
+        self.assertNotEqual(self.base.root, repo.ROOT)
         before = ledger_projection.render(self.base)
         _, _, result = self.plan(
             link(self.RPM, "reader", self.BUILDER, cmd="unlink"),

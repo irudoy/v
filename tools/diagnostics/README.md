@@ -95,8 +95,9 @@ uv run python tools/diagnostics/sid22_inventory.py
 uv run python tools/diagnostics/sid22_inventory.py --format json
 ```
 
-The tool SHA-locks the complete ROM, publisher function, and all six pointer
-table extents. Its output deliberately contains no physical names or units;
+The tool SHA-locks the complete ROM, the contiguous publisher backing that
+contains every disjoint body range, natural return and PC-relative pool, and
+all six pointer table extents. Its output deliberately contains no physical names or units;
 those remain reviewed claims in `defs/JK08A.diagnostic-bindings.csv`.
 
 The tuning-coverage report cross-checks the reviewed signal catalog against the

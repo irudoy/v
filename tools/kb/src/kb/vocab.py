@@ -65,7 +65,7 @@ EVIDENCE_KINDS = {
 }
 EVIDENCE_KEYS = ("kind", "supports", "at", "to", "relies", "count", "value", "sha256",
                  "mode", "path", "key", "note")
-INDIRECT_MODES = ("pointer", "gbr", "window", "block-copy", "base")
+INDIRECT_MODES = ("pointer", "gbr", "window", "block-copy", "did-pointer", "base")
 
 FN_ROLES = ("accessor", "service", "driver", "monitor", "wrapper", "dispatch", "init",
             "handler", "selector", "consumer", "kernel", "finisher")

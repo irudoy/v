@@ -93,10 +93,17 @@ def toolchain():
 def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--write-cases', action='store_true', required=True)
-    parser.parse_args()
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--write', '--write-cases', action='store_true')
+    mode.add_argument('--check', action='store_true')
+    args = parser.parse_args()
     target = TOOL_DIR / 'can-latch-copy-cases.h'
-    target.write_text(render_header(proof.descriptor(ROOT)))
+    expected = render_header(proof.descriptor(ROOT))
+    if args.check:
+        if target.read_text() != expected:
+            raise SystemExit('the CAN case header differs from its declared matrix')
+    else:
+        target.write_text(expected)
     print(f'{target.relative_to(ROOT)}: {case_count()} cases')
 
 

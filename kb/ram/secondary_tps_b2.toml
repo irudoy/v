@@ -216,6 +216,16 @@ layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0003235c"
+to = "married-moth/fn/7mfk"
+value = {reader = "secondary_tps_b2/ram"}
+mode = "did-pointer"
+path = "defs/JK08A.sid22-pointer-read.toml"
+key = "sid22-v1:jk08a-pointer-read"
+
 [[link]]
 type = "writer"
 to = "tall-chipmunk/fn"

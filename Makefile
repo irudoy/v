@@ -83,6 +83,8 @@ setup:
 
 check:
 	$(PYTHON) tools/check_projection_contract.py
+	$(PYTHON) tools/sh-elf-run/can_latch_copy.py --check
+	$(PYTHON) tools/sh-elf-run/sid22_pointer_read.py --check
 	$(PYTHON) tools/version_index.py --check
 	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/diagnostics/extract_rom_dtc.py --check

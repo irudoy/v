@@ -18,6 +18,10 @@ def test_exact_rom_and_publisher_are_sha_locked():
     assert hashlib.sha256(image[start:end]).hexdigest() == (
         sid22_inventory.PUBLISHER_SHA256
     )
+    assert end == 0x328C0
+    assert sum(end - start for start, end in sid22_inventory.PUBLISHER_BODY_RANGES) == 1256
+    assert image[0x328B4:0x328B8] == bytes.fromhex('000b6cf6')
+    assert image[0x328B8:0x328C0] == bytes.fromhex('0002ec9a00034114')
 
 
 def test_declared_inventory_counts(entries):

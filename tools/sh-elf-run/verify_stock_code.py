@@ -41,6 +41,7 @@ from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from kb import targets as kb_targets
 import can_latch_copy
+import sid22_pointer_read
 
 
 RETURN_STUB = bytes.fromhex("000b0009")
@@ -1149,7 +1150,7 @@ REGIONS = (*REGIONS, Region(
     harness='harness-stock-jk08a-can-latch-copy.c', start=0x21094, end=0x2109a,
     pools=((0x210f4, 4), (0x21234, 4), (0x2125c, 4)), ram_literals=(0x2125c,),
     cases=can_latch_copy.case_count(ROOT), constants=(('EARLY_ONLY', 0),),
-    callees=((0x22558, 0x22590),)))
+    callees=((0x22558, 0x22590),)), sid22_pointer_read.region(Region))
 
 
 class VerificationError(RuntimeError):
@@ -1439,7 +1440,9 @@ REGION_OBSERVERS.update({
 })
 
 
-def run_region(region, invoke, build_dir, *, copy_capture=None):
+def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=None):
+    if region.key == sid22_pointer_read.REGION:
+        return sid22_pointer_read.run_region(region, build_dir, capture=sid22_capture)
     execution_timeout = stock_execution_timeout()
     observer = REGION_OBSERVERS.get(region.key)
     captured = can_latch_copy.snapshot(ROOT, build_dir) if region.key == 'jk08a-can-latch-copy' else None
@@ -1530,7 +1533,7 @@ def run_region(region, invoke, build_dir, *, copy_capture=None):
     return instructions
 
 
-def verify(verbose=False, *, copy_capture=None):
+def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-stock-") as directory:
         build_dir = Path(directory)
         invoke = build_dir / "stock-invoke.o"
@@ -1540,8 +1543,11 @@ def verify(verbose=False, *, copy_capture=None):
         ])
         instructions = 0
         for region in REGIONS:
-            count = (run_region(region, invoke, build_dir) if copy_capture is None
-                     else run_region(region, invoke, build_dir, copy_capture=copy_capture))
+            if sid22_capture is not None:
+                count = run_region(region, invoke, build_dir, copy_capture=copy_capture, sid22_capture=sid22_capture)
+            else:
+                count = (run_region(region, invoke, build_dir) if copy_capture is None
+                         else run_region(region, invoke, build_dir, copy_capture=copy_capture))
             instructions += count
             if verbose:
                 print(

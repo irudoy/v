@@ -1211,6 +1211,7 @@ mov #0x5,r1
             },
         }
         expected.update({
+            'jk08a-sid22-pointer-read': {'REGION_ENTRY': 0x0003235c, 'EARLY_ONLY': 0},
             'jk08a-knock-metric': {'REGION_ENTRY': 0x0004a2b6,
                 'TOP_THREE_ENTRY': 0x00049d88, 'SCALER_ENTRY': 0x00049e96},
             'jk08a-knock-normalization': {'REGION_ENTRY': 0x0004a26a,
@@ -1249,6 +1250,16 @@ mov #0x5,r1
                     self.assertEqual(region.cases, len(helper.copy_matrix.cases(descriptor)))
                     self.assertIn('if (completed != ARRAY_SIZE(can_copy_cases)) return 1;', harness)
                     self.assertIn('if (completed != ARRAY_SIZE(can_copy_early_indices)) return 1;', harness)
+                    self.assertIn('production=false', harness)
+                elif key == 'jk08a-sid22-pointer-read':
+                    helper = STOCK_VERIFIER.sid22_pointer_read
+                    descriptor = helper.proof.descriptor(ROOT)
+                    image = helper.image(ROOT)
+                    header = (STOCK_VERIFIER.TOOL_DIR / 'sid22-pointer-read-cases.h').read_text()
+                    self.assertEqual(header, helper.render_header(descriptor, image))
+                    self.assertEqual(region.cases, len(helper.matrix.cases(descriptor, image)))
+                    self.assertIn('count = EARLY_ONLY ? sizeof(sid22_early_indices)', harness)
+                    self.assertIn(': sizeof(sid22_cases) / sizeof(sid22_cases[0])', harness)
                     self.assertIn('production=false', harness)
                 elif key in ("jk08a-stft-publication", "jk08a-grid-selection", "jk08a-grid-learning", "jk08a-closed-loop-conversion", "jk08a-closed-loop-adjustment"):
                     scope = key.removeprefix("jk08a-")

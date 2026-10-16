@@ -1,0 +1,925 @@
+schema = 1
+id = "sid22-v1:jk08a-pointer-read"
+layout = "7mfk"
+image = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+entry = 0x0003235c
+natural_return = 0x000328b4
+return_delay = 0x000328b6
+body_bytes = 1256
+backing_start = 0x0003235c
+backing_end = 0x000328c0
+backing_sha256 = "21589cdc96127a922d7f81f9305f49779718749aede97d8cbc915c5101598986"
+
+[[code]]
+start = 0x0003235c
+end = 0x00032474
+sha256 = "c800951de172776d0b96da2dbec6f0849cd415e73a50f698fca2868df4d96aec"
+
+[[code]]
+start = 0x00032484
+end = 0x00032578
+sha256 = "c55a7e70282a5ebe331c760578b637df5329248f127ef1dd8efa4fb63f79e974"
+
+[[code]]
+start = 0x000325a8
+end = 0x0003270e
+sha256 = "5a7b4e074615004db287b70e7a71620edc1eb0f27de834bedc3a34ad10fd4ab1"
+
+[[code]]
+start = 0x00032712
+end = 0x00032834
+sha256 = "5ab85b9091898d23c79c68a03095fb57ead34fcc3ec7abbec308137ad41a7c4a"
+
+[[code]]
+start = 0x00032864
+end = 0x000328b8
+sha256 = "5dfbd6352da74d1ec6a7f7a02674609c3d9db73562c8b8a6a114ba4ffef4a0eb"
+
+[[pool]]
+address = 0x00032474
+width_bytes = 2
+value = 0x8005
+loads = [0x00032366]
+
+[[pool]]
+address = 0x00032476
+width_bytes = 2
+value = 0x93e
+loads = [0x0003236c]
+
+[[pool]]
+address = 0x00032478
+width_bytes = 2
+value = 0x8212
+loads = [0x00032370]
+
+[[pool]]
+address = 0x0003247a
+width_bytes = 2
+value = 0x93f
+loads = [0x00032378, 0x0003241e]
+
+[[pool]]
+address = 0x0003247c
+width_bytes = 2
+value = 0x8214
+loads = [0x00032382]
+
+[[pool]]
+address = 0x0003247e
+width_bytes = 2
+value = 0x8105
+loads = [0x000323b4]
+
+[[pool]]
+address = 0x00032480
+width_bytes = 2
+value = 0x810a
+loads = [0x000323b8]
+
+[[pool]]
+address = 0x00032482
+width_bytes = 2
+value = 0x679
+loads = [0x00032436]
+
+[[pool]]
+address = 0x00032578
+width_bytes = 2
+value = 0x8105
+loads = [0x00032484]
+
+[[pool]]
+address = 0x0003257a
+width_bytes = 2
+value = 0x810a
+loads = [0x00032488]
+
+[[pool]]
+address = 0x0003257c
+width_bytes = 2
+value = 0x129
+loads = [0x000324bc]
+
+[[pool]]
+address = 0x00032580
+width_bytes = 4
+value = 0xffff28f8
+loads = [0x00032368]
+
+[[pool]]
+address = 0x00032584
+width_bytes = 4
+value = 0x34114
+loads = [0x00032392, 0x0003243e, 0x00032468]
+
+[[pool]]
+address = 0x00032588
+width_bytes = 4
+value = 0x226ac
+loads = [0x000323a4]
+
+[[pool]]
+address = 0x0003258c
+width_bytes = 4
+value = 0x2ec9a
+loads = [0x00032416, 0x0003256c]
+
+[[pool]]
+address = 0x00032590
+width_bytes = 4
+value = 0xffff8488
+loads = [0x0003242a]
+
+[[pool]]
+address = 0x00032594
+width_bytes = 4
+value = 0x2289c
+loads = [0x00032452]
+
+[[pool]]
+address = 0x00032598
+width_bytes = 4
+value = 0xffff5718
+loads = [0x000324c2]
+
+[[pool]]
+address = 0x0003259c
+width_bytes = 4
+value = 0x19360
+loads = [0x000324cc]
+
+[[pool]]
+address = 0x000325a0
+width_bytes = 4
+value = 0x21bbc
+loads = [0x000324d0]
+
+[[pool]]
+address = 0x000325a4
+width_bytes = 4
+value = 0x2e8a8
+loads = [0x00032524]
+
+[[pool]]
+address = 0x0003270e
+width_bytes = 2
+value = 0x8105
+loads = [0x000325c6, 0x00032668]
+
+[[pool]]
+address = 0x00032710
+width_bytes = 2
+value = 0x810a
+loads = [0x000325ca, 0x0003266c]
+
+[[pool]]
+address = 0x00032834
+width_bytes = 2
+value = 0x8105
+loads = [0x0003273c, 0x000327ec]
+
+[[pool]]
+address = 0x00032836
+width_bytes = 2
+value = 0x810a
+loads = [0x0003274a, 0x000327ee]
+
+[[pool]]
+address = 0x00032838
+width_bytes = 2
+value = 0x93e
+loads = [0x000327fc]
+
+[[pool]]
+address = 0x0003283a
+width_bytes = 2
+value = 0x93f
+loads = [0x0003280c]
+
+[[pool]]
+address = 0x0003283c
+width_bytes = 4
+value = 0x229e0
+loads = [0x000325b2]
+
+[[pool]]
+address = 0x00032840
+width_bytes = 4
+value = 0x2ec9a
+loads = [0x0003263c, 0x00032702, 0x000327ba]
+
+[[pool]]
+address = 0x00032844
+width_bytes = 4
+value = 0x34114
+loads = [0x00032648, 0x00032712, 0x000327c6]
+
+[[pool]]
+address = 0x00032848
+width_bytes = 4
+value = 0x22a88
+loads = [0x0003265a]
+
+[[pool]]
+address = 0x0003284c
+width_bytes = 4
+value = 0xffff56e2
+loads = [0x00032698]
+
+[[pool]]
+address = 0x00032850
+width_bytes = 4
+value = 0xffff5b33
+loads = [0x000326a8]
+
+[[pool]]
+address = 0x00032854
+width_bytes = 4
+value = 0x22b0c
+loads = [0x00032728]
+
+[[pool]]
+address = 0x00032858
+width_bytes = 4
+value = 0xffff4194
+loads = [0x000327b2]
+
+[[pool]]
+address = 0x0003285c
+width_bytes = 4
+value = 0x22bb0
+loads = [0x000327d8]
+
+[[pool]]
+address = 0x00032860
+width_bytes = 4
+value = 0xffff28f8
+loads = [0x000327f4]
+
+[[pool]]
+address = 0x000328b8
+width_bytes = 4
+value = 0x2ec9a
+loads = [0x00032890]
+
+[[pool]]
+address = 0x000328bc
+width_bytes = 4
+value = 0x34114
+loads = [0x0003289a, 0x000328a2]
+
+[[table]]
+family = 0x11
+start = 0x226ac
+end = 0x2289c
+stride = 4
+sha256 = "62b8faefae6c8fe0215d39182f4dc1b8a3e89ff543c32a827dc2f824997a46ab"
+firmware_index_bound = "none"
+
+[[table]]
+family = 0x12
+start = 0x2289c
+end = 0x229e0
+stride = 4
+sha256 = "a34f7cacef6d860458d79e2b37dbe2408420f3278ee94169f50b492f3424e7bc"
+firmware_index_bound = "none"
+
+[[table]]
+family = 0x13
+start = 0x229e0
+end = 0x22a88
+stride = 8
+sha256 = "f1cb955cc44ac3df8636351958968cf73d132f6189c73ed0af82e085af44b8de"
+firmware_index_bound = "after-first-pointer-load"
+
+[[member]]
+meaning = "maf_b1/ram"
+address = 0xffff101c
+declared_width = 16
+claim_sha256 = "549f39d946b05441d67e2ce778907fbb668fbc36a3078e016b3e8d0bd200956e"
+
+[[member]]
+meaning = "maf_b2/ram"
+address = 0xffff101e
+declared_width = 16
+claim_sha256 = "64376a02a612c65a2b7f070b3d70bcc63290f775db3f8ec8746e1070e92428d1"
+
+[[member]]
+meaning = "bfs/ram"
+address = 0xffff1026
+declared_width = 16
+claim_sha256 = "9887d42f284393b5ca48e3518bb806e486eb9894417b8380d3f83ae1587e144b"
+
+[[member]]
+meaning = "fuel_temperature_did_source/ram"
+address = 0xffff1074
+declared_width = 8
+claim_sha256 = "e0588b658d5c8edfba96f6b5a98c8eb20d9267e1dc6a78cf7918043049dff397"
+
+[[member]]
+meaning = "coolant/ram"
+address = 0xffff1079
+declared_width = 8
+claim_sha256 = "69d9f03dd656f2a395234c67509670caca5519d26bda26273a4a20b8db744e22"
+
+[[member]]
+meaning = "battery_voltage/ram"
+address = 0xffff1188
+declared_width = 8
+claim_sha256 = "26f5adb7b4888c63504ce4aa615acc4b5ac2dcbf3676943d333637d97f571a24"
+
+[[member]]
+meaning = "overjoyed-chameleon/ram"
+address = 0xffff118a
+declared_width = 8
+claim_sha256 = "56cc6ab2810d44ca7423a475f052df9e55db4a08f9e38273a7e4035fdaf29e2c"
+
+[[member]]
+meaning = "authentic-wasp/ram"
+address = 0xffff11f4
+declared_width = 16
+claim_sha256 = "56fe4bf10f88857a4bd71ea7a462c815bbbd092cebc265b1bb8f37c6e9a08f9d"
+
+[[member]]
+meaning = "daffodil-ape/ram"
+address = 0xffff16d2
+declared_width = 8
+claim_sha256 = "824899fcc2727d379ce767b865e7e6b92be53c60a0ad97e30a466ae05e375c77"
+
+[[member]]
+meaning = "exhaust_cvtc_duty_b1_word/ram"
+address = 0xffff1aac
+declared_width = 16
+claim_sha256 = "d3fbbe38cf59296d61cddabbd0fcfe6c96eb225f82d8de9df51d605fd24afab3"
+
+[[member]]
+meaning = "exhaust_cvtc_duty_b2_word/ram"
+address = 0xffff1aae
+declared_width = 16
+claim_sha256 = "bcc6c9ad27659849dbede4228fad69ea76de755001d2b730bec76cdbb052c9dc"
+
+[[member]]
+meaning = "spiritual-porpoise/ram"
+address = 0xffff1ab0
+declared_width = 16
+claim_sha256 = "73127fb8a6d8a246de245d33c96a9a7e559e676100010d5fadafc587153c2334"
+
+[[member]]
+meaning = "sceptical-toucan/ram"
+address = 0xffff1ab2
+declared_width = 16
+claim_sha256 = "2a7b6482e9d7d4d69446d305c63695e15b283dca096a7405a35f5e51e4d0d432"
+
+[[member]]
+meaning = "apc_output/ram"
+address = 0xffff2022
+declared_width = 8
+claim_sha256 = "9e4feb191616bc5301d957a7a6d754eb5c48b15c1e2532772b4711e18c1ed75d"
+
+[[member]]
+meaning = "copper-wombat/ram"
+address = 0xffff22c4
+declared_width = 8
+claim_sha256 = "f69344f5c9612b8aacd8a0fbe53170530151cd5b29d4312e2a2d418d511e3f63"
+
+[[member]]
+meaning = "attentive-tarantula/ram"
+address = 0xffff22c5
+declared_width = 8
+claim_sha256 = "af1c7e7ff5ad98a5d48d1d09d959f7e031ce6fbd2fd4b2962610de3d5bfba0f4"
+
+[[member]]
+meaning = "stft_b1/ram"
+address = 0xffff22dc
+declared_width = 16
+claim_sha256 = "929c74162b5644483390b639d4cd104a6393d2126ff68224d1f9242af1839f0a"
+
+[[member]]
+meaning = "stft_b2/ram"
+address = 0xffff22de
+declared_width = 16
+claim_sha256 = "5ab5c86eb7b609ce4984dedbc733d455560641338f4bd2e516d486e186c31c9c"
+
+[[member]]
+meaning = "af_state_factor/ram"
+address = 0xffff22e8
+declared_width = 16
+claim_sha256 = "0890e396025c01d910f305fd008cbf61d1314aa2d2e90ad446bbc35190e72566"
+
+[[member]]
+meaning = "ltft_b1/ram"
+address = 0xffff2302
+declared_width = 16
+claim_sha256 = "1b6dd06df1ca5fb57601c4c4d24cbe5297808a021473c8dd5c4c31f6d98eb98b"
+
+[[member]]
+meaning = "ltft_b2/ram"
+address = 0xffff2304
+declared_width = 16
+claim_sha256 = "1289e65f64ba57ca36188cd9b9be91423ae11b37cacee44d4c27d4012e6afb99"
+
+[[member]]
+meaning = "exhaust_cvtc_actual_b1/ram"
+address = 0xffff2324
+declared_width = 8
+claim_sha256 = "8ec0f6b8939f7e36553a5126b57459c9ff3dbaa519a70db2db1f113c1a3964a1"
+
+[[member]]
+meaning = "exhaust_cvtc_actual_b2/ram"
+address = 0xffff2325
+declared_width = 8
+claim_sha256 = "63a02376ae69bf673923af29bef9365763b56a24778bfbcd3734dad738bcd627"
+
+[[member]]
+meaning = "exhaust_cvtc_target/ram"
+address = 0xffff2327
+declared_width = 8
+claim_sha256 = "06d98209713f8e1135f71e3b15a7c461ca00b6ba49a4618a431d95dcf84f4c06"
+
+[[member]]
+meaning = "injection_0/ram"
+address = 0xffff23c8
+declared_width = 16
+claim_sha256 = "2eca8a4ca8cef7f6cfcd1e2701f5e7c1668ff75be5161c08141c043c5a2dbc9f"
+
+[[member]]
+meaning = "injection_1/ram"
+address = 0xffff23ca
+declared_width = 16
+claim_sha256 = "9019dc2a659e3dbf35e1a1297e6aea9c78310f6ed6a54cf8e23e3f6e1464f6d1"
+
+[[member]]
+meaning = "intake_cvtc_actual_b1/ram"
+address = 0xffff2442
+declared_width = 8
+claim_sha256 = "822caabf9cbcc8e66391ce4397362e9e7acaa40932e22f84335c4b75ac3d08c2"
+
+[[member]]
+meaning = "app1/ram"
+address = 0xffff269e
+declared_width = 16
+claim_sha256 = "009790afafd6c08b8b02f3f022b14b06e7ba2568dc7c0d2330f2ab96268ae04b"
+
+[[member]]
+meaning = "app2/ram"
+address = 0xffff26a2
+declared_width = 16
+claim_sha256 = "145af78a84f27f24c73a3725e145e2950bf0b5d80645e02a8f18a6de237bd4e2"
+
+[[member]]
+meaning = "tps_b1/ram"
+address = 0xffff2756
+declared_width = 16
+claim_sha256 = "40f5d19ac868e8794afb154cd6519b7b8b6bb664d63788eae5483b1a9cce4cd8"
+
+[[member]]
+meaning = "secondary_tps_b1/ram"
+address = 0xffff275e
+declared_width = 16
+claim_sha256 = "90ca9c53ee1ce7175909f107130b2cd3e055c2607f8739e43977322a1e11f5df"
+
+[[member]]
+meaning = "front_af_sensor_b1_word/ram"
+address = 0xffff2780
+declared_width = 16
+claim_sha256 = "fb6c3b10a3225fa27dbf61b38eaa51ef619e148550fe300b7bd2b61dbf92dd7f"
+
+[[member]]
+meaning = "front_af_sensor_b2_word/ram"
+address = 0xffff2782
+declared_width = 16
+claim_sha256 = "dba51cfb00f059886d5b7f94b3a5172f6160f8cfc3d7a0512e8ea0a4ac912362"
+
+[[member]]
+meaning = "iat/ram"
+address = 0xffff2837
+declared_width = 8
+claim_sha256 = "da60def0e87515f110ac06816c10918894d5a5618fcc8d2c5253a7c22e41b97a"
+
+[[member]]
+meaning = "tps_b2/ram"
+address = 0xffff285c
+declared_width = 16
+claim_sha256 = "066a67b45bccfbe15fef77a76d6522c5075e27954beaae06b6866cb3cd6d07b9"
+
+[[member]]
+meaning = "secondary_tps_b2/ram"
+address = 0xffff2864
+declared_width = 16
+claim_sha256 = "33b35dc39583725d551fcf8eedebf69b1c0b57a70846b110a6b1d3a5b4f72154"
+
+[[member]]
+meaning = "oil_temperature_did_source/ram"
+address = 0xffff2876
+declared_width = 8
+claim_sha256 = "cf4ddcca2b70b1609df6015ca6ceb5a9dab365b0daf83e38a43e2b23db93f178"
+
+[[member]]
+meaning = "peach-asp/ram"
+address = 0xffff2a81
+declared_width = "unset"
+claim_sha256 = "bb66213dbf15e9705a0b63b85e2386764b55151ec87f6e4e3abeabb64f1b9d76"
+
+[[member]]
+meaning = "tiny-spider/ram"
+address = 0xffff2a82
+declared_width = "unset"
+claim_sha256 = "261b68633b53863f0a6afbdbdec5acee222e590c6d5f8b8bf1a1ea6cb0eaca65"
+
+[[member]]
+meaning = "abstract-newt/ram"
+address = 0xffff2a83
+declared_width = "unset"
+claim_sha256 = "75926a65173f99081ae809fd5d274f1b86ccc79d228b1486ebb898f0655179d3"
+
+[[member]]
+meaning = "diagnostic_state/ram"
+address = 0xffff2a84
+declared_width = "unset"
+claim_sha256 = "4910242ff5ad20a45132d609311acda6ba32162bf1af311adb569cf9b1ddbd27"
+
+[[member]]
+meaning = "nano-axolotl/ram"
+address = 0xffff2c56
+declared_width = "unset"
+claim_sha256 = "a1d56d80e34b95f41ccfe13db8f86b568c990a3bd639ae556798613e3ee1ef4c"
+
+[[member]]
+meaning = "pretty-caracal/ram"
+address = 0xffff2c57
+declared_width = "unset"
+claim_sha256 = "39673c0035d9ebd3ce04328f0187e5b9ff9a58ea772d969adc9e94d45ceacdf3"
+
+[[member]]
+meaning = "organic-cow/ram"
+address = 0xffff3342
+declared_width = "unset"
+claim_sha256 = "23c8acb50e3ae158bc7f30eeaf84a0288d1b4d45442fa9bc66b6b83d5cb75f93"
+
+[[member]]
+meaning = "maf_total/ram"
+address = 0xffff3852
+declared_width = 16
+claim_sha256 = "c45cf0c71a9e59620e5ebfd8566c2b0786fb7a6e99cf07ac5fb3703bb1cfacb8"
+
+[[member]]
+meaning = "eager-boobook/ram"
+address = 0xffff4544
+declared_width = 8
+claim_sha256 = "27af015b942f12d5e03a36ec97527d52617a969ebf84a8d3e12f1d6ed8ba5264"
+
+[[member]]
+meaning = "af_adjustment_b1/ram"
+address = 0xffff45a0
+declared_width = 16
+claim_sha256 = "42360d7ab5993a16b8ab2456ce31e5481b4b1c76593995f25687769127b17d94"
+
+[[member]]
+meaning = "af_adjustment_b2/ram"
+address = 0xffff45a2
+declared_width = 16
+claim_sha256 = "d83ca2baee921b88a84d480f1b5175889e01a70b19d4200bba6cf72a7cc6e844"
+
+[[member]]
+meaning = "cryptic-honeybee/ram"
+address = 0xffff564c
+declared_width = 8
+claim_sha256 = "6e521a79c1835caf6e744c70d6d1282fa81e374d9376431c30d0d1be68f15cca"
+
+[[member]]
+meaning = "cornflower-polecat/ram"
+address = 0xffff5690
+declared_width = "unset"
+claim_sha256 = "c37a29538d2d34a072e3deb63e8c74fcd654d6f88f82266f69ec8db4bb2499aa"
+
+[[binding]]
+member = "maf_b1/ram"
+did = 0x1204
+record = 0x000228ac
+source_offset = "unset"
+
+[[binding]]
+member = "maf_b2/ram"
+did = 0x1205
+record = 0x000228b0
+source_offset = "unset"
+
+[[binding]]
+member = "bfs/ram"
+did = 0x1208
+record = 0x000228bc
+source_offset = "unset"
+
+[[binding]]
+member = "fuel_temperature_did_source/ram"
+did = 0x1104
+record = 0x000226bc
+source_offset = "unset"
+
+[[binding]]
+member = "fuel_temperature_did_source/ram"
+did = 0x1111
+record = 0x000226f0
+source_offset = "unset"
+
+[[binding]]
+member = "coolant/ram"
+did = 0x1101
+record = 0x000226b0
+source_offset = "unset"
+
+[[binding]]
+member = "battery_voltage/ram"
+did = 0x1103
+record = 0x000226b8
+source_offset = "unset"
+
+[[binding]]
+member = "overjoyed-chameleon/ram"
+did = 0x1116
+record = 0x00022704
+source_offset = "unset"
+
+[[binding]]
+member = "authentic-wasp/ram"
+did = 0x1201
+record = 0x000228a0
+source_offset = "unset"
+
+[[binding]]
+member = "daffodil-ape/ram"
+did = 0x112a
+record = 0x00022754
+source_offset = "unset"
+
+[[binding]]
+member = "exhaust_cvtc_duty_b1_word/ram"
+did = 0x122f
+record = 0x00022958
+source_offset = "unset"
+
+[[binding]]
+member = "exhaust_cvtc_duty_b2_word/ram"
+did = 0x1230
+record = 0x0002295c
+source_offset = "unset"
+
+[[binding]]
+member = "spiritual-porpoise/ram"
+did = 0x122d
+record = 0x00022950
+source_offset = "unset"
+
+[[binding]]
+member = "sceptical-toucan/ram"
+did = 0x122e
+record = 0x00022954
+source_offset = "unset"
+
+[[binding]]
+member = "apc_output/ram"
+did = 0x1107
+record = 0x000226c8
+source_offset = "unset"
+
+[[binding]]
+member = "apc_output/ram"
+did = 0x1108
+record = 0x000226cc
+source_offset = "unset"
+
+[[binding]]
+member = "apc_output/ram"
+did = 0x1109
+record = 0x000226d0
+source_offset = "unset"
+
+[[binding]]
+member = "apc_output/ram"
+did = 0x110a
+record = 0x000226d4
+source_offset = "unset"
+
+[[binding]]
+member = "apc_output/ram"
+did = 0x113c
+record = 0x0002279c
+source_offset = "unset"
+
+[[binding]]
+member = "copper-wombat/ram"
+did = 0x1118
+record = 0x0002270c
+source_offset = "unset"
+
+[[binding]]
+member = "attentive-tarantula/ram"
+did = 0x1119
+record = 0x00022710
+source_offset = "unset"
+
+[[binding]]
+member = "stft_b1/ram"
+did = 0x1123
+record = 0x00022738
+source_offset = "unset"
+
+[[binding]]
+member = "stft_b2/ram"
+did = 0x1124
+record = 0x0002273c
+source_offset = "unset"
+
+[[binding]]
+member = "af_state_factor/ram"
+did = 0x1134
+record = 0x0002277c
+source_offset = "unset"
+
+[[binding]]
+member = "ltft_b1/ram"
+did = 0x1125
+record = 0x00022740
+source_offset = "unset"
+
+[[binding]]
+member = "ltft_b2/ram"
+did = 0x1126
+record = 0x00022744
+source_offset = "unset"
+
+[[binding]]
+member = "exhaust_cvtc_actual_b1/ram"
+did = 0x1164
+record = 0x0002283c
+source_offset = "unset"
+
+[[binding]]
+member = "exhaust_cvtc_actual_b2/ram"
+did = 0x1165
+record = 0x00022840
+source_offset = "unset"
+
+[[binding]]
+member = "exhaust_cvtc_target/ram"
+did = 0x1166
+record = 0x00022844
+source_offset = "unset"
+
+[[binding]]
+member = "injection_0/ram"
+did = 0x1206
+record = 0x000228b4
+source_offset = "unset"
+
+[[binding]]
+member = "injection_1/ram"
+did = 0x1207
+record = 0x000228b8
+source_offset = "unset"
+
+[[binding]]
+member = "intake_cvtc_actual_b1/ram"
+did = 0x1135
+record = 0x00022780
+source_offset = "unset"
+
+[[binding]]
+member = "app1/ram"
+did = 0x120d
+record = 0x000228d0
+source_offset = "unset"
+
+[[binding]]
+member = "app2/ram"
+did = 0x120e
+record = 0x000228d4
+source_offset = "unset"
+
+[[binding]]
+member = "tps_b1/ram"
+did = 0x120f
+record = 0x000228d8
+source_offset = "unset"
+
+[[binding]]
+member = "secondary_tps_b1/ram"
+did = 0x1210
+record = 0x000228dc
+source_offset = "unset"
+
+[[binding]]
+member = "front_af_sensor_b1_word/ram"
+did = 0x1225
+record = 0x00022930
+source_offset = "unset"
+
+[[binding]]
+member = "front_af_sensor_b2_word/ram"
+did = 0x1226
+record = 0x00022934
+source_offset = "unset"
+
+[[binding]]
+member = "iat/ram"
+did = 0x1106
+record = 0x000226c4
+source_offset = "unset"
+
+[[binding]]
+member = "tps_b2/ram"
+did = 0x124b
+record = 0x000229c8
+source_offset = "unset"
+
+[[binding]]
+member = "secondary_tps_b2/ram"
+did = 0x124c
+record = 0x000229cc
+source_offset = "unset"
+
+[[binding]]
+member = "oil_temperature_did_source/ram"
+did = 0x111f
+record = 0x00022728
+source_offset = "unset"
+
+[[binding]]
+member = "peach-asp/ram"
+did = 0x130d
+record = 0x00022a48
+source_offset = 1
+
+[[binding]]
+member = "tiny-spider/ram"
+did = 0x130e
+record = 0x00022a50
+source_offset = 1
+
+[[binding]]
+member = "abstract-newt/ram"
+did = 0x130d
+record = 0x00022a48
+source_offset = 0
+
+[[binding]]
+member = "diagnostic_state/ram"
+did = 0x130e
+record = 0x00022a50
+source_offset = 0
+
+[[binding]]
+member = "nano-axolotl/ram"
+did = 0x130a
+record = 0x00022a30
+source_offset = 0
+
+[[binding]]
+member = "pretty-caracal/ram"
+did = 0x130b
+record = 0x00022a38
+source_offset = 0
+
+[[binding]]
+member = "organic-cow/ram"
+did = 0x1302
+record = 0x000229f0
+source_offset = 0
+
+[[binding]]
+member = "maf_total/ram"
+did = 0x1209
+record = 0x000228c0
+source_offset = "unset"
+
+[[binding]]
+member = "eager-boobook/ram"
+did = 0x1129
+record = 0x00022750
+source_offset = "unset"
+
+[[binding]]
+member = "af_adjustment_b1/ram"
+did = 0x1249
+record = 0x000229c0
+source_offset = "unset"
+
+[[binding]]
+member = "af_adjustment_b2/ram"
+did = 0x124a
+record = 0x000229c4
+source_offset = "unset"
+
+[[binding]]
+member = "cryptic-honeybee/ram"
+did = 0x112d
+record = 0x00022760
+source_offset = "unset"
+
+[[binding]]
+member = "cornflower-polecat/ram"
+did = 0x112e
+record = 0x00022764
+source_offset = "unset"
