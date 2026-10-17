@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from kb import copy_evidence as proof, copy_matrix, local_paths, repo, test_evidence
+from kb import copy_evidence as proof, copy_matrix, injection_copy_evidence, local_paths, repo, test_evidence
 
 CONSUMED = (proof.DESCRIPTOR,
     'tools/sh-elf-run/stock_jk08a_can_latch_copy.s',
@@ -39,8 +39,10 @@ def begin(root=repo.ROOT):
     from kb import compile
     model = compile.build(root)
     proof.descriptor(root)
+    injection_copy_evidence.descriptor(root)
     return dict(schema=proof.SCHEMA, key=proof.KEY, mode='full', complete=False,
-                scope=proof.scope_digest(model), inputs=proof.inputs(root),
+                scope=proof.scope_digest(model), snapshot_scope=injection_copy_evidence.scope_digest(model),
+                inputs=proof.inputs(root),
                 native_model=test_evidence.model_digest(model), producer_inputs=provenance(root))
 
 
@@ -109,6 +111,7 @@ def validate(candidate, root):
     if set(witness['toolchain']['binaries']) != {'as', 'ld', 'objcopy', 'gcc', 'run'} or not all(
             _sha(value) for value in witness['toolchain']['binaries'].values()):
         raise ValueError('incomplete GNU executable provenance')
+    injection_copy_evidence.validate_witness(witness['snapshot'], candidate['inputs'], root)
 
 
 def finalize(process_path, stdout_path, stderr_path, root=repo.ROOT):

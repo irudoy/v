@@ -1444,6 +1444,10 @@ REGION_OBSERVERS.update({
 def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=None):
     if region.key == sid22_pointer_read.REGION:
         return sid22_pointer_read.run_region(region, build_dir, capture=sid22_capture)
+    if region.key == 'jk08a-injection-snapshot' and copy_capture is not None:
+        import injection_snapshot_copy
+        return injection_snapshot_copy.run_region(region, build_dir,
+            capture=copy_capture.setdefault('snapshot', {}))
     execution_timeout = stock_execution_timeout()
     observer = REGION_OBSERVERS.get(region.key)
     captured = can_latch_copy.snapshot(ROOT, build_dir) if region.key == 'jk08a-can-latch-copy' else None

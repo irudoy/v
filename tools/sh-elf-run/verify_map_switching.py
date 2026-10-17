@@ -604,13 +604,19 @@ def main(argv=None):
         help='emit the CAN copy candidate after the complete primary GNU pipeline')
     copy_mode.add_argument('--sid22-early', action='store_true',
         help='run the fixed non-production SID22 pointer-read subset')
+    copy_mode.add_argument('--injection-copy-early', action='store_true',
+        help='run the fixed non-production injection snapshot subset')
     parser.add_argument('--sid22-witness', action='store_true',
         help='emit the SID22 candidate with the CAN candidate after the full primary pipeline')
     args = parser.parse_args(argv)
     if args.sid22_witness and not args.can_copy_witness:
         parser.error('--sid22-witness requires --can-copy-witness')
     try:
-        if args.sid22_early:
+        if args.injection_copy_early:
+            import injection_snapshot_copy
+            with stage('feedback:injection_copy'):
+                injection_snapshot_copy.verify_early()
+        elif args.sid22_early:
             import sid22_pointer_read
             with stage('feedback:sid22_pointer'):
                 sid22_pointer_read.verify_early()

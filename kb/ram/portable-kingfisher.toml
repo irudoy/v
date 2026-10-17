@@ -288,6 +288,16 @@ reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021318"
+to = "coherent_snapshot/fn/7mfk"
+value = {direction = "reader", offset_bytes = 122, width_bits = 16}
+mode = "snapshot-copy"
+path = "defs/JK08A.injection-copy.toml"
+key = "snapshot-copy-v1:jk08a-injection-140"
+
 [[link]]
 type = "reader"
 to = "discerning-snake/fn"

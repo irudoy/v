@@ -11,6 +11,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 CAN = 'jk08a-can-latch-copy'
 SID = 'jk08a-sid22-pointer-read'
+SNAPSHOT = 'jk08a-injection-snapshot'
 
 
 @pytest.fixture
@@ -122,6 +123,17 @@ def pipeline(tmp_path, monkeypatch):
 
     monkeypatch.setattr(stock.sid22_pointer_read, 'run_region', sid_execution)
 
+    snapshot = importlib.import_module('injection_snapshot_copy')
+    def snapshot_execution(region, directory, *, capture=None):
+        assert region.key == SNAPSHOT
+        state.events.append(('execute', SNAPSHOT))
+        if state.fail_region == SNAPSHOT:
+            raise ValueError('controlled execution failure: ' + SNAPSHOT)
+        if capture is not None:
+            capture.update(region=SNAPSHOT, observations=[dict(lane='snapshot', observation=43)])
+        return sum((end-start)//2 for start,end in region.code_spans)
+    monkeypatch.setattr(snapshot, 'run_region', snapshot_execution)
+
     def finish(label, candidate, capture, root):
         executions = [key for event, key in state.events if event == 'execute']
         if executions != state.expected:
@@ -130,6 +142,9 @@ def pipeline(tmp_path, monkeypatch):
         if (candidate != dict(controlled_lane=label) or capture.get('region') != region
                 or capture.get('observations') != [dict(lane=label, observation=observation)]):
             raise ValueError('controlled missing or misrouted ' + label + ' capture')
+        if label == 'CAN' and capture.get('snapshot') != dict(
+                region=SNAPSHOT, observations=[dict(lane='snapshot', observation=43)]):
+            raise ValueError('controlled missing or misrouted snapshot capture')
         state.finishes[label] = capture
         state.events.append(('finish', label))
         return dict(controlled_only=True, lane=label, capture=capture)
@@ -210,10 +225,10 @@ def test_incomplete_or_duplicated_real_stock_loop_cannot_publish(
     assert candidates(output.out) == []
 
 
-@pytest.mark.parametrize('lane', ['ordinary', 'CAN', 'SID22'])
+@pytest.mark.parametrize('lane', ['ordinary', 'CAN', 'SID22', 'snapshot'])
 def test_region_failure_prevents_both_finalizers_and_candidates(pipeline, capsys, lane):
     pipeline.fail_region = (pipeline.expected[0] if lane == 'ordinary'
-                            else CAN if lane == 'CAN' else SID)
+                            else CAN if lane == 'CAN' else SID if lane == 'SID22' else SNAPSHOT)
     assert pipeline.driver.main(['--can-copy-witness', '--sid22-witness']) == 1
     output = capsys.readouterr()
     assert 'controlled execution failure' in output.err

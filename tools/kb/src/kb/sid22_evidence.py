@@ -293,7 +293,8 @@ def scope_digest(model):
         for link in model.links:
             if link.owner is not meaning and link.to is not meaning:
                 continue
-            evidence = list(link.evidence)
+            from kb import copy_evidence
+            evidence = copy_evidence.semantic_evidence(link)
             if link.owner.key in members and link.to.key == FUNCTION_MEANING and link.type == 'reader':
                 evidence = [entry for entry in evidence if entry != item(link.owner.key)]
             links.append((link.owner.key, link.type, link.to.key, link.slot, link.offset,

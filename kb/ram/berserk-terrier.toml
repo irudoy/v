@@ -153,3 +153,13 @@ registered copy Region observes every source, destination and neighboring \
 RAM byte, all registers and the complete frame. R11=00022558 and R12=140 are \
 explicit entry contexts; complete scheduler execution, live cadence and \
 hardware atomicity retain separate evidence."""
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021318"
+to = "coherent_snapshot/fn/7mfk"
+value = {direction = "writer", offset_bytes = 24, width_bits = 16}
+mode = "snapshot-copy"
+path = "defs/JK08A.injection-copy.toml"
+key = "snapshot-copy-v1:jk08a-injection-140"

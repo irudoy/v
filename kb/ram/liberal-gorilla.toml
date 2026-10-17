@@ -171,3 +171,13 @@ to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021318"
+to = "coherent_snapshot/fn/7mfk"
+value = {direction = "writer", offset_bytes = 72, width_bits = 8}
+mode = "snapshot-copy"
+path = "defs/JK08A.injection-copy.toml"
+key = "snapshot-copy-v1:jk08a-injection-140"

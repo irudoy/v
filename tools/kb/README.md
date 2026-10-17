@@ -107,6 +107,18 @@ Unknown block-copy items and malformed reserved markers fail closed; unrelated
 legacy evidence keeps its separate unqualified behavior. See
 `tools/sh-elf-run/README.md` for the primary producer and independent finalizer.
 
+The reserved `snapshot-copy-v1:jk08a-injection-140` indirect/snapshot-copy item
+binds twenty exact reader/writer identities through the bounded 140-byte
+injection snapshot. `defs/JK08A.injection-copy.toml` preserves their original
+claim digests, declared widths and signedness. An unset width remains unset;
+byte-copy evidence supplies no declared-width or vector-extent claim. Both copy
+domains use schema 2 of the shared primary GNU receipt. Its independent
+validator requires all 1700 ordered snapshot observations as well as the CAN
+matrix. Exact publication attachments leave supported semantic scopes unchanged;
+changed original facts or other evidence remain visible to freshness checks.
+The forty incident TEST attachments retain their separate execution/semantic
+qualification requirement. An identity-only copy receipt does not qualify them.
+
 Receipt, original process and stream bytes are live check dependencies, even
 when absent. Verdicts and pass-cache publication consume one primitive output
 snapshot; graph Meta binds the same snapshot and readers fence its freshness.

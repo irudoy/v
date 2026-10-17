@@ -158,3 +158,13 @@ key = "test_injection_snapshot_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Bounded injection result snapshot"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:00021318"
+to = "coherent_snapshot/fn/7mfk"
+value = {direction = "writer", offset_bytes = 3, width_bits = 8}
+mode = "snapshot-copy"
+path = "defs/JK08A.injection-copy.toml"
+key = "snapshot-copy-v1:jk08a-injection-140"

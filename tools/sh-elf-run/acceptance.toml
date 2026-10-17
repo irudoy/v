@@ -167,7 +167,7 @@ repeat_triggers = ["Changed programmer/dispatcher/ISR instructions, slot/mask ta
 overlap = "Python sequencing/snapshot/dispatch chains overlap masks, equations and source identity. Connected execution supplies real BSR/JSR/delay order and natural frame composition missing from isolated formulas."
 minimum_boundary = "Affected composed path plus its separately required direct-entry boundaries; retain quiet/event and count-zero/nonzero views. No public group selector."
 minimality = "unproved"
-source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_injection_sequencing_chain.py"]
+source_anchors = ["tools/sh-elf-run/README.md", "tools/kb/tests/test_injection_sequencing_chain.py", "defs/JK08A.injection-copy.toml", "tools/kb/src/kb/injection_copy_evidence.py", "tools/kb/src/kb/injection_copy_matrix.py", "tools/sh-elf-run/injection_snapshot_copy.py", "tools/sh-elf-run/harness-injection-snapshot-capture.c"]
 regions = ["jk08a-full-programmer", "jk08a-oneshot", "jk08a-event-isr", "jk08a-full-dispatch", "jk08a-injection-prologue", "jk08a-injection-count", "jk08a-injection-dispatch", "jk08a-injection-catchup", "jk08a-injection-pending", "jk08a-injection-slot", "jk08a-injection-snapshot"]
 limits = ["Prepared frames and bounded direct entries do not prove all scheduler paths. GNU TRAPA/RTE does not establish the physical SH-2E exception-stack contract; hardware eligibility remains separate."]
 

@@ -13,7 +13,7 @@ from kb import local_paths, repo, sh2
 from kb.model import SymbolKey
 from kb.test_evidence import digest, encode, json_text, publish
 
-SCHEMA = 1
+SCHEMA = 2
 PREFIX = 'can-copy-'
 KEY = 'can-copy-v1:jk08a-latch-12'
 DESCRIPTOR = 'defs/JK08A.can-latch-copy.toml'
@@ -36,6 +36,13 @@ EXECUTION_FILES = (
     'tools/sh-elf-run/invoke-can-latch-copy.s',
     'tools/sh-elf-run/can-latch-copy-cases.h',
     'tools/sh-elf-run/can_latch_copy.py',
+    'defs/JK08A.injection-copy.toml',
+    'tools/sh-elf-run/injection_snapshot_copy.py',
+    'tools/sh-elf-run/harness-injection-snapshot-capture.c',
+    'tools/sh-elf-run/stock_jk08a_injection_snapshot.s',
+    'tools/sh-elf-run/harness-stock-jk08a-injection-snapshot.c',
+    'tools/sh-elf-run/injection-snapshot-cases.h',
+    'tools/sh-elf-run/stock_injection_start_delay_invoke.s',
 )
 MARKER = 'kb-copy-candidate '
 _CONSUMED = ContextVar('can_copy_consumed_outputs', default=None)
@@ -49,8 +56,9 @@ def _registered(item, symbol=None):
 
 
 def registered(item, symbol=None):
-    from kb import sid22_evidence
-    return _registered(item, symbol) or sid22_evidence.registered(item, symbol)
+    from kb import injection_copy_evidence, sid22_evidence
+    return (_registered(item, symbol) or sid22_evidence.registered(item, symbol)
+            or injection_copy_evidence.registered(item, symbol))
 
 
 def item(direction):
@@ -84,7 +92,7 @@ def read_output(root, path):
 
 def descriptor(root):
     value = tomllib.loads(_read(root, DESCRIPTOR).decode('utf-8'))
-    if (type(value['schema']) is not int or value['schema'] != SCHEMA or value['id'] != KEY
+    if (type(value['schema']) is not int or value['schema'] != 1 or value['id'] != KEY
             or value['layout'] != '7mfk' or value['image'] != 'JK08A'
             or value['copy'] != dict(source=0xffff4194, destination=0xffff4188,
                                     length_bytes=12, member_offset_bytes=7, overlap=False)):
@@ -191,10 +199,7 @@ def scope_digest(model):
         for link in model.links:
             if link.owner is not meaning and link.to is not meaning:
                 continue
-            evidence = list(link.evidence)
-            if (link.owner.key in {entry[0] for entry in MEMBERS.values()}
-                    and link.to.key == 'coherent_snapshot/fn' and link.type in MEMBERS):
-                evidence = [entry for entry in evidence if entry != item(link.type)]
+            evidence = semantic_evidence(link)
             links.append((link.owner.key, link.type, link.to.key, link.slot, link.offset,
                           value(link.props), value(evidence), link.roles, link.stated, link.sources))
         owners.append(dict(key=meaning.key, kind=meaning.kind, semantic=meaning.semantic,
@@ -210,6 +215,21 @@ def scope_digest(model):
                 if key not in ('names', 'reconciliation', 'source_bindings')}
     return digest(encode(dict(owners=owners, layouts=model.layouts, spaces=model.spaces,
                               functions=model.functions, settings=settings)))
+
+
+def semantic_evidence(link):
+    """Exclude unique, exactly scoped publication attachments from fact hashes."""
+    from kb import injection_copy_evidence
+    result = []
+    for entry in link.evidence:
+        can = (link.type in MEMBERS and link.owner.key == MEMBERS[link.type][0]
+               and link.to.key == 'coherent_snapshot/fn' and link.slot is None
+               and link.offset is None and encode(entry) == encode(item(link.type)))
+        if (sum(encode(other) == encode(entry) for other in link.evidence) == 1
+                and (can or injection_copy_evidence.publication(link, entry))):
+            continue
+        result.append(entry)
+    return result
 
 
 def inputs(root):
@@ -297,27 +317,32 @@ def identity_only(symbol):
 
 def model_state(model):
     from itertools import chain
-    from kb import sid22_evidence
+    from kb import injection_copy_evidence, sid22_evidence
     entries = [entry for entries in chain(
             (link.evidence for link in model.links),
             (symbol.evidence for symbol in model.symbols.values())) for entry in entries]
     has_copy = any(_registered(entry) for entry in entries)
     has_sid22 = any(sid22_evidence.registered(entry) for entry in entries)
-    if not has_copy and not has_sid22:
+    has_snapshot = any(injection_copy_evidence.registered(entry) for entry in entries)
+    if not has_copy and not has_sid22 and not has_snapshot:
         return None
     try:
-        if not has_sid22:
-            return proof_state(model.root), scope_digest(model), inputs(model.root)
         return (proof_state(model.root),
-                (scope_digest(model), inputs(model.root)) if has_copy else None,
-                sid22_evidence.scope_digest(model), sid22_evidence.inputs(model.root))
+                (scope_digest(model), injection_copy_evidence.scope_digest(model), inputs(model.root))
+                if has_copy or has_snapshot else None,
+                (sid22_evidence.scope_digest(model), sid22_evidence.inputs(model.root))
+                if has_sid22 else None)
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         from kb import convert
         return proof_state(model.root), 'invalid', digest(encode(convert.dump(model)))
 
 
 def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
-    from kb import sid22_evidence
+    from kb import injection_copy_evidence, sid22_evidence
+    if injection_copy_evidence.registered(evidence, symbol):
+        if _registered(evidence, symbol) or sid22_evidence.registered(evidence, symbol):
+            return 'ambiguous reserved access execution proof'
+        return injection_copy_evidence.failure(evidence, symbol, model, claim, record=record)
     if sid22_evidence.registered(evidence, symbol):
         if _registered(evidence, symbol):
             return 'ambiguous reserved access execution proof'
@@ -345,7 +370,8 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
             return 'wrong copy execution protocol'
         if candidate['mode'] != 'full' or candidate['complete'] is not True:
             return 'copy execution is a subset or incomplete'
-        if candidate['scope'] != scope_digest(model) or candidate['inputs'] != inputs(model.root):
+        if (candidate['scope'] != scope_digest(model) or candidate['inputs'] != inputs(model.root)
+                or candidate['snapshot_scope'] != injection_copy_evidence.scope_digest(model)):
             return 'copy execution facts or inputs are stale'
         from kb import copy_witness
         copy_witness.validate(candidate, model.root)
@@ -391,11 +417,13 @@ def terminal_check(process):
 
 
 def accepted(model, symbol, function, claim):
-    from kb import sid22_evidence
+    from kb import injection_copy_evidence, sid22_evidence
     if function.key == sid22_evidence.FUNCTION:
         return sid22_evidence.accepted(model, symbol, function, claim)
     if function.key != FUNCTION:
         return None
+    if symbol.key in injection_copy_evidence.MEMBER_KEYS:
+        return injection_copy_evidence.accepted(model, symbol, function, claim)
     entries = [entry for entry in claim['evidence'] if registered(entry, symbol)]
     if len(entries) != 1 or failure(entries[0], symbol, model, 'identity') is not None:
         return None
@@ -417,9 +445,11 @@ def claim_fields(link, layout):
 def retires(before, after, old_claim):
     """Exact semantic CAS for one proof attachment, never absence-based retirement."""
     try:
-        from kb import sid22_evidence
+        from kb import injection_copy_evidence, sid22_evidence
         if old_claim['to'] == sid22_evidence.FUNCTION_MEANING:
             return sid22_evidence.retires(before, after, old_claim)
+        if old_claim['owner'] in {row[2] for row in injection_copy_evidence.MEMBERS}:
+            return injection_copy_evidence.retires(before, after, old_claim)
         from kb import reconciliation
         if any(registered(entry) for entry in old_claim['evidence']):
             return False

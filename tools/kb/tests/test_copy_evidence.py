@@ -36,6 +36,14 @@ def model_of(root):
 
 @pytest.fixture
 def qualified(tmp_path, monkeypatch):
+    from kb import injection_copy_evidence
+    # The snapshot domain has separate execution/native mutation contracts.
+    # Keep this fixture focused on the existing CAN domain and shared terminal.
+    monkeypatch.setattr(injection_copy_evidence, 'scope_digest', lambda model: 'controlled snapshot scope')
+    def snapshot(witness, inputs, root):
+        if witness != {'controlled_snapshot_boundary': True}:
+            raise ValueError('wrong controlled snapshot boundary')
+    monkeypatch.setattr(injection_copy_evidence, 'validate_witness', snapshot)
     descriptor = proof.descriptor(repo.ROOT)
     image = repo.images()['JK08A']
     data = image.path.read_bytes()
@@ -77,7 +85,8 @@ def qualified(tmp_path, monkeypatch):
             frame_before=bytes(64).hex(), frame_after=frame.hex(),
             ram_checked_bytes=65536, unchanged_outside_destination=True,
             abi_preserved=True, input_preserved=True))
-    candidate = dict(schema=1, key=proof.KEY, mode='full', complete=True,
+    candidate = dict(schema=proof.SCHEMA, key=proof.KEY, mode='full', complete=True,
+        snapshot_scope='controlled snapshot scope',
         scope=proof.scope_digest(model), inputs=inputs(tmp_path), native_model='a' * 64,
         producer_inputs={'controlled': 'b' * 64}, witness=dict(region=proof.REGION,
         cases=cases, observations=observations,
@@ -102,7 +111,8 @@ def qualified(tmp_path, monkeypatch):
                     command=['tools/sh-elf-run/run.sh', '--can-copy-witness'],
                     inclusive_process_seconds=0.1, declared_limit_seconds=300,
                     started_utc='2026-10-15T10:00:00+00:00', finished_utc='2026-10-15T10:00:00.1+00:00')
-    record = dict(schema=1, candidate=candidate, terminal=terminal,
+    candidate['witness']['snapshot'] = dict(controlled_snapshot_boundary=True)
+    record = dict(schema=proof.SCHEMA, candidate=candidate, terminal=terminal,
                   native_model=candidate['native_model'], native_inputs=proof.digest(candidate['producer_inputs']))
     def save(value=None):
         held = deepcopy(record if value is None else value)
@@ -140,7 +150,8 @@ def award(state, route):
 
 @pytest.mark.parametrize('route', ['verify', 'rank', 'anchor', 'access'])
 @pytest.mark.parametrize('fault', ['none', 'missing', 'source', 'receipt', 'terminal', 'stream',
-    'subset', 'incomplete', 'omitted-case', 'wrong-case', 'no-copy', 'register', 'frame', 'layout', 'width'])
+    'subset', 'incomplete', 'omitted-case', 'wrong-case', 'no-copy', 'register', 'frame', 'layout', 'width',
+    'missing-snapshot', 'snapshot', 'snapshot-scope', 'old-schema'])
 def test_current_packet_and_refusals(qualified, route, fault):
     assert award(qualified, route)
     record = deepcopy(qualified.record)
@@ -168,6 +179,10 @@ def test_current_packet_and_refusals(qualified, route, fault):
         if fault == 'no-copy': candidate['witness']['observations'][0]['destination_after'] = '00' * 12
         if fault == 'register': candidate['witness']['observations'][0]['gpr'][7] ^= 1
         if fault == 'frame': candidate['witness']['observations'][0]['frame_after'] = 'ff' * 64
+        if fault == 'missing-snapshot': candidate['witness'].pop('snapshot')
+        if fault == 'snapshot': candidate['witness']['snapshot'] = {}
+        if fault == 'snapshot-scope': candidate['snapshot_scope'] = 'another scope'
+        if fault == 'old-schema': candidate['schema'] = 1
         qualified.save(record)
     assert award(qualified, route) is (fault == 'none')
 

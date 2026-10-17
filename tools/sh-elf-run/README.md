@@ -1727,6 +1727,21 @@ helper 00022558. Both vectors start at byte offset 24 of source ffff23bc and
 destination ffff2330. Explicit R11=00022558 and R12=140 entry contexts and
 the complete per-byte RAM checks bind this word relation. The copy does
 not establish full scheduler execution, live cadence or hardware atomicity.
+
+The shared copy witness captures this region through
+`harness-injection-snapshot-capture.c`, retaining the original checked harness
+and independently reconstructed caller/helper bytes. The host independently
+generates the complete 1700-case matrix, validates actual entry/exit registers,
+special registers, ABI, frame, pointer pools and full admitted memory effects,
+and binds consumed sources, ELF, fixture and toolchain identities. The two RAM
+pool relocations and SP+24/R7 return boundary are explicit simulation changes;
+instruction bytes under test remain original. Twenty exact native reader/writer
+claims can receive identity support through the schema-2 shared copy receipt.
+Existing declared widths, signedness and relation slot/offset remain unchanged.
+Full qualification uses the existing primary `--can-copy-witness` path and its
+independent finalizer. `--injection-copy-early` executes twelve fixed cases only,
+emits raw observations and supplies no production receipt or native acceptance.
+Related TEST attachments require separate qualification.
 The formulas occupy fuel_pulse steps 20, 21, 22 and 23; all other fuel and
 injection steps retain their independent contracts.
 

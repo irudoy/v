@@ -1,0 +1,259 @@
+schema = 1
+id = "snapshot-copy-v1:jk08a-injection-140"
+layout = "7mfk"
+image = "JK08A"
+
+[copy]
+source = 0xffff23bc
+destination = 0xffff2330
+length_bytes = 140
+overlap = false
+
+[caller]
+meaning = "coherent_snapshot/fn"
+function = 0x20dfe
+entry = 0x21314
+call = 0x21318
+delay_slot = 0x2131a
+end = 0x2131c
+callee = 0x22558
+callee_end = 0x22590
+
+[entry_context]
+r11 = 0x22558
+r12 = 140
+scope = "bounded caller with explicit R11/R12; complete scheduler execution and hardware atomicity require separate evidence"
+
+[simulation]
+ram_base = 0x01000000
+ram_size = 65536
+boundary = 0x2131c
+boundary_bytes = "57f6472a000b0009"
+return_register = 7
+stack_return_offset = 24
+frame_bytes_below_sp = 64
+
+[matrix]
+count = 1700
+caller_affine = 1024
+caller_isolated = 280
+helper = 384
+successive = 12
+header = "tools/sh-elf-run/injection-snapshot-cases.h"
+header_sha256 = "b8281a9ba37226a071600d8a9f2d6c9660403bb3b7da2016a3f402f094145212"
+
+[[code]]
+start = 0x21314
+bytes = "d122d2234b0b60c3"
+
+[[code]]
+start = 0x22558
+bytes = "2f262f362f46880089126423340c6024210034268b0c6024801134268b086024801234268b04602480133426710489ee64f663f6000b62f6"
+
+[[pool]]
+address = 0x213a0
+value = 0xffff2330
+
+[[pool]]
+address = 0x213a4
+value = 0xffff23bc
+
+[[member]]
+meaning = "nippy-caribou/ram"
+direction = "writer"
+address = 0xffff2333
+offset_bytes = 3
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unsigned"
+claim_sha256 = "d0e0f11092826fb65dd6d60a9c6a579c2069f78150843ee06895fff3a145d762"
+
+[[member]]
+meaning = "berserk-terrier/ram"
+direction = "writer"
+address = 0xffff2348
+offset_bytes = 24
+witness_width_bits = 16
+declared_width = "16"
+declared_signed = "unsigned"
+claim_sha256 = "04cd562aa87fb3021922b45b5ca200794ebf13d337b0b3eba3d79abb6d981def"
+
+[[member]]
+meaning = "lumpy-kudu/ram"
+direction = "writer"
+address = 0xffff2356
+offset_bytes = 38
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "signed"
+claim_sha256 = "04cddf0fa28be02c2a27664e3c20a3adecfc73b8ddb39bb265b72ce0abb336d9"
+
+[[member]]
+meaning = "fabulous-koel/ram"
+direction = "writer"
+address = 0xffff2364
+offset_bytes = 52
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unsigned"
+claim_sha256 = "4db3ea5bc2b9051cdd2c2eace1cc5dcb44dd9a6a4fc097ee02bb20d6430e1ead"
+
+[[member]]
+meaning = "liberal-gorilla/ram"
+direction = "writer"
+address = 0xffff2378
+offset_bytes = 72
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "signed"
+claim_sha256 = "70235cbdb97dd9b16795c75aa1d8bfe6d69581d168192438636e1ebf44d73c7a"
+
+[[member]]
+meaning = "aloof-stork/ram"
+direction = "writer"
+address = 0xffff237a
+offset_bytes = 74
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "25ea6851dc3b423177e78e48b1e9c0f5db42db3c75eb0f37b8a3f9a6044a9630"
+
+[[member]]
+meaning = "quiet-gerbil/ram"
+direction = "writer"
+address = 0xffff2390
+offset_bytes = 96
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "5125193b5af7a9ccc68e773467a88d46728396ee0c36c81819b21805900bb805"
+
+[[member]]
+meaning = "flashy-jerboa/ram"
+direction = "writer"
+address = 0xffff23aa
+offset_bytes = 122
+witness_width_bits = 16
+declared_width = "16"
+declared_signed = "unsigned"
+claim_sha256 = "281d7c82f5e58215fbcec9d302bae5ff0eb9de3ebd3e832d7592e901ef8a26bb"
+
+[[member]]
+meaning = "intake_cvtc_duty_command_b1/ram"
+direction = "writer"
+address = 0xffff23b4
+offset_bytes = 132
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unset"
+claim_sha256 = "c89be8e258e7bd9b70be552da5647fcfdde83228765bfe37cf64c7e219d70039"
+
+[[member]]
+meaning = "intake_cvtc_duty_command_b2/ram"
+direction = "writer"
+address = 0xffff23b5
+offset_bytes = 133
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unset"
+claim_sha256 = "b436a69988ba45ce8b773d1ce48b95df8c972674da3d50372baee757d589173a"
+
+[[member]]
+meaning = "righteous-scorpion/ram"
+direction = "reader"
+address = 0xffff23bf
+offset_bytes = 3
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unsigned"
+claim_sha256 = "8bd8fbf487f234e24ff8bafe90f10ef805f140c0f16bd19bcf310cb74fc3b49f"
+
+[[member]]
+meaning = "handsome-spaniel/ram"
+direction = "reader"
+address = 0xffff23d4
+offset_bytes = 24
+witness_width_bits = 16
+declared_width = "16"
+declared_signed = "unsigned"
+claim_sha256 = "2a219912fded6fb7ce83f33d4c098357f47eb6012335b06f2c5f95bbc202af01"
+
+[[member]]
+meaning = "lavender-dalmatian/ram"
+direction = "reader"
+address = 0xffff23e2
+offset_bytes = 38
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "4fcdcef70ab53b416da73edf01d1057f7ed64404d547470e38d8cdce599fda82"
+
+[[member]]
+meaning = "flat-coyote/ram"
+direction = "reader"
+address = 0xffff23f0
+offset_bytes = 52
+witness_width_bits = 8
+declared_width = "8"
+declared_signed = "unsigned"
+claim_sha256 = "5eef06a436dc72d2fc1e0e8950091578a083633b944d7fe30d24209274655360"
+
+[[member]]
+meaning = "functional-corgi/ram"
+direction = "reader"
+address = 0xffff2404
+offset_bytes = 72
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "aff485131fa71c6bb19e37ca01930beb11bf740118aaef9e2dd88f5ec9f791ae"
+
+[[member]]
+meaning = "cuddly-crow/ram"
+direction = "reader"
+address = 0xffff2406
+offset_bytes = 74
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "4d289a51d2d19cb18d91f33e0e04af0ddfa63b7f375bdb6509f0b6e34f01d73e"
+
+[[member]]
+meaning = "fervent-bittern/ram"
+direction = "reader"
+address = 0xffff240c
+offset_bytes = 80
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "adedf796c8af24cd27165ae19d3b5f8667a24b83a417cf1094e5a62855fffc75"
+
+[[member]]
+meaning = "sepia-armadillo/ram"
+direction = "reader"
+address = 0xffff240e
+offset_bytes = 82
+witness_width_bits = 8
+declared_width = "unset"
+declared_signed = "unset"
+claim_sha256 = "c95f3bfed4dd4cbf7117e9d127fa7578aa0ffe1518dd54eb87f050edf6e022e9"
+
+[[member]]
+meaning = "devout-swift/ram"
+direction = "reader"
+address = 0xffff241c
+offset_bytes = 96
+witness_width_bits = 16
+declared_width = "16"
+declared_signed = "unsigned"
+claim_sha256 = "e5f598a9bff4c552d2c75b7c25dbc19d5c2f16935bdc15080a16ba83b4d944f9"
+
+[[member]]
+meaning = "portable-kingfisher/ram"
+direction = "reader"
+address = 0xffff2436
+offset_bytes = 122
+witness_width_bits = 16
+declared_width = "16"
+declared_signed = "unsigned"
+claim_sha256 = "fe75bafe2ea579fd6f5e0173d2e0122702b7180d1acf617c3926fadad44a7e71"
