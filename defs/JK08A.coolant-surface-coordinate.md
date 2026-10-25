@@ -1,4 +1,4 @@
-# Coolant coordinate and complete composite accessor
+# Coolant and raw inner coordinates of the complete composite accessor
 
 `JK08A.coolant-surface-coordinate-paths.toml` binds 209 stock instructions in
 1 actual entry path and 7 spans, 14 literal pools, 2 four-byte RAM pointer
@@ -17,12 +17,21 @@ caller 52576 reads RAM106F at 52582, sign-extends it into R0 and executes EXTU.B
 R0,R5 at 52586. RAM10F0 is read at 52588 and supplies R6 in the actual 5258E delay
 slot of call 5258C. The primitive contains no fixed RAM106F load.
 
-One ordinary owning operation appends one identity proof. The complete owner,
-both complete function documents, unit `normalized coolant index`, unset
-semantic width and signedness, indexed_by role, reverse support and reliance,
-diagnostic bindings, writer, copy, input, other links, ledger, evidence and
-TEST positions remain exact. The proof grants no new physical units, scale,
-geometry, scheduling, producer or hardware admission.
+The second original claim is
+`d0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd`:
+raw RAM10F0 has an indexed_by reader association with the same primitive.
+The actual delay-slot R6 argument supplies this second coordinate. The
+primitive contains no fixed RAM10F0 load. Its unit is `raw`; its physical
+quantity and engineering scale remain unresolved.
+
+One joint group of 2 ordinary owning operations appends one identity proof to
+each reader association. Both complete native owners and both complete
+function documents remain fixed. The units `normalized coolant index` and
+`raw`, unset semantic widths and signedness, indexed_by roles, original
+forward/reverse support and reliance, diagnostic bindings, writers, copies,
+inputs, other links, ledgers, evidence and TEST positions remain exact.
+The proof grants no new physical units, scale, geometry, scheduling, producer
+or hardware admission.
 
 ## Actual surface coordinates and full returns
 
@@ -63,8 +72,9 @@ Independent numerical equations require the ordered physical ROM/RAM reads,
 real helper arguments, full signed returns, fractions, product and final word.
 The instruction-state consumer requires complete CPU, RAM and frame equality,
 exact opcodes, natural calls/tails/returns, delay slots and source identities.
-Held-other RAM106F alternatives must change the actual 1652 publication through
-the real surface result. Input echoes and altered write sets are insufficient.
+Held-other RAM106F and RAM10F0 alternatives must each change the actual 1652
+publication through the real surface result. Each group varies only its own
+coordinate. Input echoes and altered write sets are insufficient.
 Independent prior1652 alternatives must preserve the complete final CPU, RAM
 and frame. The full byte-surface and word-interpolation caller originals are
 mandatory from the identical primary execution.

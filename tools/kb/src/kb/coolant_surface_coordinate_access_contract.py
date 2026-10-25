@@ -1,4 +1,4 @@
-"""One exact retained coolant coordinate quantity and complete native preservation."""
+"""Two exact retained coordinate associations and complete native preservation."""
 from copy import deepcopy
 from pathlib import Path
 import json,tomllib
@@ -12,8 +12,8 @@ DECLARED={'schema': 1,
  'id': 'jk08a-coolant-surface-coordinate-claims',
  'layout': '7mfk',
  'image_sha256': 'ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23',
- 'scope': 'One retained RAM106F indexed_by association through the actual caller R5 argument into 26040 and '
-          'complete1652 publication; complete native owner, wrapper and caller remain fixed.',
+ 'scope': 'Two retained RAM106F/RAM10F0 indexed_by associations through actual52576 R5/R6 handoffs into26040 '
+          'and complete1652 publication; both complete native owners, wrapper and caller remain fixed.',
  'native_function_publication': False,
  'native_geometry_publication': False,
  'scale_admission': False,
@@ -99,7 +99,67 @@ DECLARED={'schema': 1,
                                  'inside26040. The complete owner, wrapper, caller, unit, unset types, '
                                  'indexed_by/reverse support, diagnostics, writer/copy/input, ledger and '
                                  'TEST positions remain '
-                                 'exact.","path":"defs/JK08A.coolant-surface-coordinate-claims.toml","supports":"identity","value":{"actual_final_output":{"address":4294907474,"register":2,"site":337356,"width_bytes":2},"actual_helper_call":{"delay_slot":337294,"site":337292,"target":155712},"actual_input":{"address":4294905967,"coordinate_register":5,"load_register":0,"read_site":337282,"unsigned_extension_site":337286,"width_bytes":1},"actual_product":{"maximum":65535,"shift":7,"site":337328,"surface_register":14,"word_register":2},"actual_second_input":{"address":4294906096,"coordinate_register":6,"load_register":0,"read_site":337288,"unsigned_delay_site":337294,"width_bytes":1},"actual_surface_return_extension":{"full_return_required":true,"site":337296,"source_register":0,"target_register":14,"width_bits":8},"actual_word_call":{"delay_slot":337324,"site":337322,"target":156632},"actual_word_input":{"address":4294906402,"extension_site":337302,"load_register":0,"maximum":65535,"multiplier":32,"read_site":337298,"scaled_register":2,"width_bytes":2},"actual_word_return_extension":{"full_return_required":true,"site":337326,"source_register":0,"target_register":2,"width_bits":16},"caller":"7mfk:00052576","changed_actual1652_with_other_inputs_fixed_required":true,"complete_natural_entry_RAM_frame_CPU_and_real_calls":true,"component":"coolant_surface_coordinate_paths","direction":"reader","entry":337270,"full_signed_loads_unsigned_R5_R6_and_lookup_returns_required":true,"function":"7mfk:00026040","hardware_qualification":false,"native_address":4294905967,"native_geometry_inference":false,"natural_caller_reachability":false,"natural_scheduling_inference":false,"original_claim_sha256":"67ea4ac6db403b3ab511331bb5458664a609d62ba4ec108af92d838cb2c6288c","original_indexed_by_reverse_support_retained":true,"overwritten_prior1652_full_state_invariance_required":true,"owner":"hasty-eel/ram","scale_admission":false,"scope":"exact-coolant-coordinate-handoff","unit_normalized_coolant_index_retained_without_new_admission":true,"units_admission":false,"width_bytes":1,"wrapper_physical_RAM106F_read":false}}'}],
+                                 'exact.","path":"defs/JK08A.coolant-surface-coordinate-claims.toml","supports":"identity","value":{"actual_final_output":{"address":4294907474,"register":2,"site":337356,"width_bytes":2},"actual_helper_call":{"delay_slot":337294,"site":337292,"target":155712},"actual_input":{"address":4294905967,"coordinate_register":5,"load_register":0,"read_site":337282,"unsigned_extension_site":337286,"width_bytes":1},"actual_product":{"maximum":65535,"shift":7,"site":337328,"surface_register":14,"word_register":2},"actual_second_input":{"address":4294906096,"coordinate_register":6,"load_register":0,"read_site":337288,"unsigned_delay_site":337294,"width_bytes":1},"actual_surface_return_extension":{"full_return_required":true,"site":337296,"source_register":0,"target_register":14,"width_bits":8},"actual_word_call":{"delay_slot":337324,"site":337322,"target":156632},"actual_word_input":{"address":4294906402,"extension_site":337302,"load_register":0,"maximum":65535,"multiplier":32,"read_site":337298,"scaled_register":2,"width_bytes":2},"actual_word_return_extension":{"full_return_required":true,"site":337326,"source_register":0,"target_register":2,"width_bits":16},"caller":"7mfk:00052576","changed_actual1652_with_other_inputs_fixed_required":true,"complete_natural_entry_RAM_frame_CPU_and_real_calls":true,"component":"coolant_surface_coordinate_paths","direction":"reader","entry":337270,"full_signed_loads_unsigned_R5_R6_and_lookup_returns_required":true,"function":"7mfk:00026040","hardware_qualification":false,"native_address":4294905967,"native_geometry_inference":false,"natural_caller_reachability":false,"natural_scheduling_inference":false,"original_claim_sha256":"67ea4ac6db403b3ab511331bb5458664a609d62ba4ec108af92d838cb2c6288c","original_indexed_by_reverse_support_retained":true,"overwritten_prior1652_full_state_invariance_required":true,"owner":"hasty-eel/ram","scale_admission":false,"scope":"exact-coolant-coordinate-handoff","unit_normalized_coolant_index_retained_without_new_admission":true,"units_admission":false,"width_bytes":1,"wrapper_physical_RAM106F_read":false}}'},
+               {'id': 'retained-raw-inner-byte-surface-coordinate-reader',
+                'address': 4294906096,
+                'owner': 'sapphire-leopard/ram',
+                'function': 155712,
+                'sites': [337292],
+                'direction': 'reader',
+                'source': 'kb/ram/sapphire-leopard.toml',
+                'component': 'coolant_surface_coordinate_paths',
+                'width_bytes': 1,
+                'declared_width': 'unset',
+                'declared_signed': 'unset',
+                'original_claim_sha256': 'd0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd',
+                'original_claim_json': '{"evidence":[],"layout":"7mfk","offset":null,"owner":"sapphire-leopard/ram","props":{"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","supports":"identity"},"roles":["indexed_by"],"slot":null,"sources":["kb/ram/sapphire-leopard.toml"],"stated":["7mfk"],"to":"gabby-vole/fn","type":"reader"}',
+                'proposed_claim_sha256': 'e9eb26236ea959c954e5eefaa7edf15651d5f4af45e47c8c6224aedf8917bb71',
+                'proposed_claim_json': '{"evidence":[{"at":"7mfk:0005258c","key":"coolant-surface-coordinate-access-v1:jk08a:retained-raw-inner-byte-surface-coordinate-reader","kind":"indirect","mode":"coolant-surface-coordinate-access","note":"The '
+                                       'complete stock caller reads raw RAM10F0 and supplies its unsigned '
+                                       'byte in the actual R6 delay-slot argument of 26040. Full surface and '
+                                       'word returns reach the live product and actual1652 word publication. '
+                                       'The primitive has no fixed RAM10F0 load. The complete owner, raw '
+                                       'unit, unset types, unresolved physical quantity, indexed_by role, '
+                                       'forward/reverse properties, writer/copy/input, ledger and TEST '
+                                       'positions remain '
+                                       'exact.","path":"defs/JK08A.coolant-surface-coordinate-claims.toml","supports":"identity","value":{"actual_final_output":{"address":4294907474,"register":2,"site":337356,"width_bytes":2},"actual_helper_call":{"delay_slot":337294,"site":337292,"target":155712},"actual_input":{"address":4294906096,"coordinate_register":6,"load_register":0,"read_site":337288,"unsigned_delay_site":337294,"width_bytes":1},"actual_peer_input":{"address":4294905967,"coordinate_register":5,"load_register":0,"read_site":337282,"unsigned_extension_site":337286,"width_bytes":1},"actual_product":{"maximum":65535,"shift":7,"site":337328,"surface_register":14,"word_register":2},"actual_surface_return_extension":{"full_return_required":true,"site":337296,"source_register":0,"target_register":14,"width_bits":8},"actual_word_call":{"delay_slot":337324,"site":337322,"target":156632},"actual_word_input":{"address":4294906402,"extension_site":337302,"load_register":0,"maximum":65535,"multiplier":32,"read_site":337298,"scaled_register":2,"width_bytes":2},"actual_word_return_extension":{"full_return_required":true,"site":337326,"source_register":0,"target_register":2,"width_bits":16},"caller":"7mfk:00052576","changed_actual1652_with_other_inputs_fixed_required":true,"complete_natural_entry_RAM_frame_CPU_and_real_calls":true,"component":"coolant_surface_coordinate_paths","direction":"reader","entry":337270,"full_signed_loads_unsigned_R5_R6_and_lookup_returns_required":true,"function":"7mfk:00026040","hardware_qualification":false,"native_address":4294906096,"native_geometry_inference":false,"natural_caller_reachability":false,"natural_scheduling_inference":false,"original_claim_sha256":"d0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd","original_indexed_by_forward_reverse_support_retained":true,"original_indexed_by_reverse_support_retained":true,"overwritten_prior1652_full_state_invariance_required":true,"owner":"sapphire-leopard/ram","physical_quantity_unresolved":true,"scale_admission":false,"scope":"exact-raw-inner-coordinate-handoff","unit_raw_retained_without_new_admission":true,"units_admission":false,"width_bytes":1,"wrapper_physical_RAM10F0_read":false}}],"layout":"7mfk","offset":null,"owner":"sapphire-leopard/ram","props":{"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","supports":"identity"},"roles":["indexed_by"],"slot":null,"sources":["kb/ram/sapphire-leopard.toml"],"stated":["7mfk"],"to":"gabby-vole/fn","type":"reader"}',
+                'original_native_sha256': 'e2c3a7648e2df80c36b7ee67e64a0a389d9eac485eb803c144cbefe7c7e174ff',
+                'original_native_json': '{"ledger":[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"natural-degu/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"meteoric-wildebeest/tbl","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":62,"registry":"vars"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"natural-degu/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"note":["The '
+                                        'current-byte producer traces to the high byte of map 00015042 '
+                                        'output. Its physical quantity and engineering scale remain '
+                                        'unresolved."],"summary":"Previous-cycle raw byte used as the second '
+                                        'implicit coordinate of maps 0000a8ea/00009eda and as the explicit '
+                                        'coordinate for coefficient map 000124f2. Scheduler 00020dfe copies '
+                                        'it from current byte '
+                                        'ffff1170.","symbol":[{"address":"ffff10f0","evidence":[{"at":"7mfk:00020f0c","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}},{"at":"7mfk:00069d34","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}}],"layout":"7mfk","name":"sapphire-leopard"}],"unit":"raw"}',
+                'proposed_native_sha256': 'd43c367a841d5af341116e06b8b9d07dca1988e4d039c579cffb27cb26136330',
+                'proposed_native_json': '{"ledger":[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"natural-degu/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"meteoric-wildebeest/tbl","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":62,"registry":"vars"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"evidence":[{"at":"7mfk:0005258c","key":"coolant-surface-coordinate-access-v1:jk08a:retained-raw-inner-byte-surface-coordinate-reader","kind":"indirect","mode":"coolant-surface-coordinate-access","note":"The '
+                                        'complete stock caller reads raw RAM10F0 and supplies its unsigned '
+                                        'byte in the actual R6 delay-slot argument of 26040. Full surface '
+                                        'and word returns reach the live product and actual1652 word '
+                                        'publication. The primitive has no fixed RAM10F0 load. The complete '
+                                        'owner, raw unit, unset types, unresolved physical quantity, '
+                                        'indexed_by role, forward/reverse properties, writer/copy/input, '
+                                        'ledger and TEST positions remain '
+                                        'exact.","path":"defs/JK08A.coolant-surface-coordinate-claims.toml","supports":"identity","value":{"actual_final_output":{"address":4294907474,"register":2,"site":337356,"width_bytes":2},"actual_helper_call":{"delay_slot":337294,"site":337292,"target":155712},"actual_input":{"address":4294906096,"coordinate_register":6,"load_register":0,"read_site":337288,"unsigned_delay_site":337294,"width_bytes":1},"actual_peer_input":{"address":4294905967,"coordinate_register":5,"load_register":0,"read_site":337282,"unsigned_extension_site":337286,"width_bytes":1},"actual_product":{"maximum":65535,"shift":7,"site":337328,"surface_register":14,"word_register":2},"actual_surface_return_extension":{"full_return_required":true,"site":337296,"source_register":0,"target_register":14,"width_bits":8},"actual_word_call":{"delay_slot":337324,"site":337322,"target":156632},"actual_word_input":{"address":4294906402,"extension_site":337302,"load_register":0,"maximum":65535,"multiplier":32,"read_site":337298,"scaled_register":2,"width_bytes":2},"actual_word_return_extension":{"full_return_required":true,"site":337326,"source_register":0,"target_register":2,"width_bits":16},"caller":"7mfk:00052576","changed_actual1652_with_other_inputs_fixed_required":true,"complete_natural_entry_RAM_frame_CPU_and_real_calls":true,"component":"coolant_surface_coordinate_paths","direction":"reader","entry":337270,"full_signed_loads_unsigned_R5_R6_and_lookup_returns_required":true,"function":"7mfk:00026040","hardware_qualification":false,"native_address":4294906096,"native_geometry_inference":false,"natural_caller_reachability":false,"natural_scheduling_inference":false,"original_claim_sha256":"d0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd","original_indexed_by_forward_reverse_support_retained":true,"original_indexed_by_reverse_support_retained":true,"overwritten_prior1652_full_state_invariance_required":true,"owner":"sapphire-leopard/ram","physical_quantity_unresolved":true,"scale_admission":false,"scope":"exact-raw-inner-coordinate-handoff","unit_raw_retained_without_new_admission":true,"units_admission":false,"width_bytes":1,"wrapper_physical_RAM10F0_read":false}}],"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"level","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"natural-degu/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"note":["The '
+                                        'current-byte producer traces to the high byte of map 00015042 '
+                                        'output. Its physical quantity and engineering scale remain '
+                                        'unresolved."],"summary":"Previous-cycle raw byte used as the second '
+                                        'implicit coordinate of maps 0000a8ea/00009eda and as the explicit '
+                                        'coordinate for coefficient map 000124f2. Scheduler 00020dfe copies '
+                                        'it from current byte '
+                                        'ffff1170.","symbol":[{"address":"ffff10f0","evidence":[{"at":"7mfk:00020f0c","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}},{"at":"7mfk:00069d34","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}}],"layout":"7mfk","name":"sapphire-leopard"}],"unit":"raw"}',
+                'original_ledger_json': '[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"natural-degu/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"meteoric-wildebeest/tbl","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":62,"registry":"vars"}]',
+                'proposed_ledger_json': '[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"gabby-vole/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"natural-degu/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"stoic-dogfish/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"vivacious-cheetah/fn","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"meteoric-wildebeest/tbl","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"alpha_n_flow/ram","type":"input"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"coherent_snapshot/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":62,"registry":"vars"}]',
+                'original_symbol_evidence_json': '[{"at":"7mfk:00020f0c","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}},{"at":"7mfk:00069d34","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000124f2","00020dfe","00026040","00052576","000526a0","00069374","ffff10f0","ffff1170"],"span":1}}]',
+                'evidence_json': '{"at":"7mfk:0005258c","key":"coolant-surface-coordinate-access-v1:jk08a:retained-raw-inner-byte-surface-coordinate-reader","kind":"indirect","mode":"coolant-surface-coordinate-access","note":"The '
+                                 'complete stock caller reads raw RAM10F0 and supplies its unsigned byte in '
+                                 'the actual R6 delay-slot argument of 26040. Full surface and word returns '
+                                 'reach the live product and actual1652 word publication. The primitive has '
+                                 'no fixed RAM10F0 load. The complete owner, raw unit, unset types, '
+                                 'unresolved physical quantity, indexed_by role, forward/reverse properties, '
+                                 'writer/copy/input, ledger and TEST positions remain '
+                                 'exact.","path":"defs/JK08A.coolant-surface-coordinate-claims.toml","supports":"identity","value":{"actual_final_output":{"address":4294907474,"register":2,"site":337356,"width_bytes":2},"actual_helper_call":{"delay_slot":337294,"site":337292,"target":155712},"actual_input":{"address":4294906096,"coordinate_register":6,"load_register":0,"read_site":337288,"unsigned_delay_site":337294,"width_bytes":1},"actual_peer_input":{"address":4294905967,"coordinate_register":5,"load_register":0,"read_site":337282,"unsigned_extension_site":337286,"width_bytes":1},"actual_product":{"maximum":65535,"shift":7,"site":337328,"surface_register":14,"word_register":2},"actual_surface_return_extension":{"full_return_required":true,"site":337296,"source_register":0,"target_register":14,"width_bits":8},"actual_word_call":{"delay_slot":337324,"site":337322,"target":156632},"actual_word_input":{"address":4294906402,"extension_site":337302,"load_register":0,"maximum":65535,"multiplier":32,"read_site":337298,"scaled_register":2,"width_bytes":2},"actual_word_return_extension":{"full_return_required":true,"site":337326,"source_register":0,"target_register":2,"width_bits":16},"caller":"7mfk:00052576","changed_actual1652_with_other_inputs_fixed_required":true,"complete_natural_entry_RAM_frame_CPU_and_real_calls":true,"component":"coolant_surface_coordinate_paths","direction":"reader","entry":337270,"full_signed_loads_unsigned_R5_R6_and_lookup_returns_required":true,"function":"7mfk:00026040","hardware_qualification":false,"native_address":4294906096,"native_geometry_inference":false,"natural_caller_reachability":false,"natural_scheduling_inference":false,"original_claim_sha256":"d0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd","original_indexed_by_forward_reverse_support_retained":true,"original_indexed_by_reverse_support_retained":true,"overwritten_prior1652_full_state_invariance_required":true,"owner":"sapphire-leopard/ram","physical_quantity_unresolved":true,"scale_admission":false,"scope":"exact-raw-inner-coordinate-handoff","unit_raw_retained_without_new_admission":true,"units_admission":false,"width_bytes":1,"wrapper_physical_RAM10F0_read":false}}'}],
  'retained_functions': [{'address': 155712,
                          'owner': 'gabby-vole/fn',
                          'source': 'kb/fn/gabby-vole.toml',
@@ -139,21 +199,36 @@ IDENTITIES=(('retained-coolant-byte-surface-coordinate-reader',
   '67ea4ac6db403b3ab511331bb5458664a609d62ba4ec108af92d838cb2c6288c',
   '12c24c792c1cdc9f8b964643c89533b3f0dd123e19fbbb2ce23062739bc605c5',
   '46761c185874cb7b64eed8859837699f183609aad8bed72b32f911a3495bf492',
-  '430d3ccabc0fcc60570211c89e827e991408d9a03fd751b61de982fce2f3571f'),)
+  '430d3ccabc0fcc60570211c89e827e991408d9a03fd751b61de982fce2f3571f'),
+ ('retained-raw-inner-byte-surface-coordinate-reader',
+  4294906096,
+  'sapphire-leopard/ram',
+  155712,
+  (337292,),
+  'reader',
+  'coolant_surface_coordinate_paths',
+  1,
+  'unset',
+  'unset',
+  'd0df00bf9ee0140245e733faeb242b1b9181608c1d2bd1c6a3854ebfa2fecbfd',
+  'e9eb26236ea959c954e5eefaa7edf15651d5f4af45e47c8c6224aedf8917bb71',
+  'e2c3a7648e2df80c36b7ee67e64a0a389d9eac485eb803c144cbefe7c7e174ff',
+  'd43c367a841d5af341116e06b8b9d07dca1988e4d039c579cffb27cb26136330'))
 
 def descriptor(root):
     value=tomllib.loads((Path(root)/DESCRIPTOR).read_text())
-    if not test_contract.exact(value,DECLARED):raise ValueError('the quantity claim changes its exact retained native/function/type/evidence/TEST boundary')
-    row=value['reference'][0];old=json.loads(row['original_claim_json']);new=json.loads(row['proposed_claim_json'])
-    expected=deepcopy(old);expected['evidence'].append(item(row))
-    before=json.loads(row['original_native_json']);after=deepcopy(before)
-    links=[r for r in after['link'] if (r['type'],r['to'])==('reader','gabby-vole/fn')]
-    if len(links)!=1:raise ValueError('the quantity claim loses its unique retained conditional reader')
-    links[0].setdefault('evidence',[]).append(item(row))
-    if (digest(old)!=row['original_claim_sha256'] or digest(new)!=row['proposed_claim_sha256']
-            or digest(before)!=row['original_native_sha256'] or digest(after)!=row['proposed_native_sha256']
-            or not test_contract.exact(new,expected) or not test_contract.exact(after,json.loads(row['proposed_native_json']))):
-        raise ValueError('the quantity claim changes more than its single exact owning append')
+    if not test_contract.exact(value,DECLARED):raise ValueError('the coordinate claims change exact complete native/function/type/evidence/TEST boundaries')
+    for row in value['reference']:
+        old=json.loads(row['original_claim_json']);new=json.loads(row['proposed_claim_json'])
+        expected=deepcopy(old);expected['evidence'].append(item(row))
+        before=json.loads(row['original_native_json']);after=deepcopy(before)
+        links=[r for r in after['link'] if (r['type'],r['to'])==('reader',old['to'])]
+        if len(links)!=1:raise ValueError('a coordinate claim loses its unique retained indexed_by reader')
+        links[0].setdefault('evidence',[]).append(item(row))
+        if (digest(old)!=row['original_claim_sha256'] or digest(new)!=row['proposed_claim_sha256']
+                or digest(before)!=row['original_native_sha256'] or digest(after)!=row['proposed_native_sha256']
+                or not test_contract.exact(new,expected) or not test_contract.exact(after,json.loads(row['proposed_native_json']))):
+            raise ValueError('a coordinate claim changes more than its single exact owning append')
     return value
 
 def item(row):return json.loads(row['evidence_json'])
@@ -169,8 +244,11 @@ def operation(row):return dict(cmd='link',meaning=row['owner'],type='reader',to=
 def operations(ops,root):
     selected=[op for op in ops if any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
-    if not test_contract.exact(selected,[operation(descriptor(root)['reference'][0])]):
-        raise ValueError('the quantity attachment requires its one exact complete normal owning link operation')
+    expected=[operation(row) for row in descriptor(root)['reference']]
+    if not test_contract.exact(selected,expected):
+        raise ValueError('the coordinate attachments require the complete exact joint normal owning group')
     return True
 def looks_like_access(link):
-    return any(registered(e) for e in link.evidence) or (link.owner.key,link.type,link.to.key)==('hasty-eel/ram','reader','gabby-vole/fn')
+    return any(registered(e) for e in link.evidence) or any(
+        (link.owner.key,link.type,link.to.key)==(r['owner'],'reader',json.loads(r['original_claim_json'])['to'])
+        for r in DECLARED['reference'])

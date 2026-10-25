@@ -84,16 +84,21 @@ def causal_pairs():
     pairs=[]
     for raw in (0,32):
         observed,result,value,fixture=reconstructed(coolant_snapshot=raw);pairs.append((observed,value))
+    for raw in (0,32):
+        observed,result,value,fixture=reconstructed(inner_snapshot=raw);pairs.append((observed,value))
     return pairs
 
 
-def test_real_coordinate_needs_changed_actual1652_with_other_inputs_fixed():
-    assert proof.require_causal_alternatives(causal_pairs())=={'actual-coolant-coordinate-to1652':True}
+def test_each_real_coordinate_needs_changed_actual1652_with_other_inputs_fixed():
+    assert proof.require_causal_alternatives(causal_pairs())=={
+        'actual-coolant-coordinate-to1652':True,'actual-inner-coordinate-to1652':True}
     pairs=causal_pairs()
     for observed,value in pairs:
         raw=bytearray(observed['memory_after'][0]);raw[0x1652:0x1654]=bytes(2);observed['memory_after']=(bytes(raw),);value['value']=0
     with pytest.raises(ValueError):proof.require_causal_alternatives(pairs)
     with pytest.raises(ValueError):proof.require_causal_alternatives(causal_pairs()[:1])
+    with pytest.raises(ValueError):proof.require_causal_alternatives(causal_pairs()[:2])
+    with pytest.raises(ValueError):proof.require_causal_alternatives(causal_pairs()[2:])
 
 
 def test_prior1652_is_overwritten_without_changing_complete_other_state():

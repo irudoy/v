@@ -35,11 +35,12 @@ def same(actual, wanted, reason):
 
 def native_bindings(model):
     from kb import coolant_surface_coordinate_access_evidence as owning
-    row = owning.native_rows(model)[0]
-    if not set(contract.FUNCTIONS) <= set(model.functions.get('7mfk', ())):
-        raise ValueError('the coolant surface coordinate omits a complete required natural entry or helper')
-    return dict(original_claim_sha256=row['original_claim_sha256'], owner=row['owner'],
-                entry='7mfk:00052576', primitive='7mfk:00026040', native_width=None, native_signed=None)
+    rows=owning.native_rows(model)
+    if not set(contract.FUNCTIONS)<=set(model.functions.get('7mfk',())):
+        raise ValueError('the coordinate proof omits a complete required caller, wrapper or helper')
+    return dict(original_claims={r['id']:r['original_claim_sha256'] for r in rows},
+        owners=[dict(owner=r['owner'],address=r['address'],width=owning.contract.native_type(r,'width'),
+            signed=owning.contract.native_type(r,'signed')) for r in rows],entry='7mfk:00052576',primitive='7mfk:00026040')
 
 def declaration(model,image):
     source=contract.descriptor(model.root);contract.require_image(source,image);native_bindings(model)
@@ -129,20 +130,22 @@ def held_key(observed,address,width,domain):
     return sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode()),incoming
 
 def require_causal_alternatives(pairs):
-    groups={}
-    for observed,value in pairs:
-        actual=int.from_bytes(observed['memory_after'][0][0x1652:0x1654],'big')
-        same(actual,value['value'],'the coolant causal group replaces the actual1652 word publication')
-        key,incoming=held_key(observed,matrix.RAM_BASE+0x106F,1,'ram')
-        if incoming!=bytes([value['coolant_coordinate']]):
-            raise ValueError('the coolant causal group detaches its actual RAM byte from the live coordinate')
-        groups.setdefault(key,[]).append((incoming,value['surface_value'],actual))
-    for rows in groups.values():
-        for first in rows:
-            for second in rows:
-                if all(first[i]!=second[i] for i in range(3)):
-                    return {'actual-coolant-coordinate-to1652':True}
-    raise ValueError('the coolant quantity lacks changed actual1652 with every other complete input fixed')
+    admitted={}
+    for name,address,field in (('actual-coolant-coordinate-to1652',0x106F,'coolant_coordinate'),
+                              ('actual-inner-coordinate-to1652',0x10F0,'inner_coordinate')):
+        groups={}
+        for observed,value in pairs:
+            actual=int.from_bytes(observed['memory_after'][0][0x1652:0x1654],'big')
+            same(actual,value['value'],'a coordinate causal group replaces the actual1652 word publication')
+            key,incoming=held_key(observed,matrix.RAM_BASE+address,1,'ram')
+            if incoming!=bytes([value[field]]):
+                raise ValueError('a coordinate causal group detaches its actual RAM byte from the live argument')
+            groups.setdefault(key,[]).append((incoming,value['surface_value'],actual))
+        found=any(all(first[i]!=second[i] for i in range(3))
+            for rows in groups.values() for first in rows for second in rows)
+        if not found:raise ValueError('a coordinate lacks changed actual1652 with every other complete input fixed: '+name)
+        admitted[name]=True
+    return admitted
 
 
 def require_prior_publication_invariance(pairs):
@@ -225,7 +228,7 @@ def require_witness(model,packet,inputs):
     return dict(region=REGION,observations=len(actual),native_bindings=native_bindings(model),
         image_sha256=sha(image),fixture_sha256=sha(fixture),elf_sha256=packet['elf_sha256'],stdout_sha256=packet['stdout_sha256'],
         exact_coolant_surface_coordinate_paths=True,actual106F_R5_and_10F0_R6_to_complete1652_publication=True,
-        overwritten_prior1652_invariant=prior,
+        overwritten_prior1652_invariant=prior,both_actual_coordinates_causal=True,
         complete_natural_entry_RAM_frame_and_CPU=True,causal_inputs=causal,
         branch_outcomes={f'{site:08x}':sorted(values) for site,values in branches.items()},
         native_geometry_inference=False,scale_admission=False,units_admission=False,
