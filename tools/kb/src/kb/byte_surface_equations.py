@@ -10,6 +10,8 @@ RAM_BASE = 0x01000000
 RAM_SIZE = 65536
 ISA_REFERENCE = 'https://www.renesas.com/en/document/mah/sh-2e-software-manual'
 ISA_REFERENCE_ID = 'REJ09B0316-0200'
+SR_ARCH_MASK = 0x0FFF0FFF
+SR_TRANSFER_MASK = 0x3F1
 
 
 def signed(value,bits=32):
@@ -233,6 +235,15 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
             registers[n]=gbr
         elif word&0xF0FF==0x401E:
             gbr=registers[n]
+        elif word&0xF0FF==0x0002:
+            # SH-2E section 7.2.58: the register receives the complete SR.
+            registers[n]=sr
+        elif word&0xF0FF==0x400E:
+            # Section 7.2.26 defines the architectural mask independently of input admission.
+            value=registers[n]&SR_ARCH_MASK
+            if (value^sr)&~SR_TRANSFER_MASK:
+                raise ValueError('the byte-surface oracle changes SR controls outside the admitted I/M/Q/T boundary')
+            sr=value
         elif word&0xF0FF==0x001A:
             registers[n]=macl
         elif word&0xF0FF==0x401A:

@@ -116,3 +116,82 @@ def test_directed_bridge_inputs_leave_the_caller_outputs_unseeded(sources):
         expected=(150,160) if case['pattern']==8 else (151,180)
         assert spans[0xB2FA]==bytes([expected[0]])*64
         assert spans[0xB33A]==bytes([expected[1]])*256
+
+
+def sr_transfer(initial, replacement, fixture=None):
+    # STC SR,R1; LDC R2,SR; STC SR,R3; RTS; NOP.
+    if fixture is None:fixture=bytes.fromhex('0102420e0302000b0009')
+    context=[0x18374650+i*0x101 for i in range(20)]
+    context[2]=replacement
+    context[4]=0xFFFFFF0F
+    context[18]=initial&0x3F1
+    frame=bytes(192)
+    result=state.execute(dict(entry=[dict(start=0,end=len(fixture))]),fixture,tuple(context),
+        bytes(65536),frame,0x30000000,0x30010000,0,initial,trace=True)
+    return result,tuple(context)
+
+
+@pytest.mark.parametrize('initial,replacement',((0,0x3F1),(0x3F1,0),(0x100,0x201),
+    (0x201,0xF0),(0x2,0x3F3),(0x3F3,0x2),(0x2,0xF000F3F3)))
+def test_sr_transfers_keep_full_registers_and_preserve_other_controls(initial,replacement):
+    result,context=sr_transfer(initial,replacement)
+    masked=replacement&0x0FFF0FFF
+    expected=list(context[:15]);expected[1]=initial;expected[3]=masked
+    assert result['registers']==tuple(expected)
+    assert result['registers'][1]==initial
+    assert result['registers'][2]==replacement
+    assert result['registers'][3]==result['sr']==masked
+    assert result['sp']==0x30000000 and result['pr']==0x30010000
+    assert result['frame']==bytes(192) and result['ram']==bytes(65536)
+    assert result['accesses']==[] and result['calls']==[]
+    assert (result['gbr'],result['mach'],result['macl'])==context[15:18]
+    assert result['trace'][0]['before']['sr']==result['trace'][0]['after']['sr']==initial
+    assert result['trace'][1]['before']['sr']==initial
+    assert result['trace'][1]['after']['sr']==result['trace'][2]['after']['sr']==masked
+    assert result['trace'][-1]['delay_slot'] is True
+    assert result['trace'][-1]['next']==0x30010000
+
+
+@pytest.mark.parametrize('initial,replacement',((0,2),(2,0),(0,0x10000),
+    (0x80000000,0),(0x80000000,0x80000000)))
+def test_ldc_sr_refuses_changes_outside_existing_control_admission(initial,replacement):
+    with pytest.raises(ValueError,match='outside the admitted I/M/Q/T boundary'):
+        sr_transfer(initial,replacement)
+
+
+def test_stc_sr_transfers_the_complete_incoming_word_without_the_ldc_mask():
+    initial=0xF000F3F3
+    result,context=sr_transfer(initial,0,bytes.fromhex('0102000b0009'))
+    expected=list(context[:15]);expected[1]=initial
+    assert result['registers']==tuple(expected)
+    assert result['sr']==initial
+    assert result['accesses']==[] and result['calls']==[]
+
+
+@pytest.mark.parametrize('initial,current',((0x001,0x3F0),(0xF0,0x201),(0x3F3,0x2)))
+def test_restoring_interrupt_mask_keeps_current_mqt_and_other_sr_controls(initial,current):
+    # Save I, install current SR, then combine saved I with current M/Q/T.
+    fixture=bytes.fromhex('000240094009c90f6503420e00022049665346084608206b400e0302000b0009')
+    result,context=sr_transfer(initial,current,fixture)
+    expected=(current&~0xF0)|(initial&0xF0)
+    assert result['sr']==result['registers'][3]==expected
+    assert result['registers'][2]==current
+    assert (result['sr']&0x301)==(current&0x301)
+    assert (result['sr']&~0x3F1)==(initial&~0x3F1)
+    assert (result['gbr'],result['mach'],result['macl'])==context[15:18]
+    assert result['ram']==bytes(65536) and result['frame']==bytes(192)
+    assert result['accesses']==[] and result['calls']==[]
+
+
+@pytest.mark.parametrize('opcode',('4403','4407','412e','0122'))
+def test_unadmitted_memory_sr_and_vbr_forms_remain_refused(opcode):
+    with pytest.raises(ValueError):
+        sr_transfer(0,0,bytes.fromhex(opcode+'000b0009'))
+
+
+def test_sr_transfer_documentation_binds_architectural_and_input_masks():
+    text=(repo.ROOT/'defs/JK08A.byte-surface-paths.md').read_text()
+    assert state.SR_ARCH_MASK==0x0FFF0FFF
+    assert state.SR_TRANSFER_MASK==0x3F1
+    assert f'`0x{state.SR_ARCH_MASK:08X}`' in text
+    assert f'`0x{state.SR_TRANSFER_MASK:X}`' in text

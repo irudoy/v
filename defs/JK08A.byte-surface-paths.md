@@ -52,6 +52,15 @@ The DIV0U, DIV1 and ROTCL flag equations follow the
 sections 7.2.17, 7.2.18 and 7.2.44. The DIV1 Boolean equation retains M/Q/T
 instead of substituting a quotient for the natural instruction sequence.
 
+The register forms STC SR,Rn and LDC Rm,SR follow sections 7.2.58 and 7.2.26
+of the same manual. STC copies the complete observed SR word. LDC first
+applies architectural mask `0x0FFF0FFF`, then requires every resulting bit
+outside the admitted I/M/Q/T mask `0x3F1` to equal its incoming SR value.
+Unsupported control changes and memory SR/VBR forms refuse execution.
+The input mask and architectural mask have independent roles. Interrupt-mask
+restoration retains the current M/Q/T and other admitted controls. Execution
+remains a bounded synchronous instruction-state calculation.
+
 ## Dependency boundary
 
 The outputs at `FFFF1C5F` and `FFFF1C5D` enter later conditioning. A positive
