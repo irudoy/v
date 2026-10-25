@@ -1,0 +1,162 @@
+"""Complete DFCO state, indexed bytes, raw frame carriers and exact prior source boundaries."""
+import hashlib
+import json
+import pytest
+from kb import repo,proof_adapter
+from kb import ordinary_access_registry as registry
+from kb import dfco_state_caller_withdrawal_contract as contract,dfco_state_caller_withdrawal_matrix as matrix
+from kb import dfco_state_caller_withdrawal_semantics as scalar,dfco_state_caller_withdrawal_transfers as transfers
+from kb import dfco_state_caller_withdrawal_capture_evidence as proof,scalar_ram_leaf_withdrawal_contract as withdrawal
+
+
+def evaluate(entry,**changes):
+    case=dict(matrix.DEFAULTS,index=0,kind='controlled',entry=entry,**changes)
+    source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    return scalar.evaluate(entry,matrix.memory(case),matrix.calibrations(source,image,case),
+        matrix.context(source,case),case['initial_sr'],bytes([0xA5])*192,0x02001000,0x02100000)
+
+
+@pytest.mark.parametrize('mask,next_mask',((1,2),(2,4),(4,8),(8,16),(16,32),(32,1),(0,0),(3,0),(128,0),(255,0)))
+def test_real_rotation_retains_valid_one_hot_and_invalid_mask_domains(mask,next_mask):
+    value=evaluate(0x503E0,raw_r4=0,raw_r5=0,byte_14c1=0,byte_193a=255,byte_1936=mask,byte_1937=1,
+        **{field:0 for field in matrix.STATE_FIELDS})
+    assert value['rotations']==1 and value['known_registers'][0]==next_mask
+    assert [(row['site'],row['target'],row['registers'][4]) for row in value['calls']]==[(0x50642,0x50766,mask)]
+    assert value['calls'][0]['return_registers'][0]==next_mask
+
+
+def test_raw_count255_keeps_six_real_calls_and_the_unmodified_counter_byte():
+    value=evaluate(0x503E0,raw_r4=0,raw_r5=0,byte_14c1=0,byte_193a=255,byte_1936=1,byte_1937=255,
+        **{field:0 for field in matrix.STATE_FIELDS})
+    assert value['rotations']==6 and value['known_registers'][0]==63 and value['ram'][0x1937]==255
+    assert [row['registers'][4] for row in value['calls']]==[1,2,4,8,16,32]
+    assert [row['registers'][13] for row in value['calls']]==[1,2,3,4,5,6]
+
+
+@pytest.mark.parametrize('state',(0,1,2,3,4,5,127,128,255))
+@pytest.mark.parametrize('byte',(0,1,127,128,255))
+def test_every_admitted_state_index_uses_the_complete_raw_byte_table_without_a_four_state_cap(state,byte):
+    value=evaluate(0x503E0,raw_r4=0,raw_r5=0,byte_14c1=state,byte_193a=255,byte_1937=0,
+        byte_2571=1,byte_2572=1,byte_2573=1,**{matrix.STATE_FIELDS[state]:byte})
+    read=next(row for row in value['events'].values() if row['site']==0x50658)
+    assert (read['address'],read['width_bytes'],read['bytes'])==(0x2371C+state,1,f'{byte:02x}')
+    assert value['known_registers'][0]==byte and value['ram'][0x14C1]==state and value['rotations']==0
+
+
+def test_full_R6_carrier_preserves_word_dword_and_byte_frame_operations():
+    value=evaluate(0x503E0,raw_r4=1,raw_r5=0,raw_r6=0x12340078,byte_14c1=0,byte_2571=0,byte_2572=0)
+    rows=[next(row for row in value['events'].values() if row['site']==site) for site in (0x503F4,0x50406,0x50490,0x504AC)]
+    assert [(row['mode'],row['width_bytes'],row['bytes']) for row in rows]==[
+        ('write',2,'0078'),('write',4,'12340078'),('read',1,'00'),('read',1,'78')]
+    assert value['ram'][0x2571]==0 and value['ram'][0x2572]==120 and value['ram'][0x14C1]==2
+
+
+@pytest.mark.parametrize('coordinate,index',((0,0),(10,1),(255,2)))
+def test_each_real_delay_byte_and_actual1939_publication_retains_its_independent_index(coordinate,index):
+    value=evaluate(0x503E0,config_8b3f=0,byte_1517=coordinate)
+    assert value['ram'][0x1939]==index
+    assert value['ram'][0x193A]==matrix.DEFAULTS[f'delay_byte_{0x1269D+index:05x}']
+    assert value['ram'][0x1938]==matrix.DEFAULTS[f'delay_byte_{0x1269A+index:05x}']
+    assert any(row['site']==0x50574 and row['address']==0x01001939 and row['mode']=='write' for row in value['events'].values())
+
+
+def test_expired_delay_copies_the_full_byte_before_the_separate_six_call_loop_bound():
+    value=evaluate(0x503E0,raw_r4=0,raw_r5=0,byte_14c1=0,byte_193a=1,byte_1938=7,byte_1936=1)
+    assert value['ram'][0x193A]==255 and value['ram'][0x1937]==7
+    assert value['rotations']==6 and value['known_registers'][0]==63
+
+
+@pytest.mark.parametrize('field,value',(('byte_14c1',True),('state_byte_255',256),('delay_byte_1269f',256),
+    ('word_11b6',65536),('raw_r6',1<<32),('initial_sr',2)))
+def test_raw_state_table_delay_word_register_and_SR_inputs_refuse_narrowing(field,value):
+    case=dict(matrix.DEFAULTS,index=0,kind='controlled',entry=0x503E0);case[field]=value
+    with pytest.raises(ValueError):matrix.require_case(case)
+
+
+@pytest.mark.parametrize('flag',contract.FLAGS)
+def test_source_refuses_identity_geometry_scale_units_caller_hardware_stub_or_publication(tmp_path,flag):
+    path=tmp_path/contract.DESCRIPTOR;path.parent.mkdir(parents=True)
+    path.write_text((repo.ROOT/contract.DESCRIPTOR).read_text().replace(flag+' = false',flag+' = true',1))
+    with pytest.raises(ValueError):contract.descriptor(tmp_path)
+
+
+@pytest.mark.parametrize('root',transfers.NATIVE_ROOTS)
+@pytest.mark.parametrize('form',('native','alias','overlapping-interval'))
+@pytest.mark.parametrize('domain',('ram','rom','frame'))
+def test_selected_ROM_native_RAM_and_alias_roots_require_exact_physical_interval_absence(root,form,domain):
+    rows=[row for row in withdrawal.descriptor(repo.ROOT)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
+    identity,address,alias=root
+    if form=='alias':
+        if alias is None:pytest.skip('the selected ROM root has no RAM alias')
+        address=alias
+    width=1
+    if form=='overlapping-interval':address-=1;width=2
+    with pytest.raises(ValueError):transfers.require_no_selected_datum(dict(accesses=[dict(site=0x50574,
+        address=address,width_bytes=width,domain=domain)]),rows)
+
+
+def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_bytes():
+    declared=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    fixture,aliases=contract.independent_fixture(declared,image);restored=bytearray(fixture)
+    for first,last in contract.SPANS:assert fixture[first:last]==image[first:last]
+    for row in aliases:restored[row['address']:row['address']+4]=row['original'].to_bytes(4,'big')
+    assert len(aliases)==13 and bytes(restored)==image
+    for first,last in ((0x50400,0x50402),(0x50444,0x50484),(0x50552,0x50554),(0x5068C,0x50698),(0x506AE,0x506E8)):
+        assert fixture[first:last]==image[first:last]
+        assert not any(max(first,start)<min(last,end) for start,end in contract.SPANS)
+    assert (0x50766,0x5079C) in contract.SPANS and contract.HELPER_ENTRIES==(0x50766,)
+    assert contract.INPUT_BLOBS==[dict(name='delay_bytes',address=0x1269A,size=6),dict(name='state_bytes',address=0x2371C,size=256)]
+    assert len(matrix.STATE_FIELDS)==256 and len(matrix.DELAY_FIELDS)==6
+    from kb.test_stock_capture import tool
+    producer=tool(repo.ROOT,'dfco_state_caller_withdrawal_capture.py','_kb_DFCO_state_producer_source_contract')
+    assert declared['adapter']['marker']==producer.MARKER=='VQ_SH_ELF_DFCO_STATE_CALLER_WITHDRAWAL'
+    proof_adapter.require_generated(repo.ROOT,contract.DESCRIPTOR)
+
+
+def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources():
+    declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
+    text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
+    assert len(rows)==7 and len(declared['reference'])==123 and len(declared['function'])==66
+    assert len({row['owner'] for row in declared['reference']})==94
+    assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
+        '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
+    for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),409),
+        ('818 code bytes',sum(last-first for first,last in contract.SPANS),818),('7 code spans',len(contract.SPANS),7),
+        ('409 feasible instructions',len(transfers.FEASIBLE_SITES),409),('42 literal spans',len(contract.UNIT['pools']),42),
+        ('13 pointer aliases',len(contract.UNIT['aliases']),13),('25 complete RAM fields',len(matrix.RAM_FIELDS),25),
+        ('271 configuration fields',len(contract.CONFIGURATION),271),('44 complete calibration spans',len(contract.CONTROLLED_CALIBRATION),44),
+        ('306 raw input fields',len(matrix.WIDTHS),306)):
+        assert phrase in words and actual==wanted
+    assert f'{len(proof.REQUIRED_BRANCHES)} two-sided conditions' in words and proof.FIXED_BRANCHES=={}
+    assert transfers.FEASIBLE_SITES==transfers.EXACT_SITES
+    owners={row['owner']:row for row in declared['reference']}
+    removed=sum(sum(len(marker.get('dependency',())) for marker in (json.loads(row['original_ledger_json']) or ()))-
+        sum(len(marker.get('dependency',())) for marker in (json.loads(row['proposed_ledger_json']) or ())) for row in owners.values())
+    removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
+        for row in declared['function'] if 'proposed_ledger_json' in row)
+    assert removed==115 and '115 matching ledger selectors' in words
+    assert len(withdrawal.NATIVE_LINK_ROLES)==18 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==113
+    assert '113 readers and ten' in words
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
+    assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
+    for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):
+        assert 'Fourteen native-RAM components' in ' '.join((repo.ROOT/name).read_text().split())
+    assert withdrawal.digest(withdrawal.prior_reference_rows(declared,100))==withdrawal.PRIOR_STATE_RATIO_CALLER_REFERENCE_SHA256
+    assert withdrawal.digest(declared['function'][:55])==withdrawal.PRIOR_STATE_RATIO_CALLER_FUNCTION_SHA256
+    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
+    assert 'thirteen families and forty-seven capture bindings' in words
+    assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==23 and 'preceding twenty-three adapters' in words
+    mappings=(withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,withdrawal.PRIOR_GATED_FILES_SHA256,
+        withdrawal.PRIOR_RPM_RAM_FILES_SHA256,withdrawal.PRIOR_OVERFLOW_FILES_SHA256,withdrawal.PRIOR_WORD_FILES_SHA256,
+        withdrawal.PRIOR_RPM_STATE_FILES_SHA256,withdrawal.PRIOR_INDEXED_WORD_FILES_SHA256,
+        withdrawal.PRIOR_DIVISION_CALLER_FILES_SHA256,withdrawal.PRIOR_BYTE_CURVE_CALLER_FILES_SHA256,
+        withdrawal.PRIOR_WORD_INTERP_CALLER_FILES_SHA256,withdrawal.PRIOR_SCALED_DIVISION_FILES_SHA256,
+        withdrawal.PRIOR_CURVE_SCALE_CALLER_FILES_SHA256,withdrawal.PRIOR_DERIVATIVE_SCALE_CALLER_FILES_SHA256,
+        withdrawal.PRIOR_GUARDED_QUOTIENT_CALLER_FILES_SHA256,withdrawal.PRIOR_MIXED_CURVE_CALLER_FILES_SHA256,
+        withdrawal.PRIOR_TIMING_REMAINDER_CALLER_FILES_SHA256,withdrawal.PRIOR_STATE_RATIO_CALLER_FILES_SHA256)
+    files={name:sha for mapping in mappings for name,sha in mapping.items()}
+    assert len(files)==162 and '162 prior domain sources' in words and '161 byte-identical sources' in words
+    for name,sha in files.items():assert hashlib.sha256(withdrawal.prior_gated_source_bytes(repo.ROOT,name)).hexdigest()==sha

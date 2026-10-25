@@ -1,0 +1,24 @@
+schema = 1
+id = "jk08a-actuator-mask-base-withdrawal"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "The complete natural5096C record predicates,staged byte mask,low-speed mask and local-byte combination;selected array-root absence admits no owning replacement or array geometry."
+entries = [330092]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false
+unit = { assembly = "tools/sh-elf-run/stock_jk08a_actuator_mask_base_withdrawal.s", code = [{ start = 155168, end = 155204 }, { start = 330092, end = 330144 }, { start = 330144, end = 330218 }, { start = 330218, end = 330246 }], pools = [{ address = 155408, size = 4, stock_hex = "ffff5718" }, { address = 330328, size = 2, stock_hex = "0123" }, { address = 330516, size = 4, stock_hex = "ffff119c" }, { address = 330520, size = 4, stock_hex = "00025e20" }, { address = 330524, size = 4, stock_hex = "ffff1094" }], aliases = [{ address = 155408, width = 4, original = 4294924056, alias = 16799512 }, { address = 330516, width = 4, original = 4294906268, alias = 16781724 }, { address = 330524, width = 4, original = 4294906004, alias = 16781460 }] }
+controlled_calibration = [{ address = 155408, size = 4 }, { address = 330328, size = 2 }, { address = 330516, size = 4 }, { address = 330520, size = 4 }, { address = 330524, size = 4 }]
+configuration = []
+input_blobs = []
+adapter = { schema = 1, profile = "ordinary-80-572", symbol = "actuator_mask_base_withdrawal", region = "jk08a-actuator-mask-base-withdrawal-paths", prefix = "kb-actuator-mask-base-withdrawal-observation ", marker = "VQ_SH_ELF_ACTUATOR_MASK_BASE_WITHDRAWAL", header = "actuator-mask-base-withdrawal-cases.h", driver = "tools/sh-elf-run/harness-actuator-mask-base-withdrawal-paths.c", refusals = "tools/kb/tests/test_actuator_mask_base_withdrawal_adapter_generated.py", fields = [{ name = "raw_r0", bits = 32 }, { name = "raw_r1", bits = 32 }, { name = "raw_r2", bits = 32 }, { name = "raw_r3", bits = 32 }, { name = "raw_r4", bits = 32 }, { name = "raw_r5", bits = 32 }, { name = "raw_r6", bits = 32 }, { name = "raw_r7", bits = 32 }, { name = "byte_10e4", bits = 8 }, { name = "byte_110e", bits = 8 }, { name = "byte_11b3", bits = 8 }, { name = "byte_586c", bits = 8 }, { name = "byte_5a82", bits = 8 }, { name = "variant", bits = 8 }, { name = "initial_sr", bits = 10 }], entries = [330092], kind = { field = "entry", values = [330092] }, memory = [{ offset = 4324, width = 1, field = "byte_10e4" }, { offset = 4366, width = 1, field = "byte_110e" }, { offset = 4531, width = 1, field = "byte_11b3" }, { offset = 22636, width = 1, field = "byte_586c" }, { offset = 23170, width = 1, field = "byte_5a82" }], calibration = [{ address = 155408, size = 4 }, { address = 330328, size = 2 }, { address = 330516, size = 4 }, { address = 330520, size = 4 }, { address = 330524, size = 4 }], calibration_input = true, bound = [{ address = 155168, size = 36 }, { address = 330092, size = 52 }, { address = 330144, size = 74 }, { address = 330218, size = 28 }, { address = 155408, size = 4 }, { address = 330328, size = 2 }, { address = 330516, size = 4 }, { address = 330520, size = 4 }, { address = 330524, size = 4 }], dependencies = ["tools/kb/src/kb/actuator_mask_base_withdrawal_contract.py", "tools/kb/src/kb/actuator_mask_base_withdrawal_matrix.py", "tools/kb/src/kb/actuator_mask_base_withdrawal_semantics.py", "tools/kb/src/kb/actuator_mask_base_withdrawal_transfers.py", "tools/kb/src/kb/actuator_mask_base_withdrawal_capture_evidence.py", "tools/sh-elf-run/stock_jk08a_actuator_mask_base_withdrawal.s", "tools/kb/src/kb/byte_surface_equations.py", "tools/kb/src/kb/proof_sources.py", "tools/kb/src/kb/proof_reuse.py", "tools/sh-elf-run/stock_ignition_consumer_invoke.s", "tools/kb/tests/proof_adapter_cases.py", "defs/JK08A.maf-record-readers.toml", "tools/sh-elf-run/stock_jk08a_maf_record_readers.s", "tools/kb/src/kb/maf_record_contract.py", "tools/kb/src/kb/maf_record_matrix.py", "tools/kb/src/kb/maf_record_semantics.py", "tools/kb/src/kb/maf_record_capture_evidence.py", "tools/sh-elf-run/maf_record_capture.py", "tools/sh-elf-run/harness-maf-record.c"] }
