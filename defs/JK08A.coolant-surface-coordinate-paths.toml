@@ -1,0 +1,43 @@
+schema = 1
+id = "jk08a-coolant-surface-coordinate"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete 52576 caller and actual RAM106F-to-R5 handoff into 26040, including both implicit surface coordinates, full word return, product and final 1652 publication."
+entries = [337270]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+observation_bytes = 572
+frame_bytes = 192
+frame_prefix = 160
+outer_stack_bytes = 16
+independent_context_fields = 20
+unit = { "assembly" = "tools/sh-elf-run/stock_jk08a_coolant_surface_coordinate.s", "code" = [{ "start" = 155712, "end" = 155768 }, { "start" = 156632, "end" = 156650 }, { "start" = 157504, "end" = 157550 }, { "start" = 157552, "end" = 157638 }, { "start" = 158304, "end" = 158394 }, { "start" = 158432, "end" = 158456 }, { "start" = 337270, "end" = 337368 }], "pools" = [{ "address" = 155768, "size" = 4, "stock_hex" = "00000000" }, { "address" = 155772, "size" = 4, "stock_hex" = "00026770" }, { "address" = 155776, "size" = 4, "stock_hex" = "00026ae0" }, { "address" = 156652, "size" = 4, "stock_hex" = "00026a60" }, { "address" = 156656, "size" = 4, "stock_hex" = "0000e000" }, { "address" = 157640, "size" = 4, "stock_hex" = "00026740" }, { "address" = 158396, "size" = 4, "stock_hex" = "00026740" }, { "address" = 337562, "size" = 2, "stock_hex" = "03c6" }, { "address" = 337744, "size" = 4, "stock_hex" = "ffff1068" }, { "address" = 337748, "size" = 4, "stock_hex" = "0000a8ea" }, { "address" = 337752, "size" = 4, "stock_hex" = "00026040" }, { "address" = 337756, "size" = 4, "stock_hex" = "00014ed2" }, { "address" = 337760, "size" = 4, "stock_hex" = "000263d8" }, { "address" = 337764, "size" = 4, "stock_hex" = "ffff128c" }], "aliases" = [{ "address" = 337744, "width" = 4, "original" = 4294905960, "alias" = 16781416 }, { "address" = 337764, "width" = 4, "original" = 4294906508, "alias" = 16781964 }] }
+controlled_calibration = [{ "address" = 43242, "size" = 64 }, { "address" = 85714, "size" = 16 }, { "address" = 155768, "size" = 4 }, { "address" = 155772, "size" = 4 }, { "address" = 155776, "size" = 4 }, { "address" = 156652, "size" = 4 }, { "address" = 156656, "size" = 4 }, { "address" = 157640, "size" = 4 }, { "address" = 158396, "size" = 4 }, { "address" = 337562, "size" = 2 }, { "address" = 337744, "size" = 4 }, { "address" = 337748, "size" = 4 }, { "address" = 337752, "size" = 4 }, { "address" = 337756, "size" = 4 }, { "address" = 337760, "size" = 4 }, { "address" = 337764, "size" = 4 }]
+bound_spans = [{ "address" = 155712, "size" = 56 }, { "address" = 156632, "size" = 18 }, { "address" = 157504, "size" = 46 }, { "address" = 157552, "size" = 86 }, { "address" = 158304, "size" = 90 }, { "address" = 158432, "size" = 24 }, { "address" = 337270, "size" = 98 }, { "address" = 43242, "size" = 64 }, { "address" = 85714, "size" = 16 }, { "address" = 155768, "size" = 4 }, { "address" = 155772, "size" = 4 }, { "address" = 155776, "size" = 4 }, { "address" = 156652, "size" = 4 }, { "address" = 156656, "size" = 4 }, { "address" = 157640, "size" = 4 }, { "address" = 158396, "size" = 4 }, { "address" = 337562, "size" = 2 }, { "address" = 337744, "size" = 4 }, { "address" = 337748, "size" = 4 }, { "address" = 337752, "size" = 4 }, { "address" = 337756, "size" = 4 }, { "address" = 337760, "size" = 4 }, { "address" = 337764, "size" = 4 }]
+input_blobs = [{ "name" = "surface", "address" = 43242, "size" = 64 }, { "name" = "word_curve", "address" = 85714, "size" = 16 }]
+control_blobs = []
+stock_entry_paths = [155712, 337270, 158432, 156632, 157552, 157504, 158304]
+actual_RAM_input = { "address" = 4294905967, "width_bytes" = 1, "read_site" = 337282, "load_register" = 0, "unsigned_extension_site" = 337286, "coordinate_register" = 5 }
+actual_second_input = { "address" = 4294906096, "width_bytes" = 1, "read_site" = 337288, "load_register" = 0, "unsigned_delay_site" = 337294, "coordinate_register" = 6 }
+actual_helper_calls = [{ "site" = 337292, "delay_slot" = 337294, "target" = 155712 }]
+actual_surface_return_extension = { "site" = 337296, "source_register" = 0, "target_register" = 14, "width_bits" = 8, "full_return_required" = true }
+actual_word_input = { "address" = 4294906402, "width_bytes" = 2, "read_site" = 337298, "load_register" = 0, "extension_site" = 337302, "scaled_register" = 2, "multiplier" = 32, "maximum" = 65535 }
+actual_word_call = { "site" = 337322, "delay_slot" = 337324, "target" = 156632 }
+actual_word_return_extension = { "site" = 337326, "source_register" = 0, "target_register" = 2, "width_bits" = 16, "full_return_required" = true }
+actual_product = { "site" = 337328, "surface_register" = 14, "word_register" = 2, "shift" = 7, "maximum" = 65535 }
+actual_final_output = { "address" = 4294907474, "width_bytes" = 2, "site" = 337356, "register" = 2 }
+wrapper_has_no_physical_read_of_RAM106F = true
+full_GBR_rebase = { "native" = 4294905960, "alias" = 16781416, "site" = 337280, "restore_site" = 337358 }
+complete_initial_final_RAM_bytes = 65536
+full_existing_same_primary_originals = ["byte_surface_paths", "word_interp_caller_withdrawal_paths"]
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+natural_scheduling_inference = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false
+reused_source_sha256 = { "tools/sh-elf-run/stock_ignition_consumer_invoke.s" = "f0803224463944e2ecef86b1694e8802b01a5146a3fe706db39a4a1be9512809", "tools/kb/src/kb/byte_surface_equations.py" = "2c686f6ef380bf88a1635742b4cf6b25f3998b49a83e1f014baa698c3f5548cf", "tools/kb/src/kb/packed_transfer_evidence.py" = "7aa7f7e57a5b1a2db170e0b7003bf52bf42e96160fdfd92a7655764227bc866c", "tools/kb/src/kb/test_stock_abi.py" = "e0fbc5f20b99e736449ba68afd5879915b432088922493bbcfc5da0bf318240c", "tools/kb/src/kb/width_view_matrix.py" = "087e0f9e3db4874db26841f3cf4c89ce38bc7a9df152e916b8313110e8142869", "tools/kb/src/kb/ignition_literal_evidence.py" = "39d2499d39ec80b6036ad96374d2962d37c4ae899a4fd0015dd34e5d5245becb", "tools/kb/src/kb/test_contract.py" = "10f4a6162e989ce8e4a31e50b6d4f9ec6838e7efa9528727924434321c064b6a", "tools/kb/src/kb/test_stock_capture.py" = "12192a4b275957e7d5894ad767b0c437ee3ff153c1e3b0b741051d2b05d05ebe", "defs/JK08A.word-interp-caller-withdrawal-paths.toml" = "923067634016fb3a447d6c31caa92008ef526d75a2a3284851d2f9e0ba1918b0", "tools/sh-elf-run/stock_jk08a_word_interp_caller_withdrawal.s" = "4704e098245d81eb898040926a020337a0fccdcf5e258151e03323f301070c9a", "tools/sh-elf-run/harness-word-interp-caller-withdrawal-paths.c" = "e4714facffcb59d95bc5316687bd320202a85462cc48d5f2284814794c36a89a", "tools/sh-elf-run/word_interp_caller_withdrawal_capture.py" = "5388dde6dc64c15473de7a752b08715ca2ceb48be9f1fbbe32098af781086494", "tools/kb/src/kb/word_interp_caller_withdrawal_contract.py" = "069abc5bfc1687155a7c0660c0d3a8834085c14d3225297fae0ca630010508ac", "tools/kb/src/kb/word_interp_caller_withdrawal_matrix.py" = "9fac1a952481cb66647fa35c7075ff6632ef2b44be24e3cb59d8ddc6dcd84dd0", "tools/kb/src/kb/word_interp_caller_withdrawal_semantics.py" = "ed0a00dc33ad6bca12e969f42b01498b089280f9cd0137ef2df1349b74c7e2f8", "tools/kb/src/kb/word_interp_caller_withdrawal_transfers.py" = "c8506ca51c86d49a18beace79c0345c1c72f43ab6a03f5ac551f42e4b578aea2", "tools/kb/src/kb/word_interp_caller_withdrawal_capture_evidence.py" = "616b69264236daf8d329c6f4c39689ea4d0d22e75b5dd92fac0c0f141e18d9de", "defs/JK08A.byte-surface-paths.toml" = "646c7f482e579314ab663cdd58fb541b2fa56ebc47f940e7f358c2968a42f06b", "tools/sh-elf-run/stock_jk08a_byte_surface_paths.s" = "931646a791302eda98d6239a9e2455e46574d4b4b79b715dc51975d9d9312635", "tools/sh-elf-run/harness-byte-surface-paths.c" = "85b73fe76df884e12377c347350bffa4b5054432ed41c4eb8b2c08e13859a1fe", "tools/sh-elf-run/byte_surface_capture.py" = "531d5ae30752da44d6049dbbd4cc69f18794dfbc637d69a751f36dedef29e555", "tools/kb/src/kb/byte_surface_contract.py" = "a70226fbee2eaf0422807ec63001aea98ad3aeabcc6f1b1316d127faa0230be6", "tools/kb/src/kb/byte_surface_matrix.py" = "462e46a36df38131618bad602dd5c403b1b4a3463c7227a3ce4a22de7b307651", "tools/kb/src/kb/byte_surface_semantics.py" = "8ff3d4110fb324d9a7d2daca5b6b7948a704287255c664535c36d66c0101a853", "tools/kb/src/kb/byte_surface_capture_evidence.py" = "53299e49ae0d1cbedec5201f6f5a56760755d4876367a26c7b51ea0f004fbf94", "tools/sh-elf-run/process_record.py" = "04bb6d828957a586374b906fcf393e8655419d6be84e113d7f399da311503804" }
