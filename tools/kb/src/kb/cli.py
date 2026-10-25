@@ -143,6 +143,44 @@ def command_check(args, root=repo.ROOT):
 
 
 @_source_read
+def command_flow(args, root=repo.ROOT):
+    """One exact instruction-bound path under explicit bounded software inputs."""
+    from kb import value_flow
+    layout, datum = parse_location(args.ref, args.layout, root)
+    site_layout, site = parse_location(args.site, layout.id, root)
+    if layout.id != '7mfk' or site_layout.id != layout.id:
+        raise KbError('the bounded value-flow sources require the same 7mfk layout', code=2)
+    try:
+        value = value_flow.explain(root, args.component, args.case, datum, site, args.width,
+            expected_analysis=args.analysis)
+    except ValueError as error:
+        raise KbError(str(error), code=6) from error
+    text = json.dumps(value, indent=2, sort_keys=True)+'\n'
+    sys.stdout.write(text if args.json else fit(text, budget_of(args, 'flow', root),
+        'kb flow '+args.ref+' --component '+args.component+' --case '+str(args.case)+
+        ' --site '+args.site+' --width '+str(args.width)+' --json'))
+    return 0
+
+
+@_source_read
+def command_proof_group(args, root=repo.ROOT):
+    """Source-only applicability report, with optional existing guarded status."""
+    from kb import proof_reuse
+    layout, function = parse_location(args.function, None, root)
+    key=f'{layout.id}-{function:08x}/fn'
+    try:
+        value=proof_reuse.saved_report(root,args.group,key,args.prepared,
+            requirement_path=args.requirements,flow_paths=args.flow or (),input_path=args.inputs,
+            model=compile.cached(root) if args.accepted else None)
+    except (ValueError,OSError) as error:
+        raise KbError(str(error),code=6) from error
+    text=json.dumps(value,indent=2,sort_keys=True)+'\n'
+    sys.stdout.write(text if args.json else fit(text,budget_of(args,'proof-group',root),
+        'kb proof-group '+args.group+' --function '+args.function+' --prepared '+args.prepared+' --json'))
+    return 0
+
+
+@_source_read
 def _checked_sources(args, root=repo.ROOT):
     selected = args.only or list(CHECKS)
     record = passes.Passes(root)
@@ -700,6 +738,25 @@ def build_parser():
     code.add_argument("--no-sync", action="store_true",
                       help="fail instead of syncing a stale graph")
     code.set_defaults(handler=command_code)
+
+    flow = reader('flow', 'one exact-datum bounded instruction path with explicit software inputs', reference)
+    flow.add_argument('--component', required=True,
+        choices=('closed_loop_coolant_paths', 'maf_record_paths'))
+    flow.add_argument('--case', type=int, required=True, help='explicit input case index of the existing component')
+    flow.add_argument('--site', required=True, help='exact load instruction as <layout>:<address>')
+    flow.add_argument('--width', type=int, required=True, choices=(1, 2, 4), help='exact operand width in bytes')
+    flow.add_argument('--analysis', help='expected complete analysis digest; a mismatch remains unresolved')
+    flow.set_defaults(handler=command_flow)
+
+    preparation = reader('proof-group', 'exact reusable proof obligations of one saved coherent source group',
+        ('group','saved group-description JSON under tmp/ or .kb/'),layout=False)
+    preparation.add_argument('--function',required=True,help='exact group function as <layout>:<address>')
+    preparation.add_argument('--prepared',required=True,help='exact prepared-original manifest under tmp/ or .kb/')
+    preparation.add_argument('--requirements',help='explicit per-original datum/site/width/phase/premise requirements')
+    preparation.add_argument('--flow',action='append',help='saved exact value-flow response; repeatable')
+    preparation.add_argument('--inputs',help='saved complete source checkpoint or original producer manifest')
+    preparation.add_argument('--accepted',action='store_true',help='read existing exact-original status through guarded consumers')
+    preparation.set_defaults(handler=command_proof_group)
 
     render = commands.add_parser("project", help="render the projections that kb generates")
     render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")
