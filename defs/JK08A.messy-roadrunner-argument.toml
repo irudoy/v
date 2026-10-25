@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-messy-roadrunner-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "One bounded lookup correction product and final saturated publication; no physical scale inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "messy-roadrunner"
+address = 0x11f3a
+owner = "messy-roadrunner/tbl"
+wrapper = 0x26474
+caller = 0x69374
+callsite = 0x6ae92
+delay_slot = 0x6ae94
+component = "messy_roadrunner_paths"
+original_claim_sha256 = "ed17102dac02dbadeccf064daab5aff8b38c651692a8810909d7ae610b0a83e1"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"messy-roadrunner/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/messy-roadrunner.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "198dcaf6c83d98f07a2d536a6fd7949c2a5c020d3117042fc6fdc318cba867d4"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"messy-roadrunner/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit bounded 00069374 window reads 00011F3A through natural 00026474 with the high byte of explicit R2 as coordinate. Call 0006AE92 receives the uint8 lookup multiplied by 64 in R1 and divisor 125 in R0 after delay slot 0006AE94. The quotient is added to uint16(FFFF8E08); FFFF8EC0 retains that sum and FFFF8FDE receives min(sum + 0x7FBE, 65535). Only this conditional value flow is admitted, without complete parent reachability, following absolute control-memory stores, physical ROM reader on the arithmetic callee, units, scale, scheduling or hardware inference.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=430964)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/messy-roadrunner.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"bouncy-dolphin/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stoic-dogfish/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tasteful-kestrel/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"quaint-beluga/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],\"notes\":[0],\"order\":103,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"bouncy-dolphin/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stoic-dogfish/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tasteful-kestrel/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"quaint-beluga/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],\"notes\":[0],\"order\":103,\"registry\":\"findings\"}]"

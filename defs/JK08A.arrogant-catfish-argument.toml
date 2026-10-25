@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-arrogant-catfish-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional signed arguments of 0001244A from natural 0004BBEE; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "arrogant-catfish"
+address = 74826
+owner = "arrogant-catfish/tbl"
+wrapper = 156552
+caller = 310254
+callsite = 310508
+delay_slot = 310510
+component = "arrogant_catfish_paths"
+original_claim_sha256 = "53f8c3c78a93ecef8a86131c4ae5d19c83adfae15e2e7292505a157dfe475a92"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"arrogant-catfish/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/arrogant-catfish.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "f2fb31504d6029b732a2d1178f5a9cfc7193d1971737284a7296c3b02d164f97"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"arrogant-catfish/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0004BBEE entry selects 0001244A with FFFF2466.bit6 set and reads it through 00026388. When its byte result is below ROM threshold 00011ECD, threshold minus lookup enters signed divider 00021BBC in R0 at 0004BCEC. The paired 00012472 lookup multiplied by (uint8 FFFF1048 minus the selected lookup) enters R1 through delay slot 0004BCEE. The quotient is clamped to the paired byte and zero before the separate piecewise correction. Other mode or nonpositive denominator bypasses this particular dependency. This conditional argument dependency establishes no physical ROM reader on the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=310254)\",\"SymbolKey(layout='7mfk', kind='fn', address=156552)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/arrogant-catfish.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"competent-rottweiler/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"cryptic-bloodhound/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"identity\",\"to\":\"benign-cassowary/ram\",\"type\":\"threshold\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"scale\",\"to\":\"cryptic-bloodhound/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"scale\",\"to\":\"benign-cassowary/ram\",\"type\":\"threshold\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":141,\"registry\":\"findings\",\"scale\":[16,17,18]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"competent-rottweiler/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"cryptic-bloodhound/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"identity\",\"to\":\"benign-cassowary/ram\",\"type\":\"threshold\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"scale\",\"to\":\"cryptic-bloodhound/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"scale\",\"to\":\"benign-cassowary/ram\",\"type\":\"threshold\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":141,\"registry\":\"findings\",\"scale\":[16,17,18]}]"

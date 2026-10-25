@@ -1,0 +1,444 @@
+schema = 1
+id = "jk08a-timing-denominator"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_timing_denominator.s"
+scope = "Natural denominator entries with 16 by 16 word surfaces, eight-word curves and post-delay unsigned division; zero lookup bypasses the divider."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x21ce0,0x262a8,0x264cc,0x26628,0x266bc,0x26740,0x26848,0x26984,0x26af8,0x26b28,0x26b84,0x26c78,0x26d10,0x7b2c8,0x7b3f4]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-2"
+start = 0x262a8
+end = 0x262d8
+
+[[entry]]
+key = "code-3"
+start = 0x264cc
+end = 0x264ee
+
+[[entry]]
+key = "code-4"
+start = 0x26628
+end = 0x26658
+
+[[entry]]
+key = "code-5"
+start = 0x266bc
+end = 0x266de
+
+[[entry]]
+key = "code-6"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-7"
+start = 0x26848
+end = 0x268a0
+
+[[entry]]
+key = "code-8"
+start = 0x26984
+end = 0x269c0
+
+[[entry]]
+key = "code-9"
+start = 0x26af8
+end = 0x26b26
+
+[[entry]]
+key = "code-10"
+start = 0x26b28
+end = 0x26b80
+
+[[entry]]
+key = "code-11"
+start = 0x26b84
+end = 0x26bc0
+
+[[entry]]
+key = "code-12"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-13"
+start = 0x26d10
+end = 0x26da6
+
+[[entry]]
+key = "code-14"
+start = 0x7b2c8
+end = 0x7b3ae
+
+[[entry]]
+key = "code-15"
+start = 0x7b3f4
+end = 0x7b4de
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x262d8
+width_bytes = 4
+stock_value = 0x00026848
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x262dc
+width_bytes = 4
+stock_value = 0x00026984
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f0
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f4
+width_bytes = 4
+stock_value = 0x00026984
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26658
+width_bytes = 4
+stock_value = 0x00026b28
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2665c
+width_bytes = 4
+stock_value = 0x00026b84
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x266e0
+width_bytes = 4
+stock_value = 0x00026af8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x266e4
+width_bytes = 4
+stock_value = 0x00026b84
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x268a0
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x269c0
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26b80
+width_bytes = 4
+stock_value = 0x00026af8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26bc0
+width_bytes = 4
+stock_value = 0x00026d10
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3ae
+width_bytes = 2
+stock_value = 0x00000376
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3b0
+width_bytes = 2
+stock_value = 0x00000406
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3b2
+width_bytes = 2
+stock_value = 0x00000405
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3b4
+width_bytes = 2
+stock_value = 0x00000374
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3b8
+width_bytes = 4
+stock_value = 0xffff4124
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b3bc
+width_bytes = 4
+stock_value = 0x000083c1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3c0
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b3c4
+width_bytes = 4
+stock_value = 0x0000c98e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3c8
+width_bytes = 4
+stock_value = 0x00013478
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3cc
+width_bytes = 4
+stock_value = 0x00013498
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3d0
+width_bytes = 4
+stock_value = 0x000262a8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3d4
+width_bytes = 4
+stock_value = 0xffff28f8
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b3d8
+width_bytes = 4
+stock_value = 0x00014afa
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3dc
+width_bytes = 4
+stock_value = 0x000264cc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3e0
+width_bytes = 4
+stock_value = 0x000134b8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3e4
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b3e8
+width_bytes = 4
+stock_value = 0x00021ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3ec
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b3f0
+width_bytes = 4
+stock_value = 0xffff23bc
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b4de
+width_bytes = 2
+stock_value = 0x00000a9a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4e0
+width_bytes = 2
+stock_value = 0x00000cda
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4e2
+width_bytes = 2
+stock_value = 0x00000cf8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4e4
+width_bytes = 2
+stock_value = 0x00000cd6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4e6
+width_bytes = 2
+stock_value = 0x00000cd8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4e8
+width_bytes = 2
+stock_value = 0x00000ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4ea
+width_bytes = 2
+stock_value = 0x00000cde
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4ec
+width_bytes = 4
+stock_value = 0x000083c1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b4f0
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b4f4
+width_bytes = 4
+stock_value = 0xffff28f8
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b4f8
+width_bytes = 4
+stock_value = 0xffff41a9
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b4fc
+width_bytes = 4
+stock_value = 0xffff4124
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b500
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b504
+width_bytes = 4
+stock_value = 0x00016948
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b508
+width_bytes = 4
+stock_value = 0x00018846
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b50c
+width_bytes = 4
+stock_value = 0x00018866
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b510
+width_bytes = 4
+stock_value = 0x00026628
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b514
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b518
+width_bytes = 4
+stock_value = 0x00018dd6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b51c
+width_bytes = 4
+stock_value = 0x00018886
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b520
+width_bytes = 4
+stock_value = 0x000266bc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b524
+width_bytes = 4
+stock_value = 0x00021ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b528
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false

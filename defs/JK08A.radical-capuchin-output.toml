@@ -1,0 +1,32 @@
+schema = 1
+id = "jk08a-radical-capuchin-output"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "One exact threshold-table to Boolean-output dependency, independent of timer/10 operands."
+physical_reader_inference = false
+table_divider_argument_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "radical-capuchin"
+address = 0x12362
+owner = "radical-capuchin/tbl"
+RAM_address = 0xffff8cb4
+RAM_owner = "sage-chamois/ram"
+RAM_width = 32
+wrapper = 0x26474
+caller = 0x60fb4
+callsite = 0x61626
+delay_slot = 0x61628
+comparison_site = 0x6162a
+store_site = 0x6162e
+component = "radical_capuchin_paths"
+original_claim_sha256 = "a58bcad0795d1e7847fd8fe8b0a5aa7c62ea4b2e303aadf3fd0c9dd9bc38d857"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"radical-capuchin/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/radical-capuchin.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "b1c21f72041078046a8b460f855ce30897005d0f414d267cdf70bf084f0b36f3"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"radical-capuchin/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit 0006160C window reads 00012362 through natural 00026474 using uint8(FFFF2773) and retains the uint8 lookup in R14. Call 00061626 independently computes uint16(FFFF8C90)/10 from R1 and post-delay R0=10 in 00061628. Comparison 0006162A and MOVT 0006162C publish the Boolean lookup >= quotient at FFFF8CB4 in 0006162E. Independent table variation changes that Boolean with identical timer, quotient, context and other memory. The table supplies no divider operand. This conditional output dependency grants no physical ROM reader on the arithmetic callee, physical units, scale, complete parent reachability, scheduling or hardware inference.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=397236)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\",\"SymbolKey(layout='7mfk', kind='fn', address=138172)\"]},\"roles\":[\"comparison-output\"],\"slot\":null,\"sources\":[\"kb/tbl/radical-capuchin.toml\"],\"stated\":[\"7mfk\"],\"to\":\"sage-chamois/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"lilac-ocelot/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"sage-chamois/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":131,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"lilac-ocelot/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"sage-chamois/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":131,\"registry\":\"findings\"}]"

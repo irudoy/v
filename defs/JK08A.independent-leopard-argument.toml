@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-independent-leopard-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact unsigned value argument of 00012522 through natural 0005AC54; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "fuzzy-giraffe"
+address = 0x12522
+owner = "fuzzy-giraffe/tbl"
+wrapper = 0x26358
+caller = 0x5ac54
+callsite = 0x5ad62
+delay_slot = 0x5ad64
+component = "independent_leopard_paths"
+original_claim_sha256 = "08c132a3642b1b8b6d8249c6b6b3a5029876e3e64840b924d9762c32bb8e3ab9"
+proposed_claim_sha256 = "5a80d091a1fe6c5dbcb63e06bfe10f62a7f3ce6f94f1d39c0cf8622ea5b3ac26"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"fuzzy-giraffe/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"structure\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/fuzzy-giraffe.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"fuzzy-giraffe/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0005AC54 loop reads 00012522 through 00026358 when the low 16 bits of the word difference are nonnegative. The lookup byte is multiplied by the 32-bit difference. 0005AD64 completes that product in R1 from MACL. R0 is the constant 100. A negative low half reads 00012526 instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"structure\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=371796)\",\"SymbolKey(layout='7mfk', kind='fn', address=156504)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/fuzzy-giraffe.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"meaty-pheasant/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"neon-groundhog/ram\",\"type\":\"selector\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"subtle-inchworm/ram\",\"type\":\"selector\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"intelligent-mantis/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"modest-walrus/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":337,\"registry\":\"findings\",\"scale\":[13,14,15,16,17,18,19]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"meaty-pheasant/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"neon-groundhog/ram\",\"type\":\"selector\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"subtle-inchworm/ram\",\"type\":\"selector\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"intelligent-mantis/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"modest-walrus/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":337,\"registry\":\"findings\",\"scale\":[13,14,15,16,17,18,19]}]"

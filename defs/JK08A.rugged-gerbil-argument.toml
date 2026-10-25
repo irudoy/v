@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-rugged-gerbil-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional high-byte divisor from the explicit 0008152A high-range window; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "rugged-gerbil"
+address = 86050
+owner = "rugged-gerbil/tbl"
+wrapper = 156660
+caller = 529706
+callsite = 530074
+delay_slot = 530076
+component = "rugged_gerbil_paths"
+original_claim_sha256 = "f1037864537f49062fcf0720b2b450191bb539a2c3c4f39f93cbd67501386474"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"rugged-gerbil/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/rugged-gerbil.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "951893274bbef1f6f5c4eaf61a54750d30eaa18c25d59f9aba258fc6d556d54d"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"rugged-gerbil/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit high-range window 00081674 in 0008152A reads 00015022 through natural 000263F4/00026A64/00026740. The high byte of its interpolated uint16 result is stored at FFFF1738 and becomes the unsigned divisor R0 at 0008169A. Delay slot 0008169C forms R1 from FFFF1737 shifted left by eight. A zero high byte bypasses the divider and selects 255 without its fault store. This conditional value dependency establishes no physical ROM reader on 00021CE0, units, scale, complete parent reachability, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=529706)\",\"SymbolKey(layout='7mfk', kind='fn', address=156660)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/rugged-gerbil.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"benevolent-aardwark/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":289,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"benevolent-aardwark/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":289,\"registry\":\"findings\"}]"

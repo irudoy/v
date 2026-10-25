@@ -1,0 +1,324 @@
+schema = 1
+id = "jk08a-quiet-cat"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_quiet_cat.s"
+scope = "Natural 000BE32A entry. Index zero uses 000123EA and a nonzero index uses 00012412 as a signed dividend factor divided by 100."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x26140,0x26474,0x26740,0x26770,0x26944,0x26c78,0xbe32a]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x26140
+end = 0x26170
+
+[[entry]]
+key = "code-2"
+start = 0x26474
+end = 0x26496
+
+[[entry]]
+key = "code-3"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-4"
+start = 0x26770
+end = 0x267c6
+
+[[entry]]
+key = "code-5"
+start = 0x26944
+end = 0x26980
+
+[[entry]]
+key = "code-6"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-7"
+start = 0xbe32a
+end = 0xbe378
+
+[[entry]]
+key = "code-8"
+start = 0xbe37e
+end = 0xbe460
+
+[[entry]]
+key = "code-9"
+start = 0xbe4d4
+end = 0xbe5bc
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 4294940696
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 1102
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26170
+width_bytes = 4
+stock_value = 157552
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26174
+width_bytes = 4
+stock_value = 158020
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26498
+width_bytes = 4
+stock_value = 157504
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2649c
+width_bytes = 4
+stock_value = 158020
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x267c8
+width_bytes = 4
+stock_value = 157504
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26980
+width_bytes = 4
+stock_value = 158840
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe460
+width_bytes = 2
+stock_value = 872
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe462
+width_bytes = 2
+stock_value = 2144
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe464
+width_bytes = 2
+stock_value = 840
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe466
+width_bytes = 2
+stock_value = 2040
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe47c
+width_bytes = 4
+stock_value = 4294906508
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe480
+width_bytes = 4
+stock_value = 34326
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe484
+width_bytes = 4
+stock_value = 40986
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe488
+width_bytes = 4
+stock_value = 41114
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe48c
+width_bytes = 4
+stock_value = 4294906382
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe490
+width_bytes = 4
+stock_value = 41178
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe494
+width_bytes = 4
+stock_value = 4294911610
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe498
+width_bytes = 4
+stock_value = 77862
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe49c
+width_bytes = 4
+stock_value = 77894
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4a0
+width_bytes = 4
+stock_value = 41050
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4a4
+width_bytes = 4
+stock_value = 4294905962
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe4a8
+width_bytes = 4
+stock_value = 4294906268
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe4ac
+width_bytes = 4
+stock_value = 155968
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4b0
+width_bytes = 4
+stock_value = 138172
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4b4
+width_bytes = 4
+stock_value = 32768
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4b8
+width_bytes = 4
+stock_value = 4294906444
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe4bc
+width_bytes = 4
+stock_value = 74730
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4c0
+width_bytes = 4
+stock_value = 74770
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4c4
+width_bytes = 4
+stock_value = 72675
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4c8
+width_bytes = 4
+stock_value = 156788
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe4cc
+width_bytes = 4
+stock_value = 4294911088
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xbe4d0
+width_bytes = 4
+stock_value = 36196
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe60c
+width_bytes = 2
+stock_value = 2096
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe60e
+width_bytes = 2
+stock_value = 2144
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe610
+width_bytes = 2
+stock_value = 2034
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe612
+width_bytes = 2
+stock_value = 2160
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe73c
+width_bytes = 4
+stock_value = 34735
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe740
+width_bytes = 4
+stock_value = 34740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe744
+width_bytes = 4
+stock_value = 16777215
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe748
+width_bytes = 4
+stock_value = 36196
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xbe74c
+width_bytes = 4
+stock_value = 34325
+RAM_pointer_alias = false

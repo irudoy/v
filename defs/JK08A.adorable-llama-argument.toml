@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-adorable-llama-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "One bounded paired-normalization byte-curve argument; no physical scale or later parent processing."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "adorable-llama"
+address = 0x127d8
+owner = "adorable-llama/tbl"
+wrapper = 0x26388
+caller = 0x413cc
+callsite = 0x4168a
+delay_slot = 0x4168c
+component = "adorable_llama_paths"
+original_claim_sha256 = "1b07a2ade5dc7afacbeeb87fbbed4c9e1204d9137ef2d1f6372909716f537e13"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"adorable-llama/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/adorable-llama.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "969326b09ad7c8e647aa8a7ea3d649054b0994f51e29b8b259b8dd48c4ebdfc4"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"adorable-llama/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit bounded 000413CC entry obtains A(q), B(q), A(128) and B(128) from paired natural 00026388 byte curves 00012798 and 000127D8. When A(q)>B(q) and A(128)>B(128), signed call 0004168A receives R1=(A(q)-B(q))*256 and R0=A(128)-B(128) after subtraction in delay slot 0004168C. A nonpositive first difference publishes zero; a nonpositive anchor difference bypasses division and retains the shifted first difference. The bounded result is clamped to 255 and stored at FFFF2236. Independent changes only to B must vary both actual differences and the final output while A and all other input state remain fixed. The conditional dependency supplies no physical ROM reader on the arithmetic callee, units, scale, complete parent reachability, later brake/mode behavior, scheduling or hardware inference.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=267212)\",\"SymbolKey(layout='7mfk', kind='fn', address=156552)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/adorable-llama.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"cyan-pronghorn/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"vivid-peacock/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],\"notes\":[0],\"order\":170,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"cyan-pronghorn/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"vivid-peacock/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],\"notes\":[0],\"order\":170,\"registry\":\"findings\"}]"

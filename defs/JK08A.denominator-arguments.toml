@@ -1,0 +1,43 @@
+schema = 1
+id = "jk08a-denominator-arguments"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact denominator value arguments of the natural 0007B2C8 and 0007B3F4 entries; no numerator lineage, scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "parent-a-curve"
+address = 84730
+owner = "unnatural-petrel/tbl"
+wrapper = 156876
+caller = 504520
+callsite = 504622
+delay_slot = 504624
+component = "timing_denominator_paths"
+original_claim_sha256 = "80cbf8f621c94122ed3b5f0dff31b9533041a5f2ace6551b374e9b0be836b84c"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"unnatural-petrel/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/unnatural-petrel.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "36ff58c98699ee808ad63c667c11a85fd972590f4bb67abdad06a1558b34f0c3"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"unnatural-petrel/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0007B2C8 path reads 00014AFA through 000264CC. The call at 0007B32E places that unsigned curve result in R0 in delay slot 0007B330 and passes the unsigned FFFF412A word multiplied by 255 in R1 to unsigned division. A zero curve bypasses the call and saturates locally; it does not inherit the callee zero-divisor fault store. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=504520)\",\"SymbolKey(layout='7mfk', kind='fn', address=156876)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/unnatural-petrel.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"curly-hyrax/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cute-penguin/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],\"notes\":[0],\"order\":266,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"curly-hyrax/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cute-penguin/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],\"notes\":[0],\"order\":266,\"registry\":\"findings\"}]"
+
+[[reference]]
+id = "parent-b-curve"
+address = 101846
+owner = "micro-penguin/tbl"
+wrapper = 157372
+caller = 504820
+callsite = 504962
+delay_slot = 504964
+component = "timing_denominator_paths"
+original_claim_sha256 = "7cda92c8a519a4609170e0a85cafadace5a46e9aee8956d59d4cd6165affa0a0"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"micro-penguin/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/micro-penguin.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "1fcec83e94754bd1cc5f4b27230e83abefd0d78e24a3a2bdd2cb5c145c25a036"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"micro-penguin/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0007B3F4 path reads 00018DD6 through 000266BC. The call at 0007B482 finishes the unsigned FFFF35CE word multiplied by 255 in R1 in delay slot 0007B484 after R0 already holds the curve result. A zero curve bypasses the call and saturates locally; it does not inherit the callee zero-divisor fault store. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=504820)\",\"SymbolKey(layout='7mfk', kind='fn', address=157372)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/micro-penguin.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"skilled-chipmunk/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],\"notes\":[0],\"order\":321,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"skilled-chipmunk/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],\"notes\":[0],\"order\":321,\"registry\":\"findings\"}]"

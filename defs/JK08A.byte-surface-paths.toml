@@ -1,0 +1,227 @@
+schema = 1
+id = "jk08a-byte-surface-paths"
+scope = "Complete BFDC0 entry and natural byte-surface helpers; later conditioning, diagnostic dependencies and hardware behavior require separate admission."
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_byte_surface_paths.s"
+stock_function_stubs = false
+native_geometry_changed = false
+ROM_to_DID_dependency_inference = false
+natural_caller_reachability = false
+hardware_qualification = false
+
+[[entry]]
+key = "caller"
+start = 0x000bfdc0
+end = 0x000bfe80
+
+[[entry]]
+key = "wrapper4"
+start = 0x00026084
+end = 0x000260b4
+
+[[entry]]
+key = "wrapper8"
+start = 0x00026140
+end = 0x00026170
+
+[[entry]]
+key = "wrapper16"
+start = 0x000261b8
+end = 0x000261e8
+
+[[entry]]
+key = "axis"
+start = 0x00026944
+end = 0x00026980
+
+[[entry]]
+key = "surface"
+start = 0x00026770
+end = 0x000267c6
+
+[[entry]]
+key = "linear"
+start = 0x00026740
+end = 0x0002676e
+
+[[entry]]
+key = "divider"
+start = 0x00026c78
+end = 0x00026d0e
+
+[[pool]]
+address = 0x000260b4
+width_bytes = 4
+stock_value = 0x00026770
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000260b8
+width_bytes = 4
+stock_value = 0x00026944
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x00026170
+width_bytes = 4
+stock_value = 0x00026770
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x00026174
+width_bytes = 4
+stock_value = 0x00026944
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000261e8
+width_bytes = 4
+stock_value = 0x00026770
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000261ec
+width_bytes = 4
+stock_value = 0x00026944
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000267c8
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x00026980
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000bfe84
+width_bytes = 2
+stock_value = 0x09d3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000bfe86
+width_bytes = 2
+stock_value = 0x09d1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000bfff8
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0000
+width_bytes = 4
+stock_value = 0x00012ea2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0004
+width_bytes = 4
+stock_value = 0xffff2464
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0008
+width_bytes = 4
+stock_value = 0xffff5773
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c000c
+width_bytes = 4
+stock_value = 0xffff102c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0010
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0014
+width_bytes = 4
+stock_value = 0x0000b2fa
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0018
+width_bytes = 4
+stock_value = 0x00026140
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c001c
+width_bytes = 4
+stock_value = 0x0000b33a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0020
+width_bytes = 4
+stock_value = 0x000261b8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0024
+width_bytes = 4
+stock_value = 0x0000ab4a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0028
+width_bytes = 4
+stock_value = 0x00026084
+RAM_pointer_alias = false
+
+[[surface]]
+table = 0x0000b2fa
+rows = 8
+cols = 8
+element_bytes = 1
+row_axis = 0x00012ec2
+col_axis = 0x00012ea2
+caller_output = 0xffff1c5f
+scope = "Conditional wrapper geometry; native publication requires independent complete admission."
+
+[[surface]]
+table = 0x0000b33a
+rows = 16
+cols = 16
+element_bytes = 1
+row_axis = 0x00012f2e
+col_axis = 0x00012f0e
+caller_output = 0xffff1c5d
+scope = "Conditional wrapper geometry; native publication requires independent complete admission."
+
+[[surface]]
+table = 0x0000ab4a
+rows = 4
+cols = 4
+element_bytes = 1
+row_axis = 0x00012f96
+col_axis = 0x00012f8e
+caller_output = 0xffff1c5d
+scope = "Conditional wrapper geometry; native publication requires independent complete admission."
+
+[selection]
+coordinate_source = 0xffff11ae
+load_source = 0xffff102c
+force_mode_source = 0xffff2468
+force_mode_mask = 8
+ROM_configuration = 0x00008615
+ROM_configuration_mask = 1
+ROM_offset_pool = 0x000c0008
+ROM_offset_value = 0xffff5773
+ROM_GBR = 0x00012ea2
+correction_source = 0xffff2466
+correction_mask = 64

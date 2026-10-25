@@ -1,0 +1,241 @@
+schema = 1
+id = "jk08a-viridian-armadillo"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_viridian_armadillo.s"
+scope = "Natural 000B7A3C entry. 00014E42 is negated, multiplied by the byte at 00008832 and by 20, then divided by the low half of incoming R4."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x21ce0,0x264cc,0x264f8,0x26740,0x26984,0x26c78,0xb7a3c]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-2"
+start = 0x264cc
+end = 0x264ee
+
+[[entry]]
+key = "code-3"
+start = 0x264f8
+end = 0x2651a
+
+[[entry]]
+key = "code-4"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-5"
+start = 0x26984
+end = 0x269c0
+
+[[entry]]
+key = "code-6"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-7"
+start = 0xb7a3c
+end = 0xb7afa
+
+[[entry]]
+key = "code-8"
+start = 0xb7b06
+end = 0xb7b98
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 4294940696
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 1102
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 4294940696
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 1102
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f0
+width_bytes = 4
+stock_value = 157504
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f4
+width_bytes = 4
+stock_value = 158084
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2651c
+width_bytes = 4
+stock_value = 157504
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26520
+width_bytes = 4
+stock_value = 158084
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x269c0
+width_bytes = 4
+stock_value = 158840
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7afe
+width_bytes = 2
+stock_value = 20000
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7b00
+width_bytes = 2
+stock_value = 30267
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7b02
+width_bytes = 2
+stock_value = 32767
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7b04
+width_bytes = 2
+stock_value = 2500
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7bf0
+width_bytes = 2
+stock_value = 65281
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7bf2
+width_bytes = 2
+stock_value = 2500
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7bf4
+width_bytes = 2
+stock_value = 2352
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c00
+width_bytes = 4
+stock_value = 138172
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c04
+width_bytes = 4
+stock_value = 4294901761
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c10
+width_bytes = 4
+stock_value = 156920
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c14
+width_bytes = 4
+stock_value = 138464
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c18
+width_bytes = 4
+stock_value = 4294912248
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0xb7c1c
+width_bytes = 4
+stock_value = 35376
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c20
+width_bytes = 4
+stock_value = 4294932028
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c24
+width_bytes = 4
+stock_value = 85570
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c28
+width_bytes = 4
+stock_value = 80824
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c2c
+width_bytes = 4
+stock_value = 156876
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c30
+width_bytes = 4
+stock_value = 131070
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c34
+width_bytes = 4
+stock_value = 34866
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c38
+width_bytes = 4
+stock_value = 86514
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xb7c3c
+width_bytes = 4
+stock_value = 80888
+RAM_pointer_alias = false

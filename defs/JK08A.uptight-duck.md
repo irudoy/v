@@ -1,0 +1,22 @@
+# Natural uptight-duck entry
+
+`JK08A.uptight-duck.toml` declares the complete stock function `000B784E`
+and its natural 32-knot lookup and signed-division helpers. The GNU fixture
+preserves instruction words, delay slots and returns. Only listed RAM
+pointer literals relocate to simulator storage.
+
+Incoming R5 is the coordinate. `00026524` reads three 32-word curves on the
+axis at `00013CA8` and also reads the following physical word. `00015C80`
+is `blond-panther`. The stock axis is 32 zero knots, so every coordinate
+selects the last knot. A strict axis is an explicit calibration input.
+
+The signed call to `00021BBC` at `000B7892` does not receive any of those lookups.
+`000B7894` places incoming R4 in R1. R0 is the constant `000F4240`. The
+lookup is stored and becomes the published word at `FFFF35B6` when the
+sign-extended low half of the quotient is at least the byte at `00008C8C`
+minus 50. Otherwise that word is 1.
+
+Independent equations cover the lookup, the post-delay operands and both
+publications. The divisor is never zero, so the callee fault store at
+`FFFF9818` stays unchanged. The proof does not publish a native relation,
+admit scale, establish scheduling, or qualify hardware.

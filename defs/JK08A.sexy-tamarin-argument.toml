@@ -1,0 +1,75 @@
+schema = 1
+id = "jk08a-sexy-tamarin-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact signed value arguments of 0001252A, 00012532, 000123F2 and 000123FA through natural 000C0D90; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "sturdy-worm"
+address = 0x1252a
+owner = "sturdy-worm/tbl"
+wrapper = 0x26474
+caller = 0xc0d90
+callsite = 0xc0df6
+delay_slot = 0xc0df8
+component = "sexy_tamarin_paths"
+original_claim_sha256 = "eb871db5a6f0b38f7d7efc3444e0640b3c7ec7d68fd9715e019a0d56ec747619"
+proposed_claim_sha256 = "3dc894d384fe7fa9135522f8742563bbf19daf435fffbe327ee7de600406421b"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sturdy-worm/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/sturdy-worm.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sturdy-worm/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000C0D90 path reads 0001252A through 00026474 when the entry index in R4 is zero. The lookup byte is multiplied by a biased RAM byte and shifted left by eight. 000C0DF8 completes that product in R1 from MACL. R0 is the constant 100. A nonzero index reads 00012532 instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=789904)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/sturdy-worm.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":148,\"registry\":\"findings\",\"scale\":[16,17,18,19,20]}]"
+proposed_ledger_json = "[{\"dependency\":[],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":148,\"registry\":\"findings\",\"scale\":[16,17,18,19,20]}]"
+
+[[reference]]
+id = "foamy-cuckoo"
+address = 0x12532
+owner = "foamy-cuckoo/tbl"
+wrapper = 0x26474
+caller = 0xc0d90
+callsite = 0xc0df6
+delay_slot = 0xc0df8
+component = "sexy_tamarin_paths"
+original_claim_sha256 = "043f0659533233b92e315d11485c5d6342a1a6e92b6994ce683946f12df2f6a1"
+proposed_claim_sha256 = "300b6a0d58147921b7730ea84432a92f636d70f455188b08a55671e595bb30cb"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"foamy-cuckoo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/foamy-cuckoo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"foamy-cuckoo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000C0D90 path reads 00012532 through 00026474 when the entry index in R4 is nonzero. The lookup byte is multiplied by a biased RAM byte and shifted left by eight. 000C0DF8 completes that product in R1 from MACL. R0 is the constant 100. A zero index reads 0001252A instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=789904)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/foamy-cuckoo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":149,\"registry\":\"findings\",\"scale\":[13,14,15,16,17,18]}]"
+proposed_ledger_json = "[{\"dependency\":[],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":149,\"registry\":\"findings\",\"scale\":[13,14,15,16,17,18]}]"
+
+[[reference]]
+id = "strange-salmon"
+address = 0x123f2
+owner = "strange-salmon/tbl"
+wrapper = 0x26474
+caller = 0xc0d90
+callsite = 0xc0f28
+delay_slot = 0xc0f2a
+component = "sexy_tamarin_paths"
+original_claim_sha256 = "69eb70517728bd53a338ed82a74ae69e2163509a6a33f9693cf1115ca10bbd2f"
+proposed_claim_sha256 = "9267fec4ecc6235080db8f8179b03528e9f4dcd2f142b8f0851596accbf90ded"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"strange-salmon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/strange-salmon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"strange-salmon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000C0D90 path reads 000123F2 through 00026474 when the entry index in R4 is zero. The lookup byte is multiplied by the difference of two biased RAM bytes. 000C0F2A completes that product in R1 from MACL. R0 is the constant 100. A nonzero index reads 000123FA instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=789904)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/strange-salmon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"garrulous-nautilus/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":137,\"registry\":\"findings\",\"scale\":[22,23,24,25,26,27,28,29,30]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"garrulous-nautilus/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":137,\"registry\":\"findings\",\"scale\":[22,23,24,25,26,27,28,29,30]}]"
+
+[[reference]]
+id = "greedy-chamois"
+address = 0x123fa
+owner = "greedy-chamois/tbl"
+wrapper = 0x26474
+caller = 0xc0d90
+callsite = 0xc0f28
+delay_slot = 0xc0f2a
+component = "sexy_tamarin_paths"
+original_claim_sha256 = "57fa5de4f5cbb7812e42702279a04251aef47c4049f7d8ca3071a2594fcb5fac"
+proposed_claim_sha256 = "dcf701a5d855fdc316db69756e8a66c216ead3fc1668690a4fbbd76ec1c4b961"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"greedy-chamois/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/greedy-chamois.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"greedy-chamois/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000C0D90 path reads 000123FA through 00026474 when the entry index in R4 is nonzero. The lookup byte is multiplied by the difference of two biased RAM bytes. 000C0F2A completes that product in R1 from MACL. R0 is the constant 100. A zero index reads 000123F2 instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=789904)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/greedy-chamois.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"garrulous-nautilus/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":138,\"registry\":\"findings\",\"scale\":[22,23,24,25,26,27,28,29,30]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"garrulous-nautilus/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":138,\"registry\":\"findings\",\"scale\":[22,23,24,25,26,27,28,29,30]}]"

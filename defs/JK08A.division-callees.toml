@@ -1,0 +1,51 @@
+schema = 1
+id = "jk08a-division-callees"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_division_callees.s"
+scope = "Signed/unsigned register-operand division and exact zero-divisor fault write; no caller datum or arithmetic use is inferred."
+automatic_resolution = false
+caller_argument_inference = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+scale_admission = false
+all_modes = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x21ce0]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x21ce0
+end = 0x21dc6
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false

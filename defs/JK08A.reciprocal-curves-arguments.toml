@@ -1,0 +1,43 @@
+schema = 1
+id = "jk08a-reciprocal-curves-arguments"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional word divisors from two bounded 00069374 windows; no byte control publication, scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "first"
+address = 145348
+owner = "peach-skunk/tbl"
+wrapper = 156876
+caller = 430964
+callsite = 431652
+delay_slot = 431654
+component = "reciprocal_curves_paths"
+original_claim_sha256 = "87c3b21c57403c559bb402adca4c55fa875d4b3c0df5d8e54d77f6e74f1771d4"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"peach-skunk/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/peach-skunk.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "20bbdb6d0d7175203bee36abfffdd24622739607e606de9f6b704d016d5627b3"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"peach-skunk/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit bounded 00069374 entry reads 000237C4 through natural 000264CC and uses the uint16 lookup as divisor R0 in signed call 00069624. Delay slot 00069626 supplies constant 256 in R1 from explicit R12. A zero controlled lookup executes the genuine zero-divisor fault path; a positive divisor above 256 gives quotient 0 without that fault. The following absolute control-memory stores and complete parent reachability are not admitted. This conditional value dependency establishes no physical ROM reader on the arithmetic callee, units, scale, scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=430964)\",\"SymbolKey(layout='7mfk', kind='fn', address=156876)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/peach-skunk.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"busy-barracuda/const\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"bipedal-lyrebird/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":331,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"busy-barracuda/const\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"bipedal-lyrebird/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":331,\"registry\":\"findings\"}]"
+
+[[reference]]
+id = "second"
+address = 145412
+owner = "strange-sturgeon/tbl"
+wrapper = 156876
+caller = 430964
+callsite = 431816
+delay_slot = 431818
+component = "reciprocal_curves_paths"
+original_claim_sha256 = "9779853b6b81cad9c9e9ded0f938311affce3e5921aa68d501b60222a9f112ad"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"strange-sturgeon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/strange-sturgeon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "8ae07275121c595f890b0842dd8b6c060d014371e4f45ac305e9f70d0d700e1c"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"strange-sturgeon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit bounded 00069374 entry reads 00023804 through natural 000264CC and uses the uint16 lookup as divisor R0 in signed call 000696C8. Delay slot 000696CA supplies constant 256 in R1 from explicit R12. A zero controlled lookup executes the genuine zero-divisor fault path; a positive divisor above 256 gives quotient 0 without that fault. The following absolute control-memory stores and complete parent reachability are not admitted. This conditional value dependency establishes no physical ROM reader on the arithmetic callee, units, scale, scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=430964)\",\"SymbolKey(layout='7mfk', kind='fn', address=156876)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/strange-sturgeon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stoic-dogfish/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"psychedelic-ostrich/const\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"heavenly-seriema/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],\"notes\":[0],\"order\":333,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stoic-dogfish/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"psychedelic-ostrich/const\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"heavenly-seriema/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13],\"notes\":[0],\"order\":333,\"registry\":\"findings\"}]"

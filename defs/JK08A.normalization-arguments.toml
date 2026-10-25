@@ -1,0 +1,83 @@
+schema = 1
+id = "jk08a-normalization-arguments"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional product arguments through sequenced normalization windows; no scale, natural caller selection or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "curve-a"
+address = 83354
+symbol_kind = "tbl"
+owner = "brown-jackrabbit/tbl"
+target = "unsigned_divide/fn"
+caller = 401500
+wrapper = 156920
+callsite = 403424
+delay_slot = 403426
+component = "normalization_paths"
+original_claim_sha256 = "8f08f1a407b6105a42c4d5ef024df7a0275b5928ecf9fa0b52da744afe4e384f"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"brown-jackrabbit/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/brown-jackrabbit.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "0e2c9f9f35cca2eebf5e8ddc4506109255986c68c18747da114af228327b3f7c"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"brown-jackrabbit/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit sequenced 0006205C windows publish the 0001495A word lookup at FFFF2B68, then read the selected 0001459A or 000145CA word lookup through natural 000264F8. The actual FFFF2B68 load multiplies that selected result; the low32 product enters R1 through delay slot 000627E2 at unsigned divider call 000627E0 with R0=50000. Complete RAM continuity binds coefficient publication to consumption. Selected entries do not establish the original parent flags or scheduling. This conditional value dependency establishes no physical datum reader on the arithmetic callee, units, scale, complete parent reachability or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=401500)\",\"SymbolKey(layout='7mfk', kind='fn', address=156920)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/brown-jackrabbit.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tan-toucan/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"dashing-galago/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":256,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tan-toucan/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"dashing-galago/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":256,\"registry\":\"findings\"}]"
+
+[[reference]]
+id = "curve-b"
+address = 83402
+symbol_kind = "tbl"
+owner = "placid-mastiff/tbl"
+target = "unsigned_divide/fn"
+caller = 401500
+wrapper = 156920
+callsite = 403424
+delay_slot = 403426
+component = "normalization_paths"
+original_claim_sha256 = "0dd7759d7caf08c33c49ba8ff77e99df2c9e3d3c8bd9e538730df814fb527ae1"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"placid-mastiff/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/placid-mastiff.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "a056da320626e8dd9f8aa10dc889caa7e15356856752579a901374190c980fb6"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"placid-mastiff/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit sequenced 0006205C windows publish the 0001495A word lookup at FFFF2B68, then read the selected 0001459A or 000145CA word lookup through natural 000264F8. The actual FFFF2B68 load multiplies that selected result; the low32 product enters R1 through delay slot 000627E2 at unsigned divider call 000627E0 with R0=50000. Complete RAM continuity binds coefficient publication to consumption. Selected entries do not establish the original parent flags or scheduling. This conditional value dependency establishes no physical datum reader on the arithmetic callee, units, scale, complete parent reachability or hardware behavior.\",\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=401500)\",\"SymbolKey(layout='7mfk', kind='fn', address=156920)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/placid-mastiff.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tan-toucan/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"dashing-galago/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":257,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tan-toucan/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"dashing-galago/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"notes\":[0],\"order\":257,\"registry\":\"findings\"}]"
+
+[[reference]]
+id = "coefficient-table"
+address = 84314
+symbol_kind = "tbl"
+owner = "tested-dragon/tbl"
+target = "unsigned_divide/fn"
+caller = 401500
+wrapper = 156920
+callsite = 403424
+delay_slot = 403426
+component = "normalization_paths"
+original_claim_sha256 = "51d58253de29fc01364cb080b35a933c5c4d7445906b0b4a1cc81e6d89515f84"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"tested-dragon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/tested-dragon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "0f564465596f8788c687414faddfdfe8ddc791816c52489afd467bb6fa8a4320"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"tested-dragon/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit sequenced 0006205C windows publish the 0001495A word lookup at FFFF2B68, then read the selected 0001459A or 000145CA word lookup through natural 000264F8. The actual FFFF2B68 load multiplies that selected result; the low32 product enters R1 through delay slot 000627E2 at unsigned divider call 000627E0 with R0=50000. Complete RAM continuity binds coefficient publication to consumption. Selected entries do not establish the original parent flags or scheduling. This conditional value dependency establishes no physical datum reader on the arithmetic callee, units, scale, complete parent reachability or hardware behavior.\",\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=401500)\",\"SymbolKey(layout='7mfk', kind='fn', address=156920)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/tested-dragon.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"brown-jackrabbit/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"placid-mastiff/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6],\"notes\":[0],\"order\":258,\"registry\":\"findings\",\"scale\":[7,8,9]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"brown-jackrabbit/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"placid-mastiff/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6],\"notes\":[0],\"order\":258,\"registry\":\"findings\",\"scale\":[7,8,9]}]"
+
+[[reference]]
+id = "published-coefficient"
+address = 4294912872
+symbol_kind = "ram"
+owner = "nice-raven/ram"
+target = "unsigned_divide/fn"
+caller = 401500
+wrapper = 156920
+callsite = 403424
+delay_slot = 403426
+component = "normalization_paths"
+original_claim_sha256 = "9bfc5a922cc540e3e88c9e27912b76f262b84e07766bfd2cae2f4e1fccf273d9"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"nice-raven/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/ram/nice-raven.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "5c6012d4b64acfe373db425f03527fa0856aed01521ff3d5b36f4a900d85afd7"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"nice-raven/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit sequenced 0006205C windows publish the 0001495A word lookup at FFFF2B68, then read the selected 0001459A or 000145CA word lookup through natural 000264F8. The actual FFFF2B68 load multiplies that selected result; the low32 product enters R1 through delay slot 000627E2 at unsigned divider call 000627E0 with R0=50000. Complete RAM continuity binds coefficient publication to consumption. Selected entries do not establish the original parent flags or scheduling. This conditional value dependency establishes no physical datum reader on the arithmetic callee, units, scale, complete parent reachability or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=401500)\",\"SymbolKey(layout='7mfk', kind='fn', address=156920)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/ram/nice-raven.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"spirited-lion/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4],\"notes\":[0],\"order\":230,\"registry\":\"vars\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"tested-dragon/tbl\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"spirited-lion/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4],\"notes\":[0],\"order\":230,\"registry\":\"vars\"}]"

@@ -1,0 +1,293 @@
+schema = 1
+id = "jk08a-fine-gopher"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_fine_gopher.s"
+scope = "Natural 0006062C entry. 00014F42 and 00014F52 scale unsigned dividends; 00015002 supplies lookup*255 and a zero word at 000093E8 bypasses 00021CE0."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21ce0,0x264cc,0x26740,0x26984,0x26c78,0x6062c]
+
+[[entry]]
+key = "code-0"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-1"
+start = 0x264cc
+end = 0x264ee
+
+[[entry]]
+key = "code-2"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-3"
+start = 0x26984
+end = 0x269c0
+
+[[entry]]
+key = "code-4"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-5"
+start = 0x6062c
+end = 0x60758
+
+[[entry]]
+key = "code-6"
+start = 0x6075c
+end = 0x6084a
+
+[[entry]]
+key = "code-7"
+start = 0x60894
+end = 0x6098a
+
+[[entry]]
+key = "code-8"
+start = 0x6098c
+end = 0x60a10
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x44e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f0
+width_bytes = 4
+stock_value = 0x26740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f4
+width_bytes = 4
+stock_value = 0x26984
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x269c0
+width_bytes = 4
+stock_value = 0x26c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60758
+width_bytes = 2
+stock_value = 0x8c54
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6075a
+width_bytes = 2
+stock_value = 0x3fc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6084a
+width_bytes = 2
+stock_value = 0x3fc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6084c
+width_bytes = 2
+stock_value = 0x139b
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6084e
+width_bytes = 2
+stock_value = 0x99fc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60850
+width_bytes = 4
+stock_value = 0xffff4185
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60854
+width_bytes = 4
+stock_value = 0xffff11d4
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60858
+width_bytes = 4
+stock_value = 0x14f42
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6085c
+width_bytes = 4
+stock_value = 0x13c58
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60860
+width_bytes = 4
+stock_value = 0x264cc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60864
+width_bytes = 4
+stock_value = 0xffff401c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60868
+width_bytes = 4
+stock_value = 0x14f52
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6086c
+width_bytes = 4
+stock_value = 0xffff2330
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60870
+width_bytes = 4
+stock_value = 0x1453a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60874
+width_bytes = 4
+stock_value = 0x13c38
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60878
+width_bytes = 4
+stock_value = 0xffff1026
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x6087c
+width_bytes = 4
+stock_value = 0xffff22dc
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60880
+width_bytes = 4
+stock_value = 0x21ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60884
+width_bytes = 4
+stock_value = 0x20202
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60888
+width_bytes = 4
+stock_value = 0x3fffc0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6088c
+width_bytes = 4
+stock_value = 0x1454a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60890
+width_bytes = 4
+stock_value = 0x9066
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6098a
+width_bytes = 2
+stock_value = 0x42f
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a34
+width_bytes = 4
+stock_value = 0xffff1072
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60a38
+width_bytes = 4
+stock_value = 0x15002
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a3c
+width_bytes = 4
+stock_value = 0x13bd8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a40
+width_bytes = 4
+stock_value = 0x93e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a44
+width_bytes = 4
+stock_value = 0xffff288c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x60a48
+width_bytes = 4
+stock_value = 0x15012
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a4c
+width_bytes = 4
+stock_value = 0x13be8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a50
+width_bytes = 4
+stock_value = 0x93ec
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x60a54
+width_bytes = 4
+stock_value = 0xffff423e
+RAM_pointer_alias = true
+
+[gbr_window]
+start = 0xffff8c00
+size = 256
+base = 0xffff8c54
+
+[block_window]
+start = 0xffff9900
+size = 512
+base = 0xffff99fc

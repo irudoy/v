@@ -1,0 +1,253 @@
+schema = 1
+id = "jk08a-timing-division"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_timing_division.s"
+scope = "Explicit timing compositor inputs with natural helpers and post-delay division arguments; no physical reader edge or scale inference."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21ce0,0x26270,0x26474,0x26740,0x26848,0x26944,0x26984,0x26c78,0x4bdc2]
+
+[[entry]]
+key = "code-0"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-1"
+start = 0x26270
+end = 0x262a0
+
+[[entry]]
+key = "code-2"
+start = 0x26474
+end = 0x26496
+
+[[entry]]
+key = "code-3"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-4"
+start = 0x26848
+end = 0x268a0
+
+[[entry]]
+key = "code-5"
+start = 0x26944
+end = 0x26980
+
+[[entry]]
+key = "code-6"
+start = 0x26984
+end = 0x269c0
+
+[[entry]]
+key = "code-7"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-8"
+start = 0x4bdc2
+end = 0x4bef2
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x262a0
+width_bytes = 4
+stock_value = 0x00026848
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x262a4
+width_bytes = 4
+stock_value = 0x00026984
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26498
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2649c
+width_bytes = 4
+stock_value = 0x00026944
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x268a0
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26980
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x269c0
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bef2
+width_bytes = 2
+stock_value = 0x035e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bef4
+width_bytes = 2
+stock_value = 0x07f1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bef6
+width_bytes = 2
+stock_value = 0x0674
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bef8
+width_bytes = 2
+stock_value = 0x05a4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf08
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf24
+width_bytes = 4
+stock_value = 0xffff2458
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf28
+width_bytes = 4
+stock_value = 0xffff23bc
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf2c
+width_bytes = 4
+stock_value = 0xffff2898
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf30
+width_bytes = 4
+stock_value = 0xffff41a9
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf34
+width_bytes = 4
+stock_value = 0x00009012
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf38
+width_bytes = 4
+stock_value = 0xffff1068
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf3c
+width_bytes = 4
+stock_value = 0x00011f02
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf40
+width_bytes = 4
+stock_value = 0x00011eea
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf44
+width_bytes = 4
+stock_value = 0x00026474
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf48
+width_bytes = 4
+stock_value = 0xffff1024
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf4c
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf50
+width_bytes = 4
+stock_value = 0x0000c50e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf54
+width_bytes = 4
+stock_value = 0x0001461a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf58
+width_bytes = 4
+stock_value = 0x0001464a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf5c
+width_bytes = 4
+stock_value = 0x00026270
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf60
+width_bytes = 4
+stock_value = 0x0007a120
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf64
+width_bytes = 4
+stock_value = 0x00021ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf68
+width_bytes = 4
+stock_value = 0xffff24ce
+RAM_pointer_alias = true

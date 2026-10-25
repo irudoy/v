@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-spirited-hamster-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional byte divisor from the explicit 0007A090 window; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "spirited-hamster"
+address = 73686
+owner = "spirited-hamster/tbl"
+wrapper = 156788
+caller = 499856
+callsite = 500272
+delay_slot = 500274
+component = "spirited_hamster_paths"
+original_claim_sha256 = "ac7c4c96bee55f6dc436039550fd716cef70369394fecb07247f10e97f807060"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"spirited-hamster/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/spirited-hamster.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "bc34e115e809bee38fb8b29509490f8adf3ca381f5b0a3e6bff19cb1e6b8e08e"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"spirited-hamster/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit 0007A20A window in 0007A090 reads 00011FD6 through natural 00026474 with axis 00011A83 and an explicit byte coordinate. Its uint8 result is stored at FFFF2BE4 and enters unsigned divider 00021CE0 in R0 at 0007A230. The product of uint16 FFFF2C78 and 200 enters R1 through delay slot 0007A232. A zero lookup bypasses division and selects FFFF; nonzero quotients are capped at FFFF and stored at FFFF2C74. This conditional value dependency establishes no physical ROM read by the arithmetic callee, units, scale, complete parent reachability, scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=499856)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/spirited-hamster.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"huge-okapi/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"vagabond-lyrebird/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"glistening-guan/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"boisterous-porcupine/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"chestnut-scorpion/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],\"notes\":[0],\"order\":107,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"huge-okapi/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"vagabond-lyrebird/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"glistening-guan/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"boisterous-porcupine/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"chestnut-scorpion/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],\"notes\":[0],\"order\":107,\"registry\":\"findings\"}]"

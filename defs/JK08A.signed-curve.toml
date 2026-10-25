@@ -1,0 +1,231 @@
+schema = 1
+id = "jk08a-signed-curve"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_signed_curve.s"
+scope = "Natural 0007B0A0 signed-curve entry. The 00018DE6 lookup becomes the signed divisor after the paired curve bias; a zero difference bypasses 00021BBC."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x266e8,0x26af8,0x26b84,0x26d10,0x7b0a0,0x7b1a6]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x266e8
+end = 0x2670a
+
+[[entry]]
+key = "code-2"
+start = 0x26af8
+end = 0x26b26
+
+[[entry]]
+key = "code-3"
+start = 0x26b84
+end = 0x26bc0
+
+[[entry]]
+key = "code-4"
+start = 0x26d10
+end = 0x26da6
+
+[[entry]]
+key = "code-5"
+start = 0x7b0a0
+end = 0x7b196
+
+[[entry]]
+key = "code-6"
+start = 0x7b1a6
+end = 0x7b28c
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2670c
+width_bytes = 4
+stock_value = 0x00026af8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26710
+width_bytes = 4
+stock_value = 0x00026b84
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26bc0
+width_bytes = 4
+stock_value = 0x00026d10
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b196
+width_bytes = 2
+stock_value = 0x00000cf2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b198
+width_bytes = 2
+stock_value = 0x00000a94
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b19a
+width_bytes = 2
+stock_value = 0x00000a96
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b19c
+width_bytes = 2
+stock_value = 0x00000a9e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b19e
+width_bytes = 2
+stock_value = 0x00000320
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b1a0
+width_bytes = 2
+stock_value = 0x00000d0e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b1a2
+width_bytes = 2
+stock_value = 0x00000d10
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b1a4
+width_bytes = 2
+stock_value = 0x00000d12
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b28c
+width_bytes = 2
+stock_value = 0x00000320
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b28e
+width_bytes = 2
+stock_value = 0x00000d0e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b290
+width_bytes = 2
+stock_value = 0x00000d10
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b292
+width_bytes = 2
+stock_value = 0x00000d12
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b294
+width_bytes = 2
+stock_value = 0x00000cd6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b298
+width_bytes = 4
+stock_value = 0xffff28f8
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b29c
+width_bytes = 4
+stock_value = 0xffff41a9
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b2a0
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b2a4
+width_bytes = 4
+stock_value = 0x00018e06
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2a8
+width_bytes = 4
+stock_value = 0x00018e26
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2ac
+width_bytes = 4
+stock_value = 0x000266e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2b0
+width_bytes = 4
+stock_value = 0x00018de6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2b4
+width_bytes = 4
+stock_value = 0xffff424c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b2b8
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2bc
+width_bytes = 4
+stock_value = 0x000083c1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7b2c0
+width_bytes = 4
+stock_value = 0xffff2470
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7b2c4
+width_bytes = 4
+stock_value = 0xffff267a
+RAM_pointer_alias = true

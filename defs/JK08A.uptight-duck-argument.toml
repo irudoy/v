@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-uptight-duck-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact publication of 00015C80 after natural 000B784E; the signed operands are incoming R4 and 000F4240."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "blond-panther"
+address = 0x15c80
+owner = "blond-panther/tbl"
+wrapper = 0x26524
+caller = 0xb784e
+callsite = 0xb7892
+delay_slot = 0xb7894
+component = "uptight_duck_paths"
+original_claim_sha256 = "2d7b312e121db61661500de403724e6f1819cb75161bdd58a0ca8121adced08a"
+proposed_claim_sha256 = "a1d8bba4066d78f247e88e99810bb30c1352b75a5c12ce78e9a9e05553852498"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"blond-panther/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/blond-panther.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"blond-panther/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000B784E path reads 00015C80 through 00026524. The signed call 000B7892 does not receive that lookup. 000B7894 places incoming R4 in R1, and R0 remains the constant 000F4240. The lookup is stored and is published when the sign-extended low half of the quotient is at least the byte at 00008C8C minus 50; otherwise the published word is 1. This dependency asserts that conditional publication, no use of the curve as the divisor or dividend, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=751694)\",\"SymbolKey(layout='7mfk', kind='fn', address=156964)\"]},\"roles\":[\"conditional-publication\"],\"slot\":null,\"sources\":[\"kb/tbl/blond-panther.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"complex-firefly/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":315,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"complex-firefly/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":315,\"registry\":\"findings\"}]"

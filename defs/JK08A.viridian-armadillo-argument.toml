@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-viridian-armadillo-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional value argument of 00014E42 through natural 000B7A3C; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "sassy-flamingo"
+address = 85570
+owner = "sassy-flamingo/tbl"
+wrapper = 156876
+caller = 752188
+callsite = 752360
+delay_slot = 752362
+component = "viridian_armadillo_paths"
+original_claim_sha256 = "c77afd3aa79a14a38639cdc0e8d97089eb6fcb902231809264c15a6b90f73cd5"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sassy-flamingo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/sassy-flamingo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "cc7995982bdee421852f52debfff0b574f66bb493b627262862ef154cb782327"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sassy-flamingo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000B7A3C entry reads 00014E42 through 000264CC. The negated uint16 lookup is multiplied by the byte at 00008832 and by 20 with low32 arithmetic; that product enters R1 at 000B7AE8. Delay slot 000B7AEA places the low half of incoming R4 in R0. A zero divisor bypasses 00021BBC and preserves its fault word. This dependency asserts that explicit conditional value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=752188)\",\"SymbolKey(layout='7mfk', kind='fn', address=156876)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/sassy-flamingo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"eminent-lynx/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"viridian-armadillo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"competent-zebu/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":274,\"registry\":\"findings\",\"scale\":[22]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"eminent-lynx/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"viridian-armadillo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"competent-zebu/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],\"notes\":[0],\"order\":274,\"registry\":\"findings\",\"scale\":[22]}]"

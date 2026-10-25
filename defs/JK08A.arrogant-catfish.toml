@@ -1,0 +1,220 @@
+schema = 1
+id = "jk08a-arrogant-catfish"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_arrogant_catfish.s"
+scope = "Natural 0004BBEE entry, conditional byte-curve arguments and full piecewise correction; no hardware or natural scheduling admission."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x26388,0x26740,0x26a60,0x4bbee]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x26388
+end = 0x2639a
+
+[[entry]]
+key = "code-2"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-3"
+start = 0x26a60
+end = 0x26aba
+
+[[entry]]
+key = "code-4"
+start = 0x4bbee
+end = 0x4bc3e
+
+[[entry]]
+key = "code-5"
+start = 0x4bc94
+end = 0x4bdb8
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2639a
+width_bytes = 2
+stock_value = 0x00f0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2639c
+width_bytes = 4
+stock_value = 0x00026a84
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26abc
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc3e
+width_bytes = 2
+stock_value = 0x0361
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc40
+width_bytes = 2
+stock_value = 0x0362
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc44
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bc54
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bc5c
+width_bytes = 4
+stock_value = 0x00026388
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc84
+width_bytes = 4
+stock_value = 0xffff2466
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bc88
+width_bytes = 4
+stock_value = 0x0001243a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc8c
+width_bytes = 4
+stock_value = 0x00012462
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bc90
+width_bytes = 4
+stock_value = 0x000087ca
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bdb8
+width_bytes = 2
+stock_value = 0x0361
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bdba
+width_bytes = 2
+stock_value = 0x0362
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bdbc
+width_bytes = 2
+stock_value = 0x0360
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bdbe
+width_bytes = 2
+stock_value = 0x035f
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bdc0
+width_bytes = 2
+stock_value = 0x035e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4befc
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf00
+width_bytes = 4
+stock_value = 0x0001244a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf04
+width_bytes = 4
+stock_value = 0x00026388
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf08
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf0c
+width_bytes = 4
+stock_value = 0x00012472
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf10
+width_bytes = 4
+stock_value = 0x000087ca
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf14
+width_bytes = 4
+stock_value = 0x00011ebe
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf18
+width_bytes = 4
+stock_value = 0xffff1048
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4bf1c
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4bf20
+width_bytes = 4
+stock_value = 0xffff22dc
+RAM_pointer_alias = true

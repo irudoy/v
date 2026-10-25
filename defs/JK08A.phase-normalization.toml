@@ -1,0 +1,50 @@
+schema = 1
+id = "jk08a-phase-normalization"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_injection_tooth.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Natural normalizer and splitter entries with explicit scalar arguments and native word/byte pointer pairs; complete instruction state and independent integer equations"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+
+[[window]]
+parent = 167368
+start = 167368
+end = 167548
+
+[[window]]
+parent = 167548
+start = 167548
+end = 167582
+
+[[pair]]
+word = 4294906808
+byte = 4294908219
+word_owner = "huge-lori/ram"
+byte_owner = "economic-collie/ram"
+
+[[pair]]
+word = 4294907224
+byte = 4294907226
+word_owner = "vivacious-petrel/ram"
+byte_owner = "peridot-pony/ram"
+
+[[pool]]
+address = 167582
+size = 2
+value = 294
+
+[[pool]]
+address = 167968
+size = 4
+value = 4294906508
+
+[[pool]]
+address = 167584
+size = 2
+value = 6554

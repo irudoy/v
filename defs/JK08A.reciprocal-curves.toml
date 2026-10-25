@@ -1,0 +1,122 @@
+schema = 1
+id = "jk08a-reciprocal-curves"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_reciprocal_curves.s"
+scope = "Explicit paired word-lookup divisor windows with constant signed dividend256; control stores and complete parent reachability are not admitted."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+window_entries = [0x6961a,0x696bc]
+function_entries = [0x21bbc,0x264cc,0x26740,0x26984,0x26c78,0x69374]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x264cc
+end = 0x264ee
+
+[[entry]]
+key = "code-2"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-3"
+start = 0x26984
+end = 0x269c0
+
+[[entry]]
+key = "code-4"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-5"
+start = 0x6961a
+end = 0x69628
+
+[[entry]]
+key = "code-6"
+start = 0x696bc
+end = 0x696cc
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f0
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x264f4
+width_bytes = 4
+stock_value = 0x00026984
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x269c0
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x69864
+width_bytes = 4
+stock_value = 0x000237b4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x69868
+width_bytes = 4
+stock_value = 0x000264cc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x69888
+width_bytes = 4
+stock_value = 0x00023804
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x6988c
+width_bytes = 4
+stock_value = 0x000237f4
+RAM_pointer_alias = false
+
+[[observing_returns]]
+address = 431656
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/reciprocal_curves_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false
+
+[[observing_returns]]
+address = 431820
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/reciprocal_curves_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false

@@ -1,0 +1,28 @@
+schema = 1
+id = "jk08a-signed-curve-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact signed value argument of 00018DE6 through natural 0007B0A0; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "signed-curve"
+address = 101862
+owner = "vagabond-seagull/tbl"
+wrapper = 157416
+caller = 503968
+callsites = [504144, 504168, 504192]
+delay_slots = [504146, 504170, 504194]
+component = "signed_curve_paths"
+target = "pompous-firefly/fn"
+original_claim_sha256 = "a0684813cfd11044175a89d2dd6db0034da324e03237c04015a528e826c08754"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"vagabond-seagull/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/vagabond-seagull.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "78b0571d8e9fe92a49ede195bad46f9cdfb2d18c23dcc7072cc24c9784e7dd98"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"vagabond-seagull/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0007B0A0 path reads 00018DE6 through 000266E8, subtracts the paired 00018E06 bias, and uses the floored difference as the signed divisor. Three products with 800 are passed in R1 after the call delay slots 0007B152, 0007B16A and 0007B182. A zero difference bypasses 00021BBC and does not inherit its zero-divisor fault store. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=503968)\",\"SymbolKey(layout='7mfk', kind='fn', address=157416)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/vagabond-seagull.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"flawless-dragon/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1],\"notes\":[0],\"order\":322,\"registry\":\"findings\",\"scale\":[2,3,4]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"flawless-dragon/tbl\",\"type\":\"depends\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1],\"notes\":[0],\"order\":322,\"registry\":\"findings\",\"scale\":[2,3,4]}]"

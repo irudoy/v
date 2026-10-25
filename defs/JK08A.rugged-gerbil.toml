@@ -1,0 +1,121 @@
+schema = 1
+id = "jk08a-rugged-gerbil"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_rugged_gerbil.s"
+scope = "Explicit 00081674 high-range entry, natural word interpolation and conditional unsigned division; complete parent reachability is not inferred."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+window_entry = 0x81674
+function_entries = [0x21ce0,0x263f4,0x26740,0x26a60,0x8152a]
+
+[[entry]]
+key = "code-0"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-1"
+start = 0x263f4
+end = 0x26406
+
+[[entry]]
+key = "code-2"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-3"
+start = 0x26a60
+end = 0x26aba
+
+[[entry]]
+key = "code-4"
+start = 0x81674
+end = 0x816a2
+
+[[entry]]
+key = "code-5"
+start = 0x8170c
+end = 0x8171e
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26408
+width_bytes = 4
+stock_value = 0x00026a64
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2640c
+width_bytes = 4
+stock_value = 0x0000f000
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26abc
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x816a4
+width_bytes = 2
+stock_value = 0x04ab
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x816a8
+width_bytes = 2
+stock_value = 0x04ac
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x81704
+width_bytes = 4
+stock_value = 0x00015022
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x81708
+width_bytes = 4
+stock_value = 0x00021ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x81810
+width_bytes = 2
+stock_value = 0x04a7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x818bc
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = false
+
+[observing_return]
+address = 530206
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/rugged_gerbil_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false

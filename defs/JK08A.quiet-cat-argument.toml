@@ -1,0 +1,43 @@
+schema = 1
+id = "jk08a-quiet-cat-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact signed value arguments of 000123EA and 00012412 through natural 000BE32A; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "belligerent-potoo"
+address = 0x123ea
+owner = "belligerent-potoo/tbl"
+wrapper = 0x26474
+caller = 0xbe32a
+callsite = 0xbe41e
+delay_slot = 0xbe420
+component = "quiet_cat_paths"
+original_claim_sha256 = "aa532916bff8865d5a53d99b38677467c90b047748d1f2b0fd01c53bc920d464"
+proposed_claim_sha256 = "7e4ba08c38431dede818b43c7b53d2959bef063ad5e1475dcf02752a88e3a491"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"belligerent-potoo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/belligerent-potoo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"belligerent-potoo/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000BE32A path reads 000123EA through 00026474 when the entry index in R4 is zero. The lookup byte is multiplied by the difference of two biased RAM bytes. 000BE420 completes that product in R1 from MACL. R0 is the constant 100. A nonzero index reads 00012412 instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=779050)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/belligerent-potoo.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"radiant-robin/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":136,\"registry\":\"findings\",\"scale\":[15,16,17,18,19,20,21,22,23]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"radiant-robin/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":136,\"registry\":\"findings\",\"scale\":[15,16,17,18,19,20,21,22,23]}]"
+
+[[reference]]
+id = "red-bullmastiff"
+address = 0x12412
+owner = "red-bullmastiff/tbl"
+wrapper = 0x26474
+caller = 0xbe32a
+callsite = 0xbe41e
+delay_slot = 0xbe420
+component = "quiet_cat_paths"
+original_claim_sha256 = "5fe1a1f3a93cc936590de0f3ff67df7b18f94137dc663ef31c514559f7c22991"
+proposed_claim_sha256 = "3534db4cd5ece066f3bddcc6b5ff1ed5190ff869ab36f19693ddf7275f67702c"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"red-bullmastiff/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/red-bullmastiff.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"red-bullmastiff/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 000BE32A path reads 00012412 through 00026474 when the entry index in R4 is nonzero. The lookup byte is multiplied by the difference of two biased RAM bytes. 000BE420 completes that product in R1 from MACL. R0 is the constant 100. A zero index reads 000123EA instead. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=779050)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/red-bullmastiff.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"radiant-robin/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":139,\"registry\":\"findings\",\"scale\":[16,17,18,19,20,21,22,23,24]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"base\",\"relies\":\"structure\",\"role\":\"base\",\"supports\":\"identity\",\"to\":\"outstanding-marmot/ram\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"radiant-robin/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"tough-earwig/ram\",\"type\":\"index\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":139,\"registry\":\"findings\",\"scale\":[16,17,18,19,20,21,22,23,24]}]"
