@@ -31,3 +31,11 @@ a fixed fifth word independent of R5, including word sign and upper boundaries.
 The same input header, C driver and observer transport this explicit raw word.
 These definitions supply no executed coordinate comparison, caller-origin
 binding, datum identity or native publication by themselves.
+
+
+The coordinate response consumer binds all three real 26524 calls and their
+post-delay R6 arguments to incoming R5. It requires the actual word stores at
+FFFF35A0 and FFFF35B6, positive output contrasts in every controlled interior
+interval and invariant endpoint publications. Complete other CPU, SR, frame,
+RAM, calibration and caller inputs remain fixed. This callee value response
+supplies no independent binding to an upstream RAM source or native relation.

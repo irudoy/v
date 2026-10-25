@@ -234,10 +234,12 @@ def require_witness(model,packet,inputs):
         raise ValueError('the uptight-duck original has another actual GNU toolchain')
     for identity in toolchain['binaries'].values():ignition_literal_evidence.require_hash(identity)
     actual=observations(packet,declared)
+    coordinate_pairs=[]
     semantics=[]; coverage={site:set() for site in REQUIRED_BRANCHES}
     for case,observed in zip(declared['cases'],actual):
         result,row=require_state(declared,image,fixture,case,observed)
         semantics.append(row)
+        if 'fifth_word' in case:coordinate_pairs.append((observed,result))
         for branch in result['branches']:
             if branch['site'] in coverage:coverage[branch['site']].add(branch['kind'])
     if any(outcomes!={'taken','fallthrough'} for outcomes in coverage.values()):
@@ -252,9 +254,11 @@ def require_witness(model,packet,inputs):
         groups.setdefault(key,set()).add((row['lookup'],row['dividend']))
     if not any(len({item[0] for item in outcomes})>=2 and len({item[1] for item in outcomes})==1 for outcomes in groups.values()):
         raise ValueError('the uptight-duck original lacks a curve change that leaves the signed dividend unchanged')
+    require_coordinate_response(coordinate_pairs)
     return dict(region=REGION,image_sha256=sha(image),fixture_sha256=sha(fixture),elf_sha256=packet['elf_sha256'],
         stdout_sha256=packet['stdout_sha256'],observations=len(actual),native_bindings=native_bindings(model),
         semantic_results=semantics,conditional_branch_outcomes={f'{site:08x}':sorted(values) for site,values in coverage.items()},
+        exact_R5_coordinate_response=True,real_three_curve_R6_and_publications=True,
         lookup_is_not_the_signed_operand=True,native_geometry_inference=False,
         datum_identity_inference=False,automatic_resolution=False,natural_caller_reachability=False,
         hardware_qualification=False,native_relation_publication=False,scale_admission=False)
@@ -269,3 +273,53 @@ def require_primary(model,record):
     if ignition_literal_evidence.execution_inputs(model.root)!=current:
         raise ValueError('the uptight-duck inputs change during independent admission')
     return result
+
+
+
+def require_coordinate_response(pairs):
+    groups={}
+    calls_wanted=((0xB786C,0x15BF0),(0xB7876,0x15C40),(0xB7888,0x15C80))
+    for observed,result in pairs:
+        coordinate=observed['context'][5]
+        if type(coordinate) is not int or not 0<=coordinate<=65535:
+            raise ValueError('the uptight coordinate response changes the complete unsigned-word input')
+        calls=[row for row in result['calls'] if row['target']==0x26524]
+        same([(row['site'],row['target']) for row in calls],[(site,0x26524) for site,base in calls_wanted],
+            'the uptight coordinate response omits or substitutes an actual natural curve call')
+        for call,(site,base) in zip(calls,calls_wanted):
+            registers=call['entry']['registers']
+            same((registers[4],registers[5],registers[6]),(base,0x13CA8,coordinate),
+                'the uptight coordinate response detaches a real post-delay R6 from its incoming R5')
+        outputs=[]
+        for address in (0x35A0,0x35B6):
+            events=[event for event in result['accesses'] if event['mode']=='write'
+                and event['address']<=matrix.RAM_BASE+address<event['address']+event['width_bytes']]
+            if len(events)!=1:raise ValueError('the uptight coordinate response omits or duplicates a real word publication')
+            event=events[0];register=({0xB78C0:7,0xB78C6:2} if address==0x35A0 else {0xB78BA:2}).get(event['site'])
+            if register is None:raise ValueError('the uptight coordinate response changes a real publication site')
+            actual=observed['memory_after'][0][address:address+2]
+            same((event['address'],event['width_bytes'],event['register'],event['domain'],event['bytes']),
+                (matrix.RAM_BASE+address,2,register,'ram',actual.hex()),
+                'the uptight coordinate response substitutes a byte lane, register or actual word value')
+            outputs.append(actual)
+        context=list(observed['context']);context[5]=0
+        held=dict(context=context,memory=sha(observed['memory_before'][0]),
+            frame=sha(observed['frame_before']),sp=observed['sp'],continuation=observed['continuation'],
+            abi=observed['abi_before'],sr_before=observed['sr_before'],entry=observed['entry'],
+            calibration={str(at):sha(raw) for at,raw in observed['calibration_before'].items()})
+        key=sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode())
+        group=groups.setdefault(key,{})
+        if coordinate in group:same(group[coordinate],tuple(outputs),'one complete coordinate input changes its actual outputs')
+        group[coordinate]=tuple(outputs)
+    required={0,1,99,100,101,149,150,151,1599,1600,1601,3099,3100,3101,
+        32767,32768,65534,65535,*range(0,3101,100),*range(50,3100,100)}
+    admitted=False
+    for group in groups.values():
+        if not required<=group.keys():continue
+        if any(any(group[index*100][column]==group[index*100+50][column] for column in range(2)) for index in range(31)):
+            raise ValueError('the uptight coordinate response lacks changed actual outputs in a real axis interval')
+        if any(group[coordinate]!=group[3100] for coordinate in (3101,32767,32768,65534,65535) if coordinate in group):
+            raise ValueError('the uptight coordinate response changes an actual endpoint publication')
+        admitted=True
+    if not admitted:raise ValueError('the uptight coordinate response lacks the complete fixed-other word and knot domain')
+    return True
