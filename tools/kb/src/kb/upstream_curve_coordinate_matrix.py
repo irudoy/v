@@ -90,6 +90,13 @@ def cases(source,image):
             for word in (0,1,127,128,255):
                 add('duplicate-nonmonotonic-and-exact-axis-boundaries',**{name:axis},
                     context=raw_context(H=20,fifth_word=word),source_curve=[65535-word*257]*9)
+    for axis,fifth in (([255]+[65535]*7,1),([1]+[65281]*7,255)):
+        add('source-positive-bracket-minimum-and-maximum-word-fractions',source_axis=axis,
+            context=raw_context(H=20,fifth_word=fifth),source_curve=[0,65535]*4+[0])
+    for value in (65534,1):
+        add('consumer-positive-bracket-minimum-and-maximum-word-fractions',
+            output_axis=[0]+[65535]*15,source_curve=[value]*9,context=raw_context(H=20),
+            output_curve=[0,65535]*8+[0])
     for name,count in (('source_curve',9),('output_curve',17)):
         for curve in ([0]*count,[65535]*count,[65535 if i%2 else 0 for i in range(count)],
                       [0 if i%2 else 65535 for i in range(count)]):
