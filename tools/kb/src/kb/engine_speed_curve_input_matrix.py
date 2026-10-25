@@ -102,6 +102,11 @@ def cases(source,image):
     for mode,changes in SPEED_MODES:
         for speed in range(256) if mode != 'substitute' else BYTE_VALUES:
             add('actual-speed-handoff-'+mode,**dict(changes,speed_snapshot=speed))
+    for raw in (16383,16384,65535):
+        add('first-speed-selection-word-threshold',rom_870b=1,word_2318=raw)
+    add('second-speed-selection-zero-timer',**dict(SPEED_MODES[1][1],byte_2590=0))
+    for raw in (252,253,254,255):
+        add('full-hysteresis-coordinate-exceeds-byte-range',byte_41de=32,byte_1071=raw)
     for field,at,width in RAM_FIELDS:
         for raw in BYTE_VALUES if width == 1 else WORD_VALUES if width == 2 else LONG_VALUES:
             add('independent-raw-RAM-input-and-prior-publication',**{field:raw})
@@ -147,6 +152,15 @@ def cases(source,image):
                     changes.update({'rom_927a':lower,'rom_927c':upper,'rom_878a':factor} if hot else
                                    {'rom_9276':lower,'rom_9278':upper,'rom_8789':factor})
                     add('actual-positive-divisor-clock-term-or-bypass',**changes)
+        add('negative-correction-needs-the-actual-zero-floor',byte_244f=4 if hot else 0,
+            rom_8cd1=0,clock_15f8=50,rom_9276=0,rom_9278=100,
+            rom_927a=0,rom_927c=100,rom_8789=255,rom_878a=255,correction_curves=[0]*32)
+    for raw in (0,1,4,128,255):
+        add('shared-flag-publication-preserves-unrelated-bits',byte_22e1=3,byte_4251=raw)
+        add('hot-correction-flag-selects-subtraction-or-growth',
+            byte_244f=4,byte_4251=raw,byte_42bc=1)
+    add('hot-correction-reset-timer-retains-control-bit-guard',
+        byte_244f=4,byte_4184=64,rom_8c3b=1)
     for latch,first,second in ((0,0,0),(0,1,0),(0,1,1),(16,0,0),(16,1,0),(16,255,255)):
         for prior in (0,127,128,255):
             add('full-critical-latch-and-saved-term',byte_248d=latch,byte_1239=first,
@@ -155,6 +169,8 @@ def cases(source,image):
                                          (0,0,0,0),(127,0,0,127)):
         add('signed-critical-clamp-boundary',byte_2404=origin,byte_23c5=subtraction,
             byte_1a7d=base,speed_snapshot=speed,correction_curves=[255]*32)
+    add('complete-final-signed-lower-clamp',speed_curves=[0]*24,
+        byte_248d=16,byte_1239=1,prior_1513=128)
     for index in range(64):
         for raw in (0,1,127,128,255):
             surface = [128]*64

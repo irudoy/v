@@ -226,6 +226,7 @@ def evaluate(memory, calibration, frame_before):
         base_return = implicit(0x4B15C,0x11F12,coordinate)
         flags = read(0x4B166,0x22E1,1,0)
         if flags&1 and flags&2:
+            correction_path = 'hot-two-curves'
             coordinate = read(0x4B174,0x106F,1,0)
             extra = implicit(0x4B178,0x11F1A,coordinate)&255
             held_correction = read(0x4B188,0x1842,1,5)
@@ -238,13 +239,16 @@ def evaluate(memory, calibration, frame_before):
                 if timer:
                     grow = not bool(read(0x4B1B2,0x4184,1,0)&64)
             if grow:
+                correction_path = 'hot-growth'
                 coordinate = read(0x4B1B8,0x106F,1,0)
                 extra = implicit(0x4B1BC,0x11F22,coordinate)&255
                 quantity = min(255,(base_return&255)+extra)
             else:
+                correction_path = 'hot-subtraction'
                 held_correction = read(0x4B1E0,0x1842,1,2)
                 quantity = max(0,(base_return&255)-held_correction)
     else:
+        correction_path = 'cold-subtraction'
         coordinate = read(0x4B2AE,0x106F,1,0)
         base_return = implicit(0x4B2B2,0x11F0A,coordinate)
         held_correction = read(0x4B2BA,0x1841,1,2)
@@ -330,6 +334,7 @@ def evaluate(memory, calibration, frame_before):
     return dict(memory=bytes(after),operands=operands,calls=calls,tails=tails,lookups=lookups,
         speed_coordinate=speed_coordinate,speed_branch=speed_branch,speed_return=speed_return,
         speed_register=speed_register,speed_byte=(speed_return&255),hot=hot,correction=correction,
-        quantity=quantity,use_prior_critical=use_prior,critical=critical,surfaces_enabled=surfaces_enabled,
+        quantity=quantity,base_return=base_return,correction_path=correction_path,
+        use_prior_critical=use_prior,critical=critical,surfaces_enabled=surfaces_enabled,
         surface_results=surface_results,surface_term=surface_term,minimum=minimum,factor=factor,
         addon_enabled=enabled,addon=addon,composed=composed,signed_value=final,value=final&255)
