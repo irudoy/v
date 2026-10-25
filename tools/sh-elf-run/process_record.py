@@ -144,7 +144,7 @@ def run(root, directory, name, command, limit, *, live=True):
         inclusive_process_seconds=time.monotonic() - clock,
         actual_exit_code=process.returncode, timed_out=timed_out,
         interrupted=interrupted is not None, interruption_type=interrupted,
-        declared_limit_seconds=limit, caffeinate_applied=False,
+        declared_limit_seconds=limit,
         stdout_sha256=hashlib.sha256(out_path.read_bytes()).hexdigest(),
         stderr_sha256=hashlib.sha256(err_path.read_bytes()).hexdigest())
     write_json(terminal_path, record)
