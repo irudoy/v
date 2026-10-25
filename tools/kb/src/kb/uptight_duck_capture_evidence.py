@@ -66,7 +66,7 @@ def header(declared,image):
     for case in declared['cases']:
         values=(case['entry'],matrix.PATTERNS.index(case['pattern']),('stock','strict','high').index(case['axis']),
             case['coordinate'],case['dividend'],case['threshold'],matrix.PATTERNS.index(case['side']),
-            case['variant'],case['sr'])
+            case['variant'],case['sr'],matrix.fifth_word(case))
         lines.append('    {'+','.join(f'0x{value:x}U' for value in values)+'},')
     return '\n'.join((*lines,'};','')).encode()
 

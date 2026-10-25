@@ -52,3 +52,45 @@ def test_pinned_disposition_matches_the_current_signed_reader_claim():
               and item.to.key==arguments.TARGET)
     assert arguments.original(row,link)
     assert row['component']=='uptight_duck_paths'
+
+
+
+def test_all_original_eleven_case_records_and_complete_contexts_remain_exact():
+    source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    rows=matrix.cases(source,image)
+    original=(('last','strict',150,5000000,0,'stock'),('rising','strict',150,5000000,0,'stock'),
+        ('constant','strict',150,5000000,0,'stock'),('zero','strict',150,5000000,0,'stock'),
+        ('stock','stock',0,0,0,'stock'),('stock','stock',1000,0xFFFFFFFF,0,'stock'),
+        ('last','strict',0,0,150,'stock'),('constant','high',0,0,0,'stock'),
+        ('rising','strict',3100,50000000,0,'stock'),('last','strict',50,1000000,0,'stock'),
+        ('stock','stock',0,0,0,'last'))
+    assert len([row for row in rows if 'fifth_word' not in row])==len(original)==11
+    for index,(pattern,axis,coordinate,dividend,threshold,side) in enumerate(original):
+        sr=(index&1)|((index&15)<<4)|((index&3)<<8)
+        expected=dict(index=index,entry=contract.ENTRY,pattern=pattern,axis=axis,side=side,
+            coordinate=coordinate,dividend=dividend,threshold=threshold,variant=index%4,sr=sr)
+        assert rows[index]==expected
+        registers=[(0x1728394A+reg*0x110203+(index%4)*0x1000101)&0xFFFFFFFF for reg in range(15)]
+        registers[4:7]=[dividend,coordinate,matrix.POINTER]
+        assert matrix.context(source,rows[index])==(*registers,0x12344321,0x13579BDF,0x2468ACE0,sr,0xB6C70000|coordinate)
+
+
+def test_coordinate_contrasts_hold_every_other_raw_context_RAM_and_calibration_input_fixed():
+    source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    rows=[row for row in matrix.cases(source,image) if 'fifth_word' in row]
+    coordinates={row['coordinate'] for row in rows}
+    assert set(range(0,3101,100))<=coordinates and set(range(50,3100,100))<=coordinates
+    assert {0,1,32767,32768,65534,65535}<=coordinates
+    held=[]
+    for row in rows:
+        context=list(matrix.context(source,row));assert context[5]==row['coordinate'];context[5]=0
+        assert context[19]==0xA5B6C7D8
+        held.append((context,matrix.memory(row),matrix.calibrations(source,image,row)))
+    assert rows and all(value==held[0] for value in held)
+    text=(repo.ROOT/'defs/JK08A.uptight-duck.md').read_text()
+    assert '11 original cases' in text and 'fixed fifth word' in text
+
+
+@pytest.mark.parametrize('value',(True,-1,0x100000000))
+def test_coordinate_inputs_refuse_a_truncated_or_boolean_fifth_word(value):
+    with pytest.raises(ValueError):matrix.fifth_word(dict(coordinate=0,fifth_word=value))

@@ -20,3 +20,14 @@ Independent equations cover the lookup, the post-delay operands and both
 publications. The divisor is never zero, so the callee fault store at
 `FFFF9818` stays unchanged. The proof does not publish a native relation,
 admit scale, establish scheduling, or qualify hardware.
+
+
+## Independent coordinate inputs
+
+The input stream retains all 11 original cases and their complete contexts.
+Additional rising-curve/strict-axis coordinate contrasts hold the dividend,
+threshold, other registers, SR, complete RAM and calibration fixed. They use
+a fixed fifth word independent of R5, including word sign and upper boundaries.
+The same input header, C driver and observer transport this explicit raw word.
+These definitions supply no executed coordinate comparison, caller-origin
+binding, datum identity or native publication by themselves.

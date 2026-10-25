@@ -38,6 +38,11 @@ def cases(declared,image):
     add('rising', 'strict', 3100, 50*0xF4240, 0)
     add('last', 'strict', 50, 0xF4240)
     add('stock', 'stock', 0, 0, side='last')
+    coordinates={0,1,99,100,101,149,150,151,1599,1600,1601,3099,3100,3101,
+        32767,32768,65534,65535,*range(0,3101,100),*range(50,3100,100)}
+    for coordinate in sorted(coordinates):
+        result.append(dict(index=len(result),entry=ENTRY,pattern='rising',axis='strict',side='rising',
+            coordinate=coordinate,dividend=0,threshold=0,variant=0,sr=0,fifth_word=0xA5B6C7D8))
     return tuple(result)
 
 
@@ -46,7 +51,7 @@ def context(declared, case):
     registers[4]=case['dividend']
     registers[5]=case['coordinate']
     registers[6]=POINTER
-    return (*registers, 0x12344321, 0x13579BDF, 0x2468ACE0, case['sr'], 0xB6C70000|case['coordinate'])
+    return (*registers, 0x12344321, 0x13579BDF, 0x2468ACE0, case['sr'], fifth_word(case))
 
 
 def calibration_spans(declared):
@@ -77,3 +82,11 @@ def require_input(declared, image, case, observed):
             or not test_contract.exact(observed['calibration_before'], calibrations(declared, image, case))
             or not test_contract.exact(observed['calibration_after'], calibrations(declared, image, case))):
         raise ValueError('the uptight-duck original changes an explicit dividend, coordinate, curve or axis')
+
+
+
+def fifth_word(case):
+    value=case.get('fifth_word',0xB6C70000|case['coordinate'])
+    if type(value) is not int or not 0<=value<=0xFFFFFFFF:
+        raise ValueError('the uptight-duck input changes the complete raw fifth word')
+    return value
