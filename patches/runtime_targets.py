@@ -35,6 +35,7 @@ from patches import apply_map_switching
 from patches import can_telemetry_assembly
 from patches import can_telemetry_layout
 from patches import can_telemetry_profile
+from patches import ignition_literal_consumers
 from patches import map_switching_assembly
 from patches import map_switching_compose
 from patches import map_switching_layout
@@ -1920,40 +1921,34 @@ def _literal_loaders(data, site):
     return loaders
 
 
-def _live_literal_sites(data, value, profile):
-    """Return the literal sites that code outside the unreferenced routine
-    loads, or that no PC-relative load reaches at all."""
-    routine = profile.ignition_unreferenced_routine
-    live = []
-    for site in _aligned_literal_sites(data, value):
-        loaders = _literal_loaders(data, site)
-        owned = (
-            routine is not None
-            and loaders
-            and all(routine.start <= item < routine.end for item in loaders)
-        )
-        if not owned:
-            live.append(site)
-    return live
-
-
 def _validate_ignition_state_pool(target, profile):
-    """Bind the state-code ignition families to the hooked literal.
+    """Bind state-family bases to their declared lookup-load/call relations.
 
-    The coordinator takes each 8x8 table base and the lookup pointer from its
-    literal pool in adjacent loads. Every family base must have one live
-    literal in the stock image, and every load of it must be followed by a
-    load of the hooked literal, so no other pointer to the lookup serves a
-    switched surface.
+    1ME3B permits multiple base pools only with positive paired consumers and
+    both explicit lookup hooks. The 1ND binding requires one pool per family.
+    Neither binding derives routine reachability from an address interval.
     """
     data = bytes(target.stock_image.data)
+    if profile.map_variant == "sh7059-1me3b":
+        adapter = target.map_layout.code_region_by_key["ignition_state_adapter"].entry
+        families = target.map_layout.family_by_key
+        try:
+            ignition_literal_consumers.require_state_hooks(profile, adapter)
+            ignition_literal_consumers.paired_state_loads(
+                data,
+                tuple(families[key].canonical_address
+                      for key in rom_address_profiles.IGNITION_STATE_FAMILY_KEYS),
+                tuple(profile.map_hook_by_key[key].address for key in (
+                    "ignition_state_lookup", "ignition_state_lookup_earlier")),
+            )
+        except ignition_literal_consumers.LiteralConsumerError as error:
+            raise RuntimeTargetError(f"{target.rom}: {error}") from error
+        return
     hook = profile.map_hook_by_key["ignition_state_lookup"]
     families = target.map_layout.family_by_key
     hook_loaders = set(_literal_loaders(data, hook.address))
     for key in rom_address_profiles.IGNITION_STATE_FAMILY_KEYS:
-        sites = _live_literal_sites(
-            data, families[key].canonical_address, profile
-        )
+        sites = _aligned_literal_sites(data, families[key].canonical_address)
         loaders = _literal_loaders(data, sites[0]) if len(sites) == 1 else []
         if not loaders or any(
             item + 2 not in hook_loaders for item in loaders
@@ -1969,13 +1964,12 @@ def _validate_ignition_state_pool(target, profile):
 
 
 def _validate_state_dispatch_coordinator(target, profile):
-    """Bind the 16x16 ignition families to the live state-code dispatch.
+    """Bind every declared 16x16 literal and its positive call operands.
 
-    The image holds an unreferenced earlier copy of the ignition coordinator
-    beside the periodic one. Bit 3 of the stock configuration byte sends the
-    periodic coordinator through its state-code dispatch, which reads the two
-    16x16 families. Every literal of the 16x16 lookup must be hooked or owned
-    by the unreferenced copy, so no executed pointer bypasses the adapter.
+    Bit 3 selects the state-code dispatch. All aligned stock lookup literals
+    require the same adapter and explicit byte-bound consumers, including
+    those in the earlier region. These obligations do not establish routine
+    reachability or exclude arbitrary computed consumers.
     """
     symbols = profile.map_symbol_by_key
     data = bytes(target.stock_image.data)
@@ -1984,22 +1978,18 @@ def _validate_state_dispatch_coordinator(target, profile):
             f"{target.rom}: stock configuration gates the state-code "
             "ignition dispatch off"
         )
-    hooks = {
-        item.address: item
-        for item in profile.map_hooks
-        if item.key.startswith("ignition_lookup_")
-    }
-    stocks = {item.stock for item in hooks.values()}
-    if len(stocks) != 1:
-        raise RuntimeTargetError(
-            f"{target.rom}: 16x16 ignition hooks name different lookups"
+    try:
+        ignition_literal_consumers.require_hooks(
+            profile, target.map_layout.code_region_by_key["ignition_adapter"].entry
         )
-    live = _live_literal_sites(data, stocks.pop(), profile)
-    if set(live) != set(hooks):
-        raise RuntimeTargetError(
-            f"{target.rom}: live 16x16 ignition lookup literals differ from "
-            "the hooked literals"
-        )
+        if tuple(_aligned_literal_sites(data, ignition_literal_consumers.LOOKUP)) != (
+                ignition_literal_consumers.LITERALS):
+            raise ignition_literal_consumers.LiteralConsumerError(
+                "16x16 ignition lookup literals differ from the hooked literals"
+            )
+        ignition_literal_consumers.require_consumers(data)
+    except ignition_literal_consumers.LiteralConsumerError as error:
+        raise RuntimeTargetError(f"{target.rom}: {error}") from error
 
 
 def _validate_vq37_ignition_halves(target, profile):

@@ -165,10 +165,10 @@ VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
     "rev_fuel_cut_release_curve_base",
 }
 
-# The live 1ME3B ignition coordinator holds two literals of the 16x16 lookup.
-VQ37_1ME3B_MAP_HOOK_KEYS = VQ37_1ND_MAP_HOOK_KEYS - {
-    "ignition_lookup_3",
-    "ignition_lookup_4",
+# Every declared 1ME3B lookup pool is redirected independently of reachability.
+VQ37_1ME3B_MAP_HOOK_KEYS = VQ37_1ND_MAP_HOOK_KEYS | {
+    "ignition_lookup_5",
+    "ignition_state_lookup_earlier",
 }
 
 VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
@@ -1228,6 +1228,10 @@ def _validate_map_bindings(profile, map_layout):
                 "rev_fuel_cut_activation_curve_base": fuel_curve_shadow,
                 "rev_fuel_cut_release_curve_base": fuel_curve_shadow + 0x10,
             })
+            if profile.map_variant == "sh7059-1me3b":
+                expected["ignition_state_lookup_earlier"] = (
+                    profile.ignition_state_storage.adapter.start
+                )
         else:
             expected["rev_fuel_cut_curves_base"] = fuel_curve_shadow
             expected["rev_fuel_cut_release_cap_base"] = _rebased(
@@ -1536,12 +1540,17 @@ def load_registry(path=DEFAULT_REGISTRY):
         raise AddressProfileError(
             f"address profile registry cannot be loaded: {path}: {error}"
         ) from error
-    _require_table(document, {"schema_version", "profile"}, str(path))
+    return parse_registry(document, str(path))
+
+
+def parse_registry(document, source):
+    """Parse an explicit current projection without using the file-load cache."""
+    _require_table(document, {"schema_version", "profile"}, source)
     if document["schema_version"] != 2:
-        raise AddressProfileError(f"{path}: unsupported schema_version")
+        raise AddressProfileError(f"{source}: unsupported schema_version")
     rows = document["profile"]
     if not isinstance(rows, dict) or not rows:
-        raise AddressProfileError(f"{path}: no exact profiles")
+        raise AddressProfileError(f"{source}: no exact profiles")
     profiles = {}
 
     def resolve(rom, stack=()):
@@ -1549,13 +1558,13 @@ def load_registry(path=DEFAULT_REGISTRY):
             return profiles[rom]
         if rom not in rows:
             raise AddressProfileError(
-                f"{path}: inherited profile {rom!r} does not exist"
+                f"{source}: inherited profile {rom!r} does not exist"
             )
         if rom in stack:
             chain = " -> ".join((*stack, rom))
-            raise AddressProfileError(f"{path}: profile inheritance cycle {chain}")
+            raise AddressProfileError(f"{source}: profile inheritance cycle {chain}")
         row = rows[rom]
-        context = f"{path} [profile.{rom}]"
+        context = f"{source} [profile.{rom}]"
         if isinstance(row, dict) and set(row) == {"inherits"}:
             base_rom = row["inherits"]
             if not isinstance(base_rom, str) or not base_rom:
@@ -1593,11 +1602,12 @@ def _read_u32(image, address, context):
 
 
 def _validate_unreferenced_routine(profile, data):
-    """Verify that the stock image holds no way into the declared routine.
+    """Preserve the bounded scan attached to the legacy region identifier.
 
-    No word of the occupied image points into the routine, and no PC-relative
-    branch outside it targets its entry, so the literal pools the routine owns
-    serve no executed lookup.
+    The scan rejects aligned pointer values into the region and encoded
+    direct branches to its entry. It establishes neither instruction
+    boundaries nor absence of interior or computed control-flow entries.
+    Lookup-literal coverage has no exemption based on this scan.
     """
     routine = profile.ignition_unreferenced_routine
     occupied = data[: profile.free_rom.start]

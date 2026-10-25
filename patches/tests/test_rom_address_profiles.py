@@ -265,3 +265,13 @@ def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles, exe
         rom_address_profiles.validate_stock_profile(profile, branched)
     from kb import test_evidence
     execution_witness(profiles, images, test_evidence.facts())
+
+
+@pytest.mark.parametrize('profiles,reason', (
+    ({'A': {'inherits': 'missing'}}, 'inherited profile'),
+    ({'A': {'inherits': 'B'}, 'B': {'inherits': 'A'}}, 'inheritance cycle'),
+))
+def test_current_projection_parser_preserves_inheritance_errors(profiles, reason):
+    with pytest.raises(rom_address_profiles.AddressProfileError, match=reason):
+        rom_address_profiles.parse_registry({'schema_version': 2, 'profile': profiles},
+                                           'controlled current projection')

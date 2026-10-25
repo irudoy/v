@@ -276,21 +276,30 @@ ECU-RAM telemetry fields. It distinguishes direct mappings from
 target-specific adapters and unsupported source semantics, and its test
 requires every target and stock word to equal the validated address profile.
 
-The 1ME3B address profile binds the eighteen 1ND families. The ignition
-coordinator `0x0797CC` carries only the mode-selected half: stock
-`ROM8[0x8A7D]` = `0x1C` has bit 3 set, the two 16x16 surfaces `0x00A344` and
-`0x00A444` are read through the literals `0x079CAC` and `0x079E24`, and the
-four 8x8 state-code surfaces `0x00A544`, `0x00A644`, `0x00A5C4`, and `0x00A604`
-are read through the 8x8 lookup `0x0293D8`, whose pointer the coordinator takes
-from the single literal `0x079994`. The hook `ignition_state_lookup` redirects
-that literal to the adapter at `0x13E080`; the adapter, four pointer tables,
-and sixteen 64-byte slot copies occupy `0x13E080..0x13E580`. The image has no
-gated half, so the profile declares neither the gated surfaces nor a third
-ignition hook. The routine `0x0791A4..0x0797CB` is an unreferenced copy of the
-coordinator with private lookup literals; the profile table
-`ignition_unreferenced_routine` declares it, and the validator rejects an image
-in which an aligned word points into that range or a PC-relative branch outside
-it targets its entry, so the hooked literals are the complete live set.
+The 1ME3B address profile binds the eighteen 1ND families. Stock
+`ROM8[0x8A7D]` = `0x1C` has bit 3 set for the state-code dispatch. The two
+16x16 surfaces `0x00A344` and `0x00A444` use lookup `0x029BA8` through five
+aligned literals: `0x079420`, `0x0796F4`, `0x0799A4`, `0x079CAC`, and
+`0x079E24`. Each literal redirects to the adapter at `0x13B340`. The four
+8x8 state-code surfaces `0x00A544`, `0x00A644`, `0x00A5C4`, and `0x00A604`
+use lookup `0x0293D8` through literals `0x079404` and `0x079994`, both of
+which redirect to the adapter at `0x13E080`. The state adapter, four pointer
+tables, and sixteen 64-byte slot copies occupy `0x13E080..0x13E580`.
+
+Positive call-window obligations bind each lookup load, its actual indirect
+JSR register, delay slot, table and axis operands, and any intervening stack
+argument store. The executable gate reconstructs these stock instructions
+independently and observes the changed lookup paths through the adapters.
+The unchanged interpolation body is an observing simulator stub; interpolation
+arithmetic, scheduler reachability, arbitrary computed consumers, and hardware
+behavior remain outside this boundary. The reference surface `0x00A584`
+remains outside the switched families.
+
+The legacy profile key `ignition_unreferenced_routine` names
+`0x0791A4..0x0797CB` for a bounded image scan. That scan rejects aligned
+inbound pointer values and direct PC-relative branch encodings to the entry.
+It does not establish absence of interior or computed control-flow entries.
+No lookup pointer is excluded from coverage because of this region key.
 
 Custom CAN telemetry binds 56 of the 60 ECU-RAM fields. The two intake
 solenoid duty command fields read the 8-bit command cells `0xFFFE938F` and

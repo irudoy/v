@@ -612,16 +612,20 @@ def test_1me3b_binds_only_the_live_coordinator_literals():
     assert {
         item.key for item in target.map_layout.hooks
         if item.key.startswith("ignition_lookup_")
-    } == {"ignition_lookup_1", "ignition_lookup_2"}
+    } == {f"ignition_lookup_{index}" for index in range(1, 6)}
     lookup = profile.map_symbol_by_key["ignition_lookup"]
-    # The unreferenced coordinator copy keeps three private literals of the
-    # 16x16 lookup; the periodic coordinator owns the two hooked ones.
+    # The original selector remains stable for native TEST attachment identity.
+    # Every aligned stock pointer requires a hook, including the earlier pools.
     assert runtime_targets._aligned_literal_sites(data, lookup) == [
         0x00079420, 0x000796F4, 0x000799A4, 0x00079CAC, 0x00079E24,
     ]
-    assert runtime_targets._live_literal_sites(data, lookup, profile) == [
-        0x00079CAC, 0x00079E24,
-    ]
+    assert {hook.address for hook in profile.map_hooks
+            if hook.key.startswith("ignition_lookup_")} == {
+        0x00079420, 0x000796F4, 0x000799A4, 0x00079CAC, 0x00079E24,
+    }
+    assert {profile.map_hook_by_key[key].address for key in (
+        "ignition_state_lookup", "ignition_state_lookup_earlier"
+    )} == {0x00079404, 0x00079994}
     runtime_targets._validate_state_dispatch_coordinator(target, profile)
     runtime_targets._validate_ignition_state_pool(target, profile)
 
@@ -644,7 +648,7 @@ def test_1me3b_ignition_binding_requires_the_state_code_dispatch():
 def test_1me3b_live_ignition_lookup_literal_must_be_hooked():
     target = runtime_targets.load_runtime_target("1ME3B")
     profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
-    # The live literal 0x00079E40 names the 8x8 lookup 0x000293D8 of the
+    # Literal 0x00079E40 names the 8x8 lookup 0x000293D8 of the
     # reference surface; one word turns it into an unhooked 16x16 literal.
     assert target.stock_image.data[0x00079E40:0x00079E44] == bytes.fromhex(
         "000293d8"
@@ -654,7 +658,7 @@ def test_1me3b_live_ignition_lookup_literal_must_be_hooked():
 
     with pytest.raises(
         runtime_targets.RuntimeTargetError,
-        match="live 16x16 ignition lookup literals differ",
+        match="16x16 ignition lookup literals differ",
     ):
         runtime_targets._validate_state_dispatch_coordinator(damaged, profile)
 
@@ -662,9 +666,8 @@ def test_1me3b_live_ignition_lookup_literal_must_be_hooked():
 def test_1me3b_state_code_ignition_base_must_stay_in_the_hooked_pool():
     target = runtime_targets.load_runtime_target("1ME3B")
     profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
-    # The live pool names the reference surface 0x0000A584 before the
-    # unhooked 8x8 literal; one byte turns it into a second live literal of
-    # the state code 3 base.
+    # The reference base precedes an unhooked 8x8 literal. A state-family
+    # base at that site requires a positive consumer through a declared hook.
     assert target.stock_image.data[0x00079E3C:0x00079E40] == bytes.fromhex(
         "0000a584"
     )
@@ -672,7 +675,7 @@ def test_1me3b_state_code_ignition_base_must_stay_in_the_hooked_pool():
 
     with pytest.raises(
         runtime_targets.RuntimeTargetError,
-        match="table base is not a single literal of the hooked lookup pool",
+        match="state-family consumer bypasses its declared lookup hook",
     ):
         runtime_targets._validate_ignition_state_pool(damaged, profile)
 
