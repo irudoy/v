@@ -1,0 +1,554 @@
+schema = 1
+id = "jk08a-knock-accesses"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Four bounded existing software stages with explicit entry premises; no complete evaluator, acquisition, scheduler, sensor, units or hardware admission"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+
+[[unit]]
+id = "normalization"
+parent = 303672
+entry = 303722
+assembly = "tools/sh-elf-run/stock_jk08a_knock_normalization.s"
+
+[[unit.code]]
+start = 303722
+end = 303798
+
+[[unit.code]]
+start = 304048
+end = 304126
+
+[[unit.code]]
+start = 304184
+end = 304278
+
+[[unit.code]]
+start = 304380
+end = 304526
+
+[[unit.code]]
+start = 138464
+end = 138602
+
+[[unit.pools]]
+address = 304332
+size = 4
+stock_hex = "ffff11d4"
+
+[[unit.pools]]
+address = 304336
+size = 4
+stock_hex = "ffff1ff4"
+
+[[unit.pools]]
+address = 304340
+size = 4
+stock_hex = "ffff20d2"
+
+[[unit.pools]]
+address = 304344
+size = 4
+stock_hex = "ffff20c2"
+
+[[unit.pools]]
+address = 304372
+size = 4
+stock_hex = "ffff2132"
+
+[[unit.pools]]
+address = 304376
+size = 4
+stock_hex = "00021ce0"
+
+[[unit.pools]]
+address = 304528
+size = 4
+stock_hex = "ffff87e1"
+
+[[unit.pools]]
+address = 304532
+size = 4
+stock_hex = "ffff20d2"
+
+[[unit.pools]]
+address = 304536
+size = 4
+stock_hex = "ffff1ff4"
+
+[[unit.pools]]
+address = 304540
+size = 4
+stock_hex = "ffff20c2"
+
+[[unit.pools]]
+address = 304544
+size = 4
+stock_hex = "ffff2132"
+
+[[unit.pools]]
+address = 304548
+size = 4
+stock_hex = "00021ce0"
+
+[[unit.pools]]
+address = 304552
+size = 4
+stock_hex = "ffff11d4"
+
+[[unit.pools]]
+address = 303692
+size = 12
+stock_hex = "d29e6020c90820088d026b03"
+
+[[unit.pools]]
+address = 303708
+size = 14
+stock_hex = "de9b84ea650c25588b01a0900009"
+
+[[unit.pools]]
+address = 304032
+size = 16
+stock_hex = "e001de4b4018704f05ec6e5c2ee889ec"
+
+[[unit.pools]]
+address = 304328
+size = 4
+stock_hex = "00008b3d"
+
+[[unit.pools]]
+address = 35645
+size = 1
+stock_hex = "82"
+
+[[unit.aliases]]
+address = 304332
+original = 4294906324
+
+[[unit.aliases]]
+address = 304336
+original = 4294909940
+
+[[unit.aliases]]
+address = 304340
+original = 4294910162
+
+[[unit.aliases]]
+address = 304344
+original = 4294910146
+
+[[unit.aliases]]
+address = 304372
+original = 4294910258
+
+[[unit.aliases]]
+address = 304528
+original = 4294936545
+
+[[unit.aliases]]
+address = 304532
+original = 4294910162
+
+[[unit.aliases]]
+address = 304536
+original = 4294909940
+
+[[unit.aliases]]
+address = 304540
+original = 4294910146
+
+[[unit.aliases]]
+address = 304544
+original = 4294910258
+
+[[unit.aliases]]
+address = 304552
+original = 4294906324
+
+[[unit.boundary]]
+address = 303798
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+
+[[unit]]
+id = "metric"
+parent = 303672
+entry = 303798
+assembly = "tools/sh-elf-run/stock_jk08a_knock_metric.s"
+
+[[unit.code]]
+start = 303798
+end = 303854
+
+[[unit.code]]
+start = 304278
+end = 304328
+
+[[unit.code]]
+start = 302472
+end = 302742
+
+[[unit.code]]
+start = 302742
+end = 303040
+
+[[unit.code]]
+start = 139708
+end = 139734
+
+[[unit.code]]
+start = 139744
+end = 139768
+
+[[unit.pools]]
+address = 303040
+size = 60
+stock_hex = "00008618000221bc0000887000008b3dffff1ff4ffff2274ffff2158ffff11d4000086a700008694000086ac7fffffffffff21f8ffff21d800008000"
+
+[[unit.pools]]
+address = 304328
+size = 4
+stock_hex = "00008b3d"
+
+[[unit.pools]]
+address = 304332
+size = 4
+stock_hex = "ffff11d4"
+
+[[unit.pools]]
+address = 304336
+size = 4
+stock_hex = "ffff1ff4"
+
+[[unit.pools]]
+address = 304344
+size = 4
+stock_hex = "ffff20c2"
+
+[[unit.pools]]
+address = 304348
+size = 4
+stock_hex = "ffff2178"
+
+[[unit.pools]]
+address = 304352
+size = 4
+stock_hex = "ffff2158"
+
+[[unit.pools]]
+address = 139676
+size = 32
+stock_hex = "0e0c0a0806040200201e1c1a181614123432302e2c2a2826403e3c3a4856626c"
+
+[[unit.pools]]
+address = 139736
+size = 8
+stock_hex = "000221e60002219c"
+
+[[unit.pools]]
+address = 303692
+size = 12
+stock_hex = "d29e6020c90820088d026b03"
+
+[[unit.pools]]
+address = 303766
+size = 2
+stock_hex = "d690"
+
+[[unit.pools]]
+address = 303772
+size = 2
+stock_hex = "2f62"
+
+[[unit.pools]]
+address = 304090
+size = 2
+stock_hex = "d63f"
+
+[[unit.pools]]
+address = 304096
+size = 2
+stock_hex = "2f62"
+
+[[unit.pools]]
+address = 34328
+size = 1
+stock_hex = "00"
+
+[[unit.pools]]
+address = 34928
+size = 1
+stock_hex = "03"
+
+[[unit.pools]]
+address = 35645
+size = 1
+stock_hex = "82"
+
+[[unit.pools]]
+address = 34471
+size = 1
+stock_hex = "80"
+
+[[unit.pools]]
+address = 34452
+size = 1
+stock_hex = "80"
+
+[[unit.pools]]
+address = 34476
+size = 1
+stock_hex = "80"
+
+[[unit.aliases]]
+address = 303056
+original = 4294909940
+
+[[unit.aliases]]
+address = 303060
+original = 4294910580
+
+[[unit.aliases]]
+address = 303064
+original = 4294910296
+
+[[unit.aliases]]
+address = 303068
+original = 4294906324
+
+[[unit.aliases]]
+address = 303088
+original = 4294910456
+
+[[unit.aliases]]
+address = 303092
+original = 4294910424
+
+[[unit.aliases]]
+address = 304332
+original = 4294906324
+
+[[unit.aliases]]
+address = 304336
+original = 4294909940
+
+[[unit.aliases]]
+address = 304344
+original = 4294910146
+
+[[unit.aliases]]
+address = 304348
+original = 4294910328
+
+[[unit.aliases]]
+address = 304352
+original = 4294910296
+
+[[unit.boundary]]
+address = 303854
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+
+[[unit]]
+id = "threshold"
+parent = 303100
+entry = 303100
+assembly = "tools/sh-elf-run/stock_jk08a_knock_threshold.s"
+boundary = []
+
+[[unit.code]]
+start = 303100
+end = 303178
+
+[[unit.code]]
+start = 156920
+end = 156954
+
+[[unit.code]]
+start = 157504
+end = 157550
+
+[[unit.code]]
+start = 158084
+end = 158144
+
+[[unit.code]]
+start = 158840
+end = 158990
+
+[[unit.pools]]
+address = 35645
+size = 1
+stock_hex = "82"
+
+[[unit.pools]]
+address = 69774
+size = 194
+stock_hex = "ffff080809800a000a800be40e261066163119001c0020002c0036383d784600ffff04f1068d070008e109330b310d4a10ae12d41500198d23542b3332ae3c6effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff04bb06f1078008da0a000cbd0f0a1300158019001fdc2e00364a3fa94ddaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff04e1070008000abb0cb71000118015a61ac01e3b24732f00380042524f5a0000"
+
+[[unit.pools]]
+address = 86848
+size = 32
+stock_hex = "002000400060008000a000c000e00100012001400160018001a001c001e00200"
+
+[[unit.pools]]
+address = 156956
+size = 8
+stock_hex = "0002674000026984"
+
+[[unit.pools]]
+address = 158144
+size = 4
+stock_hex = "00026c78"
+
+[[unit.pools]]
+address = 303612
+size = 28
+stock_hex = "00008b3dffff1ff40001108effff11d400015340000264f8ffff2144"
+
+[[unit.aliases]]
+address = 303616
+original = 4294909940
+
+[[unit.aliases]]
+address = 303624
+original = 4294906324
+
+[[unit.aliases]]
+address = 303636
+original = 4294910276
+
+[[unit]]
+id = "comparison"
+parent = 303672
+entry = 303854
+assembly = "tools/sh-elf-run/stock_jk08a_knock_comparison.s"
+
+[[unit.code]]
+start = 303854
+end = 304006
+
+[[unit.code]]
+start = 303100
+end = 303178
+
+[[unit.code]]
+start = 156920
+end = 156954
+
+[[unit.code]]
+start = 157504
+end = 157550
+
+[[unit.code]]
+start = 158084
+end = 158144
+
+[[unit.code]]
+start = 158840
+end = 158990
+
+[[unit.code]]
+start = 304126
+end = 304184
+
+[[unit.code]]
+start = 139708
+end = 139734
+
+[[unit.code]]
+start = 139744
+end = 139768
+
+[[unit.pools]]
+address = 35645
+size = 1
+stock_hex = "82"
+
+[[unit.pools]]
+address = 69774
+size = 194
+stock_hex = "ffff080809800a000a800be40e261066163119001c0020002c0036383d784600ffff04f1068d070008e109330b310d4a10ae12d41500198d23542b3332ae3c6effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff04bb06f1078008da0a000cbd0f0a1300158019001fdc2e00364a3fa94ddaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff04e1070008000abb0cb71000118015a61ac01e3b24732f00380042524f5a0000"
+
+[[unit.pools]]
+address = 86848
+size = 32
+stock_hex = "002000400060008000a000c000e00100012001400160018001a001c001e00200"
+
+[[unit.pools]]
+address = 139676
+size = 32
+stock_hex = "0e0c0a0806040200201e1c1a181614123432302e2c2a2826403e3c3a4856626c"
+
+[[unit.pools]]
+address = 139736
+size = 8
+stock_hex = "000221e60002219c"
+
+[[unit.pools]]
+address = 156956
+size = 8
+stock_hex = "0002674000026984"
+
+[[unit.pools]]
+address = 158144
+size = 4
+stock_hex = "00026c78"
+
+[[unit.pools]]
+address = 303612
+size = 28
+stock_hex = "00008b3dffff1ff40001108effff11d400015340000264f8ffff2144"
+
+[[unit.pools]]
+address = 304328
+size = 12
+stock_hex = "00008b3dffff11d4ffff1ff4"
+
+[[unit.pools]]
+address = 304356
+size = 16
+stock_hex = "ffff21d8ffff2144ffff24c0000221bc"
+
+[[unit.aliases]]
+address = 303616
+original = 4294909940
+
+[[unit.aliases]]
+address = 303624
+original = 4294906324
+
+[[unit.aliases]]
+address = 303636
+original = 4294910276
+
+[[unit.aliases]]
+address = 304332
+original = 4294906324
+
+[[unit.aliases]]
+address = 304336
+original = 4294909940
+
+[[unit.aliases]]
+address = 304356
+original = 4294910424
+
+[[unit.aliases]]
+address = 304360
+original = 4294910276
+
+[[unit.aliases]]
+address = 304364
+original = 4294911168
+
+[[unit.boundary]]
+address = 304006
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"

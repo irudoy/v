@@ -1,0 +1,103 @@
+schema = 1
+id = "jk08a-rpm-inhibit"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Four bounded real contributor windows with exact status/RPM/curve paths and sentinel helpers; no full coordinator, stock conditioned/status/seed reachability, scale, units or hardware admission."
+entry_point = 323006
+incoming_gbr = 16817972
+normalized_functions = [322952, 323996, 324226, 325430, 326304, 329678, 154084, 156528, 157504]
+boundary = {address = 323014, bytes = "57f6472a000b0009", source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s", return_register = 7, stack_return_offset = 24, full_coordinator_admitted = false}
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+full_coordinator_admission = false
+stock_conditioned_pair_reachability = false
+physical_units_admission = false
+extra_boundaries = [{address = 323030, bytes = "57f6472a000b0009", source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s", return_register = 7, stack_return_offset = 24, full_coordinator_admitted = false}, {address = 323068, bytes = "57f6472a000b0009", source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s", return_register = 7, stack_return_offset = 24, full_coordinator_admitted = false}, {address = 323056, bytes = "57f6472a000b0009", source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s", return_register = 7, stack_return_offset = 24, full_coordinator_admitted = false}]
+stock_shared_status_reachability = false
+stock_composite_seed_reachability = false
+
+[[unit]]
+id = "jk08a-rpm-inhibit-callers"
+assembly = "tools/sh-elf-run/stock_jk08a_rpm_inhibit_callers.s"
+code = [{start = 323006, end = 323014}, {start = 323026, end = 323030}, {start = 323050, end = 323056}, {start = 323064, end = 323068}]
+pools = [{address = 323468, size = 4}]
+aliases = []
+
+[[unit]]
+id = "jk08a-rpm-inhibit-vehicle"
+assembly = "tools/sh-elf-run/stock_jk08a_vehicle_speed_fuel_cut.s"
+code = [{start = 323996, end = 324056}, {start = 324160, end = 324226}]
+pools = [{address = 324092, size = 4}, {address = 324132, size = 4}, {address = 324156, size = 4}, {address = 324692, size = 12}, {address = 36279, size = 1}, {address = 36291, size = 1}, {address = 36015, size = 1}]
+aliases = [{address = 324092, original = 4294911088}, {address = 324132, original = 4294906004}, {address = 324692, original = 4294906004}]
+
+[[unit]]
+id = "jk08a-rpm-inhibit-main"
+assembly = "tools/sh-elf-run/stock_jk08a_main_rpm_fuel_cut.s"
+code = [{start = 324226, end = 324388}]
+pools = [{address = 324704, size = 20}, {address = 35640, size = 1}, {address = 35945, size = 1}, {address = 37710, size = 12}]
+aliases = [{address = 324704, original = 4294911052}, {address = 324716, original = 4294906268}]
+
+[[unit]]
+id = "jk08a-rpm-summary-leaves"
+assembly = "tools/sh-elf-run/stock_jk08a_rpm_summary_leaves.s"
+code = [{start = 325430, end = 325464}, {start = 326304, end = 326316}]
+pools = [{address = 325904, size = 8}, {address = 326556, size = 4}]
+aliases = [{address = 325904, original = 4294911048}, {address = 325908, original = 4294906268}, {address = 326556, original = 4294918536}]
+
+[[unit]]
+id = "jk08a-composite-rpm-inhibit"
+assembly = "tools/sh-elf-run/stock_jk08a_composite_rpm_inhibit.s"
+code = [{start = 329678, end = 329770}, {start = 329782, end = 329958}]
+pools = [{address = 329778, size = 2}, {address = 329780, size = 2}, {address = 329958, size = 2}, {address = 329964, size = 4}, {address = 329980, size = 4}, {address = 329984, size = 4}, {address = 329988, size = 4}, {address = 329992, size = 4}, {address = 329996, size = 4}, {address = 330000, size = 4}, {address = 330004, size = 4}, {address = 330008, size = 4}, {address = 330012, size = 4}]
+aliases = [{address = 329964, original = 4294906004}, {address = 329980, original = 4294911064}, {address = 329984, original = 4294918569}, {address = 329992, original = 4294905900}, {address = 329996, original = 4294906268}, {address = 330008, original = 4294906508}]
+
+[[unit]]
+id = "jk08a-diagnostic-fault-sentinel"
+assembly = "tools/sh-elf-run/stock_jk08a_diagnostic_fault_sentinel.s"
+code = [{start = 154084, end = 154130}]
+pools = [{address = 154520, size = 4}]
+aliases = [{address = 154520, original = 4294924056}]
+
+[[unit]]
+id = "jk08a-composite-byte-curve"
+assembly = "tools/sh-elf-run/stock_jk08a_implicit_byte_curve.s"
+code = [{start = 156528, end = 156546}, {start = 157504, end = 157550}, {start = 158336, end = 158394}]
+pools = [{address = 156546, size = 2}, {address = 156548, size = 4}, {address = 158396, size = 4}]
+aliases = []
+
+[[calibration]]
+address = 35640
+size = 1
+
+[[calibration]]
+address = 35945
+size = 1
+
+[[calibration]]
+address = 36015
+size = 1
+
+[[calibration]]
+address = 36279
+size = 1
+
+[[calibration]]
+address = 36291
+size = 1
+
+[[calibration]]
+address = 37710
+size = 12
+
+[[calibration]]
+address = 37986
+size = 2
+
+[[calibration]]
+address = 76338
+size = 8

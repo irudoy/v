@@ -1,0 +1,85 @@
+schema = 1
+id = "jk08a-maf-extended"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Six stock assembly units, six natural entries including the complete battery publisher, and two bounded dual-bank caller windows; no scheduling, geometry, scale, units or hardware inference."
+natural_entries = [241290, 241474, 246792, 242212, 246876, 239898, 246710, 236190]
+normalized_functions = [138464, 140536, 241290, 241474, 246792, 422280, 422360, 242212, 246876, 239876, 246700, 236190]
+call_targets = [138464, 140538, 422280, 422360, 241290, 246792]
+automatic_resolution = false
+datum_identity_inference = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+
+[[unit]]
+id = "jk08a-maf-compensation"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_compensation.s"
+code = [{start = 241290, end = 241474}, {start = 138464, end = 138694}]
+pools = [{address = 38278, size = 2}, {address = 38284, size = 2}, {address = 138696, size = 8}, {address = 241912, size = 20}]
+aliases = [{address = 138696, original = 4294940696, alias = 16816152}, {address = 241912, original = 4294916456, alias = 16791912}, {address = 241916, original = 4294905880, alias = 16781336}, {address = 241920, original = 4294909468, alias = 16784924}]
+
+[[unit]]
+id = "jk08a-maf-contribution"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_contribution.s"
+code = [{start = 241474, end = 241816}, {start = 241818, end = 241904}, {start = 241964, end = 242212}, {start = 140538, end = 140552}]
+pools = [{address = 33462, size = 3}, {address = 33469, size = 1}, {address = 35523, size = 1}, {address = 241816, size = 2}, {address = 241904, size = 2}, {address = 241932, size = 32}, {address = 242556, size = 16}]
+aliases = [{address = 241932, original = 4294909420, alias = 16784876}, {address = 241936, original = 4294911048, alias = 16786504}, {address = 241940, original = 4294911156, alias = 16786612}, {address = 241944, original = 4294919111, alias = 16794567}, {address = 241948, original = 4294911072, alias = 16786528}]
+
+[[unit]]
+id = "jk08a-maf-scaling"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_scaling.s"
+code = [{start = 236190, end = 236270}, {start = 246792, end = 246876}, {start = 422280, end = 422342}, {start = 422360, end = 422402}]
+pools = [{address = 34808, size = 2}, {address = 37566, size = 2}, {address = 236508, size = 2}, {address = 236716, size = 20}, {address = 246900, size = 2}, {address = 246924, size = 16}, {address = 422342, size = 18}, {address = 422506, size = 6}]
+aliases = [{address = 236716, original = 4294909536, alias = 16784992}, {address = 236720, original = 4294909236, alias = 16784692}, {address = 236732, original = 4294906132, alias = 16781588}, {address = 246928, original = 4294909236, alias = 16784692}, {address = 246936, original = 4294905880, alias = 16781336}, {address = 422344, original = 4294918732, alias = 16794188}, {address = 422348, original = 4294919512, alias = 16794968}, {address = 422508, original = 4294919512, alias = 16794968}]
+
+[[unit]]
+id = "jk08a-maf-bank-publication"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_bank_publication.s"
+code = [{start = 242212, end = 242258}]
+pools = [{address = 242572, size = 16}]
+aliases = [{address = 242572, original = 4294909468, alias = 16784924}, {address = 242576, original = 4294909420, alias = 16784876}, {address = 242580, original = 4294910768, alias = 16786224}, {address = 242584, original = 4294905928, alias = 16781384}]
+
+[[unit]]
+id = "jk08a-maf-diagnostic-copy"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_diagnostic_copy.s"
+code = [{start = 246876, end = 246896}]
+pools = [{address = 246902, size = 2}, {address = 246928, size = 4}, {address = 246940, size = 4}]
+aliases = [{address = 246928, original = 4294909236, alias = 16784692}, {address = 246940, original = 4294906508, alias = 16781964}]
+
+[[unit]]
+id = "jk08a-maf-callers"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_callers.s"
+code = [{start = 239898, end = 239906}, {start = 246710, end = 246718}]
+pools = []
+aliases = []
+
+[[caller]]
+parent = 239876
+entry = 239898
+end = 239906
+incoming = {r12 = 0, r13 = 1, r14 = 16784924}
+
+[[caller]]
+parent = 246700
+entry = 246710
+end = 246718
+incoming = {}
+
+[[boundary]]
+address = 239906
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+
+[[boundary]]
+address = 246718
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24

@@ -9,6 +9,12 @@ return values are discarded, DFCO/count-mask composition, Nissan service 0x30
 Power Balance replacement, the ETC-actuator-fault auxiliary mask, and final
 publication to `0xFFFF22E0`.
 
+The separately bounded executable reader contract for the vehicle-speed and
+main RPM contributors and the bounded MAF/shared-status/composite-status calls is in
+[`JK08A.rpm-inhibit-accesses.md`](JK08A.rpm-inhibit-accesses.md). Its explicit
+caller inputs, controlled configuration branch and ordinary native evidence
+appends have a narrower acceptance boundary than this complete static model.
+
 The operational conditions and ordering are established by executable code.
 External diagnostic names are used only where an exact ROM descriptor or a
 structured Nissan-family diagnostic definition connects the code to that

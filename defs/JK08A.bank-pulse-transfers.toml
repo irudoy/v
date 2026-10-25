@@ -1,0 +1,63 @@
+schema = 1
+id = "jk08a-bank-pulse-transfers"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_bank_base_pulse.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete natural base-pulse arithmetic with an explicit bank0/1 input; no producer, scheduling or hardware admission"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+
+[[window]]
+parent = 322260
+start = 322260
+end = 322466
+
+[[pool]]
+address = 35133
+size = 1
+value = 81
+
+[[pool]]
+address = 35136
+size = 1
+value = 1
+
+[[pool]]
+address = 322530
+size = 2
+value = 1588
+
+[[pool]]
+address = 322532
+size = 2
+value = 1680
+
+[[pool]]
+address = 322560
+size = 4
+value = 4294912248
+
+[[pool]]
+address = 322564
+size = 4
+value = 4294906508
+
+[[pool]]
+address = 322568
+size = 4
+value = 4294910684
+
+[[pool]]
+address = 322584
+size = 4
+value = 35133
+
+[[pool]]
+address = 322588
+size = 4
+value = 4294916096

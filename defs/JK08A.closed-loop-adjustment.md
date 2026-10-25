@@ -108,6 +108,12 @@ do not reach them. The contract does not claim execution of those paths.
 
 ## Evidence limits
 
+The two bounded raw-mask windows and four exact bank-2 writer publication
+contracts are described in `JK08A.closed-loop-admission-accesses.md`.
+They preserve the existing full-entry assembly, harness, matrix and
+semantic owner types. Their explicit GBR and register premises supply
+no complete-entry or hardware permission admission.
+
 Hardware readiness is NO. The independent raw software domain does not
 establish physical units, scale, source producers, acquisition cadence,
 engine reachability, or hardware learning permission. Candidate scales and

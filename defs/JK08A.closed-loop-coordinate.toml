@@ -1,0 +1,211 @@
+schema = 1
+id = "jk08a-closed-loop-coordinate"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_closed_loop_conversion.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact bounded real caller and natural coordinate-conditioner/helper closure with explicit word inputs and native twenty-byte workspace; no full conversion, helper parameter-reader, geometry, scale, units, scheduling or hardware admission"
+entry_point = 257628
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+source_producer_admission = false
+full_conversion_admission = false
+helper_parameter_reader_admission = false
+
+[[window]]
+start = 257628
+end = 257662
+
+[[window]]
+start = 138172
+end = 138454
+
+[[window]]
+start = 156832
+end = 156866
+
+[[window]]
+start = 157504
+end = 157550
+
+[[window]]
+start = 158020
+end = 158080
+
+[[window]]
+start = 158840
+end = 158990
+
+[[window]]
+start = 257908
+end = 258046
+
+[[window]]
+start = 258152
+end = 258422
+
+[[literal]]
+address = 35192
+size = 1
+value = 160
+
+[[literal]]
+address = 138456
+size = 4
+value = 4294940696
+
+[[literal]]
+address = 138460
+size = 4
+value = 1102
+
+[[literal]]
+address = 156868
+size = 4
+value = 157504
+
+[[literal]]
+address = 156872
+size = 4
+value = 158020
+
+[[literal]]
+address = 158080
+size = 4
+value = 158840
+
+[[literal]]
+address = 258050
+size = 2
+value = 34144
+
+[[literal]]
+address = 258052
+size = 2
+value = 1686
+
+[[literal]]
+address = 258054
+size = 2
+value = 32767
+
+[[literal]]
+address = 258088
+size = 4
+value = 4294912248
+
+[[literal]]
+address = 258100
+size = 4
+value = 4294906004
+
+[[literal]]
+address = 258104
+size = 4
+value = 84218
+
+[[literal]]
+address = 258108
+size = 4
+value = 4294919444
+
+[[literal]]
+address = 258112
+size = 4
+value = 89376
+
+[[literal]]
+address = 258136
+size = 4
+value = 74386
+
+[[literal]]
+address = 258140
+size = 4
+value = 72519
+
+[[literal]]
+address = 258144
+size = 4
+value = 156832
+
+[[literal]]
+address = 258148
+size = 4
+value = 36760
+
+[[literal]]
+address = 258422
+size = 2
+value = 1686
+
+[[literal]]
+address = 258424
+size = 2
+value = 32767
+
+[[literal]]
+address = 258428
+size = 4
+value = 138172
+
+[[literal]]
+address = 258432
+size = 4
+value = 65280
+
+[[literal]]
+address = 258436
+size = 4
+value = 38342
+
+[[literal]]
+address = 258440
+size = 4
+value = 37764
+
+[[calibration]]
+address = 36760
+size = 2
+
+[[calibration]]
+address = 37764
+size = 4
+
+[[calibration]]
+address = 38342
+size = 2
+
+[[calibration]]
+address = 72519
+size = 17
+
+[[calibration]]
+address = 74386
+size = 17
+
+[native_storage]
+start = 4294935904
+size = 20
+logical_offset = 34144
+observed_start = 4294935808
+observed_size = 256
+
+[incoming]
+gbr = 16811332
+first_word = 16811348
+second_word_register = 0
+output_pointer = 16811352
+coefficient_pointer = 16811359
+
+[boundary]
+address = 257662
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_coordinator_body_admitted = false

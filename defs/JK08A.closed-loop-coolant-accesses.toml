@@ -1,0 +1,41 @@
+schema = 1
+id = "jk08a-closed-loop-coolant-accesses"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Two exact constant readers in the whole natural coolant5525A invocation"
+entry_point = 348762
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+stock_function_stubs = false
+semantic_admission = false
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+entry = [{start = 348762, end = 348916}, {start = 348928, end = 348988}, {start = 349060, end = 349358}, {start = 156528, end = 156546}, {start = 158336, end = 158394}, {start = 157504, end = 157550}, {start = 140688, end = 140698}]
+controlled_calibration = [{address = 34725, size = 3}, {address = 34539, size = 1}, {address = 74786, size = 8}, {address = 72475, size = 4}, {address = 72471, size = 4}, {address = 39178, size = 16}, {address = 37008, size = 2}, {address = 37530, size = 2}, {address = 348988, size = 2}]
+unit = {assembly = "tools/sh-elf-run/stock_jk08a_coolant_conditional.s", code = [{start = 348762, end = 348916}, {start = 348928, end = 348988}, {start = 349060, end = 349358}, {start = 156528, end = 156546}, {start = 158336, end = 158394}, {start = 157504, end = 157550}, {start = 140688, end = 140698}], pools = [{address = 34539, size = 1, stock_hex = "03"}, {address = 34725, size = 3, stock_hex = "909696"}, {address = 37008, size = 2, stock_hex = "0005"}, {address = 37530, size = 2, stock_hex = "1e77"}, {address = 39178, size = 16, stock_hex = "00000080000000800000808000808080"}, {address = 72471, size = 4, stock_hex = "18485068"}, {address = 72475, size = 4, stock_hex = "40465266"}, {address = 74786, size = 8, stock_hex = "00000004070a0d10"}, {address = 156546, size = 2, stock_hex = "00e0"}, {address = 156548, size = 4, stock_hex = "00026a80"}, {address = 158396, size = 4, stock_hex = "00026740"}, {address = 348988, size = 2, stock_hex = "ff40"}, {address = 349008, size = 4, stock_hex = "ffff119c"}, {address = 349040, size = 4, stock_hex = "ffff2458"}, {address = 349044, size = 4, stock_hex = "000087a5"}, {address = 349048, size = 4, stock_hex = "ffff1094"}, {address = 349052, size = 4, stock_hex = "000086eb"}, {address = 349056, size = 4, stock_hex = "ffff1068"}, {address = 349424, size = 2, stock_hex = "0351"}, {address = 349426, size = 2, stock_hex = "0350"}, {address = 349428, size = 2, stock_hex = "034e"}, {address = 349632, size = 4, stock_hex = "00012422"}, {address = 349636, size = 4, stock_hex = "00026370"}, {address = 349640, size = 4, stock_hex = "ffff128c"}, {address = 349644, size = 4, stock_hex = "ffff102c"}, {address = 349648, size = 4, stock_hex = "00011b1b"}, {address = 349652, size = 4, stock_hex = "00011b17"}, {address = 349656, size = 4, stock_hex = "0000990a"}, {address = 349660, size = 4, stock_hex = "00022590"}, {address = 349664, size = 4, stock_hex = "00009090"}, {address = 349668, size = 4, stock_hex = "0000929a"}, {address = 349672, size = 4, stock_hex = "ffff22dc"}], aliases = [{address = 349008, width = 4, original = 4294906268, alias = 16781724}, {address = 349040, width = 4, original = 4294911064, alias = 16786520}, {address = 349048, width = 4, original = 4294906004, alias = 16781460}, {address = 349056, width = 4, original = 4294905960, alias = 16781416}, {address = 349640, width = 4, original = 4294906508, alias = 16781964}, {address = 349644, width = 4, original = 4294905900, alias = 16781356}, {address = 349672, width = 4, original = 4294910684, alias = 16786140}]}
+
+[adapter]
+schema = 1
+profile = "ordinary-80-572"
+symbol = "coolant"
+region = "jk08a-closed-loop-coolant-paths"
+prefix = "kb-closed-loop-coolant-observation "
+marker = "VQ_SH_ELF_CLOSED_LOOP_COOLANT"
+header = "closed-loop-coolant-path-cases.h"
+driver = "tools/sh-elf-run/harness-closed-loop-coolant-paths.c"
+refusals = "tools/kb/tests/test_coolant_adapter_generated.py"
+fields = [{name = "rpm", bits = 8}, {name = "warm", bits = 8}, {name = "previous_coolant", bits = 8}, {name = "load", bits = 8}, {name = "rpm_select", bits = 8}, {name = "flags_a", bits = 8}, {name = "flags_b", bits = 8}, {name = "source_flag", bits = 8}, {name = "direction_flag", bits = 8}, {name = "old", bits = 16}, {name = "mixture", bits = 16}, {name = "hysteresis", bits = 8}, {name = "rate", bits = 16}, {name = "cap", bits = 16}, {name = "coolant_offset", bits = 16}, {name = "variant", bits = 1}, {name = "entry_sr", bits = 32}]
+entries = [348762]
+kind = {field = "kind", values = ["legacy", "controlled"]}
+memory = [{offset = 4531, width = 1, field = "rpm"}, {offset = 4359, width = 1, field = "warm"}, {offset = 4207, width = 1, field = "previous_coolant"}, {offset = 4140, width = 1, field = "load"}, {offset = 4526, width = 1, field = "rpm_select"}, {offset = 9362, width = 1, field = "flags_a"}, {offset = 9363, width = 1, field = "flags_b"}, {offset = 9304, width = 1, field = "source_flag"}, {offset = 9349, width = 1, field = "direction_flag"}, {offset = 5594, width = 2, field = "old"}, {offset = 8936, width = 2, field = "mixture"}]
+calibration = [{address = 34725, size = 3}, {address = 34539, size = 1}, {address = 74786, size = 8}, {address = 72475, size = 4}, {address = 72471, size = 4}, {address = 39178, size = 16}, {address = 37008, size = 2}, {address = 37530, size = 2}, {address = 348988, size = 2}]
+calibration_input = true
+bound = [{address = 348762, size = 154}, {address = 348928, size = 60}, {address = 349060, size = 298}, {address = 156528, size = 18}, {address = 158336, size = 58}, {address = 157504, size = 46}, {address = 140688, size = 10}, {address = 34539, size = 1}, {address = 34725, size = 3}, {address = 37008, size = 2}, {address = 37530, size = 2}, {address = 39178, size = 16}, {address = 72471, size = 4}, {address = 72475, size = 4}, {address = 74786, size = 8}, {address = 156546, size = 2}, {address = 156548, size = 4}, {address = 158396, size = 4}, {address = 348988, size = 2}, {address = 349008, size = 4}, {address = 349040, size = 4}, {address = 349044, size = 4}, {address = 349048, size = 4}, {address = 349052, size = 4}, {address = 349056, size = 4}, {address = 349424, size = 2}, {address = 349426, size = 2}, {address = 349428, size = 2}, {address = 349632, size = 4}, {address = 349636, size = 4}, {address = 349640, size = 4}, {address = 349644, size = 4}, {address = 349648, size = 4}, {address = 349652, size = 4}, {address = 349656, size = 4}, {address = 349660, size = 4}, {address = 349664, size = 4}, {address = 349668, size = 4}, {address = 349672, size = 4}]
+dependencies = ["tools/kb/src/kb/proof_adapter.py", "tools/kb/src/kb/proof_transport.py", "tools/kb/tests/proof_adapter_cases.py", "tools/kb/src/kb/test_stock_abi.py", "tools/kb/src/kb/width_view_matrix.py", "tools/kb/src/kb/test_contract.py", "tools/kb/src/kb/closed_loop_coolant_access_contract.py", "tools/kb/src/kb/closed_loop_coolant_matrix.py", "tools/kb/src/kb/closed_loop_coolant_capture_evidence.py", "tools/kb/src/kb/closed_loop_coolant_semantics.py", "tools/kb/src/kb/byte_surface_equations.py", "tools/sh-elf-run/stock_coolant_conditional_model.py", "tools/sh-elf-run/stock_injection_end_angle_model.py", "tools/sh-elf-run/coolant-conditional-cases.h", "tools/sh-elf-run/closed_loop_coolant_capture.py", "tools/sh-elf-run/stock_jk08a_coolant_conditional.s", "tools/sh-elf-run/stock_ignition_consumer_invoke.s"]

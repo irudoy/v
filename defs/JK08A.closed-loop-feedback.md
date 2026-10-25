@@ -82,3 +82,9 @@ coverage. Physical units, upstream producers, event cadence, complete ECU
 scheduling and engine reachability require separate evidence. The full
 function proof establishes this explicit software invocation, with independent
 incoming state, and does not establish those external paths.
+
+The exact active-state argument and writer boundary is specified in
+[`JK08A.closed-loop-feedback-accesses.md`](JK08A.closed-loop-feedback-accesses.md).
+It uses the same whole-feedback code, overlapping workspace and observer,
+with input-only raw observations, separate argument/store attribution and
+complete native/TEST preservation.

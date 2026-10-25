@@ -1,0 +1,130 @@
+schema = 1
+id = "jk08a-closed-loop-admission"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_closed_loop_adjustment.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Two exact bounded mask-decoding windows with explicit GBR and raw byte inputs; no full adjustment, integrator, producer, permission, units, scale, scheduling or hardware admission"
+entry_points = [659204, 659454]
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+integrator_update_admission = false
+source_producer_admission = false
+hardware_permission_admission = false
+
+[[window]]
+parent = 659176
+start = 659204
+end = 659326
+
+[[window]]
+parent = 659176
+start = 659454
+end = 659484
+
+[[window]]
+parent = 659176
+start = 659500
+end = 659510
+
+[[pool]]
+address = 36472
+size = 1
+value = 0
+
+[[pool]]
+address = 659486
+size = 2
+value = 872
+
+[[pool]]
+address = 659488
+size = 2
+value = 870
+
+[[pool]]
+address = 659490
+size = 2
+value = 863
+
+[[pool]]
+address = 659498
+size = 2
+value = 860
+
+[[pool]]
+address = 659788
+size = 4
+value = 4294919512
+
+[[decoder]]
+input = 4294920384
+offset = 44
+pool_site = 659208
+pool = 659486
+read_site = 659214
+one_site = 659238
+zero_site = 659240
+test_site = 659232
+loop_site = 659248
+
+[[decoder]]
+input = 4294920382
+offset = 46
+pool_site = 659250
+pool = 659488
+read_site = 659254
+one_site = 659276
+zero_site = 659278
+test_site = 659270
+loop_site = 659286
+
+[[decoder]]
+input = 4294920375
+offset = 48
+pool_site = 659288
+pool = 659490
+read_site = 659292
+one_site = 659314
+zero_site = 659316
+test_site = 659308
+loop_site = 659324
+
+[[decoder]]
+input = 4294920372
+offset = 57
+pool_site = 659458
+pool = 659498
+read_site = 659460
+one_site = 659482
+zero_site = 659500
+test_site = 659476
+loop_site = 659508
+
+[[boundary]]
+address = 659326
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_coordinator_body_admitted = false
+
+[[boundary]]
+address = 659510
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_coordinator_body_admitted = false
+
+[incoming]
+gbr = 16815996
+
+[incoming.second_window]
+r8 = 1
+r9 = 0
+r10 = 2

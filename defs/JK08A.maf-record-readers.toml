@@ -1,0 +1,77 @@
+schema = 1
+id = "jk08a-maf-record-readers"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_record_readers.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact existing record0129 byte1 read with explicit helper index or bounded real coordinator call/GBR premises; no complete coordinator, producers, RPM contributor, geometry or hardware admission"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+record_producer_admission = false
+RPM_contributor_admission = false
+
+[[window]]
+parent = 155168
+start = 155168
+end = 155204
+
+[[window]]
+parent = 246700
+start = 246726
+end = 246746
+
+[[pool]]
+address = 155408
+size = 4
+value = 4294924056
+
+[[pool]]
+address = 246896
+size = 2
+value = 297
+
+[[pool]]
+address = 246908
+size = 4
+value = 155168
+
+[record]
+owner = "tourmaline-jackal/ram"
+base = 4294924947
+size = 3
+index = 297
+member_offset = 1
+member_bytes = 1
+mask = 128
+status = 4294911049
+
+[boundary]
+address = 246746
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_coordinator_body_admitted = false
+
+[adapter]
+schema = 1
+profile = "ordinary-80-572"
+symbol = "maf_record"
+region = "jk08a-maf-record-paths"
+prefix = "kb-maf-record-observation "
+marker = "VQ_SH_ELF_MAF_RECORD"
+header = "maf-record-cases.h"
+driver = "tools/sh-elf-run/harness-maf-record.c"
+refusals = "tools/kb/tests/test_maf_record_adapter_generated.py"
+fields = [{name = "argument", bits = 32}, {name = "flags", bits = 8}, {name = "status", bits = 8}]
+entries = [155168, 246726]
+kind = {field = "entry", values = [155168, 246726]}
+memory = [{offset = 23187, width = 1, value = 54}, {offset = 23188, width = 1, field = "flags"}, {offset = 23189, width = 1, value = 167}, {offset = 9289, width = 1, field = "status"}]
+calibration = [{address = 155408, size = 4}, {address = 246896, size = 2}, {address = 246908, size = 4}]
+calibration_input = false
+bound = []
+dependencies = ["tools/kb/src/kb/proof_adapter.py", "tools/kb/src/kb/proof_transport.py", "tools/kb/tests/proof_adapter_cases.py", "tools/kb/src/kb/test_stock_abi.py", "tools/kb/src/kb/width_view_matrix.py", "tools/kb/src/kb/test_contract.py", "tools/kb/src/kb/maf_record_contract.py", "tools/kb/src/kb/maf_record_matrix.py", "tools/kb/src/kb/maf_record_capture_evidence.py", "tools/kb/src/kb/maf_record_semantics.py", "tools/kb/src/kb/byte_surface_equations.py", "tools/sh-elf-run/maf_record_capture.py", "tools/sh-elf-run/stock_jk08a_maf_record_readers.s", "tools/sh-elf-run/stock_ignition_consumer_invoke.s", "tools/sh-elf-run/publication_inhibit_snapshot_return.s"]

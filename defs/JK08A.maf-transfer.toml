@@ -1,0 +1,79 @@
+schema = 1
+id = "jk08a-maf-transfer"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_transfer.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact bounded dual-bank word lookups with explicit ADC16 and R14 input-base premises; no full coordinator, correction publisher or universal no-read inference"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+correction_publisher_admission = false
+universal_no_read_claim = false
+
+[[window]]
+parent = 239876
+start = 239906
+end = 239948
+
+[[window]]
+parent = 156688
+start = 156688
+end = 156708
+
+[[window]]
+parent = 158324
+start = 158324
+end = 158394
+
+[[window]]
+parent = 157504
+start = 157504
+end = 157550
+
+[[pool]]
+address = 34553
+size = 1
+
+[[pool]]
+address = 82420
+size = 256
+
+[[pool]]
+address = 156708
+size = 2
+
+[[pool]]
+address = 156712
+size = 4
+
+[[pool]]
+address = 158396
+size = 4
+
+[[pool]]
+address = 240480
+size = 16
+
+[[curve]]
+address = 82420
+size = 128
+owner = "ivory-gecko/tbl"
+channel = 1
+
+[[curve]]
+address = 82548
+size = 128
+owner = "wealthy-woodlouse/tbl"
+channel = 0
+
+[boundary]
+address = 239948
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_coordinator_body_admitted = false

@@ -1,0 +1,40 @@
+schema = 1
+id = "jk08a-third-trim-word-writer"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete5B534 indexed third-trim word writer with exact bank1 channel-zero identity, complete raw channel footprint, shared2A26 mode and accumulator paths; native units and producer signedness stay fixed."
+entries = [374068]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+observation_bytes = 572
+frame_bytes = 192
+frame_prefix = 160
+outer_stack_bytes = 24
+independent_context_fields = 20
+unit = { "assembly" = "tools/sh-elf-run/stock_jk08a_third_trim_word_writer.s", "code" = [{ "start" = 374068, "end" = 374210 }, { "start" = 374264, "end" = 374532 }], "pools" = [{ "address" = 374210, "size" = 2, "stock_hex" = "0992" }, { "address" = 374212, "size" = 2, "stock_hex" = "0993" }, { "address" = 374214, "size" = 2, "stock_hex" = "0996" }, { "address" = 374220, "size" = 4, "stock_hex" = "ffff28c8" }, { "address" = 374240, "size" = 4, "stock_hex" = "ffff28f8" }, { "address" = 374244, "size" = 4, "stock_hex" = "00008b2a" }, { "address" = 374248, "size" = 4, "stock_hex" = "ffff2898" }, { "address" = 374260, "size" = 4, "stock_hex" = "ffff2a24" }, { "address" = 374532, "size" = 2, "stock_hex" = "0994" }, { "address" = 374534, "size" = 2, "stock_hex" = "0990" }, { "address" = 374696, "size" = 4, "stock_hex" = "00008998" }, { "address" = 374700, "size" = 4, "stock_hex" = "000086f7" }, { "address" = 374704, "size" = 4, "stock_hex" = "00008997" }, { "address" = 374708, "size" = 4, "stock_hex" = "000086f6" }, { "address" = 374712, "size" = 4, "stock_hex" = "000082e5" }, { "address" = 374716, "size" = 4, "stock_hex" = "000082e4" }, { "address" = 374720, "size" = 4, "stock_hex" = "ffff28f8" }, { "address" = 374724, "size" = 4, "stock_hex" = "ffff2a24" }, { "address" = 374728, "size" = 4, "stock_hex" = "ffff3310" }, { "address" = 374732, "size" = 4, "stock_hex" = "000086f5" }], "aliases" = [{ "address" = 374220, "width" = 4, "original" = 4294912200, "alias" = 16787656 }, { "address" = 374240, "width" = 4, "original" = 4294912248, "alias" = 16787704 }, { "address" = 374248, "width" = 4, "original" = 4294912152, "alias" = 16787608 }, { "address" = 374260, "width" = 4, "original" = 4294912548, "alias" = 16788004 }, { "address" = 374720, "width" = 4, "original" = 4294912248, "alias" = 16787704 }, { "address" = 374724, "width" = 4, "original" = 4294912548, "alias" = 16788004 }, { "address" = 374728, "width" = 4, "original" = 4294914832, "alias" = 16790288 }] }
+controlled_calibration = [{ "address" = 33508, "size" = 1 }, { "address" = 33509, "size" = 1 }, { "address" = 34549, "size" = 1 }, { "address" = 34550, "size" = 1 }, { "address" = 34551, "size" = 1 }, { "address" = 35223, "size" = 1 }, { "address" = 35224, "size" = 1 }, { "address" = 35626, "size" = 1 }, { "address" = 374210, "size" = 2 }, { "address" = 374212, "size" = 2 }, { "address" = 374214, "size" = 2 }, { "address" = 374220, "size" = 4 }, { "address" = 374240, "size" = 4 }, { "address" = 374244, "size" = 4 }, { "address" = 374248, "size" = 4 }, { "address" = 374260, "size" = 4 }, { "address" = 374532, "size" = 2 }, { "address" = 374534, "size" = 2 }, { "address" = 374696, "size" = 4 }, { "address" = 374700, "size" = 4 }, { "address" = 374704, "size" = 4 }, { "address" = 374708, "size" = 4 }, { "address" = 374712, "size" = 4 }, { "address" = 374716, "size" = 4 }, { "address" = 374720, "size" = 4 }, { "address" = 374724, "size" = 4 }, { "address" = 374728, "size" = 4 }, { "address" = 374732, "size" = 4 }]
+bound_spans = [{ "address" = 374068, "size" = 142 }, { "address" = 374264, "size" = 268 }, { "address" = 33508, "size" = 1 }, { "address" = 33509, "size" = 1 }, { "address" = 34549, "size" = 1 }, { "address" = 34550, "size" = 1 }, { "address" = 34551, "size" = 1 }, { "address" = 35223, "size" = 1 }, { "address" = 35224, "size" = 1 }, { "address" = 35626, "size" = 1 }, { "address" = 374210, "size" = 2 }, { "address" = 374212, "size" = 2 }, { "address" = 374214, "size" = 2 }, { "address" = 374220, "size" = 4 }, { "address" = 374240, "size" = 4 }, { "address" = 374244, "size" = 4 }, { "address" = 374248, "size" = 4 }, { "address" = 374260, "size" = 4 }, { "address" = 374532, "size" = 2 }, { "address" = 374534, "size" = 2 }, { "address" = 374696, "size" = 4 }, { "address" = 374700, "size" = 4 }, { "address" = 374704, "size" = 4 }, { "address" = 374708, "size" = 4 }, { "address" = 374712, "size" = 4 }, { "address" = 374716, "size" = 4 }, { "address" = 374720, "size" = 4 }, { "address" = 374724, "size" = 4 }, { "address" = 374728, "size" = 4 }, { "address" = 374732, "size" = 4 }]
+input_blobs = []
+control_blobs = [{ "name" = "rom_82e4", "address" = 33508, "size" = 1, "stock_hex" = "5a" }, { "name" = "rom_82e5", "address" = 33509, "size" = 1, "stock_hex" = "6e" }, { "name" = "rom_86f5", "address" = 34549, "size" = 1, "stock_hex" = "08" }, { "name" = "rom_86f6", "address" = 34550, "size" = 1, "stock_hex" = "04" }, { "name" = "rom_86f7", "address" = 34551, "size" = 1, "stock_hex" = "04" }, { "name" = "rom_8997", "address" = 35223, "size" = 1, "stock_hex" = "50" }, { "name" = "rom_8998", "address" = 35224, "size" = 1, "stock_hex" = "50" }, { "name" = "rom_8b2a", "address" = 35626, "size" = 1, "stock_hex" = "09" }]
+stock_entry_paths = [374068]
+actual_indexed_writer = { "base" = 4294912548, "width_bytes" = 2, "site" = 374512, "register" = 2, "word_stride" = 2, "raw_channel_from_R4_low8" = true, "raw_channels" = 256, "identity_bank1_channel" = 0 }
+actual_shared_writer = { "address" = 4294912550, "width_bytes" = 2, "site" = 374516, "register" = 0, "raw_mode_ROM" = 35626, "mode_bit" = 2 }
+actual_accumulator = { "base" = 4294914832, "width_bytes" = 4, "stride" = 4, "read_site" = 374416, "write_sites" = [374456, 374484], "neutral" = 25600 }
+raw_memory_inputs = [{ "name" = "prior_words", "address" = 10788, "count" = 256, "width_bytes" = 2 }, { "name" = "accumulators", "address" = 13072, "count" = 256, "width_bytes" = 4 }]
+actual_bitmask_is_channel_plus_one = true
+native_width = 16
+native_signed = "unset"
+full_native_owner_unit_typed_reader_and_other_writers_preserved = true
+complete_initial_final_RAM_bytes = 65536
+full_existing_same_primary_originals = []
+reused_source_sha256 = { "tools/sh-elf-run/stock_ignition_consumer_invoke.s" = "f0803224463944e2ecef86b1694e8802b01a5146a3fe706db39a4a1be9512809", "tools/kb/src/kb/byte_surface_equations.py" = "03ee71a837ede086fae867e10eda2eba5c549eb2ee05e329c23082d0ef0a28be", "tools/kb/src/kb/packed_transfer_evidence.py" = "7aa7f7e57a5b1a2db170e0b7003bf52bf42e96160fdfd92a7655764227bc866c", "tools/kb/src/kb/test_stock_abi.py" = "e0fbc5f20b99e736449ba68afd5879915b432088922493bbcfc5da0bf318240c", "tools/kb/src/kb/width_view_matrix.py" = "087e0f9e3db4874db26841f3cf4c89ce38bc7a9df152e916b8313110e8142869", "tools/kb/src/kb/ignition_literal_evidence.py" = "39d2499d39ec80b6036ad96374d2962d37c4ae899a4fd0015dd34e5d5245becb", "tools/kb/src/kb/test_contract.py" = "10f4a6162e989ce8e4a31e50b6d4f9ec6838e7efa9528727924434321c064b6a", "tools/kb/src/kb/test_stock_capture.py" = "12192a4b275957e7d5894ad767b0c437ee3ff153c1e3b0b741051d2b05d05ebe" }
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+natural_scheduling_inference = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false

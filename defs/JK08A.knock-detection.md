@@ -527,3 +527,16 @@ metric does not establish joint invocation. ADC/DMAC/MMIO completion,
 filter/transform and bin production, ISR/RTE, full dispatch, channel-zero
 guards, physical channel mapping, cadence, physical units and engine
 reachability have no proof from this CPU contract. Hardware readiness is NO.
+
+## Bounded owning access identity
+
+`defs/JK08A.knock-accesses.md` defines the exact eight-claim/seven-owner
+ordinary proof batch for the existing normalization, metric, threshold,
+comparison and axis-reader relations. Four separate stock fixtures retain
+the common complete observer, input-only literal prefixes, real helper
+closures and independent state, scalar, physical and positive consumers.
+The table readers bind lower-cell load 00026510 to root datum 0001108E.
+The cache writer belongs to normalization within parent 0004A238. Native
+types, all other facts, ledgers, TEST origins and existing physical scopes
+retain their exact original representations. No complete evaluator,
+acquisition, scheduling, scale, units or hardware admission follows.

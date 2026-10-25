@@ -65,6 +65,12 @@ declared software values. The stock optional offset is zero.
 
 ## Execution boundary and observations
 
+The bounded real caller-to-conditioner access contracts are described in
+`JK08A.closed-loop-coordinate-accesses.md`. They retain the full legacy
+assembly, harness and matrix while separately observing the exact native
+conditioner workspace. Their caller premises grant no full parent entry
+or helper-specific physical RAM reader interpretation.
+
 The simulator relocates nine declared 32-bit RAM pools and two exact 16-bit
 RAM pointers: `0003ef10=8544` names a 28-byte workspace and `0003f002=8560`
 names a 20-byte workspace. Both aliases preserve the addressed bytes and use
