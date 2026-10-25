@@ -29,8 +29,9 @@ def models():
     return rows,compile.build(repo.ROOT,{**functions['original'],**overlays['original']}),compile.build(repo.ROOT,{**functions['proposed'],**overlays['proposed']})
 
 
-def test_123_exact_withdrawals_retain_all_94_complete_native_owners_and_test_positions(models):
+def test_exact_withdrawals_retain_all_complete_native_owners_and_test_positions(models):
     rows,before,after=models
+    assert len(rows)==124 and len({row['owner'] for row in rows})==95
     assert proof.native_rows(before,'original')==proof.native_rows(after,'proposed')==rows
     assert {key:value.packet() for key,value in test_origins.index(before).items()}=={
         key:value.packet() for key,value in test_origins.index(after).items()}
@@ -74,7 +75,7 @@ def test_joint_publication_permits_only_selected_links_and_matching_ledger_selec
 
 
 @pytest.mark.parametrize('fault',('extra-review','changed-review','missing-admission'))
-def test_review_retirement_requires_only_the_123_exact_originals_and_complete_admission(models,monkeypatch,fault):
+def test_review_retirement_requires_only_the_exact_originals_and_complete_admission(models,monkeypatch,fault):
     rows,before,after=models;after=deepcopy(after)
     selected={('access',contract.symbol_key(row).key,row['original_claim_sha256']) for row in rows}
     after.config['reconciliation']['review']=[deepcopy(row) for row in before.config['reconciliation']['review']
@@ -1609,7 +1610,7 @@ def test_state_surface_adds_two_exact_reader_originals_and_one_complete_new_owne
     assert function['owner']=='spotted-zebra/fn' and 'proposed_native_json' not in function
     assert not [item for marker in document.get('ledger',()) for item in marker.get('dependency',())
         if item.get('end')=='to' and item.get('type')=='reader' and item.get('to') in {row['owner'] for row in additional}]
-    assert len({row['owner'] for row in declared['reference']})==92
+    assert len({row['owner'] for row in declared['reference'][:121]})==92
     assert declared['reference'][9]==contract.prior_reference_rows(declared,119)[9]
 
 

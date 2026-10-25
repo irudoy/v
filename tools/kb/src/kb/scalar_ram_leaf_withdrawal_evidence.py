@@ -37,8 +37,8 @@ def native_rows(model,phase=None):
                 raise ValueError('the exact full native withdrawal image introduces an absent ledger binding')
         elif not test_contract.exact(native_ledger(model,row['owner']),ledger):
             raise ValueError('the scalar RAM leaf withdrawal changes a retained native ledger identity or selector position')
-    if len(seen)!=94 or len(phases)!=1 or phase is not None and phases!={phase}:
-        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact123-claim phase')
+    if len(seen)!=95 or len(phases)!=1 or phase is not None and phases!={phase}:
+        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact124-claim phase')
     current=next(iter(phases))
     for row in rows:
         old=json.loads(row['original_claim_json'])
