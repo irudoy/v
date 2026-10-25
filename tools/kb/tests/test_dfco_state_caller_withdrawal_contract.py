@@ -10,7 +10,8 @@ from kb import dfco_state_caller_withdrawal_capture_evidence as proof,scalar_ram
 
 
 def evaluate(entry,**changes):
-    case=dict(matrix.DEFAULTS,index=0,kind='controlled',entry=entry,**changes)
+    defaults=matrix.RESTORE_DEFAULTS if entry==0x50018 else matrix.DEFAULTS
+    case=dict(defaults,index=0,kind='controlled',entry=entry,**changes)
     source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
     return scalar.evaluate(entry,matrix.memory(case),matrix.calibrations(source,image,case),
         matrix.context(source,case),case['initial_sr'],bytes([0xA5])*192,0x02001000,0x02100000)
@@ -124,13 +125,13 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.STATE_SPANS),409),
         ('818 code bytes',sum(last-first for first,last in contract.STATE_SPANS),818),('7 code spans',len(contract.STATE_SPANS),7),
-        ('409 feasible instructions',len(transfers.FEASIBLE_SITES),409),('42 literal spans',len(contract.STATE_UNIT['pools']),42),
+        ('409 feasible instructions',len(transfers.STATE_FEASIBLE_SITES),409),('42 literal spans',len(contract.STATE_UNIT['pools']),42),
         ('13 pointer aliases',len(contract.STATE_UNIT['aliases']),13),('25 complete RAM fields',len(matrix.STATE_RAM_FIELDS),25),
         ('271 configuration fields',len(contract.STATE_CONFIGURATION),271),('44 complete calibration spans',len(contract.STATE_CONTROLLED_CALIBRATION),44),
         ('306 raw input fields',len(matrix.STATE_WIDTHS),306)):
         assert phrase in words and actual==wanted
     assert f'{len(proof.REQUIRED_BRANCHES)} two-sided conditions' in words and proof.FIXED_BRANCHES=={}
-    assert transfers.FEASIBLE_SITES==transfers.EXACT_SITES
+    assert transfers.STATE_FEASIBLE_SITES==transfers.STATE_EXACT_SITES
     owners={row['owner']:row for row in declared['reference']}
     removed=sum(sum(len(marker.get('dependency',())) for marker in (json.loads(row['original_ledger_json']) or ()))-
         sum(len(marker.get('dependency',())) for marker in (json.loads(row['proposed_ledger_json']) or ())) for row in owners.values())
@@ -314,3 +315,78 @@ def test_shared_restore_input_counts_bind_the_current_descriptor_sources():
 def test_restore_physical_input_widths_refuse_partial_or_untyped_bytes(field,value):
     case=dict(matrix.RESTORE_DEFAULTS,entry=0x50018,kind='controlled',index=0);case[field]=value
     with pytest.raises(ValueError):matrix.require_case(case)
+
+
+@pytest.mark.parametrize('field,sites',(('byte_5a95',(0x50042,)),('byte_5a98',(0x50042,0x5005E))))
+def test_restore_each_diagnostic_fallback_retains_actual_publications_without_table_calls(field,sites):
+    value=evaluate(0x50018,**{field:32})
+    assert tuple(row['site'] for row in value['calls'])==sites and value['lookups']==[]
+    assert (value['ram'][0x1778],value['ram'][0x16AA])==(64,64)
+    actual=[row for row in value['events'].values() if row['site'] in (0x501AA,0x501AE)]
+    assert [(row['site'],row['address'],row['width_bytes'],row['register'],row['bytes']) for row in actual]==[
+        (0x501AA,0x01001778,1,4,'40'),(0x501AE,0x010016AA,1,14,'40')]
+
+
+@pytest.mark.parametrize('offset,thresholds',((0,(72,88)),(128,(96,112))))
+def test_restore_real_lookup_and_offset_paths_keep_two_independent_thresholds(offset,thresholds):
+    value=evaluate(0x50018,byte_4250=offset)
+    assert [(row['site'],row['target']) for row in value['calls']]==list(contract.RESTORE_SOURCE_CALLS)
+    assert tuple(value['ram'][at] for at in (0x1778,0x16AA))==thresholds
+    assert [(row['base'],row['index'],row['fraction']) for row in value['lookups']]==[
+        (0x1298C,5,0),(0x12818,5,0)]
+    assert value['gbr']==0x456789B2 and value['mach']==0x13579BE6 and value['macl']==0x2468ACE7
+    assert value['sp']==0x02001000 and value['pr']==0x02100000
+
+
+def test_restore_actual_delay_store_and_fixed_diagnostic_arguments_keep_complete_post_delay_context():
+    value=evaluate(0x50018)
+    first,second=value['calls'][:2]
+    assert (first['registers'][0],first['registers'][4],first['registers'][7],first['registers'][12])==(
+        0x260,0x129,0x0100128C,4)
+    assert second['registers'][4]==0x12A
+    assert [row['address'] for row in value['events'].values() if row['site']==0x25C48]==[0x01005A95,0x01005A98]
+    delay=next(row for row in value['events'].values() if row['site']==0x50044)
+    assert (delay['address'],delay['width_bytes'],delay['register'],delay['bytes'])==(0x010014EC,1,12,'04')
+    assert all(row['gbr']==0x0100119C and row['return_gbr']==0x0100119C for row in value['calls'])
+
+
+def test_restore_clipped_offsets_and_speed_floor_keep_actual_byte_width_without_semantic_type_inference():
+    clipped=evaluate(0x50018,byte_4250=128,config_84e8=255)
+    assert (clipped['ram'][0x1778],clipped['ram'][0x16AA])==(255,255)
+    fallback=evaluate(0x50018,byte_4250=128,config_84e8=255,byte_5a95=32)
+    assert (fallback['ram'][0x1778],fallback['ram'][0x16AA])==(64,64)
+    floor=evaluate(0x50018,restore_byte_1299f=200)
+    assert (floor['ram'][0x1778],floor['ram'][0x16AA])==(200,200)
+
+
+@pytest.mark.parametrize('coordinate', (239,240,255))
+def test_restore_real_byte_endpoint_retains_sign_extended_helper_return_before_caller_unsigned_publication(coordinate):
+    cells={name:255 for name in matrix.RESTORE_CURVE_FIELDS[0x1298C]}
+    cells.update({name:128 for name in matrix.RESTORE_CURVE_FIELDS[0x12818]})
+    value=evaluate(0x50018,byte_106f=coordinate,**cells)
+    assert (value['ram'][0x1778],value['ram'][0x16AA])==(255,128)
+    calls=value['calls'][2:]
+    assert [row['return_registers'][0] for row in calls]==([255,128] if coordinate<240 else [0xFFFFFFFF,0xFFFFFF80])
+    assert [row['return_site'] for row in calls]==([0x2676A,0x2676A] if coordinate<240 else [0x26396,0x26396])
+
+
+def test_restore_distinct_class_outputs_and_bypass_keep_local_word_and_flag_publications():
+    assert evaluate(0x50018,byte_11b3=200)['output']==0
+    one=evaluate(0x50018,byte_2458=0)
+    assert one['output']==1 and one['ram'][0x249D]&128
+    two_cells={name:120 for name in matrix.RESTORE_CURVE_FIELDS[0x1298C]}
+    two_cells.update({name:60 for name in matrix.RESTORE_CURVE_FIELDS[0x12818]})
+    assert evaluate(0x50018,byte_110e=0,byte_11b3=80,**two_cells)['output']==2
+    assert evaluate(0x50018)['output']==3
+    bypass=evaluate(0x50018,byte_2468=64)
+    assert bypass['output']==0 and bypass['ram'][0x249D]&128
+    assert all(row['site'] not in range(0x501BA,0x5036A,2) for row in bypass['events'].values())
+
+
+def test_restore_source_feasibility_retains_full_functions_and_only_proved_unreachable_helper_modes():
+    words=' '.join((repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text().split())
+    assert len(transfers.RESTORE_EXACT_SITES)==485 and len(transfers.RESTORE_FEASIBLE_SITES)==459
+    assert len(transfers.INFEASIBLE_SITES)==26 and len(transfers.FEASIBLE_SITES)==868
+    assert transfers.RESTORE_INFEASIBLE_SITES=={0x25C54,*range(0x26A60,0x26A84,2),*range(0x26A9C,0x26AAA,2)}
+    for phrase in ('459 feasible restore instructions','26 fixed-mode helper instructions','868 feasible shared instructions'):
+        assert phrase in words

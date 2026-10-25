@@ -1184,7 +1184,7 @@ INPUT_BLOBS=[{'name': 'delay_bytes', 'address': 75418, 'size': 6},
  {'name': 'restore_curve_1298c', 'address': 76172, 'size': 16},
  {'name': 'restore_speed_thresholds', 'address': 72885, 'size': 4},
  {'name': 'restore_speed_floors', 'address': 76188, 'size': 4}]
-ADAPTER_SHA256='353708a6bad3448548f7cc464224407537bf91b1df69748c394a146aa7b3bb06'
+ADAPTER_SHA256='86890d1e52b5c0450259284e7393c26ab17e077b1c061c18f61c640f02d5e86a'
 STATE_HELPER_ENTRIES=(329574,)
 HELPER_ENTRIES=(329574, 154678, 156552, 157504, 158304)
 REUSED_HELPER_FILES_SHA256={}

@@ -253,3 +253,27 @@ establish selected-reader absence, prior-byte independence, native identity or a
 claim correction. Admission retains all feasible branch and call/return paths,
 complete state, actual writer and exact owning postimages. The 409-instruction state
 unit and its selected claims retain their separate complete boundaries.
+
+## Independent restore state equations
+
+The restore consumer composes the real diagnostic calls, byte lookup and signed
+endpoint promotion independently of instruction decoding. The existing sixteen-byte
+curve equation supplies the numerical interpolation. Each physical input, branch,
+call/return, delay slot, local dword, saved register, GBR and final state has its
+own ordered obligation. The complete RAM image retains the two actual byte stores
+and the distinct classifier return values 0, 1, 2 and 3. Fallback retains its fixed
+threshold publications; its optional offset changes the separate classifier bound.
+
+There are 459 feasible restore instructions. The 26 fixed-mode helper instructions
+remain bound stock source: 25C54 is the diagnostic sentinel outcome, 26A60..26A84
+is the skipped word/eight-point prefix and 26A9C..26AAA is the unselected word-data
+branch. Both caller diagnostic indexes differ from FFFF. The actual 26388 wrapper
+enters 26A84 and supplies a zero width flag. These premises admit no other caller
+argument or lookup width. The full source functions remain mandatory. The
+409-instruction state unit and restore unit require 868 feasible shared instructions.
+
+The independent source checks include diagnostic fallback before either lookup,
+both real lookup calls, offset saturation, all four speed-indexed floors, byte
+endpoint sign extension before EXTU.B, complete frame/GBR restoration and each
+classifier result. Executable qualification, complete causal alternatives,
+selected-reader guards and owning publication remain separate obligations.
