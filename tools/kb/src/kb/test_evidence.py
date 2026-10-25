@@ -21,6 +21,8 @@ NOTE = ('Stock-image scan for region 000791a4..000797cb rejects aligned inbound 
 PROFILE = 'patches/rom-address-profiles.toml'
 RECEIPT = Path('.kb/test-receipts/1me3b-image-scan.json')
 PRODUCER_FILES = ('tools/kb/src/kb/test_evidence.py', 'tools/kb/src/kb/test_witness.py')
+# Full-context mode requires a catalog covering every native TEST attachment.
+REQUIRE_CONTEXTS = False
 EXECUTION_INPUTS = (
     PATH, 'patches/tests/conftest.py', 'pyproject.toml', 'uv.lock',
     'patches/rom_address_profiles.py', PROFILE,
@@ -173,6 +175,10 @@ def identity_only(symbol):
                     for entry in symbol.evidence))
 
 
+def requires_origin(evidence, symbol=None):
+    return REQUIRE_CONTEXTS or registered(evidence, symbol)
+
+
 def receipt_path(root):
     return Path(root) / RECEIPT
 
@@ -186,16 +192,53 @@ def dependencies(root, *, receipt=None):
         if any(type(path) is not str or '..' in Path(path).parts for path in named):
             raise ValueError('invalid TEST output path')
         paths.update(named)
+        if 'semantic_schema' in record:
+            for declared in record['candidate']['primary_records'].values():
+                path = declared['path']
+                if type(path) is not str or '..' in Path(path).parts:
+                    raise ValueError('invalid TEST primary preparation path')
+                paths.add(path)
+                try:
+                    primary = json.loads(test_contract._read(root, path))
+                    original = (primary['process_path'], *(primary['terminal'][name]
+                                                         for name in ('stdout', 'stderr')))
+                    if any(type(name) is not str or '..' in Path(name).parts for name in original):
+                        raise ValueError('invalid TEST primary terminal path')
+                    paths.update(original)
+                except (OSError, ValueError, TypeError, KeyError):
+                    pass
     except (OSError, ValueError, TypeError, KeyError):
         pass
     return paths
 
 
-def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
+def witness_failure(witness, expected_context):
+    """Validate the actual image/profile observations independently of case scope."""
+    if (not exact(witness['facts'], facts())
+            or witness['profile_origin'] != expected_context['inputs'][PROFILE]):
+        return 'TEST execution has wrong facts or unknown profile preparation origin'
+    if digest(witness['profiles']) != witness['profiles_digest']:
+        return 'TEST execution profile values are inconsistent'
+    for image in [*witness['images'].values(), *witness['fixture_image_reads']]:
+        if expected_context['inputs'].get(image['path']) != image['sha256']:
+            return 'TEST execution image bytes lack exact input binding'
+    if '1ME3B' not in witness['images'] or not witness['fixture_image_reads']:
+        return 'TEST execution lacks its stock image'
+    return None
+
+
+def failure(evidence, symbol=None, model=None, claim=None, *, record=None, origin=None):
     """None only for a qualified receipt or an unregistered legacy witness."""
     if not registered(evidence, symbol):
+        if REQUIRE_CONTEXTS or (type(record) is dict and 'semantic_schema' in record):
+            return profile_failure(evidence, symbol, model, claim, record=record, origin=origin)
         return None
     try:
+        if origin is not None:
+            from kb import test_origins
+            owning = test_origins.current(model, origin, evidence)
+            if owning.kind != 'symbol' or symbol is None or owning.owner != symbol.key.key:
+                return 'the registered image-scan TEST requires its direct owning symbol attachment'
         public_packet(model, symbol, evidence)
         if claim != 'identity':
             from kb import checks
@@ -209,6 +252,8 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
                 return 'the registered TEST requires its exact identity-claim context'
         if record is None:
             record = json.loads(test_contract._read(model.root, RECEIPT))
+        if 'semantic_schema' in record:
+            return profile_failure(evidence, symbol, model, claim, record=record, origin=origin)
         candidate = record['candidate']
         if type(record['schema']) is not int or record['schema'] != SCHEMA:
             return 'incompatible TEST execution receipt'
@@ -225,18 +270,26 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
         if not exact(candidate['context'], context(model, symbol, evidence)):
             return 'TEST execution inputs or model context are stale'
         witness = candidate['witness']
-        if not exact(witness['facts'], facts()) or witness['profile_origin'] != candidate['context']['inputs'][PROFILE]:
-            return 'TEST execution has wrong facts or unknown profile preparation origin'
-        if digest(witness['profiles']) != witness['profiles_digest']:
-            return 'TEST execution profile values are inconsistent'
-        for image in [*witness['images'].values(), *witness['fixture_image_reads']]:
-            if candidate['context']['inputs'].get(image['path']) != image['sha256']:
-                return 'TEST execution image bytes lack exact input binding'
-        if '1ME3B' not in witness['images'] or not witness['fixture_image_reads']:
-            return 'TEST execution lacks its stock image'
+        refused = witness_failure(witness, candidate['context'])
+        if refused:
+            return refused
         return test_contract.terminal_failure(record, model.root, CONTRACT)
     except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, ImportError):
         return 'missing or invalid qualified TEST execution context'
+
+
+def profile_failure(evidence, symbol, model, claim, *, record=None, origin=None):
+    """Use the complete explicit catalog; no unregistered TEST fallback."""
+    try:
+        from kb import test_catalog, test_primary
+        if record is None:
+            record = json.loads(test_contract._read(model.root, RECEIPT))
+        primary = test_primary.load(model.root, record['candidate']['primary_records'])
+        return test_catalog.prepared(model).failure(evidence, symbol, model, claim, origin,
+                                                    record=record, primary=primary)
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError,
+            RecursionError, ImportError):
+        return 'missing or invalid qualified TEST semantic context'
 
 
 def publish(path, value):
@@ -259,6 +312,14 @@ def finalize(candidate_path, process_path, stdout_path, stderr_path, root=repo.R
 def prepare(candidate_path, process_path, stdout_path, stderr_path, root=repo.ROOT):
     """Validate a native candidate under the caller's source lock, without publication."""
     candidate = json.loads(Path(candidate_path).read_bytes())
+    if 'semantic_schema' in candidate:
+        from kb import compile, test_catalog, test_primary
+        model = compile.build(root)
+        engine = test_catalog.build(model)
+        record = test_contract.bind_terminal(candidate, process_path, stdout_path, stderr_path,
+                                             root, engine.cohort.contract, candidate_path)
+        primary = test_primary.load(root, candidate['primary_records'])
+        return engine.prepare(record, model, primary)
     refused = CONTRACT.failure(candidate)
     if refused:
         raise ValueError(refused)

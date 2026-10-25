@@ -24,6 +24,7 @@ from kb.prepare_evidence import PREFIX as PREPARED_PREFIX
 from kb.test_contract import exact
 
 PRIMARY = ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness']
+NATIVE_PRIMARY = [*PRIMARY, '--native-test-witness']
 PRIMARY_LIMIT = 7200
 TEST_LIMIT = 1200
 VALIDATION_LIMIT = 1200
@@ -58,11 +59,60 @@ def source_inputs(root):
             'TEST_scope_inputs': test_evidence.inputs(root)}
 
 
-def test_command(candidate):
-    return ['uv', 'run', 'pytest', '-vv', '--tb=long', '--durations=0',
+def metadata_source_transition(before, after, texts):
+    """Require exactly the bytes written by the constrained normal writer."""
+    expected = {namespace:dict(values) for namespace,values in before.items()}
+    for path, text in texts.items():
+        if text is None:
+            raise ValueError('native proof publication removes no source input')
+        name = path.as_posix()
+        identity = hashlib.sha256(text.encode()).hexdigest()
+        matched = False
+        for values in expected.values():
+            if name in values:
+                values[name] = identity
+                matched = True
+        if not matched:
+            raise ValueError('native publication writes a source outside the original input manifest')
+    if after != expected:
+        raise ValueError('native publication changes undeclared semantic or executable inputs')
+    return expected
+
+
+def publish_native_metadata(root, job, ops, before, seals):
+    """Use all three prepared records with the ordinary constrained writer."""
+    from kb import write
+    references = {name:dict(path=local_paths.relative(output, root),
+                           sha256=hashlib.sha256(data).hexdigest())
+                  for name, (_, output, data) in zip(RECEIPTS, seals)}
+    if len(references) != 3 or len(seals) != 3:
+        raise ValueError('native metadata publication requires all three independently prepared records')
+    with copy_evidence.prepared_publication(root, references):
+        change, texts = write.apply(ops, root, log=lambda value:print(value, file=sys.stderr, flush=True),
+                                   metadata_only=True, archive_before=job / 'native-preimages')
+    after = source_inputs(root)
+    expected = metadata_source_transition(before, after, texts)
+    write_json(job / 'source-inputs-after-native-publication.json', after)
+    write_json(job / 'native-publication.json', dict(metadata_only=True,
+        prepared_records=references, operations=change.lines,
+        files={path.as_posix():hashlib.sha256(text.encode()).hexdigest() for path,text in texts.items()},
+        original_source_map='source-inputs.json',
+        resulting_source_map='source-inputs-after-native-publication.json'))
+    return expected
+
+
+def test_command(candidate, *, native_profiles=False):
+    command = ['uv', 'run', 'pytest', '-vv', '--tb=long', '--durations=0',
             '--junitxml=' + str(candidate.parent / 'TEST.xml'),
-            '--basetemp=' + str(candidate.parent / 'TEST-work'),
-            test_evidence.NODEID, '--kb-test-candidate=' + str(candidate)]
+            '--basetemp=' + str(candidate.parent / 'TEST-work')]
+    if native_profiles:
+        from kb import test_cases, test_primary
+        command += [case.nodeid for case in test_cases.ordered()]
+        command += [test_primary.COPY_OPTION + '=' + str(candidate.parent / 'CAN-prepared.json'),
+                    test_primary.SID22_OPTION + '=' + str(candidate.parent / 'SID22-prepared.json')]
+    else:
+        command.append(test_evidence.NODEID)
+    return [*command, '--kb-test-candidate=' + str(candidate)]
 
 
 def prepare_command(protocol, paths, output, candidate):
@@ -123,7 +173,7 @@ def original(root, job, name, command, bound):
     return result
 
 
-def runtime_record(text, root):
+def runtime_record(text, root, *, command=None):
     rows = [json.loads(line[len(RUNTIME_PREFIX):]) for line in text.splitlines()
             if line.startswith(RUNTIME_PREFIX)]
     if len(rows) != 1:
@@ -131,7 +181,8 @@ def runtime_record(text, root):
     value = rows[0]
     if (type(value['schema']) is not int or value['schema'] != 1
             or value['checkout'] != hashlib.sha256(str(root.resolve()).encode()).hexdigest()
-            or value['arguments'] != PRIMARY[1:] or value['status'] != 'succeeded'
+            or value['arguments'] != (PRIMARY if command is None else command)[1:]
+            or value['status'] != 'succeeded'
             or type(value['client_exit_code']) is not int or value['client_exit_code'] != 0
             or value['current_container_state'] not in ('absent', 'stopped')
             or type(value['image']) is not str or not value['image']
@@ -142,17 +193,34 @@ def runtime_record(text, root):
     return value
 
 
-def run(root=ROOT):
+def run(root=ROOT, *, native_profiles=False, native_publication_batch=None):
+    if type(native_profiles) is not bool:
+        raise ValueError('qualification requires an explicit native TEST mode')
+    if native_publication_batch is not None and not native_profiles:
+        raise ValueError('native metadata publication requires the complete native TEST mode')
     root = Path(root).resolve()
     with serialized(root):
         job = (root / 'tmp/local-results/sh-elf-run').resolve() / ('qualification-' + uuid.uuid4().hex)
         job.mkdir()
+        primary_command = NATIVE_PRIMARY if native_profiles else PRIMARY
         state = {'schema': 1, 'job': local_paths.relative(job, root),
-                 'started_utc': utc(), 'status': 'prepared', 'primary_command': PRIMARY,
+                 'started_utc': utc(), 'status': 'prepared', 'primary_command': primary_command,
+                 'native_TEST_profiles': native_profiles,
                  'primary_limit_seconds': PRIMARY_LIMIT, 'TEST_limit_seconds': TEST_LIMIT,
                  'validation_limit_seconds': VALIDATION_LIMIT}
         write_json(job / 'state.json', state)
         try:
+            publication_ops = None
+            if native_publication_batch is not None:
+                from kb import write
+                source = local_paths.owned(native_publication_batch, root)
+                batch = source.read_bytes()
+                batch_path = job / 'native-publication-batch.toml'
+                batch_path.write_bytes(batch)
+                publication_ops = write.read_batch(batch_path)
+                write.require_publication_operations(publication_ops)
+                state['native_publication_batch_sha256'] = hashlib.sha256(batch).hexdigest()
+                write_json(job / 'state.json', state)
             before = source_inputs(root)
             write_json(job / 'source-inputs.json', before)
             saved = receipt_bytes(root)
@@ -163,23 +231,35 @@ def run(root=ROOT):
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     destination.write_bytes(data)
             write_json(job / 'prior-receipts.json', prior)
-            primary = original(root, job, 'GNU', list(PRIMARY), PRIMARY_LIMIT)
+            primary = original(root, job, 'GNU', list(primary_command), PRIMARY_LIMIT)
             primary_text = primary.streams[0].decode()
             stages = acceptance.check_stages(primary_text, acceptance.registered())
-            runtime = runtime_record(primary_text, root)
+            runtime = (runtime_record(primary_text, root, command=primary_command) if native_profiles
+                       else runtime_record(primary_text, root))
             write_json(job / 'runtime.json', runtime)
             state.update(status='GNU-complete', GNU_process=local_paths.relative(primary.paths[0], root),
                          GNU_process_sha256=hashlib.sha256(primary.process_bytes).hexdigest(), stage_count=len(stages),
                          runtime_sha256=sha(job / 'runtime.json'))
             write_json(job / 'state.json', state)
             candidate = job / 'TEST-candidate.json'
-            tested = original(root, job, 'TEST', test_command(candidate), TEST_LIMIT)
+            records, validations, seals = [], {}, []
+            if native_profiles:
+                for protocol in ('CAN', 'SID22'):
+                    record, terminal, seal = prepared(root, job, protocol, primary, candidate)
+                    records.append(record)
+                    validations[protocol] = terminal
+                    seals.append(seal)
+                if source_inputs(root) != before:
+                    raise ValueError('qualification sources change before the common TEST cohort')
+            command = (test_command(candidate, native_profiles=True) if native_profiles
+                       else test_command(candidate))
+            tested = original(root, job, 'TEST', command, TEST_LIMIT)
             # Execution-time source changes cannot be hidden by later fresh receipts.
             if source_inputs(root) != before:
                 raise ValueError('qualification source inputs change during execution')
             # Each native validator owns a separate process, model and cache lifetime.
-            records, validations, seals = [], {}, []
-            for protocol in ('CAN', 'SID22', 'TEST'):
+            protocols = ('TEST',) if native_profiles else ('CAN', 'SID22', 'TEST')
+            for protocol in protocols:
                 record, terminal, seal = prepared(root, job, protocol,
                                              tested if protocol == 'TEST' else primary, candidate)
                 records.append(record)
@@ -194,8 +274,22 @@ def run(root=ROOT):
                 if any(output.read_bytes() != data for _, output, data in seals):
                     raise ValueError('an independently prepared output changes after validation')
 
+            final_inputs = before
+            if publication_ops is not None:
+                if source_inputs(root) != before or receipt_hashes(receipt_bytes(root)) != prior:
+                    raise ValueError('qualification inputs or prior receipts change before native publication')
+                unchanged()
+                state.update(status='publishing-native-metadata', validations=validations)
+                write_json(job / 'state.json', state)
+                final_inputs = publish_native_metadata(root, job, publication_ops, before, seals)
+                state['native_publication'] = 'native-publication.json'
+                state['native_publication_sha256'] = sha(job / 'native-publication.json')
+                state['source_inputs_after_native_publication_sha256'] = sha(
+                    job / 'source-inputs-after-native-publication.json')
+                write_json(job / 'state.json', state)
+
             with lock.held(root):
-                if source_inputs(root) != before:
+                if source_inputs(root) != final_inputs:
                     raise ValueError('qualification inputs change before publication')
                 if receipt_hashes(receipt_bytes(root)) != prior:
                     raise ValueError('another publication changes the prior receipts')
@@ -212,7 +306,7 @@ def run(root=ROOT):
                 if any(json.loads((root / name).read_bytes()) != record
                        for name, record in zip(RECEIPTS, records)):
                     raise ValueError('qualified receipt readback disagrees')
-                if source_inputs(root) != before:
+                if source_inputs(root) != final_inputs:
                     raise ValueError('qualification inputs change during publication')
                 unchanged()
             state.update(status='passed', finished_utc=utc(),
@@ -230,9 +324,23 @@ def run(root=ROOT):
             raise
 
 
-def main():
+def main(argv=None):
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--native-test-profiles', action='store_true',
+                        help='qualify the complete explicit native TEST catalog in the shared gate')
+    parser.add_argument('--native-publication-batch',
+                        help='publish only exact registered proof/review metadata after all records validate')
+    args = parser.parse_args(argv)
     try:
-        run()
+        if args.native_test_profiles and args.native_publication_batch is not None:
+            run(native_profiles=True, native_publication_batch=args.native_publication_batch)
+        elif args.native_test_profiles:
+            run(native_profiles=True)
+        elif args.native_publication_batch is not None:
+            parser.error('--native-publication-batch requires --native-test-profiles')
+        else:
+            run()
     except (OSError, ValueError, RuntimeError, repo.KbError):
         traceback.print_exc()
         return 1

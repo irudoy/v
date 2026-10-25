@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from kb import copy_evidence as proof, copy_matrix, injection_copy_evidence, local_paths, repo, test_evidence
+from kb import coherent_copy_evidence, copy_evidence as proof, copy_matrix, injection_copy_evidence, local_paths, repo, test_evidence
 
 CONSUMED = (proof.DESCRIPTOR,
     'tools/sh-elf-run/stock_jk08a_can_latch_copy.s',
@@ -40,8 +40,10 @@ def begin(root=repo.ROOT):
     model = compile.build(root)
     proof.descriptor(root)
     injection_copy_evidence.descriptor(root)
+    coherent_copy_evidence.descriptor(root)
     return dict(schema=proof.SCHEMA, key=proof.KEY, mode='full', complete=False,
                 scope=proof.scope_digest(model), snapshot_scope=injection_copy_evidence.scope_digest(model),
+                coherent_scope=coherent_copy_evidence.scope_digest(model),
                 inputs=proof.inputs(root),
                 native_model=test_evidence.model_digest(model), producer_inputs=provenance(root))
 
@@ -60,6 +62,7 @@ def _sha(value):
 
 
 def validate(candidate, root):
+    from kb import ordinary_access_registry as ordinary
     if (type(candidate['schema']) is not int or candidate['schema'] != proof.SCHEMA
             or candidate['key'] != proof.KEY or candidate['mode'] != 'full'
             or candidate['complete'] is not True):
@@ -67,6 +70,7 @@ def validate(candidate, root):
     descriptor = proof.descriptor(root)
     expected = copy_matrix.cases(descriptor)
     witness = candidate['witness']
+    ordinary.require_captures(witness)
     if witness['region'] != proof.REGION or proof.encode(witness['cases']) != proof.encode(expected):
         raise ValueError('wrong, skipped, reordered or incomplete copy case matrix')
     if len(witness['observations']) != len(expected):
@@ -112,6 +116,7 @@ def validate(candidate, root):
             _sha(value) for value in witness['toolchain']['binaries'].values()):
         raise ValueError('incomplete GNU executable provenance')
     injection_copy_evidence.validate_witness(witness['snapshot'], candidate['inputs'], root)
+    coherent_copy_evidence.validate_witness(witness['coherent'], candidate['inputs'], root)
 
 
 def finalize(process_path, stdout_path, stderr_path, root=repo.ROOT):

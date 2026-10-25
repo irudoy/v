@@ -213,7 +213,7 @@ candidate=next(arg.split('=',1)[1] for arg in sys.argv if arg.startswith('--kb-t
 Path(candidate).write_text(json.dumps({'controlled':True}))
 raise SystemExit(3 if Path('fault.txt').read_text()=='TEST-failed' else 0)
 ''')
-    monkeypatch.setattr(gate, 'test_command', lambda candidate:
+    monkeypatch.setattr(gate, 'test_command', lambda candidate, **kwargs:
                         [sys.executable, str(tested), gate.test_evidence.NODEID,
                          '--kb-test-candidate=' + str(candidate)])
     monkeypatch.setattr(gate, 'source_inputs', lambda root: {'controlled': gate.sha(root / 'input.txt')})
@@ -408,3 +408,125 @@ def test_real_make_orders_the_shared_gate_before_its_consumers(tmp_path, failure
     expected = ['verify-firmware', 'check', 'test']
     assert log.read_text().splitlines() == (expected if failure is None else expected[:expected.index(failure)+1])
     assert (completed.returncode == 0) is (failure is None)
+
+
+@pytest.mark.parametrize('fault', ('execution', 'undeclared', 'added', 'removed', 'namespace', 'untracked', 'delete'))
+def test_metadata_source_transition_admits_only_exact_existing_writer_bytes(gate, fault):
+    before = {'GNU':{'metadata.txt':'a' * 64, 'execution.txt':'b' * 64},
+              'TEST':{'metadata.txt':'a' * 64}}
+    text = 'registered proof appended\n'
+    texts = {Path('metadata.txt'):text}
+    after = {name:dict(values) for name,values in before.items()}
+    identity = hashlib.sha256(text.encode()).hexdigest()
+    for values in after.values():
+        values['metadata.txt'] = identity
+    if fault == 'execution':
+        after['GNU']['execution.txt'] = 'c' * 64
+    elif fault == 'undeclared':
+        after['GNU']['metadata.txt'] = 'd' * 64
+    elif fault == 'added':
+        after['GNU']['new.txt'] = 'e' * 64
+    elif fault == 'removed':
+        after['GNU'].pop('execution.txt')
+    elif fault == 'namespace':
+        after['OTHER'] = {}
+    elif fault == 'untracked':
+        texts[Path('untracked.txt')] = 'not in the original manifest'
+    else:
+        texts[Path('metadata.txt')] = None
+    with pytest.raises(ValueError):
+        gate.metadata_source_transition(before, after, texts)
+
+
+def test_metadata_source_transition_binds_every_original_namespace(gate):
+    before = {'GNU':{'metadata.txt':'a' * 64, 'execution.txt':'b' * 64},
+              'TEST':{'metadata.txt':'a' * 64}}
+    text = 'registered proof appended\n'
+    identity = hashlib.sha256(text.encode()).hexdigest()
+    after = {'GNU':{'metadata.txt':identity, 'execution.txt':'b' * 64},
+             'TEST':{'metadata.txt':identity}}
+    assert gate.metadata_source_transition(before, after, {Path('metadata.txt'):text}) == after
+    assert before['GNU']['metadata.txt'] == 'a' * 64
+
+
+@pytest.fixture
+def metadata_publication(gate, controlled, monkeypatch):
+    from types import SimpleNamespace
+    from kb import copy_evidence, write
+    root, state, before = controlled
+    monkeypatch.setattr(gate, 'NATIVE_PRIMARY', gate.PRIMARY)
+    (root / 'execution.txt').write_text('fixed execution input')
+    monkeypatch.setattr(gate, 'source_inputs', lambda directory:{
+        'GNU':{'input.txt':gate.sha(directory / 'input.txt'),
+               'execution.txt':gate.sha(directory / 'execution.txt')},
+        'TEST':{'input.txt':gate.sha(directory / 'input.txt')}})
+    batch = root / 'metadata-batch.toml'
+    batch.write_text('[[op]]\ncmd = "reconcile-width"\nref = "controlled-field/ram"\n'
+                     'layout = "1me3b"\nclaim_sha256 = "' + 'a' * 64 + '"\n')
+
+    def normal_writer(ops, directory, *, log, metadata_only, archive_before):
+        assert directory == root and metadata_only is True
+        assert archive_before.name == 'native-preimages'
+        assert state['events'] == [('prepare', name) for name in ('CAN','SID22','TEST')]
+        assert {name:(root / name).read_bytes() for name in before} == before
+        for name, protocol in zip(gate.RECEIPTS, ('CAN','SID22','TEST')):
+            record = json.loads(copy_evidence.read_output(root, name))
+            assert record['controlled_semantic_adapter'] == protocol
+        state['events'].append(('native', 'metadata-only'))
+        fault = (root / 'fault.txt').read_text()
+        if fault == 'metadata-refused':
+            raise ValueError('controlled normal writer refusal')
+        text = 'controlled proof metadata\n'
+        (root / 'input.txt').write_text(text)
+        if fault == 'metadata-execution-change':
+            (root / 'execution.txt').write_text('unrequested executable mutation')
+        return SimpleNamespace(lines=['controlled exact width resolution']), {Path('input.txt'):text}
+
+    monkeypatch.setattr(write, 'apply', normal_writer)
+    return root, state, before, batch
+
+
+def test_all_three_records_precede_normal_metadata_and_final_receipts(gate, metadata_publication):
+    root, state, before, batch = metadata_publication
+    (root / 'fault.txt').write_text('none')
+    result = gate.run(root, native_profiles=True, native_publication_batch=batch)
+    assert result['status'] == 'passed'
+    assert state['events'][:4] == [('prepare', name) for name in ('CAN','SID22','TEST')] + [('native','metadata-only')]
+    assert len([event for event in state['events'] if event[0] == 'publish']) == 3
+    job = root / result['job']
+    assert len(list(job.glob('GNU-process.json'))) == 1
+    assert len(list(job.glob('TEST-process.json'))) == 1
+    assert (job / 'native-publication-batch.toml').read_bytes() == batch.read_bytes()
+    original = json.loads((job / 'source-inputs.json').read_bytes())
+    current = json.loads((job / 'source-inputs-after-native-publication.json').read_bytes())
+    assert original['GNU']['execution.txt'] == current['GNU']['execution.txt']
+    assert original['GNU']['input.txt'] != current['GNU']['input.txt']
+    publication = json.loads((job / 'native-publication.json').read_bytes())
+    assert publication['metadata_only'] is True and set(publication['prepared_records']) == set(gate.RECEIPTS)
+    assert copy_evidence_view_is_restored(gate, root)
+    assert all((root / name).read_bytes() != old for name,old in before.items())
+
+
+def copy_evidence_view_is_restored(gate, root):
+    return gate.copy_evidence._PREPARED_PUBLICATION.get() is None
+
+
+@pytest.mark.parametrize('fault', ('TEST-failed', 'TEST-refused', 'metadata-refused', 'metadata-execution-change'))
+def test_incomplete_test_or_metadata_refusal_cannot_publish_receipts(gate, metadata_publication, fault):
+    root, state, before, batch = metadata_publication
+    (root / 'fault.txt').write_text(fault)
+    with pytest.raises(ValueError):
+        gate.run(root, native_profiles=True, native_publication_batch=batch)
+    assert all((root / name).read_bytes() == old for name,old in before.items())
+    assert not any(event[0] == 'publish' for event in state['events'])
+    assert copy_evidence_view_is_restored(gate, root)
+    if fault.startswith('TEST'):
+        assert not any(event[0] == 'native' for event in state['events'])
+
+
+def test_publication_batch_requires_native_mode_before_starting_a_child(gate, controlled):
+    root, _, before = controlled
+    with pytest.raises(ValueError, match='complete native TEST mode'):
+        gate.run(root, native_publication_batch=root / 'unused.toml')
+    assert not list((root / 'tmp/local-results/sh-elf-run').glob('qualification-*'))
+    assert all((root / name).read_bytes() == old for name,old in before.items())

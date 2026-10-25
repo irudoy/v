@@ -300,7 +300,8 @@ def _result(root, overlay):
 # The keys of an unresolved status that a conversion states.
 UNRESOLVED = ("method", "target", "count", "l0", "note")
 # Identity items of the correspondence rows whose symbol no instruction of L0
-# reaches: a test binds the routine that no pointer or branch enters.
+# reaches: a bounded scan binds aligned pointer values and direct entry
+# branch encodings. Interior and computed control flow require separate proof.
 ROW_TESTS = {
     "ignition_unreferenced_routine": {
         "kind": "test", "supports": "identity",
@@ -513,11 +514,7 @@ class Conversion:
                     raise KbError(f"{key.key}: curated selector differs", code=3)
                 entry["curated"] = marker
                 self.curated_tables[key] = marker
-                anchored = any(item.get("supports", "identity") == "identity"
-                               and match.rank(item, symbol, self.before) >= match.CANDIDATE
-                               and match._complete(item)
-                               and match.verify(self.before, symbol, item) is None
-                               for item in entry.get("evidence", ()))
+                anchored = _identity_anchor(self.before, symbol, entry.get('evidence', ()))
                 if not anchored:
                     item = {"kind": "l0", "supports": "identity", "at": key.location}
                     if match.verify(self.before, symbol, item) is not None:
@@ -714,11 +711,7 @@ class Conversion:
         for key in sorted(keys):
             symbol = before.symbols[key]
             entry = self._entry(self._document(symbol.meaning), symbol)
-            anchored = any(item.get("supports", "identity") == "identity"
-                           and match.rank(item, symbol, before) >= match.CANDIDATE
-                           and match._complete(item)
-                           and match.verify(before, symbol, item) is None
-                           for item in entry.get("evidence", ()))
+            anchored = _identity_anchor(before, symbol, entry.get('evidence', ()))
             if anchored:
                 continue
             item = ({"kind": "l0", "supports": "identity", "at": key.location}
@@ -1822,6 +1815,26 @@ def _agree(document, props, subject):
         elif held != value:
             raise KbError(f"{subject}: {name} = {value!r} of the registry disagrees with "
                           f"{held!r} of its file", code=3)
+
+
+def _identity_anchor(model, symbol, items):
+    """A converted TEST item retains its exact unique native symbol origin."""
+    from kb import test_contract, test_origins
+    for item in items:
+        if item.get('supports', 'identity') != 'identity':
+            continue
+        native, origin = item, None
+        if item.get('kind') == 'test':
+            found = [(index, source) for index, source in enumerate(symbol.evidence)
+                     if test_contract.exact(_value(model, source), item)]
+            if len(found) != 1:
+                continue
+            index, native = found[0]
+            origin = test_origins.capture(model, test_origins.symbol_route(symbol, index))
+        if (match.rank(native, symbol, model, 'identity', origin=origin) >= match.CANDIDATE
+                and match._complete(native) and match.verify(model, symbol, native) is None):
+            return True
+    return False
 
 
 def _value(model, value):

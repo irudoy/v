@@ -83,7 +83,9 @@ setup:
 
 check:
 	$(PYTHON) tools/check_projection_contract.py
+	$(PYTHON) tools/sh-elf-run/generate_proof_adapters.py --check
 	$(PYTHON) tools/sh-elf-run/can_latch_copy.py --check
+	$(PYTHON) tools/sh-elf-run/coherent_snapshot_copy.py --check
 	$(PYTHON) tools/sh-elf-run/sid22_pointer_read.py --check
 	$(PYTHON) tools/sh-elf-run/acceptance.py --check
 	$(PYTHON) tools/version_index.py --check

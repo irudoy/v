@@ -175,6 +175,9 @@ def scope_digest(model):
         for relation in model.links:
             if relation.owner is not meaning and relation.to is not meaning:
                 continue
+            from kb import snapshot_rom_contract
+            if snapshot_rom_contract.representation_only(relation,model.root):
+                continue
             links.append((relation.owner.key,relation.type,relation.to.key,relation.slot,relation.offset,
                 value(relation.props),value(common.semantic_evidence(relation)),relation.roles,
                 relation.stated,relation.sources))

@@ -73,6 +73,9 @@ class State:
                                                  evidence.digest(evidence.encode(result)))
             return result
 
+        for name in ('cache_info', 'cache_clear', 'cache_parameters'):
+            if hasattr(original_registry, name):
+                setattr(registry, name, getattr(original_registry, name))
         self.patch.setattr(rom_address_profiles, 'load_registry', registry)
         from tools import rom_homology
         original_images = rom_homology.load_images
@@ -90,6 +93,28 @@ class State:
         self.native_model = evidence.model_digest(model)
         self.producer_inputs = evidence.producer_inputs(self.root)
         self.context = evidence.context(model, symbol, evidence.item())
+        self.profile_engine = None
+        self.profile_primary = None
+        self.profile_preparation = None
+        self.profile_references = None
+
+    def bind_profiles(self, engine, primary, references):
+        """Use the same real collector for an explicit complete semantic cohort."""
+        from kb import test_execution
+        if (type(engine) is not test_execution.Engine or self.profile_engine is not None
+                or self.capture.collected or self.capture.reports or self.witness is not None):
+            raise ValueError('the TEST profile cohort must bind once before collection and observation')
+        if evidence.NODEID not in {case.nodeid for case in engine.cohort.contract.cases}:
+            raise ValueError('the shared TEST cohort omits the registered image-scan case')
+        from kb import test_primary
+        prepared = test_primary.load(self.root, references)
+        if not test_contract.exact(prepared, primary):
+            raise ValueError('the common TEST run substitutes its original primary preparation')
+        self.profile_preparation = engine.begin(self.model, native_model=self.native_model,
+                                               producer_inputs=self.producer_inputs)
+        self.capture = test_contract.Capture(engine.cohort.contract, self.capture.assertions)
+        self.profile_engine, self.profile_primary = engine, primary
+        self.profile_references = test_contract.json_text(references)
 
     def image_packets(self, images):
         return {name: {'path': image.path.resolve().relative_to(self.root).as_posix(),
@@ -125,10 +150,23 @@ class State:
         stable = (test_contract.exact(evidence.context(self.model, self.symbol, evidence.item()), self.context)
                   and evidence.model_digest(self.model) == self.native_model
                   and evidence.producer_inputs(self.root) == self.producer_inputs)
-        candidate = self.capture.candidate(exitstatus,
-                     complete=self.witness is not None and stable,
-                     context=self.context, native_model=self.native_model,
-                     producer_inputs=self.producer_inputs, witness=self.witness)
+        if self.profile_engine is None:
+            candidate = self.capture.candidate(exitstatus,
+                         complete=self.witness is not None and stable,
+                         context=self.context, native_model=self.native_model,
+                         producer_inputs=self.producer_inputs, witness=self.witness)
+        else:
+            if not stable or self.witness is None:
+                raise ValueError('the shared TEST cohort lacks stable native inputs or its actual image-scan witness')
+            candidate = self.profile_engine.candidate(self.capture, exitstatus, self.model,
+                self.profile_primary, preparation=self.profile_preparation)
+            candidate['image_scan'] = dict(context=self.context, witness=self.witness)
+            import json
+            from kb import test_primary
+            references = json.loads(self.profile_references)
+            if not test_contract.exact(test_primary.load(self.root, references), self.profile_primary):
+                raise ValueError('the TEST original primary preparation changes during execution')
+            candidate['primary_records'] = references
         evidence.publish(self.output, candidate)
         print('\n' + test_contract.MARKER + evidence.digest(candidate))
 
@@ -141,11 +179,26 @@ class State:
 
 def pytest_addoption(parser):
     parser.addoption('--kb-test-candidate', default=None)
+    from kb import test_primary
+    parser.addoption(test_primary.COPY_OPTION, default=None)
+    parser.addoption(test_primary.SID22_OPTION, default=None)
 
 
 def pytest_configure(config):
+    from kb import test_primary
+    copy_path = config.getoption(test_primary.COPY_OPTION)
+    sid_path = config.getoption(test_primary.SID22_OPTION)
+    if bool(copy_path) != bool(sid_path) or ((copy_path or sid_path) and not config.getoption('--kb-test-candidate')):
+        raise ValueError('common TEST primary references require both preparations and the actual candidate')
     if config.getoption('--kb-test-candidate'):
         config._kb_test_witness = State(config)
+        if copy_path:
+            from kb import test_catalog
+            state = config._kb_test_witness
+            references = test_primary.references(state.root, copy_path, sid_path)
+            primary = test_primary.load(state.root, references)
+            primary.require(state.model)
+            state.bind_profiles(test_catalog.build(state.model), primary, references)
 
 
 def pytest_collection_finish(session):

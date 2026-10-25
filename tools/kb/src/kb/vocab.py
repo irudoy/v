@@ -65,7 +65,8 @@ EVIDENCE_KINDS = {
 }
 EVIDENCE_KEYS = ("kind", "supports", "at", "to", "relies", "count", "value", "sha256",
                  "mode", "path", "key", "note")
-INDIRECT_MODES = ("pointer", "gbr", "window", "block-copy", "snapshot-copy", "did-pointer", "base")
+from kb.ordinary_access_registry import MODES as ORDINARY_ACCESS_MODES
+INDIRECT_MODES = ("pointer", "gbr", "window", "block-copy", "snapshot-copy", "coherent-copy", "did-pointer", "diagnostic-output", "arithmetic-argument", "calculation-dependency", "arithmetic-factor", "io-access", *ORDINARY_ACCESS_MODES, "snapshot-output", "base")
 
 FN_ROLES = ("accessor", "service", "driver", "monitor", "wrapper", "dispatch", "init",
             "handler", "selector", "consumer", "kernel", "finisher")

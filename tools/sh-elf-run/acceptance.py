@@ -94,6 +94,16 @@ def check(document, regions, root=ROOT):
 def direct_sources(group, regions, root=ROOT):
     """Explicit anchors and transitive local C/assembly includes, not all provenance."""
     paths = set(group['source_anchors'])
+    generated_headers = set()
+    private_headers_loaded = False
+    if group['id'] == 'pipeline_integration':
+        from kb import proof_reuse
+        for value in proof_reuse.adapter_closures(root).values():
+            if not value['complete_declared_closure']:
+                raise ValueError('the bounded adapter has unresolved declared source dependencies')
+            paths.update(value['files'])
+            generated_headers.update(value['generated_input_headers'])
+        private_headers_loaded = True
     paths.update('tools/sh-elf-run/' + value for region in regions
                  if region.key in group['regions'] for value in (region.source, region.harness))
     pending = list(paths)
@@ -104,6 +114,13 @@ def direct_sources(group, regions, root=ROOT):
             continue
         for name in include.findall((root / path).read_text()):
             target = (Path(path).parent / name).as_posix()
+            if not (root / target).is_file() and not private_headers_loaded:
+                from kb import proof_reuse
+                generated_headers.update(proof_reuse.generated_input_headers(root))
+                private_headers_loaded = True
+            if target in generated_headers and not (root / target).is_file():
+                # The capture and independent consumer bind these input-only private bytes.
+                continue
             if '..' in Path(target).parts or not (root / target).is_file():
                 raise ValueError(f'unresolved local execution include: {target}')
             if target not in paths:

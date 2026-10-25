@@ -7,6 +7,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from kb import ordinary_access_registry as ordinary
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CAN = 'jk08a-can-latch-copy'
@@ -58,6 +60,317 @@ def pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(driver.tempfile, 'TemporaryDirectory',
         lambda **kwargs: original_directory(dir=tmp_path, **kwargs))
     monkeypatch.setattr(stock, 'stock_image', lambda rom: b'controlled stock bytes')
+    width = importlib.import_module('width_view_capture')
+    state.width_captures = []
+    def width_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == width.REGION:
+            raise ValueError('controlled execution failure: ' + width.REGION)
+        captured.update(region=width.REGION, controlled_only=True)
+        state.width_captures.append(captured)
+        return 'CONTROLLED_WIDTH_VIEW_BOUNDARY'
+    monkeypatch.setattr(width, 'run', width_execution)
+    byte_surface = importlib.import_module('byte_surface_capture')
+    state.byte_surface_captures = []
+    def byte_surface_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == byte_surface.REGION:
+            raise ValueError('controlled execution failure: ' + byte_surface.REGION)
+        captured.update(region=byte_surface.REGION, controlled_only=True)
+        state.byte_surface_captures.append(captured)
+        return 'CONTROLLED_BYTE_SURFACE_BOUNDARY'
+    monkeypatch.setattr(byte_surface, 'run', byte_surface_execution)
+    exhaust_target = importlib.import_module('exhaust_target_capture')
+    state.exhaust_target_captures = []
+    def exhaust_target_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == exhaust_target.REGION:
+            raise ValueError('controlled execution failure: ' + exhaust_target.REGION)
+        captured.update(region=exhaust_target.REGION, controlled_only=True)
+        state.exhaust_target_captures.append(captured)
+        return 'CONTROLLED_EXHAUST_TARGET_BOUNDARY'
+    monkeypatch.setattr(exhaust_target, 'run', exhaust_target_execution)
+    bfs_path = importlib.import_module('bfs_path_capture')
+    state.bfs_path_captures = []
+    def bfs_path_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == bfs_path.REGION:
+            raise ValueError('controlled execution failure: ' + bfs_path.REGION)
+        captured.update(region=bfs_path.REGION, controlled_only=True)
+        state.bfs_path_captures.append(captured)
+        return 'CONTROLLED_BFS_PATH_BOUNDARY'
+    monkeypatch.setattr(bfs_path, 'run', bfs_path_execution)
+    ignition_diagnostic = importlib.import_module('ignition_diagnostic_capture')
+    state.ignition_diagnostic_captures = []
+    def ignition_diagnostic_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == ignition_diagnostic.REGION:
+            raise ValueError('controlled execution failure: ' + ignition_diagnostic.REGION)
+        captured.update(region=ignition_diagnostic.REGION, controlled_only=True)
+        state.ignition_diagnostic_captures.append(captured)
+        return 'CONTROLLED_IGNITION_DIAGNOSTIC_BOUNDARY'
+    monkeypatch.setattr(ignition_diagnostic, 'run', ignition_diagnostic_execution)
+    publication_inhibit = importlib.import_module('publication_inhibit_capture')
+    state.publication_inhibit_captures = []
+    def publication_inhibit_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == publication_inhibit.REGION:
+            raise ValueError('controlled execution failure: ' + publication_inhibit.REGION)
+        captured.update(region=publication_inhibit.REGION, controlled_only=True)
+        state.publication_inhibit_captures.append(captured)
+        return 'CONTROLLED_PUBLICATION_INHIBIT_BOUNDARY'
+    monkeypatch.setattr(publication_inhibit, 'run', publication_inhibit_execution)
+    division_callees = importlib.import_module('division_callees_capture')
+    state.division_callees_captures = []
+    def division_callees_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == division_callees.REGION:
+            raise ValueError('controlled execution failure: ' + division_callees.REGION)
+        captured.update(region=division_callees.REGION, controlled_only=True)
+        state.division_callees_captures.append(captured)
+        return 'CONTROLLED_DIVISION_CALLEES_BOUNDARY'
+    monkeypatch.setattr(division_callees, 'run', division_callees_execution)
+    timing_division = importlib.import_module('timing_division_capture')
+    state.timing_division_captures = []
+    def timing_division_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == timing_division.REGION:
+            raise ValueError('controlled execution failure: ' + timing_division.REGION)
+        captured.update(region=timing_division.REGION, controlled_only=True)
+        state.timing_division_captures.append(captured)
+        return 'CONTROLLED_TIMING_DIVISION_BOUNDARY'
+    monkeypatch.setattr(timing_division, 'run', timing_division_execution)
+    timing_tail = importlib.import_module('timing_tail_capture')
+    state.timing_tail_captures = []
+    def timing_tail_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == timing_tail.REGION:
+            raise ValueError('controlled execution failure: ' + timing_tail.REGION)
+        captured.update(region=timing_tail.REGION, controlled_only=True)
+        state.timing_tail_captures.append(captured)
+        return 'CONTROLLED_TIMING_TAIL_BOUNDARY'
+    monkeypatch.setattr(timing_tail, 'run', timing_tail_execution)
+    timing_denominator = importlib.import_module('timing_denominator_capture')
+    state.timing_denominator_captures = []
+    def timing_denominator_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == timing_denominator.REGION:
+            raise ValueError('controlled execution failure: ' + timing_denominator.REGION)
+        captured.update(region=timing_denominator.REGION, controlled_only=True)
+        state.timing_denominator_captures.append(captured)
+        return 'CONTROLLED_TIMING_DENOMINATOR_BOUNDARY'
+    monkeypatch.setattr(timing_denominator, 'run', timing_denominator_execution)
+    signed_curve = importlib.import_module('signed_curve_capture')
+    state.signed_curve_captures = []
+    def signed_curve_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == signed_curve.REGION:
+            raise ValueError('controlled execution failure: ' + signed_curve.REGION)
+        captured.update(region=signed_curve.REGION, controlled_only=True)
+        state.signed_curve_captures.append(captured)
+        return 'CONTROLLED_SIGNED_CURVE_BOUNDARY'
+    monkeypatch.setattr(signed_curve, 'run', signed_curve_execution)
+    fine_gopher = importlib.import_module('fine_gopher_capture')
+    state.fine_gopher_captures = []
+    def fine_gopher_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == fine_gopher.REGION:
+            raise ValueError('controlled execution failure: ' + fine_gopher.REGION)
+        captured.update(region=fine_gopher.REGION, controlled_only=True)
+        state.fine_gopher_captures.append(captured)
+        return 'CONTROLLED_FINE_GOPHER_BOUNDARY'
+    monkeypatch.setattr(fine_gopher, 'run', fine_gopher_execution)
+    independent_leopard = importlib.import_module('independent_leopard_capture')
+    state.independent_leopard_captures = []
+    def independent_leopard_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == independent_leopard.REGION:
+            raise ValueError('controlled execution failure: ' + independent_leopard.REGION)
+        captured.update(region=independent_leopard.REGION, controlled_only=True)
+        state.independent_leopard_captures.append(captured)
+        return 'CONTROLLED_INDEPENDENT_LEOPARD_BOUNDARY'
+    monkeypatch.setattr(independent_leopard, 'run', independent_leopard_execution)
+    uptight_duck = importlib.import_module('uptight_duck_capture')
+    state.uptight_duck_captures = []
+    def uptight_duck_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == uptight_duck.REGION:
+            raise ValueError('controlled execution failure: ' + uptight_duck.REGION)
+        captured.update(region=uptight_duck.REGION, controlled_only=True)
+        state.uptight_duck_captures.append(captured)
+        return 'CONTROLLED_UPTIGHT_DUCK_BOUNDARY'
+    monkeypatch.setattr(uptight_duck, 'run', uptight_duck_execution)
+    apc_reset_offset = importlib.import_module('apc_reset_offset_capture')
+    state.apc_reset_offset_captures = []
+    def apc_reset_offset_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == apc_reset_offset.REGION:
+            raise ValueError('controlled execution failure: ' + apc_reset_offset.REGION)
+        captured.update(region=apc_reset_offset.REGION, controlled_only=True)
+        state.apc_reset_offset_captures.append(captured)
+        return 'CONTROLLED_APC_RESET_OFFSET_BOUNDARY'
+    monkeypatch.setattr(apc_reset_offset, 'run', apc_reset_offset_execution)
+    quiet_cat = importlib.import_module('quiet_cat_capture')
+    state.quiet_cat_captures = []
+    def quiet_cat_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == quiet_cat.REGION:
+            raise ValueError('controlled execution failure: ' + quiet_cat.REGION)
+        captured.update(region=quiet_cat.REGION, controlled_only=True)
+        state.quiet_cat_captures.append(captured)
+        return 'CONTROLLED_QUIET_CAT_BOUNDARY'
+    monkeypatch.setattr(quiet_cat, 'run', quiet_cat_execution)
+    sexy_tamarin = importlib.import_module('sexy_tamarin_capture')
+    state.sexy_tamarin_captures = []
+    def sexy_tamarin_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == sexy_tamarin.REGION:
+            raise ValueError('controlled execution failure: ' + sexy_tamarin.REGION)
+        captured.update(region=sexy_tamarin.REGION, controlled_only=True)
+        state.sexy_tamarin_captures.append(captured)
+        return 'CONTROLLED_SEXY_TAMARIN_BOUNDARY'
+    monkeypatch.setattr(sexy_tamarin, 'run', sexy_tamarin_execution)
+    viridian_armadillo = importlib.import_module('viridian_armadillo_capture')
+    state.viridian_armadillo_captures = []
+    def viridian_armadillo_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == viridian_armadillo.REGION:
+            raise ValueError('controlled execution failure: ' + viridian_armadillo.REGION)
+        captured.update(region=viridian_armadillo.REGION, controlled_only=True)
+        state.viridian_armadillo_captures.append(captured)
+        return 'CONTROLLED_VIRIDIAN_ARMADILLO_BOUNDARY'
+    monkeypatch.setattr(viridian_armadillo, 'run', viridian_armadillo_execution)
+    rugged_gerbil = importlib.import_module('rugged_gerbil_capture')
+    state.rugged_gerbil_captures = []
+    def rugged_gerbil_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == rugged_gerbil.REGION:
+            raise ValueError('controlled execution failure: ' + rugged_gerbil.REGION)
+        captured.update(region=rugged_gerbil.REGION, controlled_only=True)
+        state.rugged_gerbil_captures.append(captured)
+        return 'CONTROLLED_RUGGED_GERBIL_BOUNDARY'
+    monkeypatch.setattr(rugged_gerbil, 'run', rugged_gerbil_execution)
+    spirited_hamster = importlib.import_module('spirited_hamster_capture')
+    state.spirited_hamster_captures = []
+    def spirited_hamster_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == spirited_hamster.REGION:
+            raise ValueError('controlled execution failure: ' + spirited_hamster.REGION)
+        captured.update(region=spirited_hamster.REGION, controlled_only=True)
+        state.spirited_hamster_captures.append(captured)
+        return 'CONTROLLED_SPIRITED_HAMSTER_BOUNDARY'
+    monkeypatch.setattr(spirited_hamster, 'run', spirited_hamster_execution)
+    arrogant_catfish = importlib.import_module('arrogant_catfish_capture')
+    state.arrogant_catfish_captures = []
+    def arrogant_catfish_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == arrogant_catfish.REGION:
+            raise ValueError('controlled execution failure: ' + arrogant_catfish.REGION)
+        captured.update(region=arrogant_catfish.REGION, controlled_only=True)
+        state.arrogant_catfish_captures.append(captured)
+        return 'CONTROLLED_ARROGANT_CATFISH_BOUNDARY'
+    monkeypatch.setattr(arrogant_catfish, 'run', arrogant_catfish_execution)
+    scaled_publication = importlib.import_module('scaled_publication_capture')
+    state.scaled_publication_captures = []
+    def scaled_publication_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == scaled_publication.REGION:
+            raise ValueError('controlled execution failure: ' + scaled_publication.REGION)
+        captured.update(region=scaled_publication.REGION, controlled_only=True)
+        state.scaled_publication_captures.append(captured)
+        return 'CONTROLLED_SCALED_PUBLICATION_BOUNDARY'
+    monkeypatch.setattr(scaled_publication, 'run', scaled_publication_execution)
+    normalization = importlib.import_module('normalization_capture')
+    state.normalization_captures = []
+    def normalization_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == normalization.REGION:
+            raise ValueError('controlled execution failure: ' + normalization.REGION)
+        captured.update(region=normalization.REGION, controlled_only=True)
+        state.normalization_captures.append(captured)
+        return 'CONTROLLED_NORMALIZATION_BOUNDARY'
+    monkeypatch.setattr(normalization, 'run', normalization_execution)
+    differential_curve = importlib.import_module('differential_curve_capture')
+    state.differential_curve_captures = []
+    def differential_curve_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == differential_curve.REGION:
+            raise ValueError('controlled execution failure: ' + differential_curve.REGION)
+        captured.update(region=differential_curve.REGION, controlled_only=True)
+        state.differential_curve_captures.append(captured)
+        return 'CONTROLLED_DIFFERENTIAL_CURVE_BOUNDARY'
+    monkeypatch.setattr(differential_curve, 'run', differential_curve_execution)
+    reciprocal_curves = importlib.import_module('reciprocal_curves_capture')
+    state.reciprocal_curves_captures = []
+    def reciprocal_curves_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == reciprocal_curves.REGION:
+            raise ValueError('controlled execution failure: ' + reciprocal_curves.REGION)
+        captured.update(region=reciprocal_curves.REGION, controlled_only=True)
+        state.reciprocal_curves_captures.append(captured)
+        return 'CONTROLLED_RECIPROCAL_CURVES_BOUNDARY'
+    monkeypatch.setattr(reciprocal_curves, 'run', reciprocal_curves_execution)
+    counter_threshold = importlib.import_module('counter_threshold_capture')
+    state.counter_threshold_captures = []
+    def counter_threshold_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == counter_threshold.REGION:
+            raise ValueError('controlled execution failure: ' + counter_threshold.REGION)
+        captured.update(region=counter_threshold.REGION, controlled_only=True)
+        state.counter_threshold_captures.append(captured)
+        return 'CONTROLLED_COUNTER_THRESHOLD_BOUNDARY'
+    monkeypatch.setattr(counter_threshold, 'run', counter_threshold_execution)
+    messy_roadrunner = importlib.import_module('messy_roadrunner_capture')
+    state.messy_roadrunner_captures = []
+    def messy_roadrunner_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == messy_roadrunner.REGION:
+            raise ValueError('controlled execution failure: ' + messy_roadrunner.REGION)
+        captured.update(region=messy_roadrunner.REGION, controlled_only=True)
+        state.messy_roadrunner_captures.append(captured)
+        return 'CONTROLLED_MESSY_ROADRUNNER_BOUNDARY'
+    monkeypatch.setattr(messy_roadrunner, 'run', messy_roadrunner_execution)
+    radical_capuchin = importlib.import_module('radical_capuchin_capture')
+    state.radical_capuchin_captures = []
+    def radical_capuchin_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == radical_capuchin.REGION:
+            raise ValueError('controlled execution failure: ' + radical_capuchin.REGION)
+        captured.update(region=radical_capuchin.REGION, controlled_only=True)
+        state.radical_capuchin_captures.append(captured)
+        return 'CONTROLLED_RADICAL_CAPUCHIN_BOUNDARY'
+    monkeypatch.setattr(radical_capuchin, 'run', radical_capuchin_execution)
+    adorable_llama = importlib.import_module('adorable_llama_capture')
+    state.adorable_llama_captures = []
+    def adorable_llama_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == adorable_llama.REGION:
+            raise ValueError('controlled execution failure: ' + adorable_llama.REGION)
+        captured.update(region=adorable_llama.REGION, controlled_only=True)
+        state.adorable_llama_captures.append(captured)
+        return 'CONTROLLED_ADORABLE_LLAMA_BOUNDARY'
+    monkeypatch.setattr(adorable_llama, 'run', adorable_llama_execution)
+    io_accesses = importlib.import_module('io_access_capture')
+    state.io_access_captures = []
+    def io_access_execution(target, directory, captured):
+        assert target.rom == 'JK08A' and target.stock_image.data == b'controlled stock bytes'
+        if state.fail_region == io_accesses.REGION:
+            raise ValueError('controlled execution failure: ' + io_accesses.REGION)
+        captured.update(region=io_accesses.REGION, controlled_only=True)
+        state.io_access_captures.append(captured)
+        return 'CONTROLLED_IO_ACCESS_BOUNDARY'
+    monkeypatch.setattr(io_accesses, 'run', io_access_execution)
+    state.ordinary_captures={component:[] for component,producer in ordinary.captures()}
+    for component,producer_name in ordinary.captures():
+        producer=importlib.import_module(producer_name)
+        def ordinary_execution(target,directory,captured,component=component,producer=producer):
+            assert target.rom=='JK08A' and target.stock_image.data==b'controlled stock bytes'
+            if state.fail_region==producer.REGION:
+                raise ValueError('controlled execution failure: '+producer.REGION)
+            captured.update(region=producer.REGION,controlled_only=True)
+            state.ordinary_captures[component].append(captured)
+            return 'CONTROLLED_ORDINARY_ACCESS_BOUNDARY component='+component
+        monkeypatch.setattr(producer,'run',ordinary_execution)
     monkeypatch.setattr(stock, 'build_fixture',
         lambda region, image, **kwargs: ('controlled fixture ' + region.key).encode())
     monkeypatch.setattr(stock, 'harness_defines', lambda region, image: {})
@@ -134,6 +447,19 @@ def pipeline(tmp_path, monkeypatch):
         return sum((end-start)//2 for start,end in region.code_spans)
     monkeypatch.setattr(snapshot, 'run_region', snapshot_execution)
 
+    coherent = importlib.import_module('coherent_snapshot_copy')
+    coherent_keys = [f'jk08a-coherent-{window.call:08x}' for window in coherent.matrix.WINDOWS]
+    state.coherent_keys = coherent_keys
+    def coherent_execution(index, captured, directory, *, early):
+        assert not early
+        key = coherent_keys[index]
+        state.events.append(('execute', key))
+        if state.fail_region == key:
+            raise ValueError('controlled execution failure: ' + key)
+        return dict(region=key, observations=[dict(lane='coherent', observation=47+index)],
+            instructions=sum((end-start)//2 for start,end in regions[key].code_spans))
+    monkeypatch.setattr(coherent, 'run_window', coherent_execution)
+
     def finish(label, candidate, capture, root):
         executions = [key for event, key in state.events if event == 'execute']
         if executions != state.expected:
@@ -145,6 +471,11 @@ def pipeline(tmp_path, monkeypatch):
         if label == 'CAN' and capture.get('snapshot') != dict(
                 region=SNAPSHOT, observations=[dict(lane='snapshot', observation=43)]):
             raise ValueError('controlled missing or misrouted snapshot capture')
+        if label == 'CAN' and capture.get('coherent', {}).get('windows') != [
+                dict(region=key, observations=[dict(lane='coherent', observation=47+index)],
+                    instructions=sum((end-start)//2 for start,end in regions[key].code_spans))
+                for index,key in enumerate(coherent_keys)]:
+            raise ValueError('controlled missing or misrouted coherent capture')
         state.finishes[label] = capture
         state.events.append(('finish', label))
         return dict(controlled_only=True, lane=label, capture=capture)
@@ -177,6 +508,71 @@ def test_real_dispatch_and_stock_loop_preserve_witness_routing(pipeline, capsys,
     expected = [] if mode == 'ordinary' else ['CAN'] if mode == 'CAN' else ['SID22', 'CAN']
     assert [packet['lane'] for packet in packets] == expected
     assert all(packet['controlled_only'] is True for packet in packets)
+    assert len(pipeline.width_captures) == 1
+    assert len(pipeline.byte_surface_captures) == 1
+    assert len(pipeline.exhaust_target_captures) == 1
+    assert len(pipeline.bfs_path_captures) == 1
+    assert len(pipeline.ignition_diagnostic_captures) == 1
+    assert len(pipeline.publication_inhibit_captures) == 1
+    assert len(pipeline.division_callees_captures) == 1
+    assert len(pipeline.timing_division_captures) == 1
+    assert len(pipeline.timing_tail_captures) == 1
+    assert len(pipeline.timing_denominator_captures) == 1
+    assert len(pipeline.signed_curve_captures) == 1
+    assert len(pipeline.fine_gopher_captures) == 1
+    assert len(pipeline.independent_leopard_captures) == 1
+    assert len(pipeline.uptight_duck_captures) == 1
+    assert len(pipeline.apc_reset_offset_captures) == 1
+    assert len(pipeline.quiet_cat_captures) == 1
+    assert len(pipeline.sexy_tamarin_captures) == 1
+    assert len(pipeline.viridian_armadillo_captures) == 1
+    assert len(pipeline.rugged_gerbil_captures) == 1
+    assert len(pipeline.spirited_hamster_captures) == 1
+    assert len(pipeline.arrogant_catfish_captures) == 1
+    assert len(pipeline.scaled_publication_captures) == 1
+    assert len(pipeline.normalization_captures) == 1
+    assert len(pipeline.differential_curve_captures) == 1
+    assert len(pipeline.reciprocal_curves_captures) == 1
+    assert len(pipeline.counter_threshold_captures) == 1
+    assert len(pipeline.messy_roadrunner_captures) == 1
+    assert len(pipeline.radical_capuchin_captures) == 1
+    assert len(pipeline.adorable_llama_captures) == 1
+    assert len(pipeline.io_access_captures) == 1
+    assert set(pipeline.ordinary_captures)=={component for component,producer in ordinary.captures()}
+    assert all(len(rows)==1 for rows in pipeline.ordinary_captures.values())
+    if mode != 'ordinary':
+        for component,rows in pipeline.ordinary_captures.items():
+            assert pipeline.finishes['CAN'][component] is rows[0]
+        assert pipeline.finishes['CAN']['width_views'] is pipeline.width_captures[0]
+        assert pipeline.finishes['CAN']['byte_surface_paths'] is pipeline.byte_surface_captures[0]
+        assert pipeline.finishes['CAN']['exhaust_target_paths'] is pipeline.exhaust_target_captures[0]
+        assert pipeline.finishes['CAN']['bfs_paths'] is pipeline.bfs_path_captures[0]
+        assert pipeline.finishes['CAN']['ignition_diagnostic_paths'] is pipeline.ignition_diagnostic_captures[0]
+        assert pipeline.finishes['CAN']['publication_inhibit_paths'] is pipeline.publication_inhibit_captures[0]
+        assert pipeline.finishes['CAN']['division_callees_paths'] is pipeline.division_callees_captures[0]
+        assert pipeline.finishes['CAN']['timing_division_paths'] is pipeline.timing_division_captures[0]
+        assert pipeline.finishes['CAN']['timing_tail_paths'] is pipeline.timing_tail_captures[0]
+        assert pipeline.finishes['CAN']['timing_denominator_paths'] is pipeline.timing_denominator_captures[0]
+        assert pipeline.finishes['CAN']['signed_curve_paths'] is pipeline.signed_curve_captures[0]
+        assert pipeline.finishes['CAN']['fine_gopher_paths'] is pipeline.fine_gopher_captures[0]
+        assert pipeline.finishes['CAN']['independent_leopard_paths'] is pipeline.independent_leopard_captures[0]
+        assert pipeline.finishes['CAN']['uptight_duck_paths'] is pipeline.uptight_duck_captures[0]
+        assert pipeline.finishes['CAN']['apc_reset_offset_paths'] is pipeline.apc_reset_offset_captures[0]
+        assert pipeline.finishes['CAN']['quiet_cat_paths'] is pipeline.quiet_cat_captures[0]
+        assert pipeline.finishes['CAN']['sexy_tamarin_paths'] is pipeline.sexy_tamarin_captures[0]
+        assert pipeline.finishes['CAN']['viridian_armadillo_paths'] is pipeline.viridian_armadillo_captures[0]
+        assert pipeline.finishes['CAN']['rugged_gerbil_paths'] is pipeline.rugged_gerbil_captures[0]
+        assert pipeline.finishes['CAN']['spirited_hamster_paths'] is pipeline.spirited_hamster_captures[0]
+        assert pipeline.finishes['CAN']['arrogant_catfish_paths'] is pipeline.arrogant_catfish_captures[0]
+        assert pipeline.finishes['CAN']['scaled_publication_paths'] is pipeline.scaled_publication_captures[0]
+        assert pipeline.finishes['CAN']['normalization_paths'] is pipeline.normalization_captures[0]
+        assert pipeline.finishes['CAN']['differential_curve_paths'] is pipeline.differential_curve_captures[0]
+        assert pipeline.finishes['CAN']['reciprocal_curves_paths'] is pipeline.reciprocal_curves_captures[0]
+        assert pipeline.finishes['CAN']['counter_threshold_paths'] is pipeline.counter_threshold_captures[0]
+        assert pipeline.finishes['CAN']['messy_roadrunner_paths'] is pipeline.messy_roadrunner_captures[0]
+        assert pipeline.finishes['CAN']['radical_capuchin_paths'] is pipeline.radical_capuchin_captures[0]
+        assert pipeline.finishes['CAN']['adorable_llama_paths'] is pipeline.adorable_llama_captures[0]
+        assert pipeline.finishes['CAN']['io_access_paths'] is pipeline.io_access_captures[0]
     assert sum(line.startswith('VQ_SH_ELF_VERIFY status=PASS ')
                for line in output.out.splitlines()) == 1
     acceptance = importlib.import_module('acceptance')
@@ -190,7 +586,7 @@ def test_real_dispatch_and_stock_loop_preserve_witness_routing(pipeline, capsys,
         assert pipeline.sid_receivers == [None]
 
 
-@pytest.mark.parametrize('fault', ['drop-CAN', 'drop-SID22', 'swap', 'replace-CAN', 'alias'])
+@pytest.mark.parametrize('fault', ['drop-CAN', 'drop-SID22', 'swap', 'replace-CAN', 'alias', 'drop-coherent'])
 def test_controlled_route_mutations_cannot_publish_a_candidate(
         pipeline, monkeypatch, capsys, fault):
     original = pipeline.stock.run_region
@@ -201,13 +597,15 @@ def test_controlled_route_mutations_cannot_publish_a_candidate(
         elif fault == 'swap': copy_capture, sid22_capture = sid22_capture, copy_capture
         elif fault == 'replace-CAN': copy_capture = {}
         elif fault == 'alias': copy_capture = sid22_capture
+        elif fault == 'drop-coherent' and region.key in pipeline.coherent_keys: copy_capture = None
         return original(region, invoke, directory,
             copy_capture=copy_capture, sid22_capture=sid22_capture)
 
     monkeypatch.setattr(pipeline.stock, 'run_region', changed)
     assert pipeline.driver.main(['--can-copy-witness', '--sid22-witness']) == 1
     output = capsys.readouterr()
-    assert 'missing or misrouted' in output.err
+    assert ('missing or misrouted' in output.err
+            or 'coherent stock loop omits, duplicates, reorders or changes inputs' in output.err)
     assert candidates(output.out) == []
 
 
@@ -284,3 +682,283 @@ def test_feedback_timing_cannot_satisfy_the_full_primary_stage_contract(
     with pytest.raises(ValueError, match='complete primary registry order'):
         acceptance.check_stages(output.out, pipeline.stock.REGIONS)
     assert candidates(output.out) == []
+
+
+def test_width_view_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-width-views'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_byte_surface_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-byte-surface-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_exhaust_target_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-exhaust-target-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_bfs_path_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-bfs-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_ignition_diagnostic_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-ignition-diagnostic-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_publication_inhibit_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-publication-inhibit-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_division_callees_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-division-callees-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_timing_division_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-timing-division-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_sexy_tamarin_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-sexy-tamarin-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_viridian_armadillo_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-viridian-armadillo-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_rugged_gerbil_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-rugged-gerbil-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_spirited_hamster_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-spirited-hamster-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_arrogant_catfish_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-arrogant-catfish-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_scaled_publication_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-scaled-publication-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_normalization_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-normalization-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_differential_curve_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-differential-curve-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_reciprocal_curves_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-reciprocal-curves-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_counter_threshold_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-counter-threshold-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_messy_roadrunner_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-messy-roadrunner-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_radical_capuchin_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-radical-capuchin-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_adorable_llama_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-adorable-llama-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_io_access_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-io-access-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+@pytest.mark.parametrize('component,producer',ordinary.captures())
+def test_each_registered_ordinary_capture_failure_prevents_the_complete_original_candidate(pipeline,capsys,component,producer):
+    pipeline.fail_region=importlib.import_module(producer).REGION
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_quiet_cat_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-quiet-cat-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_apc_reset_offset_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-apc-reset-offset-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_uptight_duck_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-uptight-duck-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_independent_leopard_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-independent-leopard-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_fine_gopher_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-fine-gopher-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_signed_curve_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-signed-curve-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_timing_denominator_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-timing-denominator-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}
+
+
+def test_timing_tail_failure_prevents_the_complete_original_candidate(pipeline,capsys):
+    pipeline.fail_region='jk08a-timing-tail-paths'
+    assert pipeline.driver.main(['--can-copy-witness','--sid22-witness'])!=0
+    output=capsys.readouterr()
+    assert candidates(output.out)==[]
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in output.out
+    assert pipeline.finishes=={}

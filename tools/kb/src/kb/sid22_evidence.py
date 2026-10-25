@@ -267,7 +267,7 @@ def validate_item(evidence, symbol, model, claim='identity', *, contract=None):
 
 
 def scope_digest(model):
-    """Full incident facts of the exact readers, publisher and selected DIDs."""
+    """Incident RAM-reader facts, with exact diagnostic ROM representations outside this namespace."""
     from kb import convert
     from kb.test_evidence import digest, encode
     contract = descriptor(model.root)
@@ -292,6 +292,9 @@ def scope_digest(model):
         links = []
         for link in model.links:
             if link.owner is not meaning and link.to is not meaning:
+                continue
+            from kb import diagnostic_rom_contract
+            if diagnostic_rom_contract.sid_representation_only(link,model.root):
                 continue
             from kb import copy_evidence
             evidence = copy_evidence.semantic_evidence(link)
@@ -330,7 +333,9 @@ def dependencies(root, *, receipt=None):
 def terminal_check(process):
     from kb import copy_evidence
     copy_evidence.terminal_check(process)
-    if process['command'] != ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness']:
+    if process['command'] not in (
+            ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness'],
+            ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness', '--native-test-witness']):
         raise ValueError('the complete primary SID22 witness process did not succeed')
 
 

@@ -6,14 +6,14 @@ from pathlib import Path
 import tomllib
 from datetime import datetime
 import math
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 
-from kb import local_paths, repo, sh2
+from kb import local_paths, repo, sh2, ordinary_access_registry as ordinary
 from kb.model import SymbolKey
 from kb.test_evidence import digest, encode, json_text, publish
 
-SCHEMA = 2
+SCHEMA = 3
 PREFIX = 'can-copy-'
 KEY = 'can-copy-v1:jk08a-latch-12'
 DESCRIPTOR = 'defs/JK08A.can-latch-copy.toml'
@@ -43,9 +43,75 @@ EXECUTION_FILES = (
     'tools/sh-elf-run/harness-stock-jk08a-injection-snapshot.c',
     'tools/sh-elf-run/injection-snapshot-cases.h',
     'tools/sh-elf-run/stock_injection_start_delay_invoke.s',
+    'defs/JK08A.coherent-copy.toml',
+    'defs/packed-field-transfers.toml',
+    'defs/JK08A.width-views.toml',
+    'defs/JK08A.width-dispositions.toml',
+    'defs/JK08A.byte-surface-paths.toml',
+    'defs/JK08A.exhaust-target-path.toml',
+    'defs/JK08A.bfs-path.toml',
+    'defs/JK08A.ignition-diagnostic-path.toml',
+    'defs/JK08A.diagnostic-ROM-dependencies.toml',
+    'defs/JK08A.publication-inhibit-path.toml',
+    'defs/JK08A.division-callees.toml',
+    'defs/JK08A.timing-division.toml',
+    'defs/JK08A.timing-tail.toml',
+    'defs/JK08A.timing-denominator.toml',
+    'defs/JK08A.signed-curve.toml',
+    'defs/JK08A.signed-curve-argument.toml',
+    'defs/JK08A.fine-gopher.toml',
+    'defs/JK08A.fine-gopher-arguments.toml',
+    'defs/JK08A.independent-leopard.toml',
+    'defs/JK08A.independent-leopard-argument.toml',
+    'defs/JK08A.uptight-duck.toml',
+    'defs/JK08A.uptight-duck-argument.toml',
+    'defs/JK08A.apc-reset-offset.toml',
+    'defs/JK08A.apc-reset-offset-argument.toml',
+    'defs/JK08A.quiet-cat.toml',
+    'defs/JK08A.quiet-cat-argument.toml',
+    'defs/JK08A.sexy-tamarin.toml',
+    'defs/JK08A.sexy-tamarin-argument.toml',
+    'defs/JK08A.viridian-armadillo.toml',
+    'defs/JK08A.viridian-armadillo-argument.toml',
+    'defs/JK08A.rugged-gerbil.toml',
+    'defs/JK08A.rugged-gerbil-argument.toml',
+    'defs/JK08A.spirited-hamster.toml',
+    'defs/JK08A.spirited-hamster-argument.toml',
+    'defs/JK08A.arrogant-catfish.toml',
+    'defs/JK08A.arrogant-catfish-argument.toml',
+    'defs/JK08A.scaled-publication.toml',
+    'defs/JK08A.scaled-publication-outputs.toml',
+    'defs/JK08A.normalization.toml',
+    'defs/JK08A.normalization-arguments.toml',
+    'defs/JK08A.differential-curve.toml',
+    'defs/JK08A.differential-curve-arguments.toml',
+    'defs/JK08A.reciprocal-curves.toml',
+    'defs/JK08A.reciprocal-curves-arguments.toml',
+    'defs/JK08A.counter-threshold.toml',
+    'defs/JK08A.counter-threshold-factor.toml',
+    'defs/JK08A.messy-roadrunner.toml',
+    'defs/JK08A.messy-roadrunner-argument.toml',
+    'defs/JK08A.radical-capuchin.toml',
+    'defs/JK08A.radical-capuchin-output.toml',
+    'defs/JK08A.adorable-llama.toml',
+    'defs/JK08A.adorable-llama-argument.toml',
+    'defs/JK08A.closed-loop-sample-argument.toml',
+    'defs/JK08A.denominator-arguments.toml',
+    'defs/JK08A.timing-arguments.toml',
+    'defs/JK08A.snapshot-ROM-dependency.toml',
+    'defs/JK08A.io-accesses.toml',
+    'defs/JK08A.io-access-claims.toml',
+    'tools/sh-elf-run/coherent_snapshot_copy.py',
+    'tools/sh-elf-run/harness-coherent-copy-capture.c',
+    'tools/sh-elf-run/coherent-copy-cases.h',
+    *(f'tools/sh-elf-run/stock_jk08a_coherent_{call:08x}.s' for call in (
+        0x20f18,0x20f36,0x20f56,0x20f6c,0x20f7c,0x20fcc,0x2105a,0x21310,0x2132c,0x21334,0x21348,
+        0x20bd0,0x20cba,0x20cdc,0x20ce6)),
+    *ordinary.EXECUTION_FILES,
 )
 MARKER = 'kb-copy-candidate '
 _CONSUMED = ContextVar('can_copy_consumed_outputs', default=None)
+_PREPARED_PUBLICATION = ContextVar('prepared_native_publication_records', default=None)
 
 
 def _registered(item, symbol=None):
@@ -56,9 +122,10 @@ def _registered(item, symbol=None):
 
 
 def registered(item, symbol=None):
-    from kb import injection_copy_evidence, sid22_evidence
-    return (_registered(item, symbol) or sid22_evidence.registered(item, symbol)
-            or injection_copy_evidence.registered(item, symbol))
+    from kb import coherent_copy_evidence, injection_copy_evidence, sid22_evidence, io_access_claim_contract
+    return (_registered(item,symbol) or sid22_evidence.registered(item,symbol)
+        or injection_copy_evidence.registered(item,symbol) or coherent_copy_evidence.registered(item,symbol)
+        or io_access_claim_contract.registered(item) or ordinary.registered(item))
 
 
 def item(direction):
@@ -199,6 +266,9 @@ def scope_digest(model):
         for link in model.links:
             if link.owner is not meaning and link.to is not meaning:
                 continue
+            from kb import snapshot_rom_contract
+            if snapshot_rom_contract.representation_only(link,model.root):
+                continue
             evidence = semantic_evidence(link)
             links.append((link.owner.key, link.type, link.to.key, link.slot, link.offset,
                           value(link.props), value(evidence), link.roles, link.stated, link.sources))
@@ -219,14 +289,15 @@ def scope_digest(model):
 
 def semantic_evidence(link):
     """Exclude unique, exactly scoped publication attachments from fact hashes."""
-    from kb import injection_copy_evidence
-    result = []
+    from kb import coherent_copy_evidence, injection_copy_evidence
+    result=[]
     for entry in link.evidence:
-        can = (link.type in MEMBERS and link.owner.key == MEMBERS[link.type][0]
-               and link.to.key == 'coherent_snapshot/fn' and link.slot is None
-               and link.offset is None and encode(entry) == encode(item(link.type)))
-        if (sum(encode(other) == encode(entry) for other in link.evidence) == 1
-                and (can or injection_copy_evidence.publication(link, entry))):
+        can=(link.type in MEMBERS and link.owner.key==MEMBERS[link.type][0]
+            and link.to.key=='coherent_snapshot/fn' and link.slot is None
+            and link.offset is None and encode(entry)==encode(item(link.type)))
+        if (sum(encode(other)==encode(entry) for other in link.evidence)==1
+                and (can or injection_copy_evidence.publication(link,entry)
+                    or coherent_copy_evidence.publication(link,entry) or ordinary.publication(link,entry))):
             continue
         result.append(entry)
     return result
@@ -268,6 +339,9 @@ def dependencies(root, *, receipt=None):
 
 def _snapshot(root):
     def read(path):
+        prepared = _PREPARED_PUBLICATION.get()
+        if prepared is not None and prepared[0] == Path(root).resolve() and path in prepared[1]:
+            return prepared[1][path][0]
         try:
             return local_paths.read_path(path, root).read_bytes()
         except (OSError, ValueError):
@@ -285,6 +359,45 @@ def _snapshot(root):
 
 
 @contextmanager
+def prepared_publication(root, records):
+    """Consume sealed prepared records through ordinary validators, without publishing.
+
+    The context replaces only the three registered receipt reads. Original
+    processes, streams, native contracts and semantic validators remain live.
+    It creates a primitive snapshot and restores the caller's snapshot on exit;
+    no parsed model or verdict is retained across operations.
+    """
+    from kb import sid22_evidence, test_evidence
+    root = Path(root).resolve()
+    expected = {RECEIPT, sid22_evidence.RECEIPT, str(test_evidence.RECEIPT)}
+    if type(records) is not dict or set(records) != expected or _PREPARED_PUBLICATION.get() is not None:
+        raise ValueError('prepared native publication requires the exact three registered records')
+    held = {}
+    for name, reference in records.items():
+        if type(reference) is not dict or set(reference) != {'path', 'sha256'}:
+            raise ValueError('prepared publication requires exact owned paths and sealed bytes')
+        path = local_paths.owned(reference['path'], root).resolve()
+        if not path.is_relative_to(local_paths.results_root(root)):
+            raise ValueError('prepared publication records must live in tmp/local-results')
+        data = path.read_bytes()
+        if hashlib.sha256(data).hexdigest() != reference['sha256']:
+            raise ValueError('a prepared publication record changes before consumption')
+        if type(json.loads(data)) is not dict:
+            raise ValueError('a prepared publication record has another schema')
+        held[name] = data, path
+    token = _PREPARED_PUBLICATION.set((root, held))
+    previous = _CONSUMED.set(None)
+    try:
+        with consuming(root):
+            yield
+        if any(path.read_bytes() != data for data, path in held.values()):
+            raise ValueError('a prepared publication record changes during native writes')
+    finally:
+        _CONSUMED.reset(previous)
+        _PREPARED_PUBLICATION.reset(token)
+
+
+@contextmanager
 def consuming(root):
     """One primitive output snapshot for a verdict or graph publication."""
     previous = _CONSUMED.get()
@@ -293,7 +406,13 @@ def consuming(root):
         return
     token = _CONSUMED.set((Path(root).resolve(), _snapshot(root)))
     try:
-        yield
+        from kb import test_evidence
+        prepared = nullcontext()
+        if test_evidence.REQUIRE_CONTEXTS:
+            from kb import test_catalog
+            prepared = test_catalog.preparing(root)
+        with prepared:
+            yield
     finally:
         _CONSUMED.reset(token)
 
@@ -310,35 +429,80 @@ def proof_state(root, *, live=False):
 
 
 def identity_only(symbol):
-    return symbol is not None and symbol.meaning is not None and any(
-        registered(entry, symbol) for link in symbol.meaning.links if link.owner is symbol.meaning
-        for entry in link.evidence)
+    return symbol is not None and symbol.meaning is not None and (
+        any(registered(entry, symbol) for entry in symbol.evidence)
+        or any(registered(entry, symbol) for link in symbol.meaning.links if link.owner is symbol.meaning
+               for entry in link.evidence))
 
 
 def model_state(model):
     from itertools import chain
-    from kb import injection_copy_evidence, sid22_evidence
+    from kb import injection_copy_evidence, sid22_evidence, diagnostic_rom_contract, diagnostic_rom_evidence
+    from kb import timing_argument_contract,timing_argument_evidence
+    from kb import calculation_dependency_contract,calculation_dependency_evidence
+    from kb import snapshot_rom_contract,snapshot_rom_evidence
+    from kb import io_access_claim_contract,io_access_evidence
     entries = [entry for entries in chain(
             (link.evidence for link in model.links),
             (symbol.evidence for symbol in model.symbols.values())) for entry in entries]
     has_copy = any(_registered(entry) for entry in entries)
     has_sid22 = any(sid22_evidence.registered(entry) for entry in entries)
-    has_snapshot = any(injection_copy_evidence.registered(entry) for entry in entries)
-    if not has_copy and not has_sid22 and not has_snapshot:
+    from kb import coherent_copy_evidence
+    has_snapshot = any(injection_copy_evidence.registered(entry) or coherent_copy_evidence.registered(entry) for entry in entries)
+    has_diagnostic = (any(diagnostic_rom_contract.registered(entry) for entry in entries)
+                      or any(diagnostic_rom_contract.looks_like_dependency(link) for link in model.links))
+    has_argument = (any(timing_argument_contract.registered(entry) for entry in entries)
+                      or any(timing_argument_contract.looks_like_dependency(link) for link in model.links))
+    has_snapshot_ROM = (any(snapshot_rom_contract.registered(entry) for entry in entries)
+                      or any(snapshot_rom_contract.looks_like_dependency(link) for link in model.links))
+    has_calculation = (any(calculation_dependency_contract.registered(entry) for entry in entries)
+                       or any(calculation_dependency_contract.looks_like_dependency(link) for link in model.links))
+    has_io = (any(io_access_claim_contract.registered(entry) for entry in entries)
+              or any(io_access_claim_contract.looks_like_access(link) for link in model.links))
+    ordinary_active=ordinary.active(model,entries)
+    if not any((has_copy,has_sid22,has_snapshot,has_diagnostic,has_argument,has_snapshot_ROM,
+            has_calculation,has_io,ordinary_active)):
         return None
     try:
         return (proof_state(model.root),
-                (scope_digest(model), injection_copy_evidence.scope_digest(model), inputs(model.root))
+                (scope_digest(model), injection_copy_evidence.scope_digest(model),
+                 coherent_copy_evidence.scope_digest(model), inputs(model.root))
                 if has_copy or has_snapshot else None,
                 (sid22_evidence.scope_digest(model), sid22_evidence.inputs(model.root))
-                if has_sid22 else None)
+                if has_sid22 else None,
+                diagnostic_rom_evidence.dependency_state(model) if has_diagnostic else None,
+                timing_argument_evidence.dependency_state(model) if has_argument else None,
+                snapshot_rom_evidence.dependency_state(model) if has_snapshot_ROM else None,
+                calculation_dependency_evidence.dependency_state(model) if has_calculation else None,
+                io_access_evidence.dependency_state(model) if has_io else None,
+                tuple((family.mode,family.evidence.dependency_state(model)) for family in ordinary_active))
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         from kb import convert
         return proof_state(model.root), 'invalid', digest(encode(convert.dump(model)))
 
 
 def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
-    from kb import injection_copy_evidence, sid22_evidence
+    from kb import coherent_copy_evidence, injection_copy_evidence, sid22_evidence
+    from kb import io_access_claim_contract,io_access_evidence
+    matches=ordinary.matching(evidence)
+    io=io_access_claim_contract.registered(evidence)
+    physical=(_registered(evidence,symbol) or sid22_evidence.registered(evidence,symbol)
+        or injection_copy_evidence.registered(evidence,symbol)
+        or coherent_copy_evidence.registered(evidence,symbol))
+    if matches:
+        if len(matches)!=1 or physical or io:
+            return 'ambiguous reserved access execution proof'
+        if matches[0].withdrawal_only:
+            return 'an ordinary withdrawal grants no owning evidence or supported fact'
+        return matches[0].evidence.failure(evidence,symbol,model,claim)
+    if io:
+        if physical:return 'ambiguous reserved access execution proof'
+        return io_access_evidence.failure(evidence,symbol,model,claim)
+    if coherent_copy_evidence.registered(evidence, symbol):
+        if (_registered(evidence, symbol) or sid22_evidence.registered(evidence, symbol)
+                or injection_copy_evidence.registered(evidence, symbol)):
+            return 'ambiguous reserved access execution proof'
+        return coherent_copy_evidence.failure(evidence, symbol, model, claim, record=record)
     if injection_copy_evidence.registered(evidence, symbol):
         if _registered(evidence, symbol) or sid22_evidence.registered(evidence, symbol):
             return 'ambiguous reserved access execution proof'
@@ -371,7 +535,8 @@ def failure(evidence, symbol=None, model=None, claim=None, *, record=None):
         if candidate['mode'] != 'full' or candidate['complete'] is not True:
             return 'copy execution is a subset or incomplete'
         if (candidate['scope'] != scope_digest(model) or candidate['inputs'] != inputs(model.root)
-                or candidate['snapshot_scope'] != injection_copy_evidence.scope_digest(model)):
+                or candidate['snapshot_scope'] != injection_copy_evidence.scope_digest(model)
+                or candidate['coherent_scope'] != coherent_copy_evidence.scope_digest(model)):
             return 'copy execution facts or inputs are stale'
         from kb import copy_witness
         copy_witness.validate(candidate, model.root)
@@ -405,7 +570,9 @@ def terminal_check(process):
             or process.get('interrupted', False) is not False
             or process['command'] not in (
                 ['tools/sh-elf-run/run.sh', '--can-copy-witness'],
-                ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness'])):
+                ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness'],
+                ['tools/sh-elf-run/run.sh', '--can-copy-witness', '--sid22-witness',
+                 '--native-test-witness'])):
         raise ValueError('the complete primary CAN witness process did not succeed')
     bound, elapsed = process['declared_limit_seconds'], process['inclusive_process_seconds']
     if (type(bound) is not int or bound <= 0 or type(elapsed) not in (int, float)
@@ -417,11 +584,23 @@ def terminal_check(process):
 
 
 def accepted(model, symbol, function, claim):
-    from kb import injection_copy_evidence, sid22_evidence
+    from kb import coherent_copy_evidence, injection_copy_evidence, sid22_evidence
+    from kb import io_access_claim_contract,io_access_evidence
+    try:family=ordinary.claim_family(symbol,claim)
+    except (ValueError,TypeError,KeyError,AttributeError):return None
+    if family is not None:
+        return None if family.withdrawal_only else family.evidence.accepted(model,symbol,function,claim)
+    if (any(io_access_claim_contract.registered(entry) for entry in claim['evidence'])
+            or symbol.meaning is not None and symbol.meaning.key in {row[2] for row in io_access_claim_contract.IDENTITIES}):
+        return io_access_evidence.accepted(model,symbol,function,claim)
     if function.key == sid22_evidence.FUNCTION:
         return sid22_evidence.accepted(model, symbol, function, claim)
+    if any(coherent_copy_evidence.registered(entry,symbol) for entry in claim['evidence']):
+        return coherent_copy_evidence.accepted(model,symbol,function,claim)
     if function.key != FUNCTION:
         return None
+    if symbol.key in coherent_copy_evidence.MEMBER_KEYS:
+        return coherent_copy_evidence.accepted(model, symbol, function, claim)
     if symbol.key in injection_copy_evidence.MEMBER_KEYS:
         return injection_copy_evidence.accepted(model, symbol, function, claim)
     entries = [entry for entry in claim['evidence'] if registered(entry, symbol)]
@@ -445,9 +624,13 @@ def claim_fields(link, layout):
 def retires(before, after, old_claim):
     """Exact semantic CAS for one proof attachment, never absence-based retirement."""
     try:
-        from kb import injection_copy_evidence, sid22_evidence
+        from kb import coherent_copy_evidence, injection_copy_evidence, sid22_evidence
+        family=ordinary.original_family(old_claim)
+        if family is not None:return family.resolution.retires(before,after,old_claim)
         if old_claim['to'] == sid22_evidence.FUNCTION_MEANING:
             return sid22_evidence.retires(before, after, old_claim)
+        if old_claim['owner'] in {row[2] for row in coherent_copy_evidence.MEMBERS}:
+            return coherent_copy_evidence.retires(before, after, old_claim)
         if old_claim['owner'] in {row[2] for row in injection_copy_evidence.MEMBERS}:
             return injection_copy_evidence.retires(before, after, old_claim)
         from kb import reconciliation

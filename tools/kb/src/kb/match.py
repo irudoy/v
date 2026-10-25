@@ -463,7 +463,22 @@ def context(model, symbol, item):
 def verify(model, symbol, item):
     """None when the evidence item holds on L0 and the images, else what
     fails. Kinds that L0 and the images do not decide hold here."""
-    from kb import copy_evidence
+    from kb import copy_evidence, diagnostic_rom_contract, diagnostic_rom_evidence
+    from kb import timing_argument_contract,timing_argument_evidence
+    from kb import calculation_dependency_contract,calculation_dependency_evidence
+    from kb import snapshot_rom_contract,snapshot_rom_evidence
+    from kb import copy_evidence, ordinary_access_registry as ordinary
+    from kb import io_access_claim_contract
+    if io_access_claim_contract.registered(item) or ordinary.registered(item):
+        return copy_evidence.failure(item,symbol,model,'identity')
+    if calculation_dependency_contract.registered(item):
+        return calculation_dependency_evidence.failure(item,symbol,model,item.get('supports'))
+    if snapshot_rom_contract.registered(item):
+        return snapshot_rom_evidence.failure(item,symbol,model,'identity')
+    if timing_argument_contract.registered(item):
+        return timing_argument_evidence.failure(item,symbol,model,'identity')
+    if diagnostic_rom_contract.registered(item):
+        return diagnostic_rom_evidence.failure(item,symbol,model,'identity')
     if copy_evidence.registered(item, symbol):
         return copy_evidence.failure(item, symbol, model, 'identity')
     check = VERIFIERS.get(item.get("kind"))
@@ -900,6 +915,22 @@ def mcu_manual(model, key):
 def _verify_indirect(ctx):
     """A `base` item: the instruction or pool literal at `at` references the
     base, the address of the symbol minus `value`. Other modes hold here."""
+    from kb import diagnostic_rom_contract, diagnostic_rom_evidence
+    from kb import timing_argument_contract,timing_argument_evidence
+    from kb import calculation_dependency_contract,calculation_dependency_evidence
+    from kb import snapshot_rom_contract,snapshot_rom_evidence
+    from kb import copy_evidence, ordinary_access_registry as ordinary
+    from kb import io_access_claim_contract
+    if io_access_claim_contract.registered(ctx.item) or ordinary.registered(ctx.item):
+        return copy_evidence.failure(ctx.item,ctx.symbol,ctx.model,'identity')
+    if calculation_dependency_contract.registered(ctx.item):
+        return calculation_dependency_evidence.failure(ctx.item,ctx.symbol,ctx.model,ctx.item.get('supports'))
+    if snapshot_rom_contract.registered(ctx.item):
+        return snapshot_rom_evidence.failure(ctx.item,ctx.symbol,ctx.model,'identity')
+    if timing_argument_contract.registered(ctx.item):
+        return timing_argument_evidence.failure(ctx.item,ctx.symbol,ctx.model,'identity')
+    if diagnostic_rom_contract.registered(ctx.item):
+        return diagnostic_rom_evidence.failure(ctx.item,ctx.symbol,ctx.model,'identity')
     if ctx.item["mode"] != "base":
         return None
     failure = _own(ctx)
@@ -996,12 +1027,24 @@ VERIFIERS = {
 
 # Grounding.
 
-def rank(item, symbol=None, model=None, claim=None):
+def rank(item, symbol=None, model=None, claim=None, *, origin=None):
     """The level rank that an evidence item of `symbol` grounds: its kind's
     level, `code` for `manual` identity evidence of a `reg` symbol from the
     hardware manual of the MCU, and at most `candidate` for a counted match
     whose count is not 1."""
-    from kb import copy_evidence
+    from kb import copy_evidence, diagnostic_rom_contract, diagnostic_rom_evidence
+    from kb import timing_argument_contract,timing_argument_evidence
+    from kb import calculation_dependency_contract,calculation_dependency_evidence
+    from kb import snapshot_rom_contract,snapshot_rom_evidence
+    if calculation_dependency_contract.registered(item) and calculation_dependency_evidence.failure(item,symbol,model,claim) is not None:
+        return -1
+    if snapshot_rom_contract.registered(item) and snapshot_rom_evidence.failure(item,symbol,model,claim) is not None:
+        return -1
+    if timing_argument_contract.registered(item) and timing_argument_evidence.failure(item,symbol,model,claim) is not None:
+        return -1
+    if diagnostic_rom_contract.registered(item) and diagnostic_rom_evidence.failure(
+            item,symbol,model,claim) is not None:
+        return -1
     if copy_evidence.registered(item, symbol) and copy_evidence.failure(
             item, symbol, model, claim) is not None:
         return -1
@@ -1012,7 +1055,7 @@ def rank(item, symbol=None, model=None, claim=None):
     found = vocab.LEVEL_RANK[level]
     if kind == 'test':
         from kb import test_evidence
-        if test_evidence.failure(item, symbol, model, claim) is not None:
+        if test_evidence.failure(item, symbol, model, claim, origin=origin) is not None:
             return -1
     if (kind == "manual" and symbol is not None and symbol.kind == "reg"
             and item.get("supports", "identity") == "identity"
@@ -1032,9 +1075,15 @@ def _anchor(model, symbol, failures):
     """The rank that identity evidence of the symbol's own layout grounds,
     or a `relies` link of its meaning with evidence of that layout."""
     best = -1
-    for item in symbol.evidence:
-        if (item.get("supports", "identity") != "identity"
-                or rank(item, symbol, model, 'identity') <= best):
+    for evidence_index, item in enumerate(symbol.evidence):
+        if item.get("supports", "identity") != "identity":
+            continue
+        origin = None
+        if item.get('kind') == 'test':
+            from kb import test_evidence, test_origins
+            if test_evidence.requires_origin(item, symbol):
+                origin = test_origins.capture(model, test_origins.symbol_route(symbol, evidence_index))
+        if rank(item, symbol, model, 'identity', origin=origin) <= best:
             continue
         at = location(item.get("at"))
         if at is not None and at[0] != symbol.layout:
@@ -1045,24 +1094,29 @@ def _anchor(model, symbol, failures):
         if failure is not None:
             failures.append((item, failure))
             continue
-        best = rank(item, symbol, model, 'identity')
+        best = rank(item, symbol, model, 'identity', origin=origin)
     meaning = symbol.meaning
     for link in meaning.links if meaning is not None else ():
         if (link.owner is not meaning or not link.props.get("relies")
                 or link.props.get("supports", "identity") != "identity"):
             continue
-        for item in link.evidence:
+        for evidence_index, item in enumerate(link.evidence):
             at = location(item.get("at"))
             if at is not None and at[0] == symbol.layout and _complete(item):
+                origin = None
+                if item.get('kind') == 'test':
+                    from kb import test_evidence, test_origins
+                    if test_evidence.requires_origin(item, symbol):
+                        origin = test_origins.capture(model, test_origins.link_route(link, evidence_index))
                 from kb import copy_evidence
                 if copy_evidence.registered(item, symbol):
                     failure = copy_evidence.failure(item, symbol, model, 'identity')
                     if failure is not None:
                         failures.append((item, failure))
                     else:
-                        best = max(best, rank(item, symbol, model, 'identity'))
+                        best = max(best, rank(item, symbol, model, 'identity', origin=origin))
                 else:
-                    best = max(best, rank(item, symbol, model, 'identity'))
+                    best = max(best, rank(item, symbol, model, 'identity', origin=origin))
     return best
 
 

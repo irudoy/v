@@ -46,6 +46,7 @@ class Claim:
     items: list = field(default_factory=list)
     deps: list = field(default_factory=list)
     symbol: object = None
+    origins: list = field(default_factory=list)
 
 
 @dataclass(eq=False)
@@ -300,12 +301,18 @@ class _Collector:
             return
         self.depend(claim, item.get("relies"), "trace evidence", symbol.meaning, symbol, shown)
 
-    def evidence(self, claim, symbol, items):
-        for item in items or ():
+    def evidence(self, claim, symbol, items, *, origin_route=None):
+        for evidence_index, item in enumerate(items or ()):
             if item.get("kind") == "trace" and item.get("relies") in vocab.RELIES:
                 self.trace(claim, item)
             else:
                 claim.items.append((symbol, item))
+                origin = None
+                if item.get('kind') == 'test' and origin_route is not None:
+                    from kb import test_evidence, test_origins
+                    if test_evidence.requires_origin(item, symbol):
+                        origin = test_origins.capture(self.model, (*origin_route, 'evidence', evidence_index))
+                claim.origins.append(origin)
 
     def collect(self):
         model = self.model
@@ -341,7 +348,7 @@ class _Collector:
     def _meaning_evidence(self, meaning):
         path, subject = checks._sources(meaning), checks._subject(meaning)
         for _, symbol in sorted(meaning.symbols.items()):
-            for item in symbol.evidence:
+            for evidence_index, item in enumerate(symbol.evidence):
                 supports = item.get("supports", "identity")
                 name = "identity" if supports == "homology" else supports
                 if name not in KEYS:
@@ -353,25 +360,59 @@ class _Collector:
                 for claim in found:
                     if claim is not None:
                         self.evidence(claim, symbol, [item])
-        owners = [(subject, meaning.props, meaning.home_symbol)]
-        owners += [(symbol.key.key, symbol.props, symbol)
+                        if item.get('kind') == 'test':
+                            from kb import test_evidence, test_origins
+                            if test_evidence.requires_origin(item, symbol):
+                                claim.origins[-1] = test_origins.capture(
+                                    self.model, test_origins.symbol_route(symbol, evidence_index))
+        owners = [(subject, meaning.props, meaning.home_symbol,
+                   ('meaning', meaning.key, 'properties'))]
+        owners += [(symbol.key.key, symbol.props, symbol,
+                    ('symbol', symbol.key.key, 'properties'))
                    for _, symbol in sorted(meaning.symbols.items())]
-        for owner, props, symbol in owners:
+        for owner, props, symbol, origin_route in owners:
             for table in ("bit", "value"):
                 listed = props.get(table)
-                for entry in listed if isinstance(listed, list) else ():
+                for entry_index, entry in enumerate(listed if isinstance(listed, list) else ()):
                     if not isinstance(entry, dict) or entry.get("level") not in vocab.LEVEL_RANK:
                         continue
                     claim = self.add(Claim(path, f"{owner} {table} {entry.get('name')}", table,
                                            entry["level"]))
-                    self.evidence(claim, symbol, entry.get("evidence"))
-        for binding in meaning.tables.get("diagnostic", ()):
+                    self.evidence(claim, symbol, entry.get("evidence"),
+                                  origin_route=(*origin_route, table, entry_index))
+        for binding_index, binding in enumerate(meaning.tables.get("diagnostic", ())):
             if binding.get("level") in vocab.LEVEL_RANK:
                 claim = self.add(Claim(path, f"{subject} diagnostic {binding.get('id')}",
                                        "diagnostic", binding["level"]))
-                self.evidence(claim, meaning.home_symbol, binding.get("evidence"))
+                self.evidence(claim, meaning.home_symbol, binding.get("evidence"),
+                              origin_route=('meaning', meaning.key, 'tables', 'diagnostic', binding_index))
 
     def _link(self, link):
+        from kb import diagnostic_rom_contract, diagnostic_rom_evidence
+        from kb import timing_argument_contract,timing_argument_evidence
+        from kb import calculation_dependency_contract,calculation_dependency_evidence
+        from kb import snapshot_rom_contract,snapshot_rom_evidence
+        from kb import io_access_claim_contract,io_access_evidence
+        from kb import ordinary_access_registry as ordinary
+        from kb import coherent_copy_evidence
+        diagnostic=diagnostic_rom_contract.looks_like_dependency(link)
+        argument=timing_argument_contract.looks_like_dependency(link)
+        snapshot_ROM=snapshot_rom_contract.looks_like_dependency(link)
+        calculation=calculation_dependency_contract.looks_like_dependency(link)
+        io=io_access_claim_contract.looks_like_access(link)
+        coherent=coherent_copy_evidence.looks_like_access(link)
+        families=ordinary.link_families(link)
+        family=families[0] if len(families)==1 else None
+        guarded=diagnostic or argument or snapshot_ROM or calculation or io or coherent or bool(families)
+        failure=('ambiguous reserved ordinary access relation' if len(families)>1 else
+            'an ordinary withdrawal grants no owning evidence or supported fact' if family is not None and family.withdrawal_only else
+            family.evidence.link_failure(self.model,link) if family is not None else
+            io_access_evidence.link_failure(self.model,link) if io else
+            calculation_dependency_evidence.link_failure(self.model,link) if calculation else
+            diagnostic_rom_evidence.link_failure(self.model,link) if diagnostic else
+            timing_argument_evidence.link_failure(self.model,link) if argument else
+            snapshot_rom_evidence.link_failure(self.model,link) if snapshot_ROM else
+            coherent_copy_evidence.link_failure(self.model,link) if coherent else None)
         ends = (("relies", "supports", link.owner, link.to, link.type),
                 ("reverse_relies", "reverse_supports", link.to, link.owner,
                  f"{link.type} link of {checks._subject(link.owner)}"))
@@ -384,6 +425,21 @@ class _Collector:
             for name in _supports(link.props.get(supports_key)):
                 claim = self.meanings.get((id(owner), name))
                 if claim is not None:
+                    if calculation or io or coherent or family is not None and family.direct_owning:
+                        owned_name='scale' if calculation and link.owner.key=='natural-hedgehog/tbl' else 'identity'
+                        if name!=owned_name or relies_key!='relies':
+                            continue
+                        if failure is not None:
+                            claim.deps.append(Dependency(relies,f'{via} link',shown,lacks=failure))
+                        else:
+                            own_symbol=link.owner.symbols.get('7mfk')
+                            self.evidence(claim,own_symbol,link.evidence)
+                        continue
+                    if guarded and (name!='identity' or relies_key!='relies'):
+                        continue
+                    if guarded and failure is not None:
+                        claim.deps.append(Dependency(relies,f'{via} link',shown,lacks=failure))
+                        continue
                     self.depend(claim, relies, via if relies_key == "reverse_relies"
                                 else f"{via} link", to, symbol, shown)
 
@@ -446,15 +502,26 @@ def analyze(model, *, subjects=None):
     grounded = {}
     for claim in claims:
         best = ranks[claim.symbol.key][0] if claim.symbol is not None else -1
-        from kb import copy_evidence, test_evidence
+        from kb import copy_evidence, test_evidence, diagnostic_rom_evidence,timing_argument_evidence
+        from kb import snapshot_rom_evidence
+        from kb import calculation_dependency_evidence
+        from kb import io_access_evidence
+        from kb import ordinary_access_registry as ordinary
         if claim.name != 'identity' and (test_evidence.identity_only(claim.symbol)
-                                       or copy_evidence.identity_only(claim.symbol)):
-            # This witness proves only its registered image-scanning identity.
+                                       or copy_evidence.identity_only(claim.symbol)
+                                       or diagnostic_rom_evidence.identity_only(claim.symbol)
+                                       or timing_argument_evidence.identity_only(claim.symbol)
+                                       or snapshot_rom_evidence.identity_only(claim.symbol)
+                                       or calculation_dependency_evidence.identity_only(claim.symbol)
+                                       or io_access_evidence.identity_only(claim.symbol)
+                                       or ordinary.identity_only(claim.symbol)):
+            # An identity-only witness supplies no separate scale grounding.
             best = -1
-        for symbol, item in claim.items:
+        for evidence_index, (symbol, item) in enumerate(claim.items):
             if id(item) in failed or item.get("supports") == "homology":
                 continue
-            best = max(best, match.rank(item, symbol, model, claim))
+            origin = claim.origins[evidence_index] if evidence_index < len(claim.origins) else None
+            best = max(best, match.rank(item, symbol, model, claim, origin=origin))
         grounded[id(claim)] = best
     changed = True
     while changed:

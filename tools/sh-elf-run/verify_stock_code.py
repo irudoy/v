@@ -22,6 +22,7 @@ import argparse
 import csv
 from dataclasses import dataclass
 import hashlib
+from importlib import import_module
 import os
 from pathlib import Path
 import sys
@@ -1154,6 +1155,10 @@ REGIONS = (*REGIONS, Region(
     callees=((0x22558, 0x22590),)), sid22_pointer_read.region(Region))
 
 
+import coherent_snapshot_copy
+REGIONS = (*REGIONS, *coherent_snapshot_copy.regions(Region))
+
+
 class VerificationError(RuntimeError):
     """Raised when a stock-code executable contract fails."""
 
@@ -1441,7 +1446,11 @@ REGION_OBSERVERS.update({
 })
 
 
-def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=None):
+def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=None,
+               test_capture=None):
+    if region.key in {f'jk08a-coherent-{window.call:08x}' for window in coherent_snapshot_copy.matrix.WINDOWS}:
+        return coherent_snapshot_copy.run_region(region, build_dir,
+            capture=copy_capture.setdefault('coherent', {}) if copy_capture is not None else None)
     if region.key == sid22_pointer_read.REGION:
         return sid22_pointer_read.run_region(region, build_dir, capture=sid22_capture)
     if region.key == 'jk08a-injection-snapshot' and copy_capture is not None:
@@ -1451,19 +1460,24 @@ def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=No
     execution_timeout = stock_execution_timeout()
     observer = REGION_OBSERVERS.get(region.key)
     captured = can_latch_copy.snapshot(ROOT, build_dir) if region.key == 'jk08a-can-latch-copy' else None
-    source_dir = captured['source_dir'] if captured else TOOL_DIR
+    native_spec = test_capture.select(region) if test_capture is not None else None
+    native = None
+    if native_spec is not None:
+        import native_test_capture
+        native = native_test_capture.snapshot(ROOT, region, observer, native_spec, build_dir)
+    source_dir = (native or captured)['source_dir'] if native or captured else TOOL_DIR
     boundary_bytes = None
     if observer is not None:
         invoke = build_dir / f"{region.key}-invoke.o"
         base_verifier.run_command([
-            base_verifier.AS, "--big", "--isa=sh2e", "-I", TOOL_DIR,
+            base_verifier.AS, "--big", "--isa=sh2e", "-I", source_dir,
             "-o", invoke, source_dir / observer,
         ])
         if captured:
             boundary_bytes = can_latch_copy.boundary(invoke, build_dir)
     image = stock_image(region.rom)
     reconstruction = {}
-    if captured:
+    if captured or native:
         instructions = require_reconstruction(region, image, build_dir,
             source_path=source_dir / region.source, captured=reconstruction)
         fixture = build_fixture(region, image, boundary_bytes=boundary_bytes)
@@ -1481,8 +1495,7 @@ def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=No
     output = build_dir / f"{region.key}-harness.elf"
     text_base = max(base_verifier.DRIVER_TEXT_BASE, len(fixture) + 0x10000)
     defines = harness_defines(region, image)
-    base_verifier.run_command(
-        [
+    compile_command = [
             base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2",
             "-Wall", "-Wextra", "-Werror",
             f'-DREGION_KEY="{region.key}"',
@@ -1490,23 +1503,30 @@ def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=No
             f"-Wl,-Ttext-segment={text_base:#x}",
             "-Wl,--section-start=.rom=0",
             "-o", output,
-            source_dir / region.harness, invoke, rom_object,
-        ],
-        timeout=120,
-    )
+            native['harness'] if native else source_dir / region.harness,
+            invoke, rom_object,
+        ]
+    if native:
+        compile_command += [
+            '-I', source_dir,
+            '-DVQ_NATIVE_CAPTURE_REAL_SYMBOL="' + native['real_symbol'] + '"',
+            '-DVQ_NATIVE_CAPTURE_WRAP_SYMBOL="' + native['wrapper_symbol'] + '"',
+            '-Wl,--wrap=' + native['linker_symbol'],
+            source_dir / 'native_test_capture.c',
+        ]
+    base_verifier.run_command(compile_command, timeout=120)
     try:
         require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"{region.key}: ELF storage separation: {error}") from error
-    executable = output.read_bytes() if captured else None
-    result = base_verifier.run_command(
-        [
+    executable = output.read_bytes() if captured or native else None
+    observer_object = invoke.read_bytes() if native else None
+    execution_command = [
             base_verifier.RUN,
             f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k",
             output,
-        ],
-        timeout=execution_timeout,
-    )
+        ]
+    result = base_verifier.run_command(execution_command, timeout=execution_timeout)
     marker = (
         f"VQ_SH_ELF_STOCK_CODE status=PASS region={region.key} "
         f"cases={region.cases}"
@@ -1519,9 +1539,17 @@ def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=No
             f"{region.key}: zero exit without the exact PASS marker"
             + (f"\n{result.stdout.rstrip()}" if result.stdout else "")
         )
-    if captured:
+    if captured or native:
         if output.read_bytes() != executable:
-            raise VerificationError('the actual CAN ELF changes during execution')
+            raise VerificationError('the actual stock witness ELF changes during execution')
+    if native:
+        if fixture_path.read_bytes() != fixture or invoke.read_bytes() != observer_object:
+            raise VerificationError('the actual stock witness fixture or observer changes during execution')
+        test_capture.record(ROOT, region, native, image=image, fixture=fixture,
+            executable=executable, observer_object=observer_object,
+            reconstruction=reconstruction, command=execution_command,
+            result=result, toolchain=can_latch_copy.toolchain())
+    if captured:
         observations = can_latch_copy.observe(result.stdout, captured, early=early)
         if copy_capture is not None:
             copy_capture.update(region=region.key, cases=captured['cases'], observations=observations,
@@ -1538,9 +1566,266 @@ def run_region(region, invoke, build_dir, *, copy_capture=None, sid22_capture=No
     return instructions
 
 
-def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
+def verify(verbose=False, *, copy_capture=None, sid22_capture=None, test_capture=None):
+    from kb import ordinary_access_registry as ordinary
+    ordinary.require_bindings()
+    if test_capture is not None:
+        reserved = {'jk08a-can-latch-copy', 'jk08a-injection-snapshot', sid22_pointer_read.REGION}
+        reserved.update(f'jk08a-coherent-{window.call:08x}'
+                        for window in coherent_snapshot_copy.matrix.WINDOWS)
+        test_capture.bind(REGIONS, REGION_OBSERVERS, reserved)
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-stock-") as directory:
         build_dir = Path(directory)
+        from types import SimpleNamespace
+        import width_view_capture
+        import byte_surface_capture
+        import exhaust_target_capture
+        import bfs_path_capture
+        import ignition_diagnostic_capture
+        import publication_inhibit_capture
+        import division_callees_capture
+        import timing_division_capture
+        import timing_tail_capture
+        import timing_denominator_capture
+        import signed_curve_capture
+        import fine_gopher_capture
+        import independent_leopard_capture
+        import uptight_duck_capture
+        import apc_reset_offset_capture
+        import quiet_cat_capture
+        import sexy_tamarin_capture
+        import viridian_armadillo_capture
+        import rugged_gerbil_capture
+        import spirited_hamster_capture
+        import arrogant_catfish_capture
+        import scaled_publication_capture
+        import normalization_capture
+        import differential_curve_capture
+        import reciprocal_curves_capture
+        import counter_threshold_capture
+        import messy_roadrunner_capture
+        import radical_capuchin_capture
+        import adorable_llama_capture
+        import io_access_capture
+        stock_target = SimpleNamespace(rom='JK08A',stock_image=SimpleNamespace(data=stock_image('JK08A')))
+        width_views = {}
+        marker = width_view_capture.run(stock_target, build_dir, width_views)
+        print(marker)
+        if copy_capture is not None:
+            if 'width_views' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A width-view capture')
+            copy_capture['width_views'] = width_views
+        byte_surfaces = {}
+        marker = byte_surface_capture.run(stock_target, build_dir, byte_surfaces)
+        print(marker)
+        if copy_capture is not None:
+            if 'byte_surface_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A byte-surface capture')
+            copy_capture['byte_surface_paths'] = byte_surfaces
+        exhaust_targets = {}
+        marker = exhaust_target_capture.run(stock_target, build_dir, exhaust_targets)
+        print(marker)
+        if copy_capture is not None:
+            if 'exhaust_target_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A exhaust-target capture')
+            copy_capture['exhaust_target_paths'] = exhaust_targets
+        bfs_paths = {}
+        marker = bfs_path_capture.run(stock_target, build_dir, bfs_paths)
+        print(marker)
+        if copy_capture is not None:
+            if 'bfs_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A BFS path capture')
+            copy_capture['bfs_paths'] = bfs_paths
+        ignition_diagnostics = {}
+        marker = ignition_diagnostic_capture.run(stock_target, build_dir, ignition_diagnostics)
+        print(marker)
+        if copy_capture is not None:
+            if 'ignition_diagnostic_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A ignition diagnostic capture')
+            copy_capture['ignition_diagnostic_paths'] = ignition_diagnostics
+        publication_inhibit = {}
+        marker = publication_inhibit_capture.run(stock_target, build_dir, publication_inhibit)
+        print(marker)
+        if copy_capture is not None:
+            if 'publication_inhibit_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A publication inhibit capture')
+            copy_capture['publication_inhibit_paths'] = publication_inhibit
+        division_callees = {}
+        marker = division_callees_capture.run(stock_target, build_dir, division_callees)
+        print(marker)
+        if copy_capture is not None:
+            if 'division_callees_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A direct division capture')
+            copy_capture['division_callees_paths'] = division_callees
+        timing_division = {}
+        marker = timing_division_capture.run(stock_target, build_dir, timing_division)
+        print(marker)
+        if copy_capture is not None:
+            if 'timing_division_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A timing division capture')
+            copy_capture['timing_division_paths'] = timing_division
+        timing_tail = {}
+        marker = timing_tail_capture.run(stock_target, build_dir, timing_tail)
+        print(marker)
+        if copy_capture is not None:
+            if 'timing_tail_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A bounded timing tail capture')
+            copy_capture['timing_tail_paths'] = timing_tail
+        timing_denominator = {}
+        marker = timing_denominator_capture.run(stock_target, build_dir, timing_denominator)
+        print(marker)
+        if copy_capture is not None:
+            if 'timing_denominator_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A timing denominator capture')
+            copy_capture['timing_denominator_paths'] = timing_denominator
+        signed_curve = {}
+        marker = signed_curve_capture.run(stock_target, build_dir, signed_curve)
+        print(marker)
+        if copy_capture is not None:
+            if 'signed_curve_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A signed-curve capture')
+            copy_capture['signed_curve_paths'] = signed_curve
+        fine_gopher = {}
+        marker = fine_gopher_capture.run(stock_target, build_dir, fine_gopher)
+        print(marker)
+        if copy_capture is not None:
+            if 'fine_gopher_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A fine-gopher capture')
+            copy_capture['fine_gopher_paths'] = fine_gopher
+        independent_leopard = {}
+        marker = independent_leopard_capture.run(stock_target, build_dir, independent_leopard)
+        print(marker)
+        if copy_capture is not None:
+            if 'independent_leopard_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A independent-leopard capture')
+            copy_capture['independent_leopard_paths'] = independent_leopard
+        uptight_duck = {}
+        marker = uptight_duck_capture.run(stock_target, build_dir, uptight_duck)
+        print(marker)
+        if copy_capture is not None:
+            if 'uptight_duck_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A uptight-duck capture')
+            copy_capture['uptight_duck_paths'] = uptight_duck
+        apc_reset_offset = {}
+        marker = apc_reset_offset_capture.run(stock_target, build_dir, apc_reset_offset)
+        print(marker)
+        if copy_capture is not None:
+            if 'apc_reset_offset_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A APC reset offset capture')
+            copy_capture['apc_reset_offset_paths'] = apc_reset_offset
+        quiet_cat = {}
+        marker = quiet_cat_capture.run(stock_target, build_dir, quiet_cat)
+        print(marker)
+        if copy_capture is not None:
+            if 'quiet_cat_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A quiet-cat capture')
+            copy_capture['quiet_cat_paths'] = quiet_cat
+        sexy_tamarin = {}
+        marker = sexy_tamarin_capture.run(stock_target, build_dir, sexy_tamarin)
+        print(marker)
+        if copy_capture is not None:
+            if 'sexy_tamarin_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A sexy-tamarin capture')
+            copy_capture['sexy_tamarin_paths'] = sexy_tamarin
+        viridian_armadillo = {}
+        marker = viridian_armadillo_capture.run(stock_target, build_dir, viridian_armadillo)
+        print(marker)
+        if copy_capture is not None:
+            if 'viridian_armadillo_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A viridian-armadillo capture')
+            copy_capture['viridian_armadillo_paths'] = viridian_armadillo
+        rugged_gerbil = {}
+        marker = rugged_gerbil_capture.run(stock_target, build_dir, rugged_gerbil)
+        print(marker)
+        if copy_capture is not None:
+            if 'rugged_gerbil_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A rugged-gerbil capture')
+            copy_capture['rugged_gerbil_paths'] = rugged_gerbil
+        spirited_hamster = {}
+        marker = spirited_hamster_capture.run(stock_target, build_dir, spirited_hamster)
+        print(marker)
+        if copy_capture is not None:
+            if 'spirited_hamster_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A spirited-hamster capture')
+            copy_capture['spirited_hamster_paths'] = spirited_hamster
+        arrogant_catfish = {}
+        marker = arrogant_catfish_capture.run(stock_target, build_dir, arrogant_catfish)
+        print(marker)
+        if copy_capture is not None:
+            if 'arrogant_catfish_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A arrogant-catfish capture')
+            copy_capture['arrogant_catfish_paths'] = arrogant_catfish
+        scaled_publication = {}
+        marker = scaled_publication_capture.run(stock_target, build_dir, scaled_publication)
+        print(marker)
+        if copy_capture is not None:
+            if 'scaled_publication_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A scaled-publication capture')
+            copy_capture['scaled_publication_paths'] = scaled_publication
+        normalization = {}
+        marker = normalization_capture.run(stock_target, build_dir, normalization)
+        print(marker)
+        if copy_capture is not None:
+            if 'normalization_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A normalization capture')
+            copy_capture['normalization_paths'] = normalization
+        differential_curve = {}
+        marker = differential_curve_capture.run(stock_target, build_dir, differential_curve)
+        print(marker)
+        if copy_capture is not None:
+            if 'differential_curve_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A differential-curve capture')
+            copy_capture['differential_curve_paths'] = differential_curve
+        reciprocal_curves = {}
+        marker = reciprocal_curves_capture.run(stock_target, build_dir, reciprocal_curves)
+        print(marker)
+        if copy_capture is not None:
+            if 'reciprocal_curves_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A reciprocal-curves capture')
+            copy_capture['reciprocal_curves_paths'] = reciprocal_curves
+        counter_threshold = {}
+        marker = counter_threshold_capture.run(stock_target, build_dir, counter_threshold)
+        print(marker)
+        if copy_capture is not None:
+            if 'counter_threshold_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A counter-threshold capture')
+            copy_capture['counter_threshold_paths'] = counter_threshold
+        messy_roadrunner = {}
+        marker = messy_roadrunner_capture.run(stock_target, build_dir, messy_roadrunner)
+        print(marker)
+        if copy_capture is not None:
+            if 'messy_roadrunner_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A messy-roadrunner capture')
+            copy_capture['messy_roadrunner_paths'] = messy_roadrunner
+        radical_capuchin = {}
+        marker = radical_capuchin_capture.run(stock_target, build_dir, radical_capuchin)
+        print(marker)
+        if copy_capture is not None:
+            if 'radical_capuchin_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A radical-capuchin capture')
+            copy_capture['radical_capuchin_paths'] = radical_capuchin
+        adorable_llama = {}
+        marker = adorable_llama_capture.run(stock_target, build_dir, adorable_llama)
+        print(marker)
+        if copy_capture is not None:
+            if 'adorable_llama_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A adorable-llama capture')
+            copy_capture['adorable_llama_paths'] = adorable_llama
+        io_accesses = {}
+        marker = io_access_capture.run(stock_target, build_dir, io_accesses)
+        print(marker)
+        if copy_capture is not None:
+            if 'io_access_paths' in copy_capture:
+                raise VerificationError('the primary repeats its JK08A I/O-access capture')
+            copy_capture['io_access_paths'] = io_accesses
+        for component,producer in ordinary.captures():
+            captured={}
+            marker=import_module(producer).run(stock_target,build_dir,captured)
+            print(marker)
+            if copy_capture is not None:
+                if component in copy_capture:
+                    raise VerificationError('the primary repeats its ordinary access capture: '+component)
+                copy_capture[component]=captured
         invoke = build_dir / "stock-invoke.o"
         base_verifier.run_command([
             base_verifier.AS, "--big", "--isa=sh2e", "-I", TOOL_DIR,
@@ -1549,7 +1834,10 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None):
         instructions = 0
         for region in REGIONS:
             with stage(region.key, kind='stock'):
-                if sid22_capture is not None:
+                if test_capture is not None:
+                    count = run_region(region, invoke, build_dir, copy_capture=copy_capture,
+                                       sid22_capture=sid22_capture, test_capture=test_capture)
+                elif sid22_capture is not None:
                     count = run_region(region, invoke, build_dir, copy_capture=copy_capture, sid22_capture=sid22_capture)
                 else:
                     count = (run_region(region, invoke, build_dir) if copy_capture is None

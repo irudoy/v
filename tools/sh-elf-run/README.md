@@ -8,6 +8,21 @@ p-code.
 The default gate is fully repository-contained. Verification of the separate
 npkern project is optional, external, and revision-locked.
 
+## Bounded adapter sources
+
+The coolant and MAF record raw adapters use the input-only descriptor generator
+in `generate_proof_adapters.py`. Its generated C drivers retain the existing
+80/572 observer, complete frames/RAM/CPU state and exact fixture lifecycle.
+`make check` compares generated sources. Both independent domain consumers also
+require the complete declared source dependency graph in their actual execution
+input map, including imported numerical helpers. Private generated headers retain
+their exact producer/consumer byte checks. Numerical equations, physical/call
+interpretation, causal alternatives and native/TEST/scopes guards remain separate.
+
+`tools/kb/proof-adapters.md`, `proof-value-flow.md` and `proof-reuse.md` describe
+generation, the bounded read-only value path and exact group preparation. These
+source and structural reports retain the shared executable acceptance boundary.
+
 ## Primary container lifecycle
 
 `run.sh` uses the local `default` Docker context through `docker_lifecycle.py`.
@@ -76,6 +91,413 @@ receipt replacement is atomic; a per-file I/O failure can leave independently
 validated replacements, which the job journals without claiming a complete pass.
 Prior bytes remain archived. A source change during publication also prevents a
 completed gate. Jobs serialize without removing another job's lock or container.
+
+The explicit `--native-test-profiles --native-publication-batch <batch>` mode
+prepares CAN and SID22 records from the same original GNU child, runs the full
+registered native TEST cohort against those prepared records, and independently
+prepares TEST before changing native metadata. All three records name the same
+original native snapshot. The ordinary writer consumes sealed prepared bytes
+through its validators while the prior receipt files remain intact. Its
+metadata-only mode admits registered reader/writer proof appends, exact
+`reconcile-width` operations and the complete registered four-claim
+`reconcile-diagnostic-output` transition. The latter requires independent
+ROM-to-RAM execution, complete exhaust RAM continuity and SID22 source proof
+from the same original process. It permits only the exact reader replacements,
+absent per-layout geometry and the registered alias-note phrase replacement.
+It withdraws only the exact legacy ledger selectors of those physical readers;
+the conditional dependencies remain native facts. Every other ledger value and
+evidence index retains its complete value and order.
+Every original TEST context, status, executable binding and other semantic
+property remains fixed. The job archives
+native preimages, their hashes and the writer diff. Its source fence changes
+only to the exact existing input files and bytes returned by that writer;
+unrequested native or executable changes refuse final receipt publication.
+The complete original producer provenance remains in each prepared record.
+
+The registered `reconcile-timing-argument` transition replaces the exact
+`0000C50E`, `00011F02`, `00011EFA` and `000147CA` physical-reader
+assertions with conditional value arguments of the natural timing
+compositor and explicit accumulator tail. It consumes the caller's
+complete observation, bounded tail and direct division contract from the same
+original primary. R1 is bound to the callee-entry state after the real delay slot;
+independent table changes must alter the dividend and bounded output.
+Every other native value and original ledger selector remains fixed. The
+existing COPY and SID22 scope digests must remain equal across these exact
+replacements; this transition adds no scope normalization or receipt.
+
+The registered `reconcile-calculation-dependency` batch binds the remaining
+exact arithmetic arguments, arithmetic outputs, conditional publication,
+comparison output and owning dimensionless factor to their independent
+same-primary components. Complete physical inputs, raw state, separate
+equations, actual post-delay operands and positive value/output variation
+remain required. The writer retains every other native property, ledger
+selector, evidence position and TEST context. Existing physical scopes stay
+equal without an additional normalization rule. AAFA alone retains its exact
+owned `ratio`, `x/10`, `x*10`, `code` scale proof; other dependencies grant
+identity only. No new producer, receipt, scheduling or hardware admission
+follows from these transitions.
+
+The one exact FFFF4524 argument disposition reuses
+`closed_loop_coordinate_paths`. The caller's read0003EE72 and delay
+slot0003EE7C bind R6 at real call0003EE7A to natural conditioner0003EF74.
+Independent complete-input alternatives vary only that sample word and
+must change the actual output pair. The pinned reverse-only original is
+replaced by its owning arithmetic-argument dependency through the existing
+calculation batch. Every other native relation, unset semantic type,
+ledger and TEST context remains exact. The same raw component retains
+its existing observer, native workspace and complete physical consumers.
+
+The shared primary also captures `jk08a-io-access-paths` through four
+bounded stock windows. The harness observes three exact native flat
+storage banks separately from relocated RAM, plus complete frame,
+register, SR, ABI and descriptor state. The monitor word window takes its
+R4 and GBR from the actual descriptor-prefix exit and preserves complete
+memory continuity. Independent state and numeric consumers bind the
+DC40 mailbox writes, F430 uint32 read and packed operand, and F754
+selected pointer/mask read. Four separately assembled observing returns
+leave stock instruction bytes intact. `reconcile-io-access` admits only
+the exact three existing-owner metadata transitions documented in
+`defs/JK08A.io-accesses.md`. The proof grants no peripheral behavior,
+natural scheduling, configured-disabled monitor reachability, units,
+scale or hardware qualification.
+
+`jk08a-maf-copy-filter-paths` retains the existing stock copy/filter
+assembly, natural returns and the shared complete observer ABI. It adds
+raw bank/word/mode/coefficient observations consumed independently of the
+conventional MAF harness verdict. Exact instruction-state and separate
+copy/filter/anti-stall equations bind the four existing bank-1 access
+claims, preserve sibling and neighbor RAM, and require positive value
+alternatives with other inputs fixed. `defs/JK08A.maf-copy-filter.md`
+defines the source and exact grouped-owner publication boundary. The
+transition uses ordinary `link` operations and the existing shared receipt.
+
+`jk08a-maf-extended-paths` reuses the compensation, contribution and
+scaling assembly units plus bank-publication and diagnostic-copy units
+with their natural returns and callees. A sixth assembly unit binds two
+bounded dual-bank caller windows with explicit incoming registers and
+separately assembled SP+24 observing returns outside tested stock spans.
+Complete state and separate integer equations bind 26 accesses, the exact
+interior helper entry at 000224FA, real post-delay call arguments and
+fixed-other input/output alternatives. `defs/JK08A.maf-extended.md`
+defines this source and its joint 34-access batch with copy/filter,
+the bounded two-curve lookup and existing record-member readers.
+The complete natural battery publisher00039A9E uses the same scaling
+assembly and real guard/scaler, three additional exact RAM pointer aliases
+and its natural return. Separate word/byte-wrap/guard/scale/cap equations,
+ordered physical transfers, post-delay R4/R5 and helper/caller returns
+bind its one coefficient-reader claim. Both guard and final byte-cap
+outcomes belong to the explicit battery input domain. Coefficient-only
+alternatives must change the actual output byte with complete other input
+state fixed. Native unsigned16, TEST, ledger and both coefficient-owner
+appends remain exact; no physical voltage scale or live bypass state follows.
+`jk08a-maf-transfer-paths` reuses the existing
+MAF transfer assembly at0003A922..0003A94C with the real implicit word
+wrapper and interpolation helpers, explicit ADC16/R14 premises and a
+separate SP+24/R7 observing return outside tested bytes. Both exact curve
+roots require fixed-other positive alternatives. Full state and separate
+word/register equations preserve upper-clamp sign extension. The native
+batch removes only two unsupported reader0003B27E relations and appends
+evidence to the already-existing reader0003A904 relations. No universal
+absence-of-read, complete coordinator or correction publisher is admitted.
+Shared owners retain one complete postimage. The existing writer requires
+all reserved owning items together and preserves TEST origins, semantic
+types and existing physical namespaces.
+
+`jk08a-maf-record-paths` binds natural predicate00025E20 and bounded
+coordinator0003C3C6..0003C3DA to exact stock bytes and the unchanged80/572
+observer. Byte1 atFFFF5A94 belongs to the existing three-byte FFFF5A93
+record0129. Explicit R4 low-word index, sentinelFFFF and incoming caller
+GBR premises remain separate inputs. The consumer binds the real call,
+natural return, conditional byte RMW, both branch outcomes and a separately
+assembled outside return. Full state and separate scalar equations retain
+siblings, all RAM, status bits0..6 and fixed-other positive alternatives.
+The shared owner postimage preserves unset semantic types, ledger, eleven
+symbol evidence items and other three relations. No record producer,
+RPM contributor, complete coordinator, new geometry or hardware behavior
+is admitted. `defs/JK08A.maf-extended.md` defines this component.
+
+`jk08a-closed-loop-admission-paths` reuses the unchanged complete adjustment
+assembly for two bounded raw-mask windows, with separate executable spans
+around the literal gap at000A101C..000A102C. Explicit GBR/register premises
+and independent mask bytes feed the existing complete80/572 observer.
+One base alias and two independently assembled outside SP+24/R7 returns
+preserve every tested stock instruction. Separate full-state, bit, exact
+physical, branch and fixed-other positive consumers bind four unsigned-byte
+bank-2 writers while retaining both bank outputs and all other RAM.
+Four exact ordinary owning appends share the complete original COPY primary
+and preserve native readers, types, TEST positions and physical scopes.
+The full legacy adjustment matrix and harness remain unchanged.
+`defs/JK08A.closed-loop-admission-accesses.md` defines the boundary without
+full coordinator, integrator, physical permission or hardware admission.
+
+`jk08a-closed-loop-coordinate-paths` binds the bounded real3EE7A call to
+the complete natural conditioner and five existing helpers. The stock
+native GBR word8560 remains unchanged. A narrowly guarded20-byte native
+workspace, complete256-byte native snapshots, unchanged canaries and
+separate raw RAM reuse the existing observation protocol and80/572 observer.
+Only those20 bytes overlay logical RAM. The existing4338 literal inputs
+retain their first16 input columns; expected outputs are not consumed.
+Separate scalar/full-state/physical/post-delay/branch/return/positive
+consumers bind six exact owning relations and preserve unset native types,
+all original TEST/evidence positions and existing physical scopes.
+`defs/JK08A.closed-loop-coordinate-accesses.md` defines the complete boundary.
+
+`jk08a-closed-loop-feedback-paths` reuses the whole 5CBEC closure and its
+3067 instructions/63998 bound bytes, 43 long/17 word aliases, 76-byte input
+context, 892-byte result and 352-byte frame observer. The 302-byte shared
+workspace and 64 native canary bytes retain the existing translation; ordinary
+RAM stays separate. Only the first three input columns and byte changes of
+the 1829 legacy contexts feed the raw driver. Three source arguments and two
+active-state stores require exact physical carriers, full signed post-delay
+registers, the partial fifth byte/full fifth word, sixth pointer, natural
+return, independent whole state/memory/frame/terminal and fixed-other effects.
+The unsigned transition-counter reader/writer at FFFF88BA uses the actual
+transition phase and real 5D66C/5CA8C packet/callee sequence, exact delay
+store, pointer carriers, returns and original TEST/spec positions. Separate
+counter/flag, threshold and inclusive-band equations remain mandatory.
+All 27 active-state/transition conditional sites require both outcomes.
+The separate 5CB84 saturation guard requires taken under the preceding
+byte-product bound and rejects entry into its excluded saturation span.
+Controlled 18-byte
+ascending/descending/threshold profiles grant no stock reachability claim.
+The existing coordinate/publication family has twelve owning appends with
+ten retained full references; the calculation registry has 38 dispositions
+with all 37 identities pinned.
+`defs/JK08A.closed-loop-feedback-accesses.md` defines the complete boundary.
+
+`jk08a-closed-loop-coolant-paths` reuses the complete natural5525A assembly
+and existing numerical/frame/terminal equations with the same80/572 observer.
+The source binds322 stock instructions/770 bound bytes, seven long pointer
+aliases,42 controlled calibration bytes, complete64KiB RAM and14261 legacy
+input rows. Only17 scalar inputs and five calibration arrays feed the driver.
+The selected coefficient index/address/byte and signed offset have exact
+physical transfers, real calls/delay slots/returns and fixed-other derived-word
+positives. All25 feasible conditional sites require both outcomes; the byte-only
+26A9A guard retains its bounded taken premise. Twelve owning appends retain
+all ten prior references,37 calculations and original reader/type/TEST/spec
+contexts. One normal binding reuses the ordinary registry with no
+new mode, dispatcher or memory domain.
+`defs/JK08A.closed-loop-coolant-accesses.md` defines this boundary.
+
+`jk08a-exhaust-cvtc-transition-paths` reconstructs natural bank2 roots
+`000C1DEC`/`000C2040` and the real byte-curve/fractional-division/unsigned-
+quotient/remainder closure. Explicit bank-index and nonzero battery inputs,
+complete raw RAM/CPU/ABI/frame/calibration/bound-code observations and
+separate transition/product/curve/duty equations bind eleven exact RAM
+relations. Ordered physical operands, actual post-delay calls, natural RTS
+paths, feasible branch outcomes and fixed-other actual-output variation are
+mandatory. The standard input-only driver retains the existing 80/572
+observer. Exact ordinary appends preserve six complete native owners, TEST,
+types, ledger and physical scopes. The source grants no sensor, scheduler,
+units, scale or hardware claim. `defs/JK08A.exhaust-cvtc-accesses.md` defines
+the complete domain and refusal boundary.
+The registry has thirteen families/forty-seven captures.
+
+The `scalar-ram-leaf-withdrawal` registration binds 123 exact unsupported access
+relations through complete natural RAM/register/state/indexed,interpolation,
+scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
+threshold-window,auxiliary-rate and paired normalization paths. Twenty-three
+independent components require one complete original COPY primary. There are
+113 readers,ten individually pinned writers and eighteen exact indexed_by
+originals with unchanged types and roles. Complete actual instruction CPU/SR/
+frame/RAM,separate equations,ordered physical operands,post-delay calls and
+natural returns remain mandatory. The paired normalization callers retain all
+16 raw axis bytes,17 physical data bytes,positive adjacent fractional divisors,
+two real local-byte carriers,variable signed normalization and both actual word
+publications. No numerical causality is admitted for zero-fraction lookahead16.
+Fixed-other alternatives require changed actual R0 or common actual computed
+publication bytes outside the controlled RAM input. Input echoes and a changed
+write-set alone fail. Every previous full family/helper/native/TEST original
+remains mandatory from the identical primary. Sixteen native-RAM components
+retain exact root/alias interval absence. All 123 normal unlinks and 110 matching
+selectors preserve94 full datum owners,62 full functions and every other native/
+type/TEST/ledger/scope fact. The selector total contains108 datum-end and
+5 function-end removals. Full prior19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/
+87/92/100/107/112/115/116 reference,function and source boundaries retain exact
+complete prefix reconstruction and separate current full-image pins. The sole
+additional preceding current image delta is reference79 at lyrical-dragon/tbl:
+two exact readers and their two owner-end selectors. All60 preceding full
+function records,including both pinned full function transitions,remain exact.
+The gated assembly retains its bounded two-site spelling exception and complete
+current/legacy hashes. No owning replacement or reverse donation is created.
+The complete byte-ratio producer additionally retains variable unsigned
+word/large and short/long division, the ratio65536 split, real signed shift10,
+its exact actual saved post-DIV1 R1 carrier and full known frame overwrite.
+The complete118-record/62-function prefix retains exact reconstruction and its bounded current shared-owner transitions.
+The complete state-surface caller retains three raw state modes, the real
+four-byte local carrier, full four-row surface and implicit-byte helpers.
+Only the additional exact row99 reader/owner-selector delta changes one
+preceding current postimage; all119 core records and63 functions remain exact.
+The complete byte-factor caller retains unsigned/signed word promotion,
+two real byte-curve calls,distinct partial products and percentage delay-slot
+publication. Its exact reverse writer adds one complete function transition;
+all121 preceding full records/current images and64 functions remain exact.
+The complete byte-sum caller retains the clipped raw coordinate,real byte
+curve,unsigned minimum,separate three-byte sum and two full-word saturations.
+Its exact reverse writer adds one full function transition and retains the
+new owner's absent ledger;all122 prior full records/current images and65
+functions remain exact.
+The narrow caller and helper specifications define these boundaries.
+
+
+The `register-only-withdrawal` family binds twelve exact unsupported readers
+to six complete natural helper entries through `register_only_helper_paths`.
+Separate full-register/scalar/stack/ordered-physical/branch/RTS-delay consumers
+require executable absence of datum access and fixed-other actual R0 changes.
+Its withdrawal-only policy admits exactly twelve normal `unlink` operations
+and fourteen matching ledger-selector removals across eleven complete native
+owners, with original TEST/type/context/scope preservation. It creates no
+replacement relation or evidence and grants no identity, scale, units, caller
+semantics or hardware admission. The existing observer, COPY primary, normal
+writer and standard source generator are reused.
+`defs/JK08A.register-only-helpers.md` defines this exact boundary.
+
+
+The same CVTC capture also binds the conditional FFFF143A result of real26474.
+Independent returned R0/extended R6/actual byte-store checks and fixed-other
+coordinate/controlled-curve positives supply a distinct output guard. The
+existing calculation-dependency batch preserves the complete native owner,
+types, TEST, other ledger selectors and physical namespaces. Fixture, matrix,
+observer, producer and generated driver remain exact.
+`defs/JK08A.cvtc-gain-output.md` defines this result boundary.
+
+`jk08a-rpm-inhibit-paths` binds the eight-byte real caller sequence at0004EDBE,
+both MOV/OR delay slots, the unchanged vehicle-speed/main RPM state-machine
+assembly and separate MAF-summary/shared-status/composite-status windows
+at0004EDD2/0004EDF8/0004EDEA.
+Their OR R0/R14 and OR R2/R14 delay states use distinct complete incoming words.
+Fifteen pointer aliases and four separate outside SP+24/R7 returns reuse
+the existing complete80/572 observer and64KiB RAM domain. Explicit full caller
+state and27 calibration bytes feed independent instruction-state, scalar,
+ordered physical, post-delay call, branch, return and fixed-other positive
+consumers. All33 conditional branch sites require both outcomes. Four exact
+one-sided sites bind the real minus-one diagnostic sentinel calls and byte
+curve route, without stock seed lifecycle reachability. The existing curve
+assembly and numeric consumer are reused with natural returns and MACL
+save/restore. Fourteen exact ordinary owning appends preserve full native documents, unset
+semantic types, TEST origins and existing physical scopes. The conditioned
+status read requires an explicit controlled configuration bit7; sharedbit1 is
+an explicit controlled input without stock lifecycle reachability. Both summary
+leaves preserve complete RAM and return through their natural RTS delay slots.
+`defs/JK08A.rpm-inhibit-accesses.md` defines the boundary without full
+coordinator, stock conditioned-branch reachability, scale or hardware admission.
+
+`jk08a-rpm-remaining-inhibit-paths` observes five conditional reader relations
+in a separate exact fixture with entries0004EDC6/0004EDE4/0004EE00. Stationary,
+thermal, sustained and CAN ceiling leaves execute with their real byte16
+helper, post-delay inputs, natural returns and separate outside observers.
+The thermal consumer requires FFFF4184=C0 and unsigned FFFF571E>=40; the
+0007D8B8 dispatch is excluded only under those exact premises. Independent
+state, scalar, physical, call/return, branch and fixed-other output consumers
+are mandatory. The existing80/572 observer and192-byte frames remain exact;
+the old nine full reference records and fixture retain their complete pins.
+`defs/JK08A.rpm-remaining-inhibit.md` defines the conditional boundary without
+diagnostic-producer, complete-coordinator, scale or hardware admission.
+
+The ordinary access captures are registered once in
+`tools/kb/src/kb/ordinary_access_registry.py`. The existing stock verifier derives
+their execution order, duplicate-key guard and original candidate attachment
+from those entries; their independent domain consumers remain mandatory.
+Controlled pipeline tests derive per-component execution, exact candidate
+identity and failure coverage from the same source. The registration and
+coherent source-group contract is in `tools/kb/ordinary-access.md`.
+
+`jk08a-phase-normalization-paths` reuses the exact natural APC normalizer and splitter
+from the existing injection-tooth assembly, its real RTS delay slots and
+the existing independent scalar equations. Two explicit native word/byte
+pointer pairs feed the shared complete observer. Actual raw state, physical
+reads/stores, phase/word/byte boundaries and positive alternatives bind ten
+normalizer/splitter owning relations. `jk08a-phase-programmer-paths`
+binds the existing offset multiply and real helper through actual
+post-delay arguments with explicit post-guard period/remainder inputs.
+Its separate observing return uses the existing SP+24/R7 source outside
+tested bytes; the complete programmer, count guard and following MMIO
+remain separate. Both components share the original complete COPY primary
+and jointly bind twelve owning relations in six complete native owners.
+No separate receipt, observer, numeric framework or natural scheduling
+inference is introduced. The source and native
+publication boundary are in `defs/JK08A.phase-normalization.md`.
+
+`jk08a-bank-pulse-paths` reuses the complete natural base-pulse body and
+its three declared pointer aliases. The shared complete observer and an
+input-only legacy matrix retain every RAM, register, frame, ABI and literal
+input. Separate state, scalar and physical consumers require both LTFT
+sites, the precursor bypass, low32 arithmetic, all conditional outcomes
+and positive fixed-other reader alternatives. The base component contributes
+six original relations to the complete owning publication batch.
+`defs/JK08A.bank-pulse-transfers.md` states the software-only boundary.
+
+`jk08a-bank-pulse-stages` adds the complete existing precursor and channel
+units with their real division, fixed-point, shift and affine helpers.
+Input-only literal prefixes and explicit bounded alternatives feed the
+same observer. Separate full-state, scalar, physical and post-delay-call
+consumers bind the bank1 multiplier, actual loop delay-slot publication
+and channel1 result. The owning family requires both raw components and
+one exact nine-link batch preserving eight complete native documents.
+The channel result retains unset semantic width and signedness. Existing
+full legacy regions and their matrices retain their declared contracts.
+
+`jk08a-knock-accesses` captures four separate existing stock units:
+normalization, metric, threshold and comparison. Adjacent fragment
+boundaries use separate fixtures and the existing SP+24/R7 observing
+return outside tested instructions. The common complete observer and
+input-only literal prefixes retain full explicit state and calibration
+premises. Independent state/scalar/physical/post-delay-call/branch/positive
+consumers support one exact eight-link batch in seven complete native
+documents. No helper stub, observer ABI or receipt is added. The existing
+full legacy regions and matrices retain their contracts. The source and
+native boundary are in `defs/JK08A.knock-accesses.md`.
+
+`jk08a-learning-transfer-paths` reuses the complete grid-selection and
+grid-learning and LTFT publication assembly units and observes natural entries 0005796C,
+00057D1E, 000580E8 and 00057B26 with the common complete observer. The raw driver
+records input-only legacy columns, explicit bank/cell premises and
+single-value RAM/calibration alternatives. Independent full-state,
+scalar, physical and post-delay call consumers bind 21 owning relations.
+No stock-function stub, observing return, observer ABI or receipt is added.
+The source and exact native boundary are in `defs/JK08A.learning-transfers.md`.
+
+`jk08a-ram-initialization-paths` observes five exact stock longword clear
+paths with the existing complete observer. Exact ROM-range descriptors and
+independent instruction/state and whole-range equations cover the 43 owning
+writer relations. The final store preserves its full width above each
+unaligned exclusive limit. The fixture documents its six pointer aliases
+and four observation returns outside the tested instructions. Natural26F30
+retains its stock RTS/NOP, complete frame and ordered pointer/limit reloads.
+Its fixed nonempty range includes FFFF5B2C; no boot/reset reachability follows.
+Its finite state
+budget derives from the stock range lengths and exact loop bodies, with no
+change to other families. `defs/JK08A.ram-initialization.md` describes the
+bounded incoming contexts, complete native publication and refusal boundary.
+
+`jk08a-counter-array-paths` shares the bounded-memory C driver and complete
+observer with RAM initialization. Separate stream identities and explicit
+input macros retain initialization's byte seeds while supplying declared
+word-array patterns to the counter windows. Exact physical read/repeated-read/store
+sequences and independent unsigned saturation equations cover nine original
+writer claims. The complete intermediate word array remains part of the
+first window's state continuity. The common finite instruction bound is
+unchanged. `defs/JK08A.counter-arrays.md` describes the native publication,
+preserved unknown types and absence of cadence or interrupt-entry inference.
+
+The third bounded window2093E..20962 binds the holdoff byte atFFFF25FF,
+offset four in the exact seven-byte array. Isolated input-byte alternatives
+retain every other RAM/context/calibration input and require the actual
+saturating output. All eight earlier full reference records, old eighteen
+counter inputs and word patterns remain exact. The holdoff L0/TEST positions,
+via/note and complete native/scopes guards remain mandatory; the bounded
+entry grants no producer-call reachability.
+
+The `reconcile-snapshot-output` transition binds the conditional
+`0001202E` cached publication to the `FFFF106A` snapshot byte. Its raw
+source component observes both natural producer invocations and the
+bounded stock snapshot window with complete RAM continuity. The positive
+consumer requires calibration-dependent cache and snapshot alternatives.
+COPY, injection-copy and coherent-copy scopes admit only the exact
+original/replacement representation of this one relation; a changed
+claim retains its scope effect. All existing physical namespaces, TEST
+contexts and other native facts remain fixed. No additional receipt or
+natural scheduling or hardware admission follows.
 
 `make verify` runs this qualified firmware gate before `make check` and `make test`.
 Consumers can require current receipts after execution inputs change; no second
@@ -356,6 +778,45 @@ The gate performs these checks:
    targets differ in adapter count and entry count; each
    marker carries its own values, and the verifier sums the case counts the
    markers report.
+
+   The 1ME3B runtime phase also executes every declared ignition-literal call
+   window through the actual composed adapter pointers. The independent
+   `stock_1me3b_ignition_consumers.s` reconstruction binds the stock loads,
+   JSR operands, delay slots, axes, tables and intervening argument stores.
+   `stock_ignition_consumer_invoke.s` supplies independent R7 and fifth stack
+   arguments and records complete entry/exit state, caller ABI and stack.
+   `ignition_consumer_callee.s` replaces the unchanged lookup body solely to
+   observe its complete real entry and return path. All declared slot values
+   and both invalid selector values execute for each bounded window.
+
+   `ignition_literal_capture.py` retains the private consumed sources,
+   reconstruction, composition, fixture, ELF/object identities, actual GNU
+   streams and complete raw observations in the existing shared COPY packet.
+   `kb.ignition_literal_evidence` checks the original complete primary,
+   current sources and physical bindings, reconstructs the observing stub
+   independently, and checks actual state with separate Python equations.
+   The evidence grants no scheduler-reachability, arbitrary-computed-consumer,
+   stock-interpolation-arithmetic or hardware claim. The region scan does
+   not exempt a literal from coverage.
+
+   Original finalization binds the complete native producer provenance.
+   Consumption checks the declared executable-source closure and independently
+   rebinds the current native runtime declaration, complete composition and
+   prepared fixture. Exact original native provenance remains in the original
+   record. Review publication metadata supplies no instruction or ABI value;
+   it cannot replace any current runtime, source, ROM or fixture check.
+
+   The canonical JK78C, 1ND0A and 1ME3B phases capture the packed-field
+   transfer windows declared by `defs/packed-field-transfers.toml`, including
+   the natural copy calls that separate the mask-window base load from the
+   wider access. The independent mnemonic fixtures retain the tested stock
+   bytes. The raw C driver records const input contexts, full exit state,
+   caller ABI, seeded stack and all declared RAM. Its observations remain in
+   the existing COPY packet. `kb.packed_transfer_capture_evidence` binds the
+   same complete original primary, exact native width questions, consumed
+   sources, fixture and actual streams before independent input/state/lane
+   equations apply. A wider transfer does not infer a wider semantic field
+   or publication, scheduler reachability, or hardware behavior.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
@@ -1736,14 +2197,41 @@ special registers, ABI, frame, pointer pools and full admitted memory effects,
 and binds consumed sources, ELF, fixture and toolchain identities. The two RAM
 pool relocations and SP+24/R7 return boundary are explicit simulation changes;
 instruction bytes under test remain original. Twenty exact native reader/writer
-claims can receive identity support through the schema-2 shared copy receipt.
+claims can receive identity support through the schema-3 shared copy receipt.
 Existing declared widths, signedness and relation slot/offset remain unchanged.
 Full qualification uses the existing primary `--can-copy-witness` path and its
 independent finalizer. `--injection-copy-early` executes twelve fixed cases only,
 emits raw observations and supplies no production receipt or native acceptance.
 Related TEST attachments require separate qualification.
+
+The bounded coherent-caller descriptor is `defs/JK08A.coherent-copy.toml`.
+The matrix declares 17228 cases and the fixed feedback selects 109 cases across
+15 callers. `--coherent-copy-early` executes that selection through the primary
+runner. Each caller uses a separate reconstructed ELF and an SP+24/R7 return
+boundary outside its tested bytes. The host checks actual registers, SR,
+PR/SP, ABI, seeded stack, all source and history lanes, pointer/dispatch pools
+and the complete external RAM footprint. The length-88 and length-128 paths
+include their source+length word read; their compact dispatch table is outside
+the admitted path. The primary stock loop executes all fifteen complete windows
+and the existing shared COPY packet binds their ordered observations, native
+claim scope and private consumed sources. The independent finalizer requires
+every complete window; early feedback cannot publish a receipt or qualify
+a native claim. The reserved coherent-copy item supports exact identity only.
 The formulas occupy fuel_pulse steps 20, 21, 22 and 23; all other fuel and
 injection steps retain their independent contracts.
+
+Four bounded windows belong to scheduler 000209D8 and bind fourteen exact
+native reader/writer appends. Calls 00020BD0, 00020CBA, 00020CDC and 00020CE6
+retain lengths 24, 8, 8 and 16 from their actual delay slots. The length-24
+dispatch reads stock pointer 00022170 to 0002213E. Explicit incoming pointer
+and helper registers define each bounded entry; scheduler reachability is
+outside this claim. The 00020DFE and 000209D8 relations of the three shared
+reader owners are selected by exact caller and evidence, rather than address
+alone. The existing unique exact publication rule covers all registered
+owning items; other facts and evidence retain their scope effect. Native
+width/signedness, complete ledgers and every TEST position stay fixed. The
+standard source generator writes both the input header and descriptor from
+the pinned member/window declarations and owned image; it runs no MCU path.
 
 The numeric harness checks all fifteen GPRs, actual complete SR, natural
 PR/SP, restored MACH/MACL/GBR, the immutable 76-byte entry context, 96 frame bytes,
@@ -2361,3 +2849,69 @@ instruction bytes, calibration bytes and stock call/return behavior retain
 their original values. The function uses no helper stubs. Software execution
 does not establish the global inhibit coordinator, interrupt delivery,
 physical units, complete ECU scheduling or hardware readiness.
+
+## Bounded working-state width views
+
+The complete stock runner executes `width_view_capture.py` before its registered
+stock loop. Its `jk08a-width-views` observations remain in `width_views` of the
+same original COPY packet. They have a distinct marker and are not added to the
+registered stock-region case totals. The common TEST primary independently
+validates their physical capture and full-state equations and connects exact
+diagnostic byte views to the same complete SID22 original.
+
+`defs/JK08A.width-views.toml` declares the retained native questions and bounded
+GBR, register, selector and SP+8 premises. Independent mnemonic assembly binds
+the stock instructions and pools. The observer preserves complete raw state;
+canonical RLE retains the entire before/after RAM. These observations grant no
+automatic width resolution, natural caller or helper-output reachability,
+selector range, distant GBR preservation or hardware conclusion. The precise
+scope and remaining admission boundary are in `defs/JK08A.width-views.md`.
+
+## Native byte-surface caller observations
+
+`byte_surface_capture.py` executes the complete BFDC0 caller and natural
+4x4/8x8/16x16 byte-surface helper closure in the same full stock primary.
+`byte_surface_paths` remains part of the existing COPY packet with its own
+marker and invocation count. The explicit input catalogue includes direct
+helper roles, stock/synthetic calibrations, independent fifth/R7 arguments,
+conditional outcomes and correction boundaries. Complete raw state/RAM and
+calibration snapshots support independent physical, instruction-state and
+numeric consumers. Their exact scope is in `defs/JK08A.byte-surface-paths.md`.
+The positive later conditioning/diagnostic paths require their own evidence.
+
+## Conditional exhaust-target observations
+
+The complete stock process runs `exhaust_target_capture.py` alongside the
+byte-surface capture and retains its raw `exhaust_target_paths` in the same
+COPY original. `defs/JK08A.exhaust-target-path.toml` binds the exact BFE88
+instruction spans, natural hysteresis helper and pointer aliases. The raw
+driver has no expected-output columns. Independent consumers require the full
+state, both selected endpoint paths through the intermediate local-frame
+stores, explicit disabled/replacement modes and the actual final `FFFF2327`
+store. This conditional component grants no native relation, scale or hardware
+admission. Its invocation count is derived from its typed input matrix and is
+separate from registered stock-region totals.
+
+## Conditional BFS observations
+
+`bfs_path_capture.py` retains the complete natural BFS producer and its declared
+helpers in the same original stock process. Its `bfs_paths` COPY packet contains
+full raw state and actual K calibration bytes. Independent physical, instruction
+and wide integer consumers bind the admitted K-dependent quarter-BFS path,
+normal cap and alternate selection to the actual `FFFF1026` diagnostic store.
+The bounded modes and source contract are in `defs/JK08A.bfs-path.md`; native
+relation and scale admission remain separate.
+
+## Sequenced ignition diagnostic observations
+
+`ignition_diagnostic_capture.py` records the natural event correction, final
+coordinate and command builders on the same RAM. Its raw
+`ignition_diagnostic_paths` stays in the existing COPY original. Exact private
+sources, reconstruction, original streams, full state/frame/RAM and the actual
+native control-memory window remain mandatory. The separately assembled APC
+scheduler sink has an explicit synthetic return after the diagnostic stores;
+no scheduler MMIO, timing or hardware behavior is admitted. Independent word
+curve and conditioning equations include the physically read neighboring word
+without extending semantic geometry. The exact scope is in
+`defs/JK08A.ignition-diagnostic-path.md`.
+
