@@ -2,7 +2,7 @@
 
 The complete natural 503E0 caller and real 50766 rotation helper contain
 409 stock instructions, 818 code bytes and 7 code spans. All 409 feasible instructions
-are required. The descriptor binds 42 literal spans, 13 pointer aliases,
+are required. Its preserved state source boundary binds 42 literal spans, 13 pointer aliases,
 25 complete RAM fields, 271 configuration fields, 44 complete calibration spans
 and 306 raw input fields. The joint descriptor contains 125 exact access originals:
 115 readers and ten individually pinned writers, 95 complete owners,
@@ -232,10 +232,24 @@ these two constant caller arguments. Table/fallback paths retain actual byte
 publications at 501AA to FFFF1778 from R4 and at 501AE to FFFF16AA from R14.
 The 501AE publication is a writer obligation even when a reader claim is withdrawn.
 
-The active raw descriptor admits only 503E0. The restore source unit does not
-admit 50018 execution, selected-reader absence, prior-byte independence, native
-identity or a claim correction. Admission requires the complete raw input
-descriptor, independent numerical and physical events, all feasible branch and
-call/return paths, full state and retained writer, and exact owning postimages.
-The existing 409-instruction state unit and all selected state claims retain
-their separate complete boundaries.
+The shared input descriptor declares 503E0 and 50018 through the existing
+ordinary adapter. It contains 894 shared stock instructions, 81 shared literal spans,
+30 shared RAM pointer aliases, 39 shared RAM fields, 322 shared configuration fields,
+98 shared calibration spans and 371 shared raw input fields. The old input field
+prefix, state RAM preimages, state loop inputs and state calibration subsets remain
+explicit. The 14 additional ordinary RAM bytes default to A5 in state cases.
+Both restore curves contain 16 independent physical bytes. The four speed thresholds
+and four floors retain separate raw bytes and their complete index range.
+
+Four held-other groups supply every prior byte at FFFF16AA across first-diagnostic
+fallback, second-diagnostic fallback, ordinary lookup and offset lookup. Complete
+coordinate values 0..255 retain rising, falling and alternating table inputs.
+Every curve byte, speed threshold, floor, mode, diagnostic and complete CPU/SR input
+has independent alternatives. Case construction uses only raw inputs.
+
+The generated driver, independent numerical/physical consumer and owning postimages
+require completion before common acceptance. The source declaration does not
+establish selected-reader absence, prior-byte independence, native identity or a
+claim correction. Admission retains all feasible branch and call/return paths,
+complete state, actual writer and exact owning postimages. The 409-instruction state
+unit and its selected claims retain their separate complete boundaries.

@@ -102,12 +102,12 @@ def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_byte
     fixture,aliases=contract.independent_fixture(declared,image);restored=bytearray(fixture)
     for first,last in contract.SPANS:assert fixture[first:last]==image[first:last]
     for row in aliases:restored[row['address']:row['address']+4]=row['original'].to_bytes(4,'big')
-    assert len(aliases)==13 and bytes(restored)==image
+    assert len(aliases)==30 and bytes(restored)==image
     for first,last in ((0x50400,0x50402),(0x50444,0x50484),(0x50552,0x50554),(0x5068C,0x50698),(0x506AE,0x506E8)):
-        assert fixture[first:last]==image[first:last]
+        assert restored[first:last]==image[first:last]
         assert not any(max(first,start)<min(last,end) for start,end in contract.SPANS)
-    assert (0x50766,0x5079C) in contract.SPANS and contract.HELPER_ENTRIES==(0x50766,)
-    assert contract.INPUT_BLOBS==[dict(name='delay_bytes',address=0x1269A,size=6),dict(name='state_bytes',address=0x2371C,size=256)]
+    assert (0x50766,0x5079C) in contract.SPANS and contract.STATE_HELPER_ENTRIES==(0x50766,)
+    assert contract.STATE_INPUT_BLOBS==[dict(name='delay_bytes',address=0x1269A,size=6),dict(name='state_bytes',address=0x2371C,size=256)]
     assert len(matrix.STATE_FIELDS)==256 and len(matrix.DELAY_FIELDS)==6
     from kb.test_stock_capture import tool
     producer=tool(repo.ROOT,'dfco_state_caller_withdrawal_capture.py','_kb_DFCO_state_producer_source_contract')
@@ -122,12 +122,12 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     assert len({row['owner'] for row in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
-    for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),409),
-        ('818 code bytes',sum(last-first for first,last in contract.SPANS),818),('7 code spans',len(contract.SPANS),7),
-        ('409 feasible instructions',len(transfers.FEASIBLE_SITES),409),('42 literal spans',len(contract.UNIT['pools']),42),
-        ('13 pointer aliases',len(contract.UNIT['aliases']),13),('25 complete RAM fields',len(matrix.RAM_FIELDS),25),
-        ('271 configuration fields',len(contract.CONFIGURATION),271),('44 complete calibration spans',len(contract.CONTROLLED_CALIBRATION),44),
-        ('306 raw input fields',len(matrix.WIDTHS),306)):
+    for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.STATE_SPANS),409),
+        ('818 code bytes',sum(last-first for first,last in contract.STATE_SPANS),818),('7 code spans',len(contract.STATE_SPANS),7),
+        ('409 feasible instructions',len(transfers.FEASIBLE_SITES),409),('42 literal spans',len(contract.STATE_UNIT['pools']),42),
+        ('13 pointer aliases',len(contract.STATE_UNIT['aliases']),13),('25 complete RAM fields',len(matrix.STATE_RAM_FIELDS),25),
+        ('271 configuration fields',len(contract.STATE_CONFIGURATION),271),('44 complete calibration spans',len(contract.STATE_CONTROLLED_CALIBRATION),44),
+        ('306 raw input fields',len(matrix.STATE_WIDTHS),306)):
         assert phrase in words and actual==wanted
     assert f'{len(proof.REQUIRED_BRANCHES)} two-sided conditions' in words and proof.FIXED_BRANCHES=={}
     assert transfers.FEASIBLE_SITES==transfers.EXACT_SITES
@@ -238,8 +238,8 @@ def test_restore_source_closure_retains_complete_owned_pool_inventory_and_existi
         assert row['width']==4 and row['original']>=0xFFFF0000
         assert row['alias']==0x01000000+(row['original']&65535)
         assert image[row['address']:row['address']+4]==row['original'].to_bytes(4,'big')
-    assert contract.ENTRIES==(0x503E0,)
-    assert contract.RESTORE_SOURCE_ENTRY not in contract.ENTRIES
+    assert contract.STATE_ENTRIES==(0x503E0,)
+    assert contract.ENTRIES==(*contract.STATE_ENTRIES,contract.RESTORE_SOURCE_ENTRY)
 
 
 def test_restore_source_publication_counts_follow_the_exact_source_unit():
@@ -253,3 +253,64 @@ def test_restore_source_publication_counts_follow_the_exact_source_unit():
         assert phrase in text and actual==wanted
     assert contract.RESTORE_SOURCE_CALLS==((0x50042,0x25C36),(0x5005E,0x25C36),(0x500AC,0x26388),(0x500BC,0x26388))
     assert contract.RESTORE_SOURCE_PUBLICATIONS==((0x501AA,0xFFFF1778,1,4),(0x501AE,0xFFFF16AA,1,14))
+
+
+
+def test_shared_restore_input_fields_preserve_the_complete_state_prefix_and_physical_bytes():
+    declared=contract.descriptor(repo.ROOT)
+    adapter=declared['adapter']
+    assert {row['name']:row['bits'] for row in adapter['fields']}==matrix.WIDTHS
+    assert [row['name'] for row in adapter['fields'][:len(matrix.STATE_WIDTHS)]]==[
+        *matrix.REGISTERS,*(name for name,at,width in matrix.STATE_RAM_FIELDS),
+        *(row['field'] for row in contract.STATE_CONFIGURATION),'variant','initial_sr']
+    assert list(matrix.WIDTHS)[:len(matrix.STATE_WIDTHS)]==list(matrix.STATE_WIDTHS)
+    assert {row['offset'] for row in adapter['memory']}=={at for name,at,width in matrix.RAM_FIELDS}
+    added=[row for row in matrix.RAM_FIELDS if row not in matrix.STATE_RAM_FIELDS]
+    assert all(matrix.DEFAULTS[name]==0xA5 for name,at,width in added)
+    old_memory=bytearray([0xA5])*65536
+    for name,at,width in matrix.STATE_RAM_FIELDS:old_memory[at:at+width]=matrix.STATE_DEFAULTS[name].to_bytes(width,'big')
+    case=dict(matrix.DEFAULTS,entry=0x503E0,kind='controlled',index=0)
+    assert matrix.memory(case)==bytes(old_memory)
+    assert matrix.RESTORE_CURVE_FIELDS[0x12818][-1]=='restore_byte_12827'
+    assert matrix.RESTORE_CURVE_FIELDS[0x1298C][-1]=='restore_byte_1299b'
+    assert len(matrix.RESTORE_SPEED_FIELDS)==len(matrix.RESTORE_FLOOR_FIELDS)==4
+
+
+def test_restore_prior_byte_and_coordinate_domains_hold_every_other_raw_input():
+    image=repo.images()['JK08A'].path.read_bytes();source=contract.descriptor(repo.ROOT)
+    rows=matrix.restore_cases(source,image)
+    selected=[row for row in rows if row['kind']=='restore-unread16aa-prior-and-retained-writer']
+    groups={}
+    for row in selected:
+        matrix.require_case(row)
+        key=tuple((name,row[name]) for name in matrix.WIDTHS if name!='byte_16aa')
+        groups.setdefault(key,[]).append(row['byte_16aa'])
+    assert len(groups)==4 and all(values==list(range(256)) for values in groups.values())
+    coordinate=[row for row in rows if row['kind']=='restore-complete-coordinate-and-curve-direction']
+    assert len(coordinate)==3*256
+    for first in range(0,len(coordinate),256):
+        group=coordinate[first:first+256]
+        assert [row['byte_106f'] for row in group]==list(range(256))
+        assert all({key:value for key,value in row.items() if key not in ('index','byte_106f')}==
+                   {key:value for key,value in group[0].items() if key not in ('index','byte_106f')} for row in group)
+
+
+def test_shared_restore_input_counts_bind_the_current_descriptor_sources():
+    source=contract.descriptor(repo.ROOT)
+    words=' '.join((repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text().split())
+    for phrase,actual,wanted in (
+            ('894 shared stock instructions',sum((last-first)//2 for first,last in contract.SPANS),894),
+            ('81 shared literal spans',len(contract.UNIT['pools']),81),
+            ('30 shared RAM pointer aliases',len(contract.UNIT['aliases']),30),
+            ('39 shared RAM fields',len(matrix.RAM_FIELDS),39),
+            ('322 shared configuration fields',len(contract.CONFIGURATION),322),
+            ('98 shared calibration spans',len(contract.CONTROLLED_CALIBRATION),98),
+            ('371 shared raw input fields',len(source['adapter']['fields']),371)):
+        assert phrase in words and actual==wanted
+
+
+@pytest.mark.parametrize('field,value',(('byte_16aa',256),('byte_5a95',True),('restore_byte_12827',256),
+    ('restore_byte_1299b',-1),('restore_byte_11cb8',256),('restore_byte_1299f',False)))
+def test_restore_physical_input_widths_refuse_partial_or_untyped_bytes(field,value):
+    case=dict(matrix.RESTORE_DEFAULTS,entry=0x50018,kind='controlled',index=0);case[field]=value
+    with pytest.raises(ValueError):matrix.require_case(case)
