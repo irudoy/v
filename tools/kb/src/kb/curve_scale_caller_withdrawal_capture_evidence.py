@@ -224,12 +224,18 @@ def require_primary(model,record):
     original,current=ignition_literal_evidence.require_original(model,record)
     packet=record['candidate']['witness'].get('curve_scale_caller_withdrawal_paths')
     helpers=curve_helpers.require_primary(model,record)
+    if any(helpers.get(flag) is not True for flag in
+            ('no_selected_RAM3348_access','prior3348_complete_state_independence')):
+        raise ValueError('the curve scale shared original lacks complete uptight RAM3348 physical absence and prior-state independence')
     dividers=direct_helpers.require_primary(model,record)
     result=require_witness(model,packet,record['candidate']['producer_inputs'])
     result['complete_curve_helpers_same_primary']=True
     result['complete_direct_helpers_same_primary']=True
     result['direct_helper_original_stdout_sha256']=dividers['stdout_sha256']
     result['curve_helper_original_stdout_sha256']=helpers['stdout_sha256']
+    result['complete_uptight_RAM3348_same_primary']=True
+    result['uptight_RAM3348_withdrawal_original']='59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f'
+    result['uptight_RAM3348_original_stdout_sha256']=helpers['stdout_sha256']
     if original.count(packet['marker'])!=1:raise ValueError('the complete primary omits its unique actual curve scale caller withdrawal original')
     if ignition_literal_evidence.execution_inputs(model.root)!=current:raise ValueError('the curve scale caller withdrawal inputs change during independent consumption')
     return result

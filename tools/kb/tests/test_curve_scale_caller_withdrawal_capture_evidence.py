@@ -264,3 +264,15 @@ def test_component_retains_exact_native_alias_absence_and_all_fixed_divisor_prem
     assert result['selected_native_RAM_aliases']=={'ffff2733':'01002733','ffff3348':'01003348'}
     assert result['fixed_divisor_outcomes']=={'00026c7a':['fallthrough'],'00021bc0':['fallthrough'],
         '00021bca':['taken'],'00021bdc':['fallthrough']}
+    assert result['complete_uptight_RAM3348_same_primary'] is True
+    assert result['uptight_RAM3348_withdrawal_original']==owning.UPTIGHT_RAM3348_WITHDRAWAL[1]
+    assert result['uptight_RAM3348_original_stdout_sha256']==result['curve_helper_original_stdout_sha256']
+
+
+@pytest.mark.parametrize('flag',('no_selected_RAM3348_access','prior3348_complete_state_independence'))
+def test_existing_same_primary_neighbor_cannot_donate_RAM3348_absence_without_its_complete_prior_result(original,monkeypatch,flag):
+    require=proof.curve_helpers.require_primary
+    def changed(model,record):
+        result=dict(require(model,record));result[flag]=False;return result
+    monkeypatch.setattr(proof.curve_helpers,'require_primary',changed)
+    with pytest.raises(ValueError):proof.require_primary(original[0],original[1])

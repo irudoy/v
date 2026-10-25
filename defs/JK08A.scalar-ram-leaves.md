@@ -313,3 +313,15 @@ records,current images and65 complete functions remain exact. An additional
 complete function transition removes one exact reverse writer selector;the new
 datum owner retains its absent ledger. The preceding three full transitions,
 row79,row99,nine writer identities and eighteen indexed_by originals remain exact.
+
+
+The selected RAM3348 reader at B784E shares the complete ruddy-anaconda owner
+with the B7768, B78DA and B7A3C withdrawals. Its common postimage removes those
+four reader links and preserves the actual writer, native unit, unset semantic
+types and original symbol evidence. The complete B784E function postimage
+removes only its reverse RAM3348 reader selector. Earlier complete boundaries
+restore only the three pinned prior postimage fields after requiring their
+complete current images. The existing curve-scale consumer requires the same
+primary uptight capture's exact selected physical absence and full prior-state
+independence. Incoming R4 arithmetic and the caller's separate value store
+retain their independent scope.

@@ -852,7 +852,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   'e353009592e533d5f7413aa3a4edaac73a80982db8c14fd47b6db9376eeccc0b',
   None,
   '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
-  '93b5e80935759100047f5d30f434097a08122954a0eec6e2703f06c3576b7164'),
+  '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'),
  ('000b78da-00015bf0-withdraw',
   89072,
   'prehistoric-boa/tbl',
@@ -964,7 +964,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   'ec181ca2f794853e947329334c40017f426533116fd07a94ffe46dc1174b70e9',
   None,
   '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
-  '93b5e80935759100047f5d30f434097a08122954a0eec6e2703f06c3576b7164'),
+  '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'),
  ('000b7a3c-ffff3348-withdraw',
   4294914888,
   'ruddy-anaconda/ram',
@@ -978,7 +978,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '9f418c7091d6acf535a07437acd5068090a8b59e50d8426db950136c98b527e3',
   None,
   '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
-  '93b5e80935759100047f5d30f434097a08122954a0eec6e2703f06c3576b7164'),
+  '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'),
  ('000b78da-ffff35a0-withdraw',
   4294915488,
   'curvy-mandrill/ram',
@@ -1748,7 +1748,21 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531',
   None,
   'ba01cb238c8e7be06cda932c2caa6164367d5ff16dc14d1e284aeca769c6b0ec',
-  'f1265c1c88ef93e34295fa672ae9eb303faa0fd8e1853a61fd171879d93a60d7'))
+  'f1265c1c88ef93e34295fa672ae9eb303faa0fd8e1853a61fd171879d93a60d7'),
+ ('000b784e-ffff3348-withdraw',
+ 4294914888,
+ 'ruddy-anaconda/ram',
+ 751694,
+ (),
+ 'withdrawal',
+ 'curve_scale_caller_withdrawal_paths',
+ None,
+ 'unset',
+ 'unset',
+ '59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f',
+ None,
+ '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
+ '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2012,7 +2026,11 @@ RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
  ('cherubic-salamander/fn',
   287966,
   'kb/fn/cherubic-salamander.toml',
-  '71929d38a641cfc3a71e837a3c5ee7ad3bad2d9aec1eee82552f6f628b61ead1'))
+  '71929d38a641cfc3a71e837a3c5ee7ad3bad2d9aec1eee82552f6f628b61ead1'),
+ ('uptight-duck/fn',
+ 751694,
+ 'kb/fn/uptight-duck.toml',
+ 'c869d66b1a0495c487e8891a60e23c09439104abeea09203f1da1356dbb678e4'))
 PRIOR_REFERENCE_SHA256 = '97065661723b863b4a61c65e304a3a6fa4492b31b1859eee8b6ce516322759c6'
 PRIOR_FUNCTION_SHA256 = 'd4546448515592cbda8fd42e6c762217dc27943572d644e0783620f59d1c691e'
 PRIOR_FILES_SHA256 = {'defs/JK08A.scalar-ram-leaves.toml': '6e90413cffcac41a4379ddf756094592f173ca4031e81b97abed134f322bfd11',
@@ -2073,7 +2091,8 @@ NATIVE_LINK_ROLES = {'0004f958-ffff11ae-withdraw': ('indexed_by',),
  '000b78da-ffff3348-withdraw': ('indexed_by',),
  '000b7a3c-ffff3348-withdraw': ('indexed_by',),
  '000b78da-ffff35a0-withdraw': ('indexed_by',),
- '000b7a3c-ffff35b6-withdraw': ('indexed_by',)}
+ '000b7a3c-ffff35b6-withdraw': ('indexed_by',),
+ '000b784e-ffff3348-withdraw': ('indexed_by',)}
 PRIOR_RPM_RAM_REFERENCE_SHA256 = '3bd975e9f3f02b055b05fa36aa708633441c21b47c598a940658b046923f3b0e'
 PRIOR_RPM_RAM_FUNCTION_SHA256 = 'fc72ce9be899e1efd9ba000b55d03a2b045a36600cc939be5e82bacfb233236d'
 PRIOR_RPM_RAM_FILES_SHA256 = {'defs/JK08A.rpm-ram-withdrawal-paths.toml': 'b826bccb4d6da7134e91bdb89b78a2dda56b727e6f9ff1c69ab7e510a5ecbb2a',
@@ -2288,14 +2307,22 @@ FUNCTION_POSTIMAGE_IDENTITIES = (('classy-seahorse/fn',
   '71929d38a641cfc3a71e837a3c5ee7ad3bad2d9aec1eee82552f6f628b61ead1',
   '3c21af3c1695f8541f5ee82f3893f8be99caf700da96970ab118f398c14a0dc4',
   '[{"dependency":[{"end":"owner","link_role":"consumer","relies":"level","role":"consumer","supports":"identity","to":"quirky-silkworm/fn","type":"depends"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"smiling-bustard/tbl","type":"reader"},{"end":"to","link_role":"indexed_by","relies":"structure","role":"indexed_by","supports":"identity","to":"saffron-manul/ram","type":"reader"},{"end":"owner","relies":"structure","role":"threshold","supports":"identity","to":"electric-gopher/ram","type":"threshold"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"rigorous-lizard/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"urban-ibex/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3],"notes":[0],"order":315,"registry":"funcs"}]',
-  '[{"dependency":[{"end":"owner","link_role":"consumer","relies":"level","role":"consumer","supports":"identity","to":"quirky-silkworm/fn","type":"depends"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"smiling-bustard/tbl","type":"reader"},{"end":"to","link_role":"indexed_by","relies":"structure","role":"indexed_by","supports":"identity","to":"saffron-manul/ram","type":"reader"},{"end":"owner","relies":"structure","role":"threshold","supports":"identity","to":"electric-gopher/ram","type":"threshold"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"rigorous-lizard/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3],"notes":[0],"order":315,"registry":"funcs"}]'))
+  '[{"dependency":[{"end":"owner","link_role":"consumer","relies":"level","role":"consumer","supports":"identity","to":"quirky-silkworm/fn","type":"depends"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"smiling-bustard/tbl","type":"reader"},{"end":"to","link_role":"indexed_by","relies":"structure","role":"indexed_by","supports":"identity","to":"saffron-manul/ram","type":"reader"},{"end":"owner","relies":"structure","role":"threshold","supports":"identity","to":"electric-gopher/ram","type":"threshold"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"rigorous-lizard/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3],"notes":[0],"order":315,"registry":"funcs"}]'),
+ ('uptight-duck/fn',
+ 751694,
+ 'kb/fn/uptight-duck.toml',
+ 'c869d66b1a0495c487e8891a60e23c09439104abeea09203f1da1356dbb678e4',
+ '7a971abdaedff46981c533e37ce360aa302a826bc0df0891e30707c25b2eab28',
+ '[{"dependency":[{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"blond-panther/tbl","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"magic-kingfisher/tbl","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"prehistoric-boa/tbl","type":"reader"},{"end":"owner","link_role":"indexed_by","relies":"structure","role":"indexed_by","supports":"identity","to":"complex-firefly/tbl","type":"depends"},{"end":"to","link_role":"indexed_by","relies":"level","role":"indexed_by","supports":"identity","to":"rpm/ram","type":"reader"},{"end":"to","link_role":"indexed_by","relies":"level","role":"indexed_by","supports":"identity","to":"ruddy-anaconda/ram","type":"reader"},{"end":"to","relies":"level","role":"writes","supports":"identity","to":"curvy-mandrill/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mauve-myna/ram","type":"writer"},{"end":"to","relies":"level","role":"writes","supports":"identity","to":"peach-anteater/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],"notes":[0],"order":480,"registry":"funcs"}]',
+ '[{"dependency":[{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"blond-panther/tbl","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"magic-kingfisher/tbl","type":"reader"},{"end":"to","relies":"structure","role":"from_map","supports":"identity","to":"prehistoric-boa/tbl","type":"reader"},{"end":"owner","link_role":"indexed_by","relies":"structure","role":"indexed_by","supports":"identity","to":"complex-firefly/tbl","type":"depends"},{"end":"to","link_role":"indexed_by","relies":"level","role":"indexed_by","supports":"identity","to":"rpm/ram","type":"reader"},{"end":"to","relies":"level","role":"writes","supports":"identity","to":"curvy-mandrill/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mauve-myna/ram","type":"writer"},{"end":"to","relies":"level","role":"writes","supports":"identity","to":"peach-anteater/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],"notes":[0],"order":480,"registry":"funcs"}]'))
 FUNCTION_POSTIMAGE_CLAIMS = (('573e631e56ccae93bdac53c1906dadcc90aeb13a9fef5f5abe97af5d7fa3f437', 'rampant-lobster/ram', 510376),
  ('177290ea6eaeccff871ba8e2f041ef206f867d937656ff13aa6db177a9d94298', 'realistic-capybara/ram', 510376),
  ('f5ad4f5cd86f01b4ce9c961c46d182bd1a5ca987660d96cbe7df5f127d23cd36', 'neon-seagull/ram', 510376),
  ('ace066de89ca0e146133354756c38ccda95830904176750f776020f78d758261', 'hallowed-malkoha/ram', 510202),
  ('e05ca8c55888e89a68795f8e3d2d7e22173743a4a5c13ad589ebab1854b4c532', 'hallowed-malkoha/ram', 510376),
  ('47c4932e2c5dbceeaa8d0d301089b790354738e4ef80dfa93ebb005beb915442', 'purple-chihuahua/ram', 309832),
- ('1dacd2a5176d35d9dc687370413cd3502b32f21417e16988f0948a9587b9d970', 'urban-ibex/ram', 287966))
+ ('1dacd2a5176d35d9dc687370413cd3502b32f21417e16988f0948a9587b9d970', 'urban-ibex/ram', 287966),
+ ('59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f', 'ruddy-anaconda/ram', 751694))
 PRIOR_PAIRED_INHIBIT_WRITER_REFERENCE_SHA256 = '402701d71dbfb418cbee703b7b25173e38e988fc5a59937dbea631757123a506'
 PRIOR_PAIRED_INHIBIT_WRITER_FUNCTION_SHA256 = 'e21822d594e8f807e45deeea6f8e8c87a2af6a9c328cd450e7f10f51c79468d5'
 PRIOR_PAIRED_INHIBIT_WRITER_FILES_SHA256 = {'defs/JK08A.paired-inhibit-writer-withdrawal-paths.toml': 'f37e081ed11c77ec4022fce89be2eb1d3f690d6f8aab79e1f366a430d8ed2b49',
@@ -2411,7 +2438,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=124):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=125):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2498,6 +2525,7 @@ def descriptor(root):
     require_prior_state_surface_caller_boundary(root,value)
     require_prior_byte_factor_caller_boundary(root,value)
     require_prior_reader_direction_boundary(value)
+    require_prior_uptight_RAM3348_boundary(value)
     return value
 
 
@@ -2547,8 +2575,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=124 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all124 unchanged normal unlink operations')
+    if len(selected)!=125 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all125 unchanged normal unlink operations')
     return True
 
 
@@ -2871,8 +2899,8 @@ def require_function_postimages(value):
             if not marker['dependency']:marker.pop('dependency')
         if not test_contract.exact(expected,after):
             raise ValueError('the paired writer changes another function field,TEST context,ledger identity,selector order,note or claim')
-    if removed!=7:
-        raise ValueError('the full function transitions change their seven exact function-end ledger selectors')
+    if removed!=8:
+        raise ValueError('the full function transitions change their eight exact function-end ledger selectors')
 
 
 def require_prior_paired_inhibit_writer_boundary(root,value):
@@ -2899,7 +2927,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=124:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=125:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -2943,7 +2971,7 @@ def paired_curve_prefix_digest(value,count):
             proposed_ledger_json=json.dumps(document.get('ledger'),sort_keys=True,separators=(',',':'),ensure_ascii=True))
         changed+=1
     expected=state_surface_current_prefix(expected,value)
-    if changed!=1 or not test_contract.exact(expected,value['reference'][:count]):
+    if changed!=1 or not test_contract.exact(expected,uptight_RAM3348_prior_current_rows(value,count)):
         raise ValueError('the paired curve changes another complete preceding record,current image,ledger,TEST,order,type,role or scope')
     return digest(previous)
 
@@ -2969,7 +2997,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=124:
+    if len(value['reference'])!=125:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3024,7 +3052,7 @@ def state_surface_prefix_digest(value,count):
         raise ValueError('the state surface changes an exact preceding whole-record boundary')
     previous=prior_reference_rows(value,count)
     expected=state_surface_current_prefix(previous,value)
-    if not test_contract.exact(expected,value['reference'][:count]):
+    if not test_contract.exact(expected,uptight_RAM3348_prior_current_rows(value,count)):
         raise ValueError('the state surface changes another complete preceding record,current image,ledger,TEST,order,type,role or scope')
     return digest(previous)
 
@@ -3042,7 +3070,7 @@ def require_prior_byte_ratio_producer_boundary(root,value):
 def require_prior_state_surface_caller_boundary(root,value):
     # All121 complete preceding records,current images and64 full functions
     # remain exact,including row99,row79 and both complete function transitions.
-    if digest(value['reference'][:121])!=PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256 or digest(prior_reference_rows(value,121))!=PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256 or digest(value['function'][:64])!=PRIOR_STATE_SURFACE_CALLER_FUNCTION_SHA256:
+    if digest(uptight_RAM3348_prior_current_rows(value,121))!=PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256 or digest(prior_reference_rows(value,121))!=PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256 or digest(value['function'][:64])!=PRIOR_STATE_SURFACE_CALLER_FUNCTION_SHA256:
         raise ValueError('the byte factor changes the complete preceding121 originals or64 full function records')
     for name,sha256 in PRIOR_STATE_SURFACE_CALLER_FILES_SHA256.items():
         if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=sha256:
@@ -3052,7 +3080,7 @@ def require_prior_state_surface_caller_boundary(root,value):
 def require_prior_byte_factor_caller_boundary(root,value):
     # All122 complete preceding records/current images and65 full functions
     # remain exact,including row79,row99 and all three function transitions.
-    if digest(value['reference'][:122])!=PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256 or digest(prior_reference_rows(value,122))!=PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256 or digest(value['function'][:65])!=PRIOR_BYTE_FACTOR_CALLER_FUNCTION_SHA256:
+    if digest(uptight_RAM3348_prior_current_rows(value,122))!=PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256 or digest(prior_reference_rows(value,122))!=PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256 or digest(value['function'][:65])!=PRIOR_BYTE_FACTOR_CALLER_FUNCTION_SHA256:
         raise ValueError('the byte sum changes the complete preceding122 originals or65 full function records')
     for name,sha256 in PRIOR_BYTE_FACTOR_CALLER_FILES_SHA256.items():
         if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=sha256:
@@ -3064,8 +3092,8 @@ PRIOR_READER_DIRECTION_REFERENCE_SHA256 = '7f7559ddffac6f75257ffd5b83ab963d40f2b
 PRIOR_READER_DIRECTION_FUNCTION_SHA256 = '2947b18e099f608f8b3855eb29da423115a7c46c49f83aeb831a641e6b34965b'
 
 def require_prior_reader_direction_boundary(value):
-    if (digest(value['reference'][:123])!=PRIOR_READER_DIRECTION_REFERENCE_SHA256
-            or digest(value['function'])!=PRIOR_READER_DIRECTION_FUNCTION_SHA256):
+    if (digest(prior_reference_rows(value,123))!=PRIOR_READER_DIRECTION_REFERENCE_SHA256
+            or digest(value['function'][:66])!=PRIOR_READER_DIRECTION_FUNCTION_SHA256):
         raise ValueError('the reader-direction withdrawal changes a complete prior123 record or66 function boundary')
     row=value['reference'][123]
     if tuple(row[key] for key in ('id','original_claim_sha256','address','function'))!=READER_ONLY_WITH_RETAINED_WRITER:
@@ -3075,3 +3103,45 @@ def require_prior_reader_direction_boundary(value):
             or not test_contract.exact([r for r in before['link'] if r['type']=='writer'],after['link'])
             or before['unit']!='enum_u8' or after['unit']!=before['unit']):
         raise ValueError('the reader-direction withdrawal changes a complete actual writer or enum unit')
+
+
+def require_prior_uptight_RAM3348_boundary(value):
+    if (digest(prior_reference_rows(value,124))!=PRIOR_UPTIGHT_RAM3348_REFERENCE_SHA256
+            or digest(value['function'][:66])!=PRIOR_UPTIGHT_RAM3348_FUNCTION_SHA256):
+        raise ValueError('the uptight RAM3348 withdrawal changes a complete prior124 record or66 function boundary')
+    row=value['reference'][124]
+    if tuple(row[key] for key in ('id','original_claim_sha256','address','function','component'))!=UPTIGHT_RAM3348_WITHDRAWAL:
+        raise ValueError('the uptight RAM3348 withdrawal changes its exact original or existing same-primary consumer')
+    shared=[held for held in value['reference'][:124] if held['owner']==row['owner']]
+    if ([held['function'] for held in shared]!=[0xB7768,0xB78DA,0xB7A3C]
+            or any(not test_contract.exact(tuple(held[key] for key in
+                ('original_native_json','proposed_native_json','original_native_sha256','proposed_native_sha256')),
+                tuple(row[key] for key in ('original_native_json','proposed_native_json','original_native_sha256','proposed_native_sha256')))
+                for held in shared)):
+        raise ValueError('the uptight RAM3348 withdrawal changes a complete common four-reader owner image')
+
+
+UPTIGHT_RAM3348_WITHDRAWAL = ('000b784e-ffff3348-withdraw', '59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f', 4294914888, 751694, 'curve_scale_caller_withdrawal_paths')
+PRIOR_UPTIGHT_RAM3348_REFERENCE_SHA256 = 'a172ca9b5e1aead2a9419fbee4fd3da20e4771fec84cadb15a7f84bdb7f9aea5'
+PRIOR_UPTIGHT_RAM3348_FUNCTION_SHA256 = '2947b18e099f608f8b3855eb29da423115a7c46c49f83aeb831a641e6b34965b'
+
+UPTIGHT_RAM3348_PRIOR_SHARED_IDS = ('000b7768-ffff3348-withdraw', '000b78da-ffff3348-withdraw', '000b7a3c-ffff3348-withdraw')
+UPTIGHT_RAM3348_PRIOR_SHARED_POSTIMAGE = ('{"ledger":[{"dependency":[{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"great-loon/ram","type":"input"},{"end":"owner","relies":"level","role":"indexed_by","supports":"identity","to":"raspberry-dragon/ram","type":"input"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"striped-horse/ram","type":"input"},{"end":"owner","relies":"level","role":"writes","supports":"identity","to":"zealous-dalmatian/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"notes":[0],"order":532,"registry":"vars"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"great-loon/ram","type":"input"},{"layouts":["7mfk"],"relies":"level","supports":"identity","to":"raspberry-dragon/ram","type":"input"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"striped-horse/ram","type":"input"},{"layouts":["7mfk"],"reverse_relies":"level","reverse_supports":"identity","role":"indexed_by","to":"uptight-duck/fn","type":"reader"},{"layouts":["7mfk"],"reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","to":"zealous-dalmatian/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","supports":"identity","to":"zealous-dalmatian/fn","type":"writer"}],"note":["Exact DID 0x1101 and the hard-coded -50 offset establish the temperature representation. When the model-ready gate is clear, the retained state is replaced by current coolant temperature after the calculation; otherwise the saturated integrated result is retained for the next pass."],"summary":"Signed P0128 model-temperature state in 1e-6 deg C. FUN 000b6b5a seeds it as 1000000*uint8[ffff1071]-50000000, otherwise loads the retained integrated state ffff9df0, and passes it to three P0128 term accessors before adding scaled balance ffff3400.","symbol":[{"address":"ffff3348","evidence":[{"at":"7mfk:000b6c22","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c60","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c62","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c64","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c66","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c6a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c6e","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c7e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6c8e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6cc0","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6cd4","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6d26","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6d2e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6d36","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b6d9c","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b78ee","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b78f0","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b78f2","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}},{"at":"7mfk:000b7a5a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["000b6b5a","000b7768","000b78da","000b7a3c","ffff1071","ffff3348","ffff3400","ffff9df0"],"span":1}}],"layout":"7mfk","name":"ruddy-anaconda"}],"unit":"P0128 model temperature [1e-6 deg C]"}', '93b5e80935759100047f5d30f434097a08122954a0eec6e2703f06c3576b7164', '[{"dependency":[{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"great-loon/ram","type":"input"},{"end":"owner","relies":"level","role":"indexed_by","supports":"identity","to":"raspberry-dragon/ram","type":"input"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"striped-horse/ram","type":"input"},{"end":"owner","relies":"level","role":"writes","supports":"identity","to":"zealous-dalmatian/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"notes":[0],"order":532,"registry":"vars"}]')
+
+
+def uptight_RAM3348_prior_current_rows(value,count):
+    # Admit every current full postimage before restoring only the three
+    # pinned historical shared-owner postimage fields for earlier boundaries.
+    prior_reference_rows(value,count)
+    rows=deepcopy(value['reference'][:count]);changed=0
+    fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
+    current=value['reference'][124]
+    for row in rows:
+        if row['id'] not in UPTIGHT_RAM3348_PRIOR_SHARED_IDS:continue
+        if (row['owner']!='ruddy-anaconda/ram' or not test_contract.exact(
+                tuple(row[key] for key in fields),tuple(current[key] for key in fields))):
+            raise ValueError('the uptight historical boundary substitutes a current complete shared-owner postimage')
+        row.update(zip(fields,UPTIGHT_RAM3348_PRIOR_SHARED_POSTIMAGE));changed+=1
+    if changed!=3:
+        raise ValueError('the uptight historical boundary changes its three exact preceding shared-owner rows')
+    return rows

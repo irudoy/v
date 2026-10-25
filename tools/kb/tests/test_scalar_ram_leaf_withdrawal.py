@@ -221,7 +221,7 @@ def test_joint_withdrawal_requires_both_independent_components_and_all_domain_fl
         if key in ('division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths'):result['complete_direct_helpers_same_primary']=True
         if key=='word_interp_caller_withdrawal_paths':result['complete_timing_helpers_same_primary']=True
         if key=='scaled_division_caller_withdrawal_paths':result['complete_register_helpers_same_primary']=True
-        if key=='curve_scale_caller_withdrawal_paths':result['complete_curve_helpers_same_primary']=True
+        if key=='curve_scale_caller_withdrawal_paths':result.update(complete_curve_helpers_same_primary=True,**uptight_RAM3348_flags())
         if key=='derivative_scale_caller_withdrawal_paths':
             result.update(complete_timing_helpers_same_primary=True,complete_normalization_helpers_same_primary=True,complete_viridian_caller_same_primary=True)
         if key=='mixed_curve_caller_withdrawal_paths':
@@ -257,7 +257,7 @@ def test_joint_admission_calls_each_independent_component_with_the_identical_pri
         def require(model,actual,key=key):
             assert model is before and actual is record;seen.append(key)
             return dict({proof.COMPONENT_FLAGS[key]:True,'no_selected_datum_access':True,
-                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}))
+                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}),**(uptight_RAM3348_flags() if key=='curve_scale_caller_withdrawal_paths' else {}))
         monkeypatch.setattr(consumer,'require_primary',require)
     result=proof.require_primary(before,record)
     assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths'}
@@ -1761,8 +1761,8 @@ def test_each_complete_prior_byte_factor_source_and_generated_output_remains_exa
 def test_reader_direction_retains_all123_preceding_records_and66_complete_functions():
     declared=contract.descriptor(repo.ROOT)
     assert len(declared['reference'])==124 and len(declared['function'])==66
-    assert contract.digest(declared['reference'][:123])==contract.PRIOR_READER_DIRECTION_REFERENCE_SHA256
-    assert contract.digest(declared['function'])==contract.PRIOR_READER_DIRECTION_FUNCTION_SHA256
+    assert contract.digest(contract.prior_reference_rows(declared,123))==contract.PRIOR_READER_DIRECTION_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:66])==contract.PRIOR_READER_DIRECTION_FUNCTION_SHA256
     row=declared['reference'][123]
     assert tuple(row[key] for key in ('id','original_claim_sha256','address','function'))==contract.READER_ONLY_WITH_RETAINED_WRITER
     assert row['component']=='dfco_state_caller_withdrawal_paths'
@@ -1806,3 +1806,98 @@ def dfco_direction_flags():
         strict_absence_originals=[r['original_claim_sha256'] for r in rows
             if r['component']=='dfco_state_caller_withdrawal_paths' and r['id']!=contract.READER_ONLY_WITH_RETAINED_WRITER[0]],
         retained1939_write_sites=[0x50574,0x50594])
+
+
+def uptight_RAM3348_flags():
+    return dict(complete_uptight_RAM3348_same_primary=True,
+        uptight_RAM3348_withdrawal_original=contract.UPTIGHT_RAM3348_WITHDRAWAL[1],
+        uptight_RAM3348_original_stdout_sha256='a'*64,curve_helper_original_stdout_sha256='a'*64)
+
+
+def test_uptight_RAM3348_preserves_complete_prior124_records_and66_functions_and_one_joint_owner():
+    declared=contract.descriptor(repo.ROOT);contract.require_prior_uptight_RAM3348_boundary(declared)
+    assert len(declared['reference'])==125 and len(declared['function'])==67
+    assert contract.digest(contract.prior_reference_rows(declared,124))==contract.PRIOR_UPTIGHT_RAM3348_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:66])==contract.PRIOR_UPTIGHT_RAM3348_FUNCTION_SHA256
+    row=declared['reference'][124]
+    assert tuple(row[key] for key in ('id','original_claim_sha256','address','function','component'))==contract.UPTIGHT_RAM3348_WITHDRAWAL
+    shared=[r for r in declared['reference'] if r['owner']==row['owner']]
+    assert [r['function'] for r in shared]==[0xB7768,0xB78DA,0xB7A3C,0xB784E]
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    assert all(json.loads(r['original_native_json'])==before and json.loads(r['proposed_native_json'])==after for r in shared)
+    expected=deepcopy(before)
+    for claim in shared:
+        old=json.loads(claim['original_claim_json'])
+        expected['link']=[link for link in expected['link'] if (link['type'],link['to'])!=(old['type'],old['to'])]
+        for marker in expected['ledger']:
+            if 'dependency' in marker:
+                marker['dependency']=[item for item in marker['dependency'] if not contract.selector(claim,row['owner'],item)]
+                if not marker['dependency']:marker.pop('dependency')
+    assert after==expected and after['symbol']==before['symbol'] and after['unit']==before['unit']
+    assert [link for link in before['link'] if link['type']=='writer']==[link for link in after['link'] if link['type']=='writer']
+    function=declared['function'][66];first,last=(contract.function_native_document(function,phase) for phase in ('original','proposed'))
+    assert function['owner']=='uptight-duck/fn' and first['symbol']==last['symbol']
+    expected=deepcopy(first);removed=[]
+    for marker in expected['ledger']:
+        items=marker.get('dependency',[]);removed.extend(item for item in items if contract.selector(row,function['owner'],item))
+        marker['dependency']=[item for item in items if not contract.selector(row,function['owner'],item)]
+    assert last==expected and len(removed)==1 and removed[0]['to']=='ruddy-anaconda/ram'
+    assert any(item.get('to')=='rpm/ram' for marker in last['ledger'] for item in marker.get('dependency',()))
+
+
+@pytest.mark.parametrize('fault',('prefix-row','prefix-order','prefix-function','shared-after','shared-before','original','component'))
+def test_uptight_RAM3348_boundary_refuses_partial_old_images_or_donation_from_other_originals(fault):
+    value=deepcopy(contract.descriptor(repo.ROOT));row=value['reference'][124]
+    if fault=='prefix-row':value['reference'][0]['original_native_json']+=' '
+    elif fault=='prefix-order':value['reference'][0],value['reference'][1]=value['reference'][1],value['reference'][0]
+    elif fault=='prefix-function':value['function'][0]['original_native_json']+=' '
+    elif fault in ('shared-after','shared-before'):row['proposed_native_json' if fault=='shared-after' else 'original_native_json']+=' '
+    elif fault=='original':row['original_claim_sha256']='0'*64
+    else:row['component']='uptight_duck_paths'
+    with pytest.raises(ValueError):contract.require_prior_uptight_RAM3348_boundary(value)
+
+
+@pytest.mark.parametrize('fault',('json','unit','ledger','evidence','other-selector','identity'))
+def test_full_uptight_function_postimage_refuses_other_fields_or_original_evidence_changes(fault):
+    value=deepcopy(contract.descriptor(repo.ROOT));row=value['function'][66]
+    if fault=='json':row['proposed_native_json']+=' '
+    elif fault=='identity':row['original_native_sha256']='0'*64
+    else:
+        document=json.loads(row['proposed_native_json'])
+        if fault=='unit':document['unit']='unregistered'
+        elif fault=='ledger':document['ledger'][0]['fields'].reverse()
+        elif fault=='evidence':document['symbol'][0]['evidence']=[]
+        else:document['ledger'][0]['dependency'].pop()
+        row['proposed_native_json']=json.dumps(document)
+    with pytest.raises(ValueError):contract.require_function_postimages(value)
+
+
+@pytest.mark.parametrize('field',tuple(uptight_RAM3348_flags()))
+def test_uptight_RAM3348_owning_binding_requires_exact_same_primary_result_and_original(field):
+    value=uptight_RAM3348_flags();assert proof.require_uptight_RAM3348_result(value) is True
+    value[field]=False if type(value[field]) is bool else '0'*64
+    with pytest.raises(ValueError):proof.require_uptight_RAM3348_result(value)
+
+
+def test_uptight_historical_current_prefix_restores_only_three_pinned_postimage_fields():
+    value=contract.descriptor(repo.ROOT)
+    fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
+    for count in (87,92,100,107,115,116,118,119,121,122):
+        previous=contract.uptight_RAM3348_prior_current_rows(value,count);changed=[]
+        for old,current in zip(previous,value['reference'][:count]):
+            if old==current:continue
+            assert old['id'] in contract.UPTIGHT_RAM3348_PRIOR_SHARED_IDS
+            assert {key:item for key,item in old.items() if key not in fields}=={
+                key:item for key,item in current.items() if key not in fields}
+            assert tuple(old[key] for key in fields)==contract.UPTIGHT_RAM3348_PRIOR_SHARED_POSTIMAGE
+            changed.append(old['id'])
+        assert tuple(changed)==contract.UPTIGHT_RAM3348_PRIOR_SHARED_IDS
+
+
+@pytest.mark.parametrize('count',(87,119,121,122))
+@pytest.mark.parametrize('field',('proposed_native_json','proposed_native_sha256','proposed_ledger_json'))
+def test_historical_postimage_restoration_requires_the_complete_current_shared_owner_first(count,field):
+    value=deepcopy(contract.descriptor(repo.ROOT))
+    row=next(r for r in value['reference'] if r['id']==contract.UPTIGHT_RAM3348_PRIOR_SHARED_IDS[0])
+    row[field]+=' '
+    with pytest.raises(ValueError):contract.uptight_RAM3348_prior_current_rows(value,count)

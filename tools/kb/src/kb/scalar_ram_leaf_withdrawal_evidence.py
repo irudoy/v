@@ -38,7 +38,7 @@ def native_rows(model,phase=None):
         elif not test_contract.exact(native_ledger(model,row['owner']),ledger):
             raise ValueError('the scalar RAM leaf withdrawal changes a retained native ledger identity or selector position')
     if len(seen)!=95 or len(phases)!=1 or phase is not None and phases!={phase}:
-        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact124-claim phase')
+        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact125-claim phase')
     current=next(iter(phases))
     for row in rows:
         old=json.loads(row['original_claim_json'])
@@ -80,6 +80,7 @@ def require_primary(model,record=None):
         raise ValueError('the scaling caller lacks the unchanged complete register-only original from the identical primary')
     if components['curve_scale_caller_withdrawal_paths'].get('complete_curve_helpers_same_primary') is not True:
         raise ValueError('the curve-scale caller lacks the unchanged complete neighboring curve original from the identical primary')
+    require_uptight_RAM3348_result(components['curve_scale_caller_withdrawal_paths'])
     if any(components['derivative_scale_caller_withdrawal_paths'].get(flag) is not True for flag in (
             'complete_timing_helpers_same_primary','complete_normalization_helpers_same_primary','complete_viridian_caller_same_primary')):
         raise ValueError('the derivative-scale callers lack unchanged complete timing, normalization or viridian originals from the identical primary')
@@ -157,3 +158,14 @@ def link_failure(model,link):
 
 
 def identity_only(symbol):return False
+
+
+def require_uptight_RAM3348_result(result):
+    original=result.get('uptight_RAM3348_original_stdout_sha256')
+    if (result.get('complete_uptight_RAM3348_same_primary') is not True
+            or result.get('uptight_RAM3348_withdrawal_original')!=contract.UPTIGHT_RAM3348_WITHDRAWAL[1]
+            or type(original) is not str or len(original)!=64
+            or any(character not in '0123456789abcdef' for character in original)
+            or original!=result.get('curve_helper_original_stdout_sha256')):
+        raise ValueError('the RAM3348 withdrawal lacks its complete exact uptight callee original from the identical primary')
+    return True
