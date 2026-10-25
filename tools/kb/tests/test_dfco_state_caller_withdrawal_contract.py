@@ -214,3 +214,42 @@ def test_directional_prior_domains_and_published_preservation_bind_current_sourc
     assert 'all 256 prior byte values' in text and 'prior 123 reference records and 66 function records' in text
     assert len(transfers.NATIVE_ROOTS)==7
     assert withdrawal.digest(withdrawal.descriptor(repo.ROOT)['reference'][:123])==withdrawal.PRIOR_READER_DIRECTION_REFERENCE_SHA256
+
+
+def test_restore_source_closure_retains_complete_owned_pool_inventory_and_existing_profile():
+    unit=contract.RESTORE_SOURCE_UNIT
+    image=repo.images()['JK08A'].path.read_bytes()
+    assert hashlib.sha256(image).hexdigest()==contract.IMAGE_SHA256
+    used=set()
+    for span in unit['code']:
+        for pc in range(span['start'],span['end'],2):
+            word=int.from_bytes(image[pc:pc+2],'big')
+            if word>>12 in (9,13):
+                width=4 if word>>12==13 else 2
+                address=((pc&~3) if width==4 else pc)+4+(word&255)*width
+                used.add((address,width))
+    assert used=={(row['address'],row['size']) for row in unit['pools']}
+    for row in unit['pools']:
+        first,last=row['address'],row['address']+row['size']
+        assert image[first:last].hex()==row['stock_hex']
+        assert not any(first<span['end'] and span['start']<last for span in (*contract.UNIT['code'],*unit['code']))
+    assert unit['assembly']==contract.UNIT['assembly']
+    for row in unit['aliases']:
+        assert row['width']==4 and row['original']>=0xFFFF0000
+        assert row['alias']==0x01000000+(row['original']&65535)
+        assert image[row['address']:row['address']+4]==row['original'].to_bytes(4,'big')
+    assert contract.ENTRIES==(0x503E0,)
+    assert contract.RESTORE_SOURCE_ENTRY not in contract.ENTRIES
+
+
+def test_restore_source_publication_counts_follow_the_exact_source_unit():
+    text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text()
+    unit=contract.RESTORE_SOURCE_UNIT
+    for phrase,actual,wanted in (
+            ('485 restore source instructions',sum((row['end']-row['start'])//2 for row in unit['code']),485),
+            ('970 restore code bytes',sum(row['end']-row['start'] for row in unit['code']),970),
+            ('7 restore code spans',len(unit['code']),7),
+            ('17 restore RAM pointer aliases',len(unit['aliases']),17)):
+        assert phrase in text and actual==wanted
+    assert contract.RESTORE_SOURCE_CALLS==((0x50042,0x25C36),(0x5005E,0x25C36),(0x500AC,0x26388),(0x500BC,0x26388))
+    assert contract.RESTORE_SOURCE_PUBLICATIONS==((0x501AA,0xFFFF1778,1,4),(0x501AE,0xFFFF16AA,1,14))

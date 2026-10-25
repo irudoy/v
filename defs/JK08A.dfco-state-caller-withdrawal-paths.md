@@ -211,3 +211,31 @@ records,current images and65 complete functions remain exact. An additional
 complete function transition removes one exact reverse writer selector;the new
 datum owner retains its absent ledger. The preceding three full transitions,
 row79,row99,nine writer identities and eighteen indexed_by originals remain exact.
+
+## Restore caller source closure
+
+The shared assembly also contains 485 restore source instructions, 970 restore code bytes,
+7 restore code spans and 17 restore RAM pointer aliases. The exact source unit in
+`dfco_state_caller_withdrawal_contract.py` contains the complete 50018 classifier,
+25C36 diagnostic predicate, 26388 byte wrapper, 26A60 lookup body and 26740 kernel.
+The 16-point wrapper jumps to the real 26A84 tail; the complete 26A60 function
+prefix remains bound source. This closure uses the existing 64 KiB ordinary RAM
+alias domain, the same assembly and the existing observer. Code addresses and
+calibration pointers remain native. Only the enumerated MOV.L RAM literals relocate.
+
+The caller retains both diagnostic calls at 50042 and 5005E, both byte lookups
+at 500AC and 500BC, their real delay slots, the complete prologue/local frame,
+saved GBR and natural return. The diagnostic calls use fixed indexes 0129 and
+012A, with actual record-byte inputs at FFFF5A95 and FFFF5A98. The sentinel
+argument FFFF belongs to the retained helper source and is unreachable from
+these two constant caller arguments. Table/fallback paths retain actual byte
+publications at 501AA to FFFF1778 from R4 and at 501AE to FFFF16AA from R14.
+The 501AE publication is a writer obligation even when a reader claim is withdrawn.
+
+The active raw descriptor admits only 503E0. The restore source unit does not
+admit 50018 execution, selected-reader absence, prior-byte independence, native
+identity or a claim correction. Admission requires the complete raw input
+descriptor, independent numerical and physical events, all feasible branch and
+call/return paths, full state and retained writer, and exact owning postimages.
+The existing 409-instruction state unit and all selected state claims retain
+their separate complete boundaries.
