@@ -90,7 +90,7 @@ def native_bindings(model):
             raise ValueError('the DFCO state caller withdrawal original changes a retained exact owner, function or native type')
         result.append(dict(symbol=symbol.key.key,meaning=row['owner'],function=function.key.key,
             function_meaning=function.meaning.key,original_claim_sha256=row['original_claim_sha256']))
-    if len(result)!=7:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
+    if len(result)!=8:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
     return result
 
 
@@ -255,11 +255,17 @@ def require_witness(model,packet,inputs):
     proof_adapter.require_source_inputs(root,contract.DESCRIPTOR,inputs)
     from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
     rows=[row for row in withdrawal.descriptor(root)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
+    strict_rows=[row for row in rows if row['id']!=transfers.READER1939_IDENTITY[0]]
+    reader_row,=[row for row in rows if row['id']==transfers.READER1939_IDENTITY[0]]
+    prior_pairs=[]
     actual=observations(packet,declared);coverage={site:set() for site in REQUIRED_BRANCHES};seen=set();entries=set()
     fixed={site:set() for site in FIXED_BRANCHES};publications={}
     for index,(case,observed) in enumerate(zip(declared['cases'],actual)):
         result,value=require_state(declared,image,case,observed,root)
-        transfers.require_no_selected_datum(result,rows);entries.add(observed['entry']);seen.update(result['code'])
+        transfers.require_no_selected_datum(result,strict_rows)
+        writes=transfers.require1939_reader_with_retained_writes(result,reader_row)
+        if case['kind']=='unread1939-prior-and-retained-writes':prior_pairs.append((observed,writes))
+        entries.add(observed['entry']);seen.update(result['code'])
         publications[index]=computed_publications(observed,result)
         for branch in result['branches']:
             if branch['site'] in coverage:coverage[branch['site']].add(branch['kind'])
@@ -272,9 +278,13 @@ def require_witness(model,packet,inputs):
     if any(fixed[site]!={wanted} for site,wanted in FIXED_BRANCHES.items()):
         raise ValueError('the DFCO state caller leaves a proved fixed byte mode, EXTU.W sign or convex byte-cap premise')
     require_positive_alternatives(actual,declared,publications)
+    require1939_prior_independence(prior_pairs)
     return dict(region=REGION,observations=len(actual),image_sha256=sha(image),fixture_sha256=sha(fixture),
         elf_sha256=packet['elf_sha256'],stdout_sha256=packet['stdout_sha256'],native_bindings=native_bindings(model),
         exact_dfco_state_caller_withdrawal_paths=True,complete_real_rotation_helper=True,no_selected_datum_access=True,no_selected_ram_datum_access=True,
+        strict_absence_originals=[row['original_claim_sha256'] for row in strict_rows],
+        reader_only1939_original=reader_row['original_claim_sha256'],reader_only1939_retained_writer=True,
+        prior1939_complete_state_independence=True,retained1939_write_sites=[0x50574,0x50594],
         selected_native_RAM_aliases={f'{native:08x}':f'{alias:08x}' for original,native,alias in transfers.NATIVE_ROOTS if alias is not None},
         conditional_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in coverage.items()},
         fixed_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in fixed.items()},
@@ -296,3 +306,33 @@ def require_primary(model,record):
     if ignition_literal_evidence.execution_inputs(model.root)!=current:
         raise ValueError('the complete DFCO state inputs change during independent consumption')
     return result
+
+
+
+def require1939_prior_independence(pairs):
+    groups={}
+    for observed,writes in pairs:
+        memory=bytearray(observed['memory_before'][0]);prior=memory[0x1939];memory[0x1939]=0
+        held=dict(memory=sha(memory),context=observed['context'],frame=observed['frame_before'].hex(),
+            sp=observed['sp'],continuation=observed['continuation'],abi=observed['abi_before'],
+            sr_before=observed['sr_before'],entry=observed['entry'],bound=sha(observed['bound_before']),
+            calibration={str(at):sha(raw) for at,raw in observed['calibration_before'].items()})
+        key=sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode())
+        after=bytearray(observed['memory_after'][0]);actual=after[0x1939]
+        if writes:
+            if len(writes)!=1 or writes[0][0] not in (0x50574,0x50594) or writes[0][1]!=actual:
+                raise ValueError('the DFCO reader-direction original detaches its actual1939 publication')
+            mode=writes[0][0]
+        else:
+            if actual!=prior:raise ValueError('the DFCO bypass changes unread1939 without an actual writer')
+            after[0x1939]=0;mode=None
+        outcome=(bytes(after),observed['exit'],observed['frame_after'],writes,
+            observed['bound_after'],observed['calibration_after'])
+        group=groups.setdefault(key,dict(priors=set(),mode=mode,outcome=outcome))
+        same((mode,outcome),(group['mode'],group['outcome']),
+            'the DFCO reader-direction original consumes prior1939 through CPU,frame,RAM or retained writer results')
+        group['priors'].add(prior)
+    modes={group['mode'] for group in groups.values() if group['priors']==set(range(256))}
+    if modes!={None,0x50574,0x50594}:
+        raise ValueError('the DFCO reader-direction original omits complete prior-byte domains for bypass or either real writer')
+    return True

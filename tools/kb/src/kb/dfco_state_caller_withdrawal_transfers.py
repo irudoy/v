@@ -183,3 +183,29 @@ def require_no_selected_datum(result,rows):
         if any(event['address']<=address<event['address']+event['width_bytes']
                 for identity,native,alias in NATIVE_ROOTS for address in ((native,) if alias is None else (native,alias))):
             raise ValueError('the DFCO state caller physically accesses a selected unsupported ROM/native-RAM root or alias')
+
+
+READER1939_IDENTITY = ('000503e0-ffff1939-reader-withdraw', '1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531', 4294908217, 328672)
+
+
+def require1939_reader_with_retained_writes(result,row):
+    same(tuple(row[key] for key in ('id','original_claim_sha256','address','function')),
+        READER1939_IDENTITY,'the DFCO reader-direction guard substitutes its exact original owner or function')
+    selected=[event for event in result['accesses'] if any(
+        event['address']<=at<event['address']+event['width_bytes'] for at in (0xFFFF1939,RAM_BASE+0x1939))]
+    if any(event['mode']!='write' for event in selected):
+        raise ValueError('the DFCO reader-direction original reads native1939 or an overlapping alias container')
+    if len(selected)>1:
+        raise ValueError('the DFCO reader-direction original duplicates an actual class publication')
+    writes=[]
+    for event in selected:
+        site=event['site'];register={0x50574:6,0x50594:2}.get(site)
+        if (register is None or event['address']!=RAM_BASE+0x1939 or event['width_bytes']!=1
+                or event['register']!=register or event['domain']!='ram'
+                or type(event['bytes']) is not str or len(event['bytes'])!=2):
+            raise ValueError('the DFCO reader-direction original changes a retained actual writer site, width, register or address')
+        raw=int(event['bytes'],16)
+        if raw not in ((0,1,2) if site==0x50574 else (10,)):
+            raise ValueError('the DFCO reader-direction original changes its actual class or forced-ten publication')
+        writes.append((site,raw))
+    return tuple(writes)

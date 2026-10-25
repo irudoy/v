@@ -100,6 +100,9 @@ def cases(declared,image):
         for state in (0,1):
             add('full-R6-word-write-overwritten-by-real-local-dword-before-byte-reloads',
                 raw_r4=1,raw_r5=0,raw_r6=raw,byte_14c1=state,byte_2571=0,byte_2572=0)
+    for profile in (dict(byte_2468=64),dict(),dict(byte_11b3=255)):
+        for prior in range(256):
+            add('unread1939-prior-and-retained-writes',**dict(profile,byte_1939=prior))
     return tuple(dict(row,index=index) for index,row in enumerate(inputs))
 
 

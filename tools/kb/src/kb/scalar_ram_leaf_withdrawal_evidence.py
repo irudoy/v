@@ -100,6 +100,16 @@ def require_primary(model,record=None):
         raise ValueError('the state ratio withdrawal omits a complete preceding helper,byte caller or standard implicit-byte original from the identical primary')
     if components['dfco_state_caller_withdrawal_paths'].get('complete_real_rotation_helper') is not True:
         raise ValueError('the DFCO withdrawal omits the complete real rotation helper from the identical primary')
+    dfco=components['dfco_state_caller_withdrawal_paths']
+    strict=[row['original_claim_sha256'] for row in rows if row['component']=='dfco_state_caller_withdrawal_paths'
+        and row['id']!=contract.READER_ONLY_WITH_RETAINED_WRITER[0]]
+    if (dfco.get('reader_only1939_retained_writer') is not True
+            or dfco.get('prior1939_complete_state_independence') is not True
+            or dfco.get('reader_only1939_original')!=contract.READER_ONLY_WITH_RETAINED_WRITER[1]
+            or not test_contract.exact(dfco.get('strict_absence_originals'),strict)
+            or not test_contract.exact(dfco.get('retained1939_write_sites'),[0x50574,0x50594])):
+        raise ValueError('the DFCO reader-only withdrawal lacks exact direction,retained writes or complete prior-byte independence')
+
     if any(components['paired_inhibit_writer_withdrawal_paths'].get(flag) is not True for flag in (
             'complete_real_nibble_helper','entry_scoped_root_absence','complete_RMW_read_write_pairs')):
         raise ValueError('the paired writer withdrawal omits its exact entry scope,real helper or ordered physical RMW operands')
