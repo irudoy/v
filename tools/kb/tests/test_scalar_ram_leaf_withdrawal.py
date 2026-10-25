@@ -1753,3 +1753,43 @@ def test_each_complete_prior_byte_factor_source_and_generated_output_remains_exa
     declared=contract.descriptor(repo.ROOT);read=Path.read_bytes
     monkeypatch.setattr(Path,'read_bytes',lambda path:read(path)+b'\n' if path==repo.ROOT/name else read(path))
     with pytest.raises(ValueError):contract.require_prior_byte_factor_caller_boundary(repo.ROOT,declared)
+
+
+def test_reader_direction_retains_all123_preceding_records_and66_complete_functions():
+    declared=contract.descriptor(repo.ROOT)
+    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert contract.digest(declared['reference'][:123])==contract.PRIOR_READER_DIRECTION_REFERENCE_SHA256
+    assert contract.digest(declared['function'])==contract.PRIOR_READER_DIRECTION_FUNCTION_SHA256
+    row=declared['reference'][123]
+    assert tuple(row[key] for key in ('id','original_claim_sha256','address','function'))==contract.READER_ONLY_WITH_RETAINED_WRITER
+    assert row['component']=='dfco_state_caller_withdrawal_paths'
+    assert row['owner']=='piquant-lemur/ram' and row['declared_width']==row['declared_signed']=='unset'
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    expected=deepcopy(before)
+    expected['link']=[r for r in expected['link'] if (r['type'],r['to'])!=('reader','dfco_state_machine/fn')]
+    for marker in expected['ledger']:
+        marker['dependency']=[r for r in marker['dependency'] if not contract.selector(row,row['owner'],r)]
+        if not marker['dependency']:marker.pop('dependency')
+    assert expected==after
+    assert [r for r in before['link'] if r['type']=='writer']==after['link']
+    assert before['unit']==after['unit']=='enum_u8'
+    assert json.loads(row['original_claim_json'])['evidence']==[]
+    assert json.loads(row['original_symbol_evidence_json'])==next(r for r in after['symbol'] if r['layout']=='7mfk')['evidence']
+    target,=[r for r in declared['function'] if r['owner']=='dfco_state_machine/fn']
+    assert not any(r['type']=='reader' and r.get('to')=='piquant-lemur/ram'
+        for marker in json.loads(target['original_native_json'])['ledger'] for r in marker.get('dependency',()))
+
+
+@pytest.mark.parametrize('fault',('prior-row','prior-order','function','identity','writer','unit'))
+def test_reader_direction_boundary_refuses_donation_from_another_scope(fault):
+    declared=deepcopy(contract.descriptor(repo.ROOT));row=declared['reference'][123]
+    if fault=='prior-row':declared['reference'][0]['proposed_native_json']+=' '
+    elif fault=='prior-order':declared['reference'][0],declared['reference'][1]=declared['reference'][1],declared['reference'][0]
+    elif fault=='function':declared['function'][0]['original_native_json']+=' '
+    elif fault=='identity':row['original_claim_sha256']='0'*64
+    else:
+        after=json.loads(row['proposed_native_json'])
+        if fault=='writer':after['link']=[]
+        else:after['unit']='unproved unit'
+        row['proposed_native_json']=json.dumps(after)
+    with pytest.raises(ValueError):contract.require_prior_reader_direction_boundary(declared)

@@ -1734,7 +1734,21 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '1dacd2a5176d35d9dc687370413cd3502b32f21417e16988f0948a9587b9d970',
   None,
   '19c850a2cc34a18212f7101e5f296409b84f36d70126ef7f5854bda269e5da4b',
-  '5fa9ab5906f0b5586b27c9a393c924fed1715ca6fa154954201e2786e13e41f3'))
+  '5fa9ab5906f0b5586b27c9a393c924fed1715ca6fa154954201e2786e13e41f3'),
+ ('000503e0-ffff1939-reader-withdraw',
+  4294908217,
+  'piquant-lemur/ram',
+  328672,
+  (),
+  'withdrawal',
+  'dfco_state_caller_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531',
+  None,
+  'ba01cb238c8e7be06cda932c2caa6164367d5ff16dc14d1e284aeca769c6b0ec',
+  'f1265c1c88ef93e34295fa672ae9eb303faa0fd8e1853a61fd171879d93a60d7'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2397,7 +2411,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=123):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=124):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2447,7 +2461,7 @@ def descriptor(root):
         if not document.get('link'):document.pop('link',None)
         for marker in document.get('ledger',()):
             if not marker.get('dependency'):marker.pop('dependency',None)
-    if len(expected)!=94 or not test_contract.exact(expected,proposed):
+    if len(expected)!=95 or not test_contract.exact(expected,proposed):
         raise ValueError('the scalar RAM leaf withdrawal changes another fact, link order, evidence, ledger identity, field or note')
     if len(value['function'])!=len(RETAINED_FUNCTIONS):
         raise ValueError('the scalar RAM leaf withdrawal omits a complete retained function input')
@@ -2483,6 +2497,7 @@ def descriptor(root):
     require_prior_byte_ratio_producer_boundary(root,value)
     require_prior_state_surface_caller_boundary(root,value)
     require_prior_byte_factor_caller_boundary(root,value)
+    require_prior_reader_direction_boundary(value)
     return value
 
 
@@ -2532,8 +2547,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=123 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all123 unchanged normal unlink operations')
+    if len(selected)!=124 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all124 unchanged normal unlink operations')
     return True
 
 
@@ -2884,7 +2899,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=123:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=124:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -2954,7 +2969,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=123:
+    if len(value['reference'])!=124:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3042,3 +3057,21 @@ def require_prior_byte_factor_caller_boundary(root,value):
     for name,sha256 in PRIOR_BYTE_FACTOR_CALLER_FILES_SHA256.items():
         if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=sha256:
             raise ValueError('the byte sum changes a retained byte-factor fixture,input,equation,physical,producer or generated source')
+
+
+READER_ONLY_WITH_RETAINED_WRITER = ('000503e0-ffff1939-reader-withdraw', '1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531', 4294908217, 328672)
+PRIOR_READER_DIRECTION_REFERENCE_SHA256 = '7f7559ddffac6f75257ffd5b83ab963d40f2b1a8b31bb229b962a059876d24a5'
+PRIOR_READER_DIRECTION_FUNCTION_SHA256 = '2947b18e099f608f8b3855eb29da423115a7c46c49f83aeb831a641e6b34965b'
+
+def require_prior_reader_direction_boundary(value):
+    if (digest(value['reference'][:123])!=PRIOR_READER_DIRECTION_REFERENCE_SHA256
+            or digest(value['function'])!=PRIOR_READER_DIRECTION_FUNCTION_SHA256):
+        raise ValueError('the reader-direction withdrawal changes a complete prior123 record or66 function boundary')
+    row=value['reference'][123]
+    if tuple(row[key] for key in ('id','original_claim_sha256','address','function'))!=READER_ONLY_WITH_RETAINED_WRITER:
+        raise ValueError('the reader-direction withdrawal changes its one exact retained-writer identity')
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    if (json.loads(row['original_claim_json'])['type']!='reader'
+            or not test_contract.exact([r for r in before['link'] if r['type']=='writer'],after['link'])
+            or before['unit']!='enum_u8' or after['unit']!=before['unit']):
+        raise ValueError('the reader-direction withdrawal changes a complete actual writer or enum unit')
