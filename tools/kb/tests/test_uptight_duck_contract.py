@@ -77,7 +77,7 @@ def test_all_original_eleven_case_records_and_complete_contexts_remain_exact():
 
 def test_coordinate_contrasts_hold_every_other_raw_context_RAM_and_calibration_input_fixed():
     source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
-    rows=[row for row in matrix.cases(source,image) if 'fifth_word' in row]
+    rows=[row for row in matrix.cases(source,image) if 'fifth_word' in row and 'prior3348' not in row]
     coordinates={row['coordinate'] for row in rows}
     assert set(range(0,3101,100))<=coordinates and set(range(50,3100,100))<=coordinates
     assert {0,1,32767,32768,65534,65535}<=coordinates
@@ -94,3 +94,26 @@ def test_coordinate_contrasts_hold_every_other_raw_context_RAM_and_calibration_i
 @pytest.mark.parametrize('value',(True,-1,0x100000000))
 def test_coordinate_inputs_refuse_a_truncated_or_boolean_fifth_word(value):
     with pytest.raises(ValueError):matrix.fifth_word(dict(coordinate=0,fifth_word=value))
+
+
+def test_prior_RAM3348_definitions_change_only_the_four_explicit_bytes_in_each_publication_mode():
+    source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    groups={}
+    for case in matrix.cases(source,image):
+        if 'prior3348' not in case:continue
+        before=matrix.memory(case)
+        assert int.from_bytes(before[0x3348:0x334C],'big')==case['prior3348']
+        key=case['side'],case['threshold']
+        held=(matrix.context(source,case),before[:0x3348]+bytes(4)+before[0x334C:],
+            matrix.calibrations(source,image,case))
+        values,prior=groups.setdefault(key,({},held));assert prior==held
+        assert case['prior3348'] not in values;values[case['prior3348']]=case
+    required={0,0xFFFFFFFF,0xA5C3D2E1,0x7FFF,0x8000,0xFFFF,0x10000,0x7FFFFFFF,
+        *(1<<bit for bit in range(32)),*((1<<bit)^0xFFFFFFFF for bit in range(32))}
+    assert set(groups)=={(side,threshold) for side in ('zero','rising') for threshold in (0,255)}
+    assert all(set(values)==required for values,held in groups.values())
+
+
+@pytest.mark.parametrize('value',(True,-1,0x100000000))
+def test_prior_RAM3348_input_refuses_boolean_or_truncated_values(value):
+    with pytest.raises(ValueError):matrix.prior3348(dict(prior3348=value))

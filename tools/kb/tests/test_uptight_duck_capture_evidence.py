@@ -38,7 +38,7 @@ def coordinate_pairs(original):
     image=repo.images()['JK08A'].path.read_bytes();fixture,_=proof.contract.independent_fixture(declared['source'],image)
     pairs=[]
     for case,row in zip(declared['cases'],observed):
-        if 'fifth_word' not in case:continue
+        if 'fifth_word' not in case or 'prior3348' in case:continue
         result,value=proof.require_state(declared,image,fixture,case,row);pairs.append((row,result))
     return pairs
 
@@ -89,3 +89,55 @@ def test_coordinate_response_refuses_echoes_partial_inputs_and_substituted_actua
         memory=bytearray(observed['memory_before'][0]);memory[0x11BC]^=1;observed['memory_before']=(bytes(memory),)
     else:observed['calibration_before']={}
     with pytest.raises(ValueError):proof.require_coordinate_response(pairs)
+
+
+@pytest.fixture(scope='module')
+def prior3348_pairs(original):
+    declared=original[2]['declaration'];observed=proof.observations(original[2],declared)
+    image=repo.images()['JK08A'].path.read_bytes();fixture,_=proof.contract.independent_fixture(declared['source'],image)
+    pairs=[]
+    for case,row in zip(declared['cases'],observed):
+        if 'prior3348' not in case:continue
+        result,value=proof.require_state(declared,image,fixture,case,row);pairs.append((row,result))
+    return pairs
+
+
+def test_original_complete_callee_ignores_the_four_prior_RAM3348_bytes_in_both_publication_branches(prior3348_pairs):
+    assert proof.require_prior3348_independence(prior3348_pairs) is True
+    assert all(proof.require_no_RAM3348_access(result) for observed,result in prior3348_pairs)
+
+
+@pytest.mark.parametrize('address,width,mode',(
+    (0xFFFF3348,1,'read'),(0x01003348,4,'read'),(0x01003346,4,'read'),
+    (0x0100334B,1,'read'),(0xFFFF3348,4,'write'),(0x01003348,2,'write')))
+def test_prior_RAM3348_guard_refuses_native_alias_overlap_and_wrong_direction(prior3348_pairs,address,width,mode):
+    result=deepcopy(prior3348_pairs[0][1])
+    result['accesses'].append(dict(site=0xB7860,mode=mode,address=address,width_bytes=width,
+        register=4,domain='ram',bytes='00'*width))
+    with pytest.raises(ValueError):proof.require_no_RAM3348_access(result)
+
+
+@pytest.mark.parametrize('fault',('omit-prior','omit-mode','duplicate','changed-prior','exit','frame','RAM','calibration-after',
+    'other-input','frame-input','RAM-input','calibration-input','path','call'))
+def test_actual_prior_RAM3348_independence_refuses_incomplete_or_substituted_state(prior3348_pairs,fault):
+    pairs=deepcopy(prior3348_pairs);observed,result=pairs[0]
+    if fault=='omit-prior':pairs.pop(0)
+    elif fault=='omit-mode':
+        modes=lambda r:tuple(next(b['kind'] for b in r['branches'] if b['site']==site) for site in (0xB78A4,0xB78B8))
+        first=modes(result);pairs=[pair for pair in pairs if modes(pair[1])!=first]
+    elif fault=='duplicate':pairs.append(deepcopy(pairs[0]))
+    elif fault in ('changed-prior','RAM'):
+        memory=bytearray(observed['memory_after'][0]);memory[0x3348 if fault=='changed-prior' else 0x3330]^=1
+        observed['memory_after']=(bytes(memory),)
+    elif fault=='exit':observed['exit']=(observed['exit'][0]^1,*observed['exit'][1:])
+    elif fault=='frame':observed['frame_after']=bytes([observed['frame_after'][0]^1])+observed['frame_after'][1:]
+    elif fault=='calibration-after':observed['calibration_after']={}
+    elif fault=='other-input':
+        context=list(observed['context']);context[4]^=1;observed['context']=tuple(context)
+    elif fault=='frame-input':observed['frame_before']=bytes([observed['frame_before'][0]^1])+observed['frame_before'][1:]
+    elif fault=='RAM-input':
+        memory=bytearray(observed['memory_before'][0]);memory[0x3330]^=1;observed['memory_before']=(bytes(memory),)
+    elif fault=='calibration-input':observed['calibration_before']={}
+    elif fault=='path':result['branches'][0]['target']^=2
+    else:result['calls'][0]['entry']['registers']=(0,)*15
+    with pytest.raises(ValueError):proof.require_prior3348_independence(pairs)

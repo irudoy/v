@@ -66,7 +66,7 @@ def header(declared,image):
     for case in declared['cases']:
         values=(case['entry'],matrix.PATTERNS.index(case['pattern']),('stock','strict','high').index(case['axis']),
             case['coordinate'],case['dividend'],case['threshold'],matrix.PATTERNS.index(case['side']),
-            case['variant'],case['sr'],matrix.fifth_word(case))
+            case['variant'],case['sr'],matrix.fifth_word(case),matrix.prior3348(case))
         lines.append('    {'+','.join(f'0x{value:x}U' for value in values)+'},')
     return '\n'.join((*lines,'};','')).encode()
 
@@ -165,6 +165,7 @@ def require_state(declared,image,fixture,case,observed):
     if (not test_contract.exact(observed['exit'],expected) or observed['frame_after']!=result['frame']
             or observed['memory_after']!=(result['ram'],)):
         raise ValueError('the actual uptight-duck complete state disagrees with independent natural instruction equations')
+    require_no_RAM3348_access(result)
     return result,semantic(case,observed,result)
 
 
@@ -234,12 +235,13 @@ def require_witness(model,packet,inputs):
         raise ValueError('the uptight-duck original has another actual GNU toolchain')
     for identity in toolchain['binaries'].values():ignition_literal_evidence.require_hash(identity)
     actual=observations(packet,declared)
-    coordinate_pairs=[]
+    coordinate_pairs=[];prior_pairs=[]
     semantics=[]; coverage={site:set() for site in REQUIRED_BRANCHES}
     for case,observed in zip(declared['cases'],actual):
         result,row=require_state(declared,image,fixture,case,observed)
         semantics.append(row)
-        if 'fifth_word' in case:coordinate_pairs.append((observed,result))
+        if 'prior3348' in case:prior_pairs.append((observed,result))
+        elif 'fifth_word' in case:coordinate_pairs.append((observed,result))
         for branch in result['branches']:
             if branch['site'] in coverage:coverage[branch['site']].add(branch['kind'])
     if any(outcomes!={'taken','fallthrough'} for outcomes in coverage.values()):
@@ -255,10 +257,12 @@ def require_witness(model,packet,inputs):
     if not any(len({item[0] for item in outcomes})>=2 and len({item[1] for item in outcomes})==1 for outcomes in groups.values()):
         raise ValueError('the uptight-duck original lacks a curve change that leaves the signed dividend unchanged')
     require_coordinate_response(coordinate_pairs)
+    require_prior3348_independence(prior_pairs)
     return dict(region=REGION,image_sha256=sha(image),fixture_sha256=sha(fixture),elf_sha256=packet['elf_sha256'],
         stdout_sha256=packet['stdout_sha256'],observations=len(actual),native_bindings=native_bindings(model),
         semantic_results=semantics,conditional_branch_outcomes={f'{site:08x}':sorted(values) for site,values in coverage.items()},
         exact_R5_coordinate_response=True,real_three_curve_R6_and_publications=True,
+        no_selected_RAM3348_access=True,prior3348_complete_state_independence=True,
         lookup_is_not_the_signed_operand=True,native_geometry_inference=False,
         datum_identity_inference=False,automatic_resolution=False,natural_caller_reachability=False,
         hardware_qualification=False,native_relation_publication=False,scale_admission=False)
@@ -322,4 +326,53 @@ def require_coordinate_response(pairs):
             raise ValueError('the uptight coordinate response changes an actual endpoint publication')
         admitted=True
     if not admitted:raise ValueError('the uptight coordinate response lacks the complete fixed-other word and knot domain')
+    return True
+
+
+def require_no_RAM3348_access(result):
+    for event in result['accesses']:
+        address,width=event['address'],event['width_bytes']
+        if (type(address) is not int or not 0<=address<=0xFFFFFFFF
+                or type(width) is not int or width not in (1,2,4)
+                or event['mode'] not in ('read','write')):
+            raise ValueError('the uptight RAM3348 absence guard changes a typed physical access')
+        if any(address<base+4 and base<address+width for base in (0xFFFF3348,matrix.RAM_BASE+0x3348)):
+            raise ValueError('the complete uptight callee physically accesses the selected RAM3348 bytes')
+    return True
+
+
+def require_prior3348_independence(pairs):
+    groups={}
+    required={0,0xFFFFFFFF,0xA5C3D2E1,0x7FFF,0x8000,0xFFFF,0x10000,0x7FFFFFFF,
+        *(1<<bit for bit in range(32)),*((1<<bit)^0xFFFFFFFF for bit in range(32))}
+    for observed,result in pairs:
+        require_no_RAM3348_access(result)
+        before=observed['memory_before'][0];after=observed['memory_after'][0]
+        same(after[0x3348:0x334C],before[0x3348:0x334C],
+            'the uptight callee changes any of the four unread prior RAM3348 bytes')
+        prior=int.from_bytes(before[0x3348:0x334C],'big')
+        held=dict(context=observed['context'],memory=sha(before[:0x3348]+bytes(4)+before[0x334C:]),
+            frame=sha(observed['frame_before']),sp=observed['sp'],continuation=observed['continuation'],
+            abi=observed['abi_before'],sr_before=observed['sr_before'],entry=observed['entry'],
+            calibration={str(at):sha(raw) for at,raw in observed['calibration_before'].items()})
+        key=sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode())
+        modes=tuple(next(row['kind'] for row in result['branches'] if row['site']==site)
+            for site in (0xB78A4,0xB78B8))
+        output=dict(exit=observed['exit'],frame=sha(observed['frame_after']),abi=observed['abi_after'],
+            memory=sha(after[:0x3348]+bytes(4)+after[0x334C:]),
+            calibration={str(at):sha(raw) for at,raw in observed['calibration_after'].items()},
+            calls=result['calls'],branches=result['branches'],accesses=result['accesses'])
+        group=groups.setdefault(key,{})
+        if prior in group:raise ValueError('the uptight prior RAM3348 domain repeats one complete held-other input')
+        group[prior]=(modes,output)
+    seen=set()
+    for group in groups.values():
+        if not required<=group.keys():
+            raise ValueError('the uptight prior RAM3348 contrast omits a bit, complement or boundary with other inputs fixed')
+        reference=group[0]
+        for value in group.values():
+            same(value,reference,'the uptight result or physical path depends on unread prior RAM3348 bytes')
+        seen.add(reference[0])
+    if seen!={(first,second) for first in ('taken','fallthrough') for second in ('taken','fallthrough')}:
+        raise ValueError('the uptight prior RAM3348 contrast omits a real publication-branch combination')
     return True

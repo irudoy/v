@@ -150,7 +150,7 @@ ADAPTER_SHA256='f02e8cb00ebc78cb55885df3fcd52cc27cfc0221b1c9f24adbc7949a6b845ba7
 HELPER_ENTRIES=(156964, 158084, 157504, 158840)
 REUSED_HELPER_FILES_SHA256={'defs/JK08A.curve-scale-caller-withdrawal-paths.toml': 'ecb266e69212318a2313236dcadedd1310337979200982f4f351a619f27cf6be',
  'tools/sh-elf-run/stock_jk08a_curve_scale_caller_withdrawal.s': 'badbff3005e24f06e5f77635be706ab5e444f23935ff66c3dbd181d74f547682',
- 'tools/kb/src/kb/curve_scale_caller_withdrawal_contract.py': '62fc5e874b5b1660eb77b64bce2e7288c284f9247f06e69603dc5d213cdc54f4',
+ 'tools/kb/src/kb/curve_scale_caller_withdrawal_contract.py': '37cb62fba8b9afe76e68315b17b9192601db47b0dea37bf51c8a7b3c6f60b570',
  'tools/kb/src/kb/curve_scale_caller_withdrawal_matrix.py': 'cdd4f3e45562c3fcc5dbd99399d4f1d31b96e9585ebf95096cefbe7a773ac965',
  'tools/kb/src/kb/curve_scale_caller_withdrawal_semantics.py': '5cec258c846ee2318f25793fd2638dd72be5ceb8afaa85c31a3aee8feac33df4',
  'tools/kb/src/kb/curve_scale_caller_withdrawal_transfers.py': '593afd82c89f3a4f63fa9583682d8331c173a5bbdb0ccb7657c79fc57b0e0b7b',

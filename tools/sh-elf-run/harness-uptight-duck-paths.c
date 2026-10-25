@@ -14,7 +14,7 @@ struct observation {
     uint32_t sr_before;
 };
 struct path_case {
-    uint32_t entry,pattern,axis,coordinate,dividend,threshold,side,variant,sr,fifth;
+    uint32_t entry,pattern,axis,coordinate,dividend,threshold,side,variant,sr,fifth,prior3348;
 };
 #include "uptight-duck-path-cases.h"
 _Static_assert(sizeof(void *)==4U,"SH-2E pointer ABI");
@@ -75,6 +75,7 @@ static void prepare(const struct path_case *input)
     write_axis(input->axis);
     *(volatile uint8_t *)(uintptr_t)0x8c8cU=(uint8_t)input->threshold;
     *(volatile uint32_t *)(uintptr_t)(RAM_BASE+0x9818U)=0xa5c3d2e1U;
+    *(volatile uint32_t *)(uintptr_t)(RAM_BASE+0x3348U)=input->prior3348;
     offset=0;
     for (index=0;index<ARRAY_SIZE(starts);++index) {
         memcpy(calibration_before+offset,(const void *)(uintptr_t)starts[index],sizes[index]);

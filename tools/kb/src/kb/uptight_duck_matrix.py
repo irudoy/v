@@ -43,6 +43,14 @@ def cases(declared,image):
     for coordinate in sorted(coordinates):
         result.append(dict(index=len(result),entry=ENTRY,pattern='rising',axis='strict',side='rising',
             coordinate=coordinate,dividend=0,threshold=0,variant=0,sr=0,fifth_word=0xA5B6C7D8))
+    priors={0,0xFFFFFFFF,0xA5C3D2E1,0x7FFF,0x8000,0xFFFF,0x10000,0x7FFFFFFF,
+        *(1<<bit for bit in range(32)),*((1<<bit)^0xFFFFFFFF for bit in range(32))}
+    for side in ('zero','rising'):
+        for threshold in (0,255):
+            for prior in sorted(priors):
+                result.append(dict(index=len(result),entry=ENTRY,pattern='rising',axis='strict',side=side,
+                    coordinate=150,dividend=0,threshold=threshold,variant=0,sr=0,
+                    fifth_word=0xA5B6C7D8,prior3348=prior))
     return tuple(result)
 
 
@@ -72,6 +80,7 @@ def calibrations(declared, image, case):
 def memory(case):
     result=bytearray(RAM_SIZE)
     result[0x9818:0x981C]=bytes.fromhex('a5c3d2e1')
+    result[0x3348:0x334C]=prior3348(case).to_bytes(4,'big')
     return bytes(result)
 
 
@@ -89,4 +98,11 @@ def fifth_word(case):
     value=case.get('fifth_word',0xB6C70000|case['coordinate'])
     if type(value) is not int or not 0<=value<=0xFFFFFFFF:
         raise ValueError('the uptight-duck input changes the complete raw fifth word')
+    return value
+
+
+def prior3348(case):
+    value=case.get('prior3348',0)
+    if type(value) is not int or not 0<=value<=0xFFFFFFFF:
+        raise ValueError('the uptight-duck input changes the complete four prior RAM3348 bytes')
     return value

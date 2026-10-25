@@ -39,3 +39,13 @@ FFFF35A0 and FFFF35B6, positive output contrasts in every controlled interior
 interval and invariant endpoint publications. Complete other CPU, SR, frame,
 RAM, calibration and caller inputs remain fixed. This callee value response
 supplies no independent binding to an upstream RAM source or native relation.
+
+The same complete callee capture varies four prior bytes at FFFF3348 while
+holding the other inputs fixed. Every bit, its complement and integer edges
+participate in each combination of the two publication branches. A separate
+consumer rejects native, relocated and overlapping accesses to those bytes,
+requires their preservation and compares the complete returned CPU, frame,
+other RAM, ABI, calibration, calls and physical path. This selected physical
+reader boundary preserves the incoming R4 signed dividend, its constant divisor
+and the caller's distinct value publication. Four controlled storage bytes
+supply no semantic width or signedness declaration for the native owner.
