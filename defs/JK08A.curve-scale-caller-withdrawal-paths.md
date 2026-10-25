@@ -4,9 +4,9 @@ Natural caller B7768 and five real helpers contain 351 stock instructions,
 702 code bytes and 6 code spans. The caller-scoped closure requires
 296 feasible instructions. The descriptor binds 18 literal spans,
 2 pointer aliases, 33 physical curve words and 20 complete calibration spans.
-The joint descriptor contains124 exact access originals:114 readers and ten
-individually pinned writers,95 complete owners,66 complete functions and
-116 matching ledger selectors. All123 exact normal unlink operations are mandatory.
+The joint descriptor contains125 exact access originals:115 readers and ten
+individually pinned writers,95 complete owners,67 complete functions and
+117 matching ledger selectors. All125 exact normal unlink operations are mandatory.
 The selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -14,6 +14,7 @@ The selected unsupported originals are:
 | `7mfk:00015c40` | `7mfk:000b7768` | `c929ffe309a99404d540ecfdfbfad0a6be2232a343f56f29adfddec308af95a1` |
 | `7mfk:ffff2733` | `7mfk:000b7768` | `2fa5679cd811139cb212d0665cbe7a53415535a72d65c79d58e21e6f4d5f0542` |
 | `7mfk:ffff3348` | `7mfk:000b7768` | `e353009592e533d5f7413aa3a4edaac73a80982db8c14fd47b6db9376eeccc0b` |
+| `7mfk:ffff3348` | `7mfk:000b784e` | `59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f` |
 
 The caller supplies constant curve14B0A and axis13FF4 to the real26524 entry.
 Incoming R4 is reduced to an unsigned word coordinate. The JSR delay slot
@@ -159,7 +160,7 @@ The complete paired flag writer component is defined by
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
 remain mandatory. The joint total includes 109 datum-end selectors and
-7 function-end selectors. Every previous family/helper/native/TEST original
+8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
 The complete threshold-window reader component is defined by
@@ -171,14 +172,14 @@ remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
 identical primary. The joint selector total contains 109 datum-end and
-7 function-end removals.
+8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains124 exact access originals:114 readers and ten
-individually pinned writers,95 complete datum owners,66 complete functions and
-116 matching ledger selectors. These contain109 datum-end selectors and
-7 function-end selectors. Twenty-seven independent components require one
+The joint descriptor contains125 exact access originals:115 readers and ten
+individually pinned writers,95 complete datum owners,67 complete functions and
+117 matching ledger selectors. These contain109 datum-end selectors and
+8 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
@@ -220,3 +221,11 @@ records,current images and65 complete functions remain exact. An additional
 complete function transition removes one exact reverse writer selector;the new
 datum owner retains its absent ledger. The preceding three full transitions,
 row79,row99,nine writer identities and eighteen indexed_by originals remain exact.
+
+
+The additional RAM3348/B784E withdrawal uses the separate complete uptight
+capture that this component consumes from the identical primary. Its own
+physical absence and prior-state independence remain distinct from the three
+selected root claims of the curve-scale fixture. The shared consumer binds the
+exact new original and the same full uptight stdout identity. Incoming R4 and
+the caller's separate value publication retain their independent scope.

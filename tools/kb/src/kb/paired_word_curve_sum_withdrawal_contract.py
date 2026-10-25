@@ -154,7 +154,7 @@ REUSED_HELPER_FILES_SHA256={'defs/JK08A.curve-scale-caller-withdrawal-paths.toml
  'tools/kb/src/kb/curve_scale_caller_withdrawal_matrix.py': 'cdd4f3e45562c3fcc5dbd99399d4f1d31b96e9585ebf95096cefbe7a773ac965',
  'tools/kb/src/kb/curve_scale_caller_withdrawal_semantics.py': '5cec258c846ee2318f25793fd2638dd72be5ceb8afaa85c31a3aee8feac33df4',
  'tools/kb/src/kb/curve_scale_caller_withdrawal_transfers.py': '593afd82c89f3a4f63fa9583682d8331c173a5bbdb0ccb7657c79fc57b0e0b7b',
- 'tools/kb/src/kb/curve_scale_caller_withdrawal_capture_evidence.py': 'fe717992895ed582187ed4217e1487beb8aaa99c98137e635ff058478ff9918f',
+ 'tools/kb/src/kb/curve_scale_caller_withdrawal_capture_evidence.py': '8a9ba5e0f00f04eed746dd33dfa1a541c4a804fc3ea698d5f9cc21d03bc6f146',
  'tools/sh-elf-run/curve_scale_caller_withdrawal_capture.py': '5c34f2824f3723e45121b81eee378cf6cf04b29ff25e34c69be8149c781f94bf'}
 FUNCTIONS=(*ENTRIES,*HELPER_ENTRIES)
 SPANS=tuple((row['start'],row['end']) for row in UNIT['code'])

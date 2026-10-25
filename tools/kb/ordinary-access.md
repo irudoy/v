@@ -123,30 +123,32 @@ writer and standard source generator are reused.
 `defs/JK08A.register-only-helpers.md` defines this exact boundary.
 
 
-The `scalar-ram-leaf-withdrawal` registration binds 123 exact original access
+The `scalar-ram-leaf-withdrawal` registration binds 125 exact original access
 relations through complete natural RAM/register/state/indexed,interpolation,
 scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
 threshold-window,auxiliary-rate,paired normalization,byte-ratio,state-surface,
 byte-factor and byte-sum paths. Twenty-seven independent components require
-one complete original COPY primary. There are 113 readers,ten individually
-pinned writers and eighteen exact indexed_by originals with unchanged types
+one complete original COPY primary. There are 115 readers,ten individually
+pinned writers and nineteen exact indexed_by originals with unchanged types
 and roles. Complete actual instruction CPU/SR/frame/RAM,separate equations,
 ordered physical operands,post-delay calls and natural returns remain mandatory.
 Fixed-other alternatives require changed actual R0 or common actual computed
 publication bytes outside the controlled RAM input. Input echoes and a changed
 write-set alone fail. Every previous full family/helper/native/TEST original
 remains mandatory from the identical primary. Sixteen native-RAM components
-retain exact root/alias interval absence. The 123 normal unlinks and
-115 matching ledger selectors preserve 94 full datum owners and 66 complete
-functions. The total contains 108 datum-end and 7 function-end removals.
-Four complete function transitions retain seven exact function-end selectors.
+retain exact root/alias interval absence. The 125 normal unlinks and
+117 matching ledger selectors preserve 95 full datum owners and 67 complete
+functions. The total contains 109 datum-end and 8 function-end removals.
+Five complete function transitions retain eight exact function-end selectors.
 Every other native/type/TEST/ledger/scope fact remains exact. Full prior
-19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/87/92/100/107/112/115/116/118/119/121/122
+19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/87/92/100/107/112/115/116/118/119/121/122/123/124
 reference,function and source boundaries retain complete prefix reconstruction
 and separate current full-image pins. The bounded preceding current-image
 deltas are reference79 at lyrical-dragon/tbl (two exact readers and two
 owner-end selectors) and reference99 at quick-basilisk/tbl (one exact reader
-and one owner-end selector). All four complete function transitions remain
+and one owner-end selector). The three preceding RAM3348 postimages restore
+only pinned prior-image fields after exact current-image checks. All five
+complete function transitions remain
 bound to their exact original and proposed full images. The 234 frozen prior
 domain sources retain 233 byte-identical files and the gated assembly's
 bounded two-site spelling exception with complete current/legacy hashes.

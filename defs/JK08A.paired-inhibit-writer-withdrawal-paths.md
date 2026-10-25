@@ -4,10 +4,10 @@ The complete natural 7C8FA and 7C9A8 callers and real 7D84C nibble helper contai
 180 stock instructions, 360 code bytes and 3 code spans. All 180 feasible instructions
 are required. The descriptor binds 17 literal spans, 6 pointer aliases,
 33 complete RAM fields, 1 configuration field, 17 complete calibration spans
-and 44 raw input fields. The joint descriptor contains 124 exact access originals:
-114 readers and ten individually pinned writers, 95 complete datum owners,
-66 complete functions and 116 matching ledger selectors. These include
-109 datum-end selectors and 7 function-end selectors. All 123 exact normal unlink
+and 44 raw input fields. The joint descriptor contains 125 exact access originals:
+115 readers and ten individually pinned writers, 95 complete datum owners,
+67 complete functions and 117 matching ledger selectors. These include
+109 datum-end selectors and 8 function-end selectors. All 125 exact normal unlink
 operations are mandatory. The selected unsupported writer originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -127,14 +127,14 @@ remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
 identical primary. The joint selector total contains 109 datum-end and
-7 function-end removals.
+8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains124 exact access originals:114 readers and ten
-individually pinned writers,95 complete datum owners,66 complete functions and
-116 matching ledger selectors. These contain109 datum-end selectors and
-7 function-end selectors. Twenty-seven independent components require one
+The joint descriptor contains125 exact access originals:115 readers and ten
+individually pinned writers,95 complete datum owners,67 complete functions and
+117 matching ledger selectors. These contain109 datum-end selectors and
+8 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.

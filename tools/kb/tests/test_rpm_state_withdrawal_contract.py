@@ -117,7 +117,7 @@ def test_source_refuses_owning_identity_units_geometry_scale_caller_hardware_or_
 def test_published_component_joint_role_and_prior_source_counts_bind_current_execution_files():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='rpm_state_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.rpm-state-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==2 and len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(rows)==2 and len(declared['reference'])==125 and len(declared['function'])==67
     assert len({r['owner'] for r in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
@@ -126,7 +126,7 @@ def test_published_component_joint_role_and_prior_source_counts_bind_current_exe
         ('35 literal/configuration spans',len(contract.UNIT['pools']),35),('13 pointer aliases',len(contract.UNIT['aliases']),13),
         ('13 typed configuration operands',len(contract.CONFIGURATION),13),('30 two-sided conditional sites',len(proof.REQUIRED_BRANCHES),30)):
         assert phrase in words and actual==wanted
-    assert len(withdrawal.NATIVE_LINK_ROLES)==18 and all(json.loads(r['original_claim_json'])['roles']==['indexed_by'] for r in rows)
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and all(json.loads(r['original_claim_json'])['roles']==['indexed_by'] for r in rows)
     assert withdrawal.digest(declared['function'][:28])==withdrawal.PRIOR_WORD_FUNCTION_SHA256
     for row in rows:
         assert not any(withdrawal.selector(row,row['owner'],item)
@@ -140,7 +140,7 @@ def test_published_component_joint_role_and_prior_source_counts_bind_current_exe
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==116 and '116 matching ledger selectors' in words
+    assert removed==117 and '117 matching ledger selectors' in words
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert 'thirteen families and forty-seven capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==11 and 'preceding eleven adapters' in words

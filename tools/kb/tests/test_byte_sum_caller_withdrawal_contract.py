@@ -109,7 +109,7 @@ def test_complete_caller_real_curve_helpers_and_full26A60_parent_keep_two_exact_
 def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='byte_sum_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-sum-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(rows)==1 and len(declared['reference'])==125 and len(declared['function'])==67
     assert len({row['owner'] for row in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -129,13 +129,13 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==109 and function_removed==7 and datum_removed+function_removed==116
-    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==7
-    assert 'four transitions and seven exact function-end selectors' in words
-    assert '116 matching ledger selectors' in words and '109 datum-end selectors and 7 function-end selectors' in words
-    assert len(withdrawal.NATIVE_LINK_ROLES)==18 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==114
-    assert '114 readers and ten' in words
+    assert datum_removed==109 and function_removed==8 and datum_removed+function_removed==117
+    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert 'five transitions and eight exact function-end selectors' in words
+    assert '117 matching ledger selectors' in words and '109 datum-end selectors and 8 function-end selectors' in words
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
+    assert '115 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
     shared=(repo.ROOT/'tools/kb/ordinary-access.md').read_text()
@@ -146,13 +146,13 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     assert f"{len(declared['function'])} complete functions" in shared
     assert f'{datum_removed+function_removed} matching ledger selectors' in shared
     assert f'{datum_removed} datum-end and {function_removed} function-end removals' in shared
-    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==4 and 'Four complete function transitions' in shared
-    assert len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==7 and 'seven exact function-end selectors' in shared
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==114 and '114 readers' in shared
+    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and 'Five complete function transitions' in shared
+    assert len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8 and 'eight exact function-end selectors' in shared
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115 and '115 readers' in shared
     assert len(withdrawal.ORIGINAL_LINK_TYPES)==10 and 'ten individually pinned writers' in shared
-    assert len(withdrawal.NATIVE_LINK_ROLES)==18 and 'eighteen exact indexed_by originals' in shared
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and 'nineteen exact indexed_by originals' in shared
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
-    assert withdrawal.digest(declared['reference'][:122])==withdrawal.PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256
+    assert withdrawal.digest(withdrawal.uptight_RAM3348_prior_current_rows(declared,122))==withdrawal.PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:65])==withdrawal.PRIOR_BYTE_FACTOR_CALLER_FUNCTION_SHA256
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert 'thirteen families and forty-seven capture bindings' in words

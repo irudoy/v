@@ -33,7 +33,7 @@ def native_bindings(model):
     if not set(contract.FUNCTIONS)<=set(model.functions.get('7mfk',())):
         raise ValueError('the curve scale caller withdrawal original omits an exact natural entry')
     from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
-    rows=[row for row in withdrawal.descriptor(model.root)['reference'] if row['component']=='curve_scale_caller_withdrawal_paths'];result=[]
+    rows=[row for row in withdrawal.descriptor(model.root)['reference'] if row['component']=='curve_scale_caller_withdrawal_paths' and row['function'] in contract.ENTRIES];result=[]
     for row in rows:
         symbol=model.symbols.get(withdrawal.symbol_key(row))
         function=model.symbols.get(SymbolKey('7mfk','fn',row['function']))
@@ -188,7 +188,7 @@ def require_witness(model,packet,inputs):
     for value in toolchain['binaries'].values():ignition_literal_evidence.require_hash(value)
     proof_adapter.require_source_inputs(root,contract.DESCRIPTOR,inputs)
     from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
-    rows=[row for row in withdrawal.descriptor(root)['reference'] if row['component']=='curve_scale_caller_withdrawal_paths']
+    rows=[row for row in withdrawal.descriptor(root)['reference'] if row['component']=='curve_scale_caller_withdrawal_paths' and row['function'] in contract.ENTRIES]
     actual=observations(packet,declared);coverage={site:set() for site in REQUIRED_BRANCHES};seen=set();entries=set()
     fixed={site:set() for site in FIXED_BRANCHES}
     for case,observed in zip(declared['cases'],actual):

@@ -31,7 +31,7 @@ def models():
 
 def test_exact_withdrawals_retain_all_complete_native_owners_and_test_positions(models):
     rows,before,after=models
-    assert len(rows)==124 and len({row['owner'] for row in rows})==95
+    assert len(rows)==125 and len({row['owner'] for row in rows})==95
     assert proof.native_rows(before,'original')==proof.native_rows(after,'proposed')==rows
     assert {key:value.packet() for key,value in test_origins.index(before).items()}=={
         key:value.packet() for key,value in test_origins.index(after).items()}
@@ -57,7 +57,7 @@ def test_existing_unlink_writer_produces_exact_grouped_native_postimages_without
         json.loads(row['proposed_native_json'])) for row in rows)
     assert all(test_contract.exact(tomllib.loads(store.render('fn',documents[row['owner']])),
         contract.function_native_document(row,'proposed')) for row in function_rows)
-    assert all(line.startswith('unlink ') for line in change.lines) and len(change.lines)==124
+    assert all(line.startswith('unlink ') for line in change.lines) and len(change.lines)==125
 
 
 def test_joint_publication_permits_only_selected_links_and_matching_ledger_selectors(models,monkeypatch):
@@ -65,7 +65,7 @@ def test_joint_publication_permits_only_selected_links_and_matching_ledger_selec
     monkeypatch.setattr(proof,'require_current',lambda model:dict(controlled_only=True))
     selected={('access',contract.symbol_key(row).key,row['original_claim_sha256']) for row in rows}
     reviews=before.config['reconciliation']['review']
-    assert len([row for row in reviews if reconciliation.difference_key(row) in selected])==124
+    assert len([row for row in reviews if reconciliation.difference_key(row) in selected])==125
     after.config['reconciliation']['review']=[row for row in reviews if reconciliation.difference_key(row) not in selected]
     expected=resolution.publication_expected(before,after,write.publication_view(before))
     assert test_contract.exact(expected,write.publication_view(after))
@@ -150,6 +150,10 @@ def test_withdrawal_descriptor_pins_each_complete_original_and_native_image(tmp_
     ('curve_scale_caller_withdrawal_paths','no_selected_datum_access'),('curve_scale_caller_withdrawal_paths','no_selected_ram_datum_access'),
     ('curve_scale_caller_withdrawal_paths','native_identity_admission'),('curve_scale_caller_withdrawal_paths','complete_direct_helpers_same_primary'),
     ('curve_scale_caller_withdrawal_paths','complete_curve_helpers_same_primary'),
+    ('curve_scale_caller_withdrawal_paths','complete_uptight_RAM3348_same_primary'),
+    ('curve_scale_caller_withdrawal_paths','uptight_RAM3348_withdrawal_original'),
+    ('curve_scale_caller_withdrawal_paths','uptight_RAM3348_original_stdout_sha256'),
+    ('curve_scale_caller_withdrawal_paths','curve_helper_original_stdout_sha256'),
     ('derivative_scale_caller_withdrawal_paths','exact_derivative_scale_caller_withdrawal_paths'),
     ('derivative_scale_caller_withdrawal_paths','no_selected_datum_access'),('derivative_scale_caller_withdrawal_paths','no_selected_ram_datum_access'),
     ('derivative_scale_caller_withdrawal_paths','native_identity_admission'),('derivative_scale_caller_withdrawal_paths','complete_direct_helpers_same_primary'),
@@ -261,7 +265,7 @@ def test_joint_admission_calls_each_independent_component_with_the_identical_pri
         monkeypatch.setattr(consumer,'require_primary',require)
     result=proof.require_primary(before,record)
     assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths'}
-    assert len(seen)==27 and len(result['original_claims'])==124
+    assert len(seen)==27 and len(result['original_claims'])==125
 
 
 def test_changed_existing_physical_namespace_cannot_be_hidden_by_withdrawal_admission(models,monkeypatch):
@@ -342,7 +346,7 @@ def test_withdrawal_registration_cannot_enable_direct_owning_or_owner_fallback(m
 def test_reuse_description_exposes_withdrawal_without_inventing_a_proposed_claim_or_evidence():
     from kb import proof_reuse
     selected=[row for row in proof_reuse.index(repo.ROOT)['references'] if row['family']==contract.MODE]
-    assert len(selected)==124
+    assert len(selected)==125
     assert {row['original'] for row in selected}=={row[10] for row in contract.IDENTITIES}
     assert all(row['disposition']=='withdrawal' and row['evidence'] is None and row['width'] is None
         and row['source_prepared'] is True and row['accepted'] is False for row in selected)
@@ -363,7 +367,7 @@ def test_withdrawal_never_donates_owning_scale_or_reverse_identity_through_level
 
 def test_prior_nineteen_full_records_and_twelve_functions_retain_their_exact_boundary():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert {row['component'] for row in declared['reference'][:19]}=={'scalar_ram_leaf_paths'}
     assert {row['component'] for row in declared['reference'][19:26]}=={'scalar_ram_product_paths'}
     contract.require_prior_boundary(repo.ROOT,declared)
@@ -416,7 +420,7 @@ def test_shared_owner_postimages_remove_only_the_new_reader_and_exact_matching_s
 
 def test_complete_prior_twenty_six_records_and_sixteen_functions_retain_their_exact_boundary():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     contract.require_prior_joint_boundary(repo.ROOT,declared)
 
 
@@ -461,7 +465,7 @@ def test_gated_shared_owner_delta_is_exactly_the_additional_selected_reader_and_
 
 def test_complete_prior_thirty_one_records_and_twenty_one_functions_remain_directly_exact():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     contract.require_prior_gated_boundary(repo.ROOT,declared)
 
 
@@ -508,7 +512,7 @@ def test_selected_indexed_by_original_cannot_be_replaced_by_another_role(tmp_pat
 
 def test_complete_prior_thirty_four_records_and_twenty_four_functions_remain_exact():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     contract.require_prior_rpm_ram_boundary(repo.ROOT,declared)
 
 
@@ -534,7 +538,7 @@ def test_prior_RPM_RAM_fixture_input_scalar_physical_producer_and_generated_sour
 
 def test_complete_prior_thirty_five_records_and_twenty_five_functions_retain_exact_prefix_images():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     contract.require_prior_overflow_boundary(repo.ROOT,declared)
     prior=contract.prior_reference_rows(declared,35)
     assert contract.digest(prior)==contract.PRIOR_OVERFLOW_REFERENCE_SHA256
@@ -583,12 +587,12 @@ def test_explicit_gated_source_correction_admits_no_other_assembly_change(monkey
 
 def test_RPM_state_extension_preserves_complete_prior_word_source_and_three_exact_indexed_roles():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_word_boundary(repo.ROOT,declared)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=[r for r in declared['reference'] if r['component']=='rpm_state_withdrawal_paths']
     assert len(rows)==2 and all(json.loads(r['original_claim_json'])['roles']==['indexed_by'] for r in rows)
     assert set(contract.NATIVE_LINK_ROLES)=={'0004f958-ffff11ae-withdraw','0004f7e0-ffff11ae-withdraw','0004f9c4-ffff11ae-withdraw','0003a254-ffff115e-withdraw','000b7c84-ffff33fc-withdraw',
         '000b7b98-ffff1024-withdraw','000b7b98-ffff11bc-withdraw','00072f1e-ffff1d10-withdraw',
-        '000b7768-ffff2733-withdraw','000b7768-ffff3348-withdraw','000b78da-ffff110e-withdraw','000b7a3c-ffff110e-withdraw','000b78da-ffff2733-withdraw','000b7a3c-ffff2733-withdraw','000b78da-ffff3348-withdraw','000b7a3c-ffff3348-withdraw','000b78da-ffff35a0-withdraw','000b7a3c-ffff35b6-withdraw'}
+        '000b7768-ffff2733-withdraw','000b7768-ffff3348-withdraw','000b78da-ffff110e-withdraw','000b7a3c-ffff110e-withdraw','000b78da-ffff2733-withdraw','000b7a3c-ffff2733-withdraw','000b78da-ffff3348-withdraw','000b7a3c-ffff3348-withdraw','000b78da-ffff35a0-withdraw','000b7a3c-ffff35b6-withdraw','000b784e-ffff3348-withdraw'}
     previous=contract.prior_reference_rows(declared,38)
     assert contract.digest(previous)==contract.PRIOR_WORD_REFERENCE_SHA256
     assert {r['owner'] for r,old in zip(declared['reference'],previous) if r!=old}=={'tough-earwig/ram','scrupulous-yak/tbl','opal-camel/tbl','complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
@@ -618,7 +622,7 @@ def test_exact_single_writer_extension_preserves_all_forty_complete_reader_origi
     declared=contract.descriptor(repo.ROOT);contract.require_prior_rpm_state_boundary(repo.ROOT,declared)
     assert contract.digest(contract.prior_reference_rows(declared,40))==contract.PRIOR_RPM_STATE_REFERENCE_SHA256
     assert contract.digest(declared['function'][:30])==contract.PRIOR_RPM_STATE_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     prior,current=declared['reference'][:40],declared['reference'][40]
     assert all(json.loads(row['original_claim_json'])['type']=='reader' for row in prior)
     assert current['id']=='00052034-ffff120e-withdraw' and current['component']=='indexed_word_update_paths'
@@ -656,7 +660,7 @@ def test_division_callers_preserve_full_prior_forty_one_and_only_exact_shared_re
     assert contract.digest(previous)==contract.PRIOR_INDEXED_WORD_REFERENCE_SHA256
     assert contract.digest(declared['function'][:31])==contract.PRIOR_INDEXED_WORD_FUNCTION_SHA256
     assert {r['owner'] for r,old in zip(declared['reference'],previous) if r!=old}=={'scrupulous-yak/tbl','opal-camel/tbl','complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert {key:value for key,value in contract.ORIGINAL_LINK_TYPES.items() if key in LEGACY_WRITER_IDS}=={'00052034-ffff120e-withdraw':'writer','0006e3d8-ffff1300-withdraw':'writer','0006e3d8-ffff1f86-withdraw':'writer'}
 
 
@@ -695,7 +699,7 @@ def test_byte_curve_boundary_retains_all_forty_four_full_originals_and_thirty_fo
     declared=contract.descriptor(repo.ROOT);contract.require_prior_division_caller_boundary(repo.ROOT,declared)
     assert contract.digest(contract.prior_reference_rows(declared,44))==contract.PRIOR_DIVISION_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:34])==contract.PRIOR_DIVISION_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][44:49]
     assert {r['component'] for r in rows}=={'byte_curve_caller_withdrawal_paths'}
     assert [(r['id'],json.loads(r['original_claim_json'])['type']) for r in rows]==[
@@ -732,7 +736,7 @@ def test_word_caller_boundary_retains_all_forty_nine_full_originals_and_thirty_s
     declared=contract.descriptor(repo.ROOT);contract.require_prior_byte_curve_caller_boundary(repo.ROOT,declared)
     assert contract.digest(contract.prior_reference_rows(declared,49))==contract.PRIOR_BYTE_CURVE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:36])==contract.PRIOR_BYTE_CURVE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][49:54]
     assert {r['component'] for r in rows}=={'word_interp_caller_withdrawal_paths'}
     assert [r['id'] for r in rows]==['00072f1e-000175c8-withdraw','000b7b98-ffff1024-withdraw',
@@ -771,7 +775,7 @@ def test_scaled_callers_retain_every_full_prior54_record_and_all38_functions():
     prior=contract.prior_reference_rows(declared,54)
     assert contract.digest(prior)==contract.PRIOR_WORD_INTERP_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:38])==contract.PRIOR_WORD_INTERP_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][54:57]
     assert [row['id'] for row in rows]==['0004e59c-00012432-withdraw','00074b04-00015770-withdraw','00074478-00019190-withdraw']
     assert all(row['component']=='scaled_division_caller_withdrawal_paths' and json.loads(row['original_claim_json'])['type']=='reader' for row in rows)
@@ -825,13 +829,13 @@ def test_curve_scale_retains_all57_full_records_current_postimages_and41_functio
     declared=contract.descriptor(repo.ROOT);contract.require_prior_scaled_division_boundary(repo.ROOT,declared)
     assert contract.digest(contract.prior_reference_rows(declared,57))==contract.PRIOR_SCALED_DIVISION_REFERENCE_SHA256
     assert contract.digest(declared['function'][:41])==contract.PRIOR_SCALED_DIVISION_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][57:60]
     assert [row['id'] for row in rows]==['000b7768-00015c40-withdraw','000b7768-ffff2733-withdraw','000b7768-ffff3348-withdraw']
     assert [json.loads(row['original_claim_json'])['roles'] for row in rows]==[[],['indexed_by'],['indexed_by']]
     assert all(row['component']=='curve_scale_caller_withdrawal_paths' and json.loads(row['original_claim_json'])['type']=='reader' for row in rows)
     assert all(contract.native_type(row,'width') is None and contract.native_type(row,'signed') is None for row in rows)
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
 
 
 @pytest.mark.parametrize('fault',('original-json','proposed-json','ledger-json','type','order','function-json','function-order'))
@@ -860,7 +864,7 @@ def test_derivative_callers_retain_every_full_prior60_record_and42_functions():
     previous=contract.prior_reference_rows(declared,60)
     assert contract.digest(previous)==contract.PRIOR_CURVE_SCALE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:42])==contract.PRIOR_CURVE_SCALE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert {r['owner'] for r,old in zip(declared['reference'],previous) if r!=old}=={'perky-agama/ram','ruddy-anaconda/ram','opal-camel/tbl','vigilant-rat/tbl','complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
     for old,current in zip(previous,declared['reference'][:60]):
         expected=deepcopy(old)
@@ -870,14 +874,15 @@ def test_derivative_callers_retain_every_full_prior60_record_and42_functions():
     assert len(rows)==11 and all(row['component']=='derivative_scale_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' for row in rows)
     assert sum(json.loads(row['original_claim_json'])['roles']==['indexed_by'] for row in rows)==8
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
 
 
 @pytest.mark.parametrize('owner',('perky-agama/ram','ruddy-anaconda/ram'))
 def test_shared_owner_changes_only_two_additional_exact_readers_and_their_two_selectors(owner):
     declared=contract.descriptor(repo.ROOT)
     prior=next(row for row in contract.prior_reference_rows(declared,60) if row['owner']==owner)
-    rows=[row for row in declared['reference'][60:] if row['owner']==owner]
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
+    rows=[row for row in historical[60:] if row['owner']==owner]
     assert len(rows)==2 and {row['function'] for row in rows}=={0xB78DA,0xB7A3C}
     document=json.loads(prior['proposed_native_json']);removed=[]
     for row in rows:
@@ -917,19 +922,20 @@ def test_complete_preceding_curve_scale_fixture_input_equation_transfer_producer
 
 def test_guarded_callers_preserve_every_full_prior71_record_and44_functions():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_derivative_scale_caller_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     previous=contract.prior_reference_rows(declared,71)
     assert contract.digest(previous)==contract.PRIOR_DERIVATIVE_SCALE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:44])==contract.PRIOR_DERIVATIVE_SCALE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
-    assert {r['owner'] for r,old in zip(declared['reference'],previous) if r!=old}=={'opal-camel/tbl','vigilant-rat/tbl','complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
-    for old,current in zip(previous,declared['reference'][:71]):
+    assert len(declared['reference'])==125 and len(declared['function'])==67
+    assert {r['owner'] for r,old in zip(historical,previous) if r!=old}=={'opal-camel/tbl','vigilant-rat/tbl','complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
+    for old,current in zip(previous,historical[:71]):
         expected=deepcopy(old)
         for key in ('proposed_native_json','proposed_native_sha256','proposed_ledger_json'):expected[key]=current[key]
         assert current==expected
     rows=declared['reference'][71:79]
     assert len(rows)==8 and all(row['component']=='guarded_quotient_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
 
 
 @pytest.mark.parametrize('owner',('opal-camel/tbl','vigilant-rat/tbl'))
@@ -973,20 +979,21 @@ def test_all_preceding_derivative_fixture_input_equation_transfer_producer_and_g
 
 def test_mixed_callers_preserve_every_full_prior79_record_and47_functions():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_guarded_quotient_caller_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     previous=contract.prior_reference_rows(declared,79)
     assert contract.digest(previous)==contract.PRIOR_GUARDED_QUOTIENT_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:47])==contract.PRIOR_GUARDED_QUOTIENT_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
-    assert {r['owner'] for r,old in zip(declared['reference'],previous) if r!=old}=={
+    assert len(declared['reference'])==125 and len(declared['function'])==67
+    assert {r['owner'] for r,old in zip(historical,previous) if r!=old}=={
         'complex-condor/tbl','garrulous-civet/tbl','idle_ignition_timing/tbl'}
-    for old,current in zip(previous,declared['reference'][:79]):
+    for old,current in zip(previous,historical[:79]):
         expected=deepcopy(old)
         for key in ('proposed_native_json','proposed_native_sha256','proposed_ledger_json'):expected[key]=current[key]
         assert current==expected
     rows=declared['reference'][79:87]
     assert len(rows)==8 and all(row['component']=='mixed_curve_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     assert not any(row['original_claim_sha256']=='8c93e593a4428c3b7195cbb174725161a8ac0b87b75ac385bf4de135d7bde09b' for row in declared['reference'])
 
 
@@ -1036,13 +1043,13 @@ def test_timing_remainder_callers_preserve_every_full_prior87_record_and51_funct
     assert contract.paired_curve_prefix_digest(declared,87)==contract.digest(previous)
     assert contract.digest(previous)==contract.PRIOR_MIXED_CURVE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:51])==contract.PRIOR_MIXED_CURVE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][87:92]
     assert len(rows)==5 and all(row['component']=='timing_remainder_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
     assert [json.loads(row['original_claim_json'])['props']['supports'] for row in rows]==['identity','identity','scale','scale','identity']
     assert not ({row['owner'] for row in rows}&{row['owner'] for row in declared['reference'][:87]})
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     assert not any(row['original_claim_sha256']=='1bedae1cd4278ff4c6f33558fe50ad44f2d58390327a2d716f0c58bcc4925f40' for row in declared['reference'])
 
 
@@ -1073,7 +1080,7 @@ def test_state_ratio_callers_preserve_every_full_prior92_record_and53_functions(
     assert contract.paired_curve_prefix_digest(declared,92)==contract.digest(previous)
     assert contract.digest(previous)==contract.PRIOR_TIMING_REMAINDER_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:53])==contract.PRIOR_TIMING_REMAINDER_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][92:100]
     assert len(rows)==8 and all(row['component']=='state_ratio_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
@@ -1082,7 +1089,7 @@ def test_state_ratio_callers_preserve_every_full_prior92_record_and53_functions(
         assert props==dict(layouts=['7mfk'],relies='structure',reverse_relies='structure',reverse_supports='identity',supports=['identity','scale'])
     assert [json.loads(row['original_claim_json'])['props']['supports'] for row in rows[3:]]==['identity']*5
     assert not ({row['owner'] for row in rows}&{row['owner'] for row in declared['reference'][:92]})
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     assert all(row['owner'].endswith('/tbl') for row in rows)
 
 
@@ -1119,15 +1126,15 @@ def test_DFCO_state_caller_preserves_every_full_prior100_record_and55_functions(
     assert contract.paired_curve_prefix_digest(declared,100)==contract.digest(previous)
     assert contract.digest(previous)==contract.PRIOR_STATE_RATIO_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:55])==contract.PRIOR_STATE_RATIO_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][100:107]
     assert len(rows)==7 and all(row['component']=='dfco_state_caller_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
     assert [json.loads(row['original_claim_json'])['props']['supports'] for row in rows]==['identity']*7
     assert not ({row['owner'] for row in rows}&{row['owner'] for row in declared['reference'][:100]})
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     assert [row['address'] for row in rows[-2:]]==[0xFFFF14BD,0xFFFF14BE]
-    assert not any(row['original_claim_sha256']=='1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531' for row in declared['reference'])
+    assert not any(row['original_claim_sha256']=='1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531' for row in rows)
 
 
 @pytest.mark.parametrize('fault',('original-json','proposed-json','ledger-json','type','role','order','function-json','function-order'))
@@ -1157,7 +1164,7 @@ def test_paired_writer_preserves_full_prior107_original_records_and56_functions(
     assert contract.paired_curve_prefix_digest(declared,107)==contract.digest(previous)
     assert contract.digest(previous)==contract.PRIOR_DFCO_STATE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:56])==contract.PRIOR_DFCO_STATE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][107:112]
     assert len(rows)==5 and all(row['component']=='paired_inhibit_writer_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='writer' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
@@ -1165,7 +1172,7 @@ def test_paired_writer_preserves_full_prior107_original_records_and56_functions(
     assert contract.ORIGINAL_LINK_TYPES==dict.fromkeys((*sorted(LEGACY_WRITER_IDS),
         '0007c9a8-ffff4a45-withdraw','0007c9a8-ffff4a70-withdraw','0007c9a8-ffff4ac6-withdraw',
         '0007c8fa-ffff5718-withdraw','0007c9a8-ffff5718-withdraw','0004ba48-ffff23c5-withdraw','000464de-ffff1693-withdraw'),'writer')
-    assert len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.NATIVE_LINK_ROLES)==19
     props=[json.loads(row['original_claim_json'])['props'] for row in rows]
     assert props[:3]==[dict(layouts=['7mfk'],reverse_relies='level',reverse_supports='identity')]*3
     assert props[3:]==[dict(layouts=['7mfk'],reverse_relies='structure',reverse_supports='identity')]*2
@@ -1255,22 +1262,23 @@ def test_function_native_phase_requires_exact_original_or_proposed(phase):
 
 def test_threshold_window_retains_full112_prefix_and58_function_records_including_both_postimages():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_paired_inhibit_writer_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     prior=contract.prior_reference_rows(declared,112)
     assert contract.digest(prior)==contract.PRIOR_PAIRED_INHIBIT_WRITER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:58])==contract.PRIOR_PAIRED_INHIBIT_WRITER_FUNCTION_SHA256
     assert contract.paired_curve_prefix_digest(declared,107)==contract.digest(prior[:107])
-    changed={old['owner'] for old,current in zip(prior,declared['reference']) if old!=current}
+    changed={old['owner'] for old,current in zip(prior,historical) if old!=current}
     assert changed=={'rampant-lobster/ram','realistic-capybara/ram','neon-seagull/ram'}
-    for old,current in zip(prior,declared['reference']):
+    for old,current in zip(prior,historical):
         expected=deepcopy(old)
         for field in ('proposed_native_json','proposed_native_sha256','proposed_ledger_json'):expected[field]=current[field]
         assert expected==current
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][112:115]
     assert len(rows)==3 and all(row['component']=='threshold_window_reader_withdrawal_paths' for row in rows)
     assert all(json.loads(row['original_claim_json'])['type']=='reader' and json.loads(row['original_claim_json'])['roles']==[] for row in rows)
     assert [json.loads(row['original_claim_json'])['props'] for row in rows]==[dict(layouts=['7mfk'],relies='level',supports='identity')]*3
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     assert all(row['declared_width']==row['declared_signed']=='unset' for row in rows)
 
 
@@ -1327,7 +1335,7 @@ def test_auxiliary_rate_retains_every_full115_original_and59_full_function_recor
     assert contract.paired_curve_prefix_digest(declared,115)==contract.digest(previous)
     assert contract.digest(previous)==contract.PRIOR_THRESHOLD_WINDOW_READER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:59])==contract.PRIOR_THRESHOLD_WINDOW_READER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     rows=declared['reference'][115:116];assert len(rows)==1
     row=rows[0];old=json.loads(row['original_claim_json'])
     assert row['component']=='aux_rate_caller_withdrawal_paths' and row['owner']=='athletic-swallow/tbl'
@@ -1335,8 +1343,8 @@ def test_auxiliary_rate_retains_every_full115_original_and59_full_function_recor
     assert old['type']=='reader' and old['roles']==[] and old['evidence']==[]
     assert old['props']==dict(layouts=['7mfk'],relies='structure',supports='identity')
     assert row['owner'] not in {prior['owner'] for prior in declared['reference'][:115]}
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
-    assert contract.FUNCTION_POSTIMAGE_IDENTITIES and len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
+    assert contract.FUNCTION_POSTIMAGE_IDENTITIES and len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5
 
 
 @pytest.mark.parametrize('fault',('original-json','proposed-json','ledger-json','type','role','order','function-json','function-order','paired-function-postimage'))
@@ -1367,8 +1375,9 @@ def test_all_preceding_threshold_window_fixture_inputs_equations_transfers_produ
     (116,'PRIOR_AUX_RATE_CALLER_REFERENCE_SHA256')))
 def test_paired_curve_preserves_every_full_prefix_with_only_two_exact_shared_reader_deltas(count,pin):
     declared=contract.descriptor(repo.ROOT);previous=contract.prior_reference_rows(declared,count)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     assert contract.paired_curve_prefix_digest(declared,count)==contract.digest(previous)==getattr(contract,pin)
-    changed=[index for index,(old,new) in enumerate(zip(previous,declared['reference'][:count])) if old!=new]
+    changed=[index for index,(old,new) in enumerate(zip(previous,historical[:count])) if old!=new]
     assert changed==([79,99] if count>99 else [79])
     old,new=previous[79],declared['reference'][79]
     postimage={'proposed_native_json','proposed_native_sha256','proposed_ledger_json'}
@@ -1392,13 +1401,13 @@ def test_paired_curve_preserves_every_full_prefix_with_only_two_exact_shared_rea
 def test_paired_curve_retains_all_sixty_full_functions_and_both_exact_prior_function_transitions():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_aux_rate_caller_boundary(repo.ROOT,declared)
     assert contract.digest(declared['function'][:60])==contract.PRIOR_AUX_RATE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert [(row['owner'],row['function']) for row in declared['function'][60:62]]==[
         ('vigorous-saluki/fn',0x655B4),('silky-vulture/fn',0x65B08)]
     assert all('proposed_native_json' not in row for row in declared['function'][60:64])
     contract.require_function_postimages(declared)
-    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==7
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
 
 
 @pytest.mark.parametrize('fault',('claim-id','claim-type','claim-role','claim-evidence','claim-function',
@@ -1444,8 +1453,9 @@ def test_complete_preceding_auxiliary_rate_domain_sources_remain_exact(monkeypat
 
 def test_byte_ratio_retains_all_full118_current_records_and62_full_function_records():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_paired_curve_normalization_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     previous=contract.prior_reference_rows(declared,118)
-    assert contract.state_surface_current_prefix(previous,declared)==declared['reference'][:118]
+    assert contract.state_surface_current_prefix(previous,declared)==historical[:118]
     assert contract.digest(previous)==contract.PRIOR_PAIRED_CURVE_NORMALIZATION_REFERENCE_SHA256
     assert contract.digest(declared['function'][:62])==contract.PRIOR_PAIRED_CURVE_NORMALIZATION_FUNCTION_SHA256
     row=declared['reference'][118];old=json.loads(row['original_claim_json'])
@@ -1454,9 +1464,9 @@ def test_byte_ratio_retains_all_full118_current_records_and62_full_function_reco
     assert old['type']=='reader' and old['roles']==[] and old['evidence']==[]
     assert old['props']==dict(layouts=['7mfk'],relies='structure',supports='identity')
     assert row['owner'] not in {prior['owner'] for prior in declared['reference'][:118]}
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
-    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==7
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
+    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert len(declared['reference'])==125 and len(declared['function'])==67
 
 
 @pytest.mark.parametrize('fault',('original-json','current-json','ledger-json','type','role','order','shared-pair-image',
@@ -1498,17 +1508,18 @@ def test_complete_byte_ratio_function_document_and_TEST_positions_remain_exact(m
 
 def test_state_surface_retains_full119_core_records_and63_complete_functions():
     declared=contract.descriptor(repo.ROOT);previous=contract.prior_reference_rows(declared,119)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     assert contract.state_surface_prefix_digest(declared,119)==contract.digest(previous)==contract.PRIOR_BYTE_RATIO_PRODUCER_REFERENCE_SHA256
-    assert [i for i,(old,new) in enumerate(zip(previous,declared['reference'][:119])) if old!=new]==[99]
+    assert [i for i,(old,new) in enumerate(zip(previous,historical[:119])) if old!=new]==[99]
     old,new=previous[99],declared['reference'][99]
     postimage={'proposed_native_json','proposed_native_sha256','proposed_ledger_json'}
     assert {key:value for key,value in old.items() if key not in postimage}=={key:value for key,value in new.items() if key not in postimage}
     assert contract.digest(declared['function'][:63])==contract.PRIOR_BYTE_RATIO_PRODUCER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert declared['reference'][79]==previous[79]
-    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==7
+    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==8
     contract.require_function_postimages(declared)
-    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.ORIGINAL_LINK_TYPES)==10 and len(contract.NATIVE_LINK_ROLES)==19
     row=declared['reference'][119];claim=json.loads(row['original_claim_json'])
     assert (row['owner'],row['address'],row['function'])==('quick-basilisk/tbl',0x12B52,0x647E8)
     assert row['original_claim_sha256']=='0057fd6cb20fac880f590fbd89fccd80768695872bed9c47fa438877314cec2b'
@@ -1539,8 +1550,9 @@ def test_state_surface_shared_owner_changes_only_one_exact_link_and_owner_end_se
     (116,'PRIOR_AUX_RATE_CALLER_REFERENCE_SHA256')))
 def test_state_surface_retains_both_separately_bounded_shared_owner_deltas_in_complete_old_prefixes(count,pin):
     declared=contract.descriptor(repo.ROOT);previous=contract.prior_reference_rows(declared,count)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     assert contract.paired_curve_prefix_digest(declared,count)==contract.digest(previous)==getattr(contract,pin)
-    assert [i for i,(old,new) in enumerate(zip(previous,declared['reference'][:count])) if old!=new]==([79,99] if count>99 else [79])
+    assert [i for i,(old,new) in enumerate(zip(previous,historical[:count])) if old!=new]==([79,99] if count>99 else [79])
     for index in ((79,99) if count>99 else (79,)):
         old,new=previous[index],declared['reference'][index]
         omitted={'proposed_native_json','proposed_native_sha256','proposed_ledger_json'}
@@ -1551,8 +1563,9 @@ def test_state_surface_retains_both_separately_bounded_shared_owner_deltas_in_co
     (119,'PRIOR_BYTE_RATIO_PRODUCER_REFERENCE_SHA256')))
 def test_state_surface_retains_complete_current_prefixes_with_only_one_exact_new_delta(count,pin):
     declared=contract.descriptor(repo.ROOT);previous=contract.prior_reference_rows(declared,count)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     assert contract.state_surface_prefix_digest(declared,count)==contract.digest(previous)==getattr(contract,pin)
-    assert [i for i,(old,new) in enumerate(zip(previous,declared['reference'][:count])) if old!=new]==[99]
+    assert [i for i,(old,new) in enumerate(zip(previous,historical[:count])) if old!=new]==[99]
 
 
 @pytest.mark.parametrize('fault',('claim-id','claim-owner','claim-function','claim-type','claim-role','claim-evidence',
@@ -1616,11 +1629,12 @@ def test_state_surface_adds_two_exact_reader_originals_and_one_complete_new_owne
 
 def test_byte_factor_retains_all121_full_current_records_and64_complete_functions():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_state_surface_caller_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     previous=contract.prior_reference_rows(declared,121)
-    assert previous==declared['reference'][:121]
+    assert previous==historical[:121]
     assert contract.digest(previous)==contract.PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:64])==contract.PRIOR_STATE_SURFACE_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     row=declared['reference'][121];old=json.loads(row['original_claim_json'])
     assert (row['owner'],row['address'],row['function'])==('purple-chihuahua/ram',0xFFFF23C5,0x4BA48)
     assert row['original_claim_sha256']=='47c4932e2c5dbceeaa8d0d301089b790354738e4ef80dfa93ebb005beb915442'
@@ -1629,7 +1643,7 @@ def test_byte_factor_retains_all121_full_current_records_and64_complete_function
     assert row['owner'] not in {held['owner'] for held in previous}
     assert row['original_ledger_json']==row['proposed_ledger_json']
     assert contract.ORIGINAL_LINK_TYPES[row['id']]=='writer' and len(contract.ORIGINAL_LINK_TYPES)==10
-    assert len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.NATIVE_LINK_ROLES)==19
 
 
 def test_byte_factor_complete_function_transition_removes_only_one_exact_reverse_writer_selector():
@@ -1646,7 +1660,7 @@ def test_byte_factor_complete_function_transition_removes_only_one_exact_reverse
         if not marker['dependency']:marker.pop('dependency')
     assert removed==[dict(role='writes',to='purple-chihuahua/ram',type='writer',end='to',relies='structure',supports='identity')]
     assert test_contract.exact(expected,after)
-    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==7
+    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==8
 
 
 @pytest.mark.parametrize('fault',('original-json','current-json','ledger-json','type','role','order','row79','row99',
@@ -1700,11 +1714,12 @@ def test_additional_full_function_postimages_have_no_ignored_field_or_generic_ow
 
 def test_byte_sum_retains_all122_full_current_records_and65_complete_function_records():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_byte_factor_caller_boundary(repo.ROOT,declared)
+    historical=contract.uptight_RAM3348_prior_current_rows(declared,124)
     previous=contract.prior_reference_rows(declared,122)
-    assert declared['reference'][:122]==previous
+    assert historical[:122]==previous
     assert contract.digest(previous)==contract.PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256
     assert contract.digest(declared['function'][:65])==contract.PRIOR_BYTE_FACTOR_CALLER_FUNCTION_SHA256
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     row=declared['reference'][122];old=json.loads(row['original_claim_json'])
     assert (row['owner'],row['address'],row['function'])==('urban-ibex/ram',0xFFFF1693,0x464DE)
     assert row['original_claim_sha256']=='1dacd2a5176d35d9dc687370413cd3502b32f21417e16988f0948a9587b9d970'
@@ -1714,7 +1729,7 @@ def test_byte_sum_retains_all122_full_current_records_and65_complete_function_re
     assert 'ledger' not in json.loads(row['original_native_json']) and 'ledger' not in json.loads(row['proposed_native_json'])
     assert row['owner'] not in {held['owner'] for held in previous}
     assert contract.ORIGINAL_LINK_TYPES[row['id']]=='writer' and len(contract.ORIGINAL_LINK_TYPES)==10
-    assert len(contract.NATIVE_LINK_ROLES)==18
+    assert len(contract.NATIVE_LINK_ROLES)==19
 
 
 def test_byte_sum_complete_function_transition_removes_one_exact_reverse_writer_and_preserves_all_other_selectors():
@@ -1731,7 +1746,7 @@ def test_byte_sum_complete_function_transition_removes_one_exact_reverse_writer_
         if not marker['dependency']:marker.pop('dependency')
     assert removed==[dict(role='writes',to='urban-ibex/ram',type='writer',end='to',relies='structure',supports='identity')]
     assert test_contract.exact(expected,after)
-    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==4 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==7
+    assert len(contract.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(contract.FUNCTION_POSTIMAGE_CLAIMS)==8
 
 
 @pytest.mark.parametrize('fault',('original-json','current-json','ledger-json','type','role','order','row79','row99',
@@ -1760,7 +1775,7 @@ def test_each_complete_prior_byte_factor_source_and_generated_output_remains_exa
 
 def test_reader_direction_retains_all123_preceding_records_and66_complete_functions():
     declared=contract.descriptor(repo.ROOT)
-    assert len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(declared['reference'])==125 and len(declared['function'])==67
     assert contract.digest(contract.prior_reference_rows(declared,123))==contract.PRIOR_READER_DIRECTION_REFERENCE_SHA256
     assert contract.digest(declared['function'][:66])==contract.PRIOR_READER_DIRECTION_FUNCTION_SHA256
     row=declared['reference'][123]
@@ -1882,7 +1897,7 @@ def test_uptight_RAM3348_owning_binding_requires_exact_same_primary_result_and_o
 def test_uptight_historical_current_prefix_restores_only_three_pinned_postimage_fields():
     value=contract.descriptor(repo.ROOT)
     fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
-    for count in (87,92,100,107,115,116,118,119,121,122):
+    for count in (71,79,87,92,100,107,112,115,116,118,119,121,122):
         previous=contract.uptight_RAM3348_prior_current_rows(value,count);changed=[]
         for old,current in zip(previous,value['reference'][:count]):
             if old==current:continue

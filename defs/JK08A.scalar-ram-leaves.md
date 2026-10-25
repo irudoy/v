@@ -86,7 +86,7 @@ consumer requires distinct `exact_scalar_ram_leaves` and
 `no_selected_datum_access` flags. The `scalar-ram-leaf-withdrawal` family uses
 the existing withdrawal-only ordinary policy and normal `unlink` writer.
 The component binds nineteen complete before-present/after-absent original
-relations inside the joint 124-relation native withdrawal batch. No replacement owning claim or evidence item is created. Partial,
+relations inside the joint 125-relation native withdrawal batch. No replacement owning claim or evidence item is created. Partial,
 duplicate, changed, unmatched or broader removals refuse.
 Exactly 19 matching ledger selectors belong to this component; the joint
 batch removes115 matching selectors across94 unique owners; all other selectors,
@@ -121,7 +121,7 @@ defines the independent product boundary and exact joint composition.
 
 The joint descriptor retains the complete prior26 boundary while adding five
 gated/indexed originals. `scalar_ram_gated_paths` is a third mandatory consumer
-in the same primary. The joint124 transition preserves95 full owners and66
+in the same primary. The joint125 transition preserves95 full owners and66
 full functions and removes115 exact matching selectors. Only the selected
 additional links/selectors of cautious-iguana/tbl and
 rev_limit_throttle_cut/tbl change their shared owner postimages.
@@ -252,7 +252,7 @@ The complete paired flag writer component is defined by
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
 remain mandatory. The joint total includes 109 datum-end selectors and
-7 function-end selectors. Every previous family/helper/native/TEST original
+8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
 The complete threshold-window reader component is defined by
@@ -264,14 +264,14 @@ remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
 identical primary. The joint selector total contains 109 datum-end and
-7 function-end removals.
+8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains124 exact access originals:114 readers and ten
-individually pinned writers,95 complete datum owners,66 complete functions and
-116 matching ledger selectors. These contain109 datum-end selectors and
-7 function-end selectors. Twenty-seven independent components require one
+The joint descriptor contains125 exact access originals:115 readers and ten
+individually pinned writers,95 complete datum owners,67 complete functions and
+117 matching ledger selectors. These contain109 datum-end selectors and
+8 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.

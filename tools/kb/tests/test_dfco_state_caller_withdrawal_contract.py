@@ -118,7 +118,7 @@ def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_byte
 def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==8 and len(declared['reference'])==124 and len(declared['function'])==66
+    assert len(rows)==8 and len(declared['reference'])==125 and len(declared['function'])==67
     assert len({row['owner'] for row in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -137,10 +137,10 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==116 and '116 matching ledger selectors' in words
-    assert len(withdrawal.NATIVE_LINK_ROLES)==18 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==114
-    assert '114 readers and ten' in words
+    assert removed==117 and '117 matching ledger selectors' in words
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
+    assert '115 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
