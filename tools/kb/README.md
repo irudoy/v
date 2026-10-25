@@ -574,6 +574,24 @@ a field or a chain with its keys, whose empty file fails the checks.
   the new one. A name that another meaning of the kind holds as its name, one
   of its other names, or a former name of one of its symbols is refused, and
   so is a meaning whose name a registry states until that registry converts.
+
+  `semantic = false` identifies a generated name. List those meanings with
+  `uv run kb cypher 'MATCH (m:Meaning) WHERE m.semantic = false RETURN m.key ORDER BY m.key'`.
+  A meaning with an established, specific role receives a semantic name when
+  that role is recorded or revised; unrelated ECU research is not a prerequisite.
+
+  The rename command covers entity files and their references. It does not
+  rename Python modules, imports, C or assembly identifiers, fixture names,
+  tests, specifications, or source-path manifests. Rename those consumers in
+  the same local change as the meaning: choose a role-based package name,
+  rename its files, update imports and identifiers, and replace references in
+  specifications, registration tables, generators, and source manifests.
+  Search for both the hyphenated generated name and its underscore form to
+  find the remaining consumers. Keep the old name only in `former` references
+  and historical records, rather than adding compatibility modules with the
+  generated name. Regenerate declared outputs and validate the renamed package
+  at its shared acceptance boundary. A KB-only rename is incomplete when the
+  generated name remains in active code or filenames.
 - `kb merge <meaning> <other>` moves the symbols of the other meaning into
   the file of the meaning, each with the evidence of its join: the
   `--evidence` items at its layout, or the candidate of the search as for
