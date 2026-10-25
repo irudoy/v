@@ -1,0 +1,56 @@
+schema = 1
+id = "jk08a-maf-copy-filter"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_maf_filter.s"
+scope = "Natural copy and filter entries with explicit low-byte bank argument; complete state and exact word transfers, without caller scheduling or units admission."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x3a982, 0x3a9aa]
+
+[[entry]]
+key = "code-0"
+start = 0x3a982
+end = 0x3a9aa
+
+[[entry]]
+key = "code-1"
+start = 0x3a9aa
+end = 0x3aa12
+
+[[pool]]
+address = 0x870a
+width_bytes = 1
+stock_value = 26
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3ab68
+width_bytes = 4
+stock_value = 0xffff1048
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3ab70
+width_bytes = 4
+stock_value = 0xffff1dec
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3ab74
+width_bytes = 4
+stock_value = 0xffff2460
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3ab78
+width_bytes = 4
+stock_value = 0x870a
+RAM_pointer_alias = false

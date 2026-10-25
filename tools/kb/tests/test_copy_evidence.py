@@ -11,6 +11,7 @@ import pytest
 
 from kb import compile, copy_evidence as proof, copy_matrix, copy_witness
 from kb import checks, graph, levels, match, passes, reconciliation, repo, write
+from kb import ordinary_access_registry as ordinary
 from kb.model import Builder, Issue, SymbolKey
 
 
@@ -36,7 +37,7 @@ def model_of(root):
 
 @pytest.fixture
 def qualified(tmp_path, monkeypatch):
-    from kb import injection_copy_evidence
+    from kb import coherent_copy_evidence, injection_copy_evidence
     # The snapshot domain has separate execution/native mutation contracts.
     # Keep this fixture focused on the existing CAN domain and shared terminal.
     monkeypatch.setattr(injection_copy_evidence, 'scope_digest', lambda model: 'controlled snapshot scope')
@@ -44,6 +45,11 @@ def qualified(tmp_path, monkeypatch):
         if witness != {'controlled_snapshot_boundary': True}:
             raise ValueError('wrong controlled snapshot boundary')
     monkeypatch.setattr(injection_copy_evidence, 'validate_witness', snapshot)
+    monkeypatch.setattr(coherent_copy_evidence, 'scope_digest', lambda model: 'controlled coherent scope')
+    def coherent(witness, inputs, root):
+        if witness != {'controlled_coherent_boundary': True}:
+            raise ValueError('wrong controlled coherent boundary')
+    monkeypatch.setattr(coherent_copy_evidence, 'validate_witness', coherent)
     descriptor = proof.descriptor(repo.ROOT)
     image = repo.images()['JK08A']
     data = image.path.read_bytes()
@@ -86,7 +92,7 @@ def qualified(tmp_path, monkeypatch):
             ram_checked_bytes=65536, unchanged_outside_destination=True,
             abi_preserved=True, input_preserved=True))
     candidate = dict(schema=proof.SCHEMA, key=proof.KEY, mode='full', complete=True,
-        snapshot_scope='controlled snapshot scope',
+        snapshot_scope='controlled snapshot scope', coherent_scope='controlled coherent scope',
         scope=proof.scope_digest(model), inputs=inputs(tmp_path), native_model='a' * 64,
         producer_inputs={'controlled': 'b' * 64}, witness=dict(region=proof.REGION,
         cases=cases, observations=observations,
@@ -112,6 +118,11 @@ def qualified(tmp_path, monkeypatch):
                     inclusive_process_seconds=0.1, declared_limit_seconds=300,
                     started_utc='2026-10-15T10:00:00+00:00', finished_utc='2026-10-15T10:00:00.1+00:00')
     candidate['witness']['snapshot'] = dict(controlled_snapshot_boundary=True)
+    candidate['witness']['coherent'] = dict(controlled_coherent_boundary=True)
+    # Structural placeholders preserve this CAN-only protocol fixture.
+    # They cannot satisfy any independent ordinary domain consumer.
+    candidate['witness'].update({component:dict(controlled_only=True,semantic_admission=False)
+        for component,producer in ordinary.captures()})
     record = dict(schema=proof.SCHEMA, candidate=candidate, terminal=terminal,
                   native_model=candidate['native_model'], native_inputs=proof.digest(candidate['producer_inputs']))
     def save(value=None):
@@ -148,10 +159,20 @@ def award(state, route):
                           proof.claim_fields(link, '7mfk')) is not None
 
 
+@pytest.mark.parametrize('component,producer',ordinary.captures())
+@pytest.mark.parametrize('route',('verify','rank','anchor','access'))
+def test_complete_primary_omitting_any_registered_ordinary_component_refuses(qualified,component,producer,route):
+    assert award(qualified,route)
+    record=deepcopy(qualified.record);record['candidate']['witness'].pop(component)
+    qualified.save(record)
+    assert award(qualified,route) is False
+
+
 @pytest.mark.parametrize('route', ['verify', 'rank', 'anchor', 'access'])
 @pytest.mark.parametrize('fault', ['none', 'missing', 'source', 'receipt', 'terminal', 'stream',
     'subset', 'incomplete', 'omitted-case', 'wrong-case', 'no-copy', 'register', 'frame', 'layout', 'width',
-    'missing-snapshot', 'snapshot', 'snapshot-scope', 'old-schema'])
+    'missing-snapshot', 'snapshot', 'snapshot-scope', 'old-schema',
+    'missing-coherent', 'coherent', 'coherent-scope', 'previous-schema'])
 def test_current_packet_and_refusals(qualified, route, fault):
     assert award(qualified, route)
     record = deepcopy(qualified.record)
@@ -183,6 +204,10 @@ def test_current_packet_and_refusals(qualified, route, fault):
         if fault == 'snapshot': candidate['witness']['snapshot'] = {}
         if fault == 'snapshot-scope': candidate['snapshot_scope'] = 'another scope'
         if fault == 'old-schema': candidate['schema'] = 1
+        if fault == 'previous-schema': candidate['schema'] = 2
+        if fault == 'missing-coherent': candidate['witness'].pop('coherent')
+        if fault == 'coherent': candidate['witness']['coherent'] = {}
+        if fault == 'coherent-scope': candidate['coherent_scope'] = 'another scope'
         qualified.save(record)
     assert award(qualified, route) is (fault == 'none')
 

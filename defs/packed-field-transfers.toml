@@ -1,0 +1,319 @@
+schema = 1
+id = "packed-field-transfers"
+scope = "Bounded wide-transfer compatibility with declared byte fields; semantic field width, natural reachability and hardware behavior require separate evidence."
+semantic_width_inference = false
+publication_width_inference = false
+natural_entry_inference = false
+hardware_qualification = false
+
+[[field]]
+symbol = "1me3b-fffe81b4/ram"
+meaning = "final_timing/ram"
+layout = "1me3b"
+declared_bits = 8
+original_claim_sha256 = "355b5a8941155af4daac4e9280ed8c64d9ccbe5f1a336405534f0adfdeb77014"
+original_l0 = "28a4e19998ef4d2c"
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x00021344
+mode = "load"
+width_bytes = 4
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x00021344
+mode = "read"
+width_bytes = 4
+[[field.transfer]]
+window = "1me3b-timing-history"
+read = 0x00021344
+write = 0x00021356
+source = 0xfffe81b4
+destination = 0xfffe817c
+physical_width_bytes = 4
+data_register = 9
+retained_read_bytes = "6922"
+retained_write_bytes = "1492"
+
+[[field]]
+symbol = "1me3b-fffe92b0/ram"
+meaning = "fuel_inhibit_mask/ram"
+layout = "1me3b"
+declared_bits = 8
+original_claim_sha256 = "edb20920d76865cd2e23694597a749ccc1f25c44b86f037b691fb431549927ff"
+original_l0 = "28a4e19998ef4d2c"
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x000213a0
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x000213a0
+mode = "read"
+width_bytes = 2
+[[field.transfer]]
+window = "1me3b-mask-history"
+read = 0x000213a0
+write = 0x000213a4
+source = 0xfffe92b0
+destination = 0xfffe92bc
+physical_width_bytes = 2
+data_register = 0
+retained_read_bytes = "85a2"
+retained_write_bytes = "81a8"
+
+[[field]]
+symbol = "1me3b-fffe92f4/ram"
+meaning = "intake_cvtc_target/ram"
+layout = "1me3b"
+declared_bits = 8
+original_claim_sha256 = "520290e2213639fd0661964e340dc68728a5320b4fec20391a43fba45aab4d56"
+original_l0 = "28a4e19998ef4d2c"
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x0002178a
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "1me3b:00021240"
+site = 0x0002178a
+mode = "read"
+width_bytes = 2
+[[field.transfer]]
+window = "1me3b-cvtc-history"
+read = 0x0002178a
+write = 0x0002178e
+source = 0xfffe92f4
+destination = 0xfffe92ec
+physical_width_bytes = 2
+data_register = 0
+retained_read_bytes = "8516"
+retained_write_bytes = "8112"
+
+[[field]]
+symbol = "1nd-fffe81cc/ram"
+meaning = "final_timing/ram"
+layout = "1nd"
+declared_bits = 8
+original_claim_sha256 = "d546c3e50077f4a60f98e28cf0ba1e8264aad557ee664382ed26da05b098d4a6"
+original_l0 = "cb701875f15725a4"
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002131e
+mode = "load"
+width_bytes = 4
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002131e
+mode = "read"
+width_bytes = 4
+[[field.transfer]]
+window = "1nd-timing-history"
+read = 0x0002131e
+write = 0x0002132e
+source = 0xfffe81cc
+destination = 0xfffe8194
+physical_width_bytes = 4
+data_register = 14
+retained_read_bytes = "6e22"
+retained_write_bytes = "1be2"
+
+[[field]]
+symbol = "1nd-fffe92e4/ram"
+meaning = "fuel_inhibit_mask/ram"
+layout = "1nd"
+declared_bits = 8
+original_claim_sha256 = "b8d558b659bcd534c18a5f66832a682cbf3988803eac801714f26c8510760e61"
+original_l0 = "cb701875f15725a4"
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002137a
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002137a
+mode = "read"
+width_bytes = 2
+[[field.transfer]]
+window = "1nd-mask-history"
+read = 0x0002137a
+write = 0x0002137e
+source = 0xfffe92e4
+destination = 0xfffe92f0
+physical_width_bytes = 2
+data_register = 0
+retained_read_bytes = "85a2"
+retained_write_bytes = "81a8"
+
+[[field]]
+symbol = "1nd-fffe9326/ram"
+meaning = "intake_cvtc_target/ram"
+layout = "1nd"
+declared_bits = 8
+original_claim_sha256 = "752bd62f1d9cc7e6015d4cd6f0033742fe32bd6976b9ab0d8e6f23225cdb3821"
+original_l0 = "cb701875f15725a4"
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002172a
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002172a
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002173c
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "1nd:00021218"
+site = 0x0002173c
+mode = "read"
+width_bytes = 2
+[[field.transfer]]
+window = "1nd-cvtc-history"
+read = 0x0002172a
+write = 0x0002172e
+source = 0xfffe9326
+destination = 0xfffe9320
+physical_width_bytes = 2
+data_register = 0
+retained_read_bytes = "8515"
+retained_write_bytes = "8112"
+[[field.transfer]]
+window = "1nd-cvtc-history"
+read = 0x0002173c
+write = 0x0002173e
+source = 0xfffe9326
+destination = 0xfffe932c
+physical_width_bytes = 2
+data_register = 0
+retained_read_bytes = "8515"
+retained_write_bytes = "8118"
+
+[[field]]
+symbol = "jk78c-ffff227a/ram"
+meaning = "intake_cvtc_target/ram"
+layout = "jk78c"
+declared_bits = 8
+original_claim_sha256 = "bed1ce49eea61afcd7c484de44c5b24b961ba3907f4d0933fc20e3121abf0302"
+original_l0 = "6bd18b774cb344a9"
+[[field.observed]]
+function = "jk78c:00020f1a"
+site = 0x0002131c
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "jk78c:00020f1a"
+site = 0x0002131c
+mode = "read"
+width_bytes = 2
+[[field.transfer]]
+window = "jk78c-cvtc-history"
+read = 0x0002131c
+write = 0x00021322
+source = 0xffff227a
+destination = 0xffff2276
+physical_width_bytes = 2
+data_register = 2
+retained_read_bytes = "6271"
+retained_write_bytes = "2e21"
+[[field.transfer]]
+window = "jk78c-cvtc-history"
+read = 0x0002131c
+write = 0x00021324
+source = 0xffff227a
+destination = 0xffff227e
+physical_width_bytes = 2
+data_register = 2
+retained_read_bytes = "6271"
+retained_write_bytes = "2721"
+
+[[window]]
+key = "1me3b-timing-history"
+layout = "1me3b"
+rom = "1ME3B"
+image_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+assembly = "tools/sh-elf-run/stock_1me3b_packed_transfers.s"
+start = 0x0002133e
+end = 0x00021358
+natural_copy_callee_required = false
+
+[[window]]
+key = "1me3b-mask-history"
+layout = "1me3b"
+rom = "1ME3B"
+image_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+assembly = "tools/sh-elf-run/stock_1me3b_packed_transfers.s"
+start = 0x0002138e
+end = 0x000213a6
+natural_copy_callee_required = true
+[window.copy_callee]
+entry = 0x000228ec
+end = 0x00022924
+call = 0x00021390
+length_bytes = 56
+source = 0x01006000
+destination = 0x01006100
+scope = "Bounded caller with explicit R1/R2/R7; the exact natural callee executes between the R10 literal load and wider field access."
+
+[[window]]
+key = "1me3b-cvtc-history"
+layout = "1me3b"
+rom = "1ME3B"
+image_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+assembly = "tools/sh-elf-run/stock_1me3b_packed_transfers.s"
+start = 0x00021776
+end = 0x00021790
+natural_copy_callee_required = false
+
+[[window]]
+key = "1nd-timing-history"
+layout = "1nd"
+rom = "1ND0A"
+image_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+assembly = "tools/sh-elf-run/stock_1nd_packed_transfers.s"
+start = 0x00021318
+end = 0x00021330
+natural_copy_callee_required = false
+
+[[window]]
+key = "1nd-mask-history"
+layout = "1nd"
+rom = "1ND0A"
+image_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+assembly = "tools/sh-elf-run/stock_1nd_packed_transfers.s"
+start = 0x00021368
+end = 0x00021380
+natural_copy_callee_required = true
+[window.copy_callee]
+entry = 0x00022870
+end = 0x000228a8
+call = 0x0002136a
+length_bytes = 60
+source = 0x01006000
+destination = 0x01006100
+scope = "Bounded caller with explicit R1/R2/R7; the exact natural callee executes between the R10 literal load and wider field access."
+
+[[window]]
+key = "1nd-cvtc-history"
+layout = "1nd"
+rom = "1ND0A"
+image_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+assembly = "tools/sh-elf-run/stock_1nd_packed_transfers.s"
+start = 0x00021722
+end = 0x00021740
+natural_copy_callee_required = false
+
+[[window]]
+key = "jk78c-cvtc-history"
+layout = "jk78c"
+rom = "JK78C"
+image_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
+assembly = "tools/sh-elf-run/stock_jk78c_packed_transfers.s"
+start = 0x00021316
+end = 0x00021326
+natural_copy_callee_required = false

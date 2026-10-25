@@ -1,0 +1,28 @@
+schema = 1
+id = "jk08a-counter-threshold-factor"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Only the existing owned dimensionless ratio factor of AAFA; no physical time units or other scale claims."
+owned_factor_scale_only = true
+physical_reader_inference = false
+physical_time_units_inference = false
+hardware_qualification = false
+natural_scheduling_inference = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "counter-threshold"
+address = 43770
+owner = "natural-hedgehog/tbl"
+wrapper = 155836
+caller = 496952
+callsite = 497448
+delay_slot = 497450
+component = "counter_threshold_paths"
+owned_fields_json = "{\"scale\":\"x/10\",\"scale_level\":\"code\",\"to_raw\":\"x*10\",\"unit\":\"ratio\"}"
+original_claim_sha256 = "c52565bea75dd644bcf2fd1d78ed5caec3f658a0b00c32a4e9cdab91ab55efbe"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"natural-hedgehog/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"scale\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/natural-hedgehog.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "eb000913a58842385f8308341406f5ff109155fe75b77d873bc52d260ca54937"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"natural-hedgehog/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit bounded 00079538 entry selects one lower-knot byte from 0000AAFA through natural 000260BC, stores it at FFFF351C, and multiplies it by uint8(FFFF3448). Signed call 00079728 receives R0=10 and the post-delay low-32-bit product in R1 from 0007972A. Both factors are uint8, so the quotient equals floor(elapsed * raw / 10). It is bounded below by the adjacent map output at FFFF3449 and compared with the saturated uint16 counter FFFF3446. This owning conditional dependency supports only the existing dimensionless ratio factor x/10 with inverse x*10 at code level. It supplies no physical time unit, scheduler, complete parent reachability or physical ROM reader on the arithmetic callee.\",\"relies\":\"contract\",\"supports\":\"scale\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=496952)\",\"SymbolKey(layout='7mfk', kind='fn', address=155836)\"]},\"roles\":[\"arithmetic-factor\"],\"slot\":null,\"sources\":[\"kb/tbl/natural-hedgehog.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"rousing-narwhal/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"identity\",\"to\":\"observant-emu/ram\",\"type\":\"threshold\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"scarlet-caracara/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2],\"notes\":[0],\"order\":60,\"registry\":\"findings\",\"scale\":[3,4,5,6,7,8]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"rousing-narwhal/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"threshold\",\"supports\":\"identity\",\"to\":\"observant-emu/ram\",\"type\":\"threshold\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"scarlet-caracara/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2],\"notes\":[0],\"order\":60,\"registry\":\"findings\",\"scale\":[3,4,5,6,7,8]}]"

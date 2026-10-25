@@ -1,0 +1,22 @@
+schema = 1
+id = "jk08a-register-only-helpers"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete natural arithmetic helper entries with exact register inputs and local frame effects; no datum-reader identity or caller binding is admitted."
+entries = [140536, 140538, 140572, 154064, 157504, 330316]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false
+unit = { assembly = "tools/sh-elf-run/stock_jk08a_register_only_helpers.s", code = [{ start = 140536, end = 140538 }, { start = 140538, end = 140552 }, { start = 140572, end = 140592 }, { start = 154064, end = 154084 }, { start = 157504, end = 157550 }, { start = 330316, end = 330326 }], pools = [], aliases = [] }
+readonly_observation = [{ address = 140536, size = 16 }]
+adapter = { schema = 1, profile = "ordinary-80-572", symbol = "register_only_helpers", region = "jk08a-register-only-helper-paths", prefix = "kb-register-only-helper-observation ", marker = "VQ_SH_ELF_REGISTER_ONLY_HELPERS", header = "register-only-helper-cases.h", driver = "tools/sh-elf-run/harness-register-only-helper-paths.c", refusals = "tools/kb/tests/test_register_only_helpers_adapter_generated.py", fields = [{ name = "raw_r0", bits = 32 }, { name = "raw_r1", bits = 32 }, { name = "raw_r2", bits = 32 }, { name = "raw_r3", bits = 32 }, { name = "raw_r4", bits = 32 }, { name = "raw_r5", bits = 32 }, { name = "raw_r6", bits = 32 }, { name = "raw_r7", bits = 32 }, { name = "variant", bits = 8 }, { name = "initial_sr", bits = 10 }], entries = [140536, 140538, 140572, 154064, 157504, 330316], kind = { field = "entry", values = [140536, 140538, 140572, 154064, 157504, 330316] }, memory = [{ offset = 65535, width = 1, value = 165 }], calibration = [{ address = 140536, size = 16 }], calibration_input = false, bound = [{ address = 140536, size = 2 }, { address = 140538, size = 14 }, { address = 140572, size = 20 }, { address = 154064, size = 20 }, { address = 157504, size = 46 }, { address = 330316, size = 10 }], dependencies = ["tools/kb/src/kb/register_only_helpers_contract.py", "tools/kb/src/kb/register_only_helpers_matrix.py", "tools/kb/src/kb/register_only_helpers_semantics.py", "tools/kb/src/kb/register_only_helpers_capture_evidence.py", "tools/sh-elf-run/stock_jk08a_register_only_helpers.s", "tools/sh-elf-run/stock_ignition_consumer_invoke.s", "tools/kb/src/kb/byte_surface_equations.py", "tools/kb/src/kb/proof_sources.py", "tools/kb/src/kb/proof_reuse.py", "tools/kb/tests/proof_adapter_cases.py"] }

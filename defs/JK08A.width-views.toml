@@ -1,0 +1,410 @@
+schema = 1
+id = "jk08a-width-views"
+scope = "Exact diagnostic-byte views, bounded wider working-state operations and symbolic indexed bases; no natural caller or semantic-width inference."
+semantic_width_inference = false
+natural_entry_inference = false
+selector_range_inference = false
+hardware_qualification = false
+
+[[field]]
+symbol = "7mfk-ffff118a/ram"
+meaning = "overjoyed-chameleon/ram"
+layout = "7mfk"
+declared_bits = 8
+original_claim_sha256 = "c85c471b0d8b6cc36751895cecd9caa73cd1e6f115d759aeccfd8a591273d971"
+original_l0 = "014e30840503f771"
+kind = "diagnostic-byte-view"
+automatic_resolution = false
+[[field.observed]]
+function = "7mfk:0003cb64"
+site = 0x0003cbb0
+mode = "store"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cb64"
+site = 0x0003cbb0
+mode = "write"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc4c
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc4c
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc7a
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc7a
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ce4e
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ce4e
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ce8e
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ce8e
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ceb8
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ceb8
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003cec2
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003cec2
+mode = "read"
+width_bytes = 2
+[field.diagnostic]
+did = 0x1116
+record = 0x00022704
+address = 0xffff118a
+width_bytes = 1
+
+[[field]]
+symbol = "7mfk-ffff16d2/ram"
+meaning = "daffodil-ape/ram"
+layout = "7mfk"
+declared_bits = 8
+original_claim_sha256 = "8b7042cbf10fce50e8c80a3d74c5e85f3ce2562d6b10aa1aee619eb160bfc8e9"
+original_l0 = "014e30840503f771"
+kind = "diagnostic-byte-view"
+automatic_resolution = false
+[[field.observed]]
+function = "7mfk:00035856"
+site = 0x00035cec
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:00035856"
+site = 0x00035cec
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0007e560"
+site = 0x0007e674
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0007e560"
+site = 0x0007e674
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0007e560"
+site = 0x0007e7be
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0007e560"
+site = 0x0007e7be
+mode = "read"
+width_bytes = 2
+[field.diagnostic]
+did = 0x112a
+record = 0x00022754
+address = 0xffff16d2
+width_bytes = 1
+
+[[field]]
+symbol = "7mfk-ffff4544/ram"
+meaning = "eager-boobook/ram"
+layout = "7mfk"
+declared_bits = 8
+original_claim_sha256 = "0ce283d325813ec10b6fe9428a7f466edbccd31146e5b44349c3eccabe431307"
+original_l0 = "014e30840503f771"
+kind = "diagnostic-byte-view"
+automatic_resolution = false
+[[field.observed]]
+function = "7mfk:0002c254"
+site = 0x0002c2d0
+mode = "store"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0002c254"
+site = 0x0002c2d0
+mode = "write"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc9e
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cc9e
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cd60
+mode = "store"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cd60
+mode = "write"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cda4
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cda4
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cdea
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003cbe8"
+site = 0x0003cdea
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ceca
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0003ce18"
+site = 0x0003ceca
+mode = "read"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:000a81b4"
+site = 0x000a81fe
+mode = "load"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:000a81b4"
+site = 0x000a81fe
+mode = "read"
+width_bytes = 2
+[field.diagnostic]
+did = 0x1129
+record = 0x00022750
+address = 0xffff4544
+width_bytes = 1
+
+[[field]]
+symbol = "7mfk-ffff2142/ram"
+meaning = "knock_count/ram"
+layout = "7mfk"
+declared_bits = 8
+original_claim_sha256 = "d42efc18ebf55e0f51c6181976b1b0e4064d1de0a2cd6085be9ee75c045fbee5"
+original_l0 = "014e30840503f771"
+kind = "symbolic-indexed-base"
+automatic_resolution = false
+[[field.observed]]
+function = "7mfk:00049ffc"
+site = 0x0004a03a
+mode = "store"
+width_bytes = 2
+[[field.observed]]
+function = "7mfk:0004a238"
+site = 0x0004a31a
+mode = "load"
+width_bytes = 2
+
+[[window]]
+key = "118a-producer"
+start = 0x0003cb9c
+end = 0x0003cbb2
+gbr = 0xffff1e60
+entries = [0x0003cb9c]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "118a-read-a"
+start = 0x0003cc44
+end = 0x0003cc4e
+gbr = 0xffff4534
+entries = [0x0003cc44]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "118a-read-b"
+start = 0x0003cc76
+end = 0x0003cc7c
+gbr = 0xffff4534
+entries = [0x0003cc76]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "118a-read-c"
+start = 0x0003ce4e
+end = 0x0003ce50
+gbr = 0xffff1114
+entries = [0x0003ce4e]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "118a-read-d"
+start = 0x0003ce8e
+end = 0x0003ce90
+gbr = 0xffff1114
+entries = [0x0003ce8e]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "working-terminal"
+start = 0x0003ceb8
+end = 0x0003cece
+gbr = 0xffff1114
+entries = [0x0003ceb8, 0x0003cebe]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "16d2-read-a"
+start = 0x00035ce8
+end = 0x00035cfc
+gbr = 0xffff4534
+entries = [0x00035ce8]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "16d2-read-b"
+start = 0x0007e670
+end = 0x0007e680
+gbr = 0xffff4534
+entries = [0x0007e670]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "16d2-read-c"
+start = 0x0007e7ba
+end = 0x0007e7ca
+gbr = 0xffff4534
+entries = [0x0007e7ba]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-write-a"
+start = 0x0002c2cc
+end = 0x0002c2d2
+gbr = 0xffff4534
+entries = [0x0002c2cc]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-read-a"
+start = 0x0003cc9e
+end = 0x0003cca0
+gbr = 0xffff4534
+entries = [0x0003cc9e]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-write-b"
+start = 0x0003cd5a
+end = 0x0003cd62
+gbr = 0xffff4534
+entries = [0x0003cd5a]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-read-b"
+start = 0x0003cda4
+end = 0x0003cdaa
+gbr = 0xffff4534
+entries = [0x0003cda4]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-read-c"
+start = 0x0003cdea
+end = 0x0003cdf6
+gbr = 0xffff4534
+entries = [0x0003cdea]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "4544-publication"
+start = 0x000a81fa
+end = 0x000a8206
+gbr = 0xffff9bb8
+entries = [0x000a81fa]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "2142-indexed-store"
+start = 0x0004a030
+end = 0x0004a03c
+gbr = 0xffff4534
+entries = [0x0004a030]
+extra_spans = []
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "2142-byte-counter"
+start = 0x0004a35c
+end = 0x0004a386
+gbr = 0xffff4534
+entries = [0x0004a35c]
+extra_spans = [[0x0004a3fe, 0x0004a402]]
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[[window]]
+key = "2142-indexed-read"
+start = 0x0004a2fe
+end = 0x0004a31c
+gbr = 0xffff4534
+entries = [0x0004a2fe, 0x0004a402]
+extra_spans = [[0x0004a402, 0x0004a410]]
+entry_premise = "Explicit bounded entry registers, stack input and GBR; no caller or helper-output reachability inference."
+
+[image]
+layout = "7mfk"
+rom = "JK08A"
+sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_width_views.s"

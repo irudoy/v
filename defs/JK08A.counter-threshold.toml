@@ -1,0 +1,169 @@
+schema = 1
+id = "jk08a-counter-threshold"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_counter_threshold.s"
+scope = "Explicit two lower-knot4x4 selections, byte-factor product/10, counter saturation and comparison; owned scale admission is separate."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+window_entry = 0x79686
+function_entries = [0x21bbc,0x260bc,0x26944,0x26c78,0x79538]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x260bc
+end = 0x260f8
+
+[[entry]]
+key = "code-2"
+start = 0x26944
+end = 0x26980
+
+[[entry]]
+key = "code-3"
+start = 0x26c78
+end = 0x26d0e
+
+[[entry]]
+key = "code-4"
+start = 0x79686
+end = 0x79706
+
+[[entry]]
+key = "code-5"
+start = 0x7970e
+end = 0x7974a
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x260f8
+width_bytes = 4
+stock_value = 0x00000004
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x260fc
+width_bytes = 4
+stock_value = 0x00026944
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26980
+width_bytes = 4
+stock_value = 0x00026c78
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x79708
+width_bytes = 2
+stock_value = 0x0c24
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7970a
+width_bytes = 2
+stock_value = 0x0b51
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7970c
+width_bytes = 2
+stock_value = 0x0b4e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x797de
+width_bytes = 2
+stock_value = 0x0b4e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x797e0
+width_bytes = 2
+stock_value = 0x0b50
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x797e2
+width_bytes = 2
+stock_value = 0x0c24
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x797e4
+width_bytes = 2
+stock_value = 0x0b51
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x797f8
+width_bytes = 4
+stock_value = 0xffff40c6
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x797fc
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x79800
+width_bytes = 4
+stock_value = 0x00012fee
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x79804
+width_bytes = 4
+stock_value = 0x0000aafa
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x79808
+width_bytes = 4
+stock_value = 0x000260bc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7980c
+width_bytes = 4
+stock_value = 0x0000aaea
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x79810
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[observing_return]
+address = 497482
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/counter_threshold_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false

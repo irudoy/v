@@ -1,0 +1,29 @@
+schema = 1
+id = "jk08a-snapshot-ROM-dependency"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Conditional cached publication followed by an explicit bounded snapshot entry; no natural scheduling or hardware inference."
+physical_reader_inference = false
+universal_no_ROM_read = false
+natural_scheduling_inference = false
+scale_admission = false
+hardware_qualification = false
+
+[geometry]
+storage = "uint8"
+cols = 4
+
+[[reference]]
+id = "inhibit-publication"
+owner = "turquoise-mushroom/tbl"
+address = 73774
+original_claim_sha256 = "9931126fbeddf67582df91a5b6939c5c00ec7a6471eb7fa6e4879e048fef5212"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"turquoise-mushroom/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"structure\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/turquoise-mushroom.toml\"],\"stated\":[\"7mfk\"],\"to\":\"coherent_snapshot/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "cc1d1bfe9a833513e465b8780e7a01f63a5bcc7a2efc6e601cb494288c812fc4"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"turquoise-mushroom/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The bounded scheduler window snapshots the RAM publication selected by the cached calibration gate. The explicit sequence computes the cache, changes only the mode bit, runs the producer again, and copies the live bytes. This dependency asserts no physical ROM read by the scheduler, natural scheduling, units or hardware behavior.\",\"relies\":\"structure\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=254426)\",\"SymbolKey(layout='7mfk', kind='fn', address=134654)\"]},\"roles\":[\"snapshot-output\"],\"slot\":null,\"sources\":[\"kb/tbl/turquoise-mushroom.toml\"],\"stated\":[\"7mfk\"],\"to\":\"teal-giraffe/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"coherent_snapshot/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"phenomenal-cricket/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"sophisticated-magpie/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"nickel-magpie/ram\",\"type\":\"selector\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"wisteria-sheep/ram\",\"type\":\"selector\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"porcelain-mastiff/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"purring-shellfish/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"teal-giraffe/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"vivid-meerkat/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":336,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"phenomenal-cricket/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"sophisticated-magpie/ram\",\"type\":\"index\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"nickel-magpie/ram\",\"type\":\"selector\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"selector\",\"supports\":\"identity\",\"to\":\"wisteria-sheep/ram\",\"type\":\"selector\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"porcelain-mastiff/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"purring-shellfish/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"teal-giraffe/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"vivid-meerkat/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14],\"notes\":[0],\"order\":336,\"registry\":\"findings\"}]"
+RAM_owner = "teal-giraffe/ram"
+RAM_address = 4294905962
+live_owner = "vivid-meerkat/ram"
+live_address = 4294905970

@@ -1,0 +1,125 @@
+schema = 1
+id = "jk08a-io-accesses"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_io_accesses.s"
+scope = "Bounded software transfers through exact native I/O storage; no peripheral side effects, complete parent or natural scheduling admission."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+peripheral_side_effects_admission = false
+function_entries = [0x2040,0xa6dc4,0xc2fbe]
+native_io = [{start=0xffffd900,size=1024},{start=0xfffff400,size=256},{start=0xfffff700,size=256}]
+
+[[entry]]
+key = "code-0"
+start = 0x2040
+end = 0x205a
+
+[[entry]]
+key = "code-1"
+start = 0xa6dc8
+end = 0xa6de4
+
+[[entry]]
+key = "code-2"
+start = 0xa6e9e
+end = 0xa6eb0
+
+[[entry]]
+key = "code-3"
+start = 0xc2fe4
+end = 0xc3018
+
+[[entry]]
+key = "code-4"
+start = 0xc3028
+end = 0xc307a
+
+[[pool]]
+address = 0x2198
+width_bytes = 2
+stock_value = 0xf420
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xa701c
+width_bytes = 4
+stock_value = 0x00023ac4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xc319e
+width_bytes = 2
+stock_value = 0xd920
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xc31a0
+width_bytes = 2
+stock_value = 0x7ff0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0xc31b4
+width_bytes = 4
+stock_value = 0x0000975a
+RAM_pointer_alias = false
+
+[[window]]
+key = "capture"
+entry = 0x2040
+parent = 0x2040
+
+[[window]]
+key = "monitor-prefix"
+entry = 0xa6dc8
+parent = 0xa6dc4
+
+[[window]]
+key = "monitor-read"
+entry = 0xa6e9e
+parent = 0xa6dc4
+
+[[window]]
+key = "mailbox"
+entry = 0xc2fe4
+parent = 0xc2fbe
+
+[[observing_return]]
+address = 8282
+bytes = "7f0c4f266ef6000b0009"
+source = "tools/sh-elf-run/io_capture_return.s"
+stack_recovery_bytes = 20
+kind = "saved-parent-PR"
+parent_reachability_admitted = false
+
+[[observing_return]]
+address = 683496
+bytes = "7f0857f6472a000b0009"
+source = "tools/sh-elf-run/io_monitor_return.s"
+stack_recovery_bytes = 8
+kind = "observer-slot24"
+parent_reachability_admitted = false
+
+[[observing_return]]
+address = 683696
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/io_access_return.s"
+stack_recovery_bytes = 0
+kind = "observer-slot24"
+parent_reachability_admitted = false
+
+[[observing_return]]
+address = 798842
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/io_access_return.s"
+stack_recovery_bytes = 0
+kind = "observer-slot24"
+parent_reachability_admitted = false

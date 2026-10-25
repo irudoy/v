@@ -1,0 +1,132 @@
+schema = 1
+id = "jk08a-counter-arrays"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_counter_arrays.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Three bounded conditional counter-array updates; no ISR entry, producer-call reachability, cadence, units, geometry or hardware inference."
+ISR_entry_reachability = false
+periodic_cadence_inference = false
+native_geometry_inference = false
+automatic_resolution = false
+scale_admission = false
+units_admission = false
+hardware_qualification = false
+
+[[window]]
+parent = 132108
+start = 132518
+end = 132634
+gbr = 305414945
+prefix_steps = 22
+
+[[window]]
+parent = 132108
+start = 132770
+end = 132810
+gbr = 305414945
+prefix_steps = 8
+
+[[array]]
+entry = 132518
+pointer = 132704
+first = 4294911338
+count = 138
+width_bytes = 1
+read = 132534
+repeat_read = 132540
+store = 132546
+initial_branch = 132530
+zero_branch = 132538
+loop_branch = 132556
+
+[[array]]
+entry = 132518
+pointer = 132708
+first = 4294911492
+count = 10
+width_bytes = 2
+read = 132570
+repeat_read = 132576
+store = 132582
+initial_branch = 132566
+zero_branch = 132574
+loop_branch = 132592
+
+[[array]]
+entry = 132518
+pointer = 132712
+first = 4294919111
+count = 195
+width_bytes = 1
+read = 132610
+repeat_read = 132616
+store = 132622
+initial_branch = 132606
+zero_branch = 132614
+loop_branch = 132632
+
+[[array]]
+entry = 132770
+pointer = 133344
+first = 4294918867
+count = 244
+width_bytes = 1
+read = 132786
+repeat_read = 132792
+store = 132798
+initial_branch = 132782
+zero_branch = 132790
+loop_branch = 132808
+
+[[pool]]
+address = 132704
+value = 4294911338
+
+[[pool]]
+address = 132708
+value = 4294911492
+
+[[pool]]
+address = 132712
+value = 4294919111
+
+[[pool]]
+address = 133344
+value = 4294918867
+
+[[boundary]]
+address = 132634
+bytes = "000b0009"
+
+[[boundary]]
+address = 132810
+bytes = "000b0009"
+
+[[window]]
+parent = 0x208F8
+start = 0x2093E
+end = 0x20962
+gbr = 0x12344321
+prefix_steps = 6
+
+[[array]]
+entry = 0x2093E
+pointer = 0x20B44
+first = 0xFFFF25FB
+count = 7
+width_bytes = 1
+read = 0x2094A
+repeat_read = 0x20950
+store = 0x20956
+initial_branch = 0x20946
+zero_branch = 0x2094E
+loop_branch = 0x20960
+
+[[pool]]
+address = 0x20B44
+value = 0xFFFF25FB
+
+[[boundary]]
+address = 0x20962
+bytes = "000b0009"

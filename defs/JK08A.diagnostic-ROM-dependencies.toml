@@ -1,0 +1,114 @@
+schema = 1
+id = "jk08a-diagnostic-ROM-dependencies"
+layout = "7mfk"
+publisher = "married-moth/fn"
+publisher_address = 0x0003235c
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact diagnostic-output dependencies replace four unestablished physical ROM reader claims; no universal no-ROM-read or hardware inference."
+physical_reader_inference = false
+universal_no_ROM_read = false
+hardware_qualification = false
+scale_level_changes = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "k-bfs"
+owner = "active-caracal/tbl"
+address = 0x00009284
+original_claim_sha256 = "a54e81b76506487bc4d6ad62b06eb8007df871ae163f41c2b2451ab9fecb7439"
+proposed_claim_sha256 = "faecc814f7a54c0661e590f3a21829895ae8447405b223b3b71cdf3045e26059"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"active-caracal/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"level\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/active-caracal.toml\"],\"stated\":[\"7mfk\"],\"to\":\"married-moth/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"active-caracal/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The diagnostic publisher observes the conditioned RAM result of this calibration. This dependency does not assert that the publisher loads or references the ROM object. The positive K-dependent branch contributes to quarter BFS; alternate mode branches can replace the published BFS.\",\"relies\":\"level\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=243548)\",\"SymbolKey(layout='7mfk', kind='fn', address=205660)\"]},\"roles\":[\"diagnostic-output\"],\"slot\":null,\"sources\":[\"kb/tbl/active-caracal.toml\"],\"stated\":[\"7mfk\"],\"to\":\"bfs/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"base_fuel_schedule_producer/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"bfs/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"voracious-oarfish/ram\",\"type\":\"lookup\"}],\"fields\":[\"family\",\"width\",\"storagetype\",\"accessor\",\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6],\"notes\":[0],\"order\":344,\"registry\":\"findings\",\"scale\":[7,8,9]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"base_fuel_schedule_producer/fn\",\"type\":\"reader\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"bfs/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"voracious-oarfish/ram\",\"type\":\"lookup\"}],\"fields\":[\"family\",\"width\",\"storagetype\",\"accessor\",\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6],\"notes\":[0],\"order\":344,\"registry\":\"findings\",\"scale\":[7,8,9]}]"
+RAM_owner = "bfs/ram"
+RAM_address = 0xffff1026
+RAM_width = 16
+RAM_reader_claim_sha256 = "9887d42f284393b5ca48e3518bb806e486eb9894417b8380d3f83ae1587e144b"
+dids = [0x1208]
+via = [0x0003b75c,0x0003235c]
+condition = "The positive K-dependent branch contributes to quarter BFS; alternate mode branches can replace the published BFS."
+
+[[reference]]
+id = "exhaust-cold"
+owner = "meaty-guillemot/tbl"
+address = 0x0000b2fa
+original_claim_sha256 = "773bb5c05fb01ade08e4316ae3feaf6f23782809755cf8bbe6363ca1876f1520"
+proposed_claim_sha256 = "589a4ed9c7532bb63ae7d95050b565a53a4ab0eb9e269f9dbdae70ee2224c5ea"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"meaty-guillemot/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"level\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/meaty-guillemot.toml\"],\"stated\":[\"7mfk\"],\"to\":\"married-moth/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"meaty-guillemot/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The diagnostic publisher observes the conditioned RAM result of this calibration. This dependency does not assert that the publisher loads or references the ROM object. The cold result is selected or blended with the main result before downstream exhaust-target conditioning.\",\"relies\":\"level\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=785856)\",\"SymbolKey(layout='7mfk', kind='fn', address=786056)\",\"SymbolKey(layout='7mfk', kind='fn', address=205660)\"]},\"roles\":[\"diagnostic-output\"],\"slot\":null,\"sources\":[\"kb/tbl/meaty-guillemot.toml\"],\"stated\":[\"7mfk\"],\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"benign-albatross/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"serious-heron/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cornflower-millipede/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7],\"notes\":[0],\"order\":68,\"registry\":\"findings\",\"scale\":[8,9,10,11,12,13,14,15]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"benign-albatross/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"serious-heron/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cornflower-millipede/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5,6,7],\"notes\":[0],\"order\":68,\"registry\":\"findings\",\"scale\":[8,9,10,11,12,13,14,15]}]"
+RAM_owner = "exhaust_cvtc_target/ram"
+RAM_address = 0xffff2327
+RAM_width = 8
+RAM_reader_claim_sha256 = "06d98209713f8e1135f71e3b15a7c461ca00b6ba49a4618a431d95dcf84f4c06"
+dids = [0x1166]
+via = [0x000bfdc0,0x000bfe88,0x0003235c]
+condition = "The cold result is selected or blended with the main result before downstream exhaust-target conditioning."
+
+[[reference]]
+id = "exhaust-main"
+owner = "exhaust_cvtc_target/tbl"
+address = 0x0000b33a
+original_claim_sha256 = "07dd46c691870056fae3c1d94866e8383dc9867a6058c1662ebe211fb7356f26"
+proposed_claim_sha256 = "be17ca2d103facff74519abbd62889faae500fb1091e39be6415af9c4964ae58"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"exhaust_cvtc_target/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"level\",\"supports\":[\"identity\",\"scale\"]},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/exhaust_cvtc_target.toml\"],\"stated\":[\"7mfk\"],\"to\":\"married-moth/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"exhaust_cvtc_target/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The diagnostic publisher observes the conditioned RAM result of this calibration. This dependency does not assert that the publisher loads or references the ROM object. The main result can receive a separate correction and is selected or blended before downstream exhaust-target conditioning.\",\"relies\":\"level\",\"supports\":[\"identity\",\"scale\"],\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=785856)\",\"SymbolKey(layout='7mfk', kind='fn', address=786056)\",\"SymbolKey(layout='7mfk', kind='fn', address=205660)\"]},\"roles\":[\"diagnostic-output\"],\"slot\":null,\"sources\":[\"kb/tbl/exhaust_cvtc_target.toml\"],\"stated\":[\"7mfk\"],\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apricot-echidna/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"fortunate-mantis/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"loose-frigatebird/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"righteous-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"athletic-jackal/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"loose-termite/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"illegal-husky/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5],\"notes\":[0],\"order\":69,\"registry\":\"findings\",\"scale\":[6,7,8,9,10,11,12,13,14,15]}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apricot-echidna/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"fortunate-mantis/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"loose-frigatebird/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"wild-taipan/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"righteous-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"athletic-jackal/axis\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"loose-termite/axis\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"exhaust_cvtc_target/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"level\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"illegal-husky/ram\",\"type\":\"lookup\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"scale\",\"to\":\"paper-hippo/fn\",\"type\":\"reader\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\",\"scale_conf\"],\"identity\":[0,1,2,3,4,5],\"notes\":[0],\"order\":69,\"registry\":\"findings\",\"scale\":[6,7,8,9,10,11,12,13,14,15]}]"
+RAM_owner = "exhaust_cvtc_target/ram"
+RAM_address = 0xffff2327
+RAM_width = 8
+RAM_reader_claim_sha256 = "06d98209713f8e1135f71e3b15a7c461ca00b6ba49a4618a431d95dcf84f4c06"
+dids = [0x1166]
+via = [0x000bfdc0,0x000bfe88,0x0003235c]
+condition = "The main result can receive a separate correction and is selected or blended before downstream exhaust-target conditioning."
+
+[[reference]]
+id = "ignition-correction"
+owner = "sincere-dragonfly/tbl"
+address = 0x000147da
+original_claim_sha256 = "46cdc06c45f30a8aa231f7928c00bd9b92d0cdb605c27af12da340ca666e9ddb"
+proposed_claim_sha256 = "59048af27cdf146c229a2667bdb7678e54bb84ae7abdfa1dacf1e3c1e9e694f5"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sincere-dragonfly/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"structure\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/sincere-dragonfly.toml\"],\"stated\":[\"7mfk\"],\"to\":\"married-moth/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"sincere-dragonfly/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The diagnostic publisher observes the conditioned RAM result of this calibration. This dependency does not assert that the publisher loads or references the ROM object. The correction enters the selected final timing coordinate; the command builder includes mode and override branches.\",\"relies\":\"structure\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=317852)\",\"SymbolKey(layout='7mfk', kind='fn', address=318440)\",\"SymbolKey(layout='7mfk', kind='fn', address=319362)\",\"SymbolKey(layout='7mfk', kind='fn', address=205660)\"]},\"roles\":[\"diagnostic-output\"],\"slot\":null,\"sources\":[\"kb/tbl/sincere-dragonfly.toml\"],\"stated\":[\"7mfk\"],\"to\":\"apc_output/ram\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apc_reset_compare_scheduler/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apc_set_command_builder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"final_timing_coordinate_builder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"married-moth/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stock_ignition_consumer/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"crazy-degu/ram\",\"type\":\"index\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"apc_output/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"final_timing/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"loyal-snail/reg\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"nifty-clam/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"steadfast-yak/reg\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"viridian-koel/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],\"notes\":[0],\"order\":253,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apc_reset_compare_scheduler/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"apc_set_command_builder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"final_timing_coordinate_builder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"stock_ignition_consumer/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"crazy-degu/ram\",\"type\":\"index\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"apc_output/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"final_timing/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"loyal-snail/reg\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"nifty-clam/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"steadfast-yak/reg\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"viridian-koel/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],\"notes\":[0],\"order\":253,\"registry\":\"findings\"}]"
+RAM_owner = "apc_output/ram"
+RAM_address = 0xffff2022
+RAM_width = 8
+RAM_reader_claim_sha256 = "9e4feb191616bc5301d957a7a6d754eb5c48b15c1e2532772b4711e18c1ed75d"
+dids = [0x1107,0x1108,0x1109,0x110a,0x113c]
+via = [0x0004d99c,0x0004dbe8,0x0004df82,0x0003235c]
+condition = "The correction enters the selected final timing coordinate; the command builder includes mode and override branches."
+
+[[geometry]]
+owner = "active-caracal/tbl"
+address = 0x00009284
+properties_json = "{\"cols\":1,\"storage\":\"uint16\"}"
+scope = "Only absent or exactly equal native properties may receive independently admitted geometry."
+
+[[geometry]]
+owner = "meaty-guillemot/tbl"
+address = 0x0000b2fa
+properties_json = "{\"cols\":8,\"rows\":8,\"storage\":\"uint8\"}"
+scope = "Only absent or exactly equal native properties may receive independently admitted geometry."
+
+[[geometry]]
+owner = "exhaust_cvtc_target/tbl"
+address = 0x0000b33a
+properties_json = "{\"cols\":16,\"rows\":16,\"storage\":\"uint8\"}"
+scope = "Only absent or exactly equal native properties may receive independently admitted geometry."
+
+[[geometry]]
+owner = "sincere-dragonfly/tbl"
+address = 0x000147da
+properties_json = "{\"cols\":8,\"storage\":\"uint16\"}"
+scope = "Only absent or exactly equal native properties may receive independently admitted geometry."
+
+[alias_note]
+owner = "sincere-dragonfly/tbl"
+original_json = "[\"FUN 0004d99c writes ffff12d6; 0004dbe8 forms ffff11d4; 0004df82 publishes ffff2022 and schedules GR11A through 0002a892; 0004e080 adds the secondary offset and schedules GR11B through 0002acba. FUN 0003235c also returns ffff2022 for four exact pointer-table aliases. The operating-mode qualifier, degree unit, physical edge polarity, and producer of ffff237e remain unresolved. A whole-program p-code scan found only the read of ffff237e at 0004da82. Result disposition: actuator and diagnostic command chain.\"]"
+proposed_json = "[\"FUN 0004d99c writes ffff12d6; 0004dbe8 forms ffff11d4; 0004df82 publishes ffff2022 and schedules GR11A through 0002a892; 0004e080 adds the secondary offset and schedules GR11B through 0002acba. FUN 0003235c returns ffff2022 for its exact pointer-table aliases. The operating-mode qualifier, degree unit, physical edge polarity, and producer of ffff237e remain unresolved. A whole-program p-code scan found only the read of ffff237e at 0004da82. Result disposition: actuator and diagnostic command chain.\"]"
+scope = "The note states the diagnostic aliases without a fixed count; all other open qualifiers remain intact."

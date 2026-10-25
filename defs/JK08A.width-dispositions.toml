@@ -1,0 +1,71 @@
+schema = 1
+id = "jk08a-narrow-width-dispositions"
+scope = "Explicit qualified compatibility of semantic byte views with exact wider instruction questions; no native width or identity change."
+
+[[disposition]]
+symbol = "7mfk-ffff118a/ram"
+meaning = "overjoyed-chameleon/ram"
+original_claim_sha256 = "c85c471b0d8b6cc36751895cecd9caa73cd1e6f115d759aeccfd8a591273d971"
+kind = "diagnostic-byte-view-with-word-working-access"
+declared_bits = 8
+physical_question_bits = 16
+complete_SID22_required = true
+complete_primary_required = true
+native_width_change = false
+identity_grounding = false
+access_grounding = false
+natural_entry_inference = false
+selector_range_inference = false
+zero_index_disjointness = false
+hardware_qualification = false
+
+[[disposition]]
+symbol = "7mfk-ffff16d2/ram"
+meaning = "daffodil-ape/ram"
+original_claim_sha256 = "8b7042cbf10fce50e8c80a3d74c5e85f3ce2562d6b10aa1aee619eb160bfc8e9"
+kind = "diagnostic-byte-view-with-word-working-access"
+declared_bits = 8
+physical_question_bits = 16
+complete_SID22_required = true
+complete_primary_required = true
+native_width_change = false
+identity_grounding = false
+access_grounding = false
+natural_entry_inference = false
+selector_range_inference = false
+zero_index_disjointness = false
+hardware_qualification = false
+
+[[disposition]]
+symbol = "7mfk-ffff4544/ram"
+meaning = "eager-boobook/ram"
+original_claim_sha256 = "0ce283d325813ec10b6fe9428a7f466edbccd31146e5b44349c3eccabe431307"
+kind = "diagnostic-byte-view-with-word-working-access"
+declared_bits = 8
+physical_question_bits = 16
+complete_SID22_required = true
+complete_primary_required = true
+native_width_change = false
+identity_grounding = false
+access_grounding = false
+natural_entry_inference = false
+selector_range_inference = false
+zero_index_disjointness = false
+hardware_qualification = false
+
+[[disposition]]
+symbol = "7mfk-ffff2142/ram"
+meaning = "knock_count/ram"
+original_claim_sha256 = "d42efc18ebf55e0f51c6181976b1b0e4064d1de0a2cd6085be9ee75c045fbee5"
+kind = "byte-counter-with-conditional-word-vector-alias"
+declared_bits = 8
+physical_question_bits = 16
+complete_SID22_required = false
+complete_primary_required = true
+native_width_change = false
+identity_grounding = false
+access_grounding = false
+natural_entry_inference = false
+selector_range_inference = false
+zero_index_disjointness = false
+hardware_qualification = false

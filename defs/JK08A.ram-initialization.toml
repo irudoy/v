@@ -1,0 +1,130 @@
+schema = 1
+id = "jk08a-ram-initialization"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_ram_initialization.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Five exact ROM-range longword clear paths, including the complete natural helper; no boot, reset, geometry, units, scale or hardware inference."
+instruction_budget = 34484
+boot_reachability = false
+reset_reachability = false
+native_geometry_inference = false
+automatic_resolution = false
+scale_admission = false
+units_admission = false
+hardware_qualification = false
+
+[[window]]
+parent = 162496
+start = 162532
+end = 162554
+gbr = 140788
+first = 4294911516
+limit = 4294919442
+store = 162544
+initial_branch = 162540
+loop_branch = 162552
+prefix_steps = 6
+loop_steps = 5
+
+[[window]]
+parent = 162896
+start = 162926
+end = 162948
+gbr = 140812
+first = 4294905856
+limit = 4294911514
+store = 162938
+initial_branch = 162934
+loop_branch = 162946
+prefix_steps = 6
+loop_steps = 5
+
+[[window]]
+parent = 195620
+start = 195722
+end = 195748
+gbr = 140812
+first = 4294905856
+limit = 4294925554
+store = 195736
+initial_branch = 195732
+loop_branch = 195744
+prefix_steps = 7
+loop_steps = 6
+
+[[window]]
+parent = 215920
+start = 216052
+end = 216080
+gbr = 305414945
+first = 4294905856
+limit = 4294925554
+store = 216068
+initial_branch = 216060
+loop_branch = 216076
+prefix_steps = 7
+loop_steps = 7
+
+[[pool]]
+address = 140804
+value = 4294911516
+
+[[pool]]
+address = 140808
+value = 4294919442
+
+[[pool]]
+address = 140820
+value = 4294905856
+
+[[pool]]
+address = 140824
+value = 4294911514
+
+[[pool]]
+address = 140840
+value = 4294925554
+
+[[pool]]
+address = 216480
+value = 140788
+
+[[boundary]]
+address = 162554
+bytes = "000b0009"
+
+[[boundary]]
+address = 162948
+bytes = "000b0009"
+
+[[boundary]]
+address = 195748
+bytes = "000b0009"
+
+[[boundary]]
+address = 216080
+bytes = "000b0009"
+
+[[window]]
+parent = 0x26F30
+start = 0x26F30
+end = 0x26F4C
+gbr = 0x12344321
+first = 0xFFFF4514
+limit = 0xFFFF5CF2
+store = 0x26F3E
+initial_branch = 0x26F3A
+loop_branch = 0x26F46
+prefix_steps = 7
+loop_steps = 5
+natural_return = 0x26F48
+range_pointer = 0x22624
+
+[[pool]]
+address = 0x22624
+value = 0xFFFF4514
+
+[[pool]]
+address = 0x26F9C
+value = 0x22624
