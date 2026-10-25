@@ -2255,9 +2255,9 @@ PRIOR_DFCO_STATE_CALLER_FUNCTION_SHA256 = 'efe59944e20e9de38a6f54004076589c7b5de
 PRIOR_DFCO_STATE_CALLER_FILES_SHA256 = {'defs/JK08A.dfco-state-caller-withdrawal-paths.toml': '0187bbf837f6df0e5652c23cf0308f2850ade89860e545905295b34b09c1b1f8',
  'tools/sh-elf-run/stock_jk08a_dfco_state_caller_withdrawal.s': '6ebbeb9875b5da5db3ded573d56b5b9d6595ff52c0bfd50bf52c6bfb3b51489b',
  'tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py': '2b4ea5683d96b680d37b98a8c0d0ec0be989dba637ae2036458565922e79e187',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': 'b1c9a2151872b66347cfce5ca62257239ab45e18e118539248b524f6447422bb',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': 'f278b91dbf44f788cb3379d5c0d8fa3994745e5346f386381cbff39486af0271',
  'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py': 'd0a2e992bd49f094ead64662709fd928cfa00468bc701019b0a43609fbd2ceda',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': '02b2e764d6e4b754598cacfcdf5eea98c0c10a9443a0a0a2f6007dae15029be7',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': '13259bfee9b0b6dfffccfe11a8c4e37f4419f3fde1b328077bfc0e68dc91ed46',
  'tools/sh-elf-run/dfco_state_caller_withdrawal_capture.py': 'a12a121859f5d9eedfb96f5f6ba8263a098197b4dcddf8580e823e9fbd2ff4fd',
  'tools/sh-elf-run/harness-dfco-state-caller-withdrawal-paths.c': 'e41ad9046cb8d7478fad46546d89207b4b34d4e605664e1b6e09bb1c8fdbad95',
  'tools/kb/tests/test_dfco_state_caller_withdrawal_adapter_generated.py': '0773fd13664a5b09686aafb96943ab2cb531b06312a83f66ed56056e26f827b1'}

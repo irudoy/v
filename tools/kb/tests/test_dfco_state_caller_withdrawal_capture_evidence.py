@@ -282,3 +282,48 @@ def test_component_retains_full_rotation_and_both_native_RAM_alias_intervals(ori
     assert result['complete_real_rotation_helper'] is True and result['no_selected_ram_datum_access'] is True
     assert result['selected_native_RAM_aliases']=={'ffff14bd':'010014bd','ffff14be':'010014be'}
     assert len(result['conditional_branch_outcomes'])==len(proof.REQUIRED_BRANCHES) and result['fixed_branch_outcomes']=={}
+
+
+
+@pytest.fixture(scope='module')
+def prior1939_pairs(original):
+    declared=original[2]['declaration'];actual=proof.observations(original[2],declared);pairs=[]
+    for case,observed in zip(declared['cases'],actual):
+        if case['kind']!='unread1939-prior-and-retained-writes':continue
+        if case['byte_2468']&64:writes=()
+        elif case['byte_11b3']==255:writes=((0x50594,10),)
+        else:writes=((0x50574,observed['memory_after'][0][0x1939]),)
+        pairs.append((observed,writes))
+    return pairs
+
+
+def test_actual_prior_byte_domains_preserve_CPU_frame_other_RAM_and_bypass(prior1939_pairs,original):
+    assert proof.require1939_prior_independence(prior1939_pairs) is True
+    result=proof.require_primary(original[0],original[1])
+    assert result['reader_only1939_original']==transfers.READER1939_IDENTITY[1]
+    assert result['reader_only1939_retained_writer'] is True
+    assert result['prior1939_complete_state_independence'] is True
+    assert result['retained1939_write_sites']==[0x50574,0x50594]
+    assert result['strict_absence_originals']==[r[0] for r in transfers.NATIVE_ROOTS]
+
+
+@pytest.mark.parametrize('fault',('omit-prior','omit-write-path','exit','frame','other-RAM','bypass-byte',
+    'written-byte','write-site','write-value','input-neighbor','bound-after','calibration-after'))
+def test_actual_directional_invariance_refuses_partial_domains_or_changed_complete_state(prior1939_pairs,fault):
+    pairs=deepcopy(prior1939_pairs)
+    if fault=='omit-prior':pairs.pop()
+    elif fault=='omit-write-path':pairs=[pair for pair in pairs if not pair[1] or pair[1][0][0]!=0x50594]
+    else:
+        index=next(i for i,pair in enumerate(pairs) if bool(pair[1])==(fault in ('written-byte','write-site','write-value')))
+        observed,writes=pairs[index]
+        if fault=='exit':observed['exit']=(*observed['exit'][:-1],observed['exit'][-1]^1)
+        elif fault=='frame':observed['frame_after']=bytes([observed['frame_after'][0]^1])+observed['frame_after'][1:]
+        elif fault in ('other-RAM','bypass-byte','written-byte'):
+            raw=bytearray(observed['memory_after'][0]);raw[0x1939 if fault!='other-RAM' else 0x88]^=1;observed['memory_after']=(bytes(raw),)
+        elif fault=='write-site':pairs[index]=(observed,((0x50576,writes[0][1]),))
+        elif fault=='write-value':pairs[index]=(observed,((writes[0][0],writes[0][1]^1),))
+        elif fault=='input-neighbor':
+            raw=bytearray(observed['memory_before'][0]);raw[0x1938]^=1;observed['memory_before']=(bytes(raw),)
+        elif fault=='bound-after':observed['bound_after']=b'changed'
+        else:observed['calibration_after']={}
+    with pytest.raises(ValueError):proof.require1939_prior_independence(pairs)

@@ -96,8 +96,8 @@ def test_fixture_retains_all_real_helpers_and_only_two_exact_RAM_aliases():
 def test_published_curve_scale_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='curve_scale_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.curve-scale-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==3 and len(declared['reference'])==123 and len(declared['function'])==66
-    assert len({r['owner'] for r in declared['reference']})==94
+    assert len(rows)==3 and len(declared['reference'])==124 and len(declared['function'])==66
+    assert len({r['owner'] for r in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,wanted in (('351 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),351),
@@ -114,7 +114,7 @@ def test_published_curve_scale_joint_prior_and_registry_counts_bind_execution_so
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==115 and '115 matching ledger selectors' in words
+    assert removed==116 and '116 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==18 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
     assert all(withdrawal.native_type(r,'width') is None and withdrawal.native_type(r,'signed') is None for r in rows)
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,57))==withdrawal.PRIOR_SCALED_DIVISION_REFERENCE_SHA256

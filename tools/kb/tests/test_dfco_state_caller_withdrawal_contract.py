@@ -84,7 +84,9 @@ def test_source_refuses_identity_geometry_scale_units_caller_hardware_stub_or_pu
 @pytest.mark.parametrize('form',('native','alias','overlapping-interval'))
 @pytest.mark.parametrize('domain',('ram','rom','frame'))
 def test_selected_ROM_native_RAM_and_alias_roots_require_exact_physical_interval_absence(root,form,domain):
-    rows=[row for row in withdrawal.descriptor(repo.ROOT)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
+    rows=[row for row in withdrawal.descriptor(repo.ROOT)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths'
+        and row['id']!=transfers.READER1939_IDENTITY[0]]
+    transfers.require_no_selected_datum(dict(accesses=[]),rows)
     identity,address,alias=root
     if form=='alias':
         if alias is None:pytest.skip('the selected ROM root has no RAM alias')
@@ -116,8 +118,8 @@ def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_byte
 def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==7 and len(declared['reference'])==123 and len(declared['function'])==66
-    assert len({row['owner'] for row in declared['reference']})==94
+    assert len(rows)==8 and len(declared['reference'])==124 and len(declared['function'])==66
+    assert len({row['owner'] for row in declared['reference']})==95
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),409),
@@ -135,10 +137,10 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==115 and '115 matching ledger selectors' in words
+    assert removed==116 and '116 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==18 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==113
-    assert '113 readers and ten' in words
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==114
+    assert '114 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
@@ -160,3 +162,55 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     files={name:sha for mapping in mappings for name,sha in mapping.items()}
     assert len(files)==162 and '162 prior domain sources' in words and '161 byte-identical sources' in words
     for name,sha in files.items():assert hashlib.sha256(withdrawal.prior_gated_source_bytes(repo.ROOT,name)).hexdigest()==sha
+
+
+
+def reader1939_row():
+    row,=[row for row in withdrawal.descriptor(repo.ROOT)['reference'] if row['id']==transfers.READER1939_IDENTITY[0]]
+    return row
+
+
+def write1939(site=0x50574,raw=2):
+    return dict(site=site,mode='write',address=matrix.RAM_BASE+0x1939,width_bytes=1,
+        register=6 if site==0x50574 else 2,domain='ram',bytes=f'{raw:02x}')
+
+
+@pytest.mark.parametrize('site,raw',((0x50574,0),(0x50574,1),(0x50574,2),(0x50594,10)))
+def test_reader_direction_retains_each_exact_real_class_writer(site,raw):
+    assert transfers.require1939_reader_with_retained_writes(dict(accesses=[write1939(site,raw)]),reader1939_row())==((site,raw),)
+    assert transfers.require1939_reader_with_retained_writes(dict(accesses=[]),reader1939_row())==()
+
+
+@pytest.mark.parametrize('address,width',((0xFFFF1939,1),(matrix.RAM_BASE+0x1939,1),
+    (0xFFFF1938,2),(matrix.RAM_BASE+0x1938,2),(0xFFFF1938,4),(matrix.RAM_BASE+0x1938,4)))
+def test_reader_direction_refuses_native_alias_and_overlapping_container_reads(address,width):
+    event=write1939();event.update(mode='read',address=address,width_bytes=width)
+    with pytest.raises(ValueError):transfers.require1939_reader_with_retained_writes(dict(accesses=[event]),reader1939_row())
+
+
+@pytest.mark.parametrize('fault',('site','address','width_bytes','register','domain','bytes','forced-ten','duplicate','identity'))
+def test_reader_direction_cannot_admit_a_missing_or_substituted_actual_writer(fault):
+    event=write1939();row=reader1939_row();events=[event]
+    if fault=='forced-ten':events=[write1939(0x50594,2)]
+    elif fault=='duplicate':events.append(dict(event))
+    elif fault=='identity':row=dict(row,original_claim_sha256='0'*64)
+    elif fault=='site':event['site']=0x50576
+    elif fault=='address':event['address']=0xFFFF1939
+    elif fault=='width_bytes':event['width_bytes']=2
+    elif fault=='register':event['register']=2
+    elif fault=='domain':event['domain']='frame'
+    else:event['bytes']='80'
+    with pytest.raises(ValueError):transfers.require1939_reader_with_retained_writes(dict(accesses=events),row)
+
+
+
+def test_directional_prior_domains_and_published_preservation_bind_current_sources():
+    source=contract.descriptor(repo.ROOT);image=repo.images()['JK08A'].path.read_bytes()
+    rows=[r for r in matrix.cases(source,image) if r['kind']=='unread1939-prior-and-retained-writes']
+    groups={}
+    for row in rows:groups.setdefault((row['byte_2468'],row['byte_11b3']),set()).add(row['byte_1939'])
+    assert len(groups)==3 and all(values==set(range(256)) for values in groups.values())
+    text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text()
+    assert 'all 256 prior byte values' in text and 'prior 123 reference records and 66 function records' in text
+    assert len(transfers.NATIVE_ROOTS)==7
+    assert withdrawal.digest(withdrawal.descriptor(repo.ROOT)['reference'][:123])==withdrawal.PRIOR_READER_DIRECTION_REFERENCE_SHA256

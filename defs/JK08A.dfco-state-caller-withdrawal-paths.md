@@ -4,9 +4,9 @@ The complete natural 503E0 caller and real 50766 rotation helper contain
 409 stock instructions, 818 code bytes and 7 code spans. All 409 feasible instructions
 are required. The descriptor binds 42 literal spans, 13 pointer aliases,
 25 complete RAM fields, 271 configuration fields, 44 complete calibration spans
-and 306 raw input fields. The joint descriptor contains 123 exact access originals:
-113 readers and ten individually pinned writers, 94 complete owners,
-66 complete functions and 115 matching ledger selectors. All 123 normal unlink
+and 306 raw input fields. The joint descriptor contains 124 exact access originals:
+114 readers and ten individually pinned writers, 95 complete owners,
+66 complete functions and 116 matching ledger selectors. All 124 normal unlink
 operations are mandatory. The selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -18,6 +18,7 @@ operations are mandatory. The selected unsupported originals are:
 | `7mfk:0001298c` | `7mfk:000503e0` | `d01e3e567c9a6dd847ddc78602b5ac9db022cb3d6f01c911d22c3453c3a3735f` |
 | `7mfk:ffff14bd` | `7mfk:000503e0` | `d81705553131a9e20163fc8625517644ea150b1f8488cea0052a8b505f4280d1` |
 | `7mfk:ffff14be` | `7mfk:000503e0` | `95bd095088335f1392d2daceb203c8655979cc4c4c08cc25355c97a37cb1aaf3` |
+| `7mfk:ffff1939` | `7mfk:000503e0` | `1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531` |
 
 ## Complete caller, frame and real helper
 
@@ -51,9 +52,20 @@ delay-selection path. Six independently controlled delay bytes occupy
 1269A..1269D and 1269D..126A0. The caller actually writes the index at 1939,
 the selected hold byte at 193A and the selected restore byte at 1938.
 
-The actual 1939 writes at 50574 and 50594 remain present. Its original reader
-claim is unselected and open. It cannot enter the selected interval-absence
-package while a real physical write overlaps that root.
+RAM1939 has a separate check of access direction. Its exact reader is removed;
+the actual writer, enum_u8 unit, unset width and signedness, symbol evidence and
+other ledger selectors remain fixed. Reads at native FFFF1939, alias 01001939
+or any overlapping container are refused. Only the actual byte writes at 50574 from R6
+with classes 0..2 and at 50594 from R2 with value 10 are admitted. The seven strict
+no-read-or-write guards for the other roots remain exact.
+
+Three held-other groups supply all 256 prior byte values for bypass and each
+actual writer. Every group requires the same complete CPU, frame, other RAM,
+source bytes and calibration. Bypass preserves the unread byte. Writer paths
+must publish their actual store value independently of the prior byte.
+Missing raw values, either missing writer path and input echoes are refused.
+The complete prior 123 reference records and 66 function records retain their
+exact full-record digests.
 
 The saved state, 2573 counter, 193A sentinel 255, new-delay sentinel inR6,
 nonzero decrement and 1938-to-1937 transfer remain separate. The counter byte
@@ -109,8 +121,8 @@ publication overlapping the controlled RAM input is excluded. An unchanged
 input echo, unchanged common values or only a different write-set cannot establish
 an alternative. All other CPU/frame/RAM/calibration/bound preimages stay fixed.
 
-All seven originals are readers with empty roles and identity-supporting props.
-Exactly seven matching selectors are removed from seven additional full owners.
+All eight originals are readers with empty roles and identity-supporting props.
+Exactly eight matching selectors are removed from eight full owners.
 No owner is shared with the preceding 100-reference set. Complete prior 100
 records, current postimages and 55 functions retain their direct digests and
 every preceding prefix reconstruction. Types, unknown types, evidence positions,
@@ -137,7 +149,7 @@ The complete paired flag writer component is defined by
 56 functions retain exact boundaries. Entry-scoped absence preserves the real
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 108 datum-end selectors and
+remain mandatory. The joint total includes 109 datum-end selectors and
 7 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
@@ -149,14 +161,14 @@ same three datum owners. Full prior 112 records reconstruct exactly; all
 remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 108 datum-end and
-5 function-end removals.
+identical primary. The joint selector total contains 109 datum-end and
+7 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains123 exact access originals:113 readers and ten
-individually pinned writers,94 complete datum owners,66 complete functions and
-115 matching ledger selectors. These contain108 datum-end selectors and
+The joint descriptor contains124 exact access originals:114 readers and ten
+individually pinned writers,95 complete datum owners,66 complete functions and
+116 matching ledger selectors. These contain109 datum-end selectors and
 7 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
