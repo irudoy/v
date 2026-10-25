@@ -1,0 +1,773 @@
+schema = 1
+id = "jk08a-exhaust-target-path"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_exhaust_target.s"
+scope = "Conditional positive endpoint modes from 1C5F or 1C5D through BFE88 to2327; disabled and replacement modes remain distinct."
+stock_function_stubs = false
+native_relation_publication = false
+scale_admission = false
+all_modes = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x000bfe88,0x000259d0]
+
+[[entry]]
+key = "code-0"
+start = 0x000259d0
+end = 0x000259e4
+
+[[entry]]
+key = "code-1"
+start = 0x000bfe88
+end = 0x000bfff6
+
+[[entry]]
+key = "code-2"
+start = 0x000c0068
+end = 0x000c00cc
+
+[[entry]]
+key = "code-3"
+start = 0x000c00ce
+end = 0x000c01e6
+
+[[entry]]
+key = "code-4"
+start = 0x000c01ea
+end = 0x000c0266
+
+[[entry]]
+key = "code-5"
+start = 0x000c02a4
+end = 0x000c03f0
+
+[[entry]]
+key = "code-6"
+start = 0x000c03f2
+end = 0x000c04e8
+
+[[entry]]
+key = "code-7"
+start = 0x000c051c
+end = 0x000c066e
+
+[[entry]]
+key = "code-8"
+start = 0x000c0678
+end = 0x000c075a
+
+[[entry]]
+key = "code-9"
+start = 0x000c078c
+end = 0x000c0886
+
+[[entry]]
+key = "code-10"
+start = 0x000c088e
+end = 0x000c09c6
+
+[[entry]]
+key = "code-11"
+start = 0x000c0a04
+end = 0x000c0aba
+
+[[entry]]
+key = "code-12"
+start = 0x000c0abe
+end = 0x000c0c50
+
+[[entry]]
+key = "code-13"
+start = 0x000c0c5e
+end = 0x000c0cb0
+
+[[entry]]
+key = "code-14"
+start = 0x000c0cd4
+end = 0x000c0d32
+
+[[pool]]
+address = 0x000bfff8
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000bfffc
+width_bytes = 4
+stock_value = 0xffff2324
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0010
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c002c
+width_bytes = 4
+stock_value = 0xffff2468
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0030
+width_bytes = 4
+stock_value = 0x000086e1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0034
+width_bytes = 4
+stock_value = 0x00008e36
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0038
+width_bytes = 4
+stock_value = 0x000259d0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c003c
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0040
+width_bytes = 4
+stock_value = 0x000086e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0044
+width_bytes = 4
+stock_value = 0x00008dee
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0048
+width_bytes = 4
+stock_value = 0xffff267a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c004c
+width_bytes = 4
+stock_value = 0x00008e28
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0050
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0054
+width_bytes = 4
+stock_value = 0x00008e16
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0058
+width_bytes = 4
+stock_value = 0x00008cbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c005c
+width_bytes = 4
+stock_value = 0xffff256a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0060
+width_bytes = 4
+stock_value = 0x00008615
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0064
+width_bytes = 4
+stock_value = 0x00008b34
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c00cc
+width_bytes = 2
+stock_value = 0x09d3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c01e6
+width_bytes = 2
+stock_value = 0x09d1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c01e8
+width_bytes = 2
+stock_value = 0x09d3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0266
+width_bytes = 2
+stock_value = 0x06c8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0268
+width_bytes = 4
+stock_value = 0x00008b42
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c026c
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0270
+width_bytes = 4
+stock_value = 0xffff1000
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0274
+width_bytes = 4
+stock_value = 0x0000851e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0278
+width_bytes = 4
+stock_value = 0x00008d2e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c027c
+width_bytes = 4
+stock_value = 0x00008d2d
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0280
+width_bytes = 4
+stock_value = 0xffff106a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0284
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0288
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c028c
+width_bytes = 4
+stock_value = 0xffff244f
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0290
+width_bytes = 4
+stock_value = 0x00008e36
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0294
+width_bytes = 4
+stock_value = 0xffff24ce
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0298
+width_bytes = 4
+stock_value = 0x00008de4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c029c
+width_bytes = 4
+stock_value = 0x00008e1e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c02a0
+width_bytes = 4
+stock_value = 0x00008e29
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c03f0
+width_bytes = 2
+stock_value = 0x023c
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04e8
+width_bytes = 2
+stock_value = 0x023c
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04ea
+width_bytes = 2
+stock_value = 0x0709
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04ec
+width_bytes = 2
+stock_value = 0x0a04
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04ee
+width_bytes = 2
+stock_value = 0x047a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04f0
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c04f4
+width_bytes = 4
+stock_value = 0x00008cbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c04f8
+width_bytes = 4
+stock_value = 0xffff24f9
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c04fc
+width_bytes = 4
+stock_value = 0xffff124c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0500
+width_bytes = 4
+stock_value = 0xffff2324
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0504
+width_bytes = 4
+stock_value = 0x000084d1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0508
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c050c
+width_bytes = 4
+stock_value = 0x000084c7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0510
+width_bytes = 4
+stock_value = 0x0000830a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0514
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0518
+width_bytes = 4
+stock_value = 0x000084f3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c066e
+width_bytes = 2
+stock_value = 0x0a04
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0670
+width_bytes = 2
+stock_value = 0x09f2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0672
+width_bytes = 2
+stock_value = 0x084d
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0674
+width_bytes = 2
+stock_value = 0x06c5
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0676
+width_bytes = 2
+stock_value = 0x06c6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c075a
+width_bytes = 2
+stock_value = 0x06c6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c075c
+width_bytes = 2
+stock_value = 0x06c7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c075e
+width_bytes = 2
+stock_value = 0x06c5
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0760
+width_bytes = 2
+stock_value = 0x084d
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0764
+width_bytes = 4
+stock_value = 0x00008e36
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0768
+width_bytes = 4
+stock_value = 0x00008dcb
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c076c
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0770
+width_bytes = 4
+stock_value = 0xffff2324
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0774
+width_bytes = 4
+stock_value = 0xffff124c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0778
+width_bytes = 4
+stock_value = 0xffff2468
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c077c
+width_bytes = 4
+stock_value = 0xffff24ce
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0780
+width_bytes = 4
+stock_value = 0x000086f4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0784
+width_bytes = 4
+stock_value = 0x00008de6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0788
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0886
+width_bytes = 2
+stock_value = 0x06c5
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0888
+width_bytes = 2
+stock_value = 0x06c6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c088a
+width_bytes = 2
+stock_value = 0x06c7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c088c
+width_bytes = 2
+stock_value = 0x09f2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09c6
+width_bytes = 2
+stock_value = 0x09f2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09c8
+width_bytes = 2
+stock_value = 0x06c6
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09ca
+width_bytes = 2
+stock_value = 0x06c7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09cc
+width_bytes = 2
+stock_value = 0x09e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09d0
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c09d4
+width_bytes = 4
+stock_value = 0x00008cbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09d8
+width_bytes = 4
+stock_value = 0x00008dcb
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09dc
+width_bytes = 4
+stock_value = 0x000086f4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09e0
+width_bytes = 4
+stock_value = 0x00008e36
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09e4
+width_bytes = 4
+stock_value = 0x00008e15
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09e8
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c09ec
+width_bytes = 4
+stock_value = 0x00008e14
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c09f0
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c09f4
+width_bytes = 4
+stock_value = 0xffff124c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c09f8
+width_bytes = 4
+stock_value = 0xffff2324
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c09fc
+width_bytes = 4
+stock_value = 0xffff232a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0a00
+width_bytes = 4
+stock_value = 0xffff256a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0aba
+width_bytes = 2
+stock_value = 0x09f2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0abc
+width_bytes = 2
+stock_value = 0x01ee
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c50
+width_bytes = 2
+stock_value = 0x01ee
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c52
+width_bytes = 2
+stock_value = 0x09f2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c54
+width_bytes = 2
+stock_value = 0x02e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c56
+width_bytes = 2
+stock_value = 0x02e0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c58
+width_bytes = 2
+stock_value = 0x02ec
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c5a
+width_bytes = 2
+stock_value = 0x02e4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0c5c
+width_bytes = 2
+stock_value = 0x09f3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0cb0
+width_bytes = 2
+stock_value = 0x0a02
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0cb4
+width_bytes = 4
+stock_value = 0xffff24ce
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0cb8
+width_bytes = 4
+stock_value = 0xffff5b33
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0cbc
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0cc0
+width_bytes = 4
+stock_value = 0xffff124c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0cc4
+width_bytes = 4
+stock_value = 0x00008e52
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0cc8
+width_bytes = 4
+stock_value = 0xffff4558
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0ccc
+width_bytes = 4
+stock_value = 0x0002657c
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0cd0
+width_bytes = 4
+stock_value = 0x000265c4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0e42
+width_bytes = 2
+stock_value = 0x09e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x000c0ebc
+width_bytes = 4
+stock_value = 0xffff2324
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x000c0ec0
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true

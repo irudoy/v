@@ -1,0 +1,225 @@
+schema = 1
+id = "jk08a-apc-reset-offset"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_apc_reset_offset.s"
+scope = "Natural 0004C1E4 entry. 0001208E is a factor of the signed dividend divided by 00014000."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x21bbc,0x21ce0,0x26370,0x26740,0x4c1e4]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-2"
+start = 0x26370
+end = 0x26382
+
+[[entry]]
+key = "code-3"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-4"
+start = 0x26a80
+end = 0x26aba
+
+[[entry]]
+key = "code-5"
+start = 0x4c1e4
+end = 0x4c364
+
+[[entry]]
+key = "code-6"
+start = 0x4c36c
+end = 0x4c3a2
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x44e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x44e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26382
+width_bytes = 2
+stock_value = 0xe0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26384
+width_bytes = 4
+stock_value = 0x26a80
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26abc
+width_bytes = 4
+stock_value = 0x26740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c364
+width_bytes = 2
+stock_value = 0x5e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c366
+width_bytes = 2
+stock_value = 0x1c1
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c368
+width_bytes = 2
+stock_value = 0x1c5
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c36a
+width_bytes = 2
+stock_value = 0x5e9
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c3ea
+width_bytes = 2
+stock_value = 0x5e8
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c3ec
+width_bytes = 4
+stock_value = 0xffff4184
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4c3f0
+width_bytes = 4
+stock_value = 0x851f
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c3f4
+width_bytes = 4
+stock_value = 0x8291
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c3f8
+width_bytes = 4
+stock_value = 0xffff1094
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4c3fc
+width_bytes = 4
+stock_value = 0x828a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c400
+width_bytes = 4
+stock_value = 0xffff119c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4c404
+width_bytes = 4
+stock_value = 0xffff128c
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4c408
+width_bytes = 4
+stock_value = 0x959a
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c40c
+width_bytes = 4
+stock_value = 0x21ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c410
+width_bytes = 4
+stock_value = 0x8b87
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c414
+width_bytes = 4
+stock_value = 0x1208e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c418
+width_bytes = 4
+stock_value = 0x26370
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c41c
+width_bytes = 4
+stock_value = 0x12096
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c420
+width_bytes = 4
+stock_value = 0x14000
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c424
+width_bytes = 4
+stock_value = 0x21bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x4c428
+width_bytes = 4
+stock_value = 0xffff23bc
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x4c42c
+width_bytes = 4
+stock_value = 0xffff424c
+RAM_pointer_alias = true

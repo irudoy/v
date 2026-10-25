@@ -1,0 +1,27 @@
+schema = 1
+id = "jk08a-apc-reset-offset-argument"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact signed value argument of 0001208E through natural 0004C1E4; no scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "prophetic-jacamar"
+address = 0x1208e
+owner = "prophetic-jacamar/tbl"
+wrapper = 0x26370
+caller = 0x4c1e4
+callsite = 0x4c34e
+delay_slot = 0x4c350
+component = "apc_reset_offset_paths"
+original_claim_sha256 = "46966e19ba37213a16104684d1590b856f525e2af2ca10b7f2fc0e05526a91f4"
+proposed_claim_sha256 = "7921999b799a1aabbb9c5d1826ef6323c832b60d83b747a653fd81e0bc3fc949"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"prophetic-jacamar/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"structure\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/prophetic-jacamar.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"prophetic-jacamar/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The natural 0004C1E4 path reads 0001208E through 00026370. The lookup byte is multiplied by the configuration scale and then by the 00012096 lookup. 0004C350 completes that product in R1 from MACL. R0 is the constant 00014000. This dependency asserts that explicit value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"structure\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=311780)\",\"SymbolKey(layout='7mfk', kind='fn', address=156528)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/prophetic-jacamar.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"huge-pelican/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"horned-turkey/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":357,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"huge-pelican/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"horned-turkey/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":357,\"registry\":\"findings\"}]"

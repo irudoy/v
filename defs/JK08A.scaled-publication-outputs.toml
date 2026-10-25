@@ -1,0 +1,47 @@
+schema = 1
+id = "jk08a-scaled-publication-outputs"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional arithmetic output dependencies from two explicitly bounded publication windows; no units, scale or hardware inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "first"
+address = 4294906384
+owner = "jasper-taipan/ram"
+target = "pompous-firefly/fn"
+caller = 501138
+callsite = 501636
+delay_slot = 501638
+store_site = 501652
+kind = "signed"
+component = "scaled_publication_paths"
+original_claim_sha256 = "f5256752759284c2fd37d7926c4ebf672bea878ca5f15d5dda65bca240ab4ab6"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"jasper-taipan/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/ram/jasper-taipan.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "c10f1e03863fc211203718fd15e556ec7179253e86ded14d7fec048d1a769eb5"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"jasper-taipan/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit publication window in 0007A592 calls the natural signed divider with R0=800 and R1=727 times its explicit uint16 input after delay slot 0007A786. The returned quotient is written as a word at FFFF1210 by 0007A794. The tested window publishes this output without reading its previous value. Complete parent reachability, physical direct access by the arithmetic callee, units, scale, scheduling and hardware behavior are not asserted.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=501138)\"]},\"roles\":[\"arithmetic-output\"],\"slot\":null,\"sources\":[\"kb/ram/jasper-taipan.toml\"],\"stated\":[\"7mfk\"],\"to\":\"pompous-firefly/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"devout-cougar/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pistachio-vole/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pompous-firefly/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"urban-sidewinder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"married-jaguarundi/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"phenomenal-aardwolf/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"strong-hawk/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11],\"notes\":[0],\"order\":29,\"registry\":\"vars\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"devout-cougar/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"pistachio-vole/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"level\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"urban-sidewinder/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"married-jaguarundi/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"phenomenal-aardwolf/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"strong-hawk/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11],\"notes\":[0],\"order\":29,\"registry\":\"vars\"}]"
+
+[[reference]]
+id = "second"
+address = 4294906440
+owner = "snobbish-bird/ram"
+target = "unsigned_divide/fn"
+caller = 501764
+callsite = 502134
+delay_slot = 502136
+store_site = 502144
+kind = "unsigned"
+component = "scaled_publication_paths"
+original_claim_sha256 = "92bf91b5ce6edcf089184a5c65066fc7cccc5c607bfc3211d5c545df465757c2"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"snobbish-bird/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/ram/snobbish-bird.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "8249d2970b09d4243ae6219f5a8a769f461f07b32662f8cb56972de4b85bb45b"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"snobbish-bird/ram\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit publication window in 0007A804 calls the natural unsigned divider with R0=800 and R1=727 times its explicit uint16 input after delay slot 0007A978. The returned quotient is written as a word at FFFF1248 by 0007A980. The tested window publishes this output without reading its previous value. Complete parent reachability, physical direct access by the arithmetic callee, units, scale, scheduling and hardware behavior are not asserted.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=501764)\"]},\"roles\":[\"arithmetic-output\"],\"slot\":null,\"sources\":[\"kb/ram/snobbish-bird.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"grumpy-squirrel/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"crazy-toucan/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4,5,6,7],\"notes\":[0],\"order\":30,\"registry\":\"vars\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"grumpy-squirrel/ram\",\"type\":\"input\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"crazy-toucan/fn\",\"type\":\"writer\"}],\"fields\":[\"semantics\",\"units\",\"confidence\"],\"identity\":[0,1,2,3,4,5,6,7],\"notes\":[0],\"order\":30,\"registry\":\"vars\"}]"

@@ -1,0 +1,75 @@
+schema = 1
+id = "jk08a-timing-arguments"
+layout = "7mfk"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact conditional value arguments from the natural timing compositor and explicit timing accumulator tail; no physical reader or scale inference."
+physical_reader_inference = false
+scale_admission = false
+hardware_qualification = false
+natural_scheduling_inference = false
+universal_no_ROM_read = false
+unrelated_claim_changes = false
+
+[[reference]]
+id = "word-surface"
+address = 50446
+owner = "fabulous-marmoset/tbl"
+wrapper = 156272
+original_claim_sha256 = "35213c7b97eeee5f2a5d75c20d6eee5e8bab2beae882f4b97cff39eb46cb7539"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"fabulous-marmoset/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/fabulous-marmoset.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "00cf4e3d0d70d9ee0708a81b36dd938301f23a0228b8ebf4a8becea05c1ab715"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"fabulous-marmoset/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The conditional 0004BDC2 path reads the calibration through its natural lookup helper, bounds the word result, and passes the resulting product in R1 after the call delay slot to unsigned division by 500000. This dependency asserts an explicit bounded value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=310722)\",\"SymbolKey(layout='7mfk', kind='fn', address=156272)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/fabulous-marmoset.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"orange-lemur/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11],\"notes\":[0],\"order\":82,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"orange-lemur/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11],\"notes\":[0],\"order\":82,\"registry\":\"findings\"}]"
+caller = 310722
+callsite = 310912
+delay_slot = 310914
+component = "timing_division_paths"
+
+[[reference]]
+id = "byte-curve"
+address = 73474
+owner = "charming-barracuda/tbl"
+wrapper = 156788
+original_claim_sha256 = "6784063a95462c327013e45d4a1cfce2a3669bce977be699827796b5cb49055f"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"charming-barracuda/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/charming-barracuda.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "aa12876f528842df04eb5889e264638371cf82befda2ace14409941adc8a5040"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"charming-barracuda/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The conditional 0004BDC2 path reads the calibration through its natural lookup helper, bounds the word result, and passes the resulting product in R1 after the call delay slot to unsigned division by 500000. This dependency asserts an explicit bounded value argument, no physical ROM read by the arithmetic callee, units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=310722)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/charming-barracuda.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"timing_state_compositor/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"fabulous-marmoset/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"mutant-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"hungry-pig/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"invaluable-sheep/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],\"notes\":[0],\"order\":101,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"timing_state_compositor/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"fabulous-marmoset/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"mutant-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"hungry-pig/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"invaluable-sheep/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],\"notes\":[0],\"order\":101,\"registry\":\"findings\"}]"
+caller = 310722
+callsite = 310912
+delay_slot = 310914
+component = "timing_division_paths"
+
+[[reference]]
+id = "tail-word-curve"
+address = 83914
+owner = "indigo-fossa/tbl"
+wrapper = 156876
+caller = 307164
+callsite = 308336
+delay_slot = 308338
+component = "timing_tail_paths"
+original_claim_sha256 = "dc009defbab5164ac4ca0fef08449641ff9b77a5fa2113307fc0b9b98f0821b5"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"indigo-fossa/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/indigo-fossa.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "256e67176d2d5e7b24b98070caf0b55db40400b6c2fd720231cdc466d76691fd"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"indigo-fossa/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit 0004B3F2..0004B4A4 window of 0004AFDC reads the calibration through its natural lookup helper, derives the speed coefficient, bounds the word result, and passes the resulting product in R1 after the call delay slot to unsigned division by 500000. This dependency asserts a conditional value argument, no physical calibration read by the arithmetic callee, parent-entry reachability, physical units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=307164)\",\"SymbolKey(layout='7mfk', kind='fn', address=156876)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/indigo-fossa.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"signed_timing_state_accumulator/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"beige-bullmastiff/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"rare-sawfly/ram\",\"type\":\"index\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cunning-manul/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"diamond-jellyfish/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":252,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"signed_timing_state_accumulator/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"beige-bullmastiff/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"rare-sawfly/ram\",\"type\":\"index\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"cunning-manul/ram\",\"type\":\"lookup\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"diamond-jellyfish/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\",\"units\",\"scale_expr\",\"to_byte\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"notes\":[0],\"order\":252,\"registry\":\"findings\"}]"
+
+[[reference]]
+id = "tail-byte-curve"
+address = 73466
+owner = "outrageous-bustard/tbl"
+wrapper = 156788
+caller = 307164
+callsite = 308336
+delay_slot = 308338
+component = "timing_tail_paths"
+original_claim_sha256 = "632ada197b3fbdc4a3f3348737ac25dc77a5671f1e95eea4e5eeba63f5a04fa7"
+original_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"outrageous-bustard/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\"},\"roles\":[],\"slot\":null,\"sources\":[\"kb/tbl/outrageous-bustard.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"}"
+proposed_claim_sha256 = "27e7c277e4b07d00b85ddfc4db89096e473950785410bf7d8b57b5ba10983bb9"
+proposed_claim_json = "{\"evidence\":[],\"layout\":\"7mfk\",\"offset\":null,\"owner\":\"outrageous-bustard/tbl\",\"props\":{\"layouts\":[\"7mfk\"],\"note\":\"The explicit 0004B3F2..0004B4A4 window of 0004AFDC reads the calibration through its natural lookup helper, derives the speed coefficient, bounds the word result, and passes the resulting product in R1 after the call delay slot to unsigned division by 500000. This dependency asserts a conditional value argument, no physical calibration read by the arithmetic callee, parent-entry reachability, physical units, scale, natural scheduling or hardware behavior.\",\"relies\":\"contract\",\"reverse_relies\":\"structure\",\"reverse_supports\":\"identity\",\"supports\":\"identity\",\"via\":[\"SymbolKey(layout='7mfk', kind='fn', address=307164)\",\"SymbolKey(layout='7mfk', kind='fn', address=156788)\"]},\"roles\":[\"arithmetic-argument\"],\"slot\":null,\"sources\":[\"kb/tbl/outrageous-bustard.toml\"],\"stated\":[\"7mfk\"],\"to\":\"unsigned_divide/fn\",\"type\":\"depends\"}"
+original_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"signed_timing_state_accumulator/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"relies\":\"contract\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"unsigned_divide/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"indigo-fossa/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"mutant-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"quixotic-labradoodle/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],\"notes\":[0],\"order\":100,\"registry\":\"findings\"}]"
+proposed_ledger_json = "[{\"dependency\":[{\"end\":\"owner\",\"relies\":\"structure\",\"role\":\"consumer\",\"supports\":\"identity\",\"to\":\"signed_timing_state_accumulator/fn\",\"type\":\"reader\"},{\"end\":\"owner\",\"link_role\":\"from_map\",\"relies\":\"structure\",\"role\":\"from_map\",\"supports\":\"identity\",\"to\":\"indigo-fossa/tbl\",\"type\":\"depends\"},{\"end\":\"owner\",\"link_role\":\"indexed_by\",\"relies\":\"structure\",\"role\":\"indexed_by\",\"supports\":\"identity\",\"to\":\"mutant-sparrow/tbl\",\"type\":\"depends\"},{\"end\":\"to\",\"relies\":\"structure\",\"role\":\"writes\",\"supports\":\"identity\",\"to\":\"quixotic-labradoodle/ram\",\"type\":\"lookup\"}],\"fields\":[\"confidence\",\"role\",\"semantics\"],\"identity\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],\"notes\":[0],\"order\":100,\"registry\":\"findings\"}]"

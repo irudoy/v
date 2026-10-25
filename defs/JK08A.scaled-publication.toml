@@ -1,0 +1,119 @@
+schema = 1
+id = "jk08a-scaled-publication"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_scaled_publication.s"
+scope = "Explicit paired16-bit input windows publish scaled quotient words; complete parent reachability and hardware behavior are not inferred."
+automatic_resolution = false
+datum_identity_inference = false
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+hardware_qualification = false
+natural_caller_reachability = false
+window_entries = [0x7a778,0x7a968]
+function_entries = [0x21bbc,0x21ce0,0x7a592,0x7a804]
+
+[[entry]]
+key = "code-0"
+start = 0x21bbc
+end = 0x21cd6
+
+[[entry]]
+key = "code-1"
+start = 0x21ce0
+end = 0x21dc6
+
+[[entry]]
+key = "code-2"
+start = 0x7a778
+end = 0x7a796
+
+[[entry]]
+key = "code-3"
+start = 0x7a968
+end = 0x7a982
+
+[[pool]]
+address = 0x21cd8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21cdc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dc8
+width_bytes = 4
+stock_value = 0xffff9818
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x21dcc
+width_bytes = 4
+stock_value = 0x0000044e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a7d6
+width_bytes = 2
+stock_value = 0x02d7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a7fc
+width_bytes = 4
+stock_value = 0x00021bbc
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a800
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x7a9a0
+width_bytes = 2
+stock_value = 0x02d7
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a9a2
+width_bytes = 2
+stock_value = 0x0cd4
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a9f0
+width_bytes = 4
+stock_value = 0x00021ce0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x7a9f8
+width_bytes = 4
+stock_value = 0xffff120e
+RAM_pointer_alias = true
+
+[[observing_returns]]
+address = 501654
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/scaled_publication_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false
+
+[[observing_returns]]
+address = 502146
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/scaled_publication_return.s"
+return_register = 7
+stack_return_offset = 24
+parent_reachability_admitted = false

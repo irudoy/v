@@ -1,0 +1,244 @@
+schema = 1
+id = "jk08a-publication-inhibit-path"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+assembly = "tools/sh-elf-run/stock_jk08a_publication_inhibit.s"
+scope = "Conditional cached Boolean publication gate followed by an explicit bounded snapshot entry; no natural scheduling or hardware claim."
+stock_function_stubs = false
+native_relation_publication = false
+native_geometry_publication = false
+scale_admission = false
+all_modes = false
+hardware_qualification = false
+natural_caller_reachability = false
+function_entries = [0x20dfe,0x22558,0x25e20,0x25e4e,0x26358,0x26740,0x26a60,0x3e1da]
+sequence = [0x3e1da,0x3e1da,0x20f1c]
+
+[[entry]]
+key = "code-0"
+start = 0x20f1c
+end = 0x20f3a
+
+[[entry]]
+key = "code-1"
+start = 0x22558
+end = 0x22590
+
+[[entry]]
+key = "code-2"
+start = 0x25e20
+end = 0x25e44
+
+[[entry]]
+key = "code-3"
+start = 0x25e4e
+end = 0x25ec8
+
+[[entry]]
+key = "code-4"
+start = 0x26358
+end = 0x2636a
+
+[[entry]]
+key = "code-5"
+start = 0x26740
+end = 0x2676e
+
+[[entry]]
+key = "code-6"
+start = 0x26a60
+end = 0x26aba
+
+[[entry]]
+key = "code-7"
+start = 0x3e1da
+end = 0x3e284
+
+[[entry]]
+key = "code-8"
+start = 0x3e290
+end = 0x3e382
+
+[[pool]]
+address = 0x21124
+width_bytes = 4
+stock_value = 0xffff1064
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21128
+width_bytes = 4
+stock_value = 0xffff1068
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x2112c
+width_bytes = 4
+stock_value = 0xffff1066
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21130
+width_bytes = 4
+stock_value = 0xffff106a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x21134
+width_bytes = 4
+stock_value = 0xffff1072
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x25f10
+width_bytes = 4
+stock_value = 0xffff5718
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x2636a
+width_bytes = 2
+stock_value = 0x00c0
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x2636c
+width_bytes = 4
+stock_value = 0x00026a7c
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x26abc
+width_bytes = 4
+stock_value = 0x00026740
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3ba
+width_bytes = 2
+stock_value = 0x04e2
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3bc
+width_bytes = 2
+stock_value = 0x84c3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3c4
+width_bytes = 4
+stock_value = 0xffff11d4
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3cc
+width_bytes = 4
+stock_value = 0xffff1114
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3d0
+width_bytes = 4
+stock_value = 0xffff1e50
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3d4
+width_bytes = 4
+stock_value = 0x00025e4e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3d8
+width_bytes = 4
+stock_value = 0xffff24b4
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3dc
+width_bytes = 4
+stock_value = 0x000084a3
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3e0
+width_bytes = 4
+stock_value = 0xffff2459
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3e4
+width_bytes = 4
+stock_value = 0x0001202e
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3e8
+width_bytes = 4
+stock_value = 0x00026358
+RAM_pointer_alias = false
+
+[[pool]]
+address = 0x3e3ec
+width_bytes = 4
+stock_value = 0xffff256a
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3f0
+width_bytes = 4
+stock_value = 0xffff2451
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3f4
+width_bytes = 4
+stock_value = 0xffff1072
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3f8
+width_bytes = 4
+stock_value = 0xffff421d
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e3fc
+width_bytes = 4
+stock_value = 0xffff39c4
+RAM_pointer_alias = true
+
+[[pool]]
+address = 0x3e400
+width_bytes = 4
+stock_value = 0xffff277e
+RAM_pointer_alias = true
+
+[table]
+table = 73774
+elements = 4
+element_bytes = 1
+axis_step = 64
+RPM = 4294906186
+cache = 4294911354
+upstream = 4294905970
+snapshot = 4294905962
+mode = 4294911065
+mode_mask = 32
+brake = 4294911057
+brake_mask = 128
+
+[native_control_bytes]
+addresses = [4294935747]
+window_start = 4294935552
+window_size = 256
+
+[snapshot_return]
+address = 134970
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_scheduler_body_admitted = false

@@ -1,0 +1,58 @@
+schema = 1
+id = "jk08a-phase-programmer"
+layout = "7mfk"
+rom = "JK08A"
+assembly = "tools/sh-elf-run/stock_jk08a_injection_offset.s"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Exact post-guard offset multiplication with its real reciprocal helper; no full programmer, count decision or peripheral admission"
+automatic_resolution = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+count_guard_admission = false
+peripheral_admission = false
+
+[[window]]
+parent = 177738
+start = 177876
+end = 177912
+
+[[window]]
+parent = 167548
+start = 167548
+end = 167582
+
+[[pool]]
+address = 167584
+size = 2
+value = 6554
+
+[[pool]]
+address = 178014
+size = 6
+value = 7348735706166
+
+[[pool]]
+address = 178276
+size = 4
+value = 4294906508
+
+[[pool]]
+address = 178284
+size = 4
+value = 167548
+
+[[pool]]
+address = 178292
+size = 4
+value = 4294909940
+
+[boundary]
+address = 177912
+bytes = "57f6472a000b0009"
+source = "tools/sh-elf-run/publication_inhibit_snapshot_return.s"
+return_register = 7
+stack_return_offset = 24
+stock_programmer_body_admitted = false
