@@ -52,14 +52,19 @@ according to the task's dependencies and risks, aiming to close more
 acceptance criteria per full verification run while preserving required
 evidence and coverage.
 
+Use the KB CLI directly for ordinary knowledge reads. Process receipts and
+command timeouts belong to executable acceptance runs that require them.
+Do not use `caffeinate` or change system sleep settings for project commands.
+
 ## Gates and commits
 
 - `make check` validates tracked sources and projections, `make test` runs the
   Python and pin-tracer contracts, and `make verify-firmware` runs the
   repository-contained GNU SH-2E execution gate. `make verify` runs all three.
-- Run `make check` and the tests covering the changed subsystem before every
-  commit. Run `make verify` before committing a change to instruction bytes,
-  address profiles, or runtime allocation.
+- Run the required checks at the agreed package acceptance boundary. Changes
+  to instruction bytes, address profiles, or runtime allocation require
+  `make verify` for acceptance. Local commits may record unverified work and
+  do not establish successful acceptance.
 - A version, count, or identity that a document publishes belongs under a gate
   that reads it from the file the project executes. Add the gate with the fact.
 - `defs/JK08A.architecture.toml` places every reviewed function in one block and
@@ -68,9 +73,9 @@ evidence and coverage.
   commit; `tools/romviz/architecture.py suggest` ranks candidate blocks and
   `check` reports what remains unplaced. `make check` runs that gate and rebuilds
   the atlas, so the architecture view follows the ledgers on every build.
-- Commit locally on `master` as soon as the gates covering a step pass, without
-  waiting for a separate instruction. Leave unrelated worktree content and
-  other sessions' changes unstaged.
+- Commit coherent changes locally on `master` without waiting for a separate
+  instruction. Leave unrelated worktree content and other sessions' changes
+  unstaged.
 - Commit messages follow Conventional Commits: `type(scope): description`,
   with an optional scope. Use `feat`, `fix`, `docs`, `refactor`, `perf`,
   `test`, `build`, `ci`, `chore`, `revert`, or `style` for the change type.
