@@ -5,7 +5,10 @@ specification" Rev. 0.94 by Philip Tobin: byte offsets, field widths, the
 10 us block timestamp, and the record checksum.
 """
 
+import io
+from pathlib import Path
 import struct
+import tempfile
 import unittest
 
 from tools.logs import mlvlg
@@ -27,6 +30,79 @@ HEADER_FIELDS = (
         1,
     ),
 )
+
+
+class RetainedPrefixTest(unittest.TestCase):
+    def recording(self):
+        stream = io.BytesIO()
+        writer = mlvlg.StreamWriter(stream, (mlvlg.FieldSpec("Probe", field_type=mlvlg.MLG_U16),), 123)
+        for index in range(3):
+            writer.write((index + 100,), index / 100)
+        return stream.getvalue()
+
+    def test_valid_file_has_no_damaged_tail(self):
+        data = self.recording()
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "retained.tmp"
+            source.write_bytes(data)
+            prefix = mlvlg.scan_mlg_prefix(source)
+            self.assertEqual(prefix.validation, mlvlg.validate_mlg(source))
+            self.assertEqual(prefix.valid_bytes, len(data))
+            self.assertIsNone(prefix.tail_error)
+            self.assertEqual(source.read_bytes(), data)
+
+    def test_damaged_last_block_stops_at_the_previous_valid_record(self):
+        data = self.recording()
+        last = mlvlg.MLG_HEADER_SIZE + mlvlg.MLG_FIELD_SIZE + 2 * 7
+        corrupted = bytearray(data)
+        corrupted[-1] ^= 1
+        counter = bytearray(data)
+        counter[last + 1] = 99
+        block_type = bytearray(data)
+        block_type[last] = 7
+        for raw in (data[:-1], bytes(corrupted), bytes(counter), bytes(block_type), data[:last+2]):
+            with self.subTest(tail=raw[last:]), tempfile.TemporaryDirectory() as directory:
+                source = Path(directory) / "retained.tmp"
+                source.write_bytes(raw)
+                with self.assertRaises(mlvlg.MlvlgError):
+                    mlvlg.validate_mlg(source)
+                prefix = mlvlg.scan_mlg_prefix(source)
+                self.assertEqual(prefix.valid_bytes, last)
+                self.assertEqual(prefix.validation.data_records, 2)
+                self.assertTrue(prefix.tail_error)
+                self.assertEqual(source.read_bytes(), raw)
+
+    def test_partial_marker_does_not_extend_the_valid_prefix(self):
+        data = self.recording()
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "marker.tmp"
+            source.write_bytes(data + b"\x01\x03\x00\x00partial")
+            prefix = mlvlg.scan_mlg_prefix(source)
+            self.assertEqual(prefix.valid_bytes, len(data))
+            self.assertEqual(prefix.validation.data_records, 3)
+            self.assertEqual(prefix.validation.marker_records, 0)
+            self.assertIn("marker", prefix.tail_error)
+
+    def test_recovery_does_not_skip_damage_to_accept_later_records(self):
+        raw = bytearray(self.recording())
+        first = mlvlg.MLG_HEADER_SIZE + mlvlg.MLG_FIELD_SIZE + 7
+        raw[first + 6] ^= 1
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "damaged-middle.tmp"
+            source.write_bytes(raw)
+            prefix = mlvlg.scan_mlg_prefix(source)
+            self.assertEqual(prefix.valid_bytes, first)
+            self.assertEqual(prefix.validation.data_records, 1)
+            self.assertIn("CRC", prefix.tail_error)
+
+    def test_invalid_header_and_empty_prefix_are_not_recoverable(self):
+        data = self.recording()
+        for raw in (b"invalid", b"X" + data[1:], data[:mlvlg.MLG_HEADER_SIZE+mlvlg.MLG_FIELD_SIZE]):
+            with tempfile.TemporaryDirectory() as directory:
+                source = Path(directory) / "invalid.tmp"
+                source.write_bytes(raw)
+                with self.assertRaises(mlvlg.MlvlgError):
+                    mlvlg.scan_mlg_prefix(source)
 
 
 class HeaderLayoutTest(unittest.TestCase):

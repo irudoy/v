@@ -99,6 +99,15 @@ class ValidationSummary:
         return self.data_records + self.marker_records
 
 
+@dataclass(frozen=True)
+class PrefixSummary:
+    """Validated bytes before the first damaged block of an unfinished file."""
+
+    validation: ValidationSummary
+    valid_bytes: int
+    tail_error: str | None
+
+
 def _ascii_text(value: str) -> str:
     replacements = {
         "\u00b0": "deg",
@@ -357,7 +366,9 @@ def _descriptor_record_length(descriptors: bytes, field_count: int) -> int:
     return total
 
 
-def validate_mlg(path: Path, *, require_data: bool = True) -> ValidationSummary:
+def _scan_mlg(
+    path: Path, *, require_data: bool, allow_tail: bool
+) -> PrefixSummary:
     path = Path(path)
     with path.open("rb") as stream:
         header = stream.read(MLG_HEADER_SIZE)
@@ -399,43 +410,67 @@ def validate_mlg(path: Path, *, require_data: bool = True) -> ValidationSummary:
         data_records = 0
         marker_records = 0
         block_counter = 0
+        valid_bytes = data_begin
+        tail_error = None
         while True:
-            prefix = stream.read(4)
-            if not prefix:
-                break
-            if len(prefix) != 4:
-                raise MlvlgError(f"{path}: truncated MLVLG block header")
-            block_type, counter = prefix[0], prefix[1]
-            if counter != block_counter % BLOCK_COUNTER_MODULUS:
-                raise MlvlgError(
-                    f"{path}: invalid block counter at block {block_counter}"
-                )
-            if block_type == 0:
-                data = stream.read(declared_record_length)
-                crc = stream.read(1)
-                if len(data) != declared_record_length or len(crc) != 1:
-                    raise MlvlgError(f"{path}: truncated MLVLG data block")
-                if sum(data) & 0xFF != crc[0]:
+            try:
+                prefix = stream.read(4)
+                if not prefix:
+                    break
+                if len(prefix) != 4:
+                    raise MlvlgError(f"{path}: truncated MLVLG block header")
+                block_type, counter = prefix[0], prefix[1]
+                if counter != block_counter % BLOCK_COUNTER_MODULUS:
                     raise MlvlgError(
-                        f"{path}: CRC mismatch at data record {data_records}"
+                        f"{path}: invalid block counter at block {block_counter}"
                     )
-                data_records += 1
-            elif block_type == 1:
-                message = stream.read(MLG_MARKER_MESSAGE_SIZE)
-                if len(message) != MLG_MARKER_MESSAGE_SIZE:
-                    raise MlvlgError(f"{path}: truncated MLVLG marker block")
-                marker_records += 1
-            else:
-                raise MlvlgError(
-                    f"{path}: unsupported MLVLG block type {block_type}"
-                )
+                if block_type == 0:
+                    data = stream.read(declared_record_length)
+                    crc = stream.read(1)
+                    if len(data) != declared_record_length or len(crc) != 1:
+                        raise MlvlgError(f"{path}: truncated MLVLG data block")
+                    if sum(data) & 0xFF != crc[0]:
+                        raise MlvlgError(
+                            f"{path}: CRC mismatch at data record {data_records}"
+                        )
+                    data_records += 1
+                elif block_type == 1:
+                    message = stream.read(MLG_MARKER_MESSAGE_SIZE)
+                    if len(message) != MLG_MARKER_MESSAGE_SIZE:
+                        raise MlvlgError(f"{path}: truncated MLVLG marker block")
+                    marker_records += 1
+                else:
+                    raise MlvlgError(
+                        f"{path}: unsupported MLVLG block type {block_type}"
+                    )
+            except MlvlgError as error:
+                if not allow_tail:
+                    raise
+                tail_error = str(error)
+                break
             block_counter += 1
+            valid_bytes += 4 + (
+                declared_record_length + 1 if block_type == 0 else MLG_MARKER_MESSAGE_SIZE
+            )
 
     if require_data and data_records == 0:
         raise MlvlgError(f"{path}: MLVLG contains no data records")
-    return ValidationSummary(
-        fields=field_count,
-        record_length=declared_record_length,
-        data_records=data_records,
-        marker_records=marker_records,
+    return PrefixSummary(
+        validation=ValidationSummary(
+            fields=field_count,
+            record_length=declared_record_length,
+            data_records=data_records,
+            marker_records=marker_records,
+        ),
+        valid_bytes=valid_bytes,
+        tail_error=tail_error,
     )
+
+
+def validate_mlg(path: Path, *, require_data: bool = True) -> ValidationSummary:
+    return _scan_mlg(path, require_data=require_data, allow_tail=False).validation
+
+
+def scan_mlg_prefix(path: Path, *, require_data: bool = True) -> PrefixSummary:
+    """Inspect a retained prefix without modifying the source or skipping bad blocks."""
+    return _scan_mlg(path, require_data=require_data, allow_tail=True)

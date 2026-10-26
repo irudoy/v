@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 import math
 import os
 from pathlib import Path
@@ -15,6 +16,7 @@ from tools.logs import can_telemetry
 DEFAULT_SCHEMA = can_telemetry.DEFAULT_SCHEMA
 MAX_GAP_SECONDS = 0.3
 SYNC_RECORD_INTERVAL = 100
+LOG = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -37,6 +39,65 @@ class RecordingSummary:
     @property
     def records(self) -> int:
         return self.event_records + self.bridge_records
+
+
+@dataclass(frozen=True)
+class RecoverySummary:
+    source: Path
+    output: Path
+    validation: mlvlg.ValidationSummary
+    excluded_bytes: int
+    tail_error: str | None
+
+
+def _publish_recording(temporary: Path, output: Path, *, force: bool = False) -> None:
+    if force:
+        os.replace(temporary, output)
+    else:
+        os.link(temporary, output)
+        temporary.unlink()
+
+
+def recover_recording(source: Path, output: Path) -> RecoverySummary:
+    """Copy and validate the retained record prefix without changing its source."""
+    source, output = Path(source), Path(output)
+    if output.exists():
+        raise FileExistsError(f"output already exists: {output}")
+    prefix = mlvlg.scan_mlg_prefix(source)
+    source_size = source.stat().st_size
+    if source_size < prefix.valid_bytes:
+        raise mlvlg.MlvlgError("recording became shorter after prefix validation")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, name = tempfile.mkstemp(
+        prefix=f".{output.name}.recovery.", suffix=".tmp", dir=output.parent
+    )
+    temporary = Path(name)
+    try:
+        with os.fdopen(descriptor, "wb") as destination, source.open("rb") as original:
+            remaining = prefix.valid_bytes
+            while remaining:
+                chunk = original.read(min(remaining, 1024 * 1024))
+                if not chunk:
+                    raise mlvlg.MlvlgError("recording became shorter during recovery")
+                if destination.write(chunk) != len(chunk):
+                    raise OSError("short recording recovery write")
+                remaining -= len(chunk)
+            destination.flush()
+            os.fsync(destination.fileno())
+        validation = mlvlg.validate_mlg(temporary)
+        if validation != prefix.validation:
+            raise mlvlg.MlvlgError("copied recording prefix differs from its validation")
+        _publish_recording(temporary, output)
+    except Exception:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError as error:
+            LOG.warning("incomplete recovery copy retained at %s: %s", temporary, error)
+        raise
+    return RecoverySummary(
+        source=source, output=output, validation=validation,
+        excluded_bytes=source_size-prefix.valid_bytes, tail_error=prefix.tail_error,
+    )
 
 
 def current_channel_name(name: str) -> str:
@@ -254,6 +315,8 @@ class TelemetryMlgRecorder:
         self._last_elapsed: float | None = None
         self._last_values: tuple[int | float, ...] | None = None
         self._closed = False
+        self.retained_path: Path | None = self.temporary
+        self.close_error: OSError | None = None
 
     def _values(self, model, elapsed: float) -> tuple[int | float, ...]:
         values = []
@@ -291,6 +354,13 @@ class TelemetryMlgRecorder:
             raise ValueError(
                 f"recording time decreased from {self._last_elapsed} to {elapsed}"
             )
+        try:
+            self._append(model, elapsed)
+        except (OSError, ValueError):
+            self.abort()
+            raise
+
+    def _append(self, model, elapsed: float) -> None:
         if self._last_elapsed is not None:
             bridge_elapsed = self._last_elapsed + MAX_GAP_SECONDS
             while bridge_elapsed < elapsed - 1e-12:
@@ -316,11 +386,14 @@ class TelemetryMlgRecorder:
         try:
             self._stream.flush()
             os.fsync(self._stream.fileno())
-        finally:
             self._stream.close()
+        except OSError:
+            self.abort()
+            raise
 
         if self.event_records == 0:
             self.temporary.unlink(missing_ok=True)
+            self.retained_path = None
             return RecordingSummary(
                 output=self.output,
                 output_existed=self.output_existed,
@@ -349,13 +422,10 @@ class TelemetryMlgRecorder:
                 raise mlvlg.MlvlgError(
                     "validated MLVLG record count differs from the writer"
                 )
-            if self.output.exists() and not self.force:
-                raise FileExistsError(
-                    f"output appeared during recording: {self.output}"
-                )
-            os.replace(self.temporary, self.output)
+            _publish_recording(self.temporary, self.output, force=self.force)
+            self.retained_path = self.output.absolute()
         except Exception:
-            self.temporary.unlink(missing_ok=True)
+            self.abort()
             raise
 
         return RecordingSummary(
@@ -368,8 +438,11 @@ class TelemetryMlgRecorder:
             output_size=self.output.stat().st_size,
         )
 
-    def abort(self) -> None:
-        if not self._closed:
-            self._closed = True
+    def abort(self) -> Path | None:
+        """Stop writing and retain the file, including any incomplete tail."""
+        self._closed = True
+        try:
             self._stream.close()
-        self.temporary.unlink(missing_ok=True)
+        except OSError as error:
+            self.close_error = error
+        return self.retained_path

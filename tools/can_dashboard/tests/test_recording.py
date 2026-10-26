@@ -1,3 +1,5 @@
+import contextlib
+import errno
 import math
 from pathlib import Path
 import struct
@@ -58,6 +60,155 @@ def read_f32_records(path):
 
 
 class TelemetryMlgRecorderTest(unittest.TestCase):
+    def one_record(self, output):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        feed_group(dashboard, generator.group(1), 0.0)
+        recorder = recording.TelemetryMlgRecorder(output, "tuning", 1_776_000_000)
+        recorder.append(dashboard, 0.0)
+        recorder._stream.flush()
+        return recorder, dashboard
+
+    def test_append_failure_stops_further_writes_and_retains_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "full-disk.mlg"
+            recorder, dashboard = self.one_record(output)
+            try:
+                with mock.patch.object(
+                    recorder._writer, "write", side_effect=OSError(errno.ENOSPC, "disk full")
+                ), self.assertRaises(OSError):
+                    recorder.append(dashboard, 0.01)
+                with self.assertRaisesRegex(ValueError, "closed"):
+                    recorder.append(dashboard, 0.02)
+                recorder.abort()
+                self.assertFalse(output.exists())
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_abort_preserves_the_recorded_prefix(self):
+        with tempfile.TemporaryDirectory() as directory:
+            recorder, _dashboard = self.one_record(Path(directory) / "aborted.mlg")
+            try:
+                recorder.abort()
+                self.assertTrue(recorder.temporary.exists())
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_encoding_failure_stops_recording_without_losing_previous_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            recorder, dashboard = self.one_record(Path(directory) / "encoding-error.mlg")
+            try:
+                with mock.patch.object(
+                    recorder._writer, "write", side_effect=mlvlg.MlvlgError("invalid record")
+                ), self.assertRaises(mlvlg.MlvlgError):
+                    recorder.append(dashboard, 0.01)
+                with self.assertRaisesRegex(ValueError, "closed"):
+                    recorder.append(dashboard, 0.02)
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_destination_conflict_keeps_both_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "conflict.mlg"
+            recorder, _dashboard = self.one_record(output)
+            try:
+                output.write_bytes(b"another recording")
+                with self.assertRaises(FileExistsError):
+                    recorder.close()
+                recorder.abort()
+                self.assertEqual(output.read_bytes(), b"another recording")
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_flush_failure_keeps_recorded_data_after_abort(self):
+        with tempfile.TemporaryDirectory() as directory:
+            recorder, _dashboard = self.one_record(Path(directory) / "flush-error.mlg")
+            try:
+                with mock.patch.object(
+                    recording.os, "fsync", side_effect=OSError(errno.ENOSPC, "disk full")
+                ), self.assertRaises(OSError):
+                    recorder.close()
+                recorder.abort()
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_partial_append_failure_recovers_only_the_earlier_record(self):
+        with tempfile.TemporaryDirectory() as directory:
+            recorder, dashboard = self.one_record(Path(directory) / "partial.mlg")
+            try:
+                valid = recorder.temporary.read_bytes()
+
+                def partial_write(values, elapsed):
+                    block = mlvlg.encode_data_block(recorder.fields, values, 1, elapsed)
+                    recorder._stream.write(block[:-2])
+                    raise OSError(errno.ENOSPC, "disk full")
+
+                with mock.patch.object(recorder._writer, "write", side_effect=partial_write), self.assertRaises(OSError):
+                    recorder.append(dashboard, 0.01)
+                retained = recorder.temporary.read_bytes()
+                self.assertGreater(len(retained), len(valid))
+                output = Path(directory) / "partial.recovered.mlg"
+                recovered = recording.recover_recording(recorder.temporary, output)
+                self.assertEqual(recovered.validation.data_records, 1)
+                self.assertEqual(output.read_bytes(), valid)
+                self.assertEqual(recorder.temporary.read_bytes(), retained)
+            finally:
+                recorder.abort()
+
+    def test_stream_close_failure_does_not_delete_recorded_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            recorder, _dashboard = self.one_record(Path(directory) / "close-error.mlg")
+            stream = mock.Mock(wraps=recorder._stream)
+            stream.close.side_effect = OSError(errno.EIO, "close failed")
+            try:
+                with mock.patch.object(recorder, "_stream", stream):
+                    with self.assertRaises(OSError):
+                        recorder.close()
+                    self.assertEqual(recorder.abort(), recorder.temporary)
+                    self.assertIsNotNone(recorder.close_error)
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_failed_atomic_publication_retains_the_capture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "unsupported.mlg"
+            recorder, _dashboard = self.one_record(output)
+            try:
+                with mock.patch.object(
+                    recording.os, "link", side_effect=OSError(errno.EOPNOTSUPP, "publication unsupported")
+                ), self.assertRaises(OSError):
+                    recorder.close()
+                self.assertFalse(output.exists())
+                self.assertEqual(recorder.retained_path, recorder.temporary)
+                self.assertEqual(mlvlg.validate_mlg(recorder.temporary).data_records, 1)
+            finally:
+                recorder.abort()
+
+    def test_failure_after_publication_reports_the_actual_output_path(self):
+        with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
+            output = Path("published.mlg")
+            recorder, _dashboard = self.one_record(output)
+            original_stat = Path.stat
+
+            def fail_output_stat(path, *args, **kwargs):
+                if path == output:
+                    raise OSError(errno.EIO, "output stat failed")
+                return original_stat(path, *args, **kwargs)
+
+            try:
+                with mock.patch.object(Path, "stat", fail_output_stat), self.assertRaises(OSError):
+                    recorder.close()
+                self.assertEqual(recorder.abort(), Path(directory).resolve() / output)
+                self.assertEqual(mlvlg.validate_mlg(output).data_records, 1)
+            finally:
+                recorder.abort()
+
     def test_initialization_error_removes_temporary_file(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "invalid.mlg"
@@ -264,7 +415,114 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
                 recorder.close()
 
             self.assertFalse(output.exists())
-            self.assertFalse(temporary.exists())
+            self.assertTrue(temporary.exists())
+            self.assertEqual(mlvlg.validate_mlg(temporary).data_records, 1)
+
+
+class RecordingRecoveryTest(unittest.TestCase):
+    def retained_file(self, directory):
+        source = Path(directory) / ".drive.mlg.retained.tmp"
+        with source.open("wb") as stream:
+            writer = mlvlg.StreamWriter(
+                stream, (mlvlg.FieldSpec("Probe", field_type=mlvlg.MLG_U16),), 123
+            )
+            writer.write((100,), 0.0)
+            writer.write((101,), 0.01)
+        return source
+
+    def test_recovery_copies_only_valid_records_and_keeps_corrupt_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            valid = source.read_bytes()
+            source.write_bytes(valid + b"\x00\x02\x00")
+            original = source.read_bytes()
+            output = Path(directory) / "drive.recovered.mlg"
+            recovered = recording.recover_recording(source, output)
+            self.assertEqual(output.read_bytes(), valid)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual(recovered.validation.data_records, 2)
+            self.assertEqual(recovered.excluded_bytes, 3)
+            self.assertTrue(recovered.tail_error)
+            self.assertEqual(mlvlg.validate_mlg(output), recovered.validation)
+            with self.assertRaises(mlvlg.MlvlgError):
+                mlvlg.validate_mlg(source)
+
+    def test_valid_unfinished_file_is_copied_without_deleting_its_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            original = source.read_bytes()
+            output = Path(directory) / "recovered.mlg"
+            recovered = recording.recover_recording(source, output)
+            self.assertIsNone(recovered.tail_error)
+            self.assertEqual(recovered.excluded_bytes, 0)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual(output.read_bytes(), original)
+
+    def test_recovery_never_overwrites_an_existing_destination(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            original = source.read_bytes()
+            output = Path(directory) / "existing.mlg"
+            output.write_bytes(b"another recording")
+            with self.assertRaises(FileExistsError):
+                recording.recover_recording(source, output)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual(output.read_bytes(), b"another recording")
+
+    def test_destination_appearing_during_recovery_is_not_replaced(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            original = source.read_bytes()
+            output = Path(directory) / "appeared.mlg"
+            validate = mlvlg.validate_mlg
+
+            def validate_and_create_destination(path):
+                result = validate(path)
+                output.write_bytes(b"another recording")
+                return result
+
+            with mock.patch.object(
+                recording.mlvlg, "validate_mlg", side_effect=validate_and_create_destination
+            ), self.assertRaises(FileExistsError):
+                recording.recover_recording(source, output)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual(output.read_bytes(), b"another recording")
+
+    def test_recovery_storage_failure_preserves_the_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            original = source.read_bytes()
+            output = Path(directory) / "full-disk.mlg"
+            with mock.patch.object(
+                recording.os, "fsync", side_effect=OSError(errno.ENOSPC, "disk full")
+            ), self.assertRaises(OSError):
+                recording.recover_recording(source, output)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertFalse(output.exists())
+            self.assertEqual(set(Path(directory).iterdir()), {source})
+
+    def test_invalid_header_is_retained_without_a_recovered_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "invalid.tmp"
+            source.write_bytes(b"invalid header")
+            output = Path(directory) / "recovered.mlg"
+            with self.assertRaises(mlvlg.MlvlgError):
+                recording.recover_recording(source, output)
+            self.assertEqual(source.read_bytes(), b"invalid header")
+            self.assertFalse(output.exists())
+
+    def test_failed_copy_validation_keeps_the_original(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = self.retained_file(directory)
+            original = source.read_bytes()
+            output = Path(directory) / "invalid-copy.mlg"
+            mismatch = mlvlg.ValidationSummary(fields=2, record_length=2, data_records=2, marker_records=0)
+            with mock.patch.object(
+                recording.mlvlg, "validate_mlg", return_value=mismatch
+            ), self.assertRaisesRegex(mlvlg.MlvlgError, "differs"):
+                recording.recover_recording(source, output)
+            self.assertEqual(source.read_bytes(), original)
+            self.assertFalse(output.exists())
 
 
 class MlgCalibrationGateTest(unittest.TestCase):

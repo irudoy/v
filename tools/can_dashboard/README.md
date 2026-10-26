@@ -317,9 +317,17 @@ leaving the window finalize and validate the file. Every way out leads to the
 same shutdown: the close button, the quit command of the platform, and the end
 of the main loop, so a recording survives a quit the same way it survives a
 close.
-No new output is left when no complete snapshot was received; an existing file
+A normal stop leaves no new output when no complete snapshot was received; an existing file
 selected for replacement remains unchanged in that case. Existing files require
 an explicit replacement confirmation in the UI and are rejected by `--record`.
+
+A write, synchronization, validation or final-publication error stops recording
+and retains the captured file. The status reads `MLG incomplete` with the full
+retained path; the application log records the path and error. The file can
+contain a partial last block and must not be treated as a completed capture.
+Final publication does not overwrite a destination that appears during a
+recording. If the filesystem cannot publish without replacing a destination,
+the temporary file is retained and the error is reported.
 
 Frames already queued when recording starts update the display but are not
 written to the new file. The first MLG event therefore cannot predate the
@@ -363,6 +371,33 @@ recording declares no GPS channels rather than storing channels that hold only
 `NaN`. A real route requires a separately captured and decoded AV/navigation
 network or another GPS source. The logger never invents coordinates from
 vehicle speed.
+
+### Recovering an unfinished recording
+
+After a crash, the retained file is in the selected output directory under
+the hidden name `.<output-name>.<random>.tmp`. Stop the dashboard before
+recovering it. Free storage or select a new output directory, then copy the
+validated record prefix to a new destination:
+
+```bash
+python3 -m tools.can_dashboard.app \
+  --recover-recording "/path/to/.drive.mlg.random.tmp" \
+  --recovery-output "/path/to/drive.recovered.mlg"
+```
+
+The portable Windows launcher accepts the same two options. The native macOS
+application accepts them through `open -na "VQ CAN Telemetry" --args`. Recovery
+does not open a window or connect to CAN. Its result is printed and written to
+the application log.
+When recovering from a terminal with an unavailable log directory, add
+`--no-log-file`; the recovery result is still printed.
+
+Recovery validates the header and field table, then checks record counters,
+lengths and checksums up to the first damaged block. It validates the copied
+prefix again before publishing it and reports excluded trailing bytes. It
+does not skip corruption to accept later blocks, overwrite an existing
+destination, or change or delete the retained source. Even a structurally
+valid unfinished file does not establish that the complete drive was captured.
 
 ## Replay
 

@@ -42,7 +42,7 @@ from tools.can_dashboard.model import (
 )
 from tools.can_dashboard.live_feed import LiveFeed, feed_channels, parse_endpoint
 from tools.can_dashboard.presentation import Metric
-from tools.can_dashboard.recording import TelemetryMlgRecorder
+from tools.can_dashboard.recording import TelemetryMlgRecorder, recover_recording
 from tools.can_dashboard.replay import (
     ReplayError,
     ReplayLoaded,
@@ -2115,9 +2115,7 @@ class DashboardApp:
         try:
             summary = recorder.close()
         except (OSError, ValueError) as error:
-            recorder.abort()
-            self.record_var.set(f"MLG error: {error}")
-            LOG.error("recording not saved: %s", error)
+            self._recording_failed(recorder, error)
             return
         if summary.event_records:
             self.record_var.set(
@@ -2136,6 +2134,17 @@ class DashboardApp:
                 else "file not created"
             )
             self.record_var.set(f"MLG: no complete snapshots, {detail}")
+
+    def _recording_failed(self, recorder, error):
+        retained = recorder.abort()
+        if retained is None:
+            self.record_var.set(f"MLG error: {error}")
+            LOG.error("recording failed without retained data: %s", error)
+        else:
+            self.record_var.set(f"MLG incomplete: {retained}")
+            LOG.error("incomplete recording retained at %s: %s", retained, error)
+        if recorder.close_error is not None:
+            LOG.error("recording stream close failed: %s", recorder.close_error)
 
     def stop_source(self):
         self.stop_recording()
@@ -2226,12 +2235,11 @@ class DashboardApp:
         try:
             self.recorder.append(self.model, elapsed)
         except (OSError, ValueError) as error:
-            self.recorder.abort()
+            recorder = self.recorder
             self.recorder = None
             self.recording_clock = None
             self._sync_record_button()
-            self.record_var.set(f"MLG error: {error}")
-            LOG.error("recording aborted: %s", error)
+            self._recording_failed(recorder, error)
 
     def _refresh_tick(self):
         """Paint the window on a timer of its own.
@@ -2459,6 +2467,14 @@ def build_parser():
         help="start MLVLG recording to this new file",
     )
     parser.add_argument(
+        "--recover-recording", type=Path,
+        help="recover the validated prefix of an unfinished MLVLG recording without opening the dashboard",
+    )
+    parser.add_argument(
+        "--recovery-output", type=Path,
+        help="new destination for --recover-recording; the source is retained",
+    )
+    parser.add_argument(
         "--publish-udp",
         metavar="[HOST:]PORT",
         help="send live engineering values to this UDP endpoint in this run, "
@@ -2468,7 +2484,15 @@ def build_parser():
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if (args.recover_recording is None) != (args.recovery_output is None):
+        parser.error("--recover-recording and --recovery-output are required together")
+    if args.recover_recording is not None and (
+        args.record is not None or args.replay is not None or args.demo or args.publish_udp is not None
+        or args.pcan_driver_check or args.smoke_test
+    ):
+        parser.error("recording recovery cannot be combined with live, replay or diagnostic modes")
     if args.bitrate <= 0:
         raise SystemExit("bitrate must be positive")
     if not 1 <= args.can_id <= 0x7FE:
@@ -2506,6 +2530,24 @@ def main(argv=None):
                 PRODUCT_SLUG,
             )
         dashboard_log.configure(args.log_file)
+    if args.recover_recording is not None:
+        try:
+            recovered = recover_recording(args.recover_recording, args.recovery_output)
+        except (OSError, ValueError) as error:
+            LOG.error("recovery failed; source retained at %s: %s", args.recover_recording, error)
+            raise SystemExit(str(error)) from error
+        detail = (
+            f"{recovered.excluded_bytes} damaged trailing bytes excluded"
+            if recovered.tail_error is not None
+            else "capture completeness is unknown"
+        )
+        message = (
+            f"Recovered prefix: {recovered.validation.data_records} valid records to {recovered.output}; "
+            f"{detail}; source retained at {recovered.source}"
+        )
+        LOG.warning(message)
+        print(message)
+        return 0
     root = tk.Tk()
     dashboard_log.install_hooks(LOG, root)
     LOG.info(
