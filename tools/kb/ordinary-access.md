@@ -128,7 +128,7 @@ relations through complete natural RAM/register/state/indexed,interpolation,
 scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
 threshold-window,auxiliary-rate,paired normalization,byte-ratio,state-surface,
 byte-factor and byte-sum paths. Twenty-seven independent components require
-one complete original COPY primary. There are 116 readers,ten individually
+one complete original COPY primary. There are 117 readers,ten individually
 pinned writers and nineteen exact indexed_by originals with unchanged types
 and roles. Complete actual instruction CPU/SR/frame/RAM,separate equations,
 ordered physical operands,post-delay calls and natural returns remain mandatory.
@@ -136,9 +136,9 @@ Fixed-other alternatives require changed actual R0 or common actual computed
 publication bytes outside the controlled RAM input. Input echoes and a changed
 write-set alone fail. Every previous full family/helper/native/TEST original
 remains mandatory from the identical primary. Sixteen native-RAM components
-retain exact root/alias interval absence. The 126 normal unlinks and
-118 matching ledger selectors preserve 96 full datum owners and 68 complete
-functions. The total contains 110 datum-end and 8 function-end removals.
+retain exact root/alias interval absence. The 127 normal unlinks and
+119 matching ledger selectors preserve 97 full datum owners and 68 complete
+functions. The total contains 111 datum-end and 8 function-end removals.
 Five complete function transitions retain eight exact function-end selectors.
 Every other native/type/TEST/ledger/scope fact remains exact. Full prior
 19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/87/92/100/107/112/115/116/118/119/121/122/123/124

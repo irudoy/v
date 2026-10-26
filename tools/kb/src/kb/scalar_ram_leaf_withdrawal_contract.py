@@ -2306,9 +2306,9 @@ PRIOR_DFCO_STATE_CALLER_FUNCTION_SHA256 = 'efe59944e20e9de38a6f54004076589c7b5de
 PRIOR_DFCO_STATE_CALLER_FILES_SHA256 = {'defs/JK08A.dfco-state-caller-withdrawal-paths.toml': '58ad8353f15bae7291fa1e85e0a8d5772fb3fd75e1db8707c07bc85b23981fd0',
  'tools/sh-elf-run/stock_jk08a_dfco_state_caller_withdrawal.s': 'c2edd846c2ed58be6b982d31a5aaf45c642ba17107ac1d125eaae2189aa22c22',
  'tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py': 'bb79b3b5454c832dcd3c9ce315e1f1281a5d7b3b00f0952ce1212b4aed73d7d8',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': '4e92f6cb0dc21249b103f01f98b8269a197b3dbaa31addefe4c99094db89805b',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': '11937b6539936cd25a098e034ae437d7cd368dfb732b023ca6f14ddea18712a7',
  'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py': 'ef74ffe8bbfdea61550533ba3e568f085c30d361f397746b871976a533f53876',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': 'd86817700023bdb5db6b17c036e5fc153be750dad6b582ebf92161ca6b92c075',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': 'c7921f885181e10e1a684fb75bc03455704b38abdca71fb8c050b29b5ffb73c7',
  'tools/sh-elf-run/dfco_state_caller_withdrawal_capture.py': 'a12a121859f5d9eedfb96f5f6ba8263a098197b4dcddf8580e823e9fbd2ff4fd',
  'tools/sh-elf-run/harness-dfco-state-caller-withdrawal-paths.c': '39dc94def813c9fc1a94b5d17f029f33faa4f72e6e6d04b0a2584dce79d94662',
  'tools/kb/tests/test_dfco_state_caller_withdrawal_adapter_generated.py': '0773fd13664a5b09686aafb96943ab2cb531b06312a83f66ed56056e26f827b1'}

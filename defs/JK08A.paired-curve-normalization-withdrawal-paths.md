@@ -6,9 +6,9 @@ domain requires 538 feasible instructions and has 58 excluded instructions.
 The descriptor binds 32 literal spans, 8 pointer aliases, 15 complete RAM fields,
 34 scalar configuration fields, 34 complete calibration spans, 59 raw input fields
 and 26 complete helper sources. The joint descriptor contains 123 exact access
-originals: 116 readers and ten individually pinned writers, 96 complete datum
-owners, 68 complete functions and 118 matching ledger selectors. These include
-110 datum-end selectors and 8 function-end selectors. All 126 exact normal unlink
+originals: 117 readers and ten individually pinned writers, 97 complete datum
+owners, 68 complete functions and 119 matching ledger selectors. These include
+111 datum-end selectors and 8 function-end selectors. All 127 exact normal unlink
 operations are mandatory. The two selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
