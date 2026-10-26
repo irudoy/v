@@ -1450,8 +1450,10 @@ def build_image(
 
 
 def default_output_path(source):
-    source = Path(source)
-    return source.with_name(f"{source.stem}-complete.bin")
+    try:
+        return apply_map_switching.default_output_path(source, "complete")
+    except apply_map_switching.PatchError as error:
+        raise BuildError(str(error)) from error
 
 
 def _checksum_dict(values):
@@ -1486,7 +1488,7 @@ def manifest_data(result, input_path, output_path):
         "rom": result.rom,
         "detection": result.detection,
         "input": {
-            "path": str(input_path),
+            "path": str(Path(input_path).resolve()),
             "state": result.input_state,
             "sha256": result.source_sha256,
             "checksums": _checksum_dict(result.source_checksums),
@@ -1525,7 +1527,7 @@ def manifest_data(result, input_path, output_path):
             "can_telemetry_sha256": result.output_sha256,
         },
         "output": {
-            "path": str(output_path),
+            "path": str(Path(output_path).resolve()),
             "sha256": result.output_sha256,
             "md5": result.output_md5,
             "checksums": _checksum_dict(result.output_checksums),
@@ -1580,18 +1582,12 @@ def artifact_contents(result, input_path, output_path):
 def write_artifacts(result, input_path, output_path):
     """Create all output artifacts exclusively or accept an identical set."""
     artifacts = artifact_contents(result, input_path, output_path)
-    for path, content in artifacts.items():
-        if path.exists() and path.read_bytes() != content:
-            raise BuildError(f"existing output artifact differs: {path}")
-    created = []
-    for path, content in artifacts.items():
-        if path.exists():
-            continue
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("xb") as output:
-            output.write(content)
-        created.append(path)
-    return tuple(created)
+    try:
+        return apply_map_switching._publish_artifacts(
+            artifacts, Path(output_path)
+        )
+    except apply_map_switching.PatchError as error:
+        raise BuildError(str(error)) from error
 
 
 def _format_checksums(values):
@@ -1680,10 +1676,10 @@ def main(argv=None):
         print("no ROM file was written")
         return 0
 
-    output_path = args.output or default_output_path(args.input)
-    if output_path.resolve() == args.input.resolve():
-        parser.error("input and output paths must differ")
     try:
+        output_path = args.output or default_output_path(args.input)
+        if output_path.resolve() == args.input.resolve():
+            parser.error("input and output paths must differ")
         created = write_artifacts(
             result, args.input, output_path
         )

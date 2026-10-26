@@ -14,8 +14,10 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 from itertools import chain
+import os
 from pathlib import Path
 import sys
+import tempfile
 import tomllib
 
 
@@ -60,9 +62,14 @@ def md5(data):
     return hashlib.md5(data).hexdigest()
 
 
-def default_output_path(source):
+def default_output_path(source, suffix="map-switching"):
     source = Path(source)
-    return source.with_name(f"{source.stem}-map-switching.bin")
+    if source.resolve().is_relative_to((ROOT / "rom-images").resolve()):
+        raise PatchError(
+            "input is under rom-images; select an explicit --output outside "
+            "the stock collection"
+        )
+    return source.with_name(f"{source.stem}-{suffix}.bin")
 
 
 def load_payloads(layout=None, path=DEFAULT_PAYLOADS):
@@ -225,29 +232,90 @@ def patch_image(
     )
 
 
-def write_output(path, image):
-    """Create an output exclusively or accept an already identical file."""
-    path = Path(path)
-    if path.exists():
-        if path.read_bytes() == image:
+def _publish_artifacts(artifacts, rom_path, *, kind="output artifact"):
+    """Stage and read back every missing file, then publish the ROM last."""
+    def identical(path, content):
+        try:
+            current = path.read_bytes()
+        except FileNotFoundError:
             return False
-        raise PatchError(f"existing output differs: {path}")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("xb") as output:
-        output.write(image)
-    return True
+        if current != content:
+            raise PatchError(f"existing {kind} differs: {path}")
+        return True
+
+    missing = {
+        path: content for path, content in artifacts.items()
+        if not identical(path, content)
+    }
+    staged = {}
+    created = []
+    try:
+        for path, content in missing.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(
+                dir=path.parent, prefix=f".{path.name}.", suffix=".tmp",
+                delete=False,
+            ) as output:
+                staged[path] = Path(output.name)
+                output.write(content)
+                output.flush()
+                os.fsync(output.fileno())
+            if staged[path].read_bytes() != content:
+                raise PatchError(f"staged output artifact differs: {path}")
+
+        order = [path for path in staged if path != rom_path]
+        if rom_path in staged:
+            order.append(rom_path)
+        for path in order:
+            try:
+                os.link(staged[path], path)
+            except FileExistsError:
+                if not identical(path, artifacts[path]):
+                    raise PatchError(f"existing {kind} differs: {path}")
+            else:
+                created.append(path)
+    except Exception:
+        for path in reversed(created):
+            try:
+                current = path.lstat()
+                original = staged[path].stat()
+                if ((current.st_dev, current.st_ino)
+                        == (original.st_dev, original.st_ino)
+                        and path.read_bytes() == artifacts[path]):
+                    path.unlink()
+            except FileNotFoundError:
+                pass
+        raise
+    finally:
+        for temporary in staged.values():
+            temporary.unlink(missing_ok=True)
+    return tuple(created)
+
+
+def write_output(path, image):
+    """Create a complete output exclusively or accept an identical file."""
+    path = Path(path)
+    return bool(_publish_artifacts({path: image}, path, kind="output"))
 
 
 def write_md5_sidecar(path, image):
     path = Path(path)
     sidecar = path.with_name(f"{path.name}.md5")
-    content = f"{md5(image)} *{path.name}\n"
-    if sidecar.exists():
-        if sidecar.read_text(encoding="ascii") == content:
-            return False
-        raise PatchError(f"existing MD5 sidecar differs: {sidecar}")
-    sidecar.write_text(content, encoding="ascii")
-    return True
+    content = f"{md5(image)} *{path.name}\n".encode("ascii")
+    return bool(_publish_artifacts(
+        {sidecar: content}, sidecar, kind="MD5 sidecar"
+    ))
+
+
+def write_output_with_md5(path, image):
+    """Publish a complete ROM only after its MD5 sidecar is available."""
+    path = Path(path)
+    sidecar = path.with_name(f"{path.name}.md5")
+    artifacts = {
+        path: image,
+        sidecar: f"{md5(image)} *{path.name}\n".encode("ascii"),
+    }
+    return path in _publish_artifacts(artifacts, path)
 
 
 def _blob_argument(text):
@@ -335,12 +403,11 @@ def main(argv=None):
         print("no ROM file was written")
         return 0
 
-    output = args.output or default_output_path(args.input)
-    if output.resolve() == args.input.resolve():
-        parser.error("input and output paths must differ")
     try:
-        created = write_output(output, result.data)
-        write_md5_sidecar(output, result.data)
+        output = args.output or default_output_path(args.input)
+        if output.resolve() == args.input.resolve():
+            parser.error("input and output paths must differ")
+        created = write_output_with_md5(output, result.data)
     except (OSError, PatchError) as error:
         parser.error(str(error))
     print(f"output={output} status={'created' if created else 'already_exact'}")

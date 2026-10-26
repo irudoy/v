@@ -1,8 +1,14 @@
+import contextlib
+import io
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from patches import apply_map_switching as patcher
+from patches import apply_can_telemetry
+from patches import apply_rolling_launch
 from patches import jk08a_checksums as checksums
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
@@ -229,12 +235,166 @@ class ApplyMapSwitchingTest(unittest.TestCase):
             Path("/tmp/example-map-switching.bin"),
         )
 
+    def test_each_cli_refuses_foreign_md5_before_publishing_a_rom(self):
+        rolling_result = apply_rolling_launch.patch_image(
+            self.result.data, expected_source_sha256=patcher.sha256(self.result.data)
+        )
+        telemetry_result = apply_can_telemetry.patch_image(rolling_result.data)
+        for module, source, result in (
+            (patcher, self.tuned, self.result),
+            (apply_rolling_launch, self.result.data, rolling_result),
+            (apply_can_telemetry, rolling_result.data, telemetry_result),
+        ):
+            with self.subTest(module=module.__name__), tempfile.TemporaryDirectory() as directory:
+                input_path = Path(directory) / "input.bin"
+                input_path.write_bytes(source)
+                output = Path(directory) / "image.bin"
+                sidecar = Path(f"{output}.md5")
+                sidecar.write_bytes(b"foreign MD5")
+                error = io.StringIO()
+                with (mock.patch.object(module, "patch_image", return_value=result),
+                      contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(error)):
+                    with self.assertRaises(SystemExit) as stopped:
+                        module.main([str(input_path), "--output", str(output)])
+                self.assertEqual(stopped.exception.code, 2)
+                self.assertIn("artifact differs", error.getvalue())
+                self.assertEqual(set(Path(directory).iterdir()), {input_path, sidecar})
+                self.assertEqual(sidecar.read_bytes(), b"foreign MD5")
+
     def test_compatible_layout_accepts_the_tuned_lower_partition(self):
         image = romkit.Image("JK08A", "synthetic", self.tuned)
         self.assertIs(
             layout_model.validate_compatible_image(self.layout, image),
             image,
         )
+
+
+class ArtifactPublicationTest(unittest.TestCase):
+    image = b"complete ROM bytes"
+
+    def test_md5_is_complete_before_the_rom_is_published(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "image.bin"
+            sidecar = Path(f"{output}.md5")
+            link = os.link
+
+            def publish(source, destination):
+                self.assertFalse(output.exists())
+                if destination == output:
+                    self.assertEqual(
+                        sidecar.read_text(encoding="ascii"),
+                        f"{patcher.md5(self.image)} *image.bin\n",
+                    )
+                    self.assertEqual(source.read_bytes(), self.image)
+                link(source, destination)
+
+            with mock.patch.object(patcher.os, "link", side_effect=publish):
+                self.assertTrue(patcher.write_output_with_md5(output, self.image))
+            self.assertEqual(output.read_bytes(), self.image)
+            self.assertFalse(patcher.write_output_with_md5(output, self.image))
+
+    def test_staging_failure_or_truncation_publishes_nothing_and_allows_retry(self):
+        for truncate in (False, True):
+            with self.subTest(truncate=truncate), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "image.bin"
+                fsync = os.fsync
+                calls = 0
+
+                def sync(fd):
+                    nonlocal calls
+                    calls += 1
+                    if calls == 2:
+                        if not truncate:
+                            raise OSError("injected staging failure")
+                        os.ftruncate(fd, 1)
+                    fsync(fd)
+
+                with mock.patch.object(patcher.os, "fsync", side_effect=sync):
+                    with self.assertRaises((OSError, patcher.PatchError)):
+                        patcher.write_output_with_md5(output, self.image)
+                self.assertEqual(list(Path(directory).iterdir()), [])
+                self.assertTrue(patcher.write_output_with_md5(output, self.image))
+
+    def test_publication_failure_preserves_existing_sidecar_and_allows_retry(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "image.bin"
+                sidecar = Path(f"{output}.md5")
+                if existing:
+                    patcher.write_md5_sidecar(output, self.image)
+                link = os.link
+
+                def publish(source, destination):
+                    if destination == output:
+                        raise OSError("injected publication failure")
+                    link(source, destination)
+
+                with mock.patch.object(patcher.os, "link", side_effect=publish):
+                    with self.assertRaisesRegex(OSError, "publication failure"):
+                        patcher.write_output_with_md5(output, self.image)
+                self.assertEqual(
+                    list(Path(directory).iterdir()), [sidecar] if existing else []
+                )
+                self.assertTrue(patcher.write_output_with_md5(output, self.image))
+
+    def test_foreign_sidecar_prevents_rom_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "image.bin"
+            sidecar = Path(f"{output}.md5")
+            sidecar.write_bytes(b"foreign sidecar")
+            with self.assertRaisesRegex(patcher.PatchError, "artifact differs"):
+                patcher.write_output_with_md5(output, self.image)
+            self.assertEqual(list(Path(directory).iterdir()), [sidecar])
+            self.assertEqual(sidecar.read_bytes(), b"foreign sidecar")
+
+    def test_concurrent_foreign_rom_is_not_overwritten_or_removed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "image.bin"
+            link = os.link
+
+            def publish(source, destination):
+                if destination == output:
+                    output.write_bytes(b"foreign ROM")
+                link(source, destination)
+
+            with mock.patch.object(patcher.os, "link", side_effect=publish):
+                with self.assertRaisesRegex(patcher.PatchError, "artifact differs"):
+                    patcher.write_output_with_md5(output, self.image)
+            self.assertEqual(list(Path(directory).iterdir()), [output])
+            self.assertEqual(output.read_bytes(), b"foreign ROM")
+
+    def test_cleanup_preserves_replaced_or_modified_sidecar(self):
+        for replace in (False, True):
+            with self.subTest(replace=replace), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "image.bin"
+                sidecar = Path(f"{output}.md5")
+                link = os.link
+
+                def publish(source, destination):
+                    if destination == output:
+                        content = sidecar.read_bytes() if replace else b"foreign data"
+                        if replace:
+                            sidecar.unlink()
+                        sidecar.write_bytes(content)
+                        raise OSError("injected publication failure")
+                    link(source, destination)
+
+                with mock.patch.object(patcher.os, "link", side_effect=publish):
+                    with self.assertRaises(OSError):
+                        patcher.write_output_with_md5(output, self.image)
+                self.assertEqual(list(Path(directory).iterdir()), [sidecar])
+                if not replace:
+                    self.assertEqual(sidecar.read_bytes(), b"foreign data")
+
+    def test_default_outputs_reject_stock_collection_and_symlink_alias(self):
+        with tempfile.TemporaryDirectory() as directory:
+            alias = Path(directory) / "stock"
+            alias.symlink_to(STOCK.parent, target_is_directory=True)
+            for module in (patcher, apply_rolling_launch, apply_can_telemetry):
+                for source in (STOCK, alias / STOCK.name):
+                    with self.subTest(module=module.__name__, source=source):
+                        with self.assertRaisesRegex(patcher.PatchError, "explicit --output"):
+                            module.default_output_path(source)
 
 
 if __name__ == "__main__":

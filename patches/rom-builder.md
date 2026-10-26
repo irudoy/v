@@ -469,13 +469,25 @@ One successful file build creates four non-overwriting artifacts:
 - `OUTPUT.bin.manifest.json`.
 
 An existing byte-identical set is accepted as idempotent. A conflicting file
-causes the invocation to fail before any missing artifact is created. The JSON
-manifest binds the input, normalized stage, Map Switching stage, Rolling
+found before staging causes the invocation to fail before any missing artifact
+is created. Missing artifacts are written to temporary sibling files, flushed,
+synchronized, and read back before publication. Sidecars are published before
+the ROM, using atomic links that cannot replace existing files. An ordinary
+publication failure removes only unchanged files created by that invocation;
+identical files from an earlier attempt remain available for a retry. An
+interruption can leave complete sidecars or temporary files, but cannot expose
+a partially written ROM at its final path. The default output is adjacent to
+the input; inputs under `rom-images/` require an explicit `--output`.
+
+The JSON manifest binds the input, normalized stage, Map Switching stage, Rolling
 Launch stage, both runtime configurations, CAN mailbox record, final output,
 checksum values, write-set counts, and exact instruction audit counts. Manifest
 schema 3 records both the series and exact member. Every new image is marked
 `hardware_status=UNTESTED`; software verification does not make it eligible for
 flashing without target-specific bench and vehicle gates.
+
+Manifest input and output paths are resolved absolute paths. Relative and
+absolute spellings of the same paths produce byte-identical manifests.
 
 `input.configuration` and `output.configuration` contain the Rolling Launch
 and CAN telemetry records, their decoded current-schema settings, and the

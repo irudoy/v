@@ -3,6 +3,7 @@ import contextlib
 from dataclasses import replace
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -949,6 +950,28 @@ class BuildRomTest(unittest.TestCase):
             ):
                 build_rom.load_profile(invalid)
 
+    def test_production_entry_point_imports_no_historical_overlay_builder(self):
+        source = (ROOT / "patches" / "build_rom.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(source)
+        imports = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imports.extend(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                imports.extend(alias.name for alias in node.names)
+        self.assertFalse(
+            any(name.startswith("build_map_switching_") for name in imports)
+        )
+
+
+class BuildArtifactsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.stock = STOCK.read_bytes()
+        cls.base_result = build_rom.build_image(cls.stock, source_name="artifact fixture")
+
     def test_artifact_set_is_complete_idempotent_and_non_overwriting(self):
         with tempfile.TemporaryDirectory() as directory:
             input_path = Path(directory) / "source.bin"
@@ -993,26 +1016,105 @@ class BuildRomTest(unittest.TestCase):
                     self.base_result, input_path, output_path
                 )
 
-    def test_production_entry_point_imports_no_historical_overlay_builder(self):
-        source = (ROOT / "patches" / "build_rom.py").read_text(
-            encoding="utf-8"
-        )
-        tree = ast.parse(source)
-        imports = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                imports.extend(alias.name for alias in node.names)
-            elif isinstance(node, ast.ImportFrom):
-                imports.extend(alias.name for alias in node.names)
-        self.assertFalse(
-            any(name.startswith("build_map_switching_") for name in imports)
-        )
-
     def test_default_output_path_is_adjacent_and_non_destructive(self):
         self.assertEqual(
             build_rom.default_output_path(Path("/tmp/input.bin")),
             Path("/tmp/input-complete.bin"),
         )
+
+    def test_all_sidecars_are_complete_before_rom_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "image.bin"
+            artifacts = build_rom.artifact_contents(self.base_result, STOCK, output)
+            link = os.link
+
+            def publish(source, destination):
+                self.assertFalse(output.exists())
+                if destination == output:
+                    for path, content in artifacts.items():
+                        if path != output:
+                            self.assertEqual(path.read_bytes(), content)
+                    self.assertEqual(source.read_bytes(), self.base_result.data)
+                link(source, destination)
+
+            with mock.patch.object(build_rom.apply_map_switching.os, "link", side_effect=publish):
+                created = build_rom.write_artifacts(self.base_result, STOCK, output)
+            self.assertEqual(set(created), set(artifacts))
+            self.assertEqual(list(Path(directory).glob(".*.tmp")), [])
+
+    def test_manifest_staging_failure_leaves_no_published_artifacts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "image.bin"
+            fsync = os.fsync
+            calls = 0
+
+            def sync(fd):
+                nonlocal calls
+                calls += 1
+                if calls == 4:
+                    raise OSError("injected manifest staging failure")
+                fsync(fd)
+
+            with mock.patch.object(build_rom.apply_map_switching.os, "fsync", side_effect=sync):
+                with self.assertRaisesRegex(OSError, "manifest staging failure"):
+                    build_rom.write_artifacts(self.base_result, STOCK, output)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+            self.assertEqual(len(build_rom.write_artifacts(self.base_result, STOCK, output)), 4)
+
+    def test_failure_or_interruption_between_sidecars_allows_retry(self):
+        for failure in (OSError, KeyboardInterrupt):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "image.bin"
+                artifacts = build_rom.artifact_contents(self.base_result, STOCK, output)
+                digest = Path(f"{output}.sha256")
+                digest.write_bytes(artifacts[digest])
+                manifest = Path(f"{output}.manifest.json")
+                link = os.link
+
+                def publish(source, destination):
+                    if destination == manifest:
+                        raise failure("injected publication failure")
+                    link(source, destination)
+
+                with mock.patch.object(build_rom.apply_map_switching.os, "link", side_effect=publish):
+                    with self.assertRaises(failure):
+                        build_rom.write_artifacts(self.base_result, STOCK, output)
+                remaining = {digest}
+                if failure is KeyboardInterrupt:
+                    remaining.add(Path(f"{output}.md5"))
+                self.assertEqual(set(Path(directory).iterdir()), remaining)
+                for path in remaining:
+                    self.assertEqual(path.read_bytes(), artifacts[path])
+                created = build_rom.write_artifacts(self.base_result, STOCK, output)
+                self.assertEqual(set(created), set(artifacts) - remaining)
+
+    def test_relative_and_absolute_paths_accept_the_same_artifact_set(self):
+        with tempfile.TemporaryDirectory() as directory:
+            input_path = Path(directory) / "source.bin"
+            output_path = Path(directory) / "image.bin"
+            input_path.write_bytes(self.stock)
+            relative_input = Path(os.path.relpath(input_path))
+            relative_output = Path(os.path.relpath(output_path))
+            self.assertEqual(
+                len(build_rom.write_artifacts(self.base_result, relative_input, relative_output)), 4
+            )
+            self.assertEqual(
+                build_rom.write_artifacts(self.base_result, input_path, output_path), ()
+            )
+            manifest = json.loads(Path(f"{output_path}.manifest.json").read_bytes())
+            self.assertEqual(manifest["input"]["path"], str(input_path.resolve()))
+            self.assertEqual(manifest["output"]["path"], str(output_path.resolve()))
+
+    def test_stock_input_requires_explicit_output_but_allows_verify_only(self):
+        with mock.patch.object(build_rom, "build_image", return_value=self.base_result):
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                with mock.patch.object(build_rom, "write_artifacts") as write:
+                    with self.assertRaises(SystemExit) as stopped:
+                        build_rom.main([str(STOCK)])
+                    self.assertEqual(stopped.exception.code, 2)
+                    write.assert_not_called()
+                    self.assertEqual(build_rom.main([str(STOCK), "--verify-only"]), 0)
+                    write.assert_not_called()
 
 
 if __name__ == "__main__":

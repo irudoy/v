@@ -109,8 +109,7 @@ def md5(data):
 
 
 def default_output_path(source):
-    source = Path(source)
-    return source.with_name(f"{source.stem}-rolling-launch-{PROFILE_NAME}.bin")
+    return map_runtime.default_output_path(source, f"rolling-launch-{PROFILE_NAME}")
 
 
 def _read_integer(data, address, width, byte_order):
@@ -450,12 +449,11 @@ def main(argv=None):
         print("no ROM file was written")
         return 0
 
-    output = args.output or default_output_path(args.input)
-    if output.resolve() == args.input.resolve():
-        parser.error("input and output paths must differ")
     try:
-        created = map_runtime.write_output(output, result.data)
-        map_runtime.write_md5_sidecar(output, result.data)
+        output = args.output or default_output_path(args.input)
+        if output.resolve() == args.input.resolve():
+            parser.error("input and output paths must differ")
+        created = map_runtime.write_output_with_md5(output, result.data)
     except (OSError, map_runtime.PatchError) as error:
         parser.error(str(error))
     print(f"output={output} status={'created' if created else 'already_exact'}")
