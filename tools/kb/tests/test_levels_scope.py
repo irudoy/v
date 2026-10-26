@@ -204,7 +204,7 @@ def test_native_selected_positive_negative_and_restored_results_match(native_mod
             symbol.evidence = [item for item in symbol.evidence
                                if item.get('supports') != 'scale']
         broken = filtered(native_model, subjects)
-        assert broken != before and any('scale level code lacks grounding' in issue.message
+        assert broken != before and any('scale level candidate lacks evidence' in issue.message
                                         for issue in broken)
     finally:
         for key, symbol in meaning.symbols.items():
