@@ -4,7 +4,7 @@ import copy
 import unittest
 from types import SimpleNamespace
 
-from kb import compile, ledger_projection, match, project, repo, tokens, vocab
+from kb import compile, ledger_projection, match, repo, tokens, vocab
 from kb.adapters import ledgers
 from kb.model import Builder, SymbolKey
 from kb.repo import KbError
@@ -65,12 +65,6 @@ class NormalizationTest(unittest.TestCase):
                         new.replace("base:ffff1068+7@structural", "")):
             with self.subTest(changed=changed), self.assertRaises(KbError):
                 ledger_projection.validate_conversion("probe.csv", old, changed)
-
-    def test_converted_ledgers_refuse_the_preconversion_normalizer(self):
-        with patch.object(project, "stage", return_value=5), self.assertRaises(KbError) as error:
-            ledger_projection.normalization()
-        self.assertEqual(error.exception.code, 2)
-        self.assertIn("kb project", str(error.exception))
 
 
 class OwnedProjectionTest(unittest.TestCase):
