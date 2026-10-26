@@ -786,6 +786,7 @@ IMAGE_SHA256=DECLARED["image_sha256"]
 SPANS=tuple((row["start"],row["end"]) for row in UNIT["code"])
 CONTROLLED_CALIBRATION=DECLARED["controlled_calibration"]
 CONFIGURATION=DECLARED["configuration"]
+INPUT_BLOBS=DECLARED["input_blobs"]
 BOUND_SPANS=tuple(DECLARED["adapter"]["bound"])
 OBSERVER=DECLARED["observer"]
 

@@ -26,6 +26,8 @@ DEFAULTS.update({name:i*16 for i,name in enumerate(BYTE_AXIS_FIELDS)})
 DEFAULTS.update({name:i*4096 for i,name in enumerate(WORD_AXIS_FIELDS)})
 WORD_VALUES=(0,1,2,3,4,5,9,10,127,128,255,256,32767,32768,65534,65535)
 BYTE_VALUES=(0,1,2,7,15,16,127,128,129,254,255)
+ENTRY_FIELDS={0x702C6:('word_1878','word_188c','byte_1880','byte_18b4','word_1702','word_243a',
+    'map_words','axis_bytes')}
 
 
 def cases(declared,image):
@@ -79,6 +81,12 @@ def cases(declared,image):
     for raw in (0,1,0x7FFF,0x8000,0xFFFE,0xFFFF):
         for second in (0,1):
             add('selected-two-byte-scalar-prior-only',selected_scalar_word_942c=raw,byte_18b4=second)
+    nonflat={field:0x800A+(index//16)*1024 for index,field in enumerate(MAP_FIELDS)}
+    for coordinate in (0,1,127,128,255,256,257,3839,3840,65535):
+        add('actual-coordinate-alternatives-fixed-other',word_1702=coordinate,**nonflat)
+    for axis in patterns:
+        add('actual-byte-axis-alternatives-fixed-other',word_1702=128,
+            **dict(nonflat,**dict(zip(BYTE_AXIS_FIELDS,axis))))
     return tuple(dict(row,index=index) for index,row in enumerate(rows))
 
 
