@@ -73,8 +73,13 @@ def _evidence_issues(items, path, subject, check_required):
             yield Issue("schema", path, subject, f"evidence supports {item['supports']!r}")
         if item.get("relies") not in (None, *vocab.RELIES):
             yield Issue("schema", path, subject, f"evidence relies {item['relies']!r}")
-        if item.get("mode") not in (None, *vocab.INDIRECT_MODES):
+        mode = item.get("mode")
+        if mode is not None and (not isinstance(mode, str) or not vocab.INDIRECT_MODE.fullmatch(mode)):
             yield Issue("schema", path, subject, f"evidence mode {item['mode']!r}")
+        try:
+            match.archived(item)
+        except ValueError as error:
+            yield Issue("schema", path, subject, str(error))
         if check_required and "legacy" not in item:
             required, _ = vocab.EVIDENCE_KINDS[kind]
             absent = [key for key in required if key not in item]

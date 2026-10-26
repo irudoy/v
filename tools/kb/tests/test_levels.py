@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from kb import checks, compile, levels, match, repo, vocab
 from kb.model import Builder, SymbolKey
@@ -90,6 +91,11 @@ class HardwareTest(unittest.TestCase):
                                  f"hardware evidence names {key}, which is no record of "
                                  "patches/hardware-results.toml")
 
+    def test_historical_hardware_records_do_not_require_a_current_record(self):
+        item = {"kind": "hardware", "key": "git:archive-tag:records.toml#old_record"}
+        self.assertIsNone(levels.item_failure(item, {}))
+        self.assertEqual(match.rank(item), -1)
+
     def test_a_silicon_claim_rests_on_a_passing_record_of_the_repository(self):
         def declare(key):
             return lambda b: datum(b, RAM, "silicon", evidence=[
@@ -103,6 +109,48 @@ class HardwareTest(unittest.TestCase):
 
 
 class ClaimTest(unittest.TestCase):
+    def test_archived_test_claims_remain_candidates_and_keep_other_grounding(self):
+        archive = {"kind": "test", "supports": "identity",
+                   "path": "git:archive/stock-proofs-2026-10-26:absent/test_case.py",
+                   "key": "test_case"}
+        for other, expected in (([], "candidate"), ([L0], "code")):
+            with self.subTest(other=other):
+                model = model_of(lambda b: datum(b, RAM, "code", evidence=[archive, *other]))
+                result = levels.analyze(model)
+                claim = next(claim for claim in result.claims if claim.name == "identity")
+                self.assertEqual(result.level(claim), expected)
+                self.assertIn(archive, model.symbols[SymbolKey("7mfk", "ram", RAM)].evidence)
+
+    def test_indirect_metadata_alone_does_not_hold_a_storage_object(self):
+        item = {"kind": "indirect", "mode": "optional-domain-access", "at": "7mfk:00000000"}
+        model = model_of(lambda b: datum(b, RAM, "code", evidence=[item]))
+        symbol = model.symbols[SymbolKey("7mfk", "ram", RAM)]
+        with patch.object(levels.sites, "referenced", return_value=set()):
+            self.assertFalse(levels.held(model, symbol))
+
+    def test_retained_access_evidence_cannot_borrow_a_functions_existence(self):
+        test = {"kind": "test", "path": "tools/kb/tests/test_tokens.py",
+                "key": "test_a_dependency_names_address_offset_and_property"}
+        cases = (
+            ({"kind": "indirect", "supports": "identity", "mode": "optional-domain-access",
+              "at": f"7mfk:{ENTRY:08x}"}, "candidate"),
+            (test, "candidate"),
+            ({**test, "supports": "scale"}, "candidate"),
+            ({**test, "supports": "identity"}, "code"),
+        )
+        for item, expected in cases:
+            with self.subTest(item=item):
+                def declare(b):
+                    ram = datum(b, RAM, "code", evidence=())
+                    b.link(ram, "reader", function(b, ENTRY), "test",
+                           props={"relies": "structure"}, evidence=[item])
+
+                model = model_of(declare)
+                result = levels.analyze(model)
+                claim = next(claim for claim in result.claims if claim.subject == "7mfk-ffff1000/ram")
+                self.assertEqual(result.level(claim), expected)
+                self.assertEqual(result.effective[id(claim)], CODE)
+
     def test_a_candidate_claim_needs_evidence_and_a_code_claim_grounding(self):
         def declare(b):
             datum(b, RAM, "candidate", evidence=())

@@ -65,8 +65,9 @@ EVIDENCE_KINDS = {
 }
 EVIDENCE_KEYS = ("kind", "supports", "at", "to", "relies", "count", "value", "sha256",
                  "mode", "path", "key", "note")
-from kb.ordinary_access_registry import MODES as ORDINARY_ACCESS_MODES
-INDIRECT_MODES = ("pointer", "gbr", "window", "block-copy", "snapshot-copy", "coherent-copy", "did-pointer", "diagnostic-output", "arithmetic-argument", "calculation-dependency", "arithmetic-factor", "io-access", *ORDINARY_ACCESS_MODES, "snapshot-output", "base")
+# Modes describe retained evidence data, including optional archived producers.
+# A mode name does not register executable code or establish grounding.
+INDIRECT_MODE = re.compile(r"[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*")
 
 FN_ROLES = ("accessor", "service", "driver", "monitor", "wrapper", "dispatch", "init",
             "handler", "selector", "consumer", "kernel", "finisher")

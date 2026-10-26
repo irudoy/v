@@ -14,8 +14,8 @@ DID, DID_WORDS = 0x229E8, "ffff3346 00011e45"
 LATCH, INJECTION = 0x21A70, 0xFFFF23CA
 MAILBOX_DATA, MAILBOX_KEY = 0xFFFFDC48, "SH7058S-HW-17.3.3"
 ROUTINE = 0x791A4
-ROUTINE_TEST = ("patches/tests/test_rom_address_profiles.py",
-                "test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image")
+ROUTINE_TEST = ("tools/kb/tests/test_tokens.py",
+                "test_a_dependency_names_address_offset_and_property")
 CODE = vocab.LEVEL_RANK["code"]
 
 
@@ -370,7 +370,7 @@ class ExplicitTerminalChecksTest(unittest.TestCase):
                 self.assertEqual(checks.CHECKS["homology"](m), [])
                 self.assertEqual(checks.schema(m), [])
 
-    def test_invalid_base_items_fail_even_while_levels_holds_the_structure(self):
+    def test_invalid_base_items_fail_without_holding_the_structure(self):
         changes = {
             "malformed at": {"at": "not-a-location"},
             "foreign layout": {"at": "jk00d:0004ec9e"},
@@ -390,7 +390,7 @@ class ExplicitTerminalChecksTest(unittest.TestCase):
                     symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
                     failure = match.verify(m, symbol, item)
                     self.assertIsNotNone(failure)
-                    self.assertTrue(levels.held(m, symbol))
+                    self.assertFalse(levels.held(m, symbol))
                     [issue] = checks.CHECKS["homology"](m)
                     self.assertEqual((issue.check, issue.path, issue.subject),
                                      ("homology", source, symbol.key.key))
@@ -492,6 +492,39 @@ class TestEvidenceTest(unittest.TestCase):
                 "def test_probe():\n    raise RuntimeError('must not execute')\n", encoding="utf-8")
             item = {"kind": "test", "path": "test_probe.py", "key": "test_probe"}
             self.assertIsNone(match.verify(m, symbol, item))
+            self.assertEqual(match.rank(item, symbol, m), -1)
+            explicit = {**item, "supports": "identity"}
+            self.assertEqual(match.rank(explicit, symbol, m, "identity"), CODE)
+            self.assertEqual(match.rank(explicit, symbol, m, "scale"), -1)
+
+    def test_archived_test_evidence_retains_its_locator_without_loading_the_file(self):
+        m = model_of(lambda b: b.symbol("7mfk", "ram", INJECTION, "test"))
+        symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+        item = {"kind": "test", "supports": "identity",
+                "path": "git:archive/stock-proofs-2026-10-26:absent/test_case.py",
+                "key": "test_case"}
+        with patch.object(Path, "is_file", side_effect=AssertionError("opens archive")):
+            self.assertIsNone(match.verify(m, symbol, item))
+            self.assertEqual(match.rank(item, symbol, m), -1)
+        self.assertNotIn(item["path"], match.READ)
+
+    def test_malformed_archive_evidence_is_rejected_without_current_path_fallback(self):
+        m = model_of(lambda b: b.symbol("7mfk", "ram", INJECTION, "test"))
+        symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+        item = {"kind": "test", "supports": "identity",
+                "path": "git:archive-tag:../test_case.py", "key": "test_case"}
+        self.assertIn("repository-relative", match.verify(m, symbol, item))
+        self.assertEqual(match.rank(item, symbol, m), -1)
+        self.assertTrue(list(checks._evidence_issues([item], "probe", "probe", True)))
+
+    def test_optional_indirect_modes_are_data_without_executable_grounding(self):
+        m = model_of(lambda b: b.symbol("7mfk", "ram", INJECTION, "test"))
+        symbol = m.symbols[SymbolKey("7mfk", "ram", INJECTION)]
+        item = {"kind": "indirect", "supports": "identity", "mode": "optional-domain-access",
+                "at": "7mfk:00000000"}
+        self.assertIsNone(match.verify(m, symbol, item))
+        self.assertEqual(match.rank(item, symbol, m), match.CANDIDATE)
+        self.assertEqual(list(checks._evidence_issues([item], "probe", "probe", True)), [])
 
     def test_a_test_item_names_a_test_function_of_the_repository(self):
         m = model_of(lambda b: b.symbol("1me3b", "const", ROUTINE, "test",
