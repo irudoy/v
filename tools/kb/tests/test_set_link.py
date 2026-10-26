@@ -7,7 +7,7 @@ from unittest import mock
 
 import pytest
 
-from kb import adapters, cli, compile, convert, mcp, repo, store, write
+from kb import adapters, catalog, cli, compile, convert, evidence_ref, mcp, repo, store, write
 from kb.adapters import files as file_adapter
 from kb.repo import KbError
 from tools.kb.tests import selector_sources
@@ -22,10 +22,20 @@ DEP = {'role': 'writes', 'to': FUNCTION, 'type': 'writer', 'end': 'owner',
        'relies': 'structure', 'supports': 'identity'}
 
 
+def write_sources(root):
+    hashes = selector_sources.write_sources(root)
+    path = root / catalog.PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = ','.join(catalog.COLUMNS) + '\n'
+    path.write_text(text, encoding='utf-8')
+    hashes[catalog.PATH.as_posix()] = selector_sources.sha(text.encode())
+    return hashes
+
+
 @pytest.fixture(scope='module')
 def baseline(tmp_path_factory):
     root = tmp_path_factory.mktemp('set-link-writer')
-    hashes = selector_sources.write_sources(root)
+    hashes = write_sources(root)
     docs = {path: store.load(root, path) for path in (SP, FP)}
     native_writer(docs[SP])['evidence'] = [
         {'kind': 'spec', 'path': 'defs/fixture.md', 'key': 'controlled_identity'}]
@@ -92,6 +102,59 @@ def test_repeated_exact_edit_is_idempotent(baseline):
     _, _, result = plan(baseline, OP, OP)
     _, texts, _ = write.plan([OP], result, write.model_resolver(result), result.root)
     assert texts == {}
+
+
+def archive_operation(baseline):
+    _, docs = baseline
+    docs = copy.deepcopy(docs)
+    evidence = native_writer(docs[SP])['evidence']
+    evidence.insert(0, {'kind': 'test', 'path': 'tools/tests/stock.py#test_entry', 'key': 'test_entry',
+                        'supports': 'identity', 'note': 'Historical source only.'})
+    replacement = copy.deepcopy(evidence)
+    replacement[0]['path'] = f"git:{evidence_ref.STOCK_ARCHIVE}:" + evidence[0]['path']
+    return docs, {**OP, 'keys': {'evidence': replacement}}
+
+
+def test_archive_refs_replace_in_place_with_both_ends_selectors(baseline):
+    docs, op = archive_operation(baseline)
+    _, texts, result = plan(baseline, op, docs=docs)
+    expected = copy.deepcopy(docs[SP])
+    native_writer(expected)['evidence'] = op['keys']['evidence']
+    assert texts == {SP: store.render('ram', expected)}
+    assert result.overlay[FP] == baseline[0].overlay[FP]
+    assert write._issues(result) == {}
+    before = store.load(result.root, SP, {SP: store.render('ram', docs[SP])})
+    assert store.load(result.root, SP, result.overlay)['ledger'] == before['ledger']
+    _, again, _ = write.plan([op], result, write.model_resolver(result), result.root)
+    assert again == {}
+    plan(baseline, op, op, docs=docs)
+
+
+@pytest.mark.parametrize('changed', ('ref', 'kind', 'supports', 'note', 'order',
+                                      'added', 'removed', 'property', 'unset'))
+def test_archiving_cannot_change_evidence_or_relation_fields(baseline, changed):
+    docs, op = archive_operation(baseline)
+    evidence = op['keys']['evidence']
+    if changed == 'ref':
+        evidence[0]['path'] += '_different'
+    elif changed in ('kind', 'supports', 'note'):
+        evidence[0][changed] = {'kind': 'code', 'supports': 'contract', 'note': 'Changed.'}[changed]
+    elif changed == 'order':
+        evidence.reverse()
+    elif changed == 'added':
+        evidence.append(copy.deepcopy(evidence[0]))
+    elif changed == 'removed':
+        evidence.pop()
+    elif changed == 'property':
+        op['keys']['note'] = 'A changed relation.'
+    else:
+        op['unset'] = ['note']
+    refuse(baseline, op, docs=docs, code=2)
+
+
+def test_archiving_cannot_adopt_an_earlier_property_change(baseline):
+    docs, op = archive_operation(baseline)
+    refuse(baseline, OP, op, docs=docs, text='original relation and evidence')
 
 
 def test_unset_preserves_evidence_identity_and_other_properties(baseline):
@@ -349,7 +412,7 @@ def test_full_repository_plan_retains_every_untouched_document():
 
 def test_actual_owned_file_write_and_dry_run_are_atomic(baseline, tmp_path):
     _, docs = baseline
-    selector_sources.write_sources(tmp_path)
+    write_sources(tmp_path)
     store.write(tmp_path, {path: store.render(path.parent.name, doc)
                           for path, doc in docs.items()})
     model = compile.build(tmp_path)

@@ -5,8 +5,9 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+import tomlkit
 
-from kb import names, reconciliation, repo
+from kb import evidence_ref, names, reconciliation, repo
 from kb.adapters import dids
 from kb.model import SymbolKey
 
@@ -78,6 +79,83 @@ def test_wider_access_does_not_change_declared_width():
     assert subject.config['reconciliation']['review'][0]['kind'] == 'width'
     assert run(subject, site, reconciliation.check) == []
     assert next(iter(subject.symbols.values())).value('width') == 8
+
+
+def archive_models(tmp_path):
+    before = model()
+    before.root = tmp_path
+    before.meanings = [before.links[0].owner, before.links[0].to]
+    before.links[0].evidence = [{'kind': 'test', 'path': 'tools/tests/stock.py#test_entry',
+                                'key': 'test_entry',
+                                'supports': 'identity', 'note': 'Historical source.'}]
+    records = run(before, [], reconciliation.reviews)
+    records[0]['reason'] = 'Retain the independently reviewed uncertainty.'
+    before.config['reconciliation']['review'] = records
+    before.overlay = {repo.OWNER_CONFIG: tomlkit.dumps(before.config)}
+    after = deepcopy(before)
+    after.links[0].evidence[0]['path'] = (
+        f"git:{evidence_ref.STOCK_ARCHIVE}:" + before.links[0].evidence[0]['path'])
+    return before, after
+
+
+def rebase(before, after):
+    return run(before, [], lambda _: reconciliation.rebase(before, after, {}))
+
+
+def test_archive_rebase_preserves_review_reason_state_and_l0(tmp_path):
+    before, after = archive_models(tmp_path)
+    text = rebase(before, after)
+    updated = tomlkit.parse(text)['reconciliation']['review'][0].unwrap()
+    held = before.config['reconciliation']['review'][0]
+    assert updated['claim_sha256'] != held['claim_sha256']
+    assert {key: value for key, value in updated.items() if key != 'claim_sha256'} == {
+        key: value for key, value in held.items() if key != 'claim_sha256'}
+    after.config['reconciliation']['review'] = [updated]
+    assert run(after, [], reconciliation.check) == []
+    assert before.config['reconciliation']['review'] == [held]
+
+
+@pytest.mark.parametrize('changed', ('roles', 'props', 'kind', 'supports', 'note',
+                                      'tag', 'path', 'fragment', 'sources', 'at'))
+def test_archive_rebase_does_not_accept_other_claim_changes(tmp_path, changed):
+    before, after = archive_models(tmp_path)
+    link = after.links[0]
+    item = link.evidence[0]
+    if changed == 'roles':
+        link.roles.append('changed')
+    elif changed == 'props':
+        link.props['note'] = 'Changed condition.'
+    elif changed in ('kind', 'supports', 'note', 'at'):
+        item[changed] = {'kind': 'code', 'supports': 'contract',
+                         'note': 'Changed.', 'at': 42}[changed]
+    elif changed == 'sources':
+        link.sources.add('another-source.toml')
+    else:
+        old, new = {'tag': (evidence_ref.STOCK_ARCHIVE, 'another-tag'),
+                    'path': ('stock.py', 'other.py'),
+                    'fragment': ('test_entry', 'other_entry')}[changed]
+        item['path'] = item['path'].replace(old, new)
+    assert rebase(before, after) is None
+    assert run(after, [], reconciliation.check)
+
+
+def test_archive_rebase_does_not_accept_changed_l0(tmp_path):
+    before, after = archive_models(tmp_path)
+    with patch.object(reconciliation, 'accesses', return_value=observed(before, [])), \
+         patch.object(reconciliation.match, 'l0_digest', side_effect=(
+             '0123456789abcdef', 'fedcba9876543210')):
+        assert reconciliation.rebase(before, after, {}) is None
+
+
+def test_archive_rebase_does_not_accept_changed_width(tmp_path):
+    before, after = archive_models(tmp_path)
+    sites = [{'site': 0x200, 'mode': 'store', 'width': 2}]
+    before.config['reconciliation']['review'] = run(before, sites, reconciliation.reviews)
+    before.overlay[repo.OWNER_CONFIG] = tomlkit.dumps(before.config)
+    after.config = deepcopy(before.config)
+    after.symbols[next(iter(after.symbols))].value = lambda key: 16 if key == 'width' else None
+    assert run(before, sites, lambda _: reconciliation.rebase(before, after, {})) is None
+    assert run(after, sites, reconciliation.check)
 
 
 def name_model():

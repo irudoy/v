@@ -5,8 +5,12 @@ syntax only; it neither resolves a tag nor reads or executes archived files.
 """
 
 from dataclasses import dataclass
+import json
 from pathlib import PurePosixPath
 import re
+
+
+STOCK_ARCHIVE = "archive/stock-proofs-2026-10-26"
 
 
 @dataclass(frozen=True)
@@ -46,3 +50,38 @@ def parse(value):
                       or any(char.isspace() or ord(char) < 32 for char in fragment)):
         raise ValueError("archive evidence has an invalid fragment")
     return ArchiveRef(tag, path, fragment if separator else None)
+
+
+def archive_equivalent(before, after):
+    """Whether only evidence refs acquire the stock archive prefix.
+
+    Every other value, evidence position and locator fragment stays exact.
+    This comparison neither resolves references nor reads archived sources.
+    """
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        return False
+    old, new = before.get("evidence"), after.get("evidence")
+    if not isinstance(old, list) or not isinstance(new, list) or len(old) != len(new):
+        return False
+    normalized = []
+    for previous, current in zip(old, new):
+        if not isinstance(previous, dict) or not isinstance(current, dict):
+            return False
+        current = dict(current)
+        for key in ("path", "key"):
+            if previous.get(key) != current.get(key):
+                ref = previous.get(key)
+                if (not isinstance(ref, str) or ref.startswith("git:")
+                        or current.get(key) != f"git:{STOCK_ARCHIVE}:{ref}"):
+                    return False
+                try:
+                    parse(current[key])
+                except ValueError:
+                    return False
+                current[key] = ref
+        normalized.append(current)
+    try:
+        return (json.dumps(before, sort_keys=True, allow_nan=False)
+                == json.dumps({**after, "evidence": normalized}, sort_keys=True, allow_nan=False))
+    except (TypeError, ValueError):
+        return False

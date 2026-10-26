@@ -1,10 +1,67 @@
 from pathlib import Path
+from copy import deepcopy
 import subprocess
 import sys
 
 import pytest
 
 from kb import evidence_ref, repo
+
+
+def archive_claim():
+    return {'at': 12, 'note': 'Retain this condition.', 'evidence': [
+        {'kind': 'test', 'path': 'tools/tests/stock.py#test_entry', 'key': 'test_entry',
+         'supports': 'identity'},
+        {'kind': 'spec', 'path': 'defs/mechanism.md', 'key': 'mechanism'}]}
+
+
+def test_archive_equivalence_retains_the_complete_ordered_claim():
+    before = archive_claim()
+    after = deepcopy(before)
+    after['evidence'][0]['path'] = f"git:{evidence_ref.STOCK_ARCHIVE}:" + before['evidence'][0]['path']
+    assert evidence_ref.archive_equivalent(before, after)
+    assert evidence_ref.archive_equivalent(after, after)
+    assert not evidence_ref.archive_equivalent(after, before)
+
+
+def test_archive_equivalence_accepts_a_specification_key_locator():
+    before = {'evidence': [{'kind': 'spec', 'key': 'defs/proof.md#entry'}]}
+    after = {'evidence': [{'kind': 'spec', 'key':
+                          f'git:{evidence_ref.STOCK_ARCHIVE}:defs/proof.md#entry'}]}
+    assert evidence_ref.archive_equivalent(before, after)
+
+
+@pytest.mark.parametrize('changed', (
+    'tag', 'path', 'fragment', 'kind', 'supports', 'note', 'at', 'type',
+    'added', 'removed', 'order', 'missing-field',
+))
+def test_archive_equivalence_refuses_every_other_change(changed):
+    before = archive_claim()
+    after = deepcopy(before)
+    item = after['evidence'][0]
+    item['path'] = f"git:{evidence_ref.STOCK_ARCHIVE}:" + item['path']
+    if changed in ('tag', 'path', 'fragment'):
+        old, new = {'tag': (evidence_ref.STOCK_ARCHIVE, 'another-tag'),
+                    'path': ('stock.py', 'other.py'),
+                    'fragment': ('test_entry', 'other_entry')}[changed]
+        item['path'] = item['path'].replace(old, new)
+    elif changed in ('kind', 'supports'):
+        item[changed] = 'code' if changed == 'kind' else 'contract'
+    elif changed == 'note':
+        after['note'] += ' Changed.'
+    elif changed == 'at':
+        after['at'] += 1
+    elif changed == 'type':
+        after['at'] = 12.0
+    elif changed == 'added':
+        after['evidence'].append(deepcopy(item))
+    elif changed == 'removed':
+        after['evidence'].pop()
+    elif changed == 'order':
+        after['evidence'].reverse()
+    else:
+        del item['supports']
+    assert not evidence_ref.archive_equivalent(before, after)
 
 
 @pytest.mark.parametrize("text", (

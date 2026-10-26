@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import (checks, compile, graph, ledger_projection, lock, match, names, refs, repo,
+from kb import (checks, compile, evidence_ref, graph, ledger_projection, lock, match, names, refs, repo,
                 store, tokens, vocab)
 from kb.adapters import files as file_adapter
 from kb.allocation import allocation_phase
@@ -789,7 +789,7 @@ class Change:
         self.lines.append(f"link {meaning.key} {type_} {to.key}: {described}")
 
     def set_link(self, op):
-        """Replace mutable properties of one existing owned native relation."""
+        """Replace mutable properties or archive equivalent evidence refs in place."""
         meaning, to, type_ = self._ends(op)
         if any(op.get(name) is not None and not isinstance(op[name], dict)
                for name in ("selector", "keys")):
@@ -801,7 +801,16 @@ class Change:
         if "offset" in selector and selector["offset"] < 0:
             raise KbError("set-link offset is nonnegative", code=2)
         allowed = tuple(key for key in LINK_KEYS if key not in LINK_CHOICE)
-        keys = self._link_keys(op.get("keys"), allowed)
+        archive = "evidence" in (op.get("keys") or {})
+        if archive:
+            if set(op["keys"]) != {"evidence"} or op.get("unset") not in (None, []):
+                raise KbError("set-link archives evidence without other property changes", code=2)
+            evidence = op["keys"]["evidence"]
+            if not isinstance(evidence, list) or not evidence:
+                raise KbError("set-link archives a nonempty evidence array", code=2)
+            keys = {"evidence": [evidence_item(item) for item in evidence]}
+        else:
+            keys = self._link_keys(op.get("keys"), allowed)
         unset = [] if op.get("unset") is None else op["unset"]
         if not isinstance(unset, list) or not all(isinstance(key, str) and key in allowed
                                                   for key in unset):
@@ -833,8 +842,17 @@ class Change:
             raise KbError(f"{meaning.key}: set-link needs one current native relation; "
                           f"found {len(selected)}", code=3)
         held = selected[0]
+        if archive:
+            if not evidence_ref.archive_equivalent(original[0], {**original[0], **keys}):
+                raise KbError("set-link only replaces evidence refs with equivalent stock archive refs",
+                              code=2)
+            if not evidence_ref.archive_equivalent(original[0], held):
+                raise KbError(f"{meaning.key}: set-link retains the original relation and evidence",
+                              code=3)
+            if not evidence_ref.archive_equivalent(held, {**held, **keys}):
+                raise KbError("set-link cannot restore or replace archived evidence", code=2)
         immutable = ("type", "to", "slot", "offset", "evidence")
-        if ({key: held[key] for key in immutable if key in held}
+        if not archive and ({key: held[key] for key in immutable if key in held}
                 != {key: original[0][key] for key in immutable if key in original[0]}):
             raise KbError(f"{meaning.key}: set-link retains the original identity and evidence",
                           code=3)
@@ -1883,7 +1901,9 @@ def plan(ops, base, resolve, root=repo.ROOT):
     result = compile.build(root, {**base.overlay, **texts})
     from kb import reconciliation
     owner_text = (reconciliation.rebase(base, result, change.renamed)
-                  if change.renamed or any(op["cmd"] == "unlink" for op in ops) else None)
+                  if change.renamed or any(op["cmd"] == "unlink" or
+                     (op["cmd"] == "set-link" and "evidence" in (op.get("keys") or {}))
+                     for op in ops) else None)
     if owner_text is not None:
         texts[repo.OWNER_CONFIG] = owner_text
         result = compile.build(root, {**base.overlay, **texts})

@@ -9,7 +9,7 @@ from functools import lru_cache
 import hashlib
 import json
 
-from kb import graph, l0graph, match, repo
+from kb import evidence_ref, graph, l0graph, match, repo
 from kb.model import Issue
 
 
@@ -99,10 +99,10 @@ def reviews(model):
 
 
 def rebase(before, after, renames):
-    """Rebind exact renamed claims or withdraw reviews of deleted access claims.
+    """Rebind renamed claims or passive archive refs; withdraw deleted accesses.
 
-    New differences and changed conditions, evidence, widths or L0 never gain
-    a review. Every retained record keeps its state and reason.
+    New differences and changed conditions, evidence contents, widths or L0
+    never gain a review. Every retained record keeps its state and reason.
     """
     configured = before.config.get('reconciliation', {})
     if not configured.get('enabled'):
@@ -122,7 +122,9 @@ def rebase(before, after, renames):
     current = {difference_key(item): item for item in differences(after)}
     claims = {('access', storage.key.key, digest(claim)): claim
               for storage, _, claim in access_claims(before)}
-    remaining = {claim_identity(claim) for _, _, claim in access_claims(after)}
+    remaining = defaultdict(list)
+    for _, _, claim in access_claims(after):
+        remaining[claim_identity(claim)].append(claim)
     owners = {meaning.key: meaning for meaning in before.meanings}
     paths = {store.path_of(old.split('/')[1], old.split('/')[0]).as_posix():
              store.path_of(new.split('/')[1], new.split('/')[0]).as_posix()
@@ -152,6 +154,9 @@ def rebase(before, after, renames):
         expected = {**item, 'sources': sorted(paths.get(src, src) for src in item['sources'])}
         claim = renamed_claim(claims[key]) if key in claims else None
         if claim is not None:
+            held = remaining.get(claim_identity(claim), ())
+            if len(held) == 1 and evidence_ref.archive_equivalent(claim, held[0]):
+                claim = held[0]
             expected['claim_sha256'] = digest(claim)
         candidate = current.get(difference_key(expected))
         if candidate == expected:
