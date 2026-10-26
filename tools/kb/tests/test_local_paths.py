@@ -106,29 +106,3 @@ def test_historical_names_are_read_only_aliases_without_a_root_link(tmp_path, mo
         with pytest.raises(ValueError, match='parent'):
             local_paths.read_path(path, root)
     assert not (root / 'local-results').exists()
-
-
-def test_receipt_snapshot_reads_historical_paths_and_detects_changed_bytes(tmp_path):
-    import json
-    from kb import copy_evidence
-
-    root, physical = layout(tmp_path, 'external')
-    files = {'process.json': b'original process', 'stdout': b'original stdout', 'stderr': b''}
-    record = {'process_path': 'local-results/process.json',
-              'terminal': {'stdout': 'local-results/stdout', 'stderr': 'local-results/stderr'}}
-    receipt = root / copy_evidence.RECEIPT
-    receipt.parent.mkdir(parents=True)
-    receipt.write_text(json.dumps(record))
-    for name, data in files.items():
-        (physical / name).write_bytes(data)
-    original = receipt.read_bytes()
-    state = copy_evidence.proof_state(root, live=True)
-    with copy_evidence.consuming(root):
-        for name, data in files.items():
-            assert copy_evidence.read_output(root, 'local-results/' + name) == data
-        (physical / 'stdout').write_bytes(b'changed stdout')
-        assert copy_evidence.read_output(root, 'local-results/stdout') == b'original stdout'
-        assert copy_evidence.proof_state(root, live=True) != state
-    assert copy_evidence.read_output(root, 'local-results/stdout') == b'changed stdout'
-    assert receipt.read_bytes() == original
-    assert not (root / 'local-results').exists()

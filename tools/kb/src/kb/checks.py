@@ -957,11 +957,7 @@ def _chain_research(model, entity, step, order, path, subject, grammar):
 
 def catalog_check(model):
     """Complete source coverage is mandatory when parity owners exist."""
-    from kb import catalog, project
-    if project.stage(model.root) < 10 and not any(
-            kind == 'feature' and entity.props.get('catalog')
-            for (kind, _), entity in model.entities.items()):
-        return []
+    from kb import catalog
     return catalog.check(model)
 
 
