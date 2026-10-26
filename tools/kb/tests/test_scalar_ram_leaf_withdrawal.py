@@ -1823,7 +1823,10 @@ def dfco_direction_flags():
         retained1939_write_sites=[0x50574,0x50594],reader_only16aa_retained_writer=True,
         prior16aa_complete_state_independence=True,
         reader_only16aa_original=contract.RESTORE_READER_ONLY_WITH_RETAINED_WRITER[1],
-        retained16aa_write_sites=[0x501AE],stdout_sha256='b'*64)
+        retained16aa_write_sites=[0x501AE],stdout_sha256='b'*64,
+        reader_only1778_retained_writer=True,prior1778_complete_state_independence=True,
+        reader_only1778_original=contract.RESTORE1778_READER_ONLY_WITH_RETAINED_WRITER[1],
+        retained1778_write_sites=[0x501AA])
 
 
 def uptight_RAM3348_flags():
@@ -1966,3 +1969,45 @@ def test_restore16aa_owning_binding_requires_the_exact_primary_direction_and_ful
     assert proof.require_restore16aa_result(result) is True
     result.pop(field)
     with pytest.raises(ValueError):proof.require_restore16aa_result(result)
+
+
+
+def test_restore1778_preserves_all126_records_and_all68_functions_and_actual_writer():
+    declared=contract.descriptor(repo.ROOT);contract.require_prior_restore1778_boundary(declared)
+    assert len(declared['reference'])==127 and len(declared['function'])==68
+    assert contract.digest(declared['reference'][:126])==contract.PRIOR_RESTORE1778_REFERENCE_SHA256
+    assert contract.digest(declared['function'])==contract.PRIOR_RESTORE1778_FUNCTION_SHA256
+    row=declared['reference'][126];before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    assert before['unit']==after['unit']=='RPM/25' and row['declared_width']==row['declared_signed']=='unset'
+    expected=deepcopy(before)
+    expected['link']=[link for link in expected['link'] if (link['type'],link['to'])!=('reader','dfco_restore_classify/fn')]
+    for marker in expected['ledger']:
+        marker['dependency']=[item for item in marker['dependency'] if not contract.selector(row,row['owner'],item)]
+    assert after==expected and after['symbol']==before['symbol']
+
+
+@pytest.mark.parametrize('fault',('prior-record','function','original','writer','unit','width','signed'))
+def test_restore1778_owning_boundary_refuses_other_records_writer_or_semantic_type_changes(fault):
+    declared=deepcopy(contract.descriptor(repo.ROOT));row=declared['reference'][126]
+    if fault=='prior-record':declared['reference'][0]['source']+='-changed'
+    elif fault=='function':declared['function'][67]['source']+='-changed'
+    elif fault=='original':row['original_claim_sha256']='0'*64
+    elif fault in ('writer','unit'):
+        native=json.loads(row['proposed_native_json'])
+        if fault=='writer':native['link']=[link for link in native['link'] if link['type']!='writer']
+        else:native['unit']='changed'
+        row['proposed_native_json']=json.dumps(native)
+    elif fault=='width':row['declared_width']=8
+    elif fault=='signed':row['declared_signed']=False
+    with pytest.raises(ValueError):contract.require_prior_restore1778_boundary(declared)
+
+
+@pytest.mark.parametrize('field',('reader_only1778_retained_writer','prior1778_complete_state_independence',
+    'reader_only1778_original','retained1778_write_sites','stdout_sha256'))
+def test_restore1778_owning_binding_requires_its_exact_primary_original_and_full_state(field):
+    result=dict(reader_only1778_retained_writer=True,prior1778_complete_state_independence=True,
+        reader_only1778_original=contract.RESTORE1778_READER_ONLY_WITH_RETAINED_WRITER[1],
+        retained1778_write_sites=[0x501AA],stdout_sha256='1'*64)
+    assert proof.require_restore1778_result(result) is True
+    result.pop(field)
+    with pytest.raises(ValueError):proof.require_restore1778_result(result)

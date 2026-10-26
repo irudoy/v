@@ -37,8 +37,8 @@ def native_rows(model,phase=None):
                 raise ValueError('the exact full native withdrawal image introduces an absent ledger binding')
         elif not test_contract.exact(native_ledger(model,row['owner']),ledger):
             raise ValueError('the scalar RAM leaf withdrawal changes a retained native ledger identity or selector position')
-    if len(seen)!=96 or len(phases)!=1 or phase is not None and phases!={phase}:
-        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact126-claim phase')
+    if len(seen)!=97 or len(phases)!=1 or phase is not None and phases!={phase}:
+        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact127-claim phase')
     current=next(iter(phases))
     for row in rows:
         old=json.loads(row['original_claim_json'])
@@ -111,6 +111,7 @@ def require_primary(model,record=None):
             or not test_contract.exact(dfco.get('retained1939_write_sites'),[0x50574,0x50594])):
         raise ValueError('the DFCO reader-only withdrawal lacks exact direction,retained writes or complete prior-byte independence')
     require_restore16aa_result(dfco)
+    require_restore1778_result(dfco)
 
     if any(components['paired_inhibit_writer_withdrawal_paths'].get(flag) is not True for flag in (
             'complete_real_nibble_helper','entry_scoped_root_absence','complete_RMW_read_write_pairs')):
@@ -180,4 +181,15 @@ def require_restore16aa_result(result):
             or not test_contract.exact(result.get('retained16aa_write_sites'),[0x501AE])
             or type(source) is not str or len(source)!=64 or any(c not in '0123456789abcdef' for c in source)):
         raise ValueError('the restore reader withdrawal lacks its exact same-primary original, retained writer or full prior state')
+    return True
+
+
+def require_restore1778_result(result):
+    source=result.get('stdout_sha256')
+    if (result.get('reader_only1778_retained_writer') is not True
+            or result.get('prior1778_complete_state_independence') is not True
+            or result.get('reader_only1778_original')!=contract.RESTORE1778_READER_ONLY_WITH_RETAINED_WRITER[1]
+            or not test_contract.exact(result.get('retained1778_write_sites'),[0x501AA])
+            or type(source) is not str or len(source)!=64 or any(c not in '0123456789abcdef' for c in source)):
+        raise ValueError('the intermediate restore reader lacks its exact same-primary original, retained writer or full prior state')
     return True

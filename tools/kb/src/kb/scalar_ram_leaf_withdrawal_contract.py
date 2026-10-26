@@ -1776,7 +1776,21 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   'a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8',
   None,
   'abff2842dc4903e66ed2f824e1f5cc4165514b495436c240811d0b4a52576107',
-  'c6a4aabf99a969f484474fd32fe3c9b373acda9643ae6ff6d97d13ae3e6f0b9e'))
+  'c6a4aabf99a969f484474fd32fe3c9b373acda9643ae6ff6d97d13ae3e6f0b9e'),
+ ('00050018-ffff1778-reader-withdraw',
+  4294907768,
+  'nocturnal-adder/ram',
+  327704,
+  (),
+  'withdrawal',
+  'dfco_state_caller_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  'ee78dd754d5bc5778e829fa0e0fad67c39036ac7bf491d27c0fd7f3a9af3dbf7',
+  None,
+  '243c9f95d9d0ff1394d96f292112c97a6902baf5e23d64968ba2c1f3f1f7ae27',
+  'b55ea87326019c5359eae056c06670d06a6a92ef21c222f1b64ae2658c2c5a37'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2456,7 +2470,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=126):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=127):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2506,7 +2520,7 @@ def descriptor(root):
         if not document.get('link'):document.pop('link',None)
         for marker in document.get('ledger',()):
             if not marker.get('dependency'):marker.pop('dependency',None)
-    if len(expected)!=96 or not test_contract.exact(expected,proposed):
+    if len(expected)!=97 or not test_contract.exact(expected,proposed):
         raise ValueError('the scalar RAM leaf withdrawal changes another fact, link order, evidence, ledger identity, field or note')
     if len(value['function'])!=len(RETAINED_FUNCTIONS):
         raise ValueError('the scalar RAM leaf withdrawal omits a complete retained function input')
@@ -2545,6 +2559,7 @@ def descriptor(root):
     require_prior_reader_direction_boundary(value)
     require_prior_uptight_RAM3348_boundary(value)
     require_prior_restore16aa_boundary(value)
+    require_prior_restore1778_boundary(value)
     return value
 
 
@@ -2594,8 +2609,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=126 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all126 unchanged normal unlink operations')
+    if len(selected)!=127 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all127 unchanged normal unlink operations')
     return True
 
 
@@ -2946,7 +2961,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=126:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=127:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -3016,7 +3031,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=126:
+    if len(value['reference'])!=127:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3189,3 +3204,27 @@ def require_prior_restore16aa_boundary(value):
     function=value['function'][67]
     if function['owner']!=old['to'] or function['function']!=row['function'] or 'proposed_native_json' in function:
         raise ValueError('the restore reader withdrawal changes its complete retained function instead of its one reader')
+
+
+RESTORE1778_READER_ONLY_WITH_RETAINED_WRITER=('00050018-ffff1778-reader-withdraw', 'ee78dd754d5bc5778e829fa0e0fad67c39036ac7bf491d27c0fd7f3a9af3dbf7', 4294907768, 327704)
+PRIOR_RESTORE1778_REFERENCE_SHA256='5f6174a2dd7a29af1ffd4cf4655bc20ebd39d3ba1bbca1744f0598a2845bb563'
+PRIOR_RESTORE1778_FUNCTION_SHA256='08b05ec5b91861ef106e37ac776f059be713c19c9c3698f687ce17a4296e7de7'
+
+
+def require_prior_restore1778_boundary(value):
+    if (digest(value['reference'][:126])!=PRIOR_RESTORE1778_REFERENCE_SHA256
+            or digest(value['function'])!=PRIOR_RESTORE1778_FUNCTION_SHA256):
+        raise ValueError('the intermediate restore reader changes a complete prior126 record or68 function boundary')
+    row=value['reference'][126]
+    if tuple(row[key] for key in ('id','original_claim_sha256','address','function'))!=RESTORE1778_READER_ONLY_WITH_RETAINED_WRITER:
+        raise ValueError('the intermediate restore reader substitutes its exact original or natural caller')
+    old=json.loads(row['original_claim_json']);before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    if (old['type']!='reader' or old['roles']!=[] or old['evidence']!=[] or old['to']!='dfco_restore_classify/fn'
+            or row['declared_width']!='unset' or row['declared_signed']!='unset'
+            or before.get('unit')!='RPM/25' or after.get('unit')!=before['unit']
+            or not test_contract.exact([link for link in before['link'] if link['type']=='writer'],
+                [link for link in after['link'] if link['type']=='writer'])):
+        raise ValueError('the intermediate restore reader changes its actual writer, unit, unset types or original claim')
+    function,=[item for item in value['function'] if item['owner']==old['to']]
+    if function['function']!=row['function'] or 'proposed_native_json' in function:
+        raise ValueError('the intermediate restore reader changes its complete retained function')
