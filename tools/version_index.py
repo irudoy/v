@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Bind the project version table to the pins the repository executes.
-
-`tools/README.md` is the single project record for machine-local component
-versions. Every version it publishes also lives in a file that a build, a
-container, an editor session, or a gate reads. This module reads those files
-and requires the table, and only the table, to repeat them.
-"""
+"""Validate machine version pins and execution and packaging bindings."""
 
 import argparse
 import json
@@ -14,9 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX = ROOT / "tools/README.md"
-INDEX_SECTION = "## Local deployment"
-REPEAT_ROOT = ROOT / "tools"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 REQUIREMENTS = (
     "tools/can_dashboard/requirements-windows.txt",
@@ -31,7 +24,7 @@ IMAGE_SCRIPTS = (
 
 
 class VersionError(Exception):
-    """A published version differs from the pin the repository executes."""
+    """Machine configuration and the executable consumer disagree."""
 
 
 def _text(path):
@@ -89,7 +82,7 @@ def mcp_memgraph_version():
     """Read the version the project-scoped MCP server resolves.
 
     The configuration is machine-local and untracked, so a checkout without it
-    leaves the row unchecked rather than failing the gate.
+    has no optional server pin to validate.
     """
     if not (ROOT / ".mcp.json").is_file():
         return None
@@ -112,11 +105,7 @@ def simulator_version():
 
 
 def toolchain_versions():
-    """Read the upstream part of the Debian pins the execution image installs.
-
-    A Debian pin carries a packaging suffix the table does not publish, so the
-    comparison uses the leading upstream version alone.
-    """
+    """Read upstream versions from the execution image's Debian package pins."""
     return tuple(
         _single("tools/sh-elf-run/Dockerfile", rf"^ARG {name}=(\d[\d.]*)")
         for name in ("GCC_SH_ELF_VERSION", "BINUTILS_SH_ELF_VERSION")
@@ -160,80 +149,6 @@ COMPONENTS = (
 )
 
 
-def published_versions():
-    """Read the component and version cells the deployment table carries."""
-    section = _text("tools/README.md").split(INDEX_SECTION, 1)
-    if len(section) != 2:
-        raise VersionError(f"tools/README.md has no {INDEX_SECTION!r} section")
-    published = {}
-    for line in section[1].split("\n## ", 1)[0].splitlines():
-        if not line.startswith("|"):
-            continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if len(cells) != 3 or cells[0] == "Component" or set(cells[0]) <= {"-"}:
-            continue
-        published[cells[0]] = cells[1]
-    return published
-
-
-def _carries(cell, version):
-    return re.search(rf"(?<![\w.]){re.escape(version)}(?![\w.])", cell) is not None
-
-
-def check_index():
-    """Require every published version to be the pin the repository reads."""
-    published = published_versions()
-    pinned = {}
-    for component, source, read in COMPONENTS:
-        if component not in published:
-            raise VersionError(
-                f"the deployment table has no {component} row"
-            )
-        versions = read()
-        if not versions:
-            continue
-        for version in versions:
-            if not _carries(published[component], version):
-                raise VersionError(
-                    f"the deployment table publishes {component} as "
-                    f"'{published[component]}', {source} pins {version}"
-                )
-        pinned[component] = versions
-    return pinned
-
-
-def _split_code(text):
-    """Separate prose from fenced command blocks.
-
-    Prose is where a document publishes a version, and the table is its one
-    record. A fenced block is a command an operator runs, so a version there is
-    a selector that `check_launchers` holds to the same pin instead.
-    """
-    parts = re.split(r"\n[ \t]*```", "\n" + text)
-    return "\n".join(parts[::2]), "\n".join(parts[1::2])
-
-
-def _documents():
-    for path in sorted(REPEAT_ROOT.rglob("*.md")):
-        if path == INDEX or "node_modules" in path.parts:
-            continue
-        yield path, path.read_text(encoding="utf-8")
-
-
-def check_repeats(pinned):
-    """Require the table to be the only tool document publishing a version."""
-    for path, text in _documents():
-        prose, _commands = _split_code(text)
-        for component, versions in pinned.items():
-            for version in versions:
-                if _carries(prose, version):
-                    raise VersionError(
-                        f"{path.relative_to(ROOT)} repeats the {component} "
-                        f"version {version}; the deployment table in "
-                        "tools/README.md is its one project record"
-                    )
-
-
 def check_execution_image():
     """Require the execution image tag to name the simulator the gate demands."""
     expected = simulator_version()
@@ -249,16 +164,22 @@ def check_execution_image():
 
 
 def check_launchers():
-    """Require a documented `py` launcher selector to be the pinned Python."""
+    """Check the generated installer and the build tool the packager invokes."""
+    from tools.can_dashboard import package_macos, package_windows
+
     expected = python_version()
-    for path, text in _documents():
-        _prose, commands = _split_code(text)
-        for selected in set(re.findall(r"\bpy -(\d+\.\d+)\b", commands)):
-            if selected != expected:
-                raise VersionError(
-                    f"{path.relative_to(ROOT)} runs the launcher as "
-                    f"py -{selected}, pyproject.toml requires {expected}"
-                )
+    selected = set(re.findall(r"\bpy -(\d+\.\d+)\b", package_windows.INSTALL_CMD))
+    if selected != {expected}:
+        raise VersionError(
+            f"the Windows installer selects Python {sorted(selected)}, "
+            f"pyproject.toml requires {expected}"
+        )
+    expected_pyinstaller = requirement_pin(package_macos.BUILD_REQUIREMENTS, "pyinstaller")
+    if package_macos.PYINSTALLER_VERSION != expected_pyinstaller:
+        raise VersionError(
+            f"the macOS packager requires PyInstaller {package_macos.PYINSTALLER_VERSION}, "
+            f"{package_macos.BUILD_REQUIREMENTS} pins {expected_pyinstaller}"
+        )
 
 
 def main(argv=None):
@@ -266,22 +187,18 @@ def main(argv=None):
     parser.add_argument(
         "--check",
         action="store_true",
-        help="fail when a published version differs from an executed pin",
+        help="validate machine version pins and executable consumers",
     )
     parser.parse_args(argv)
     try:
-        pinned = check_index()
-        check_repeats(pinned)
+        for _component, _source, read in COMPONENTS:
+            read()
         check_execution_image()
         check_launchers()
     except VersionError as error:
         print(f"version index: {error}", file=sys.stderr)
         return 1
-    unchecked = len(COMPONENTS) - len(pinned)
-    summary = f"version index: {len(pinned)} components match their pins"
-    if unchecked:
-        summary += f", {unchecked} carry no configuration on this machine"
-    print(summary)
+    print("version pins: machine configuration and execution bindings match")
     return 0
 
 

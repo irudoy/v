@@ -1,127 +1,64 @@
-"""The deployment table is a gated projection of the pins the project runs."""
+"""Version checks consume machine pins and actual launch commands."""
+
+import subprocess
+import sys
 
 import pytest
 
 from tools import version_index
-from tools.can_dashboard import __version__ as dashboard_version
 
 
-def test_every_published_version_is_an_executed_pin():
-    pinned = version_index.check_index()
-    published = version_index.published_versions()
-    assert set(pinned) <= set(published)
-    assert pinned["CAN dashboard"] == (dashboard_version,)
-    assert pinned["Memgraph Lab"] == pinned["Memgraph MAGE"]
-
-
-def test_the_table_is_the_only_tool_document_publishing_a_version():
-    version_index.check_repeats(version_index.check_index())
-    version_index.check_launchers()
-
-
-@pytest.mark.parametrize(
-    "component, published, pinned",
-    [
-        ("Memgraph Lab", "3.11.0", "3.12.1"),
-        ("`tzdata`", "2026.3", "2026.2"),
-        ("CAN dashboard", "10.0.0", "10.0.1"),
-        ("Poppler", "26.09.0", "24.02.0"),
-        pytest.param(
-            "`mcp-memgraph`",
-            "0.4.1",
-            "0.2.0",
-            marks=pytest.mark.skipif(
-                not (version_index.ROOT / ".mcp.json").is_file(),
-                reason="the machine-local .mcp.json is absent, so the row is unchecked",
-            ),
-        ),
-    ],
-)
-def test_a_table_row_that_leaves_its_pin_behind_fails(
-    monkeypatch, component, published, pinned
-):
+def test_machine_configuration_checks_do_not_read_markdown(monkeypatch):
     read = version_index._text
 
-    def drifted(path):
-        text = read(path)
-        if path == "tools/README.md":
-            return text.replace(
-                f"| {component} | {published} |", f"| {component} | {pinned} |"
-            )
-        return text
+    def machine_input(path):
+        assert not str(path).endswith(".md"), "documentation is not a version input"
+        return read(path)
 
-    monkeypatch.setattr(version_index, "_text", drifted)
-    with pytest.raises(version_index.VersionError) as error:
-        version_index.check_index()
-    assert component in str(error.value)
-    assert published in str(error.value)
+    monkeypatch.setattr(version_index, "_text", machine_input)
+    assert version_index.main(["--check"]) == 0
 
 
-def test_a_missing_row_fails(monkeypatch):
+def test_standalone_entry_point_works_outside_the_repository(tmp_path):
+    script = version_index.ROOT / "tools/version_index.py"
+    result = subprocess.run(
+        [sys.executable, str(script), "--check"],
+        cwd=tmp_path, capture_output=True, text=True,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_absent_machine_local_configuration_has_no_server_pin(tmp_path, monkeypatch):
+    monkeypatch.setattr(version_index, "ROOT", tmp_path)
+    assert version_index.mcp_memgraph_version() is None
+
+
+def test_execution_image_tag_follows_the_simulator_pin(monkeypatch):
+    read = version_index._text
+    path = version_index.IMAGE_SCRIPTS[0]
+    current = version_index.simulator_version()
+
+    def changed(name):
+        text = read(name)
+        return text.replace(f"vq-sh-elf-run:{current}", "vq-sh-elf-run:0.0") if name == path else text
+
+    monkeypatch.setattr(version_index, "_text", changed)
+    with pytest.raises(version_index.VersionError, match="the gate requires"):
+        version_index.check_execution_image()
+
+
+def test_toolchain_pins_are_required_in_the_actual_dockerfile(monkeypatch):
     read = version_index._text
 
-    def without_dashboard(path):
+    def missing_pin(path):
         text = read(path)
-        if path == "tools/README.md":
-            return "\n".join(
-                line
-                for line in text.splitlines()
-                if not line.startswith("| CAN dashboard |")
-            )
+        if path == "tools/sh-elf-run/Dockerfile":
+            return "\n".join(line for line in text.splitlines() if not line.startswith("ARG GCC_SH_ELF_VERSION="))
         return text
 
-    monkeypatch.setattr(version_index, "_text", without_dashboard)
-    with pytest.raises(version_index.VersionError) as error:
-        version_index.check_index()
-    assert "CAN dashboard" in str(error.value)
-
-
-def test_a_machine_local_configuration_that_is_absent_leaves_its_row_unchecked(
-    monkeypatch,
-):
-    monkeypatch.setattr(version_index, "mcp_memgraph_version", lambda: None)
-    pinned = version_index.check_index()
-    assert "`mcp-memgraph`" not in pinned
-    assert "`mcp-memgraph`" in version_index.published_versions()
-
-
-def _with_appended_dashboard_readme(monkeypatch, addition):
-    """Append text to the dashboard README as the checkers read it."""
-    documents = version_index._documents
-
-    def appended():
-        for path, text in documents():
-            if path.name == "README.md" and path.parent.name == "can_dashboard":
-                yield path, text + addition
-            else:
-                yield path, text
-
-    monkeypatch.setattr(version_index, "_documents", appended)
-
-
-def test_prose_that_repeats_a_published_version_fails(monkeypatch):
-    _with_appended_dashboard_readme(
-        monkeypatch, f"\nThe dashboard is {dashboard_version} today.\n"
-    )
-    with pytest.raises(version_index.VersionError) as error:
-        version_index.check_repeats(version_index.check_index())
-    assert "can_dashboard/README.md" in str(error.value)
-
-
-def test_a_command_block_may_carry_a_version_prose_may_not(monkeypatch):
-    _with_appended_dashboard_readme(
-        monkeypatch, f"\n```bash\ncat vq-{dashboard_version}.zip\n```\n"
-    )
-    version_index.check_repeats(version_index.check_index())
-
-
-def test_a_launcher_selector_that_leaves_the_pin_behind_fails(monkeypatch):
-    _with_appended_dashboard_readme(
-        monkeypatch, "\n```bash\npy -3.13 -m tools.can_dashboard.app\n```\n"
-    )
-    with pytest.raises(version_index.VersionError) as error:
-        version_index.check_launchers()
-    assert "py -3.13" in str(error.value)
+    monkeypatch.setattr(version_index, "_text", missing_pin)
+    with pytest.raises(version_index.VersionError, match="GCC_SH_ELF_VERSION"):
+        version_index.toolchain_versions()
 
 
 def test_platform_packages_pin_one_python_can_version():
@@ -130,6 +67,35 @@ def test_platform_packages_pin_one_python_can_version():
         for path in version_index.REQUIREMENTS
     }
     assert len(set(pins.values())) == 1
+
+
+def test_inconsistent_python_can_pins_fail(monkeypatch):
+    read = version_index.requirement_pin
+
+    def changed(path, package):
+        version = read(path, package)
+        return version + ".different" if path == version_index.REQUIREMENTS[0] else version
+
+    monkeypatch.setattr(version_index, "requirement_pin", changed)
+    with pytest.raises(version_index.VersionError, match="different python-can versions"):
+        version_index.python_can_version()
+
+
+@pytest.mark.parametrize("command", ["echo no Python launcher", "py -0.0 -m venv .venv"])
+def test_wrong_packaged_windows_selector_fails(monkeypatch, command):
+    from tools.can_dashboard import package_windows
+
+    monkeypatch.setattr(package_windows, "INSTALL_CMD", command)
+    with pytest.raises(version_index.VersionError, match="Windows installer selects Python"):
+        version_index.check_launchers()
+
+
+def test_wrong_macos_build_tool_binding_fails(monkeypatch):
+    from tools.can_dashboard import package_macos
+
+    monkeypatch.setattr(package_macos, "PYINSTALLER_VERSION", "different")
+    with pytest.raises(version_index.VersionError, match="macOS packager requires PyInstaller"):
+        version_index.check_launchers()
 
 
 def test_the_windows_installer_and_the_macos_build_read_their_pins():
