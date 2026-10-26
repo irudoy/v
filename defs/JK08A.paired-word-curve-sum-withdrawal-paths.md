@@ -55,10 +55,31 @@ The exact one-reader and one-owner-selector correction preserves the full
 function. Three preceding records sharing this owner require a common full
 proposed image; only their three proposed-image fields change. Their complete
 original fields and every other reference and function remain exact. Shared
-native/family reconciliation and common B acceptance are required before
-original-completion credit or native admission.
+native/family registration binds both independent caller captures in the same
+existing family. Common B acceptance remains required before original review
+retirement or native admission.
 
 Adapter34 uses the standard input-only source generator and ordinary 80/572
 observer. All 66 preceding generated outputs retain their complete bytes.
 The generated driver and structural refusal source bind the same domain-owned
 declaration and input callbacks.
+
+
+## Shared owning source boundary
+
+The shared descriptor contains 129 exact access originals: 119 readers and ten
+individually pinned writers, 98 complete datum owners, 70 complete functions and
+121 matching ledger selectors (113 datum-end selectors and 8 function-end
+selectors). All 129 exact normal unlink operations form one complete phase.
+Twenty-nine independent components use the same complete original COPY primary.
+The existing registry contains 38 families and 75 captures. Five complete
+function transitions retain eight exact function-end selector withdrawals.
+
+The clamp and paired word-curve package preserves all 127 preceding reference
+records and all 68 preceding function records. Only the three proposed-image
+fields of the three existing shared scalar records change; their complete
+prior images remain recoverable with separate exact current image pins. Both
+new complete function snapshots remain unchanged. Exact types, evidence,
+TEST positions, ledger order, calibration semantics and downstream RAM and
+producer dependencies remain mandatory. Source completion grants no native,
+identity, scale, units, executable or hardware admission.

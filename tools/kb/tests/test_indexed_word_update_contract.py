@@ -134,8 +134,8 @@ def test_source_refuses_identity_geometry_scale_units_caller_hardware_or_publica
 def test_published_component_joint_writer_alias_and_prior_source_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='indexed_word_update_paths']
     text=(repo.ROOT/'defs/JK08A.indexed-word-update-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==127 and len(declared['function'])==68
-    assert len({r['owner'] for r in declared['reference']})==97
+    assert len(rows)==1 and len(declared['reference'])==129 and len(declared['function'])==70
+    assert len({r['owner'] for r in declared['reference']})==98
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,wanted in (('92 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),92),
@@ -159,7 +159,7 @@ def test_published_component_joint_writer_alias_and_prior_source_counts_bind_exe
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==119 and '119 matching ledger selectors' in words
+    assert removed==121 and '121 matching ledger selectors' in words
     image=repo.images()['JK08A'].path.read_bytes()
     assert sum(image[at:at+2]==b'\x00\x0b' for a,b in contract.SPANS for at in range(a,b,2))==1
     assert '1 natural RTS site' in words

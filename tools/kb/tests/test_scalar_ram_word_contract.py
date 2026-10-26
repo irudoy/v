@@ -130,8 +130,8 @@ def test_published_preceding_source_and_adapter_counts_retain_exact_file_boundar
 def test_published_word_counts_and_original_identities_bind_the_executed_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='scalar_ram_word_paths']
     text=(repo.ROOT/'defs/JK08A.scalar-ram-word-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==3 and len(declared['reference'])==127 and len(declared['function'])==68
-    assert len({r['owner'] for r in declared['reference']})==97
+    assert len(rows)==3 and len(declared['reference'])==129 and len(declared['function'])==70
+    assert len({r['owner'] for r in declared['reference']})==98
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,expected in (('78 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),78),
@@ -145,7 +145,7 @@ def test_published_word_counts_and_original_identities_bind_the_executed_sources
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==119 and '119 matching ledger selectors' in words
+    assert removed==121 and '121 matching ledger selectors' in words
     assert 'thirteen families and forty-seven capture bindings' in words
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==10 and 'preceding ten adapters' in words

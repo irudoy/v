@@ -14,7 +14,8 @@ on that table through RAM is described as absent. The original native types,
 scale candidates,units,TEST contexts,source facts and ledger order remain exact.
 The one independent native source delta removes only this direct reader and
 its one datum-end consumer selector;the full function document is unchanged.
-Shared native/family integration remains deferred to coherent reconciliation.
+The existing scalar withdrawal family registers this independent capture and
+complete source set in the same owning batch as the paired word-curve caller.
 
 The independent fixture contains 118 stock instructions,236 code bytes,
 2 complete code spans,118 feasible instructions,20 pinned data spans and
@@ -50,10 +51,30 @@ publication bytes remain mandatory independently of raw transport.
 
 Native publication requires exact complete current-source reconciliation,
 all original owning/function/TEST/ledger contexts and the common B acceptance.
-The independent source bundle retains its existing shared native and family
-contracts until that coherent integration is prepared.
+The full shared native descriptor preserves every original function, TEST
+context and ledger fact outside the exact selected relation and selector.
 
 Adapter33 uses the existing standard source generator and ordinary80/572
 observer. Its 64 preceding generated outputs retain their complete source
 bytes. The complete generated driver and structural refusal source remain
 bound to the same domain-owned declaration and input callbacks.
+
+
+## Shared owning source boundary
+
+The shared descriptor contains 129 exact access originals: 119 readers and ten
+individually pinned writers, 98 complete datum owners, 70 complete functions and
+121 matching ledger selectors (113 datum-end selectors and 8 function-end
+selectors). All 129 exact normal unlink operations form one complete phase.
+Twenty-nine independent components use the same complete original COPY primary.
+The existing registry contains 38 families and 75 captures. Five complete
+function transitions retain eight exact function-end selector withdrawals.
+
+The clamp and paired word-curve package preserves all 127 preceding reference
+records and all 68 preceding function records. Only the three proposed-image
+fields of the three existing shared scalar records change; their complete
+prior images remain recoverable with separate exact current image pins. Both
+new complete function snapshots remain unchanged. Exact types, evidence,
+TEST positions, ledger order, calibration semantics and downstream RAM and
+producer dependencies remain mandatory. Source completion grants no native,
+identity, scale, units, executable or hardware admission.

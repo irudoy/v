@@ -94,3 +94,28 @@ def test_published_independent_source_counts_read_the_executed_fixture_input_and
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==32
     assert 'Adapter33' in words and '64 preceding generated outputs' in words
     assert len(proof_adapter.DESCRIPTORS[:proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)])==32
+
+
+def test_shared_owning_publication_reads_current_execution_descriptor_and_registry():
+    import json
+    from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
+    from kb import scalar_ram_leaf_withdrawal_evidence as family,ordinary_access_registry as registry
+    declared=withdrawal.descriptor(repo.ROOT)
+    text=' '.join((repo.ROOT/'defs/JK08A.clamp-latch-caller-withdrawal-paths.md').read_text().split())
+    owners={row['owner']:row for row in declared['reference']}
+    datum=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']) or ())-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']) or ()) for row in owners.values())
+    functions=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
+        for row in declared['function'] if 'proposed_ledger_json' in row)
+    readers=sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])
+    for phrase in (f"{len(declared['reference'])} exact access originals",f'{readers} readers and ten',
+            f'{len(owners)} complete datum owners',f"{len(declared['function'])} complete functions",
+            f'{datum+functions} matching ledger selectors',f'{datum} datum-end selectors and {functions} function-end selectors',
+            f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures'):
+        assert phrase in text
+    assert len(withdrawal.ORIGINAL_LINK_TYPES)==10
+    assert len(family.COMPONENTS)==29 and 'Twenty-nine independent components' in text
+    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert withdrawal.digest(withdrawal.paired_word_sum_prior_current_rows(declared,127))==withdrawal.PRIOR_CLAMP_PAIRED_REFERENCE_SHA256
+    assert withdrawal.digest(declared['function'][:68])==withdrawal.PRIOR_CLAMP_PAIRED_FUNCTION_SHA256

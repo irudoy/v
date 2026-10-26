@@ -134,8 +134,8 @@ def test_complete_fixture_retains_both_full_callers_and_all_five_real_helpers_wi
 def test_published_paired_curve_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='paired_curve_normalization_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.paired-curve-normalization-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==2 and len(declared['reference'])==127 and len(declared['function'])==68
-    assert len({row['owner'] for row in declared['reference']})==97
+    assert len(rows)==2 and len(declared['reference'])==129 and len(declared['function'])==70
+    assert len({row['owner'] for row in declared['reference']})==98
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('596 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),596),
@@ -154,13 +154,13 @@ def test_published_paired_curve_joint_prior_and_registry_counts_bind_execution_s
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==111 and function_removed==8 and datum_removed+function_removed==119
-    assert '119 matching ledger selectors' in words and '111 datum-end selectors and 8 function-end selectors' in words
+    assert datum_removed==113 and function_removed==8 and datum_removed+function_removed==121
+    assert '121 matching ledger selectors' in words and '113 datum-end selectors and 8 function-end selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
-    assert '117 readers and ten' in words
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==119
+    assert '119 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
+    assert len(family.COMPONENTS)==29 and 'Twenty-nine independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):
         assert 'Fourteen native-RAM components' in ' '.join((repo.ROOT/name).read_text().split())

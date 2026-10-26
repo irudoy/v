@@ -127,8 +127,8 @@ def test_fixture_keeps_one_literal_hole_full_real_remainder_and_exact_eight_knot
 def test_published_timing_remainder_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='timing_remainder_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.timing-remainder-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==5 and len(declared['reference'])==127 and len(declared['function'])==68
-    assert len({row['owner'] for row in declared['reference']})==97
+    assert len(rows)==5 and len(declared['reference'])==129 and len(declared['function'])==70
+    assert len({row['owner'] for row in declared['reference']})==98
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('918 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),918),
@@ -145,12 +145,12 @@ def test_published_timing_remainder_joint_prior_and_registry_counts_bind_executi
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==119 and '119 matching ledger selectors' in words
+    assert removed==121 and '121 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
-    assert '117 readers and ten' in words
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==119
+    assert '119 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
+    assert len(family.COMPONENTS)==29 and 'Twenty-nine independent components' in words
     native_components={row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')}
     assert len(native_components)==14
     for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):

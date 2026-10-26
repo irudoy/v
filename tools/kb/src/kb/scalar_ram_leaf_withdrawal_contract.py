@@ -3375,7 +3375,7 @@ def require_clamp_latch_and_paired_word_boundary(root,value):
             raise ValueError('the clamp and paired word package changes a complete retained function or downstream dependency')
 
 CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.toml': 'f138d9fba490dbe5a75655ce4a357dc0113bcc12da3460b7d30e94287bf96b79',
- 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': '44529ed1499ede281616dfe8262af01e764fa91645eed34f2f8e11dd02ec2f04',
+ 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': '8db4735c99b6014b59b52c7762ec24bb544266d2f44c5f728330b178d7746e1c',
  'tools/sh-elf-run/stock_jk08a_clamp_latch_caller_withdrawal.s': '648337bb3e7454206973d44e216c2b1ff219972b9c9dc5f0d076b34a5e6afe2a',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_contract.py': 'e4367429d06652d24b7853be37820b71a41ffb59a55df3b06abab925df9901df',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_matrix.py': '153f6b9cf7a45cd2b2cc833e33c353438f5f361960696cdade71dad66bbf34f6',
@@ -3383,12 +3383,12 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_transfers.py': '43664b515fa8fe071f614485648e9d73146bdf4c6d107c30c77ec9cfd0ef6977',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_capture_evidence.py': 'd85adc4939b5db5e148fb83de36f60c4b24302b9d416faf64adff592e95adbcf',
  'tools/sh-elf-run/clamp_latch_caller_withdrawal_capture.py': 'af35de7d8a2685e7289e5392deb6a2da8205a5ba0efe930b96748b6756f3e90c',
- 'tools/kb/tests/test_clamp_latch_caller_withdrawal_contract.py': 'a285974ae60002c90a8f1753cb673fad6b3c8d7d6c37a9b49f93d06299e4cddb',
+ 'tools/kb/tests/test_clamp_latch_caller_withdrawal_contract.py': '226d1807e548b9f3e216357ab3b7e0c662235f46b5e71a5777a82285dc846b45',
  'tools/kb/tests/test_clamp_latch_caller_withdrawal_capture_evidence.py': 'c8e0f432fc5f85e315518551b158818f088ed2d50ed24875ffae173d365584b5',
  'tools/sh-elf-run/harness-clamp-latch-caller-withdrawal-paths.c': 'e8918c0f8d344069da6859dcd28983e8d39f839693ab76b13be2856370b7aea7',
  'tools/kb/tests/test_clamp_latch_caller_withdrawal_adapter_generated.py': '7e308d74117e301dafefa88d100d392251b0bb410d454c536df8c68683732bbc',
  'defs/JK08A.paired-word-curve-sum-withdrawal-paths.toml': '82d069b6b5e944bf9477ab6d39e5ab253b9b33b454e59f29938afe4cd93fe35f',
- 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': '5bdc24540cc27ac864a54b40373e9a4ac1c820c96816ee9e37e563cab4b2187d',
+ 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': '72c4a5076df989ef9d0607794e46a68fd8189ffb152201339ca2b1e61ca10950',
  'tools/sh-elf-run/stock_jk08a_paired_word_curve_sum_withdrawal.s': '65cc0ee3e02e108080ea15628db835eb996e3bfe8f3fc347b70651930a5e595e',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_contract.py': '5595ea964f70e447bcd0a76ffe1e222764c92fdd28acc38f127f9c2e529b5920',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_matrix.py': '3f8bdef0b73a78a6a50d74e45fbc92627824e0f1d7153b3d68d4c913080dac78',
@@ -3396,7 +3396,7 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_transfers.py': 'f840d54b4220622492dbac52bff0aac8f2a38fb267428f1fa737194c7b4d5608',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_capture_evidence.py': '16c54217cec10383d1fb9c2a31b851e14400dc4be9827aa29b2713f741fcfdc3',
  'tools/sh-elf-run/paired_word_curve_sum_withdrawal_capture.py': '94779c762767cac007888d7a165853d925881f65e95a6bc99a9875804c02d6ee',
- 'tools/kb/tests/test_paired_word_curve_sum_withdrawal_contract.py': '544719cda0bd57e9da6ac6b8edc02be09ceeac6b425c4a7797e3437b9755b680',
+ 'tools/kb/tests/test_paired_word_curve_sum_withdrawal_contract.py': '5836aa2075e1a241b0a21f3131a522fe8bc3e65d8da66679149153b9211aaab3',
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_capture_evidence.py': '3a6f52db0b2ae64e9f5d0b069efc4009a744c12bcc6fcb13e1cda77079c628ce',
  'tools/sh-elf-run/harness-paired-word-curve-sum-withdrawal-paths.c': '21d714770972eb1d9df92bb5114cd329c4d56b1c166bbf102dc779f7ed08b401',
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_adapter_generated.py': '2b29296a09f8310488de95a57410253f337302b3f8f69a14967159226776751e'}

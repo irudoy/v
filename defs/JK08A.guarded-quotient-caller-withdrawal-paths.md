@@ -5,9 +5,9 @@ Natural callers 532AE, 74B68 and 75306 and the complete real signed divider cont
 closure requires 505 feasible instructions. The descriptor binds 46 literal spans,
 14 pointer aliases, 26 complete RAM fields, 4 scalar configuration words,
 46 complete calibration spans, 40 raw input fields and 7 reused helper sources.
-The joint descriptor contains 127 exact access originals: 117 readers and ten
-individually pinned writers, 97 complete owners, 68 complete functions and
-119 matching ledger selectors. All 127 exact normal unlink operations are mandatory.
+The joint descriptor contains 129 exact access originals: 119 readers and ten
+individually pinned writers, 98 complete owners, 70 complete functions and
+121 matching ledger selectors. All 129 exact normal unlink operations are mandatory.
 The selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -116,7 +116,7 @@ Actual fixed-other output alternatives retain complete other CPU/frame/RAM,
 calibration and instruction preimages. Full raw input matrices and generated
 drivers contain no expected outputs. The 126 prior domain sources retain
 125 byte-identical sources and the existing explicit two-site gated spelling
-exception with complete current/legacy hashes. Twenty-seven independent components
+exception with complete current/legacy hashes. Twenty-nine independent components
 require one complete original COPY primary. The ordinary registry contains
 thirteen families and forty-seven capture bindings. The twentieth standard
 source-only adapter retains the preceding nineteen adapters and all thirty-eight
@@ -166,7 +166,7 @@ The complete paired flag writer component is defined by
 56 functions retain exact boundaries. Entry-scoped absence preserves the real
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 111 datum-end selectors and
+remain mandatory. The joint total includes 113 datum-end selectors and
 8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
@@ -178,15 +178,15 @@ same three datum owners. Full prior 112 records reconstruct exactly; all
 remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 111 datum-end and
+identical primary. The joint selector total contains 113 datum-end and
 8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains127 exact access originals:117 readers and ten
-individually pinned writers,97 complete datum owners,68 complete functions and
-119 matching ledger selectors. These contain111 datum-end selectors and
-8 function-end selectors. Twenty-seven independent components require one
+The joint descriptor contains129 exact access originals:119 readers and ten
+individually pinned writers,98 complete datum owners,70 complete functions and
+121 matching ledger selectors. These contain113 datum-end selectors and
+8 function-end selectors. Twenty-nine independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
