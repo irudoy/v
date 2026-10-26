@@ -503,10 +503,13 @@ because both differ by layout.
 - An anchor symbol carries evidence with `supports = "identity"` of a kind
   that grounds its level on its own layout, or its meaning has a link with
   `relies` that holds on the layout through evidence of that layout.
-- Every other symbol carries evidence with `supports = "homology"` whose `to`
-  names a symbol of the same meaning, or the location on the layout of such
-  a symbol that the evidence compares with `at`. Every homology chain reaches
-  an anchor.
+- A file-owned symbol with an explicitly declared identity `level = "candidate"`
+  needs no anchor. Its evidence, named bits, and claim levels satisfy their
+  checks.
+- Every other file-owned symbol is an anchor or carries evidence with
+  `supports = "homology"` whose `to` names a symbol of the same meaning, or
+  the location on the layout of such a symbol that the evidence compares
+  with `at`. The homology chain of such a symbol reaches an anchor.
 - Homology evidence is `masked-match`, `literal-pool`, `function-match`,
   `call-ordinal`, `interp-contract`, `did-table`, or `byte-identical`
   evidence, `l0` evidence of the symbol's own layout, or `manual` evidence
@@ -1593,7 +1596,7 @@ its last pass and the files that it read beyond those it states in advance.
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn |
 | `references` | Every stored reference and every `[[...]]` citation resolves, and none uses a former name |
 | `symbols` | At most one symbol per layout, kind, and address; at most one symbol or status per meaning and layout; every address lies in the address space of its kind on the MCU of the layout; every `fn` symbol is a function entry of L0 |
-| `homology` | Every symbol is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol |
+| `homology` | Every file-owned symbol whose identity level is not explicitly declared `candidate` is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol |
 | `levels` | No declared level exceeds its effective level; `candidate` claims carry evidence, and `code` and `silicon` claims grounding; every `hardware` key names a record whose `hardware_status` is `pass`; every `arithmetic` equation holds ([Levels](#71-levels)) |
 | `ledgers` | Every owned ledger view selects existing evidence and notes and a canonical dependency with the selected direction, layout, offset, role, and claim; the selected curated name is current or former |
 | `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) |
