@@ -140,7 +140,7 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
         for row in declared['function'] if 'proposed_ledger_json' in row)
     assert removed==118 and '118 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==116
     assert '116 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words

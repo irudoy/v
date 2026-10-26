@@ -137,7 +137,7 @@ publication bytes outside the controlled RAM input. Input echoes and a changed
 write-set alone fail. Every previous full family/helper/native/TEST original
 remains mandatory from the identical primary. Sixteen native-RAM components
 retain exact root/alias interval absence. The 126 normal unlinks and
-118 matching ledger selectors preserve 95 full datum owners and 68 complete
+118 matching ledger selectors preserve 96 full datum owners and 68 complete
 functions. The total contains 110 datum-end and 8 function-end removals.
 Five complete function transitions retain eight exact function-end selectors.
 Every other native/type/TEST/ledger/scope fact remains exact. Full prior
