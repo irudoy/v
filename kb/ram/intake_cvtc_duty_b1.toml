@@ -87,7 +87,8 @@ into this byte, x*25/64 percent"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_intake_duty_scheme.py"""
 key = "test_cell_scale_bounds_the_programmed_duty"
 note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
@@ -119,7 +120,8 @@ into this byte, x*25/64 percent"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_intake_duty_scheme.py"""
 key = "test_cell_scale_bounds_the_programmed_duty"
 note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \
@@ -195,7 +197,8 @@ into this byte, x*25/64 percent"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_intake_duty_scheme.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_intake_duty_scheme.py"""
 key = "test_cell_scale_bounds_the_programmed_duty"
 note = """
 The high byte x of a duty word bounds the duty that the 16-bit scheme \

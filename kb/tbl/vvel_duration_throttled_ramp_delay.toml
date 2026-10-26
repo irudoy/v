@@ -11,7 +11,7 @@ storage = "uint8"
 unit = "count"
 scale = "x"
 to_raw = "x"
-scale_level = "code"
+scale_level = "candidate"
 
 [editor]
 name = "VVEL Duration Throttled - Ramp Delay"
@@ -39,7 +39,8 @@ at = "1me3b:000637bc"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_ramp_delay_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_ramp_delay_scale.py"""
 key = "test_ramp_delay_local_count_scale"
 
 [[status]]

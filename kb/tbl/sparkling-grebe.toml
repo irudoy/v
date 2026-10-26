@@ -55,13 +55,15 @@ name = "sparkling-grebe"
 [[symbol.evidence]]
 kind = "test"
 supports = "identity"
-path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_candidate_identity_paths.py"""
 key = "test_1295c_branch_local_upper_clamp"
 
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_local_count_scales.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_local_count_scales.py"""
 key = "test_1295c_local_bound_scale"
 
 [[symbol.evidence]]

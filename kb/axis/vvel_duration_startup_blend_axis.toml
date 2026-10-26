@@ -33,7 +33,8 @@ at = "1me3b:000639cc"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_temperature_axis_scale.py"""
 key = "test_vvel_duration_startup_blend_axis_nominal_temperature"
 
 [[symbol.evidence]]

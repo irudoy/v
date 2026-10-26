@@ -33,7 +33,8 @@ at = "1me3b:00063408"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_running_rpm_scale.py"""
 key = "test_intake_cvtc_target_running_nominal_rpm_scale"
 note = """
 Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \
@@ -73,7 +74,8 @@ at = "1nd:0005f76c"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_running_rpm_scale.py"""
 key = "test_intake_cvtc_target_running_nominal_rpm_scale"
 note = """
 Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \
@@ -104,7 +106,8 @@ at = "jk78c:00056694"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_running_rpm_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_running_rpm_scale.py"""
 key = "test_intake_cvtc_target_running_nominal_rpm_scale"
 note = """
 Independent exact-image retained bytes; unchanged PathSh2; nominal grid with \

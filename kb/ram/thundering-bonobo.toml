@@ -65,7 +65,8 @@ mode = "base"
 [[symbol.evidence]]
 kind = "test"
 supports = "identity"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[symbol.evidence]]
@@ -123,17 +124,20 @@ mode = "base"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
@@ -155,17 +159,20 @@ at = "7mfk:0002927c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
@@ -189,17 +196,20 @@ at = "7mfk:0002909a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
@@ -224,17 +234,20 @@ at = "7mfk:000290b4"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
@@ -258,17 +271,20 @@ at = "7mfk:0002927e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"
 
 [[link]]
@@ -293,15 +309,18 @@ at = "7mfk:000290cc"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_numeric_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/mapkit/tests/test_ici0a_ratio_path.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py"""
 key = "test_ici0a_ratio_cell_path"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ici0a_ratio_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ici0a_ratio_chain.py"""
 key = "test_ici0a_ratio_chain_owner_contract"

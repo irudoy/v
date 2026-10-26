@@ -34,7 +34,8 @@ name = "amigurumi-pug"
 [[symbol.evidence]]
 kind = "test"
 supports = "identity"
-path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_candidate_identity_paths.py"""
 key = "test_12e52_strict_upper_load_bound"
 
 [[symbol.evidence]]

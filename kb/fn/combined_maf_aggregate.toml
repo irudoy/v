@@ -182,6 +182,7 @@ at = "7mfk:0003b270"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_aggregate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_aggregate.py"""
 key = """
 test_combined_maf_longword_wrap_signed_correction_unsigned_addition_and_zero_clamp_match_stock"""

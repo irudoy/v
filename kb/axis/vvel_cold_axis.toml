@@ -39,7 +39,8 @@ at = "1me3b:00063430"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_cold_axis_scale.py"""
 key = "test_vvel_cold_axis_pid05_code_domain"
 note = """
 Conditional nominal encoded-temperature grid on the exact 1ME3B stock image; \
@@ -93,7 +94,8 @@ at = "1nd:0005f7b0"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_cold_axis_scale.py"""
 key = "test_vvel_cold_axis_pid05_code_domain"
 note = """
 Conditional nominal encoded-temperature grid with separate exact 1ND0A and \
@@ -134,7 +136,8 @@ mode = "base"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_cold_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_cold_axis_scale.py"""
 key = "test_vvel_cold_axis_pid05_code_domain"
 note = """
 Conditional nominal encoded-temperature grid on the exact JK78C stock image; \

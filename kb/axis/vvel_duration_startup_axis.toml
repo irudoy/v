@@ -33,7 +33,8 @@ at = "1me3b:000639e0"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_temperature_axis_scale.py"""
 key = "test_vvel_duration_startup_axis_nominal_temperature"
 
 [[symbol.evidence]]
@@ -69,7 +70,8 @@ at = "1nd:0005fb04"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_temperature_axis_scale.py"""
 key = "test_vvel_duration_startup_axis_nominal_temperature"
 
 [[symbol.evidence]]
@@ -96,7 +98,8 @@ at = "jk78c:00056cbc"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vvel_temperature_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vvel_temperature_axis_scale.py"""
 key = "test_vvel_duration_startup_axis_nominal_temperature"
 
 [[symbol.evidence]]

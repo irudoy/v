@@ -11,7 +11,7 @@ storage = "uint8"
 unit = "Timing-state count"
 scale = "x-128"
 to_raw = "x+128"
-scale_level = "code"
+scale_level = "candidate"
 
 [editor]
 name = "Timing-State Addend - Warm DFCO Transition - Alternate"
@@ -50,7 +50,8 @@ interpolator of the default table and has no source counterpart"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_timing_state_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_timing_state_scale.py"""
 key = "test_timing_state_addend_alternate_scale"
 
 [[symbol]]
@@ -74,7 +75,8 @@ interpolator of the default table and has no source counterpart"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_timing_state_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_timing_state_scale.py"""
 key = "test_timing_state_addend_alternate_scale"
 
 [[symbol]]
@@ -98,7 +100,8 @@ interpolator of the default table and has no source counterpart"""
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_timing_state_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_timing_state_scale.py"""
 key = "test_timing_state_addend_alternate_scale"
 
 [[link]]

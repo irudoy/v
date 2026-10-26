@@ -40,7 +40,8 @@ at = "7mfk:00083988"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_rpm_axis_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_rpm_axis_scale.py"""
 key = "test_dashing_whippet_nominal_rpm_scale"
 
 [[symbol.evidence]]

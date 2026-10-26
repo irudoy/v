@@ -73,7 +73,8 @@ name = "lavender-butterfly"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_lavender_scale.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_lavender_scale.py"""
 key = "test_lavender_nominal_initialized_scale"
 
 [[symbol.evidence]]

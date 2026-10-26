@@ -37,7 +37,8 @@ name = "economic-kagu"
 [[symbol.evidence]]
 kind = "test"
 supports = "identity"
-path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_candidate_identity_paths.py"""
 key = "test_14982_event_counter_threshold"
 
 [[symbol.evidence]]

@@ -105,7 +105,8 @@ at = "7mfk:0003afbe"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -126,7 +127,8 @@ at = "7mfk:0003b0b8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -145,7 +147,8 @@ at = "7mfk:0003b080"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -164,7 +167,8 @@ at = "7mfk:0003b1d4"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -183,7 +187,8 @@ at = "7mfk:0003afd8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -203,7 +208,8 @@ at = "7mfk:0003aff6"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -222,7 +228,8 @@ at = "7mfk:0003af68"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -262,7 +269,8 @@ at = "7mfk:0003af88"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -283,7 +291,8 @@ at = "7mfk:0003afac"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -305,7 +314,8 @@ at = "7mfk:0003af60"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 
@@ -327,7 +337,8 @@ at = "7mfk:0003af76"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_contribution.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_contribution.py"""
 key = """
 test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_stock"""
 

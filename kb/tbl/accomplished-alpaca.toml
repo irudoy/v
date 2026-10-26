@@ -56,13 +56,15 @@ name = "accomplished-alpaca"
 [[symbol.evidence]]
 kind = "test"
 supports = "identity"
-path = "tools/mapkit/tests/test_candidate_identity_paths.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_candidate_identity_paths.py"""
 key = "test_c98e_signed_correction_and_stock_gate"
 
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_local_count_scales.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_local_count_scales.py"""
 key = "test_c98e_centered_word_scale"
 
 [[symbol.evidence]]

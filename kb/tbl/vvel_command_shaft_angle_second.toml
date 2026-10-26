@@ -11,7 +11,7 @@ storage = "uint16"
 unit = "count"
 scale = "x"
 to_raw = "x"
-scale_level = "code"
+scale_level = "candidate"
 
 [editor]
 name = "VVEL Command Word - Shaft Angle Conversion, Second Copy"
@@ -45,7 +45,8 @@ at = "1me3b:0005c974"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_command_count_scales.py"""
 key = "test_vvel_command_shaft_angle_second_scale"
 
 [[symbol]]
@@ -72,7 +73,8 @@ at = "1nd:00058b04"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_command_count_scales.py"""
 key = "test_vvel_command_shaft_angle_second_scale"
 
 [[symbol]]
@@ -97,7 +99,8 @@ mode = "base"
 [[symbol.evidence]]
 kind = "test"
 supports = "scale"
-path = "tools/mapkit/tests/test_vq37_command_count_scales.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_command_count_scales.py"""
 key = "test_vvel_command_shaft_angle_second_scale"
 
 [[link]]
