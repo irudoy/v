@@ -93,7 +93,8 @@ def require_reconstruction(declared, image, directory, source):
     base.run_command([base.AS, '--big', '--isa=sh2e', '-o', stem.with_suffix('.o'), source])
     base.run_command([base.LD, '-EB', f'-Ttext={origin:#x}',
         f"--entry={declared['code'][0][0]:#x}", '-o', stem.with_suffix('.elf'), stem.with_suffix('.o')])
-    base.run_command([base.OBJCOPY, '-O', 'binary', stem.with_suffix('.elf'), stem.with_suffix('.raw')])
+    base.run_command([base.OBJCOPY, '-O', 'binary', '--only-section=.text',
+                      stem.with_suffix('.elf'), stem.with_suffix('.raw')])
     raw = stem.with_suffix('.raw').read_bytes()
     for start, end in spans:
         if start < origin or end > len(image) or raw[start - origin:end - origin] != image[start:end]:
@@ -106,7 +107,8 @@ def assemble_callee(source, address, directory):
         '--defsym', f'STOCK_LOOKUP_ENTRY={address}', '-o', stem.with_suffix('.o'), source])
     base.run_command([base.LD, '-EB', f'-Ttext={address:#x}',
         '--entry=ignition_consumer_callee', '-o', stem.with_suffix('.elf'), stem.with_suffix('.o')])
-    base.run_command([base.OBJCOPY, '-O', 'binary', stem.with_suffix('.elf'), stem.with_suffix('.raw')])
+    base.run_command([base.OBJCOPY, '-O', 'binary', '--only-section=.text',
+                      stem.with_suffix('.elf'), stem.with_suffix('.raw')])
     return stem.with_suffix('.raw').read_bytes()
 
 

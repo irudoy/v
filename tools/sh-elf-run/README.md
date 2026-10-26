@@ -55,6 +55,9 @@ boundary restores the continuation outside the instruction windows under test.
 Both modifications are checked for overlap, and every tested instruction keeps
 its stock bytes. `patches/ignition_literal_consumers.py` declares the required
 consumer windows and rejects omitted or changed literal operands.
+The reconstruction and lookup stubs embed only their linked `.text` section;
+the default GNU linker script's loadable `.stack` section is outside the
+fixture content. The stubs retain their declared stock entry addresses.
 
 ## Container lifecycle and results
 
