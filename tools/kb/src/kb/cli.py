@@ -15,7 +15,7 @@ import sys
 import tomllib
 
 from kb import (answer, catalog, checks, compile, family, fingerprint, graph, guard, instance, l0, lock, passes, project,
-                read, reader, refs, repo, research, sites, spec, store, suggest, vocab, write)
+                read, reader, refs, repo, sites, spec, store, suggest, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
 
@@ -142,42 +142,8 @@ def command_check(args, root=repo.ROOT):
     return _checked_sources(args, root)
 
 
-@_source_read
-def command_flow(args, root=repo.ROOT):
-    """One exact instruction-bound path under explicit bounded software inputs."""
-    from kb import value_flow
-    layout, datum = parse_location(args.ref, args.layout, root)
-    site_layout, site = parse_location(args.site, layout.id, root)
-    if layout.id != '7mfk' or site_layout.id != layout.id:
-        raise KbError('the bounded value-flow sources require the same 7mfk layout', code=2)
-    try:
-        value = value_flow.explain(root, args.component, args.case, datum, site, args.width,
-            expected_analysis=args.analysis)
-    except ValueError as error:
-        raise KbError(str(error), code=6) from error
-    text = json.dumps(value, indent=2, sort_keys=True)+'\n'
-    sys.stdout.write(text if args.json else fit(text, budget_of(args, 'flow', root),
-        'kb flow '+args.ref+' --component '+args.component+' --case '+str(args.case)+
-        ' --site '+args.site+' --width '+str(args.width)+' --json'))
-    return 0
 
 
-@_source_read
-def command_proof_group(args, root=repo.ROOT):
-    """Source-only applicability report, with optional existing guarded status."""
-    from kb import proof_reuse
-    layout, function = parse_location(args.function, None, root)
-    key=f'{layout.id}-{function:08x}/fn'
-    try:
-        value=proof_reuse.saved_report(root,args.group,key,args.prepared,
-            requirement_path=args.requirements,flow_paths=args.flow or (),input_path=args.inputs,
-            model=compile.cached(root) if args.accepted else None)
-    except (ValueError,OSError) as error:
-        raise KbError(str(error),code=6) from error
-    text=json.dumps(value,indent=2,sort_keys=True)+'\n'
-    sys.stdout.write(text if args.json else fit(text,budget_of(args,'proof-group',root),
-        'kb proof-group '+args.group+' --function '+args.function+' --prepared '+args.prepared+' --json'))
-    return 0
 
 
 @_source_read
@@ -435,29 +401,6 @@ def command_audit(args, root=repo.ROOT):
     return 0
 
 
-def command_prepare_research(args, root=repo.ROOT):
-    """Prepare a reviewable primary batch; knowledge and graph remain unchanged."""
-    target = Path(args.output).resolve()
-    allowed = ((root / 'tmp').resolve(), (root / repo.STATE).resolve())
-    if not any(target.is_relative_to(directory) for directory in allowed):
-        raise KbError('a prepared batch belongs under tmp/ or .kb/', code=2)
-    if target.exists():
-        raise KbError(f'{target}: a preparation artifact already exists', code=3)
-    with lock.held(root):
-        operations, inventory = research.operations(compile.cached(root), args.source_commit, root)
-        if not operations:
-            print('research: no unresolved prose needs transfer')
-            return 0
-        text = store.render_batch(operations)
-        if tomllib.loads(text) != {'op': operations}:
-            raise KbError('the prepared batch loses operation fields', code=3)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text, encoding='utf-8')
-    print(json.dumps({'batch': str(target.relative_to(root)), 'source_commit': args.source_commit,
-                      'inventory': inventory, 'operations': len(operations),
-                      'unresolved_statements': sum(row['statements'] for row in inventory),
-                      'knowledge_written': False, 'graph_changed': False}, sort_keys=True))
-    return 0
 
 
 def command_project(args, root=repo.ROOT):
@@ -667,12 +610,6 @@ def build_parser():
                        help="compute and print one section; repeatable")
     audit.set_defaults(handler=command_audit)
 
-    preparation = commands.add_parser('prepare-research',
-        help='prepare a source-preserving unresolved-chain transfer batch without writing knowledge')
-    preparation.add_argument('source_commit', help='the complete immutable source commit')
-    preparation.add_argument('--output', required=True, help='a new TOML batch under tmp/ or .kb/')
-    preparation.set_defaults(handler=command_prepare_research)
-
     def reader(name, help_text, *positional, layout=True):
         command = commands.add_parser(name, help=help_text)
         for argument, argument_help in positional:
@@ -738,25 +675,6 @@ def build_parser():
     code.add_argument("--no-sync", action="store_true",
                       help="fail instead of syncing a stale graph")
     code.set_defaults(handler=command_code)
-
-    flow = reader('flow', 'one exact-datum bounded instruction path with explicit software inputs', reference)
-    flow.add_argument('--component', required=True,
-        choices=('closed_loop_coolant_paths', 'maf_record_paths'))
-    flow.add_argument('--case', type=int, required=True, help='explicit input case index of the existing component')
-    flow.add_argument('--site', required=True, help='exact load instruction as <layout>:<address>')
-    flow.add_argument('--width', type=int, required=True, choices=(1, 2, 4), help='exact operand width in bytes')
-    flow.add_argument('--analysis', help='expected complete analysis digest; a mismatch remains unresolved')
-    flow.set_defaults(handler=command_flow)
-
-    preparation = reader('proof-group', 'exact reusable proof obligations of one saved coherent source group',
-        ('group','saved group-description JSON under tmp/ or .kb/'),layout=False)
-    preparation.add_argument('--function',required=True,help='exact group function as <layout>:<address>')
-    preparation.add_argument('--prepared',required=True,help='exact prepared-original manifest under tmp/ or .kb/')
-    preparation.add_argument('--requirements',help='explicit per-original datum/site/width/phase/premise requirements')
-    preparation.add_argument('--flow',action='append',help='saved exact value-flow response; repeatable')
-    preparation.add_argument('--inputs',help='saved complete source checkpoint or original producer manifest')
-    preparation.add_argument('--accepted',action='store_true',help='read existing exact-original status through guarded consumers')
-    preparation.set_defaults(handler=command_proof_group)
 
     render = commands.add_parser("project", help="render the projections that kb generates")
     render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")

@@ -74,22 +74,3 @@ def test_a_rebound_archived_step_cannot_be_hidden_by_restoring_its_old_original(
     changed['step'][0]['via'] = ['first/fn']
     with pytest.raises(KbError, match='binding'):
         research.transfer(changed, SOURCE, GRAMMAR, COMMIT, PATH)
-
-
-@pytest.mark.parametrize('target', ['outside', 'existing'])
-def test_preparation_refuses_unsafe_or_existing_destinations_before_compiling(monkeypatch, tmp_path, target):
-    from kb import cli
-    def unexpected(*args):
-        pytest.fail('a refused destination compiles knowledge')
-    monkeypatch.setattr(cli.compile, 'cached', unexpected)
-    root = tmp_path / 'repository'
-    output = tmp_path / 'outside.toml' if target == 'outside' else root / 'tmp/existing.toml'
-    if target == 'existing':
-        output.parent.mkdir(parents=True)
-        output.write_text('existing artifact')
-    with pytest.raises(KbError):
-        cli.command_prepare_research(SimpleNamespace(output=str(output), source_commit=COMMIT), root)
-    if target == 'existing':
-        assert output.read_text() == 'existing artifact'
-    else:
-        assert not output.exists()

@@ -8,7 +8,7 @@ from kb import cli, mcp
 # Commands that change state or serve, and so are no MCP read tools.
 NOT_READ = {"sync", "instance", "guard", "mcp", "project", "fmt", "new", "set", "bind", "absent",
             "unresolved", "link", "set-link", "unlink", "select", "merge", "rename", "move", "apply",
-            "prepare-research", "retire", "family"}
+            "retire", "family"}
 
 
 class ToolTest(unittest.TestCase):
@@ -18,6 +18,15 @@ class ToolTest(unittest.TestCase):
         self.assertEqual(mcp.WRITE_COMMANDS, ("apply",))
         self.assertEqual([tool["name"] for tool in mcp.tools()],
                          [f"kb_{name}" for name in mcp.READ_COMMANDS + mcp.WRITE_COMMANDS])
+
+    def test_retired_proof_commands_are_not_exposed(self):
+        parser = cli.build_parser()
+        names = {tool["name"] for tool in mcp.tools(parser)}
+        commands = set(mcp._subparsers(parser).choices)
+        for command in ("flow", "proof-group", "prepare-research"):
+            with self.subTest(command=command):
+                self.assertNotIn(command, commands)
+                self.assertNotIn(f"kb_{command}", names)
 
     def test_apply_takes_a_batch_and_a_dry_run(self):
         schema = {tool["name"]: tool["inputSchema"] for tool in mcp.tools()}["kb_apply"]
