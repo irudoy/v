@@ -1,0 +1,28 @@
+schema = 1
+id = "jk08a-indexed-timer-refresh-writer"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete 9018C indexed timer-refresh writer, full zero/nonzero enable paths, exact native850C read/write and850D read, complete separate ordinary/native snapshots, SR interrupt masking, frame and natural return."
+entries = [590220]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+unit = {"assembly" = "tools/sh-elf-run/stock_jk08a_indexed_timer_refresh_writer.s", "code" = [{"start" = 590220, "end" = 590416}], "pools" = [{"address" = 590416, "size" = 2, "stock_hex" = "0c89"}, {"address" = 590418, "size" = 2, "stock_hex" = "ff0f"}, {"address" = 590420, "size" = 2, "stock_hex" = "850c"}, {"address" = 590840, "size" = 4, "stock_hex" = "ffff42d3"}, {"address" = 590844, "size" = 4, "stock_hex" = "00008e23"}, {"address" = 590848, "size" = 4, "stock_hex" = "ffff4124"}, {"address" = 590852, "size" = 4, "stock_hex" = "ffff28f8"}], "aliases" = [{"address" = 590840, "width" = 4, "original" = 4294918867, "alias" = 16794323}, {"address" = 590848, "width" = 4, "original" = 4294918436, "alias" = 16793892}, {"address" = 590852, "width" = 4, "original" = 4294912248, "alias" = 16787704}]}
+native_control_bytes = {"addresses" = [4294935820, 4294935821], "window_start" = 4294935808, "window_size" = 256}
+controlled_calibration = [{"address" = 36387, "size" = 1}, {"address" = 590416, "size" = 2}, {"address" = 590418, "size" = 2}, {"address" = 590420, "size" = 2}, {"address" = 590840, "size" = 4}, {"address" = 590844, "size" = 4}, {"address" = 590848, "size" = 4}, {"address" = 590852, "size" = 4}]
+bound_spans = [{"address" = 590220, "size" = 196}, {"address" = 36387, "size" = 1}, {"address" = 590416, "size" = 2}, {"address" = 590418, "size" = 2}, {"address" = 590420, "size" = 2}, {"address" = 590840, "size" = 4}, {"address" = 590844, "size" = 4}, {"address" = 590848, "size" = 4}, {"address" = 590852, "size" = 4}]
+configuration = [{"address" = 36387, "size" = 1, "field" = "reload"}]
+software_index_premise = {"first" = 0, "last" = 255, "additional" = [4294967295]}
+exact_owner_index = 6
+exact_owner_address = 4294919102
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+natural_scheduling_inference = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false

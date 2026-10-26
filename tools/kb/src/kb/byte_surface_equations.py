@@ -72,6 +72,15 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
         and native_controls.get('window_start')==0xFFFF8400
         and native_controls.get('window_size')==256
         and native_controls.get('addresses')==[0xFFFF84C3])
+    indexed_timer_window=(declared.get('id')=='jk08a-indexed-timer-refresh-writer'
+        and declared.get('image_sha256')=='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
+        and entry==0x9018C and spans==((0x9018C,0x90250),)
+        and all(type(value) is int for value in spans[0])
+        and type(native_controls) is dict
+        and type(native_controls.get('addresses')) is list
+        and all(type(value) is int for value in native_controls['addresses'])
+        and type(native_controls.get('window_start')) is int and type(native_controls.get('window_size')) is int
+        and native_controls==dict(addresses=[0xFFFF850C,0xFFFF850D],window_start=0xFFFF8500,window_size=256))
     gopher_window=declared.get('id')=='jk08a-fine-gopher'
     coordinate_window=(declared.get('id')=='jk08a-closed-loop-coordinate'
         and declared.get('native_storage')==dict(start=0xFFFF8560,size=20,logical_offset=0x8560,
@@ -86,6 +95,8 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
     if native_io_window and any(sp-frame_prefix<start+size and start<sp+32 for start,size in
             ((0xFFFFD900,1024),(0xFFFFF400,256),(0xFFFFF700,256))):
         raise ValueError('the bounded I/O frame overlaps declared native storage')
+    if indexed_timer_window and sp-frame_prefix<0xFFFF8600 and 0xFFFF8500<sp+32:
+        raise ValueError('the indexed timer frame overlaps its exact native control snapshot window')
     if coordinate_window and sp-frame_prefix<0xFFFF8574 and 0xFFFF8560<sp+32:
         raise ValueError('the coordinate frame overlaps its exact native twenty-byte workspace')
     registers=[*context[:15],sp]
@@ -107,6 +118,8 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
             # The independent consumer requires actual native/relocated snapshots to agree.
             memory,offset,domain=ram,address&65535,'native-control'
         elif publication_window and 0xFFFF8400<=address<=0xFFFF8500-width:
+            memory,offset,domain=ram,address&65535,'native-control'
+        elif indexed_timer_window and width==1 and (address==0xFFFF850C or address==0xFFFF850D and mode=='read'):
             memory,offset,domain=ram,address&65535,'native-control'
         elif gopher_window and 0xFFFF8C00<=address<=0xFFFF8D00-width:
             memory,offset,domain=ram,address&65535,'gbr-window'
