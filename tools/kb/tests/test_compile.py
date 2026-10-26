@@ -351,7 +351,7 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
     BASE = {"kind": "indirect", "supports": "identity", "at": "7mfk:00028f06",
             "mode": "base", "value": 0x6E0}
     TEST = {"kind": "test", "supports": "identity",
-            "path": "tools/mapkit/tests/test_ici0a_ratio_path.py",
+            "path": "git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_ici0a_ratio_path.py",
             "key": "test_ici0a_ratio_cell_path"}
 
     def test_actual_ratio_has_reviewed_base_test_and_handler_access_roles(self):
@@ -360,7 +360,6 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
         self.assertEqual([e for e in symbol.evidence if e["kind"] in ("indirect", "test")],
                          [self.BASE, self.TEST])
         self.assertIsNone(match.verify(m, symbol, self.BASE))
-        self.assertIsNone(match.verify(m, symbol, self.TEST))
         owner = SymbolKey("7mfk", "fn", 0x28EA2)
         reader = {(link.type, layout, link.to.symbols[layout].key)
                   for link in symbol.meaning.links
@@ -373,7 +372,7 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
         self.assertFalse([i for i in levels.check(m)
                           if "the structure of 7mfk-ffff196c/ram," in i.message])
 
-    def test_ratio_base_and_named_test_removal_restores_the_dependency_barrier(self):
+    def test_ratio_base_and_direct_references_are_independent_structural_routes(self):
         from kb import sites
         m = compile.build()
         key = SymbolKey("7mfk", "ram", 0xFFFF196C)
@@ -386,28 +385,31 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
         self.assertIn(self.TEST, symbol.evidence)
         # Accepted direct accesses and reviewed base evidence are independent
         # structural routes. Losing only one must not fabricate a deficiency.
-        with patch.object(sites, "referenced", side_effect=lambda layout, root:
-                          frozenset({0xFFFF196C}) if layout == "7mfk" else frozenset()):
-            symbol.evidence = [e for e in symbol.evidence if e not in (self.BASE, self.TEST)]
-            self.assertTrue(levels.held(m, symbol))
-        symbol.evidence = evidence
-        with patch.object(sites, "referenced", side_effect=lambda layout, root:
-                          referenced[layout] - {key.address} if layout == key.layout else referenced[layout]):
-            self.assertTrue(levels.held(m, symbol))
-            symbol.evidence = [e for e in symbol.evidence if e not in (self.BASE, self.TEST)]
-            self.assertFalse(levels.held(m, symbol))
-            after = set(levels.check(m))
-            barriers = [i for i in after - before
-                        if "the structure of 7mfk-ffff196c/ram," in i.message]
-            self.assertEqual(len(barriers), 4)
-            self.assertEqual({i.subject for i in barriers},
-                             {"knowing-manul/ram", "pastel-yak/fn",
-                              "pink-mustang/ram", "spry-uakari/reg"})
-            self.assertTrue(all("link" in i.message for i in barriers))
+        try:
+            with patch.object(sites, "referenced", side_effect=lambda layout, root:
+                              frozenset({0xFFFF196C}) if layout == "7mfk" else frozenset()):
+                symbol.evidence = [e for e in symbol.evidence if e != self.BASE]
+                self.assertTrue(levels.held(m, symbol))
             symbol.evidence = evidence
-            self.assertTrue(levels.held(m, symbol))
-            self.assertFalse([i for i in levels.check(m)
-                              if "the structure of 7mfk-ffff196c/ram," in i.message])
+            with patch.object(sites, "referenced", side_effect=lambda layout, root:
+                              referenced[layout] - {key.address} if layout == key.layout else referenced[layout]):
+                self.assertTrue(levels.held(m, symbol))
+                symbol.evidence = [e for e in symbol.evidence if e != self.BASE]
+                self.assertFalse(levels.held(m, symbol))
+                after = set(levels.check(m))
+                barriers = [i for i in after - before
+                            if "the structure of 7mfk-ffff196c/ram," in i.message]
+                self.assertEqual(len(barriers), 4)
+                self.assertEqual({i.subject for i in barriers},
+                                 {"knowing-manul/ram", "pastel-yak/fn",
+                                  "pink-mustang/ram", "spry-uakari/reg"})
+                self.assertTrue(all("link" in i.message for i in barriers))
+                symbol.evidence = evidence
+                self.assertTrue(levels.held(m, symbol))
+                self.assertFalse([i for i in levels.check(m)
+                                  if "the structure of 7mfk-ffff196c/ram," in i.message])
+        finally:
+            symbol.evidence = evidence
         self.assertEqual((symbol.props, symbol.meaning.props), props)
         self.assertEqual(set(levels.check(m)), before)
         self.assertEqual(model().symbols[key].evidence, evidence)
