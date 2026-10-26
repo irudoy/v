@@ -19,7 +19,8 @@ at = "7mfk:0003c1cc"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -42,6 +43,7 @@ at = "7mfk:0003c1cc"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""

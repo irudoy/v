@@ -220,12 +220,14 @@ relies = "structure"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -284,12 +286,14 @@ publication, not physical causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -311,12 +315,14 @@ the value publication, not physical causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -338,12 +344,14 @@ the value publication, not physical causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -365,12 +373,14 @@ publication, not physical causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -392,12 +402,14 @@ denotes the value publication, not physical causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -420,12 +432,14 @@ causation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]

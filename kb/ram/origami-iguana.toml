@@ -134,12 +134,14 @@ key = "body"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -189,12 +191,14 @@ separate from the K/H condition and the numerical-limit gate."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]

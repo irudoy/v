@@ -150,12 +150,14 @@ at = "7mfk:0005222c"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -169,12 +171,14 @@ at = "7mfk:0002b662"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -269,12 +273,14 @@ separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]
@@ -308,12 +314,14 @@ at = "7mfk:0005222c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]

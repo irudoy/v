@@ -256,12 +256,14 @@ key = "reference"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -553,12 +555,14 @@ reverse_supports = "identity"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]

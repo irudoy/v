@@ -513,12 +513,14 @@ at = "7mfk:00054a64"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -532,12 +534,14 @@ at = "7mfk:00054bdc"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -551,12 +555,14 @@ at = "7mfk:00054c54"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -570,12 +576,14 @@ at = "7mfk:00054d0c"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_dispatch_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
 key = "test_injection_dispatch_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_dispatch_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
 key = "test_injection_dispatch_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -585,12 +593,14 @@ key = "Bounded injection pre-call argument preparation"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -617,12 +627,14 @@ return; omitted entry domains retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
@@ -661,12 +673,14 @@ return; omitted entry domains retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
@@ -709,12 +723,14 @@ simulator substitutions."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]

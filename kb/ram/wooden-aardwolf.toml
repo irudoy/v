@@ -80,12 +80,14 @@ at = "7mfk:0004da28"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -111,12 +113,14 @@ at = "7mfk:0004d9d2"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]
@@ -142,12 +146,14 @@ at = "7mfk:0004da00"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]
@@ -189,12 +195,14 @@ at = "7mfk:0004d9b2"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]
@@ -221,12 +229,14 @@ at = "7mfk:0004d9be"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]
@@ -253,12 +263,14 @@ at = "7mfk:0004d9b8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]
@@ -288,12 +300,14 @@ at = "7mfk:0004da28"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_retard_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_retard_chain.py"""
 key = "test_knock_event_retard_registered_stock_contract"
 
 [[link.evidence]]

@@ -104,12 +104,14 @@ at = "7mfk:0002b6ea"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -119,12 +121,14 @@ key = "Bounded injection offset multiplication"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -156,12 +160,14 @@ timer scale, compare programming and hardware remain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]
@@ -190,12 +196,14 @@ hardware compare delivery and peripheral timing retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
@@ -234,12 +242,14 @@ timer scale, compare programming and hardware remain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]
@@ -261,12 +271,14 @@ establish that hardware delivers the compare event."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
@@ -316,12 +328,14 @@ timer scale, compare programming and hardware remain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]

@@ -49,18 +49,21 @@ test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_s
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -96,7 +99,8 @@ at = "7mfk:0003ba5e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
@@ -114,12 +118,14 @@ independent roles."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -141,12 +147,14 @@ independent."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]

@@ -88,12 +88,14 @@ at = "7mfk:000a1402"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_adjustment_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_registered_adjustment_stock_contract"
 
 [[symbol.evidence]]
@@ -124,12 +126,14 @@ at = "7mfk:000a1402"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_adjustment_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]

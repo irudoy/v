@@ -42,12 +42,14 @@ mode = "base"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -61,12 +63,14 @@ at = "7mfk:00054ab0"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -97,12 +101,14 @@ at = "7mfk:00022558"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]
@@ -133,12 +139,14 @@ at = "7mfk:00022558"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]
@@ -171,12 +179,14 @@ simulator substitutions."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_slot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
 key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
@@ -207,12 +217,14 @@ at = "7mfk:00022558"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_snapshot_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_snapshot_chain.py"""
 key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]

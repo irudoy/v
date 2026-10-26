@@ -20,12 +20,14 @@ at = "7mfk:0004a1ba"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -49,12 +51,14 @@ ordinary/weighted/B-zero domain has sign none."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -76,12 +80,14 @@ asserted."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -103,12 +109,14 @@ influence sign is none."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -135,12 +143,14 @@ at = "7mfk:0004a1ba"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -164,12 +174,14 @@ executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -191,12 +203,14 @@ domain is 0..255; no live mode reachability is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -218,12 +232,14 @@ wide-denominator helper arm is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -252,12 +268,14 @@ is an independent contract."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]

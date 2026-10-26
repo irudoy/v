@@ -280,12 +280,14 @@ at = "7mfk:0002b660"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -295,12 +297,14 @@ key = "Bounded injection argument splitting and phase normalization"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -314,12 +318,14 @@ at = "7mfk:0002b6ce"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_count_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_count_chain.py"""
 key = "test_injection_count_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_count_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_count_chain.py"""
 key = "test_injection_count_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -333,12 +339,14 @@ at = "7mfk:0002b64a"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_prologue_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
 key = "test_injection_prologue_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_prologue_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
 key = "test_injection_prologue_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -348,12 +356,14 @@ key = "Bounded injection programmer entry frame and byte flag"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -404,12 +414,14 @@ separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]

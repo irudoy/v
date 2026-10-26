@@ -143,12 +143,14 @@ at = "7mfk:00049656"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -276,12 +278,14 @@ at = "7mfk:0004964c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_timing_byte_chain.py"""
 key = "test_knock_timing_byte_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_timing_byte_chain.py"""
 key = "test_knock_timing_byte_registered_stock_contract"
 
 [[link.evidence]]
@@ -308,12 +312,14 @@ at = "7mfk:00049644"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -347,12 +353,14 @@ at = "7mfk:000499dc"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -380,12 +388,14 @@ at = "7mfk:000499cc"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -419,12 +429,14 @@ at = "7mfk:000499bc"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -453,12 +465,14 @@ at = "7mfk:00049610"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -487,12 +501,14 @@ at = "7mfk:000495e8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -526,12 +542,14 @@ at = "7mfk:00049628"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -564,12 +582,14 @@ at = "7mfk:00049614"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -597,12 +617,14 @@ at = "7mfk:0004961e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
@@ -639,12 +661,14 @@ at = "7mfk:00049656"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_timing_byte_chain.py"""
 key = "test_knock_timing_byte_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_timing_byte_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_timing_byte_chain.py"""
 key = "test_knock_timing_byte_registered_stock_contract"
 
 [[link.evidence]]
@@ -658,12 +682,14 @@ at = "7mfk:00049648"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_state_selection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_state_selection_chain.py"""
 key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]

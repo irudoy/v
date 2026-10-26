@@ -202,12 +202,14 @@ at = "7mfk:0004db8c"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -245,12 +247,14 @@ at = "7mfk:0004db5c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -284,12 +288,14 @@ at = "7mfk:0004db48"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -315,12 +321,14 @@ at = "7mfk:0004db4e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -346,12 +354,14 @@ at = "7mfk:0004db58"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -385,12 +395,14 @@ at = "7mfk:0004db54"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -434,12 +446,14 @@ at = "7mfk:0004db48"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -469,12 +483,14 @@ at = "7mfk:0004db8c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_event_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_event_publication_chain.py"""
 key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]

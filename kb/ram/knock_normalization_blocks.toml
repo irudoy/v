@@ -18,12 +18,14 @@ at = "7mfk:0004a270"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -45,12 +47,14 @@ arithmetic input."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -71,12 +75,14 @@ publication; B>0 forms exact positive denominator 32*B in 32..8160."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]

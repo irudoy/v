@@ -19,12 +19,14 @@ at = "7mfk:00049e2a"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -46,12 +48,14 @@ prescribes no stock value."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]

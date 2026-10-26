@@ -21,12 +21,14 @@ at = "7mfk:0005d026"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[symbol.evidence]]
@@ -49,12 +51,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
@@ -77,12 +81,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
@@ -105,12 +111,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
@@ -133,12 +141,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
@@ -161,12 +171,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
@@ -189,12 +201,14 @@ at = "7mfk:0005d026"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_feedback_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_feedback_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
 key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]

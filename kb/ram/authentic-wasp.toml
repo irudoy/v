@@ -180,12 +180,14 @@ at = "7mfk:0004a024"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]

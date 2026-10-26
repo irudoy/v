@@ -89,12 +89,14 @@ at = "7mfk:00054d12"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_dispatch_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
 key = "test_injection_dispatch_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_dispatch_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
 key = "test_injection_dispatch_registered_stock_contract"
 
 [[symbol.evidence]]

@@ -19,7 +19,8 @@ at = "7mfk:0003ba74"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
@@ -42,7 +43,8 @@ at = "7mfk:0003ba74"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
@@ -64,7 +66,8 @@ at = "7mfk:0003ba60"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
@@ -87,7 +90,8 @@ at = "7mfk:0003ba6a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
@@ -108,6 +112,7 @@ at = "7mfk:0003ba8c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_bfs_rate.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""

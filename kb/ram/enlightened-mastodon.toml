@@ -127,12 +127,14 @@ at = "7mfk:0004eb9a"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -142,12 +144,14 @@ key = "Bounded bank base-pulse builder"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_channel_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_channel_pulse_chain.py"""
 key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -173,12 +177,14 @@ at = "7mfk:0004eaf0"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -204,12 +210,14 @@ at = "7mfk:0004eb5e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -236,12 +244,14 @@ at = "7mfk:0004eb04"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -268,12 +278,14 @@ at = "7mfk:0004eb60"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -300,12 +312,14 @@ at = "7mfk:0004eb7a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -331,12 +345,14 @@ at = "7mfk:0004eae6"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -378,12 +394,14 @@ at = "7mfk:0004eb0e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -410,12 +428,14 @@ at = "7mfk:0004eaf6"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -441,12 +461,14 @@ at = "7mfk:0004eb12"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -472,12 +494,14 @@ at = "7mfk:0004eb22"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -509,12 +533,14 @@ at = "7mfk:0004eb9a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]

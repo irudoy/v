@@ -115,12 +115,14 @@ at = "7mfk:00054be6"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -134,12 +136,14 @@ at = "7mfk:00054c84"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -167,12 +171,14 @@ execution and MMIO retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]
@@ -202,12 +208,14 @@ execution and MMIO retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_sequencing_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
 key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]

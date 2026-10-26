@@ -17,12 +17,14 @@ at = "7mfk:0004a512"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -44,12 +46,14 @@ arithmetic input."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]
@@ -70,12 +74,14 @@ low32 X*P; its maximum product fits unsigned32. B=0 bypasses P."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_normalization_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_normalization_chain.py"""
 key = "test_knock_normalization_registered_stock_contract"
 
 [[link.evidence]]

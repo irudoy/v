@@ -31,12 +31,14 @@ at = "7mfk:00054cbe"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -67,12 +69,14 @@ physical channel mapping and hardware retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[link.evidence]]
@@ -103,12 +107,14 @@ physical channel mapping and hardware retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[link.evidence]]
@@ -139,12 +145,14 @@ physical channel mapping and hardware retain separate evidence."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_catchup_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
 key = "test_injection_catchup_registered_stock_contract"
 
 [[link.evidence]]

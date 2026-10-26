@@ -19,12 +19,14 @@ at = "7mfk:00054dd4"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -49,12 +51,14 @@ Unsigned word multiplied by100 and shifted8 for the start threshold margin."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]

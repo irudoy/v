@@ -63,12 +63,14 @@ at = "7mfk:00026984"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_conversion_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_registered_conversion_stock_contract"
 
 [[symbol.evidence]]
@@ -82,12 +84,14 @@ at = "7mfk:00026984"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_adjustment_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_registered_adjustment_stock_contract"
 
 [[symbol.evidence]]
@@ -148,12 +152,14 @@ at = "7mfk:00026984"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_conversion_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
@@ -163,12 +169,14 @@ key = "Coordinate conditioning"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_adjustment_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_adjustment_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
 key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]

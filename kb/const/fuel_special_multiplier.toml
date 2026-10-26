@@ -33,12 +33,14 @@ at = "7mfk:0005572e"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -65,12 +67,14 @@ downward discontinuities, so both input views have sign none."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[link.evidence]]

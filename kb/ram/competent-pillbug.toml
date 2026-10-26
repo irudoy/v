@@ -23,12 +23,14 @@ at = "7mfk:00055402"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -38,12 +40,14 @@ key = "Upstream fuel pulse calculations"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]

@@ -202,12 +202,14 @@ at = "7mfk:0005796c"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_grid_selection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_registered_closed_loop_stock_contract"
 
 [[symbol.evidence]]
@@ -240,12 +242,14 @@ at = "7mfk:0005796c"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_grid_selection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
@@ -286,12 +290,14 @@ at = "7mfk:00058092"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_grid_selection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
@@ -316,12 +322,14 @@ at = "7mfk:000580e8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_grid_selection_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
 key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]

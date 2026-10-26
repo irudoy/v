@@ -20,12 +20,14 @@ at = "7mfk:0004a2e0"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -49,12 +51,14 @@ view fixes c and the other unsigned operand. Each difference is \
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -78,12 +82,14 @@ or physical channel order is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -107,12 +113,14 @@ or physical channel order is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -136,12 +144,14 @@ view fixes c and the other unsigned operand. Each difference is \
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -163,12 +173,14 @@ substitutes INT32_MIN in the local frame. The admitted difference domain is \
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -192,12 +204,14 @@ or physical channel order is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -221,12 +235,14 @@ are explicit; no acquisition or normalization producer is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]

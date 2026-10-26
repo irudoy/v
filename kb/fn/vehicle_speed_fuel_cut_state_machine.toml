@@ -102,12 +102,14 @@ key = "body"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -125,12 +127,14 @@ role = "consumer"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -151,12 +155,14 @@ their independently owned roles."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -178,12 +184,14 @@ incoming arm remains even when bit5 gates active state."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -200,12 +208,14 @@ supports = "identity"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -226,12 +236,14 @@ conversion is outside this invocation."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -248,12 +260,14 @@ supports = "identity"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -274,12 +288,14 @@ bit is preserved."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -296,12 +312,14 @@ supports = "identity"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_vehicle_speed_fuel_cut_chain.py"""
 key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]

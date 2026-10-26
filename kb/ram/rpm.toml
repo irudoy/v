@@ -204,12 +204,14 @@ at = "7mfk:000521ca"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -223,12 +225,14 @@ at = "7mfk:0003edd8"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_conversion_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_registered_conversion_stock_contract"
 
 [[symbol.evidence]]
@@ -238,12 +242,14 @@ key = "Coordinate conditioning"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -312,12 +318,14 @@ at = "7mfk:000521ca"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]
@@ -419,12 +427,14 @@ at = "7mfk:0003edd8"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_conversion_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_closed_loop_conversion_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
 key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
@@ -468,12 +478,14 @@ role = "indexed_by"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_main_rpm_fuel_cut_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_main_rpm_fuel_cut_chain.py"""
 key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
@@ -517,12 +529,14 @@ at = "7mfk:000521ca"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]

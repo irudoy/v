@@ -43,12 +43,14 @@ at = "7mfk:0004a010"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -102,12 +104,14 @@ channel-zero guard or physical channel order is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -133,12 +137,14 @@ at = "7mfk:0004a13a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -161,12 +167,14 @@ channel-zero guard or physical channel order is executed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -193,12 +201,14 @@ at = "7mfk:0004a40a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_comparison_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_comparison_chain.py"""
 key = "test_knock_comparison_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_comparison_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_comparison_chain.py"""
 key = "test_knock_comparison_registered_stock_contract"
 
 [[link.evidence]]
@@ -225,12 +235,14 @@ at = "7mfk:0004a010"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_threshold_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
 key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]

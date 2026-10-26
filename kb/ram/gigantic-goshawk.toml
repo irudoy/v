@@ -30,12 +30,14 @@ at = "7mfk:0004a158"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -63,12 +65,14 @@ at = "7mfk:0004a13a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -96,12 +100,14 @@ at = "7mfk:0004a17e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -128,12 +134,14 @@ at = "7mfk:0004a150"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -160,12 +168,14 @@ at = "7mfk:0004a1ba"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -193,12 +203,14 @@ at = "7mfk:0004a1a4"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -226,12 +238,14 @@ at = "7mfk:0004a194"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -254,12 +268,14 @@ path."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_metric_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_metric_chain.py"""
 key = "test_knock_metric_registered_stock_contract"
 
 [[link.evidence]]
@@ -287,12 +303,14 @@ at = "7mfk:0004a142"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -320,12 +338,14 @@ at = "7mfk:0004a12e"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
@@ -358,12 +378,14 @@ at = "7mfk:0004a158"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_knock_reference_learning_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_reference_learning_chain.py"""
 key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]

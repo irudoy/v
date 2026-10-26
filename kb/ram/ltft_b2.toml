@@ -221,12 +221,14 @@ key = "body"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -236,12 +238,14 @@ key = "Bounded bank base-pulse builder"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -306,12 +310,14 @@ at = "7mfk:0004eb04"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -334,12 +340,14 @@ low-word wrap prevent a universal positive sign."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -362,12 +370,14 @@ low-word wrap prevent a universal positive sign."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -395,12 +405,14 @@ at = "7mfk:0004eb04"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_bank_base_pulse_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
 key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
@@ -456,12 +468,14 @@ unrelated-bit role is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -484,12 +498,14 @@ remains uint32(L+A-25600); neutral predicates remain independent."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -512,12 +528,14 @@ unrelated-bit role is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -541,12 +559,14 @@ unrelated-bit role is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -569,12 +589,14 @@ result applies. No hardware mode or unrelated-bit role is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -597,12 +619,14 @@ result applies. No hardware mode or unrelated-bit role is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -627,12 +651,14 @@ general-id execution is claimed."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -655,12 +681,14 @@ threshold is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -683,12 +711,14 @@ threshold is inferred."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -711,12 +741,14 @@ uint32 sum; a later neutral condition can still select 25600."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -739,12 +771,14 @@ uint32 sum; a later neutral condition can still select 25600."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
@@ -782,12 +816,14 @@ dispatcher, producer or physical bank claim."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_ltft_publication_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
 key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]

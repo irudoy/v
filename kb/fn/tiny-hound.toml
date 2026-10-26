@@ -293,12 +293,14 @@ key = "reference"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -379,12 +381,14 @@ these bounded windows."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[link.evidence]]
@@ -409,12 +413,14 @@ these bounded windows."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_upstream_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
 key = "test_fuel_upstream_stock_regions_contract"
 
 [[link.evidence]]

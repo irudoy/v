@@ -298,12 +298,14 @@ key = "esm-ec439-p2a00-battery-gt-11v"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]

@@ -24,12 +24,14 @@ at = "7mfk:00052234"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -54,12 +56,14 @@ at = "7mfk:00052234"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_chain_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_injection_start_delay_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_start_delay_chain.py"""
 key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]

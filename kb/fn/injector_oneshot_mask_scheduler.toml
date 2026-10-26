@@ -416,12 +416,14 @@ key = "reference"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_injection_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_connected_injection_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
 key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
@@ -436,12 +438,14 @@ key = "Connected injection calculation and raw scheduling"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[symbol.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[symbol.evidence]]
@@ -493,12 +497,14 @@ intersection selects opening for every selected channel."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[link.evidence]]
@@ -519,12 +525,14 @@ admits the explicit masked call."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[link.evidence]]
@@ -545,12 +553,14 @@ channel."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[link.evidence]]
@@ -570,12 +580,14 @@ mask; any intersection selects opening for every selected channel."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[link.evidence]]
@@ -595,12 +607,14 @@ bits leave this choice unchanged."""
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_owner_contract"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_fuel_cut_consumer_chain.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
 key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[link.evidence]]

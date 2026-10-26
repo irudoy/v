@@ -135,7 +135,8 @@ at = "7mfk:0003c288"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -156,7 +157,8 @@ at = "7mfk:0003c28a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -177,7 +179,8 @@ at = "7mfk:0003c1fa"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -198,7 +201,8 @@ at = "7mfk:0003c1f4"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -219,7 +223,8 @@ at = "7mfk:0003c21a"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -247,7 +252,8 @@ at = "7mfk:0003c292"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -290,7 +296,8 @@ at = "7mfk:0003c1d6"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -311,7 +318,8 @@ at = "7mfk:0003c1c6"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -333,7 +341,8 @@ at = "7mfk:0003c1e0"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -353,7 +362,8 @@ at = "7mfk:0003c1d0"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
@@ -375,7 +385,8 @@ at = "7mfk:0003c1ec"
 
 [[link.evidence]]
 kind = "test"
-path = "tools/kb/tests/test_airflow_fuel_compensation.py"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensation.py"""
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
