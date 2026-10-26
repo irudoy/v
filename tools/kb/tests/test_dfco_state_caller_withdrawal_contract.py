@@ -277,15 +277,17 @@ def test_shared_restore_input_fields_preserve_the_complete_state_prefix_and_phys
     assert len(matrix.RESTORE_SPEED_FIELDS)==len(matrix.RESTORE_FLOOR_FIELDS)==4
 
 
-def test_restore_prior_byte_and_coordinate_domains_hold_every_other_raw_input():
+@pytest.mark.parametrize('kind,field',(('restore-unread16aa-prior-and-retained-writer','byte_16aa'),
+    ('restore-unread1778-prior-and-retained-writer','byte_1778')))
+def test_restore_prior_byte_and_coordinate_domains_hold_every_other_raw_input(kind,field):
     image=repo.images()['JK08A'].path.read_bytes();source=contract.descriptor(repo.ROOT)
     rows=matrix.restore_cases(source,image)
-    selected=[row for row in rows if row['kind']=='restore-unread16aa-prior-and-retained-writer']
+    selected=[row for row in rows if row['kind']==kind]
     groups={}
     for row in selected:
         matrix.require_case(row)
-        key=tuple((name,row[name]) for name in matrix.WIDTHS if name!='byte_16aa')
-        groups.setdefault(key,[]).append(row['byte_16aa'])
+        key=tuple((name,row[name]) for name in matrix.WIDTHS if name!=field)
+        groups.setdefault(key,[]).append(row[field])
     assert len(groups)==4 and all(values==list(range(256)) for values in groups.values())
     coordinate=[row for row in rows if row['kind']=='restore-complete-coordinate-and-curve-direction']
     assert len(coordinate)==3*256
@@ -392,28 +394,42 @@ def test_restore_source_feasibility_retains_full_functions_and_only_proved_unrea
         assert phrase in words
 
 
-def test_restore_reader_direction_keeps_every_actual_byte_value_and_requires_the_exact_writer():
-    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+@pytest.mark.parametrize('identity,site,register,guard',(
+    (transfers.READER16AA_IDENTITY,0x501AE,14,transfers.require16aa_reader_with_retained_writer),
+    (transfers.READER1778_IDENTITY,0x501AA,4,transfers.require1778_reader_with_retained_writer)))
+def test_restore_reader_direction_keeps_every_actual_byte_value_and_requires_the_exact_writer(identity,site,register,guard):
+    row=dict(zip(('id','original_claim_sha256','address','function'),identity));alias=0x01000000+(identity[2]&65535)
     for value in range(256):
-        event=dict(site=0x501AE,mode='write',address=0x010016AA,width_bytes=1,register=14,domain='ram',bytes=f'{value:02x}')
-        assert transfers.require16aa_reader_with_retained_writer(dict(accesses=[event]),row)==((0x501AE,value),)
+        event=dict(site=site,mode='write',address=alias,width_bytes=1,register=register,domain='ram',bytes=f'{value:02x}')
+        assert guard(dict(accesses=[event]),row)==((site,value),)
 
 
 @pytest.mark.parametrize('form',('native-read','alias-read','overlap-word','overlap-dword','native-write',
     'wrong-site','wrong-register','wrong-width','wrong-domain','missing','duplicate','bool-width','noncanonical-byte'))
-def test_restore_reader_direction_refuses_reads_overlapping_containers_and_changed_actual_writer(form):
-    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
-    event=dict(site=0x501AE,mode='write',address=0x010016AA,width_bytes=1,register=14,domain='ram',bytes='80')
-    if form=='native-read':event.update(mode='read',address=0xFFFF16AA)
+@pytest.mark.parametrize('identity,site,register,guard',(
+    (transfers.READER16AA_IDENTITY,0x501AE,14,transfers.require16aa_reader_with_retained_writer),
+    (transfers.READER1778_IDENTITY,0x501AA,4,transfers.require1778_reader_with_retained_writer)))
+def test_restore_reader_direction_refuses_reads_overlapping_containers_and_changed_actual_writer(form,identity,site,register,guard):
+    row=dict(zip(('id','original_claim_sha256','address','function'),identity));native=identity[2];alias=0x01000000+(native&65535)
+    event=dict(site=site,mode='write',address=alias,width_bytes=1,register=register,domain='ram',bytes='80')
+    if form=='native-read':event.update(mode='read',address=native)
     elif form=='alias-read':event['mode']='read'
-    elif form=='overlap-word':event.update(mode='read',address=0x010016A9,width_bytes=2,bytes='0080')
-    elif form=='overlap-dword':event.update(mode='read',address=0xFFFF16A8,width_bytes=4,bytes='00008000')
-    elif form=='native-write':event['address']=0xFFFF16AA
+    elif form=='overlap-word':event.update(mode='read',address=alias-1,width_bytes=2,bytes='0080')
+    elif form=='overlap-dword':event.update(mode='read',address=native-2,width_bytes=4,bytes='00008000')
+    elif form=='native-write':event['address']=native
     elif form=='wrong-site':event['site']+=2
-    elif form=='wrong-register':event['register']=4
+    elif form=='wrong-register':event['register']=register^1
     elif form=='wrong-width':event['width_bytes']=2
     elif form=='wrong-domain':event['domain']='rom'
     elif form=='bool-width':event['width_bytes']=True
     elif form=='noncanonical-byte':event['bytes']='aF'
     events=[] if form=='missing' else [event,event] if form=='duplicate' else [event]
-    with pytest.raises(ValueError):transfers.require16aa_reader_with_retained_writer(dict(accesses=events),row)
+    with pytest.raises(ValueError):guard(dict(accesses=events),row)
+
+
+@pytest.mark.parametrize('guard,donated',(
+    (transfers.require16aa_reader_with_retained_writer,transfers.READER1778_IDENTITY),
+    (transfers.require1778_reader_with_retained_writer,transfers.READER16AA_IDENTITY)))
+def test_restore_reader_direction_refuses_another_original_or_writer_scope(guard,donated):
+    row=dict(zip(('id','original_claim_sha256','address','function'),donated))
+    with pytest.raises(ValueError):guard(dict(accesses=[]),row)

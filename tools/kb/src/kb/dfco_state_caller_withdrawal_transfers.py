@@ -271,26 +271,41 @@ READER16AA_IDENTITY=('00050018-ffff16aa-reader-withdraw',
     'a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8',0xFFFF16AA,0x50018)
 
 
-def require16aa_reader_with_retained_writer(result,row):
+READER1778_IDENTITY=('00050018-ffff1778-reader-withdraw',
+    'ee78dd754d5bc5778e829fa0e0fad67c39036ac7bf491d27c0fd7f3a9af3dbf7',0xFFFF1778,0x50018)
+
+
+def _require_restore_reader_with_retained_writer(result,row,identity,site,register):
+    if (identity,site,register) not in ((READER16AA_IDENTITY,0x501AE,14),(READER1778_IDENTITY,0x501AA,4)):
+        raise ValueError('the restore reader guard extends its exact two selected writer identities')
     same(tuple(row[key] for key in ('id','original_claim_sha256','address','function')),
-        READER16AA_IDENTITY,'the restore reader guard substitutes its exact original owner or function')
+        identity,'the restore reader guard substitutes its exact original owner or function')
+    native=identity[2];alias=RAM_BASE+(native&65535)
     selected=[]
     for event in result['accesses']:
         if (type(event) is not dict or type(event.get('address')) is not int
                 or not 0<=event['address']<=0xFFFFFFFF or type(event.get('width_bytes')) is not int
                 or event['width_bytes'] not in (1,2,4) or event['address']+event['width_bytes']>0x100000000):
             raise ValueError('the restore reader guard changes a complete typed physical operand')
-        if any(event['address']<=at<event['address']+event['width_bytes'] for at in (0xFFFF16AA,RAM_BASE+0x16AA)):
+        if any(event['address']<=at<event['address']+event['width_bytes'] for at in (native,alias)):
             selected.append(event)
     if len(selected)!=1:
         raise ValueError('the restore reader guard omits or duplicates its retained actual byte writer')
     event,=selected
-    if (event.get('mode')!='write' or event.get('site')!=0x501AE or event['address']!=RAM_BASE+0x16AA
-            or event['width_bytes']!=1 or event.get('register')!=14 or event.get('domain')!='ram'
+    if (event.get('mode')!='write' or event.get('site')!=site or event['address']!=alias
+            or event['width_bytes']!=1 or event.get('register')!=register or event.get('domain')!='ram'
             or type(event.get('bytes')) is not str or len(event['bytes'])!=2):
-        raise ValueError('the restore reader guard reads native16AA or changes its exact retained writer site, width or register')
+        raise ValueError('the restore reader guard reads a selected native byte or changes its exact retained writer site, width or register')
     try:raw=bytes.fromhex(event['bytes'])
     except ValueError as exc:raise ValueError('the restore retained writer has no complete byte value') from exc
     if len(raw)!=1 or raw.hex()!=event['bytes']:
         raise ValueError('the restore retained writer changes its canonical complete physical byte')
-    return ((0x501AE,raw[0]),)
+    return ((site,raw[0]),)
+
+
+def require16aa_reader_with_retained_writer(result,row):
+    return _require_restore_reader_with_retained_writer(result,row,READER16AA_IDENTITY,0x501AE,14)
+
+
+def require1778_reader_with_retained_writer(result,row):
+    return _require_restore_reader_with_retained_writer(result,row,READER1778_IDENTITY,0x501AA,4)

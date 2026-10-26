@@ -323,3 +323,23 @@ exact. The shared batch requires all 126 ordinary unlink operations, 96 complete
 owners, 68 complete functions and 118 matching ledger selectors. The selectors
 comprise 110 datum-end and eight function-end selectors. The complete source
 boundary does not establish executable qualification or publish native data.
+
+## Intermediate restore reader direction
+
+The RAM1778 reader has its separate exact original
+`ee78dd754d5bc5778e829fa0e0fad67c39036ac7bf491d27c0fd7f3a9af3dbf7`.
+The existing 50018 closure, independent equations, raw byte1778 input, 80/572
+observer and generated driver remain the same. A second exact writer identity
+extends the existing restore direction guard: each invocation requires the real
+byte store at 501AA from R4 to 01001778. Native or aliased reads and overlapping
+wider reads are refused. The actual 501AE/R14 writer for RAM16AA remains mandatory.
+
+Four complete prior1778 groups retain every byte value 0..255 while holding every
+other RAM byte, including prior16AA, and every CPU/frame/ABI/calibration/source
+input fixed. They use the same two diagnostic fallback paths and two lookup
+paths as the prior16AA groups. Complete returned state, actual writes, calls,
+controls and instruction trace remain equal within each group. The two exact
+reader identities cannot donate an observation or retained-writer result to each
+other. Both raw domains have actual-original substitution and partial-domain
+refusal sources. These obligations do not supply semantic width, signedness,
+native geometry, identity or hardware qualification.

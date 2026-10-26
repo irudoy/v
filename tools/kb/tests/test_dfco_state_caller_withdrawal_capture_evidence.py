@@ -27,6 +27,9 @@ def original():
     assert result['reader_only16aa_retained_writer'] is True and result['prior16aa_complete_state_independence'] is True
     assert result['reader_only16aa_original']==transfers.READER16AA_IDENTITY[1]
     assert result['retained16aa_write_sites']==[0x501AE]
+    assert result['reader_only1778_retained_writer'] is True and result['prior1778_complete_state_independence'] is True
+    assert result['reader_only1778_original']==transfers.READER1778_IDENTITY[1]
+    assert result['retained1778_write_sites']==[0x501AA]
     assert result['fixed_branch_outcomes']=={'00025c3c':['fallthrough'],'00026a9a':['taken']}
     for key in ('native_geometry_inference','automatic_resolution','scale_admission','units_admission',
             'native_identity_admission','natural_caller_reachability','hardware_qualification'):
@@ -187,39 +190,44 @@ def test_restore_actual_complete_state_physical_call_and_return_refusals(restore
 def test_restore_actual_windows_retain_the_real_writer_and_natural_return(restore_windows):
     _,_,_,selected=restore_windows
     row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    intermediate=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER1778_IDENTITY))
     for case,observed,result,value in selected.values():
         writes=transfers.require16aa_reader_with_retained_writer(result,row)
         assert writes==((0x501AE,observed['memory_after'][0][0x16AA]),)
+        assert transfers.require1778_reader_with_retained_writer(result,intermediate)==((0x501AA,observed['memory_after'][0][0x1778]),)
         assert result['trace'][-2]['site']==0x50386 and result['trace'][-1]['delay_slot'] is True
         assert result['trace'][-1]['next']==observed['continuation']
         assert value['gbr']==observed['context'][15] and value['sp']==observed['sp']
 
 
-@pytest.fixture(scope='module')
-def restore_prior_pairs(original):
+@pytest.fixture(scope='module',params=('16aa','1778'))
+def restore_prior_pairs(original,request):
     declared=original[2]['declaration'];image=repo.images()['JK08A'].path.read_bytes()
     actual=proof.observations(original[2],declared)
-    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    identity,site,guard,require=(transfers.READER16AA_IDENTITY,0x501AE,transfers.require16aa_reader_with_retained_writer,
+        proof.require16aa_prior_independence) if request.param=='16aa' else (
+        transfers.READER1778_IDENTITY,0x501AA,transfers.require1778_reader_with_retained_writer,proof.require1778_prior_independence)
+    row=dict(zip(('id','original_claim_sha256','address','function'),identity))
     pairs=[]
     for case in declared['cases']:
-        if case['kind']!='restore-unread16aa-prior-and-retained-writer':continue
+        if case['kind']!=f'restore-unread{request.param}-prior-and-retained-writer':continue
         observed=actual[case['index']];result,_=proof.require_state(declared,image,case,observed,repo.ROOT)
-        pairs.append((observed,result,transfers.require16aa_reader_with_retained_writer(result,row)))
-    assert proof.require16aa_prior_independence(pairs) is True
-    return pairs
+        pairs.append((observed,result,guard(result,row)))
+    assert require(pairs) is True
+    return dict(pairs=pairs,offset=identity[2]&65535,site=site,require=require)
 
 
 @pytest.mark.parametrize('fault',('omit','duplicate','prior','entry','frame-before','frame-after','context',
     'CPU','RAM','writer','bound-before','bound-after','calibration-before','calibration-after',
     'ABI-before','ABI-after','call','trace','branch','code'))
 def test_restore_actual_prior_domain_refuses_partial_or_changed_complete_inputs_and_outcomes(restore_prior_pairs,fault):
-    pairs=list(restore_prior_pairs)
+    pairs=list(restore_prior_pairs['pairs']);offset=restore_prior_pairs['offset'];site=restore_prior_pairs['site']
     if fault=='omit':pairs.pop()
     elif fault=='duplicate':pairs.append(pairs[0])
     else:
         observed,result,writes=deepcopy(pairs[1])
         if fault=='prior':
-            memory=bytearray(observed['memory_before'][0]);memory[0x16AA]^=1;observed['memory_before']=(bytes(memory),)
+            memory=bytearray(observed['memory_before'][0]);memory[offset]^=1;observed['memory_before']=(bytes(memory),)
         elif fault=='entry':observed['entry']=0x503E0
         elif fault in ('frame-before','frame-after','bound-before','bound-after'):
             key=fault.replace('-','_');raw=observed[key];observed[key]=bytes([raw[0]^1])+raw[1:]
@@ -227,7 +235,7 @@ def test_restore_actual_prior_domain_refuses_partial_or_changed_complete_inputs_
         elif fault=='CPU':observed['exit']=(observed['exit'][0]^1,*observed['exit'][1:])
         elif fault=='RAM':
             memory=bytearray(observed['memory_after'][0]);memory[0x1000]^=1;observed['memory_after']=(bytes(memory),)
-        elif fault=='writer':writes=((0x501AE,writes[0][1]^1),)
+        elif fault=='writer':writes=((site,writes[0][1]^1),)
         elif fault.startswith('calibration-'):
             key=fault.replace('-','_');at=next(iter(observed[key]));raw=observed[key][at];observed[key][at]=bytes([raw[0]^1])+raw[1:]
         elif fault.startswith('ABI-'):
@@ -237,14 +245,15 @@ def test_restore_actual_prior_domain_refuses_partial_or_changed_complete_inputs_
         elif fault=='branch':result['branches'][0]['target']+=2
         elif fault=='code':result['code'][next(iter(result['code']))]='0009'
         pairs[1]=(observed,result,writes)
-    with pytest.raises(ValueError):proof.require16aa_prior_independence(pairs)
+    with pytest.raises(ValueError):restore_prior_pairs['require'](pairs)
 
 
 def test_restore_capture_coverage_and_prior_domains_follow_the_current_source_contract():
     words=' '.join((repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text().split())
     assert len(proof.STATE_REQUIRED_BRANCHES)==47 and len(proof.RESTORE_REQUIRED_BRANCHES)==62
     assert len(proof.REQUIRED_BRANCHES)==109 and len(proof.FIXED_BRANCHES)==2
-    for phrase in ('109 two-sided shared conditions','two fixed helper outcomes','four complete prior16AA groups'):
+    for phrase in ('109 two-sided shared conditions','two fixed helper outcomes','four complete prior16AA groups',
+            'Four complete prior1778 groups'):
         assert phrase in words
 
 

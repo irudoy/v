@@ -154,7 +154,7 @@ def native_bindings(model):
             raise ValueError('the DFCO state caller withdrawal original changes a retained exact owner, function or native type')
         result.append(dict(symbol=symbol.key.key,meaning=row['owner'],function=function.key.key,
             function_meaning=function.meaning.key,original_claim_sha256=row['original_claim_sha256']))
-    if len(result)!=9:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
+    if len(result)!=10:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
     return result
 
 
@@ -322,7 +322,8 @@ def require_witness(model,packet,inputs):
     strict_rows=[row for row in rows if row['function']==0x503E0 and row['id']!=transfers.READER1939_IDENTITY[0]]
     reader_row,=[row for row in rows if row['id']==transfers.READER1939_IDENTITY[0]]
     restore_row,=[row for row in rows if row['id']==transfers.READER16AA_IDENTITY[0]]
-    prior_pairs=[];restore_pairs=[]
+    intermediate_row,=[row for row in rows if row['id']==transfers.READER1778_IDENTITY[0]]
+    prior_pairs=[];restore_pairs=[];intermediate_pairs=[]
     actual=observations(packet,declared);coverage={site:set() for site in REQUIRED_BRANCHES};seen=set();entries=set()
     fixed={site:set() for site in FIXED_BRANCHES};publications={}
     for index,(case,observed) in enumerate(zip(declared['cases'],actual)):
@@ -333,7 +334,9 @@ def require_witness(model,packet,inputs):
             if case['kind']=='unread1939-prior-and-retained-writes':prior_pairs.append((observed,writes))
         elif case['entry']==0x50018:
             writes=transfers.require16aa_reader_with_retained_writer(result,restore_row)
+            intermediate_writes=transfers.require1778_reader_with_retained_writer(result,intermediate_row)
             if case['kind']=='restore-unread16aa-prior-and-retained-writer':restore_pairs.append((observed,result,writes))
+            if case['kind']=='restore-unread1778-prior-and-retained-writer':intermediate_pairs.append((observed,result,intermediate_writes))
         else:raise ValueError('the DFCO capture substitutes an unreviewed natural entry')
         entries.add(observed['entry']);seen.update(result['code'])
         publications[index]=computed_publications(observed,result)
@@ -350,6 +353,7 @@ def require_witness(model,packet,inputs):
     require_positive_alternatives(actual,declared,publications)
     require1939_prior_independence(prior_pairs)
     require16aa_prior_independence(restore_pairs)
+    require1778_prior_independence(intermediate_pairs)
     return dict(region=REGION,observations=len(actual),image_sha256=sha(image),fixture_sha256=sha(fixture),
         elf_sha256=packet['elf_sha256'],stdout_sha256=packet['stdout_sha256'],native_bindings=native_bindings(model),
         exact_dfco_state_caller_withdrawal_paths=True,complete_real_rotation_helper=True,no_selected_datum_access=True,no_selected_ram_datum_access=True,
@@ -358,6 +362,8 @@ def require_witness(model,packet,inputs):
         prior1939_complete_state_independence=True,retained1939_write_sites=[0x50574,0x50594],
         reader_only16aa_original=restore_row['original_claim_sha256'],reader_only16aa_retained_writer=True,
         prior16aa_complete_state_independence=True,retained16aa_write_sites=[0x501AE],
+        reader_only1778_original=intermediate_row['original_claim_sha256'],reader_only1778_retained_writer=True,
+        prior1778_complete_state_independence=True,retained1778_write_sites=[0x501AA],
         selected_native_RAM_aliases={f'{native:08x}':f'{alias:08x}' for original,native,alias in transfers.NATIVE_ROOTS if alias is not None},
         conditional_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in coverage.items()},
         fixed_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in fixed.items()},
@@ -411,19 +417,22 @@ def require1939_prior_independence(pairs):
     return True
 
 
-def require16aa_prior_independence(pairs):
+def _require_restore_prior_independence(pairs,identity,site):
+    if (identity,site) not in ((transfers.READER16AA_IDENTITY,0x501AE),(transfers.READER1778_IDENTITY,0x501AA)):
+        raise ValueError('the restore prior-byte domain extends its two exact selected writer identities')
+    offset=identity[2]&65535
     groups={}
     for observed,result,writes in pairs:
         if observed['entry']!=0x50018:
             raise ValueError('the restore prior-byte domain substitutes another caller')
-        memory=bytearray(observed['memory_before'][0]);prior=memory[0x16AA];memory[0x16AA]=0
+        memory=bytearray(observed['memory_before'][0]);prior=memory[offset];memory[offset]=0
         held=dict(entry=observed['entry'],memory=bytes(memory).hex(),context=list(observed['context']),
             frame=observed['frame_before'].hex(),sp=observed['sp'],continuation=observed['continuation'],
             abi=list(observed['abi_before']),sr=observed['sr_before'],bound=observed['bound_before'].hex(),
             calibration={str(at):raw.hex() for at,raw in observed['calibration_before'].items()})
         key=sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode())
         after=observed['memory_after'][0]
-        if len(writes)!=1 or writes[0]!=(0x501AE,after[0x16AA]):
+        if len(writes)!=1 or writes[0]!=(site,after[offset]):
             raise ValueError('the restore prior-byte domain detaches its retained actual byte writer')
         calls=tuple((row['site'],row['target']) for row in result['calls'])
         mode=(calls,bool(observed['memory_before'][0][0x4250]&128))
@@ -434,7 +443,7 @@ def require16aa_prior_independence(pairs):
         if prior in group['priors']:
             raise ValueError('the restore prior-byte domain duplicates an input byte')
         same((mode,outcome),(group['mode'],group['outcome']),
-            'the restore original consumes prior16AA through complete CPU,frame,RAM,ABI,trace or retained writer results')
+            'the restore original consumes a selected prior byte through complete CPU,frame,RAM,ABI,trace or retained writer results')
         group['priors'].add(prior)
     expected={(contract.RESTORE_SOURCE_CALLS[:1],False),(contract.RESTORE_SOURCE_CALLS[:2],False),
         (contract.RESTORE_SOURCE_CALLS,False),(contract.RESTORE_SOURCE_CALLS,True)}
@@ -442,3 +451,11 @@ def require16aa_prior_independence(pairs):
             or {group['mode'] for group in groups.values()}!=expected):
         raise ValueError('the restore original omits a complete prior-byte domain for either diagnostic fallback or either actual lookup writer')
     return True
+
+
+def require16aa_prior_independence(pairs):
+    return _require_restore_prior_independence(pairs,transfers.READER16AA_IDENTITY,0x501AE)
+
+
+def require1778_prior_independence(pairs):
+    return _require_restore_prior_independence(pairs,transfers.READER1778_IDENTITY,0x501AA)

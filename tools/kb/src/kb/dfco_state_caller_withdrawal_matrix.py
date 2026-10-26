@@ -297,6 +297,9 @@ def restore_cases(declared,image):
     for profile in RESTORE_PRIOR_PROFILES:
         for prior in range(256):
             add('restore-unread16aa-prior-and-retained-writer',**dict(profile,byte_16aa=prior))
+    for profile in RESTORE_PRIOR_PROFILES:
+        for prior in range(256):
+            add('restore-unread1778-prior-and-retained-writer',**dict(profile,byte_1778=prior))
     return tuple(dict(row,index=index) for index,row in enumerate(inputs))
 
 
