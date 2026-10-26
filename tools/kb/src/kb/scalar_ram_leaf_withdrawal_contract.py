@@ -1,4 +1,4 @@
-"""123 exact native access withdrawals retaining complete prior source and native-owner boundaries."""
+"""Exact native access withdrawals retaining complete prior source and native-owner boundaries."""
 
 from copy import deepcopy
 import hashlib
@@ -1750,19 +1750,33 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   'ba01cb238c8e7be06cda932c2caa6164367d5ff16dc14d1e284aeca769c6b0ec',
   'f1265c1c88ef93e34295fa672ae9eb303faa0fd8e1853a61fd171879d93a60d7'),
  ('000b784e-ffff3348-withdraw',
- 4294914888,
- 'ruddy-anaconda/ram',
- 751694,
- (),
- 'withdrawal',
- 'curve_scale_caller_withdrawal_paths',
- None,
- 'unset',
- 'unset',
- '59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f',
- None,
- '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
- '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'))
+  4294914888,
+  'ruddy-anaconda/ram',
+  751694,
+  (),
+  'withdrawal',
+  'curve_scale_caller_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '59ee18e4be7bbc935c2e08f6fcf90dc42c21494b0ce73ff39550cc184342305f',
+  None,
+  '0dd1d84e8efef214bad6c82baa1c853c2471764b78f486f1633f84df08964dc7',
+  '89da17abcc08cbf335c3f73f91600cf841f10a19c9f6d8ef5c89669909a06b71'),
+ ('00050018-ffff16aa-reader-withdraw',
+  4294907562,
+  'sassy-markhor/ram',
+  327704,
+  (),
+  'withdrawal',
+  'dfco_state_caller_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  'a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8',
+  None,
+  'abff2842dc4903e66ed2f824e1f5cc4165514b495436c240811d0b4a52576107',
+  'c6a4aabf99a969f484474fd32fe3c9b373acda9643ae6ff6d97d13ae3e6f0b9e'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2028,9 +2042,13 @@ RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   'kb/fn/cherubic-salamander.toml',
   '71929d38a641cfc3a71e837a3c5ee7ad3bad2d9aec1eee82552f6f628b61ead1'),
  ('uptight-duck/fn',
- 751694,
- 'kb/fn/uptight-duck.toml',
- 'c869d66b1a0495c487e8891a60e23c09439104abeea09203f1da1356dbb678e4'))
+  751694,
+  'kb/fn/uptight-duck.toml',
+  'c869d66b1a0495c487e8891a60e23c09439104abeea09203f1da1356dbb678e4'),
+ ('dfco_restore_classify/fn',
+  327704,
+  'kb/fn/dfco_restore_classify.toml',
+  '9bd459160be17c1280b8dd9693505e0715e26d2a7058541c14fce47009858937'))
 PRIOR_REFERENCE_SHA256 = '97065661723b863b4a61c65e304a3a6fa4492b31b1859eee8b6ce516322759c6'
 PRIOR_FUNCTION_SHA256 = 'd4546448515592cbda8fd42e6c762217dc27943572d644e0783620f59d1c691e'
 PRIOR_FILES_SHA256 = {'defs/JK08A.scalar-ram-leaves.toml': '6e90413cffcac41a4379ddf756094592f173ca4031e81b97abed134f322bfd11',
@@ -2438,7 +2456,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=125):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=126):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2488,7 +2506,7 @@ def descriptor(root):
         if not document.get('link'):document.pop('link',None)
         for marker in document.get('ledger',()):
             if not marker.get('dependency'):marker.pop('dependency',None)
-    if len(expected)!=95 or not test_contract.exact(expected,proposed):
+    if len(expected)!=96 or not test_contract.exact(expected,proposed):
         raise ValueError('the scalar RAM leaf withdrawal changes another fact, link order, evidence, ledger identity, field or note')
     if len(value['function'])!=len(RETAINED_FUNCTIONS):
         raise ValueError('the scalar RAM leaf withdrawal omits a complete retained function input')
@@ -2526,6 +2544,7 @@ def descriptor(root):
     require_prior_byte_factor_caller_boundary(root,value)
     require_prior_reader_direction_boundary(value)
     require_prior_uptight_RAM3348_boundary(value)
+    require_prior_restore16aa_boundary(value)
     return value
 
 
@@ -2575,8 +2594,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=125 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all125 unchanged normal unlink operations')
+    if len(selected)!=126 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all126 unchanged normal unlink operations')
     return True
 
 
@@ -2927,7 +2946,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=125:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=126:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -2997,7 +3016,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=125:
+    if len(value['reference'])!=126:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3145,3 +3164,28 @@ def uptight_RAM3348_prior_current_rows(value,count):
     if changed!=3:
         raise ValueError('the uptight historical boundary changes its three exact preceding shared-owner rows')
     return rows
+
+
+RESTORE_READER_ONLY_WITH_RETAINED_WRITER=('00050018-ffff16aa-reader-withdraw', 'a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8', 4294907562, 327704)
+PRIOR_RESTORE16AA_REFERENCE_SHA256='d1970929b204661947618fd3a226df59a141877cb3975634b99d9b40c83e2e9d'
+PRIOR_RESTORE16AA_FUNCTION_SHA256='3d2758d850b49ae04d5dfa2f7e5d99b952b92b7b779f5a7878e89f1bca915b90'
+
+
+def require_prior_restore16aa_boundary(value):
+    if (digest(value['reference'][:125])!=PRIOR_RESTORE16AA_REFERENCE_SHA256
+            or digest(value['function'][:67])!=PRIOR_RESTORE16AA_FUNCTION_SHA256):
+        raise ValueError('the restore reader withdrawal changes a complete prior125 record or67 function boundary')
+    row=value['reference'][125]
+    if tuple(row[key] for key in ('id','original_claim_sha256','address','function'))!=RESTORE_READER_ONLY_WITH_RETAINED_WRITER:
+        raise ValueError('the restore reader withdrawal substitutes its exact original or natural caller')
+    old=json.loads(row['original_claim_json'])
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    if (old['type']!='reader' or old['roles']!=[] or old['evidence']!=[] or old['to']!='dfco_restore_classify/fn'
+            or row['declared_width']!='unset' or row['declared_signed']!='unset'
+            or before.get('unit')!='RPM/25' or after.get('unit')!=before['unit']
+            or not test_contract.exact([link for link in before['link'] if link['type']=='writer'],
+                [link for link in after['link'] if link['type']=='writer'])):
+        raise ValueError('the restore reader withdrawal changes its actual writer, native unit, unset types or original claim')
+    function=value['function'][67]
+    if function['owner']!=old['to'] or function['function']!=row['function'] or 'proposed_native_json' in function:
+        raise ValueError('the restore reader withdrawal changes its complete retained function instead of its one reader')

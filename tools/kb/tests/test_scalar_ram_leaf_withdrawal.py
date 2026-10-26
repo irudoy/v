@@ -1916,3 +1916,50 @@ def test_historical_postimage_restoration_requires_the_complete_current_shared_o
     row=next(r for r in value['reference'] if r['id']==contract.UPTIGHT_RAM3348_PRIOR_SHARED_IDS[0])
     row[field]+=' '
     with pytest.raises(ValueError):contract.uptight_RAM3348_prior_current_rows(value,count)
+
+
+
+def test_restore16aa_preserves_all125_prior_records_and67_functions_and_the_actual_native_writer():
+    declared=contract.descriptor(repo.ROOT);contract.require_prior_restore16aa_boundary(declared)
+    assert len(declared['reference'])==126 and len(declared['function'])==68
+    assert contract.digest(declared['reference'][:125])==contract.PRIOR_RESTORE16AA_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:67])==contract.PRIOR_RESTORE16AA_FUNCTION_SHA256
+    row=declared['reference'][125]
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    assert before['unit']==after['unit']=='RPM/25' and row['declared_width']==row['declared_signed']=='unset'
+    expected=deepcopy(before)
+    expected['link']=[link for link in expected['link'] if (link['type'],link['to'])!=('reader','dfco_restore_classify/fn')]
+    for marker in expected['ledger']:
+        marker['dependency']=[item for item in marker['dependency'] if not contract.selector(row,row['owner'],item)]
+    assert after==expected and after['symbol']==before['symbol']
+    function=declared['function'][67]
+    assert set(function)=={'owner','function','source','original_native_sha256','original_native_json'}
+    assert json.loads(function['original_native_json'])['ledger'][1]['dependency'][-1]['type']=='writer'
+
+
+@pytest.mark.parametrize('fault',('prior-record','prior-function','original','writer','unit','width','signed','function-scope'))
+def test_restore16aa_owning_boundary_refuses_donation_or_semantic_type_inference(fault):
+    declared=deepcopy(contract.descriptor(repo.ROOT));row=declared['reference'][125]
+    if fault=='prior-record':declared['reference'][0]['source']+='-changed'
+    elif fault=='prior-function':declared['function'][0]['source']+='-changed'
+    elif fault=='original':row['original_claim_sha256']='0'*64
+    elif fault in ('writer','unit'):
+        native=json.loads(row['proposed_native_json'])
+        if fault=='writer':native['link']=[link for link in native['link'] if link['type']!='writer']
+        else:native['unit']='changed'
+        row['proposed_native_json']=json.dumps(native)
+    elif fault=='width':row['declared_width']=8
+    elif fault=='signed':row['declared_signed']=False
+    elif fault=='function-scope':declared['function'][67]['owner']='another/fn'
+    with pytest.raises(ValueError):contract.require_prior_restore16aa_boundary(declared)
+
+
+@pytest.mark.parametrize('field',('reader_only16aa_retained_writer','prior16aa_complete_state_independence',
+    'reader_only16aa_original','retained16aa_write_sites','stdout_sha256'))
+def test_restore16aa_owning_binding_requires_the_exact_primary_direction_and_full_state(field):
+    result=dict(reader_only16aa_retained_writer=True,prior16aa_complete_state_independence=True,
+        reader_only16aa_original=contract.RESTORE_READER_ONLY_WITH_RETAINED_WRITER[1],
+        retained16aa_write_sites=[0x501AE],stdout_sha256='1'*64)
+    assert proof.require_restore16aa_result(result) is True
+    result.pop(field)
+    with pytest.raises(ValueError):proof.require_restore16aa_result(result)
