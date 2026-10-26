@@ -67,3 +67,28 @@ def test_fixture_changes_only_declared_full_pointer_pools_and_header_has_only_co
     raw=matrix.header(dict(source=source,cases=[case()]),image).decode()
     assert 'struct context context' in raw and 'uint32_t ram[5]' in raw
     assert all(name not in raw for name in ('expected','computed','terminal','result'))
+
+
+def test_shared_owning_publication_reads_current_execution_descriptor_and_registry():
+    import json
+    from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
+    from kb import scalar_ram_leaf_withdrawal_evidence as family,ordinary_access_registry as registry
+    declared=withdrawal.descriptor(repo.ROOT)
+    text=' '.join((repo.ROOT/'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md').read_text().split())
+    owners={row['owner']:row for row in declared['reference']}
+    datum=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']) or ())-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']) or ()) for row in owners.values())
+    functions=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
+        for row in declared['function'] if 'proposed_ledger_json' in row)
+    readers=sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])
+    for phrase in (f"{len(declared['reference'])} exact access originals",f'{readers} readers and eleven',
+            f'{len(owners)} complete datum owners',f"{len(declared['function'])} complete functions",
+            f'{datum+functions} matching ledger selectors',f'{datum} datum-end selectors and {functions} function-end selectors',
+            f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures'):
+        assert phrase in text
+    assert len(withdrawal.ORIGINAL_LINK_TYPES)==11
+    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in text
+    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert withdrawal.digest(withdrawal.accumulator_prior_current_rows(declared,132))==withdrawal.PRIOR_ACCUMULATOR_REFERENCE_SHA256
+    assert withdrawal.digest(declared['function'][:73])==withdrawal.PRIOR_ACCUMULATOR_FUNCTION_SHA256

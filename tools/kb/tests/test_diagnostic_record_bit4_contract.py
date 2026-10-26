@@ -101,3 +101,17 @@ def test_specification_publishes_exact_instruction_delay_and_existing_native_cla
     assert len(contract.UNIT['aliases'])==2
     assert contract.SPANS==((0x8C968,0x8C984),)
     assert {(r['address'],r['size']) for r in contract.UNIT['pools']}=={(0x8C988,2),(0x8C98C,4),(0x8C998,4)}
+
+
+def test_registered_positive_writer_publication_reads_the_execution_registries():
+    import tomllib
+    from kb import ordinary_access_registry as registry,proof_adapter
+    text=' '.join((repo.ROOT/'defs/JK08A.diagnostic-record-bit4.md').read_text().split())
+    outputs=set()
+    for path in proof_adapter.DESCRIPTORS:
+        adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter']
+        outputs.update((adapter['driver'],adapter['refusals']))
+    assert len(registry.FAMILIES)==39 and len(registry.captures())==80
+    assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
+    assert len(proof_adapter.DESCRIPTORS)==36 and len(outputs)==72
+    assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text

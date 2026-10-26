@@ -115,7 +115,7 @@ def test_shared_owning_publication_reads_current_execution_descriptor_and_regist
             f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures'):
         assert phrase in text
     assert len(withdrawal.ORIGINAL_LINK_TYPES)==11
-    assert len(family.COMPONENTS)==32 and 'Thirty-two independent components' in text
+    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in text
     assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
     assert withdrawal.digest(withdrawal.paired_word_sum_prior_current_rows(declared,127))==withdrawal.PRIOR_CLAMP_PAIRED_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:68])==withdrawal.PRIOR_CLAMP_PAIRED_FUNCTION_SHA256

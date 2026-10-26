@@ -52,3 +52,21 @@ execution, native publication, physical scale, array geometry, hardware result
 or completion of another original. The common B acceptance executes the
 independent reconstruction, state, physical, numerical, positive, native, TEST
 and refusal contracts together.
+
+
+## Registered positive source boundary
+
+One exact original writer has one positive identity append in the
+diagnostic-record-bit4-access family. Its independent physical, numerical,
+full-state, actual-byte and native owning consumers use one complete original
+COPY primary. The existing registry contains 39 families and 80 captures.
+The standard ordinary adapter registry contains 36 descriptors and 72 generated
+outputs. The bit4 adapter adds exactly its C source and refusal source;
+the 70 preceding generated outputs retain their complete bytes.
+
+The complete owner and function retain all other original facts, links,
+ledger positions and TEST attachments. The two earlier paired-array pending
+originals retain their separate status and receive no credit from this writer.
+The finite tested index set supplies no array extent, caller reachability,
+scale, units or hardware admission. Native publication and executable
+qualification remain separate from source completion.

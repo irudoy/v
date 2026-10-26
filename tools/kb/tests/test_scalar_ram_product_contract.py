@@ -104,8 +104,8 @@ def test_published_product_counts_and_originals_bind_the_executed_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='scalar_ram_product_paths']
     text=(repo.ROOT/'defs/JK08A.scalar-ram-products.md').read_text();words=' '.join(text.split())
     assert len(rows)==7 and len({row['owner'] for row in rows})==7
-    assert len(declared['reference'])==132 and len({row['owner'] for row in declared['reference']})==100
-    assert len(declared['function'])==73
+    assert len(declared['reference'])==134 and len({row['owner'] for row in declared['reference']})==100
+    assert len(declared['function'])==74
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+
         '` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -121,7 +121,7 @@ def test_published_product_counts_and_originals_bind_the_executed_sources():
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==124 and '124 matching ledger selectors' in words
+    assert removed==126 and '126 matching ledger selectors' in words
     assert 'thirteen families and forty-seven capture bindings' in words
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert 'preceding six adapters' in words and proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==6

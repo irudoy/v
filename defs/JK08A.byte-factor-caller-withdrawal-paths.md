@@ -6,9 +6,9 @@ instructions, 442 code bytes and 5 code spans. The selected domain requires
 binds 19 literal spans, 5 pointer aliases, 9 complete RAM fields, 18 scalar
 configuration fields, 20 complete calibration spans, 37 raw input fields and
 8 complete helper sources. The joint descriptor contains 123 exact access
-originals: 121 readers and eleven individually pinned writers,93 complete datum
-owners,73 complete functions and124 matching ledger selectors. These include
-116 datum-end selectors and 8 function-end selectors. All132 exact normal
+originals: 123 readers and eleven individually pinned writers,93 complete datum
+owners,74 complete functions and126 matching ledger selectors. These include
+118 datum-end selectors and 8 function-end selectors. All134 exact normal
 unlink operations are mandatory. The selected unsupported original is:
 
 | Datum | Natural function | Exact unsupported original |
@@ -91,7 +91,7 @@ identity. No owner-wide type or ledger exception is admitted. The 225 prior
 domain sources retain 224 byte-identical sources and the exact two-site gated
 spelling exception with complete current/legacy hashes.
 
-Thirty-two independent components require one complete original COPY primary.
+Thirty-three independent components require one complete original COPY primary.
 The registry contains thirteen families and forty-seven capture bindings.
 Sixteen native-RAM components retain exact root/alias interval absence.
 The thirty-first standard source-only adapter retains the preceding thirty adapters

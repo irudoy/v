@@ -47,3 +47,27 @@ complete GNU primary lifecycle. Their preparation establishes no accepted
 execution, native publication, TEST qualification, scheduling, scale, unit or
 hardware fact. The package acceptance consumes the exact current full native
 owners, retained function, ledger selectors and all original TEST positions.
+
+
+## Shared owning source boundary
+
+The shared descriptor contains 134 exact access originals: 123 readers and
+eleven individually pinned writers, 100 complete datum owners, 74 complete
+functions and 126 matching ledger selectors (118 datum-end selectors and
+8 function-end selectors). All 134 exact normal unlink operations form one
+complete phase. Thirty-three independent components use the same complete
+original COPY primary. The existing registry contains 39 families and
+80 captures. Five complete function transitions retain eight exact
+function-end selector withdrawals.
+
+The accumulator adds two exact originals and one complete unchanged function.
+Four preceding records share its two table owners. Only their three proposed
+image fields change to the complete three-reader postimage of each owner;
+the other 128 preceding records and all 73 complete functions remain exact.
+Full preceding images remain recoverable and have exact separate current
+image pins. Native types, evidence, TEST positions, ledger order, calibration
+semantics and downstream RAM and producer dependencies remain mandatory.
+The native8400/256 transport and observer retain their existing complete
+window; the finite source-oracle admission names only this component.
+Source completion grants no identity, scale, units, executable, native
+publication, whole-ECU or hardware admission.
