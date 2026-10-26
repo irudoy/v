@@ -1,0 +1,706 @@
+schema = 1
+id = "jk08a-diagnostic-state-reset-writer"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete 2E81A reset and natural 2E76E/CD75C callees; exact constant-zero99DE writer, separate full ordinary/native snapshots, all real loops, conditional native words, calls, stack and return."
+entries = [190490]
+functions = [190318, 190490, 841564]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+exact_owner_address = 4294941150
+exact_owner_write_site = 190538
+exact_owner_loop_iteration = 2
+actual_constant_publication = 0
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+natural_scheduling_inference = false
+hardware_qualification = false
+peripheral_side_effects_admission = false
+stock_function_stubs = false
+native_publication = false
+
+[unit]
+assembly = "tools/sh-elf-run/stock_jk08a_diagnostic_state_reset_writer.s"
+
+[[unit.pools]]
+address = 190336
+size = 2
+stock_hex = "99c4"
+
+[[unit.pools]]
+address = 190654
+size = 2
+stock_hex = "9924"
+
+[[unit.pools]]
+address = 190656
+size = 2
+stock_hex = "9944"
+
+[[unit.pools]]
+address = 190658
+size = 2
+stock_hex = "9964"
+
+[[unit.pools]]
+address = 190660
+size = 2
+stock_hex = "9984"
+
+[[unit.pools]]
+address = 190662
+size = 2
+stock_hex = "029e"
+
+[[unit.pools]]
+address = 190664
+size = 2
+stock_hex = "99d8"
+
+[[unit.pools]]
+address = 190666
+size = 2
+stock_hex = "9a6b"
+
+[[unit.pools]]
+address = 190668
+size = 2
+stock_hex = "8422"
+
+[[unit.pools]]
+address = 190670
+size = 2
+stock_hex = "8462"
+
+[[unit.pools]]
+address = 190724
+size = 4
+stock_hex = "ffff28f8"
+
+[[unit.pools]]
+address = 190728
+size = 4
+stock_hex = "ffff421d"
+
+[[unit.pools]]
+address = 190732
+size = 4
+stock_hex = "ffff4194"
+
+[[unit.pools]]
+address = 190736
+size = 4
+stock_hex = "ffff40b4"
+
+[[unit.pools]]
+address = 190740
+size = 4
+stock_hex = "000cd75c"
+
+[[unit.pools]]
+address = 841796
+size = 2
+stock_hex = "07ba"
+
+[[unit.pools]]
+address = 841798
+size = 2
+stock_hex = "078c"
+
+[[unit.pools]]
+address = 841800
+size = 2
+stock_hex = "07b8"
+
+[[unit.pools]]
+address = 841802
+size = 2
+stock_hex = "078e"
+
+[[unit.pools]]
+address = 841804
+size = 2
+stock_hex = "0790"
+
+[[unit.pools]]
+address = 841806
+size = 2
+stock_hex = "0792"
+
+[[unit.pools]]
+address = 841808
+size = 2
+stock_hex = "07b4"
+
+[[unit.pools]]
+address = 841810
+size = 2
+stock_hex = "07fa"
+
+[[unit.pools]]
+address = 841812
+size = 2
+stock_hex = "07b6"
+
+[[unit.pools]]
+address = 841814
+size = 2
+stock_hex = "07fc"
+
+[[unit.pools]]
+address = 841816
+size = 2
+stock_hex = "9f08"
+
+[[unit.pools]]
+address = 841818
+size = 2
+stock_hex = "f580"
+
+[[unit.pools]]
+address = 842432
+size = 4
+stock_hex = "ffff41a9"
+
+[[unit.pools]]
+address = 842436
+size = 4
+stock_hex = "ffff28f8"
+
+[[unit.pools]]
+address = 842440
+size = 4
+stock_hex = "00008dfc"
+
+[[unit.code]]
+start = 190318
+end = 190336
+
+[[unit.code]]
+start = 190338
+end = 190490
+
+[[unit.code]]
+start = 190490
+end = 190632
+
+[[unit.code]]
+start = 841564
+end = 841796
+
+[[unit.aliases]]
+address = 190724
+width = 4
+original = 4294912248
+alias = 16787704
+
+[[unit.aliases]]
+address = 190728
+width = 4
+original = 4294918685
+alias = 16794141
+
+[[unit.aliases]]
+address = 190732
+width = 4
+original = 4294918548
+alias = 16794004
+
+[[unit.aliases]]
+address = 190736
+width = 4
+original = 4294918324
+alias = 16793780
+
+[[unit.aliases]]
+address = 842432
+width = 4
+original = 4294918569
+alias = 16794025
+
+[[unit.aliases]]
+address = 842436
+width = 4
+original = 4294912248
+alias = 16787704
+
+[[native_storage]]
+start = 4294935552
+size = 256
+
+[[native_storage]]
+start = 4294940928
+size = 1792
+
+[[native_storage]]
+start = 4294964480
+size = 256
+
+[[native_permissions]]
+site = 190330
+start = 4294941124
+end = 4294941128
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190352
+start = 4294941128
+end = 4294941132
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190370
+start = 4294941132
+end = 4294941136
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190388
+start = 4294941136
+end = 4294941140
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190406
+start = 4294940964
+end = 4294940996
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190422
+start = 4294940996
+end = 4294941028
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190438
+start = 4294941028
+end = 4294941060
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190456
+start = 4294941060
+end = 4294941124
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190518
+start = 4294941172
+end = 4294941178
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190538
+start = 4294941148
+end = 4294941172
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190554
+start = 4294941144
+end = 4294941146
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190568
+start = 4294941291
+end = 4294941292
+width_bytes = 1
+modes = ["read"]
+
+[[native_permissions]]
+site = 190574
+start = 4294941291
+end = 4294941292
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190580
+start = 4294935587
+end = 4294935588
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190582
+start = 4294935586
+end = 4294935587
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190586
+start = 4294935651
+end = 4294935652
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 190588
+start = 4294935650
+end = 4294935651
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 841668
+start = 4294942472
+end = 4294942473
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 841672
+start = 4294942473
+end = 4294942474
+width_bytes = 1
+modes = ["write"]
+
+[[native_permissions]]
+site = 841746
+start = 4294964616
+end = 4294964618
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841750
+start = 4294964624
+end = 4294964626
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841754
+start = 4294964618
+end = 4294964620
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841758
+start = 4294964626
+end = 4294964628
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841770
+start = 4294964620
+end = 4294964622
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841774
+start = 4294964628
+end = 4294964630
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841778
+start = 4294964622
+end = 4294964624
+width_bytes = 2
+modes = ["write"]
+
+[[native_permissions]]
+site = 841782
+start = 4294964630
+end = 4294964632
+width_bytes = 2
+modes = ["write"]
+
+[[controlled_calibration]]
+address = 36348
+size = 2
+
+[[controlled_calibration]]
+address = 190336
+size = 2
+
+[[controlled_calibration]]
+address = 190654
+size = 2
+
+[[controlled_calibration]]
+address = 190656
+size = 2
+
+[[controlled_calibration]]
+address = 190658
+size = 2
+
+[[controlled_calibration]]
+address = 190660
+size = 2
+
+[[controlled_calibration]]
+address = 190662
+size = 2
+
+[[controlled_calibration]]
+address = 190664
+size = 2
+
+[[controlled_calibration]]
+address = 190666
+size = 2
+
+[[controlled_calibration]]
+address = 190668
+size = 2
+
+[[controlled_calibration]]
+address = 190670
+size = 2
+
+[[controlled_calibration]]
+address = 190724
+size = 4
+
+[[controlled_calibration]]
+address = 190728
+size = 4
+
+[[controlled_calibration]]
+address = 190732
+size = 4
+
+[[controlled_calibration]]
+address = 190736
+size = 4
+
+[[controlled_calibration]]
+address = 190740
+size = 4
+
+[[controlled_calibration]]
+address = 841796
+size = 2
+
+[[controlled_calibration]]
+address = 841798
+size = 2
+
+[[controlled_calibration]]
+address = 841800
+size = 2
+
+[[controlled_calibration]]
+address = 841802
+size = 2
+
+[[controlled_calibration]]
+address = 841804
+size = 2
+
+[[controlled_calibration]]
+address = 841806
+size = 2
+
+[[controlled_calibration]]
+address = 841808
+size = 2
+
+[[controlled_calibration]]
+address = 841810
+size = 2
+
+[[controlled_calibration]]
+address = 841812
+size = 2
+
+[[controlled_calibration]]
+address = 841814
+size = 2
+
+[[controlled_calibration]]
+address = 841816
+size = 2
+
+[[controlled_calibration]]
+address = 841818
+size = 2
+
+[[controlled_calibration]]
+address = 842432
+size = 4
+
+[[controlled_calibration]]
+address = 842436
+size = 4
+
+[[controlled_calibration]]
+address = 842440
+size = 4
+
+[[bound_spans]]
+address = 190318
+size = 18
+
+[[bound_spans]]
+address = 190338
+size = 152
+
+[[bound_spans]]
+address = 190490
+size = 142
+
+[[bound_spans]]
+address = 841564
+size = 232
+
+[[bound_spans]]
+address = 36348
+size = 2
+
+[[bound_spans]]
+address = 190336
+size = 2
+
+[[bound_spans]]
+address = 190654
+size = 2
+
+[[bound_spans]]
+address = 190656
+size = 2
+
+[[bound_spans]]
+address = 190658
+size = 2
+
+[[bound_spans]]
+address = 190660
+size = 2
+
+[[bound_spans]]
+address = 190662
+size = 2
+
+[[bound_spans]]
+address = 190664
+size = 2
+
+[[bound_spans]]
+address = 190666
+size = 2
+
+[[bound_spans]]
+address = 190668
+size = 2
+
+[[bound_spans]]
+address = 190670
+size = 2
+
+[[bound_spans]]
+address = 190724
+size = 4
+
+[[bound_spans]]
+address = 190728
+size = 4
+
+[[bound_spans]]
+address = 190732
+size = 4
+
+[[bound_spans]]
+address = 190736
+size = 4
+
+[[bound_spans]]
+address = 190740
+size = 4
+
+[[bound_spans]]
+address = 841796
+size = 2
+
+[[bound_spans]]
+address = 841798
+size = 2
+
+[[bound_spans]]
+address = 841800
+size = 2
+
+[[bound_spans]]
+address = 841802
+size = 2
+
+[[bound_spans]]
+address = 841804
+size = 2
+
+[[bound_spans]]
+address = 841806
+size = 2
+
+[[bound_spans]]
+address = 841808
+size = 2
+
+[[bound_spans]]
+address = 841810
+size = 2
+
+[[bound_spans]]
+address = 841812
+size = 2
+
+[[bound_spans]]
+address = 841814
+size = 2
+
+[[bound_spans]]
+address = 841816
+size = 2
+
+[[bound_spans]]
+address = 841818
+size = 2
+
+[[bound_spans]]
+address = 842432
+size = 4
+
+[[bound_spans]]
+address = 842436
+size = 4
+
+[[bound_spans]]
+address = 842440
+size = 4
+
+[[configuration]]
+address = 36348
+size = 1
+field = "raw_rom_8dfc"
+
+[[configuration]]
+address = 36349
+size = 1
+field = "raw_rom_8dfd"

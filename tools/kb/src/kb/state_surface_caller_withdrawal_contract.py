@@ -241,7 +241,7 @@ REUSED_HELPER_FILES_SHA256={'defs/JK08A.byte-surface-paths.toml': '646c7f482e579
  'tools/kb/src/kb/byte_surface_contract.py': 'a70226fbee2eaf0422807ec63001aea98ad3aeabcc6f1b1316d127faa0230be6',
  'tools/kb/src/kb/byte_surface_matrix.py': '462e46a36df38131618bad602dd5c403b1b4a3463c7227a3ce4a22de7b307651',
  'tools/kb/src/kb/byte_surface_semantics.py': '8ff3d4110fb324d9a7d2daca5b6b7948a704287255c664535c36d66c0101a853',
- 'tools/kb/src/kb/byte_surface_equations.py': 'b7a72d1ce7dde1bd247db201c9458d7666c368c6eac903443a7b9e45077ee286',
+ 'tools/kb/src/kb/byte_surface_equations.py': 'c3f54829d9364bd8063d4bedb58d810f673dc21e50ae295edcbaa6818a382012',
  'tools/kb/src/kb/byte_surface_capture_evidence.py': '53299e49ae0d1cbedec5201f6f5a56760755d4876367a26c7b51ea0f004fbf94',
  'tools/sh-elf-run/byte_surface_capture.py': '531d5ae30752da44d6049dbbd4cc69f18794dfbc637d69a751f36dedef29e555',
  'defs/JK08A.byte-curve-caller-withdrawal-paths.toml': 'eef3bb053ec07819d675547b5667b0a188cbc0343643f318db8100ffe15e65c7',

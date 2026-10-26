@@ -1,0 +1,168 @@
+"""One exact diagnostic reset writer identity and complete retained native facts."""
+from copy import deepcopy
+from pathlib import Path
+import json,tomllib
+from kb import test_contract
+from kb.diagnostic_rom_contract import canonical,digest,plain
+from kb.model import SymbolKey
+DESCRIPTOR='defs/JK08A.diagnostic-state-reset-writer-claims.toml'
+MODE='diagnostic-state-reset-writer-access'
+PREFIX='diagnostic-state-reset-writer-access-v1:jk08a:'
+DECLARED = {'schema': 1,
+ 'id': 'jk08a-diagnostic-state-reset-writer-claims',
+ 'layout': '7mfk',
+ 'image_sha256': 'ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23',
+ 'scope': 'One exact native constant-zero writer from full 2E81A with both complete natural callees. '
+          'Complete owner/function/type/unit/evidence/ledger/TEST facts remain exact.',
+ 'native_function_publication': False,
+ 'native_geometry_publication': False,
+ 'scale_admission': False,
+ 'units_admission': False,
+ 'natural_caller_reachability': False,
+ 'natural_scheduling_inference': False,
+ 'hardware_qualification': False,
+ 'peripheral_side_effects_admission': False,
+ 'reference': [{'id': 'retained-2e81a-99de-writer',
+                'address': 4294941150,
+                'owner': 'rare-butterfly/ram',
+                'function': 190490,
+                'sites': [190538],
+                'direction': 'writer',
+                'source': 'kb/ram/rare-butterfly.toml',
+                'component': 'diagnostic_state_reset_writer_paths',
+                'width_bytes': 1,
+                'declared_width': 'unset',
+                'declared_signed': 'unset',
+                'original_claim_sha256': '939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a',
+                'original_claim_json': '{"evidence":[],"layout":"7mfk","offset":null,"owner":"rare-butterfly/ram","props":{"layouts":["7mfk"],"relies":"structure","supports":"identity"},"roles":[],"slot":null,"sources":["kb/ram/rare-butterfly.toml"],"stated":["7mfk"],"to":"amber-wildcat/fn","type":"writer"}',
+                'proposed_claim_sha256': 'e8eae99a9b9b718abb4e6ac5dc3c487ca03578959155d143ce9ff31505030c9f',
+                'proposed_claim_json': '{"evidence":[{"at":"7mfk:0002e84a","key":"diagnostic-state-reset-writer-access-v1:jk08a:retained-2e81a-99de-writer","kind":"indirect","mode":"diagnostic-state-reset-writer-access","note":"Complete '
+                                       'stock diagnostic reset and both natural callees bind the exact '
+                                       'FFFF99DE zero-byte store to full R14=0 and its real loop position. '
+                                       'Complete target priors with other inputs fixed, separate '
+                                       'ordinary/native snapshots, full CPU/frame/call state, masks and '
+                                       'conditional raw-ROM native halfword effects are required. Native '
+                                       'owner, all three functions, unset width/signedness, unit, other '
+                                       'relations, ledgers and TEST origins remain '
+                                       'exact.","path":"defs/JK08A.diagnostic-state-reset-writer-claims.toml","supports":"identity","value":{"actual_conditional_ROM_products_and_zero_companions":true,"actual_constant_write":{"address":4294941150,"full_register_value":0,"loop_count":24,"loop_start":4294941148,"register":14,"site":190538,"value":0,"width_bytes":1,"zero_based_iteration":2},"complete_CPU_SR_GBR_PR_MACH_MACL_frame_calls":true,"complete_native_owner_function_TEST_ledger":true,"complete_ordered_actual_physical_operands":true,"complete_separate_ordinary_native_state":true,"component":"diagnostic_state_reset_writer_paths","constant_requires_distinct_final_outputs":false,"direction":"writer","entry":190490,"full_closure":[190318,190490,841564],"full_raw_target_prior_groups_both_native_word_paths":true,"function":"7mfk:0002e81a","hardware_qualification":false,"native_address":4294941150,"native_geometry_inference":false,"native_signed":"unset","native_storage":[{"size":256,"start":4294935552},{"size":1792,"start":4294940928},{"size":256,"start":4294964480}],"native_storage_width":"unset","natural_caller_reachability":false,"natural_scheduling_inference":false,"no_withdrawal":true,"original_claim_sha256":"939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a","owner":"rare-butterfly/ram","peripheral_side_effects_admission":false,"scale_admission":false,"scope":"exact-diagnostic-state-reset-writer","units_admission":false,"width_bytes":1}}],"layout":"7mfk","offset":null,"owner":"rare-butterfly/ram","props":{"layouts":["7mfk"],"relies":"structure","supports":"identity"},"roles":[],"slot":null,"sources":["kb/ram/rare-butterfly.toml"],"stated":["7mfk"],"to":"amber-wildcat/fn","type":"writer"}',
+                'original_native_sha256': '3371bce1691e139d04d0562e67ba070821b55532440d3381b238bc863267fcf6',
+                'original_native_json': '{"ledger":[{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":932,"registry":"vars"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"note":["The '
+                                        'JK08A LID-0 support bitmap does not advertise LID '
+                                        '3."],"summary":"Service-0x3b LID 3 value slot. While LID 3 is '
+                                        'active and the status is accepted, 000683cc copies it to '
+                                        'ffff56ba.","symbol":[{"address":"ffff99de","evidence":[{"at":"7mfk:000685a6","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}},{"at":"7mfk:000685a8","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}}],"layout":"7mfk","name":"rare-butterfly"}],"unit":"raw"}',
+                'proposed_native_sha256': '207964e0282d32f03080fdfe17bddce263cff8f91a3269b0f7d45f1c173ef711',
+                'proposed_native_json': '{"ledger":[{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":932,"registry":"vars"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","reverse_relies":"structure","reverse_supports":"identity","role":"indexed_by","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"evidence":[{"at":"7mfk:0002e84a","key":"diagnostic-state-reset-writer-access-v1:jk08a:retained-2e81a-99de-writer","kind":"indirect","mode":"diagnostic-state-reset-writer-access","note":"Complete '
+                                        'stock diagnostic reset and both natural callees bind the exact '
+                                        'FFFF99DE zero-byte store to full R14=0 and its real loop '
+                                        'position. Complete target priors with other inputs fixed, '
+                                        'separate ordinary/native snapshots, full CPU/frame/call state, '
+                                        'masks and conditional raw-ROM native halfword effects are '
+                                        'required. Native owner, all three functions, unset '
+                                        'width/signedness, unit, other relations, ledgers and TEST origins '
+                                        'remain '
+                                        'exact.","path":"defs/JK08A.diagnostic-state-reset-writer-claims.toml","supports":"identity","value":{"actual_conditional_ROM_products_and_zero_companions":true,"actual_constant_write":{"address":4294941150,"full_register_value":0,"loop_count":24,"loop_start":4294941148,"register":14,"site":190538,"value":0,"width_bytes":1,"zero_based_iteration":2},"complete_CPU_SR_GBR_PR_MACH_MACL_frame_calls":true,"complete_native_owner_function_TEST_ledger":true,"complete_ordered_actual_physical_operands":true,"complete_separate_ordinary_native_state":true,"component":"diagnostic_state_reset_writer_paths","constant_requires_distinct_final_outputs":false,"direction":"writer","entry":190490,"full_closure":[190318,190490,841564],"full_raw_target_prior_groups_both_native_word_paths":true,"function":"7mfk:0002e81a","hardware_qualification":false,"native_address":4294941150,"native_geometry_inference":false,"native_signed":"unset","native_storage":[{"size":256,"start":4294935552},{"size":1792,"start":4294940928},{"size":256,"start":4294964480}],"native_storage_width":"unset","natural_caller_reachability":false,"natural_scheduling_inference":false,"no_withdrawal":true,"original_claim_sha256":"939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a","owner":"rare-butterfly/ram","peripheral_side_effects_admission":false,"scale_admission":false,"scope":"exact-diagnostic-state-reset-writer","units_admission":false,"width_bytes":1}}],"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"note":["The '
+                                        'JK08A LID-0 support bitmap does not advertise LID '
+                                        '3."],"summary":"Service-0x3b LID 3 value slot. While LID 3 is '
+                                        'active and the status is accepted, 000683cc copies it to '
+                                        'ffff56ba.","symbol":[{"address":"ffff99de","evidence":[{"at":"7mfk:000685a6","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}},{"at":"7mfk:000685a8","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}}],"layout":"7mfk","name":"rare-butterfly"}],"unit":"raw"}',
+                'original_ledger_json': '[{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":932,"registry":"vars"}]',
+                'proposed_ledger_json': '[{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"screeching-bumblebee/fn","type":"reader"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"amber-wildcat/fn","type":"writer"},{"end":"owner","relies":"structure","role":"writes","supports":"identity","to":"passionate-penguin/fn","type":"writer"}],"fields":["semantics","units","confidence"],"identity":[0,1],"notes":[0],"order":932,"registry":"vars"}]',
+                'original_symbol_evidence_json': '[{"at":"7mfk:000685a6","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}},{"at":"7mfk:000685a8","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e81a","00034194","000683cc","ffff99de"],"span":1}}]',
+                'evidence_json': '{"at":"7mfk:0002e84a","key":"diagnostic-state-reset-writer-access-v1:jk08a:retained-2e81a-99de-writer","kind":"indirect","mode":"diagnostic-state-reset-writer-access","note":"Complete '
+                                 'stock diagnostic reset and both natural callees bind the exact FFFF99DE '
+                                 'zero-byte store to full R14=0 and its real loop position. Complete '
+                                 'target priors with other inputs fixed, separate ordinary/native '
+                                 'snapshots, full CPU/frame/call state, masks and conditional raw-ROM '
+                                 'native halfword effects are required. Native owner, all three functions, '
+                                 'unset width/signedness, unit, other relations, ledgers and TEST origins '
+                                 'remain '
+                                 'exact.","path":"defs/JK08A.diagnostic-state-reset-writer-claims.toml","supports":"identity","value":{"actual_conditional_ROM_products_and_zero_companions":true,"actual_constant_write":{"address":4294941150,"full_register_value":0,"loop_count":24,"loop_start":4294941148,"register":14,"site":190538,"value":0,"width_bytes":1,"zero_based_iteration":2},"complete_CPU_SR_GBR_PR_MACH_MACL_frame_calls":true,"complete_native_owner_function_TEST_ledger":true,"complete_ordered_actual_physical_operands":true,"complete_separate_ordinary_native_state":true,"component":"diagnostic_state_reset_writer_paths","constant_requires_distinct_final_outputs":false,"direction":"writer","entry":190490,"full_closure":[190318,190490,841564],"full_raw_target_prior_groups_both_native_word_paths":true,"function":"7mfk:0002e81a","hardware_qualification":false,"native_address":4294941150,"native_geometry_inference":false,"native_signed":"unset","native_storage":[{"size":256,"start":4294935552},{"size":1792,"start":4294940928},{"size":256,"start":4294964480}],"native_storage_width":"unset","natural_caller_reachability":false,"natural_scheduling_inference":false,"no_withdrawal":true,"original_claim_sha256":"939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a","owner":"rare-butterfly/ram","peripheral_side_effects_admission":false,"scale_admission":false,"scope":"exact-diagnostic-state-reset-writer","units_admission":false,"width_bytes":1}}'}],
+ 'retained_functions': [{'address': 190490,
+                         'owner': 'amber-wildcat/fn',
+                         'source': 'kb/fn/amber-wildcat.toml',
+                         'native_sha256': '1d37bef268164f48790c6a2df1d5e6886ae43cf2177ee3cbde4c8df40f5afd78',
+                         'native_json': '{"block":"work_support/block","ledger":[{"dependency":[{"end":"owner","link_role":"consumer","relies":"structure","role":"consumer","supports":"identity","to":"peach-guan/fn","type":"depends"},{"end":"owner","link_role":"consumer","relies":"structure","role":"consumer","supports":"identity","to":"refreshing-dinosaur/fn","type":"depends"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nickel-fulmar/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"ruby-mouse/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"notes":[0],"order":669,"registry":"funcs"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","role":"consumer","supports":"identity","to":"peach-guan/fn","type":"depends"},{"layouts":["7mfk"],"relies":"structure","role":"consumer","supports":"identity","to":"refreshing-dinosaur/fn","type":"depends"}],"note":["Transport '
+                                        'state machine 0002ea0a calls it at 0002ec2a when transport state '
+                                        'ffff821c is 8 and ffff8468 is neither 3 nor 4, and 000ca69c also '
+                                        'calls it. Together with control 0xff, the reset ends an active '
+                                        'work-support '
+                                        'adjustment."],"role":"service","summary":"Diagnostic-state reset. '
+                                        'It calls 0002e76e, which clears the service-0x30 state, zeroes '
+                                        'service-0x3b flag bytes ffff99f4..ffff99f9, value slots '
+                                        'ffff99dc..ffff99f3, and ffff99d8..ffff99d9, clears bits 6 and 7 '
+                                        'of ffff9a6b, zeroes ffff8422, ffff8423, ffff8462, and ffff8463, '
+                                        'clears ffff4198.bit4, calls 000cd75c with ffff40be, zeroes '
+                                        'ffff40be, clears ffff41de.bit0 and bits 5 and 6 of ffff41a4, and '
+                                        'zeroes '
+                                        'ffff2985.","symbol":[{"address":"0002e81a","evidence":[{"at":"7mfk:0002e836","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e84a","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e85a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e86e","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e874","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e876","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e87a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e87c","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e880","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e884","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e890","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e894","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e898","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002e89e","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002ec1a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"at":"7mfk:0002ec2a","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0002e76e","0002e81a","0002ea0a","000ca69c","000cd75c","ffff99dc","ffff99f4"],"span":1}},{"kind":"trace","relies":"structure","supports":"identity","to":"cheerful-beluga/fn/7mfk"},{"kind":"trace","relies":"structure","supports":"identity","to":"striped-tiger/fn/7mfk"}],"layout":"7mfk","name":"amber-wildcat"}]}'},
+                        {'address': 190318,
+                         'owner': 'cheerful-beluga/fn',
+                         'source': 'kb/fn/cheerful-beluga.toml',
+                         'native_sha256': '3f5aace80c6832abe2a60513c69cd9543117cdd4c7c76d3a93f012d6ae21360a',
+                         'native_json': '{"symbol":[{"address":"0002e76e","evidence":[{"at":"7mfk:0002e76e","kind":"l0","supports":"identity"}],"layout":"7mfk","name":"cheerful-beluga"}]}'},
+                        {'address': 841564,
+                         'owner': 'striped-tiger/fn',
+                         'source': 'kb/fn/striped-tiger.toml',
+                         'native_sha256': '1bbfb92c7b65d3165026c5db68c90072a37573d25800b66e9fbd24f666d3f443',
+                         'native_json': '{"block":"cvtc_exhaust/block","ledger":[{"dependency":[{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"enthusiastic-chicken/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nice-bison/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"shaggy-nyala/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"uptight-nyala/ram","type":"writer"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"vagabond-labradoodle/ram","type":"writer"}],"fields":["role","semantics","confidence"],"identity":[0,1,2,3],"notes":[0],"order":612,"registry":"funcs"}],"level":"code","note":["Clearing '
+                                        'ffff4251 bit 0 returns 000c2152 to the computed duty words; '
+                                        'service-0xa0 request 3 selects the fixed 60/50 percent test '
+                                        'fractions by setting the bit."],"role":"init","summary":"Exhaust '
+                                        'duty reset, reached from initialization path 0002e81a and '
+                                        'service-0xa0 handler 000306f8. It clears ffff4251 bit 0 at '
+                                        '000cd76e and ffff41de bit 2 at 000cd772, zeroes checksum state '
+                                        'ffff30f8, ffff3084, and ffff30b0, and programs both ATU-II '
+                                        'channel-7 cycle pairs from ROM8[00008dfc]=33 and '
+                                        'ROM8[00008dfd]=20.","symbol":[{"address":"000cd75c","evidence":[{"kind":"unbound-constant","supports":"identity","value":"00008dfc=33"},{"kind":"unbound-constant","supports":"identity","value":"00008dfd=20"},{"at":"7mfk:000cd76e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00008dfc","00008dfd","000cd75c","ffff3084","ffff30b0","ffff30f8","ffff41de","ffff4251"],"span":1}},{"at":"7mfk:000cd772","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00008dfc","00008dfd","000cd75c","ffff3084","ffff30b0","ffff30f8","ffff41de","ffff4251"],"span":1}}],"layout":"7mfk","name":"striped-tiger"}]}'}]}
+IDENTITIES = (('retained-2e81a-99de-writer',
+  4294941150,
+  'rare-butterfly/ram',
+  190490,
+  (190538,),
+  'writer',
+  'diagnostic_state_reset_writer_paths',
+  1,
+  'unset',
+  'unset',
+  '939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a',
+  'e8eae99a9b9b718abb4e6ac5dc3c487ca03578959155d143ce9ff31505030c9f',
+  '3371bce1691e139d04d0562e67ba070821b55532440d3381b238bc863267fcf6',
+  '207964e0282d32f03080fdfe17bddce263cff8f91a3269b0f7d45f1c173ef711'),)
+
+def descriptor(root):
+    value=tomllib.loads((Path(root)/DESCRIPTOR).read_text())
+    if not test_contract.exact(value,DECLARED):raise ValueError('the reset writer claim changes its exact retained native/function/type/evidence/TEST boundary')
+    row=value['reference'][0];old=json.loads(row['original_claim_json']);new=json.loads(row['proposed_claim_json'])
+    expected=deepcopy(old);expected['evidence'].append(item(row))
+    before=json.loads(row['original_native_json']);after=deepcopy(before)
+    links=[r for r in after['link'] if (r['type'],r['to'])==('writer','amber-wildcat/fn')]
+    if len(links)!=1:raise ValueError('the reset writer claim loses its unique retained indexed writer')
+    links[0].setdefault('evidence',[]).append(item(row))
+    if (digest(old)!=row['original_claim_sha256'] or digest(new)!=row['proposed_claim_sha256']
+            or digest(before)!=row['original_native_sha256'] or digest(after)!=row['proposed_native_sha256']
+            or not test_contract.exact(new,expected) or not test_contract.exact(after,json.loads(row['proposed_native_json']))):
+        raise ValueError('the reset writer claim changes more than its single exact owning append')
+    for retained in value['retained_functions']:
+        if digest(json.loads(retained['native_json']))!=retained['native_sha256']:
+            raise ValueError('the reset writer claim changes its complete retained function digest')
+    return value
+
+def item(row):return json.loads(row['evidence_json'])
+def native_type(row,field):return None if row['declared_'+field]=='unset' else row['declared_'+field]
+def symbol_key(row):return SymbolKey('7mfk','ram',row['address'])
+def original(row,link):return test_contract.exact(canonical(link),json.loads(row['original_claim_json']))
+def qualified(row,link):return test_contract.exact(canonical(link),json.loads(row['proposed_claim_json']))
+def registered(item):return (item.get('mode')==MODE or item.get('path')==DESCRIPTOR or isinstance(item.get('key'),str) and item['key'].startswith(PREFIX))
+def publication(link,evidence):
+    return (registered(evidence) and sum(test_contract.exact(evidence,x) for x in link.evidence)==1
+        and any(link.owner.key==r[2] and evidence.get('key')==PREFIX+r[0] and digest(canonical(link))==r[11] for r in IDENTITIES))
+def operation(row):return dict(cmd='link',meaning=row['owner'],type='writer',to=json.loads(row['original_claim_json'])['to'],evidence=[item(row)])
+def operations(ops,root):
+    selected=[op for op in ops if any(registered(item) for item in op.get('evidence',()))]
+    if not selected:return False
+    if not test_contract.exact(selected,[operation(descriptor(root)['reference'][0])]):
+        raise ValueError('the reset writer attachment requires its one exact complete normal owning link operation')
+    return True
+def looks_like_access(link):
+    return any(registered(e) for e in link.evidence) or (link.owner.key,link.type,link.to.key)==('rare-butterfly/ram','writer','amber-wildcat/fn')

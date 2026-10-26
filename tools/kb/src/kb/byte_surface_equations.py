@@ -81,6 +81,52 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
         and all(type(value) is int for value in native_controls['addresses'])
         and type(native_controls.get('window_start')) is int and type(native_controls.get('window_size')) is int
         and native_controls==dict(addresses=[0xFFFF850C,0xFFFF850D],window_start=0xFFFF8500,window_size=256))
+    reset_permissions=(
+        (190330, 4294941124, 4294941128, 1, ('write',)),
+        (190352, 4294941128, 4294941132, 1, ('write',)),
+        (190370, 4294941132, 4294941136, 1, ('write',)),
+        (190388, 4294941136, 4294941140, 1, ('write',)),
+        (190406, 4294940964, 4294940996, 1, ('write',)),
+        (190422, 4294940996, 4294941028, 1, ('write',)),
+        (190438, 4294941028, 4294941060, 1, ('write',)),
+        (190456, 4294941060, 4294941124, 1, ('write',)),
+        (190518, 4294941172, 4294941178, 1, ('write',)),
+        (190538, 4294941148, 4294941172, 1, ('write',)),
+        (190554, 4294941144, 4294941146, 1, ('write',)),
+        (190568, 4294941291, 4294941292, 1, ('read',)),
+        (190574, 4294941291, 4294941292, 1, ('write',)),
+        (190580, 4294935587, 4294935588, 1, ('write',)),
+        (190582, 4294935586, 4294935587, 1, ('write',)),
+        (190586, 4294935651, 4294935652, 1, ('write',)),
+        (190588, 4294935650, 4294935651, 1, ('write',)),
+        (841668, 4294942472, 4294942473, 1, ('write',)),
+        (841672, 4294942473, 4294942474, 1, ('write',)),
+        (841746, 4294964616, 4294964618, 2, ('write',)),
+        (841750, 4294964624, 4294964626, 2, ('write',)),
+        (841754, 4294964618, 4294964620, 2, ('write',)),
+        (841758, 4294964626, 4294964628, 2, ('write',)),
+        (841770, 4294964620, 4294964622, 2, ('write',)),
+        (841774, 4294964628, 4294964630, 2, ('write',)),
+        (841778, 4294964622, 4294964624, 2, ('write',)),
+        (841782, 4294964630, 4294964632, 2, ('write',)),
+    )
+    reset_native=declared.get('native_storage')
+    reset_declared_permissions=declared.get('native_permissions')
+    diagnostic_reset_window=(declared.get('id')=='jk08a-diagnostic-state-reset-writer'
+        and declared.get('image_sha256')=='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
+        and entry==0x2E81A and spans==((0x2E76E,0x2E780),(0x2E782,0x2E81A),(0x2E81A,0x2E8A8),(0xCD75C,0xCD844))
+        and all(type(value) is int for span in spans for value in span)
+        and type(reset_native) is list
+        and all(type(row) is dict and set(row)=={'start','size'}
+            and type(row['start']) is int and type(row['size']) is int for row in reset_native)
+        and reset_native==[dict(start=0xFFFF8400,size=256),dict(start=0xFFFF9900,size=1792),dict(start=0xFFFFF500,size=256)]
+        and type(reset_declared_permissions) is list
+        and all(type(row) is dict and set(row)=={'site','start','end','width_bytes','modes'}
+            and all(type(row[key]) is int for key in ('site','start','end','width_bytes'))
+            and type(row['modes']) is list and all(type(mode) is str for mode in row['modes'])
+            for row in reset_declared_permissions)
+        and reset_declared_permissions==[dict(site=site,start=start,end=end,width_bytes=width,modes=list(modes))
+            for site,start,end,width,modes in reset_permissions])
     gopher_window=declared.get('id')=='jk08a-fine-gopher'
     coordinate_window=(declared.get('id')=='jk08a-closed-loop-coordinate'
         and declared.get('native_storage')==dict(start=0xFFFF8560,size=20,logical_offset=0x8560,
@@ -97,6 +143,9 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
         raise ValueError('the bounded I/O frame overlaps declared native storage')
     if indexed_timer_window and sp-frame_prefix<0xFFFF8600 and 0xFFFF8500<sp+32:
         raise ValueError('the indexed timer frame overlaps its exact native control snapshot window')
+    if diagnostic_reset_window and any(sp-frame_prefix<start+size and start<sp+32 for start,size in
+            ((0xFFFF8400,256),(0xFFFF9900,1792),(0xFFFFF500,256))):
+        raise ValueError('the diagnostic reset frame overlaps a complete native-bank snapshot window')
     if coordinate_window and sp-frame_prefix<0xFFFF8574 and 0xFFFF8560<sp+32:
         raise ValueError('the coordinate frame overlaps its exact native twenty-byte workspace')
     registers=[*context[:15],sp]
@@ -129,6 +178,9 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
             memory,offset,domain=ram,address&65535,'coordinate-workspace'
         elif native_io_window and any(start<=address<=start+size-width for start,size in
                 ((0xFFFFD900,1024),(0xFFFFF400,256),(0xFFFFF700,256))):
+            memory,offset,domain=ram,address&65535,'native-io'
+        elif diagnostic_reset_window and any(site==pc and start<=address<=end-width and width==size and mode in modes
+                for pc,start,end,size,modes in reset_permissions):
             memory,offset,domain=ram,address&65535,'native-io'
         elif sp-frame_prefix<=address<=sp+32-width:
             memory,offset,domain=frame,address-sp+frame_prefix,'frame'
