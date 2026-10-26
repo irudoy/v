@@ -21,8 +21,11 @@ def link(document):
 def test_exact_original_positive_append_preserves_full_array_owner_function_types_and_both_ledger_ends():
     selected=row();before,after=(json.loads(selected[phase+'_native_json']) for phase in ('original','proposed'))
     stripped=deepcopy(after);target,=[r for r in stripped['link'] if (r['type'],r['to'])==('writer','cherry-wildcat/fn')]
-    assert target['evidence'].pop()==contract.item(selected)
-    if not target['evidence']:target.pop('evidence')
+    for item in contract.descriptor(repo.ROOT)['reference']:
+        original=json.loads(item['original_claim_json'])
+        target,=[link for link in stripped['link'] if (link['type'],link['to'])==(original['type'],original['to'])]
+        assert target['evidence'].pop()==contract.item(item)
+        if not target['evidence']:target.pop('evidence')
     assert stripped==before
     assert before['unit']==after['unit']=='diagnostic record byte'
     assert selected['declared_width']==8 and selected['declared_signed'] is False
@@ -42,15 +45,16 @@ def test_exact_original_positive_append_preserves_full_array_owner_function_type
 @pytest.mark.parametrize('fault',('duplicate','reader-direction','other-target','scale-support','other-index','forged-original'))
 def test_normal_owning_writer_requires_its_one_exact_registered_append(fault):
     selected=row();op=contract.operation(selected)
-    assert contract.operations([deepcopy(op)],repo.ROOT) is True
-    if fault=='duplicate':ops=[op,deepcopy(op)]
+    complete=[contract.operation(item) for item in contract.descriptor(repo.ROOT)['reference']]
+    assert contract.operations(deepcopy(complete),repo.ROOT) is True
+    if fault=='duplicate':ops=[*complete,deepcopy(op)]
     else:
         if fault=='reader-direction':op['type']='reader'
         elif fault=='other-target':op['to']='unrelated/fn'
         elif fault=='scale-support':op['evidence'][0]['supports']='scale'
         elif fault=='other-index':op['evidence'][0]['value']['explicit_full_R4_indices'].append(0x157)
         else:op['evidence'][0]['value']['original_claim_sha256']='0'*64
-        ops=[op]
+        ops=[op,*complete[1:]]
     with pytest.raises(ValueError):contract.operations(ops,repo.ROOT)
 
 

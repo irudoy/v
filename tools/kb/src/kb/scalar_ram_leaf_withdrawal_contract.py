@@ -3464,7 +3464,7 @@ def require_clamp_latch_and_paired_word_boundary(root,value):
             raise ValueError('the clamp and paired word package changes a complete retained function or downstream dependency')
 
 CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.toml': 'f138d9fba490dbe5a75655ce4a357dc0113bcc12da3460b7d30e94287bf96b79',
- 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': 'dfba9d1d3e0f02a0e13b44fcc52eee8c7520aa432def41a0f8b7a5a802e5ac84',
+ 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': '98606a9dd26ed01568a3aed762798be2abd20fb412f445087ded2a0105fa86d5',
  'tools/sh-elf-run/stock_jk08a_clamp_latch_caller_withdrawal.s': '648337bb3e7454206973d44e216c2b1ff219972b9c9dc5f0d076b34a5e6afe2a',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_contract.py': 'e4367429d06652d24b7853be37820b71a41ffb59a55df3b06abab925df9901df',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_matrix.py': '153f6b9cf7a45cd2b2cc833e33c353438f5f361960696cdade71dad66bbf34f6',
@@ -3477,7 +3477,7 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/sh-elf-run/harness-clamp-latch-caller-withdrawal-paths.c': 'e8918c0f8d344069da6859dcd28983e8d39f839693ab76b13be2856370b7aea7',
  'tools/kb/tests/test_clamp_latch_caller_withdrawal_adapter_generated.py': '7e308d74117e301dafefa88d100d392251b0bb410d454c536df8c68683732bbc',
  'defs/JK08A.paired-word-curve-sum-withdrawal-paths.toml': '82d069b6b5e944bf9477ab6d39e5ab253b9b33b454e59f29938afe4cd93fe35f',
- 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': '87b87dd1492fa514bda97fa62530205e2f913188169538f72b47dadff8084df8',
+ 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': '657218b6c43dae747aa723868beb0a1ce13ee1fa9679f83d94df6a515a177387',
  'tools/sh-elf-run/stock_jk08a_paired_word_curve_sum_withdrawal.s': '65cc0ee3e02e108080ea15628db835eb996e3bfe8f3fc347b70651930a5e595e',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_contract.py': '5595ea964f70e447bcd0a76ffe1e222764c92fdd28acc38f127f9c2e529b5920',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_matrix.py': '3f8bdef0b73a78a6a50d74e45fbc92627824e0f1d7153b3d68d4c913080dac78',
@@ -3543,7 +3543,7 @@ REMAINING_CALLER_NATIVE_ROWS_SHA256 = 'cdb9d82d93e703f55e98d581e91d5a1f248b8da2b
 REMAINING_CALLER_NATIVE_FUNCTIONS_SHA256 = '76559b299e61a9171d4532e63fb3584acc7a39fd9f6743f1c7a8d43ea457d055'
 
 REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.toml': '78a36f7235d2747ab1e895c56552bf7e90460a75ad81073881a884c753116eaa',
- 'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.md': 'bcfb34a861ceefb30fe85c2c449bb0c5e137c82195aa72a53931847bec65c3c6',
+ 'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.md': '108d67735088224a0d110db0d4b7b9988cb6ee87f0ba4013d21fa082545d839a',
  'tools/sh-elf-run/stock_jk08a_misfire_tail_dispatch_withdrawal.s': '7b86c8b2123604f809dcfa383fa0078168b3923681a8492cb4c4b5dc7c2303df',
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_contract.py': '003db30de8a595b48013e4493812934aadf1b9e22895a011a2a669d747197398',
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_matrix.py': '55a2f99e35ce5a0c6a3e3dfee964fb3a1770ce3b1eb2c3eaae9d4f2a98fd6cc9',
@@ -3556,7 +3556,7 @@ REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-pa
  'tools/sh-elf-run/harness-misfire-tail-dispatch-withdrawal-paths.c': '8b05a7a4d6e3838e8e7e1ef7d23a975bb32d3a9bba37e2781cc3273a90f88b98',
  'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_adapter_generated.py': '7726a72d705058c6694a3da06279d0294d2db59478b48db105e8d3ddce05dfc2',
  'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.toml': 'ef69dbf82efeeb070f583c2f555193549fd36a7d22413e87af4b9c2f0146d024',
- 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.md': '01b70ae21357cb7a303bb41c7f74185b213d1809df5fff7e4d31bbceaac61f1f',
+ 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.md': '882ff3bdf20524a012b96b441f55c4992a601e64831354c7ff29856fd1c7ea0d',
  'tools/sh-elf-run/stock_jk08a_endpoint_normalizer_writer_withdrawal.s': 'af8135f3efc529c365a5a97c822ee2c263962ebbd4b6b16cb271e563e705d7ea',
  'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_contract.py': '592a229343a66fef8655a213556ac4bd62c816101e4f11241e1658d2968d9238',
  'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_matrix.py': '09017caf146b9c133dd5dee48ab8cb3921494b6139b684358f95885f041e9dc6',
@@ -3569,7 +3569,7 @@ REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-pa
  'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_capture_evidence.py': 'dbfd3ec14bcbceb2c545cc5a7257bbb9aac9f5d0adb6def97216746b9be82dfa',
  'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_native.py': '9517ad5f6f157bc410752b79472b6f50665b35e5cbd4f189bad98a2c2c3406c5',
  'defs/JK08A.bfs-state-caller-withdrawal-paths.toml': '36a4424a5211f1e91d98f8359596bc653cc0051ebb260764f491e6bcf25f3cd0',
- 'defs/JK08A.bfs-state-caller-withdrawal-paths.md': 'fa59f6fb21d64b726f0bfdce2d7d72451fa36fd4b4a3c9a986d1b9bd47dc746d',
+ 'defs/JK08A.bfs-state-caller-withdrawal-paths.md': 'a232d0c2c67c850031549764eb9ba6032b30fb1d10cc07ee7ae1677ed2faa9df',
  'tools/sh-elf-run/stock_jk08a_bfs_state_caller_withdrawal.s': '92ea155175bb7bd004a1014cc9d3927d82f94afa4dd3cce45b68d4542e684216',
  'tools/kb/src/kb/bfs_state_caller_withdrawal_contract.py': 'c93e3bc009f8b3e8132920cf94f04ebe187ab8704ee624446f068375159973e8',
  'tools/kb/src/kb/bfs_state_caller_withdrawal_matrix.py': '6f5dea141897517be0fd09abd147884808ae11d04273e77514a2ffb5fda69f67',
@@ -3621,7 +3621,7 @@ def require_remaining_standalone_callers_boundary(root,value):
 SHIFTED_WORD_ACCUMULATOR_NATIVE_ROWS_SHA256='b1146cf27a4bebb98d117be8a9d537bbf4e8fd0dba00e5b605082715ea6beee4'
 SHIFTED_WORD_ACCUMULATOR_NATIVE_FUNCTION_SHA256='65211b9425835fc362211991f9b0a71558b942a729f405c970b70565dc9f4eed'
 SHIFTED_WORD_ACCUMULATOR_FILES_SHA256={'defs/JK08A.shifted-word-accumulator-withdrawal-paths.toml': 'ed95d65c767f33fb7b674f906d03a8f4706cbcc988c4635cb71282fad802e60c',
- 'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md': '30711d24498807564ee77b48036e7445ad3119b8e2985bfd44dc9a4e6c3921c2',
+ 'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md': '02db052272379628ca8ed8dc47a69dd3de0b96b0890a230d841103df5b268b46',
  'tools/sh-elf-run/stock_jk08a_shifted_word_accumulator_withdrawal.s': '0b1e983420fbb3a1d8f4f2afdee7fb96c102aeb43f3ba15e15a731e7acd26dc1',
  'tools/kb/src/kb/shifted_word_accumulator_withdrawal_contract.py': 'd5f3e968458d926bc4c7838bd53f886f07ede73785086f0cf86fe2d58e179740',
  'tools/kb/src/kb/shifted_word_accumulator_withdrawal_matrix.py': '3d5f8f08ceb6cb5fc678ae4252e28b078b84ab1d3d8fcee4a1812fba936c0c33',

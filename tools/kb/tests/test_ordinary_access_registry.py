@@ -283,10 +283,12 @@ def test_shifted_word_accumulator_uses_one_existing_withdrawal_family_and_its_ow
 
 def test_indexed_diagnostic_record_bit4_writer_has_one_positive_family_and_complete_sources():
     family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
-    assert family.captures==(('diagnostic_record_bit4_paths','diagnostic_record_bit4_capture'),)
+    assert family.captures==(('diagnostic_record_bit4_paths','diagnostic_record_bit4_capture'),
+        ('diagnostic_record_bits3_6_paths','diagnostic_record_bits3_6_capture'),
+        ('diagnostic_record_composite_gate_paths','diagnostic_record_composite_gate_capture'))
     assert family.direct_owning is True and family.owner_fallback is False and family.withdrawal_only is False
-    assert set(family.evidence.COMPONENTS)=={'diagnostic_record_bit4_paths'}
-    selected,=family.contract.descriptor(repo.ROOT)['reference']
+    assert set(family.evidence.COMPONENTS)=={component for component,producer in family.captures}
+    selected,=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']=='diagnostic_record_bit4_paths']
     assert selected['original_claim_sha256']=='3655c66e3ef972ce95f95db39da784ed70f454d346be7a51411fffaeb1fa00b5'
     assert selected['owner']=='hallowed-malkoha/ram' and selected['function']==0x8C968
     assert selected['direction']=='writer' and selected['declared_width']==8 and selected['declared_signed'] is False
@@ -301,10 +303,53 @@ def test_indexed_diagnostic_record_bit4_writer_has_one_positive_family_and_compl
 
 def test_bit4_original_cannot_be_routed_as_a_withdrawal_or_another_paired_writer():
     family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
-    selected,=family.contract.descriptor(repo.ROOT)['reference']
-    op=family.contract.operation(selected)
-    assert family.contract.operations([deepcopy(op)],repo.ROOT) is True
-    wrong=deepcopy(op);wrong['cmd']='unlink'
-    with pytest.raises(ValueError):family.contract.operations([wrong],repo.ROOT)
-    wrong=deepcopy(op);wrong['to']='classy-seahorse/fn'
-    with pytest.raises(ValueError):family.contract.operations([wrong],repo.ROOT)
+    rows=family.contract.descriptor(repo.ROOT)['reference'];ops=[family.contract.operation(row) for row in rows]
+    assert family.contract.operations(deepcopy(ops),repo.ROOT) is True
+    wrong=deepcopy(ops);wrong[0]['cmd']='unlink'
+    with pytest.raises(ValueError):family.contract.operations(wrong,repo.ROOT)
+    wrong=deepcopy(ops);wrong[0]['to']='classy-seahorse/fn'
+    with pytest.raises(ValueError):family.contract.operations(wrong,repo.ROOT)
+
+
+def test_diagnostic_writers_reuse_one_family_with_two_independent_same_primary_originals():
+    family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
+    assert family.captures==(('diagnostic_record_bit4_paths','diagnostic_record_bit4_capture'),
+        ('diagnostic_record_bits3_6_paths','diagnostic_record_bits3_6_capture'),
+        ('diagnostic_record_composite_gate_paths','diagnostic_record_composite_gate_capture'))
+    assert set(family.evidence.COMPONENTS)=={component for component,producer in family.captures}
+    assert family.direct_owning is True and family.withdrawal_only is False
+    rows=family.contract.descriptor(repo.ROOT)['reference']
+    assert {row['original_claim_sha256'] for row in rows}=={
+        '3655c66e3ef972ce95f95db39da784ed70f454d346be7a51411fffaeb1fa00b5',
+        'a1a0e755b180a883c2233b9b0defed3824a8f5bc50dd9fa1756a57fe16b6f680',
+        '3efeebbd3eaa8ba22a1a2e8fb3f75996035dc5edd14852ded72d683e95f27468'}
+    assert len({row['proposed_native_sha256'] for row in rows})==1
+    for row in rows:assert registry.matching(family.contract.item(row))==(family,)
+    for path in ('defs/JK08A.diagnostic-record-bits3-6-paths.toml',
+            'tools/kb/src/kb/diagnostic_record_bits3_6_semantics.py',
+            'tools/kb/src/kb/diagnostic_record_bits3_6_transfers.py',
+            'tools/kb/tests/test_diagnostic_record_bits3_6_access.py',
+            'tools/kb/tests/test_diagnostic_record_bits3_6_adapter_generated.py',
+            'tools/sh-elf-run/harness-diagnostic-record-bits3-6-paths.c'):
+        assert path in family.source_files and path in copy_evidence.EXECUTION_FILES
+
+
+def test_composite_diagnostic_reader_retains_the_existing_family_and_positive_nested_array_scope():
+    family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
+    assert ('diagnostic_record_composite_gate_paths','diagnostic_record_composite_gate_capture') in family.captures
+    assert family.direct_owning is True and family.withdrawal_only is False
+    rows=family.contract.descriptor(repo.ROOT)['reference']
+    selected,=[row for row in rows if row['component']=='diagnostic_record_composite_gate_paths']
+    assert selected['original_claim_sha256']=='3efeebbd3eaa8ba22a1a2e8fb3f75996035dc5edd14852ded72d683e95f27468'
+    assert selected['direction']=='reader' and selected['function']==0x25A12
+    original=json.loads(selected['original_claim_json'])
+    assert original['roles']==['indexed_by'] and original['to']=='ruby-kangaroo/fn'
+    assert registry.matching(family.contract.item(selected))==(family,)
+    assert {row['direction'] for row in rows}=={'reader','writer'}
+    for path in ('defs/JK08A.diagnostic-record-composite-gate-paths.toml',
+            'tools/kb/src/kb/diagnostic_record_composite_gate_semantics.py',
+            'tools/kb/src/kb/diagnostic_record_composite_gate_transfers.py',
+            'tools/kb/tests/test_diagnostic_record_composite_gate_access.py',
+            'tools/kb/tests/test_diagnostic_record_composite_gate_adapter_generated.py',
+            'tools/sh-elf-run/harness-diagnostic-record-composite-gate-paths.c'):
+        assert path in family.source_files and path in copy_evidence.EXECUTION_FILES
