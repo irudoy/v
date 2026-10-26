@@ -712,7 +712,7 @@
 
     <!-- 0x15C22  16 uint16  map [code]
          accessor 0x5514A, 0x5E2A0, 0x5F468; r4 operand: reviewed-target
-         scaling x count [code]; axis 0x15C02 raw
+         scaling x count [candidate]; axis 0x15C02 raw
          Exact 1ND0A target-native table at 0x15c22 bound to accessor 0x5514a through literal
          0x5531c, accessor 0x5e2a0 through literal 0x5e9b4, accessor 0x5f468 through literal
          0x5f588. Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the
@@ -723,7 +723,7 @@
     <table type="2D" name="VVEL Command Word - Shaft Angle Conversion"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x15C22" sizex="16" endian="big">
-      <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
+      <scaling units="count [cand]" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="64"/>
       <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x15C02" sizex="16" endian="big">
@@ -1013,7 +1013,7 @@
 
     <!-- 0x1B65E  16 uint16  map [code]
          accessor 0x58964; r4 operand: reviewed-target
-         scaling x count [code]; axis 0x1B63E raw
+         scaling x count [candidate]; axis 0x1B63E raw
          Exact 1ND0A target-native table at 0x1b65e bound to accessor 0x58964 through literal
          0x58b04. Read by FUN_00058964 at callsites 0x58976 and 0x5898A through the 16-point
          uint16 wrapper 0x28B2C of the kernel 0x28FC8; the primary conversion 0x00015C22 goes
@@ -1025,7 +1025,7 @@
     <table type="2D" name="VVEL Command Word - Shaft Angle Conversion, Second Copy"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1B65E" sizex="16" endian="big">
-      <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
+      <scaling units="count [cand]" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="64"/>
       <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x1B63E" sizex="16" endian="big">
@@ -2108,7 +2108,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [code]
+         scaling x-128 Timing-state count [candidate]
          Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
          0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
@@ -2118,7 +2118,7 @@
     <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13C22" sizex="8" endian="big">
-      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2668,7 +2668,7 @@
          project map-switching patch
          canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [code]
+         scaling x-128 Timing-state count [candidate]
          Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
          0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
@@ -2678,7 +2678,7 @@
     <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x133500" sizex="8" endian="big">
-      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -3231,7 +3231,7 @@
          project map-switching patch
          canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [code]
+         scaling x-128 Timing-state count [candidate]
          Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
          0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
@@ -3241,7 +3241,7 @@
     <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x133508" sizex="8" endian="big">
-      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -3794,7 +3794,7 @@
          project map-switching patch
          canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [code]
+         scaling x-128 Timing-state count [candidate]
          Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
          0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
@@ -3804,7 +3804,7 @@
     <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x133510" sizex="8" endian="big">
-      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -4357,7 +4357,7 @@
          project map-switching patch
          canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [code]
+         scaling x-128 Timing-state count [candidate]
          Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
          0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
@@ -4367,7 +4367,7 @@
     <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x133518" sizex="8" endian="big">
-      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
