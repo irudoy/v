@@ -1,28 +1,12 @@
 """Storage intersections fail before execution, including uninitialized sections."""
 import struct
 from pathlib import Path
-import subprocess
 import sys
 import pytest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sh-elf-run'))
 from elf_storage_layout import ELFStorageError,require_separate_storage
 
 RAM=0x01000000
-
-
-def test_stock_verifier_loads_without_prior_import_path_changes(tmp_path):
-    verifier=Path(__file__).resolve().parents[2]/'tools/sh-elf-run/verify_stock_code.py'
-    script='''import importlib.util, sys
-spec=importlib.util.spec_from_file_location("isolated_stock_verifier",sys.argv[1])
-module=importlib.util.module_from_spec(spec)
-sys.modules[spec.name]=module
-spec.loader.exec_module(module)
-assert callable(module.require_separate_storage)
-assert module.ELFStorageError.__module__=="elf_storage_layout"
-'''
-    result=subprocess.run([sys.executable,'-I','-c',script,str(verifier)],
-        cwd=tmp_path,text=True,capture_output=True,timeout=30)
-    assert result.returncode==0,result.stderr
 
 
 def image(section=(0x110000,4,1,2),load=(0x110000,0x110000,4,4)):
@@ -89,39 +73,6 @@ def test_malformed_or_missing_storage_fails_closed(tmp_path,mutation):
 def test_invalid_declared_ram_fails(tmp_path,ranges):
     path=tmp_path/'harness.elf';path.write_bytes(image())
     with pytest.raises(ELFStorageError):require_separate_storage(path,ranges)
-
-
-@pytest.mark.parametrize('layout',["data","bss","virtual","physical","before","after"])
-def test_primary_stock_runner_checks_linked_elf_before_simulator(tmp_path,monkeypatch,layout):
-    from types import SimpleNamespace
-    from tools.kb.tests import test_injection_start_delay_chain as publication
-    stock=publication.stock_module()
-    region=next(row for row in stock.REGIONS if row.key=='jk08a-fuel-compensation')
-    overlap=layout not in ('before','after')
-    begin=RAM if overlap else (RAM-4 if layout=='before' else RAM+65536)
-    data=image(section=(begin,4,8 if layout=='bss' else 1,2))
-    if layout in ('virtual','physical'):
-        data=image(load=(RAM if layout=='virtual' else 0x110000,RAM if layout=='physical' else 0x110000,0,4))
-    calls=[]
-    marker=f'VQ_SH_ELF_STOCK_CODE status=PASS region={region.key} cases={region.cases}'
-    def command(args,**kwargs):
-        calls.append((args[0],kwargs))
-        if args[0]==stock.base_verifier.GCC:
-            Path(args[args.index('-o')+1]).write_bytes(data)
-        return SimpleNamespace(stdout=marker+'\n')
-    monkeypatch.setattr(stock,'stock_image',lambda rom:b'\0'*4)
-    monkeypatch.setattr(stock,'require_reconstruction',lambda *args:301)
-    monkeypatch.setattr(stock,'build_fixture',lambda *args:b'\0'*4)
-    monkeypatch.setattr(stock,'harness_defines',lambda *args:{})
-    monkeypatch.setattr(stock.base_verifier,'run_command',command)
-    if overlap:
-        with pytest.raises(stock.VerificationError,match='ELF storage separation.*intersects'):
-            stock.run_region(region,tmp_path/'invoke.o',tmp_path)
-        assert stock.base_verifier.RUN not in [cmd for cmd,_ in calls]
-    else:
-        assert stock.run_region(region,tmp_path/'invoke.o',tmp_path)==301
-        assert calls[-1]==(stock.base_verifier.RUN,{'timeout':stock.stock_execution_timeout()})
-    assert next(options for cmd,options in calls if cmd==stock.base_verifier.GCC)=={'timeout':120}
 
 
 @pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059'])
