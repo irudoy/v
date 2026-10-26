@@ -271,6 +271,42 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(decoder.schema_mismatches, 1)
         self.assertEqual(decoder.completed_groups, 0)
 
+    def test_reported_identity_survives_rejection_until_replaced(self):
+        for offset in (2, 3, 5):
+            with self.subTest(offset=offset):
+                decoder = can_telemetry.Decoder("tuning")
+                group = list(frames("tuning", 5, context_tag=3))
+                health = bytearray(group[9])
+                health[offset] ^= 1
+                group[9] = bytes(health)
+                reported = (health[2], health[3], int.from_bytes(health[4:6], "big"))
+                self.assertIsNone(feed_group(decoder, group))
+                self.assertEqual(decoder.reported_identity, reported)
+                self.assertNotEqual(reported, decoder.expected_identity)
+
+                waiting = feed_group(decoder, frames("tuning", 6))
+                self.assertFalse(waiting.schema_verified)
+                self.assertEqual(decoder.reported_identity, reported)
+                matching = feed_group(decoder, frames("tuning", 7, context_tag=3))
+                self.assertTrue(matching.schema_verified)
+                self.assertEqual(decoder.reported_identity, decoder.expected_identity)
+
+    def test_a_restart_clears_the_previous_identity_but_keeps_a_new_mismatch(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_group(decoder, frames("tuning", 512, context_tag=3))
+        restarted = feed_group(decoder, frames("tuning", 1))
+        self.assertFalse(restarted.schema_verified)
+        self.assertIsNone(decoder.reported_identity)
+
+        # A mismatch can be the first complete group after another restart.
+        feed_group(decoder, frames("tuning", 512, context_tag=3))
+        feed_group(decoder, frames("tuning", 2, context_tag=3, health_valid=False))
+        reported = decoder.reported_identity
+        self.assertIsNotNone(reported)
+        following = feed_group(decoder, frames("tuning", 3))
+        self.assertFalse(following.schema_verified)
+        self.assertEqual(decoder.reported_identity, reported)
+
     def test_loss_duplicate_reorder_and_preemption_are_visible(self):
         decoder = can_telemetry.Decoder("tuning")
         first = frames("tuning", 10)

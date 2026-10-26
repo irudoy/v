@@ -472,7 +472,8 @@ class DashboardModelTest(unittest.TestCase):
     def test_status_bits_and_decoder_errors_are_exposed(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
-        group = list(generator.group(1))
+        feed_group(dashboard, generator.group(4), 1.0)
+        group = list(generator.group(5))
         page = bytearray(group[3].data)
         page[7] = 0x09
         group[3] = model.FrameRecord(0x6F0, bytes(page))
@@ -513,6 +514,48 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIsNone(feed_group(dashboard, bad, 4.1))
         self.assertFalse(dashboard.schema_verified)
         self.assertIsNone(dashboard.value("normalized_load"))
+
+    def test_unverified_fields_stay_hidden_and_do_not_cross_verification(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        for frame in generator.stock_context(1):
+            dashboard.process_frame(frame, now=0.0)
+        stock_rpm = dashboard.stock_rpm
+        feed_group(dashboard, generator.group(1), 0.01)
+        self.assertIn("coolant_raw", dashboard.raw)
+        for key in (*dashboard._displays, *dashboard._raw_keys):
+            with self.subTest(key=key):
+                self.assertIsNone(dashboard.value(key))
+        self.assertEqual(dashboard.telemetry_status_flags, {})
+        self.assertEqual(dashboard.stock_rpm, stock_rpm)
+
+        feed_group(dashboard, generator.group(4), 0.04)
+        self.assertTrue(dashboard.schema_verified)
+        self.assertIsNotNone(dashboard.value("normalized_load"))
+        self.assertIsNone(dashboard.value("coolant"))
+        feed_group(dashboard, generator.group(6), 0.06)
+        self.assertIsNotNone(dashboard.value("coolant"))
+
+        bad = list(generator.group(9))
+        health = bytearray(bad[9].data)
+        health[3] ^= 1
+        bad[9] = model.FrameRecord(0x6F0, bytes(health))
+        self.assertIsNone(feed_group(dashboard, bad, 0.09))
+        self.assertEqual(dashboard.raw, {})
+        self.assertEqual(dashboard.engineering, {})
+        self.assertEqual(dashboard.updated_at, {})
+        feed_group(dashboard, generator.group(11), 0.11)
+        self.assertIn("coolant_raw", dashboard.raw)
+        self.assertIsNone(dashboard.value("coolant"))
+        self.assertIsNone(dashboard.value("rolling_launch_phase"))
+        self.assertEqual(dashboard.stock_rpm, stock_rpm)
+
+        feed_group(dashboard, generator.group(14), 0.14)
+        self.assertTrue(dashboard.schema_verified)
+        self.assertIsNotNone(dashboard.value("normalized_load"))
+        self.assertIsNone(dashboard.value("coolant"))
+        feed_group(dashboard, generator.group(16), 0.16)
+        self.assertIsNotNone(dashboard.value("coolant"))
 
     def test_the_telemetry_map_index_names_the_selected_map(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)

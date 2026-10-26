@@ -54,6 +54,13 @@ model is created. Terminal source status is retained even when the frame queue
 is full, and PCAN receive or shutdown failures remain visible as errors rather
 than being replaced by a normal stopped state.
 
+Telemetry values, including fields displayed without unit conversion, require
+a matching health identity: protocol version, profile ID and profile CRC16.
+The schema status shows both the received and expected identities on a mismatch;
+the main status reports `SCHEMA MISMATCH`. A later matching health context restores
+the display using values received under that verified layout. Independently
+decoded stock CAN values remain available while telemetry is unverified.
+
 ## Portable Windows package
 
 Build the ignored transfer archive from the repository root:

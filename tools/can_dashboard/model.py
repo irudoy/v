@@ -377,8 +377,7 @@ class DashboardModel:
         self._record_unwrapped = None
         fields = can_telemetry.profile_fields(self.decoder.profile)
         self._field_names = tuple(field["name"] for field in fields)
-        # The display of each field by engineering key, and the fields the
-        # dashboard shows raw, whose value needs no verified schema.
+        # Both converted fields and fields shown raw require a verified layout.
         self._displays = {}
         self._raw_keys = {}
         for field in fields:
@@ -423,8 +422,10 @@ class DashboardModel:
             frame.data,
             frame.timestamp,
         )
-        self.schema_verified = self.decoder.schema_verified
         if snapshot is None:
+            if self.schema_verified and not self.decoder.schema_verified:
+                self._clear_telemetry()
+            self.schema_verified = self.decoder.schema_verified
             return None
         self._accept_snapshot(snapshot, now)
         return snapshot
@@ -499,6 +500,13 @@ class DashboardModel:
         return frame.timestamp if _finite(frame.timestamp) else now
 
     def _accept_snapshot(self, snapshot, now):
+        if (
+            snapshot.run != self.last_run
+            or snapshot.schema_verified != self.schema_verified
+        ):
+            # Values from an unverified layout cannot become valid merely
+            # because a later health context matches the selected schema.
+            self._clear_telemetry()
         if self.last_run is not None and snapshot.run != self.last_run:
             # The controller restarted, so its tick counter starts a new run
             # and the distance across the gap is not a snapshot count.
@@ -530,6 +538,11 @@ class DashboardModel:
                 for key, (name, display) in self._displays.items()
                 if name in self.raw
             )
+
+    def _clear_telemetry(self):
+        self.raw.clear()
+        self.engineering.clear()
+        self.updated_at.clear()
 
     def _set_gear(self, code):
         self.gear_raw = code
@@ -622,7 +635,9 @@ class DashboardModel:
     def value(self, key, default=None):
         """The shown value of a metric key: the engineering value of a
         verified schema, or the raw value of a field shown raw."""
-        if self.schema_verified and key in self.engineering:
+        if not self.schema_verified:
+            return default
+        if key in self.engineering:
             return self.engineering[key]
         name = self._raw_keys.get(key)
         return default if name is None else self.raw.get(name, default)
@@ -661,6 +676,8 @@ class DashboardModel:
 
     @property
     def telemetry_status_flags(self):
+        if not self.schema_verified:
+            return {}
         value = self.raw.get("telemetry_status", 0)
         return {
             "overrun_latched": bool(value & 0x01),

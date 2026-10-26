@@ -162,11 +162,15 @@ class SchemaStatusTest(unittest.TestCase):
         dashboard.schema_verified = False
         self.assertEqual(app.schema_status(dashboard), "Schema: waiting")
 
-    def test_the_status_field_reserves_the_widest_profile_id(self):
+    def test_the_status_field_reserves_a_complete_identity_mismatch(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
-        self.record(dashboard, 1, profile_id=0xFF)
+        dashboard.decoder.reported_identity = (255, 255, 0xFFFF)
         samples = {name: sample for name, *_rest, sample in app.STATUS_FIELDS}
-        self.assertEqual(samples["schema_var"], app.schema_status(dashboard))
+        status = app.schema_status(dashboard)
+        self.assertIn("received v255/profile 255/CRC FFFF", status)
+        version, profile, crc = dashboard.decoder.expected_identity
+        self.assertIn(f"expected v{version}/profile {profile}/CRC {crc:04X}", status)
+        self.assertGreaterEqual(len(samples["schema_var"]), len(status))
 
 
 class PaletteTest(unittest.TestCase):
@@ -686,6 +690,41 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.assertEqual(
             dashboard.schema_var.get(), "Schema: VERIFIED, profile 7"
         )
+
+    def test_a_mismatch_is_visible_and_hides_telemetry_until_matching_health(self):
+        dashboard = self.dashboard
+        dashboard.source_state = "connected"
+        generator = model.DemoGenerator()
+        for frame in generator.stock_context(1):
+            dashboard.model.process_frame(frame, now=0.0)
+        for frame in generator.group(4):
+            dashboard.model.process_frame(frame, now=0.04)
+        dashboard._refresh(0.05)
+        self.assertNotEqual(self.panel_value("normalized_load"), "--")
+
+        bad = list(generator.group(9))
+        health = bytearray(bad[9].data)
+        health[5] ^= 1
+        bad[9] = model.FrameRecord(dashboard.model.can_id, bytes(health))
+        for frame in bad:
+            dashboard.model.process_frame(frame, now=0.09)
+        dashboard._refresh(0.1)
+        self.assertEqual(dashboard.status_var.get(), "SCHEMA MISMATCH")
+        self.assertIn("received v2/profile", dashboard.schema_var.get())
+        self.assertIn("expected v2/profile", dashboard.schema_var.get())
+        self.assertEqual(self.panel_value("normalized_load"), "--")
+        self.assertEqual(self.panel_value("rolling_launch_phase"), "--")
+        self.assertEqual(dashboard.health_vars["flags"].get(), "flags=--")
+        self.assertEqual(dashboard.health_vars["overrun"].get(), "overrun=--")
+        self.assertEqual(dashboard._metric_value("rpm"), dashboard.model.stock_rpm)
+        self.assertIsNotNone(dashboard._metric_value("rpm"))
+
+        for frame in generator.group(14):
+            dashboard.model.process_frame(frame, now=0.14)
+        dashboard._refresh(0.15)
+        self.assertEqual(dashboard.status_var.get(), "LIVE")
+        self.assertIn("VERIFIED", dashboard.schema_var.get())
+        self.assertNotEqual(self.panel_value("normalized_load"), "--")
 
     def test_hover_over_a_metric_name_describes_the_metric(self):
         dashboard = self.dashboard

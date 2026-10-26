@@ -612,7 +612,7 @@ STATUS_FIELDS = (
     ("source_var", "Telemetry source", "text", "left",
      "Source: PCAN_USBBUS1, 500000 bit/s"),
     ("schema_var", "Wire schema state", "amber", "left",
-     "Schema: VERIFIED, profile 255"),
+     "Schema: MISMATCH, received v255/profile 255/CRC FFFF; expected v255/profile 255/CRC FFFF"),
     ("rate_var", "Group and frame rates", "cyan", "left",
      "Groups: 100.0 Hz | Frames: 1000.0 Hz"),
     ("loss_var", "Loss and integrity counters", "muted", "left",
@@ -656,8 +656,18 @@ RUN_TOOLTIPS = {
 
 
 def schema_status(model):
-    """Name the verified profile ID."""
+    """Show the verified profile or both sides of a wire identity mismatch."""
     if not model.schema_verified:
+        received = model.decoder.reported_identity
+        expected = model.decoder.expected_identity
+        if received is not None and received != expected:
+            def describe(identity):
+                version, profile, crc = identity
+                return f"v{version}/profile {profile}/CRC {crc:04X}"
+            return (
+                f"Schema: MISMATCH, received {describe(received)}; "
+                f"expected {describe(expected)}"
+            )
         return "Schema: waiting"
     if model.profile_id is None:
         return "Schema: VERIFIED"
@@ -2350,6 +2360,12 @@ class DashboardApp:
             state, color = self.source_state.upper(), palette.muted
         elif self.player is not None and not self.player.playing:
             state, color = "PAUSED", palette.amber
+        elif (
+            not self.model.schema_verified
+            and self.model.decoder.reported_identity is not None
+            and self.model.decoder.reported_identity != self.model.decoder.expected_identity
+        ):
+            state, color = "SCHEMA MISMATCH", palette.red
         elif age is None:
             state, color = f"WAITING FOR 0x{self.model.can_id:03X}", palette.amber
         elif age > 0.5:
@@ -2396,9 +2412,9 @@ class DashboardApp:
             ("groups", stats.completed_groups),
             ("mismatch", stats.schema_mismatches),
             ("errors", stats.error_frames),
-            ("overrun", self.model.raw.get("snapshot_overrun_count", "--")),
-            ("tx_abort", self.model.raw.get("tx_abort_count", "--")),
-            ("flags", active_flags or "none"),
+            ("overrun", self.model.value("snapshot_overrun_count", "--")),
+            ("tx_abort", self.model.value("tx_abort_count", "--")),
+            ("flags", (active_flags or "none") if self.model.schema_verified else "--"),
         ):
             self.health_vars[key].set(f"{key}={value}")
 

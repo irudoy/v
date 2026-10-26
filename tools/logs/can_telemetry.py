@@ -432,6 +432,8 @@ class Decoder:
         self._unwrapped_tick = None
         self._run = 0
         self._schema_verified = False
+        self.reported_identity = None
+        self._identity_run = 0
         self._seen_page_zero = False
         self.incomplete_groups = 0
         self.malformed_frames = 0
@@ -442,6 +444,14 @@ class Decoder:
     @property
     def schema_verified(self):
         return self._schema_verified
+
+    @property
+    def expected_identity(self):
+        """The selected wire protocol version, profile ID and profile CRC16."""
+        return (
+            self.schema["protocol_version"], self.profile["id"],
+            self.profile["_crc16"],
+        )
 
     def _discard(self):
         if self._pages:
@@ -511,6 +521,9 @@ class Decoder:
         if run != self._run:
             # A new run republishes its identity on the next health context.
             self._schema_verified = False
+        if run != self._identity_run:
+            self.reported_identity = None
+            self._identity_run = run
 
         context_tags = {page: pages[page][1] for page in self.context_pages}
         if len(set(context_tags.values())) != 1:
@@ -525,11 +538,11 @@ class Decoder:
                 )
                 for field, offset in self._health_fields
             }
-            if (
-                health["protocol_version"] != self.schema["protocol_version"]
-                or health["profile_id"] != self.profile["id"]
-                or health["profile_crc16"] != self.profile["_crc16"]
-            ):
+            self.reported_identity = (
+                health["protocol_version"], health["profile_id"],
+                health["profile_crc16"],
+            )
+            if self.reported_identity != self.expected_identity:
                 self.schema_mismatches += 1
                 self._schema_verified = False
                 return None

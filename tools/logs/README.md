@@ -66,6 +66,10 @@ factor and offset, unit, candidate flag, values, or named bits that its scale
 string states, and the decoder refuses a schema whose terms differ from its
 scale strings.
 
+The decoder retains the last reported `(protocol version, profile ID, CRC16)`
+identity even when it rejects a mismatching health group. A producer restart
+clears the previous run's identity until a health context reports another one.
+
 Fuel-trim words retain the firmware's Q8.8 absolute-percent representation,
 whose neutral value is 100.00%. The engineering correction emitted by the
 decoder is therefore `raw / 256 - 100 percent`.
