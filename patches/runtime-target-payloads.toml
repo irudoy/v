@@ -1153,9 +1153,9 @@ ffffffffffffffffffffffffffffffff
 
 [target.1ME3B]
 stock_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
-map_stage_sha256 = "7747c349681dee7588ec2c39a9491f248f6773585d530287e4abfff458133354"
-rolling_stage_sha256 = "4c34480918b51dacc361adff331c1f900bd219e520e0de21c0e049e7d79cd457"
-telemetry_stage_sha256 = "152be9550f794128a7fd80b86af8838181fd85332d3ca8b35bb0b751e1d5bd8d"
+map_stage_sha256 = "290f935353525471c22d79eaea796bbc936e9858534889f2183670b00afe8566"
+rolling_stage_sha256 = "34cb0e55433e78830a7f660d6e060c29e3e9da90f735943e4ac4008585779ae5"
+telemetry_stage_sha256 = "498090d95b77b862cf76d3068faf7278ea0f27b47b733ad83a3c46d0cb93d59f"
 
 [target.1ME3B.map_units]
 selector_host = """

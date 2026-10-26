@@ -85,8 +85,24 @@ replacement = "0013b340"
 hook = "ignition_lookup_4e1c0_a/hook"
 replacement = "0013b340"
 
+[target.hooks.ignition_lookup_3]
+hook = "ignition_lookup_79420/hook"
+replacement = "0013b340"
+
+[target.hooks.ignition_lookup_4]
+hook = "ignition_lookup_796f4/hook"
+replacement = "0013b340"
+
+[target.hooks.ignition_lookup_5]
+hook = "ignition_lookup_799a4/hook"
+replacement = "0013b340"
+
 [target.hooks.ignition_state_lookup]
 hook = "ignition_state_lookup/hook"
+replacement = "0013e080"
+
+[target.hooks.ignition_state_lookup_earlier]
+hook = "ignition_state_lookup_79404/hook"
 replacement = "0013e080"
 
 [target.hooks.overrun_cut_lookup]

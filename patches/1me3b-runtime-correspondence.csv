@@ -38,7 +38,11 @@ map_hook,idle_ignition_lookup_pool_1,0004b224,000733fc,0002a9f4,,target-specific
 map_hook,idle_ignition_lookup_pool_2,,00073624,0002a9f4,,target-specific,Second literal-pool copy of the common idle lookup pointer serves the alternate and fallback branches
 map_hook,ignition_lookup_1,000496c0,00079cac,00029ba8,,target-specific,Coordinator literal reads the hot and cold 16x16 surfaces
 map_hook,ignition_lookup_2,0004e474,00079e24,00029ba8,,target-specific,Coordinator literal reads the hot 16x16 surface
+map_hook,ignition_lookup_3,,00079420,00029ba8,,target-specific,Declared lookup literal in the 1ME3B patch consumer contract.
+map_hook,ignition_lookup_4,,000796f4,00029ba8,,target-specific,Declared lookup literal in the 1ME3B patch consumer contract.
+map_hook,ignition_lookup_5,,000799a4,00029ba8,,target-specific,Declared lookup literal in the 1ME3B patch consumer contract.
 map_hook,ignition_state_lookup,,00079994,000293d8,,target-specific,Single literal through which the coordinator 000797cc calls the 8x8 lookup for the four state-code surfaces; the second live literal 00079e40 of that lookup serves only the reference surface 0000a584
+map_hook,ignition_state_lookup_earlier,,00079404,000293d8,,target-specific,Declared lookup literal in the 1ME3B patch consumer contract.
 map_hook,overrun_cut_lookup,0004fdd0,0007bf08,0002aa48,,mapped,Target literal calls the DFCO lookup
 map_hook,overrun_restore_lookup,00050258,0007c3e4,0002aa48,,mapped,Target literal calls the DFCO lookup
 map_hook,rev_fuel_cut_activation_curve_base,,0007b32c,000172b6,,target-specific,Native state-machine literal selects the eight-point activation curve

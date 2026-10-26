@@ -1,0 +1,28 @@
+[[symbol]]
+layout = "1me3b"
+address = "00079404"
+level = "code"
+note = "Lookup literal of the declared 1ME3B ignition call windows."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079404"
+value = "000293d8"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "patches/ignition_literal_consumers.py"
+key = "STATE_LITERALS"
+note = "Declared lookup literal in the 1ME3B patch consumer contract."
+
+[[link]]
+type = "target"
+to = "determined-gaur/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00079404"
+value = "000293d8"
