@@ -21,7 +21,7 @@ explicit post-base contexts, not a claim that ordinary word inputs reach \
 them. Full-entry wide fallback references and changed fixture weights \
 similarly establish software boundaries without live reachability.""",
 ]
-level = "code"
+level = "candidate"
 unit = "raw MAF contribution"
 
 [[ledger]]

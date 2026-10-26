@@ -15,7 +15,7 @@ unit = "raw MAF state"
 [[symbol]]
 layout = "7mfk"
 address = "ffff1e1e"
-level = "code"
+level = "candidate"
 width = 16
 signed = true
 

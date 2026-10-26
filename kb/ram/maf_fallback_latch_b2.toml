@@ -9,7 +9,7 @@ unit = "raw mode state"
 [[symbol]]
 layout = "7mfk"
 address = "ffff43cb"
-level = "code"
+level = "candidate"
 width = 8
 signed = false
 
