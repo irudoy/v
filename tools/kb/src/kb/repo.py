@@ -150,7 +150,7 @@ def config(root=ROOT, overlay=None):
         owner_text = None
     if owner_text is not None:
         owners = _configuration_document(owner_text)
-        if (set(owners) != {'schema_version', 'names', 'reconciliation', 'source_bindings'}
+        if (set(owners) != {'schema_version', 'names', 'reconciliation'}
                 or type(owners['schema_version']) is not int or owners['schema_version'] != 1
                 or not isinstance(owners['names'], dict)
                 or set(owners['names']) != {'owners_checked', 'reserved'}
@@ -160,11 +160,10 @@ def config(root=ROOT, overlay=None):
                        or set(owners[key]) != {'enabled', 'review'}
                        or owners[key]['enabled'] is not True
                        or not isinstance(owners[key]['review'], list)
-                       for key in ('reconciliation', 'source_bindings'))):
+                       for key in ('reconciliation',))):
             raise KbError(f'{OWNER_CONFIG}: only name ownership and source-bound reviews are allowed')
         document.setdefault('names', {}).update(owners['names'])
         document['reconciliation'] = owners['reconciliation']
-        document['source_bindings'] = owners['source_bindings']
     return document
 
 

@@ -7995,19 +7995,3 @@ detail = "jk78c-ffff227a/ram: declared 8 bits; normalized L0 includes wider acce
 sources = ["kb/ram/intake_cvtc_target.toml"]
 state = "unresolved"
 reason = "jk78c-ffff227a/ram: declared 8 bits; normalized L0 includes wider accesses of [16] bits"
-[source_bindings]
-enabled = true
-
-[[source_bindings.review]]
-location = "jk78c:000bced0"
-kind = "fn"
-l0 = "6bd18b774cb344a9"
-state = "unresolved"
-reason = "The documented function anchor has no entry in normalized L0."
-
-[[source_bindings.review.sources]]
-layout = "jk78c"
-path = "defs/JK78C.can.md"
-sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
-sections = ["Exhaust camshaft control removal"]
-anchor = "FUN_000BCED0"

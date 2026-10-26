@@ -13,8 +13,7 @@ EXECUTION = '# Retained execution settings.\n[names]\nwords = 2\n[l0]\nscripts =
 
 def owners():
     return dict(schema_version=1, names=dict(owners_checked=True, reserved=[]),
-                reconciliation=dict(enabled=True, review=[]),
-                source_bindings=dict(enabled=True, review=[]))
+                reconciliation=dict(enabled=True, review=[]))
 
 
 

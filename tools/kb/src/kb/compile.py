@@ -68,8 +68,6 @@ def inputs(root=repo.ROOT):
     from kb import compatibility
     found.update(compatibility.inputs(root))
     found.update(names.inputs())
-    from kb import source_bindings
-    found.update(path.as_posix() for path in source_bindings.PATHS)
     found.update((repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix(), repo.CONFIG.as_posix()))
     if (root / 'defs/JK08A.can-latch-copy.toml').is_file():
         found.add('defs/JK08A.can-latch-copy.toml')

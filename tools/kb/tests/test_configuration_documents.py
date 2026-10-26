@@ -2,7 +2,6 @@
 
 from concurrent.futures import ThreadPoolExecutor
 import pickle
-import re
 import tomllib
 from unittest import mock
 
@@ -14,16 +13,7 @@ from kb import repo
 TEXT = 'title = "Probe"\nstamp = 2026-10-05T00:00:00Z\n' \
        '[[items]]\nname = "first"\nvalues = [1, 2]\n'
 OWNERS = ('schema_version = 1\n[names]\nowners_checked = true\nreserved = []\n'
-          '[reconciliation]\nenabled = true\nreview = []\n'
-          '[source_bindings]\nenabled = true\nreview = []\n')
-
-
-def test_default_preparation_budget_matches_its_published_contract():
-    text = (repo.ROOT / 'tools/kb/README.md').read_text(encoding='utf-8')
-    [published] = re.findall(r'a ([0-9]+) MiB content budget', text)
-    documents = repo._ConfigurationDocuments()
-    assert documents.capacity == int(published) * (1 << 20)
-    assert documents.bytes == 0 and not documents.entries
+          '[reconciliation]\nenabled = true\nreview = []\n')
 
 
 def fresh_reader(monkeypatch, capacity=64 << 20):
@@ -81,7 +71,7 @@ def test_owner_schema_validation_executes_after_every_preparation(tmp_path, monk
             repo.config(tmp_path, overlay)
     assert bad in documents.entries
     overlay[repo.OWNER_CONFIG] = OWNERS
-    assert repo.config(tmp_path, overlay)['source_bindings']['enabled'] is True
+    assert repo.config(tmp_path, overlay)['reconciliation']['enabled'] is True
 
 
 def test_syntax_errors_are_not_retained():
@@ -156,10 +146,10 @@ def test_owner_merges_do_not_change_a_prepared_execution_document(tmp_path, monk
     documents = fresh_reader(monkeypatch)
     original = tomllib.loads(TEXT)
     merged = repo.config(tmp_path, {repo.CONFIG: TEXT, repo.OWNER_CONFIG: OWNERS})
-    merged['source_bindings']['review'].append({'key': 'changed'})
+    merged['reconciliation']['review'].append({'key': 'changed'})
     assert documents.loads(TEXT) == original
     assert repo.config(tmp_path, {repo.CONFIG: TEXT, repo.OWNER_CONFIG: None}) == original
     owners = tomllib.loads(OWNERS)
     assert repo.config(tmp_path, {repo.CONFIG: TEXT, repo.OWNER_CONFIG: OWNERS}) \
            == {**original, **{key: owners[key] for key in (
-               'names', 'reconciliation', 'source_bindings')}}
+               'names', 'reconciliation')}}

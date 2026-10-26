@@ -23,8 +23,7 @@ def declared(tmp_path):
     subject.config['reconciliation']['review'] = records
     source = tomlkit.dumps(dict(schema_version=1,
         names=dict(owners_checked=True, reserved=[]),
-        reconciliation=subject.config['reconciliation'],
-        source_bindings=dict(enabled=True, review=[])))
+        reconciliation=subject.config['reconciliation']))
     path = tmp_path / repo.OWNER_CONFIG
     path.parent.mkdir(parents=True)
     path.write_text('# Retain unrelated owner metadata.\n' + source)
@@ -45,7 +44,6 @@ def test_deleted_access_withdraws_only_its_review_and_preserves_other_owner_tabl
         document = tomlkit.parse(updated)
         assert document['reconciliation']['review'] == []
         assert document['names'] == tomlkit.parse(text)['names']
-        assert document['source_bindings'] == tomlkit.parse(text)['source_bindings']
         assert updated.startswith('# Retain unrelated owner metadata.\n')
         assert (tmp_path / repo.OWNER_CONFIG).read_text() == text
         after.config['reconciliation'] = document['reconciliation']

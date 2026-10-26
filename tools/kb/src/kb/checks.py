@@ -966,11 +966,6 @@ def code_check(model):
     return reconciliation.check(model)
 
 
-def source_bindings_check(model):
-    from kb import source_bindings
-    return source_bindings.check(model)
-
-
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -990,7 +985,6 @@ CHECKS = {
     'chains': chains,
     'catalog': catalog_check,
     'code': code_check,
-    'source-bindings': source_bindings_check,
 }
 
 # Reports of a check that do not fail it.

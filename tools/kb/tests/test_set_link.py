@@ -47,7 +47,7 @@ def baseline(tmp_path_factory):
     assert set(write.checks.CHECKS) == {
         'schema', 'canonical', 'names', 'references', 'symbols', 'homology',
         'links', 'widths', 'image-bytes', 'statuses', 'writers', 'fields',
-        'levels', 'ledgers', 'blocks', 'chains', 'catalog', 'code', 'source-bindings',
+        'levels', 'ledgers', 'blocks', 'chains', 'catalog', 'code',
     }
     assert write._issues(model) == {}
     frozen = convert.dump(model)

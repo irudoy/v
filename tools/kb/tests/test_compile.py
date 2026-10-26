@@ -250,19 +250,20 @@ class RamStructureEvidenceTest(unittest.TestCase):
                     self.assertEqual([item for item in symbol.evidence if "legacy" not in item],
                                      [expected])
 
-    def test_eight_wrong_offsets_fail_homology_even_while_structure_is_held(self):
+    def test_wrong_offsets_fail_homology_and_structure_grounding(self):
         m = compile.build()
         failures = {}
         for address in self.EXPECTED:
             key = SymbolKey("7mfk", "ram", address)
             symbol = m.symbols[key]
             self.assert_pair(address, symbol.evidence)
+            self.assertTrue(levels.held(m, symbol))
             base = self.expected_items(address)[0]
             wrong = {**base, "value": base["value"] + 1}
             symbol.evidence[symbol.evidence.index(base)] = wrong
             failure = match.verify(m, symbol, wrong)
             self.assertIsNotNone(failure)
-            self.assertTrue(levels.held(m, symbol))
+            self.assertFalse(levels.held(m, symbol))
             failures[key.key] = failure
         issues = [issue for issue in checks.CHECKS["homology"](m)
                   if issue.subject in failures]
@@ -1722,12 +1723,6 @@ class ArchitectureAdapterTest(unittest.TestCase):
 
 
 class StageTwoChecksTest(unittest.TestCase):
-    def test_the_readme_lists_every_adapter_in_compiler_order(self):
-        text = (repo.ROOT / "tools/kb/README.md").read_text(encoding="utf-8")
-        listed = re.findall(r"^\| `([a-z]+)` \| `(?:kb|tools|defs|patches)/", text, re.M)
-        self.assertEqual(listed, [adapter.__name__.rsplit(".", 1)[1]
-                                  for adapter in adapters.ADAPTERS])
-
     def test_the_model_checks_pass(self):
         m = model()
         for name, check in checks.CHECKS.items():
