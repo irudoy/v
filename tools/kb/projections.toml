@@ -742,3 +742,15 @@ inputs = [
 ]
 consumers = ["tools/memgraph/ingest_diagnostics.py", "tools/diagnostics/tests/"]
 read = "open"
+
+[[projection]]
+path = "patches/runtime-bindings.toml"
+generator = "kb.runtime_projection:render"
+inputs = [
+    "kb/", "rom-images/homology.toml",
+    "tools/kb/src/kb/runtime_projection.py", "tools/kb/src/kb/targets.py",
+    "tools/kb/src/kb/repo.py", "tools/kb/src/kb/store.py",
+    "tools/kb/src/kb/vocab.py", "tools/kb/src/kb/source_documents.py",
+]
+consumers = ["patches/runtime_bindings.py", "patches/runtime_targets.py"]
+read = "open"

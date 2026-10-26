@@ -7,7 +7,7 @@ applies the audited uniform injected-ROM and injected-RAM relocations. The
 JK08A values of the key tables of the feature targets, the hook keys of each
 target, and the MAIN switch bit of the ASCD flag byte, the active cut bit of
 the RPM fuel-cut state, and the high-detonation bit of the knock surface state
-of each layout come from the entity files through `kb.targets`. Target
+of each layout come from the generated numeric runtime bindings. Target
 machine-code payloads are tracked separately and are accepted only when their
 digests match both the projected layout and independently assembled sources.
 """
@@ -25,11 +25,8 @@ import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
-# The firmware gate runs this module outside the project environment, where
-# the `kb` package is importable only from its source tree.
-for _path in (ROOT / "tools" / "kb" / "src", ROOT):
-    if str(_path) not in sys.path:
-        sys.path.insert(0, str(_path))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from patches import apply_map_switching
 from patches import can_telemetry_assembly
@@ -44,11 +41,10 @@ from patches import rolling_launch_compose
 from patches import rolling_launch_layout
 from patches import rom_address_profiles
 from patches import rom_checksums
+from patches import runtime_bindings
 from patches import can_telemetry_compose
 from tools import rom_homology
 from tools.mapkit import rom as romkit
-from kb import targets as kb_targets
-from kb.repo import KbError
 
 
 DEFAULT_PAYLOADS = Path(__file__).with_name("runtime-target-payloads.toml")
@@ -132,29 +128,25 @@ class RuntimeTargetError(ValueError):
     """Raised when a target projection or payload lock is incomplete."""
 
 
-def _kb(read, *args):
-    """A read of the entity files through `kb.targets`."""
+def _binding(read, *args):
+    """Read a generated binding without loading the knowledge model."""
     try:
-        return read(*args, root=ROOT)
-    except KbError as error:
-        raise RuntimeTargetError(f"kb: {error}") from error
+        return read(*args)
+    except runtime_bindings.RuntimeBindingsError as error:
+        raise RuntimeTargetError(f"runtime bindings: {error}") from error
 
 
 @lru_cache(maxsize=None)
 def canonical_symbols(feature):
     """{key: value} of the JK08A target of a feature: symbol addresses,
     numbers, and record words."""
-    return _kb(kb_targets.canonical_symbols, feature)
+    return _binding(runtime_bindings.canonical_symbols, feature)
 
 
 @lru_cache(maxsize=None)
 def map_hook_keys(rom):
     """{JK08A hook word: key} of the map hooks of the layout of a ROM."""
-    return _kb(
-        kb_targets.hook_keys,
-        "map_switching",
-        _kb(kb_targets.layout_of, rom),
-    )
+    return _binding(runtime_bindings.map_hook_keys, rom)
 
 
 @lru_cache(maxsize=None)
@@ -163,17 +155,7 @@ def ignition_state_template():
     source names: the table base of each state-code family on the template
     layout and the pointer table of its storage there, less the ROM
     relocation of the layout."""
-    layout = IGNITION_STATE_TEMPLATE_LAYOUT
-    maps = _kb(kb_targets.target, "map_switching", layout)
-    delta = _kb(kb_targets.target, "runtime", layout)["rom_delta"]
-    storage = maps["ignition_state_storage"]
-    return {
-        key: (
-            _kb(kb_targets.address, maps["families"][key], layout),
-            int(storage[key]["pointer_table"], 16) - delta,
-        )
-        for key in IGNITION_STATE_FAMILY_NAMES
-    }
+    return _binding(runtime_bindings.ignition_state_template)
 
 
 @dataclass(frozen=True)
@@ -536,15 +518,14 @@ def _replace_source_once(source, old, new, context):
 @lru_cache(maxsize=None)
 def ascd_main_mask(layout):
     """The mask of the MAIN switch bit of the ASCD flag byte on a layout."""
-    return 1 << _kb(kb_targets.bit, ASCD_STATE, layout, "main")
+    return 1 << _binding(runtime_bindings.layout, layout)["ascd_main_bit"]
 
 
 @lru_cache(maxsize=None)
 def fuel_cut_active_mask(layout):
     """The mask of the active cut bit of the stock RPM fuel-cut state on a
     layout."""
-    meaning = _kb(kb_targets.meaning, "rolling_launch", layout, FUEL_CUT_KEY)
-    return 1 << _kb(kb_targets.bit, meaning, layout, "active")
+    return 1 << _binding(runtime_bindings.layout, layout)["fuel_cut_active_bit"]
 
 
 @lru_cache(maxsize=None)
@@ -553,11 +534,8 @@ def knock_surface_bits(layout):
     surface field of a layout: the bit of the layout and the bit of the
     canonical layout, which the wire carries."""
     return (
-        _kb(kb_targets.bit, KNOCK_SURFACE, layout, KNOCK_SURFACE_BIT),
-        _kb(
-            kb_targets.bit, KNOCK_SURFACE, kb_targets.CANONICAL,
-            KNOCK_SURFACE_BIT,
-        ),
+        _binding(runtime_bindings.layout, layout)["knock_surface_bit"],
+        _binding(runtime_bindings.layout, runtime_bindings.CANONICAL)["knock_surface_bit"],
     )
 
 
@@ -571,9 +549,9 @@ def knock_surface_slot():
         len(fields) != 1
         or fields[0].page is None
         or fields[0].width != 1
-        or fields[0].source != _kb(
-            kb_targets.address, KNOCK_SURFACE, kb_targets.CANONICAL
-        )
+        or fields[0].source != _binding(
+            runtime_bindings.layout, runtime_bindings.CANONICAL
+        )["knock_surface_address"]
     ):
         raise RuntimeTargetError(
             f"{KNOCK_SURFACE_FIELD}: expected one fixed byte field of "
@@ -588,7 +566,7 @@ def _move_knock_surface_bit(source, profile):
     bit. The fixed page loop leaves r4 at the end of the fixed pages, and the
     context pages load r0 and r1 before they read them."""
     context = "capture fixed page loop"
-    bit, wire = knock_surface_bits(_kb(kb_targets.layout_of, profile.rom))
+    bit, wire = knock_surface_bits(_binding(runtime_bindings.layout_of, profile.rom))
     if bit == wire:
         return _replace_source_once(
             source, FIXED_PAGE_LOOP_END, FIXED_PAGE_LOOP_END, context
@@ -625,13 +603,13 @@ def _mask_source(
 ):
     """Bind a bit test, which the canonical source makes at the bit of the
     canonical layout, to the bit of the target layout."""
-    home = mask_of(kb_targets.CANONICAL)
+    home = mask_of(runtime_bindings.CANONICAL)
     if home != canonical_mask:
         raise RuntimeTargetError(
             f"{context}: the canonical source tests 0x{canonical_mask:02X}, "
-            f"and the bit of {kb_targets.CANONICAL} is 0x{home:02X}"
+            f"and the bit of {runtime_bindings.CANONICAL} is 0x{home:02X}"
         )
-    mask = mask_of(_kb(kb_targets.layout_of, profile.rom))
+    mask = mask_of(_binding(runtime_bindings.layout_of, profile.rom))
     if mask == home:
         return _replace_source_once(source, canonical, canonical, context)
     return _replace_source_once(

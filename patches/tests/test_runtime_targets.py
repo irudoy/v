@@ -1,4 +1,5 @@
 from dataclasses import replace
+import copy
 import re
 import subprocess
 import sys
@@ -10,6 +11,7 @@ from patches import map_switching_assembly
 from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import runtime_targets
+from patches import runtime_bindings
 from tools.mapkit import vq37_native_fuel_cut
 
 
@@ -18,16 +20,25 @@ SH7059_ROMS = (
 )
 
 
-def test_the_module_reads_kb_with_the_standard_library_alone():
+def test_the_module_reads_numeric_bindings_without_kb_or_site_packages():
     # The firmware gate imports the module with the python3 of its container,
     # which has no site packages.
     probe = (
         "import sys\n"
+        "class NoKnowledgeImports:\n"
+        "    def find_spec(self, fullname, path=None, target=None):\n"
+        "        if fullname == 'kb' or fullname.startswith('kb.'):\n"
+        "            raise AssertionError('patch reader imports ' + fullname)\n"
+        "sys.meta_path.insert(0, NoKnowledgeImports())\n"
         "sys.path.insert(0, sys.argv[1])\n"
         "from patches import runtime_targets\n"
         "runtime_targets.canonical_symbols('can_telemetry')\n"
         "runtime_targets.map_hook_keys('JK00C')\n"
         "runtime_targets.ignition_state_template()\n"
+        "runtime_targets.load_payload_locks()\n"
+        "for rom in runtime_targets.EXACT_ROMS:\n"
+        "    runtime_targets.load_runtime_target(rom)\n"
+        "assert not any(name == 'kb' or name.startswith('kb.') for name in sys.modules)\n"
     )
     result = subprocess.run(
         [sys.executable, "-I", "-S", "-c", probe, str(runtime_targets.ROOT)],
@@ -54,9 +65,39 @@ def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
         runtime_targets.fuel_cut_active_mask("7mfk")
     )
     assert runtime_targets.CANONICAL_FUEL_FINAL_MASK == (
-        runtime_targets.kb_targets.address("fuel_inhibit_mask/ram", "7mfk")
+        runtime_targets.runtime_bindings.layout("7mfk")["fuel_inhibit_mask"]
     )
     assert runtime_targets.knock_surface_bits("7mfk") == (6, 6)
+
+
+@pytest.mark.parametrize("damage", ("schema", "bit", "image", "feature", "hook"))
+def test_runtime_bindings_reject_malformed_machine_inputs(tmp_path, monkeypatch, damage):
+    document = copy.deepcopy(runtime_bindings.load())
+    if damage == "schema":
+        document["schema_version"] = True
+    elif damage == "bit":
+        document["layouts"]["7mfk"]["ascd_main_bit"] = 8
+    elif damage == "image":
+        document["images"]["JK08A"] = "missing"
+    elif damage == "feature":
+        document["canonical_symbols"].pop("rolling_launch")
+    else:
+        document["map_hook_keys"]["7mfk"] = {"not-an-address": "lookup"}
+    path = tmp_path / "bindings.toml"
+    path.write_text("")
+    monkeypatch.setattr(runtime_bindings.tomllib, "load", lambda source: document)
+    with pytest.raises(runtime_bindings.RuntimeBindingsError):
+        runtime_bindings.load(path)
+
+
+def test_runtime_binding_reads_keep_the_cached_machine_input_unchanged():
+    original = runtime_bindings.layout("7mfk")
+    changed = runtime_bindings.layout("7mfk")
+    changed["ascd_main_bit"] = 0
+    assert runtime_bindings.layout("7mfk") == original
+    symbols = runtime_bindings.canonical_symbols("can_telemetry")
+    symbols.clear()
+    assert runtime_bindings.canonical_symbols("can_telemetry")
 
 
 def test_the_ignition_state_template_names_the_adapter_source_numbers():
@@ -696,7 +737,7 @@ def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
     engine = target.rolling_layout.source_text_by_unit["engine"]
 
     assert runtime_targets.ascd_main_mask(
-        runtime_targets.kb_targets.layout_of(rom)
+        runtime_targets.runtime_bindings.layout_of(rom)
     ) == mask
     assert runtime_targets.ascd_main_mask("7mfk") == 0x80
     immediate = "#-0x80" if mask == 0x80 else f"#0x{mask:02X}"
@@ -727,17 +768,13 @@ def test_the_engine_reports_the_active_cut_bit_of_the_target(
     # and the native rev-limit state machine on the VQ37VHR layouts, whose
     # coordinator wrapper extends the final inhibit mask instead.
     target = runtime_targets.load_runtime_target(rom)
-    layout = runtime_targets.kb_targets.layout_of(rom)
+    layout = runtime_targets.runtime_bindings.layout_of(rom)
     engine = target.rolling_layout.source_text_by_unit["engine"]
     wrapper = target.rolling_layout.source_text_by_unit.get(
         "fuel_cut_wrapper"
     )
-    meaning = runtime_targets.kb_targets.meaning(
-        "rolling_launch", layout, runtime_targets.FUEL_CUT_KEY
-    )
-
     assert runtime_targets.fuel_cut_active_mask(layout) == mask
-    assert runtime_targets.kb_targets.address(meaning, layout) == state
+    assert runtime_targets.runtime_bindings.layout(layout)["fuel_cut_address"] == state
     assert engine.count(
         f"mov.b @r4,r0\nand 0x{mask:02X},r0\ntst r0,r0\n"
         "bt rl_active_flags_store\n"
@@ -745,9 +782,7 @@ def test_the_engine_reports_the_active_cut_bit_of_the_target(
     assert f"rl_helper_fuel_cut_status:\n.long 0x{state:08X}\n" in engine
     assert (wrapper is None) == (final is None)
     if final is not None:
-        assert runtime_targets.kb_targets.address(
-            "fuel_inhibit_mask/ram", layout
-        ) == final
+        assert runtime_targets.runtime_bindings.layout(layout)["fuel_inhibit_mask"] == final
         assert (
             f"rl_fuel_final_mask_address:\n.long 0x{final:08X}\n" in wrapper
         )
@@ -782,7 +817,7 @@ def test_the_capture_carries_the_high_detonation_bit_of_the_target(rom, bit):
     )
 
     assert runtime_targets.knock_surface_bits(
-        runtime_targets.kb_targets.layout_of(rom)
+        runtime_targets.runtime_bindings.layout_of(rom)
     ) == (bit, 6)
     assert runtime_targets.knock_surface_slot() == (4, 5)
     assert canonical.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
