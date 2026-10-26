@@ -38,7 +38,6 @@ class Positional:
 class Syntax:
     text: str
     table: str
-    stage: int
     command: str = ""
     positionals: list = field(default_factory=list)
     options: dict = field(default_factory=dict)
@@ -78,7 +77,7 @@ def _elements(syntax, tokens, start, stop, common, optional=False, repeat=False)
             index += 2 if again else 1
 
 
-def parse(text, table, stage, common=None):
+def parse(text, table, common=None):
     """The syntax of a command of the tables: its command words, positionals,
     and options."""
     tokens = TOKEN.findall(text)
@@ -87,7 +86,7 @@ def parse(text, table, stage, common=None):
     index = 1
     while index < len(tokens) and WORD.fullmatch(tokens[index]):
         index += 1
-    syntax = Syntax(text, table, stage, " ".join(tokens[1:index]))
+    syntax = Syntax(text, table, " ".join(tokens[1:index]))
     _elements(syntax, tokens, index, len(tokens), common or {})
     return syntax
 
@@ -97,7 +96,7 @@ def common_options(root=repo.ROOT):
     found = {}
     for cells in spec.table(COMMON, root):
         for text in re.findall(r"`([^`]+)`", cells[0]):
-            found.update(parse(f"kb {text}", COMMON, 0).options)
+            found.update(parse(f"kb {text}", COMMON).options)
     return {name: Option(option.value, False, False) for name, option in found.items()}
 
 
@@ -108,7 +107,7 @@ def rows(root=repo.ROOT):
     for heading in (READ, WRITE):
         for cells in spec.table(heading, root):
             for text in re.findall(r"`([^`]+)`", cells[0]):
-                found.append(parse(text, heading, int(cells[-1]), common))
+                found.append(parse(text, heading, common))
     return found
 
 
@@ -170,28 +169,22 @@ class CommandTableTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rows = rows()
-        cls.stage = project.stage()
-        cls.started = [syntax for syntax in cls.rows if syntax.stage <= cls.stage]
         cls.parser = cli.build_parser()
         cls.commands = leaves(cls.parser)
 
     def forms(self, command):
-        return [syntax for syntax in self.started if syntax.command == command]
+        return [syntax for syntax in self.rows if syntax.command == command]
 
-    def test_every_stage_is_one_of_the_transition(self):
-        numbers = {row["number"] for row in spec.stages()}
+
+    def test_every_declared_row_names_a_command_of_the_parser(self):
         for syntax in self.rows:
-            self.assertIn(syntax.stage, numbers, syntax.text)
-
-    def test_every_started_row_names_a_command_of_the_parser(self):
-        for syntax in self.started:
             self.assertIn(syntax.command, self.commands,
-                          f"`{syntax.text}` of stage {syntax.stage} names no command of kb")
+                          f"`{syntax.text}` names no command of kb")
 
-    def test_every_command_of_the_parser_has_a_started_row(self):
+    def test_every_command_of_the_parser_has_a_declared_row(self):
         for command in self.commands:
             self.assertTrue(self.forms(command),
-                            f"kb {command} has no row of a started stage in section 12")
+                            f"kb {command} has no declared command row")
 
     def test_the_options_agree(self):
         for command, parser in self.commands.items():
@@ -233,8 +226,8 @@ class CommandTableTest(unittest.TestCase):
                     self.assertEqual(set(positional.choices), set(action.choices or ()),
                                      action.dest)
 
-    def test_every_started_row_parses(self):
-        for syntax in self.started:
+    def test_every_declared_row_parses(self):
+        for syntax in self.rows:
             parser = self.commands.get(syntax.command)
             if parser is None:
                 continue
@@ -248,8 +241,8 @@ class CommandTableTest(unittest.TestCase):
                     except SystemExit:
                         self.fail(f"`{syntax.text}`: {error.getvalue().strip()}")
 
-    def test_the_mcp_tools_are_the_started_read_commands(self):
-        read = {syntax.command for syntax in self.started if syntax.table == READ}
+    def test_the_mcp_tools_are_the_declared_read_commands(self):
+        read = {syntax.command for syntax in self.rows if syntax.table == READ}
         self.assertEqual(set(mcp.READ_COMMANDS), read)
         self.assertEqual(mcp.WRITE_COMMANDS, ("apply",))
 
@@ -265,7 +258,7 @@ class CommandTableTest(unittest.TestCase):
 class SyntaxTest(unittest.TestCase):
     def test_a_hyphenated_command_keeps_its_options_and_positionals(self):
         syntax = parse("kb set-link <from> <type> <to> <key>=<value>... "
-                       "[--offset <offset>] [--slot <slot>] [--dry-run]", WRITE, 6)
+                       "[--offset <offset>] [--slot <slot>] [--dry-run]", WRITE)
         self.assertEqual(syntax.command, "set-link")
         self.assertEqual(syntax.positionals, [Positional(True, False)] * 3 +
                          [Positional(True, True)])
@@ -274,19 +267,19 @@ class SyntaxTest(unittest.TestCase):
                                          "--dry-run": Option(False, False, False)})
         for text in ("kb set-link- <from>", "kb -link <from>", "kb set-link! <from>"):
             with self.subTest(text=text), self.assertRaises(ValueError):
-                parse(text, WRITE, 6)
+                parse(text, WRITE)
 
     def test_generated_examples_accept_an_integer_converter(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--offset", type=lambda text: int(text, 0))
-        syntax = parse("kb [--offset <offset>]", WRITE, 6)
+        syntax = parse("kb [--offset <offset>]", WRITE)
         self.assertEqual(argv(syntax, parser, True), ["--offset", "1"])
         self.assertEqual(parser.parse_args(argv(syntax, parser, True)).offset, 1)
 
     def test_a_syntax_gives_its_positionals_and_options(self):
         common = {"--full": Option(False, False, False)}
         syntax = parse("kb unresolved <meaning> --layout <l> [--method <kind> --count <n>] "
-                       "[--evidence <item>]... [<path>...] [<read options>]", READ, 3, common)
+                       "[--evidence <item>]... [<path>...] [<read options>]", READ, common)
         self.assertEqual(syntax.command, "unresolved")
         self.assertEqual(syntax.positionals, [Positional(True, False), Positional(False, True)])
         self.assertEqual(syntax.options, {
@@ -295,31 +288,31 @@ class SyntaxTest(unittest.TestCase):
             "--full": Option(False, False, False)})
 
     def test_a_required_option_repeats_with_dots_after_its_value(self):
-        syntax = parse("kb absent <meaning> --evidence <item>...", WRITE, 3)
+        syntax = parse("kb absent <meaning> --evidence <item>...", WRITE)
         self.assertEqual(syntax.options["--evidence"], Option(True, True, True))
 
     def test_words_name_the_command_and_bars_the_choices(self):
-        self.assertEqual(parse("kb family new", WRITE, 9).command, "family new")
-        syntax = parse("kb instance up|down|status|prune", WRITE, 2)
+        self.assertEqual(parse("kb family new", WRITE).command, "family new")
+        syntax = parse("kb instance up|down|status|prune", WRITE)
         self.assertEqual(syntax.command, "instance")
         self.assertEqual(syntax.positionals, [Positional(True, False, ("up", "down", "status",
                                                                          "prune"))])
 
     def test_a_location_and_an_assignment_are_one_positional(self):
-        syntax = parse("kb set <ref> <key>=<value>... --where <layout>:<address>", WRITE, 3)
+        syntax = parse("kb set <ref> <key>=<value>... --where <layout>:<address>", WRITE)
         self.assertEqual(syntax.positionals, [Positional(True, False), Positional(True, True)])
         self.assertEqual(syntax.options["--where"], Option(True, True, False))
 
     def test_text_outside_the_grammar_is_refused(self):
         with self.assertRaises(ValueError):
-            parse("kb show <ref> (--layout <l>)", READ, 2)
+            parse("kb show <ref> (--layout <l>)", READ)
         with self.assertRaises(ValueError):
-            parse("uv run kb show <ref>", READ, 2)
+            parse("uv run kb show <ref>", READ)
 
     def test_an_escaped_bar_stays_in_its_cell(self):
         cells = [cells for cells in spec.table(WRITE) if cells[0].startswith("`kb instance")]
         self.assertEqual(cells, [["`kb instance up|down|status|prune`",
-                                  "[Instances](#11-instances)", "2"]])
+                                  "[Instances](#11-instances)"]])
 
 
 if __name__ == "__main__":

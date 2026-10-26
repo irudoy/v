@@ -8,9 +8,7 @@ denies a call that reads knowledge whose owner lies under a guarded tree or in
 a guarded projection, edits a guarded tree or a projection, searches a guarded
 path, or names one in a shell command, with a reason that names the command to
 use. It uses only the standard library and reads its lists from
-tools/kb/config.toml (`[guard]`), tools/kb/projections.toml, and the stage of
-tools/kb/bench.toml: a projection whose `stage` lies ahead is still owned by
-its registry. `kb guard` records a session override; without an override,
+tools/kb/config.toml (`[guard]`) and tools/kb/projections.toml. `kb guard` records a session override; without an override,
 `KB_GUARD=off` in the hook environment disables it.
 
 A shell command splits into simple commands at the shell operators and line
@@ -37,7 +35,6 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = Path("tools/kb/config.toml")
 PROJECTIONS = Path("tools/kb/projections.toml")
-BENCH = Path("tools/kb/bench.toml")
 EDITS = ("Edit", "Write", "MultiEdit", "NotebookEdit")
 RUNNERS = ("tools/", "patches/")
 DIRECTORY = ("cd", "pushd", "popd")
@@ -127,9 +124,7 @@ def load(root=ROOT):
         return tomllib.loads((root / path).read_text(encoding="utf-8"))
 
     config = read(CONFIG).get("guard", {})
-    stage = read(BENCH).get("stage", 0)
-    projections = [entry for entry in read(PROJECTIONS).get("projection", [])
-                   if entry.get("stage", 0) <= stage]
+    projections = read(PROJECTIONS).get("projection", [])
     return (tuple(tree.rstrip("/") for tree in config.get("trees", ())),
             tuple(config.get("git", ())), projections)
 

@@ -1749,27 +1749,11 @@ def brief(graph, root=repo.ROOT):
     data["layouts"] = {layout: {"functions": functions.get(layout, 0), "symbols": symbols[layout],
                                 "statuses": statuses[layout]} for layout in repo.layouts(root)}
     config = bench(root)
-    stage = config["stage"]
-    stages = {row["number"]: row["name"] for row in spec.stages(root)}
-    owners = project.owners(root, stage)
-    owner_lines = [f"  {row['registry']}: {row['owner']}" for row in owners["converted"]]
-    pending = ", ".join(f"stage {number}: {count}" for number, count in
-                        sorted(owners["pending"].items()))
-    owner_lines.append(f"  registries that own their facts until conversion: {pending}")
-    answer.section(f"stage {stage}: {stages.get(stage, '?')}; owners", FACTS, owner_lines)
-    data["stage"] = {"number": stage, "name": stages.get(stage), **owners}
-    sources = {(row["layout"], row["kind"], row["address"]): row["src"] or () for row in graph.run(
-        "MATCH (s:Kb:Symbol) RETURN s.layout AS layout, s.kind AS kind, s.address AS address, "
-        "s.src AS src")}
-    legacy = project.legacy(sources, root)
-    leave = ", ".join(f"stage {number}: {count}" for number, count in
-                      sorted(legacy["leave"].items()))
-    stay = "; ".join(f"{holders}: {count}" for holders, count in sorted(legacy["stay"].items()))
-    answer.section(f"kb/names.csv: {legacy['rows']} rows", FACTS, [
-        f"  by the first stage that converts a registry stating their symbol: {leave or 'none'}",
-        f"  by the registries that state their symbol when none converts: {stay or 'none'}",
-        f"  reserving the name of a symbol that no registry states: {legacy['reserved']}"])
-    data["names"] = legacy
+    owners = [{"registry": spec.plain(row[0]), "owner": spec.plain(row[2])}
+              for row in spec.table(spec.OWNERSHIP, root)]
+    answer.section("fact owners", FACTS,
+                   [f"  {row['registry']}: {row['owner']}" for row in owners])
+    data["owners"] = owners
     research_rows = graph.run(
         "MATCH (c:Kb:Entity {kind: 'chain'})-[:STEP]->(s:Kb:Step) "
         "WHERE s.research IS NOT NULL RETURN c.key AS chain, count(s) AS n ORDER BY chain")
@@ -1804,10 +1788,9 @@ def brief(graph, root=repo.ROOT):
                  "gap_priorities": priorities, "stale": stale, "candidates": candidates})
     questions = []
     for item in config["question"]:
-        active = "active" if item["stage"] <= stage else f"from stage {item['stage']}"
-        questions.append(f"  {item['id']:>2}  {item['command']:<46} {item['budget']:>5}  {active}"
+        questions.append(f"  {item['id']:>2}  {item['command']:<46} {item['budget']:>5}"
                          f"  {item['question']}")
-    answer.section("questions: command, budget in tokens, stage", DETAIL, questions)
+    answer.section("questions: command, budget in tokens", DETAIL, questions)
     data["questions"] = config["question"]
     answer.data = data
     return answer

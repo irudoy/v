@@ -4,7 +4,6 @@ import io
 from pathlib import Path
 import subprocess
 import tempfile
-from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -15,43 +14,33 @@ CONTRACTS = """\
 # Machine-owned KB command and ownership contracts.
 version = 1
 
-[table."## 19. Ownership by stage"]
+[table."Ownership"]
 rows = [
-  ["`roms.csv`", "Images", "not converted", "itself", ""],
-  ["`l0` exports", "Code structure", "1", "`l0/<layout>/`", "Cache"],
-  ["`kb/names.csv`", "Generated names", "created in 2", "itself, shrinking with each conversion", "Removed in 11"],
-  ["`profiles.toml`", "Targets", "3", "Meanings", "Projection"],
-  ["`defs/*.interp.csv`", "Interpolation", "3", "`fn` meanings", "Projection"],
-  ["`symbols/7mfk.csv`", "Names of 7mfk", "5", "Names of `fn` meanings", "Projection"],
-  ["`symbols/1nd.csv`", "Names of 1nd", "9", "Names of `fn` meanings", "Projection"],
-  ["`maps.csv`", "Map tracker", "generated", "`build_tracker.py`", "Projection"],
+  ["`roms.csv`", "Images", "itself"],
+  ["`l0` exports", "Code structure", "`l0/<layout>/`"],
+  ["`kb/names.csv`", "Generated names", "itself"],
+  ["`profiles.toml`", "Targets", "Meanings"],
+  ["`defs/*.interp.csv`", "Interpolation", "`fn` meanings"],
+  ["`symbols/7mfk.csv`", "Names of 7mfk", "Names of `fn` meanings"],
+  ["`symbols/1nd.csv`", "Names of 1nd", "Names of `fn` meanings"],
+  ["`maps.csv`", "Map tracker", "`build_tracker.py`"],
 ]
 
-[table."### 21.3 Stages"]
-rows = [
-  ["1. L0 in git", "L0", "Gates"],
-  ["2. Read path", "Compiler", "Questions"],
-  ["3. Knowledge", "Entities", "Audit"],
-]
 """
 
 BENCH = """\
-stage = 2
-converted = ["l0 exports"]
 
 [[question]]
 id = 1
 question = "What is at an address"
 command = "kb at jk00d:ffff1034"
 budget = 600
-stage = 2
 
 [[question]]
 id = 2
 question = "Where a meaning is"
 command = "kb where x"
 budget = 400
-stage = 3
 """
 
 CONFIG = """\
@@ -64,7 +53,6 @@ PROJECTIONS = """\
 [[projection]]
 path = "AGENTS.md#kb"
 generator = "kb.project:agents"
-stage = 2
 inputs = ["tools/kb/contracts.toml", "tools/kb/bench.toml"]
 consumers = []
 read = "open"
@@ -81,7 +69,6 @@ PATTERN = """
 [[projection]]
 path = "defs/*.interp.csv"
 generator = "kb.project:tracked"
-stage = 3
 inputs = ["defs/source.toml"]
 consumers = []
 read = "guarded"
@@ -196,20 +183,19 @@ class WriteTest(RepoCase):
         with self.assertRaises(KbError):
             project.write(root)
 
-    def test_the_section_states_the_questions_and_owners_of_the_stage(self):
+    def test_the_section_states_the_questions_and_current_owners(self):
         root = self.repo("agents")
         text = project.agents(root)
         self.assertIn("tools/kb/contracts.toml", text)
         self.assertIn("| What is at an address | `uv run kb at jk00d:ffff1034` |", text)
-        self.assertNotIn("Where a meaning is", text)
+        self.assertIn("Where a meaning is", text)
         self.assertIn("| `roms.csv` | Images | itself |", text)
         self.assertIn("| `l0` exports | Code structure | `l0/<layout>/` |", text)
-        self.assertIn("| `kb/names.csv` | Generated names | itself, shrinking with each "
-                      "conversion |", text)
-        self.assertIn("| `profiles.toml` | Targets | the registry |", text)
+        self.assertIn("| `kb/names.csv` | Generated names | itself |", text)
+        self.assertIn("| `profiles.toml` | Targets | Meanings |", text)
         self.assertIn("| `maps.csv` | Map tracker | `build_tracker.py` |", text)
-        self.assertIn("| `symbols/7mfk.csv` | Names of 7mfk | the registry |", text)
-        self.assertIn("| `symbols/1nd.csv` | Names of 1nd | the registry |", text)
+        self.assertIn("| `symbols/7mfk.csv` | Names of 7mfk | Names of `fn` meanings |", text)
+        self.assertIn("| `symbols/1nd.csv` | Names of 1nd | Names of `fn` meanings |", text)
         self.assertTrue(text.startswith("\n\n## Knowledge access\n"))
         self.assertTrue(text.endswith("|\n\n"))
 
@@ -219,8 +205,7 @@ def _interp(root):
 
 
 class PatternTest(RepoCase):
-    """A projection of a pattern whose generator returns {path: text}, at
-    stage 3, where it applies."""
+    """A declared projection whose generator returns {path: text}."""
 
     def setUp(self):
         super().setUp()
@@ -233,7 +218,7 @@ class PatternTest(RepoCase):
     def repo(self, name, files=None):
         return super().repo(name, {
             "tools/kb/projections.toml": PROJECTIONS + PATTERN,
-            "tools/kb/bench.toml": BENCH.replace("stage = 2\n", "stage = 3\n", 1),
+            "tools/kb/bench.toml": BENCH,
             "defs/A.interp.csv": "a\n", "defs/B.interp.csv": "old\n", **(files or {})})
 
     def test_kb_writes_each_file_of_the_pattern(self):
@@ -263,48 +248,6 @@ class PatternTest(RepoCase):
         project.write(root)
         self.assertEqual(project.check(root), [
             "defs/B.interp.csv: not tracked (fix: git add defs/B.interp.csv)"])
-
-    def test_a_registry_of_the_stage_changes_owner_when_kb_renders_its_files(self):
-        root = self.repo("owner")
-        text = project.agents(root)
-        self.assertIn("| `defs/*.interp.csv` | Interpolation | `fn` meanings |",
-                      text)
-        self.assertIn("| `profiles.toml` | Targets | the registry |", text)
-        self.assertIn("| `l0` exports | Code structure | `l0/<layout>/` |", text)
-        owners = project.owners(root)
-        self.assertEqual(owners["pending"], {3: 1, 5: 1, 9: 1})
-        self.assertEqual([row["registry"] for row in owners["converted"]],
-                         ["l0 exports", "kb/names.csv", "defs/*.interp.csv"])
-
-    def test_a_projection_ahead_of_the_stage_leaves_the_owner(self):
-        root = self.repo("ahead", {"tools/kb/bench.toml": BENCH})
-        self.assertIn("| `defs/*.interp.csv` | Interpolation | the registry |",
-                      project.agents(root))
-
-    def test_a_module_that_reads_kb_changes_owner_once_no_adapter_reads_it(self):
-        row = '  ["Tables of `patches/runtime.py`", "Hook keys", "3", "Feature targets", "The module reads them through the `kb` API"],\n'
-        spec = CONTRACTS.replace('  ["`symbols/7mfk.csv`"', row + '  ["`symbols/7mfk.csv`"')
-
-        def owner(name, text, read):
-            root = self.repo(name, {"tools/kb/contracts.toml": spec, "patches/runtime.py": text})
-            adapter = SimpleNamespace(inputs=lambda root: read)
-            with mock.patch.object(project.adapters, "ORDER", (adapter,)):
-                return project.agents(root)
-
-        converted = "| Tables of `patches/runtime.py` | Hook keys | Feature targets |"
-        pending = "| Tables of `patches/runtime.py` | Hook keys | the registry |"
-        self.assertIn(converted, owner("reader", "from kb import targets\n", []))
-        self.assertIn(pending, owner("read", "import kb.targets\n", ["patches/runtime.py"]))
-        self.assertIn(pending, owner("tables", "KEYS = {'a': 1}\n", []))
-
-    def test_the_list_names_no_registry_that_its_files_convert(self):
-        bench = BENCH.replace('stage = 2\nconverted = ["l0 exports"]',
-                              'stage = 3\nconverted = ["l0 exports", "defs/*.interp.csv"]')
-        root = self.repo("files", {"tools/kb/bench.toml": bench})
-        project.write(root)
-        self.assertEqual(project.check(root), [
-            "tools/kb/bench.toml: converted defs/*.interp.csv: its files convert it "
-            "(fix: edit tools/kb/bench.toml)"])
 
 
 class CheckTest(RepoCase):
@@ -366,82 +309,6 @@ read = "open"
         self.assertEqual(project.check(root), [
             "tools/kb/projections.toml: projection defs/JK08A.xml: defs/JK08A.xml is also a "
             "file of projection defs/*.xml (fix: edit tools/kb/projections.toml)"])
-
-
-NAMES = """\
-layout,kind,address,name,former
-7mfk,fn,00001000,alpha-one,
-1nd,fn,00002000,beta-two,
-7mfk,ram,ffff1000,gamma-three,
-7mfk,did,00001234,delta-four,
-7mfk,tbl,00005000,epsilon-five,
-7mfk,tbl,00006000,zeta-six,
-"""
-
-
-class OwnershipTest(RepoCase):
-    WHERE, FIX = "tools/kb/bench.toml: converted", "(fix: edit tools/kb/bench.toml)"
-
-    def test_the_files_decide_the_owner_once_the_stage_starts(self):
-        entry = """
-[[projection]]
-path = "symbols/7mfk.csv"
-generator = "kb.project:tracked"
-stage = 5
-inputs = []
-consumers = []
-read = "guarded"
-"""
-        root = self.repo("files", {
-            "tools/kb/projections.toml": PROJECTIONS + entry,
-            "tools/kb/bench.toml": BENCH.replace("stage = 2\n", "stage = 6\n", 1),
-            "symbols/7mfk.csv": "a\n", "symbols/1nd.csv": "b\n"})
-        text = project.agents(root)
-        self.assertIn("| `symbols/7mfk.csv` | Names of 7mfk | Names of `fn` meanings |", text)
-        self.assertIn("| `symbols/1nd.csv` | Names of 1nd | the registry |", text)
-        self.assertIn("| `profiles.toml` | Targets | the registry |", text)
-        self.assertEqual(project.owners(root)["pending"], {3: 2, 9: 1})
-
-    def test_the_list_names_registries_that_only_it_converts(self):
-        bench = BENCH.replace('converted = ["l0 exports"]', 'converted = ["l0 exports", "maps", '
-                              '"kb/names.csv", "profiles.toml"]')
-        root = self.repo("listed", {"tools/kb/bench.toml": bench})
-        self.assertEqual(project.ownership(root), [
-            f"{self.WHERE} maps: names no row of ownership contracts that converts in a stage {self.FIX}",
-            f"{self.WHERE} kb/names.csv: names no row of ownership contracts that converts in a stage "
-            f"{self.FIX}",
-            f"{self.WHERE} profiles.toml: its row converts in stage 3, which has not started "
-            f"{self.FIX}"])
-        root = self.repo("text", {"tools/kb/bench.toml": bench.replace(
-            'converted = ["l0 exports", "maps", "kb/names.csv", "profiles.toml"]',
-            'converted = "l0 exports"')})
-        self.assertEqual(project.ownership(root), [
-            f"{self.WHERE}: 'l0 exports' is no list of registries {self.FIX}"])
-
-    def test_a_row_states_one_stage(self):
-        row = '  ["`symbols/<layout>.csv`", "Names", "5 for `7mfk`, 9 for `1nd`", "Names", "Projection"],\n'
-        root = self.repo("stages", {"tools/kb/contracts.toml": CONTRACTS.replace('  ["`maps.csv`"',
-                                                                     row + '  ["`maps.csv`"')})
-        self.assertEqual(project.ownership(root), [
-            "tools/kb/contracts.toml: ownership contracts: symbols/<layout>.csv states stages 5, 9; a row states "
-            "one stage (fix: give each stage its row)"])
-
-    def test_the_names_count_by_the_first_stage_that_converts_their_registries(self):
-        row = '  ["`tools/diag/<name>.py`", "Diagnostic names", "not converted", "itself", ""],\n'
-        root = self.repo("legacy", {"tools/kb/contracts.toml": CONTRACTS.replace('  ["`maps.csv`"',
-                                                                     row + '  ["`maps.csv`"'),
-                                    "kb/names.csv": NAMES})
-        sources = {
-            ("7mfk", "fn", 0x1000): ["symbols/7mfk.csv", "defs/A.interp.csv"],
-            ("1nd", "fn", 0x2000): ["symbols/1nd.csv"],
-            ("7mfk", "ram", 0xffff1000): ["tools/diag/sid.py"],
-            ("7mfk", "did", 0x1234): ["tools/other.py", "tools/diag/sid.py"],
-            ("7mfk", "tbl", 0x5000): [],
-        }
-        self.assertEqual(project.legacy(sources, root), {
-            "rows": 6, "leave": {3: 1, 9: 1},
-            "stay": {"tools/diag/<name>.py": 1, "tools/diag/<name>.py, tools/other.py": 1},
-            "reserved": 2})
 
 
 if __name__ == "__main__":

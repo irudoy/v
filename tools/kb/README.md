@@ -67,8 +67,7 @@ semantics, and software checks do not replace hardware validation.
 A historical file reference uses `git:<tag>:<repository-path>[#fragment]`.
 Stock-proof evidence uses the local `archive/stock-proofs-2026-10-26` tag.
 Archived TEST evidence and TEST evidence without `supports` provide no grounding.
-The passive reference parser does not import or execute archive code. Archive
-reference validity belongs to the structural check; evidence records remain data.
+The passive reference parser does not import or execute archive code. Evidence records retain historical paths as data.
 
 Executable stock-code proofs require prior agreement on a named patch obligation
 or calibration decision that cannot proceed without one. The main KB path does
@@ -113,8 +112,8 @@ per-worktree state and is ignored by Git.
 
 Use small packages with a named user scenario and run affected tests immediately.
 The Makefile declares repository acceptance targets; full checks run before
-flashing and before closing an engineering track. Test-tier separation and
-independent subsystem checks are tracked under issue #77.
+flashing and before closing an engineering track. Final acceptance runs the complete suite once; a fast/default and full/preflash
+split is needed only if that run exceeds three minutes.
 
 Graph integration tests use the isolated instance selected by `KB_TEST_BOLT`
 and clear that instance. Run them against a dedicated test graph.

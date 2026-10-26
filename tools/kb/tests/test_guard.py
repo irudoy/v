@@ -24,14 +24,6 @@ consumers = []
 read = "guarded"
 
 [[projection]]
-path = "defs/later.csv"
-generator = "kb.project:agents"
-stage = 5
-inputs = ["kb/fn/"]
-consumers = []
-read = "guarded"
-
-[[projection]]
 path = "GUIDE.md#kb"
 generator = "tools/guide.py"
 inputs = ["tools/guide.py"]
@@ -63,14 +55,13 @@ def make_repo(root, files=None):
     """A git working tree with the guard inputs and `files`, all tracked."""
     defaults = {
         "tools/kb/config.toml": CONFIG,
-        "tools/kb/bench.toml": "stage = 2\n",
         "tools/kb/projections.toml": PROJECTIONS,
         "tools/kb/hook.py": (project.hook.__file__,),
         "tools/defs/build.py": "",
         "tools/guide.py": "",
         "defs/source.toml": "",
         "defs/JK08A.xml": "<rom/>\n",
-        "defs/later.csv": "a,b\n",
+        "defs/open.csv": "a,b\n",
         "GUIDE.md": GUIDE,
         "kb/names.csv": "layout,kind,address,name,former\n",
         "kb/ram/normalized_bfs.toml": "",
@@ -120,9 +111,9 @@ class ReadTest(GuardCase):
         self.assertIsNone(self.denied("Read", file_path=self.path("open.txt")))
         self.assertIsNone(self.denied("Read", file_path="/etc/hosts"))
 
-    def test_a_guarded_projection_is_read_through_kb_from_its_stage(self):
+    def test_every_guarded_projection_is_read_through_kb(self):
         self.assertIn("kb where", self.denied("Read", file_path=self.path("defs/JK08A.xml")))
-        self.assertIsNone(self.denied("Read", file_path=self.path("defs/later.csv")))
+        self.assertIsNone(self.denied("Read", file_path=self.path("defs/open.csv")))
         self.assertIsNone(self.denied("Read", file_path=self.path("GUIDE.md")))
 
     def test_a_symbolic_link_counts_as_its_target(self):
@@ -140,7 +131,7 @@ class EditTest(GuardCase):
                              new_string="x")
         self.assertIn("`tools/defs/build.py`", reason)
         self.assertIn("defs/source.toml", reason)
-        self.assertIsNone(self.denied("Edit", file_path=self.path("defs/later.csv"),
+        self.assertIsNone(self.denied("Edit", file_path=self.path("defs/open.csv"),
                                       old_string="a", new_string="b"))
         self.assertIsNone(self.denied("NotebookEdit", notebook_path=self.path("open.ipynb")))
 
@@ -179,11 +170,11 @@ class PatchTest(GuardCase):
         self.assertIsNotNone(self.patch("*** Update File: open.txt\n@@\n-open\n+x\n"
                                       "*** Delete File: kb/names.csv\n"))
 
-    def test_open_files_and_future_projections_stay_open(self):
+    def test_open_files_stay_open(self):
         for body in ("*** Add File: new.txt\n+new\n",
                      "*** Delete File: open.txt\n",
                      "*** Update File: open.txt\n*** Move to: moved.txt\n@@\n-open\n+new\n",
-                     "*** Update File: defs/later.csv\n@@\n-a,b\n+c,d\n"):
+                     "*** Update File: defs/open.csv\n@@\n-a,b\n+c,d\n"):
             with self.subTest(body=body):
                 self.assertIsNone(self.patch(body))
 
@@ -286,7 +277,7 @@ class BashTest(GuardCase):
         "cd l0\ncd ..\nls",
         "ls defs/",
         "cat GUIDE.md",
-        "cat defs/later.csv",
+        "cat defs/open.csv",
         "echo ok > /dev/null; ls",
     ]
 

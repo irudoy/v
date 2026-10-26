@@ -234,8 +234,6 @@ def check_kb_questions():
         identifiers.add(number)
         if not isinstance(question.get("budget"), int) or question["budget"] <= 0:
             raise SourceError(f"{KB_BENCH}: question {number} requires a positive budget")
-        if not isinstance(question.get("stage"), int) or question["stage"] < 0:
-            raise SourceError(f"{KB_BENCH}: question {number} requires a valid stage")
         if not isinstance(question.get("command"), str) or not question["command"].startswith("kb "):
             raise SourceError(f"{KB_BENCH}: question {number} requires a KB command")
     return len(questions)

@@ -27,7 +27,7 @@ def _model_check(name, table=checks.CHECKS):
     return run
 
 
-# Checks active at the current transition stage, in execution order.
+# Supported checks, in execution order.
 CHECKS = {"l0": l0.check_all, "sites": sites.check,
           **{name: _model_check(name) for name in checks.CHECKS},
           "projections": project.check, "guard": guard.check}
@@ -368,10 +368,9 @@ def command_bench(args, root=repo.ROOT):
     if args.only and (unknown := sorted(set(args.only) - known)):
         raise KbError(f"no benchmark questions {unknown}; known ids: {sorted(known)}", code=2)
     selected = [(question, expected) for question, expected in questions
-                if (question["stage"] <= config["stage"] or args.all)
-                and (not args.only or question["id"] in args.only)]
+                if not args.only or question["id"] in args.only]
     if not selected:
-        raise KbError("no active benchmark questions selected; --all includes later stages",
+        raise KbError("no benchmark questions selected",
                       code=2)
     failed = 0
     for question, expected in selected:
@@ -573,7 +572,7 @@ def build_parser():
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    check = commands.add_parser("check", help="run the checks of the current stage")
+    check = commands.add_parser("check", help="run supported model and source checks")
     check.add_argument("--changed", action="store_true",
                        help="run the checks whose inputs differ from those of their last pass")
     check.add_argument("--only", action="append", help="run one check; repeatable")
@@ -660,7 +659,6 @@ def build_parser():
     candidates.set_defaults(handler=command_suggest)
 
     bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
-    bench.add_argument("--all", action="store_true", help="include questions of later stages")
     bench.add_argument("--only", type=int, action="append", help="one question id; repeatable")
     bench.set_defaults(handler=command_bench)
 

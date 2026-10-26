@@ -6,12 +6,12 @@ agents read and change that knowledge. It fixes the storage of symbols,
 meanings, families, links, and evidence; names and references; layouts; the
 compiler, the graph schema, and the graph fingerprint; per-worktree graph
 instances; the `kb` commands and the MCP server; the gates; the projection
-registry; the migration of current registry fields; the access guard; and the
+registry; current fact owners; the access guard; and the
 acceptance questions with their output budgets.
 
-The model is implemented in the stages of [Transition](#21-transition). A
-registry keeps the ownership that [Ownership by stage](#19-ownership-by-stage)
-assigns it until the stage that converts it lands.
+Knowledge representation transfer is complete. Current command and fact-owner
+contracts live in `tools/kb/contracts.toml`; benchmark questions and their
+content expectations live in `tools/kb/bench.toml`.
 
 ## 1. Model
 
@@ -158,7 +158,7 @@ tools/kb/
   the meaning of its symbol takes a semantic name, and its name then resolves
   as a former name. A symbol leaves `names.csv` in the conversion commit of
   its registry. The decoder-owned rows and exact inactive reservations remain
-  primary names in stage 11. `[names] owners_checked` requires every remaining
+  primary names. `[names] owners_checked` requires every remaining
   row to have the SID 0x22 decoder as its only active declarer or an exact
   `[names] reserved` entry with its full row and a permanent-reservation reason.
 - `.ignore` at the repository root lists `/kb/` and `/l0/`, anchored at the
@@ -283,7 +283,7 @@ for another layout, translates an address whose meaning has a symbol there.
   `tools/kb/config.toml`.
 - A symbol receives a generated name when it enters the store without a
   semantic name: a new symbol of an unnamed meaning, or a symbol of a legacy
-  registry that `kb sync` enrolls from stage 2. The `names` check fails while
+  registry that `kb sync` enrolls. The `names` check fails while
   such a symbol lacks its name.
 
 ### 5.5 Renames, merges, and moves
@@ -438,7 +438,7 @@ Keys of every meaning:
 | `level` | level | yes | Level of the identity claim |
 | `home` | layout id | when the meaning has more than one symbol | The layout that bare addresses in prose refer to; a meaning with one symbol takes its layout |
 | `role` | string | for `fn` and `tbl` | The role from the vocabulary of the kind |
-| `block` | block reference | for reviewed `fn` meanings from stage 6 | The architecture block; other kinds may pin one |
+| `block` | block reference | for reviewed `fn` meanings | The architecture block; other kinds may pin one |
 | `former` | array of names | no | Former names, each a permanent redirect to this meaning |
 
 Keys by kind:
@@ -591,7 +591,7 @@ A link is stored at one end and read in both directions.
   type that evidence verifies, when evidence of that layout supports it or
   the link holds on another layout of the same family.
 - A link that does not hold on a claimed layout is unverified there. `kb
-  show` marks it, and from stage 8 the `links` check fails on it.
+  show` marks it, and the `links` check fails on it.
 - A link states a dependency of its owner on `to`, except that the function
   of a `reader` depends on the datum, and a `depends` link reads by its role:
   with `consumer` or `writes`, `to` depends on the owner; `homolog` and
@@ -665,30 +665,16 @@ A link is stored at one end and read in both directions.
   that VBR bases, else at the first instruction that touches the nearest
   address below the symbol, within `[match] base` bytes, as a literal, an
   access, or a census operand.
-- An `l0-context` item reproduces the relation of section 20.7 on current L0
+- An `l0-context` item reproduces its recorded classification on current L0
   and image bytes. Its span is positive and does not exceed the table's
   storage, or is one byte for another kind. The footprint grants no physical
   unit or conversion; every supported claim requires the recorded
   classification to hold. `unbound-constant` and `unverified-site` items
   retain source assertions without grounding a level.
-- `ram-clear-access` binds an exact existing writer relation to one of the
-  stock RAM clear paths in `defs/JK08A.ram-initialization.md`, including the
-  complete natural ROM-pointer helper with its stock RTS/NOP.
-  The complete original COPY primary supplies the instruction bytes, actual
-  ROM range-pointer snapshots and full execution state. One exact batch of
-  ordinary `link` operations preserves complete native documents and TEST
-  positions. The owning append supports identity only. A unique append with
-  its complete pinned claim is neutral to an existing physical scope;
-  altered or duplicated evidence retains its scope effect. No boot/reset
-  reachability, semantic width, units, scale or hardware inference follows.
-- `counter-array-access` binds the nine original counter writers in
-  `defs/JK08A.counter-arrays.md`. Its complete original captures exact ROM
-  pointers and full state over two bounded stock windows. Independent
-  per-element saturation and physical equations distinguish a zero read
-  without a store from the nonzero repeated-read/decrement/store path.
-  Ordinary grouped `link` publication preserves every native fact and TEST
-  origin. Exact owning identity evidence grants no width, units, cadence,
-  interrupt-entry reachability, natural scheduling or hardware admission.
+- Historical stock-proof evidence remains data. Its archived file references use
+  `git:archive/stock-proofs-2026-10-26:<repository-path>[#fragment]`.
+  Archived TEST items and TEST items without `supports` provide no grounding.
+  Ordinary reads and writes do not import or execute the archived implementation.
 
 ### 7.7 Analogs
 
@@ -968,7 +954,7 @@ exported from the Ghidra program of the layout's L0 image.
 - `funcs.csv` omits the Ghidra function name, because `RenameFuncs.java`
   writes project names into programs. Names come from
   `tools/ghidra/symbols/<layout>.csv` until their conversion into L1
-  ([Ownership by stage](#19-ownership-by-stage)).
+  (the current owners in `tools/kb/contracts.toml`).
 - `function_tokens.csv` carries `ins_addr`, so the instruction stream and
   function bodies need no listing.
 - `accessors.<kernel>.csv` covers every kernel of the layout's interpolation
@@ -1097,8 +1083,7 @@ every `kb` command runs it first when the graph is stale.
   catalog lists.
 - `tools/kb/config.toml`, the restricted `tools/kb/owners.toml`, and
   `tools/kb/projections.toml`.
-- Until a registry converts, the registry itself, read by its adapter
-  ([Migration map](#20-migration-map)).
+- Retained source registries read by their declared adapters.
 - The modules of the compiler under `tools/kb/src/kb/`. The modules of the
   command line, the read commands, the checks, and the instances do not change
   the graph and are no inputs.
@@ -1182,11 +1167,9 @@ timeout in `tools/kb/config.toml`, then exits with code 7.
 
 ### 9.7 Legacy graph
 
-Until stage 7 the graph also holds the elements that the loaders of
-`tools/memgraph/` write for the current readers. Every element the compiler
-writes carries the label `:Kb` in addition to its own labels, and the
-compiler deletes and replaces only `:Kb` elements. The legacy loaders and
-readers keep using the main instance until their stage converts them.
+Every element the compiler writes carries the label `:Kb` in addition to its
+own labels. The compiler deletes and replaces only `:Kb` elements, preserving
+other data in the same Memgraph instance.
 
 ## 10. Graph schema
 
@@ -1280,8 +1263,7 @@ The labels and types above differ from those that the loaders of
 `tools/memgraph/` write for code and for the diagnostic corpora, among them
 `Func`, `Reg`, `Map`, `Axis`, `Interp`, `Rom`, `Claim`, `CALLS`, `ACCESSES`,
 `VIA`, `USES`, `RESTS_ON`, `AXIS_X`, `AXIS_Y`, and `KERNEL`. Both sets live
-in the main instance until stage 7, and the compiler deletes and replaces
-only `:Kb` elements.
+in the main instance, and the compiler deletes and replaces only `:Kb` elements.
 
 ## 11. Instances
 
@@ -1304,12 +1286,9 @@ its own server.
   `tools/kb/config.toml` and removes the containers of working trees that no
   longer exist; `up` runs `prune` first.
 - The maximum number of running instances is a parameter of
-  `tools/kb/config.toml`; stage 1 sets it from the measured memory of a graph
-  with the L0 of all layouts.
+  `tools/kb/config.toml`.
 - A linked working tree's graph is rebuilt from git by `kb sync`; only the
   main instance is backed up.
-- Until stage 7 the legacy readers connect to the main instance from every
-  working tree, as they do now.
 
 ## 12. Commands
 
@@ -1324,12 +1303,9 @@ The read commands whose syntax ends in `[<read options>]` take these
 options:
 
 
-In a read command, `--layout <l>` restricts the answer to one layout. The
-Stage column of the command tables names the transition stage from which a
-command exists ([Stages](#213-stages)). A test binds the tables to the parser
-of `kb`: the syntax of every row whose stage has started parses, every
-command and option of the parser appears in such a row, and the MCP tools are
-the read commands of those rows with `kb_apply` ([MCP](#126-mcp)).
+In a read command, `--layout <l>` restricts the answer to one layout.
+`tools/kb/contracts.toml` declares the command syntax, read options and exit
+codes. Tests bind those declarations to the parser and MCP command list.
 
 ### 12.2 Read commands
 
@@ -1431,9 +1407,8 @@ references.
   name by the rules of `kb rename`; otherwise the symbol keeps the generated
   name of its row of `kb/names.csv`, whose other names become `former`
   references, or draws one. `kb new <kind> <slug>` starts the empty file of a
-  designed entity of a kind that the store holds, from stage 3 a `feature`
-  and from stage 4 a `signal` and a `field`; stage 6 adds a `stage`, `block`,
-  `endpoint`, and `chain`. The empty file of a field fails the `fields` and
+  designed entity of a supported kind: `feature`, `signal`, `field`, `stage`,
+  `block`, `endpoint`, or `chain`. The empty file of a field fails the `fields` and
   `widths` checks, and that of a chain fails `chains`, so a batch starts either
   entity with `new` and a `set` of its keys, including the chain's output and
   steps.
@@ -1537,355 +1512,6 @@ operation on a meaning that an earlier one renames, since a batch renames a
 meaning after its other operations. Subagents write only through batches,
 so the parent reviews one diff.
 
-The batch-only `reconcile-width` operation takes `ref`, `layout`, and
-`claim_sha256`. It names one existing RAM/register symbol and the exact
-retained raw width question. Its unique registered compatibility family must
-cover every original wider-access tuple through current independently
-qualified originals without inferring a wider semantic field or publication.
-Packed-field transfers and the exact JK08A diagnostic-byte/counter dispositions
-have separate physical and semantic admission contracts. Diagnostic views also
-require the complete SID22 original from the same process and native snapshot.
-The indexed counter disposition retains the explicitly observed zero-index
-alias and grants no natural selector range or disjointness. Raw capture alone
-supplies no disposition. The normal writer removes only that
-matching unresolved review, revalidates the result, and preserves other facts
-and reviews. Missing, stale, failing, unrelated, changed-width or changed-code
-proofs refuse the operation. Without a live proof the original difference
-remains visible; a retained review is not itself a compatibility proof.
-
-The batch-only `reconcile-diagnostic-output` operation takes `id` and
-`claim_sha256` from `defs/JK08A.diagnostic-ROM-dependencies.toml`. A batch
-contains all four registered operations. Each needs its complete unchanged
-original reader, the exact retained unresolved review, independent conditional
-ROM-to-RAM execution and the complete SID22 original from the same process and
-native snapshot. Cold/main exhaust composition requires equality of all 65536
-RAM bytes between separately observed entries. The writer replaces only those
-readers with exact `diagnostic-output` dependencies, fills only absent matching
-per-layout geometry, and replaces the registered alias-note phrase. It retains
-RAM reader/SOURCE facts, every original TEST context and all other properties.
-Only exact legacy ledger selectors of the replaced physical readers are
-withdrawn; the conditional dependencies remain native facts. All other ledger
-fields, selectors and evidence indices retain their values and order.
-The dependency supplies identity evidence only. Missing or stale originals
-block both evidence rank and relation-derived level donation. SID22 normalizes
-only the complete registered before/after representations of these four
-relations; that representation rule grants no ROM dependency by itself.
-
-The batch-only `reconcile-calculation-dependency` operation takes `id` and
-`claim_sha256` from `calculation_dependency_contract.IDENTITIES`. A batch
-contains every registered operation with a unique ID and unchanged original
-hash. Existing family contracts pin the complete original/replacement claims,
-roles, caller windows and ledgers. Each operation needs its exact retained
-unresolved review and independent consumption of the complete same-primary
-raw component. The writer replaces only that relation and its original ledger
-reader selector. All other native facts, geometry, editor settings, original
-TEST contexts, evidence positions and reviews remain fixed.
-
-Calculation dependencies support their owning identity; AAFA's dedicated
-factor supports only its existing dimensionless code scale. The owning joint
-factor consumer requires `ratio`, `x/10`, `x*10` and `code` unchanged and
-admits no physical time units or scale donation. Other claims and reverse
-relation directions receive no level from these proofs. Exact before/after
-COPY, injection, coherent and SID22 scopes remain equal without a new scope
-normalization. The transition adds no producer or receipt.
-
-The pinned `closed-loop-sample:sample-word` operation alone admits an
-original helper-reader with only reverse identity support and indexed_by
-role. It retains those reverse properties and supplies direct owning
-identity support on the exact arithmetic-argument replacement. The same
-coordinate raw component must bind read0003EE72, post-delay R6 at0003EE7A
-and varying actual output with all other complete input state fixed.
-The full original/proposed owner, unchanged ledger, unset semantic types,
-all other relations and exact TEST origins remain required.
-
-The batch-only `reconcile-io-access` operation takes `id` and
-`claim_sha256` from `io_access_claim_contract.IDENTITIES`. A batch contains
-all three unique exact originals. The writer requires each complete
-unchanged native document and retained unresolved review. The exact
-publication delta appends owning evidence to the DC40 writer and F754
-reader, removes only F430's old `reader/indexed_by` relation, and appends
-the positive `0000204E` proof after its existing symbol evidence. It
-creates no function at `00002040`, ledger or geometry. Every other native
-value, TEST origin and evidence position remains fixed, and existing
-COPY, injection, coherent and SID22 scopes compare equal without a new
-normalization rule. Ordinary `link` operations cannot attach reserved
-I/O proof items. The independently consumed original complete primary
-must contain all four bounded windows, complete separate native banks,
-relocated RAM, frame, SR, ABI and descriptor snapshots. Owning evidence
-supports identity only; reverse function levels, scale, peripheral side
-effects and natural scheduling receive no admission.
-
-Ordinary `link` access families have one authoritative registration in
-`ordinary_access_registry.py`. Shared reserved dispatch, validation/rank/levels,
-complete writer preflight/publication, required raw captures and source bindings
-derive from it. Exact domain contracts and independent consumers retain native
-postimages, semantic types, layouts, ledger, TEST positions, physical scopes and
-same-primary requirements. `ordinary-access.md` defines the registration and
-source-group preparation boundary. I/O and arithmetic disposition commands
-retain their separate operation contracts.
-
-Reserved `maf-access` evidence uses 34 exact ordinary `link`
-operations and two exact ordinary `unlink` operations from
-`maf_access_contract`. The unlinks remove only the two pinned unsupported
-curve readers to0003B27E. Positive evidence attaches to the already-existing
-readers to0003A904; every other reader and all six table layouts remain
-present. Both planning and
-qualified publication require every unique original claim with its exact
-owning item; partial or changed batches are refused. The writer retains
-the complete original owner documents apart from those exact dispositions, including
-both relations of the shared `dancing-hippo` and spiked-dalmatian owners,
-the two maf_b1 caller relations and all four maf_b2 natural/caller relations.
-Independent consumers bind the actual natural or bounded caller entry, bank, instruction
-site, byte/word/longword direction and value, full state, calibration
-inputs, real helper calls and positive alternatives. The two-curve slice
-retains ADC16/R14 premises, exact root reads, register sign extension and
-an independently assembled outside observing return. Two record-member
-readers retain the existing three-byte FFFF5A93 owner and byte1 atFFFF5A94,
-unset semantic types, explicit predicate index and caller GBR premises,
-sentinel no-read behavior and conditional status-byte RMW. Their shared
-postimage preserves the ledger, eleven symbol evidence items and other
-three access relations. The complete natural battery publisher retains
-the same guard/scaler assembly and separately binds raw-word staging,
-byte wrap, the post-guard coefficient, exact natural calls/returns and
-byte cap. Its coefficient alternatives hold all other complete inputs
-fixed; the shared coefficient owner retains both exact owning appends.
-A unique append
-is neutral to physical scopes only with its full pinned canonical digest;
-changed, duplicated or misplaced items retain their scope effect. Exact
-review retirement requires all 34 qualified dispositions, unchanged
-TEST origins and equal existing physical scopes. The proof supports no
-other fact or reverse relation and grants no units, scale, scheduling or
-hardware admission.
-
-Reserved `closed-loop-admission-access` evidence uses four exact ordinary
-`link` appends on existing unsigned-byte writer relations of parent000A0EE8.
-The complete original primary must contain both bounded raw-mask windows,
-their disjoint executable spans, explicit GBR/register inputs, complete
-state and separately reconstructed outside returns. Independent scalar,
-physical, branch and fixed-other positive consumers bind bit0/bit1 stores.
-The grouped transition preserves all four complete owners, existing reader
-relations, symbol types, evidence positions, absent ledger and TEST origins.
-Only a unique exact pinned owning append is neutral to existing physical
-scopes. The proof supports identity only and admits no full adjustment,
-integrator update, physical permission, producer, units, scale, scheduling
-or hardware behavior.
-
-Reserved `closed-loop-coordinate-access` evidence uses eight exact ordinary
-`link` appends: six coordinate relations and two whole-feedback active-state
-writers. The six retained coordinate references bind five caller-owned ROM
-readers and one coefficient byte publisher. The bounded real call and complete natural conditioner/helper
-closure retain explicit source words, actual post-delay arguments and the
-stock native GBR word. The independent engine admits only the declared
-twenty-byte native workspace for that exact descriptor. Separate complete
-native snapshots, unchanged canaries and raw RAM precede a logical overlay
-of only those twenty bytes. Source input parsing consumes sixteen input
-columns of the existing literal rows and excludes expected-result columns.
-Independent scalar/physical/call/branch/return/positive consumers, complete
-original identity and exact grouped native publication remain mandatory.
-All six semantic types stay unset; existing helper-reader questions and
-every original TEST/evidence position remain exact. The proof grants no
-full conversion, geometry, units, scale, scheduling or hardware behavior.
-
-The `closed_loop_feedback_paths` component binds the existing whole 5CBEC
-closure, real 5CEF8 call/5CEFA delay slot and stores 5D846/5D84E through the
-sixth pointer. Three original helper-reader claims become exact
-`calculation-dependency` argument dispositions via the caller; two owning
-writer appends and the FFFF88BA transition-counter reader/writer use the
-existing twelve-item owning batch. All ten prior full references and all
-37 calculation identities retain exact pins. The
-calculation registry contains 38 dispositions. Full signed R5/R7, the partial
-fifth byte and complete fifth word, sixth pointer, native/type/TEST facts,
-complete state/frame/workspace/canaries, physical order and fixed-other
-positive results remain required. The existing 76-byte context/352-byte frame
-observer and 302-byte shared workspace are reused under an exact guarded
-instruction-state premise. The 1829 legacy inputs exclude expected outputs;
-18 controlled calibration bytes and both feasible outcomes at 27 active-state/transition
-sites retain their explicit scope. The real packet/callee sequence, actual
-transition phase, counter/flag and inclusive-band equations, original
-TEST/spec positions and bounded taken-only 5CB84 guard remain mandatory.
-All three independent feedback domain flags are required. The argument
-dispositions grant no physical callee-reader claim. The exact boundary in
-`defs/JK08A.closed-loop-feedback-accesses.md` grants no geometry, units,
-scale, scheduling or hardware claim.
-
-The `closed_loop_coolant_paths` component adds two exact constant-reader
-appends to the same owning family. The complete natural5525A closure uses
-322 stock instructions/770 bound bytes, seven long aliases,42 controlled
-calibration bytes and the existing80/572 observer. Its14261 legacy rows
-supply only17 scalar inputs and five calibration arrays. Exact indexed byte
-selection at990A and signed word offset5533C require actual derived-output
-variation with complete fixed-other preimages, full state/frame/terminal,
-physical calls/delay slots/returns,25 two-sided sites and a bounded byte-only
-guard. All original reader/type/TEST/spec facts remain exact. Three independent
-coolant domain flags are required. One normal binding reuses the ordinary
-registry without a new mode, common dispatcher or storage.
-`defs/JK08A.closed-loop-coolant-accesses.md` defines the complete source contract.
-
-Reserved `exhaust-cvtc-access` evidence admits only eleven exact bank2
-reader/writer owning appends through `exhaust_cvtc_transition_paths`.
-Natural `000C1DEC`/`000C2040`, real byte-curve and quotient/remainder helpers,
-explicit complete raw inputs, independent scalar/state/physical/call/branch/
-return consumers and changed actual outputs with complete fixed-other inputs
-are mandatory. All six native owners, other facts, types, ledger and TEST
-origins retain their complete values. One ordinary-family entry supplies the
-existing common routes and shared receipt; no geometry, scale, units,
-scheduler, sensor or hardware admission follows. The exact contract is
-`defs/JK08A.exhaust-cvtc-accesses.md`.
-The registry has thirteen families/forty-seven captures.
-
-The `scalar-ram-leaf-withdrawal` registration binds 123 exact unsupported access
-relations through complete natural RAM/register/state/indexed,interpolation,
-scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
-threshold-window,auxiliary-rate and paired normalization paths. Twenty-three
-independent components require one complete original COPY primary. There are
-113 readers,ten individually pinned writers and eighteen exact indexed_by
-originals with unchanged types and roles. Complete actual instruction CPU/SR/
-frame/RAM,separate equations,ordered physical operands,post-delay calls and
-natural returns remain mandatory. The paired normalization callers retain all
-16 raw axis bytes,17 physical data bytes,positive adjacent fractional divisors,
-two real local-byte carriers,variable signed normalization and both actual word
-publications. No numerical causality is admitted for zero-fraction lookahead16.
-Fixed-other alternatives require changed actual R0 or common actual computed
-publication bytes outside the controlled RAM input. Input echoes and a changed
-write-set alone fail. Every previous full family/helper/native/TEST original
-remains mandatory from the identical primary. Sixteen native-RAM components
-retain exact root/alias interval absence. All 123 normal unlinks and 110 matching
-selectors preserve94 full datum owners,62 full functions and every other native/
-type/TEST/ledger/scope fact. The selector total contains108 datum-end and
-5 function-end removals. Full prior19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/
-87/92/100/107/112/115/116 reference,function and source boundaries retain exact
-complete prefix reconstruction and separate current full-image pins. The sole
-additional preceding current image delta is reference79 at lyrical-dragon/tbl:
-two exact readers and their two owner-end selectors. All60 preceding full
-function records,including both pinned full function transitions,remain exact.
-The gated assembly retains its bounded two-site spelling exception and complete
-current/legacy hashes. No owning replacement or reverse donation is created.
-The complete byte-ratio producer additionally retains variable unsigned
-word/large and short/long division, the ratio65536 split, real signed shift10,
-its exact actual saved post-DIV1 R1 carrier and full known frame overwrite.
-The complete118-record/62-function prefix retains exact reconstruction and its bounded current shared-owner transitions.
-The complete state-surface caller retains three raw state modes, the real
-four-byte local carrier, full four-row surface and implicit-byte helpers.
-Only the additional exact row99 reader/owner-selector delta changes one
-preceding current postimage; all119 core records and63 functions remain exact.
-The complete byte-factor caller retains unsigned/signed word promotion,
-two real byte-curve calls,distinct partial products and percentage delay-slot
-publication. Its exact reverse writer adds one complete function transition;
-all121 preceding full records/current images and64 functions remain exact.
-The complete byte-sum caller retains the clipped raw coordinate,real byte
-curve,unsigned minimum,separate three-byte sum and two full-word saturations.
-Its exact reverse writer adds one full function transition and retains the
-new owner's absent ledger;all122 prior full records/current images and65
-functions remain exact.
-The narrow caller and helper specifications define these boundaries.
-
-
-The `register-only-withdrawal` family binds twelve exact unsupported readers
-to six complete natural helper entries through `register_only_helper_paths`.
-Separate full-register/scalar/stack/ordered-physical/branch/RTS-delay consumers
-require executable absence of datum access and fixed-other actual R0 changes.
-Its withdrawal-only policy admits exactly twelve normal `unlink` operations
-and fourteen matching ledger-selector removals across eleven complete native
-owners, with original TEST/type/context/scope preservation. It creates no
-replacement relation or evidence and grants no identity, scale, units, caller
-semantics or hardware admission. The existing observer, COPY primary, normal
-writer and standard source generator are reused.
-`defs/JK08A.register-only-helpers.md` defines this exact boundary.
-
-
-The exact FFFF143A to26474 helper-reader disposition uses the existing
-`calculation-dependency` arithmetic-output role through C1DEC. Real returned
-R0 atC1ED8, byte extension into R6, actual storeC1EE2 and observed143A
-output require a distinct domain flag and complete fixed-other coordinate
-and controlled-curve alternatives. Full native/type/TEST/scopes and every
-other ledger selector remain exact; the original37 calculation identities
-retain their complete values. `defs/JK08A.cvtc-gain-output.md` defines its
-existing writer/shared-primary acceptance boundary.
-
-Reserved `rpm-inhibit-access` evidence uses fourteen exact ordinary `link`
-appends on existing reader relations of parent0004ED88. The bounded eight-byte
-vehicle/main sequence and separate MAF-summary/shared-status/composite-status calls execute with
-explicit GBR/register state and separately assembled outside observing
-returns. Complete raw state and separate scalar, physical, post-delay call,
-branch, return and fixed-other positive consumers are mandatory. The status
-reader atFFFF2494 has an explicit controlled configuration-bit premise. The
-sharedbit1 input atFFFF418C is controlled without stock lifecycle reachability.
-Actual OR R0/R14 and OR R2/R14 delay states, unsigned RPM192 boundary,
-complete unchanged summary RAM and natural returns remain mandatory. The
-composite path retains two real minus-one sentinel calls and the existing
-byte curve. Its exact one-sided branch premises exclude the diagnostic RAM
-path only within that closure; separate latch/curve equations bind the two
-state bytes, threshold word and complete RAM. No stock seed lifecycle or other
-reachability follows. Full grouped native publication retains every
-other link, layout, type, ledger, evidence position and TEST origin, with equal
-existing physical scopes. An exact owning append supports only its reader's
-identity, with no reverse, full coordinator, geometry, units, scale, scheduling
-or hardware admission. `defs/JK08A.rpm-inhibit-accesses.md` defines the contract.
-
-Five of those relations use the separate `rpm_remaining_inhibit_paths`
-fixture. Its stationary, thermal, sustained and CAN ceiling phases retain
-real post-delay call state and natural returns. The thermal consumer requires
-FFFF4184=C0 and unsigned FFFF571E>=40; diagnostic dispatch exclusion is
-conditional, with no stub or producer admission. Full state, separate scalar
-and physical transfers and actual caller-result alternatives remain required.
-The previous nine complete records and fixture retain their exact pins.
-`defs/JK08A.rpm-remaining-inhibit.md` defines this bounded source.
-
-Reserved `phase-normalization-access` evidence uses twelve exact ordinary
-`link` appends for normalizer readers/writers, splitter writers and bounded
-programmer writers of six existing owners. Its natural normalizer and
-splitter source and bounded offset programmer source retain
-two explicit word/byte pointer pairs, real RTS delay-slot stores, full
-independent state, existing scalar normalization equations and explicit
-full R4 low32 splitter equations. The programmer requires actual
-post-delay helper arguments and exact period/remainder inputs after its
-count decision, without admitting that decision or following MMIO.
-Both raw components belong to the original common COPY primary.
-Complete native documents, semantic types,
-ledgers, every TEST origin and exact physical scopes remain fixed apart
-from the pinned owning appends. Partial, changed, stale or unrelated
-attachments qualify no review. The proof grants owning identity only;
-the bounded pointer premises grant no full caller, scheduler, units,
-scale or hardware admission.
-
-Reserved `bank-pulse-access` evidence requires the complete exact nine-item
-ordinary `link` batch for the natural precursor, bank base-pulse and
-channel bodies. Six word readers and three writers, including both
-conditional LTFT sites and the loop delay-slot store, bind eight
-complete native owner documents. Full independent instruction-state,
-scalar, physical, original-input and positive-alternative consumers
-require both raw components in the same complete original primary.
-The real helper order and post-delay operands retain their exact premises.
-Injection_1 retains unset width/signedness. Semantic types, ledgers,
-every TEST origin and all other native values remain fixed. Owning
-identity grants no reverse function, scale, units, upstream producer,
-scheduling or hardware conclusion. Partial, stale, changed or unrelated
-attachments qualify no review.
-
-Reserved `knock-access` evidence requires the complete exact eight-item
-ordinary `link` batch and seven complete grouped owner documents. Separate
-normalization, metric, threshold and comparison fixtures retain the common
-observer and real helpers. Independent actual-original, complete-state,
-scalar, physical, post-delay-call, branch and positive-alternative consumers
-bind each owning relation. Both table readers require the root-cell load
-at 00026510; the upper neighbor annotation supplies no root identity.
-The cache writer remains in normalization, and the axis reader requires
-its physical sites and actual helper closure. Table/axis types remain
-unset; all existing types, ledger, TEST positions and physical namespaces
-are preserved exactly. Partial, stale, changed or unrelated attachments
-qualify no review. Owning identity grants no reverse function, geometry,
-scale, units, complete evaluator, acquisition, scheduling or hardware claim.
-
-Reserved `learning-transfer-access` evidence requires the complete exact
-twenty-one-item ordinary `link` batch for the natural grid selector, learned
-update, auxiliary helper and LTFT publisher. It preserves thirteen complete owner documents,
-semantic types, ledger, evidence positions and all TEST origins. Independent
-state, scalar, physical and actual post-delay call consumers require the
-same complete original primary, exact private inputs and positive RAM/ROM
-alternatives. Owning identity supports no reverse function, scale, live
-permit, cadence or hardware conclusion. Changed, partial, stale or unrelated
-attachments qualify no review.
-
 ### 12.4 Output
 
 - Output is plain text that states full references, one fact per line.
@@ -1907,7 +1533,7 @@ attachments qualify no review.
   reads a datum need not compute each of its outputs from it. The fields that
   carry the reference or a datum of the closure follow, and the features that
   require any of them, the reference, or such a feature, with the targets that
-  state a requirement of one target; chains join at stage 6. The insertion
+  state a requirement of one target; chains express ordered calculations. The insertion
   points of a meaning state every layout: the accesses or calls of its symbol,
   or else its status. A field reaches the features that require it and the
   signal it serves; its insertion points are its source on every layout that
@@ -2017,7 +1643,6 @@ including the files that current generators already produce:
 [[projection]]
 path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
 generator = "kb.ledger_projection:registries"
-stage = 5
 inputs = ["kb/", "l0/7mfk/", "tools/kb/src/kb/ledger_projection.py"]
 consumers = ["tools/maps/build_tracker.py"]
 read = "guarded"
@@ -2028,7 +1653,6 @@ read = "guarded"
 | `path` | Generated file, a pattern, or `<file>#<name>` for the section of a file between `<!-- <name>:begin -->` and `<!-- <name>:end -->`; in a pattern `*`, `?`, and `[...]` match within one path segment and `{a,b}` lists alternatives |
 | `generator` | The function `kb.<module>:<function>` that renders it from the repository root, which returns the text, or for a pattern {path: text} of its files; or the command of its current generator |
 | `check` | For a command projection, the read-only argument array of the same producer with `--check`; a source placeholder binds an explicitly supplied `VQ_` path variable |
-| `stage` | The transition stage from which the projection applies and, for a `kb` function, from which `kb` generates it; until then the registry owns the file. A file without `stage` keeps its current generator |
 | `inputs` | Paths whose change requires regeneration |
 | `consumers` | Tools, tests, and external programs that read it |
 | `read` | `guarded`: agents read the knowledge through `kb`; `open`: anyone reads the file |
@@ -2054,13 +1678,11 @@ read = "guarded"
 - No projection is edited by hand: the access guard refuses the edit and the
   check reports the difference.
 - Editor definitions, the TunerPro and RomRaider files, and the host decoder
-  are `open`. Ledgers and registries whose facts live in `kb/` are `guarded`
-  from their conversion stage.
-- A projection without consumers is removed in stage 11.
+  are `open`. Ledgers and registries whose facts live in `kb/` are `guarded`.
+- A projection without consumers is removed.
 - `AGENTS.md` carries one generated section, the projection `AGENTS.md#kb`
   between `<!-- kb:begin -->` and `<!-- kb:end -->`: the access rules, the
-  table of questions and commands, and the ownership table of the current
-  stage.
+  table of questions and commands, and the current fact owners.
 - `rom-images/support-matrix.md` carries the generated section `features`,
   the projection `rom-images/support-matrix.md#features`: a table with a row
   for each layout and the images that share its addresses and a column for
@@ -2123,8 +1745,6 @@ security boundary: the gates validate every file whatever wrote it.
   compares the generated section. A patch whose operations or required
   context cannot be inspected is denied. A Codex shell call uses its
   `workdir` when supplied, otherwise the session working directory.
-- A projection whose `stage` the transition has not reached belongs to its
-  registry, and the guard refuses neither its reads nor its edits.
 - A directory above the guarded trees and projections stays open to reads
   and searches.
 - `.ignore` excludes the root trees `kb/` and `l0/` and guarded projections

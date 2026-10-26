@@ -18,7 +18,6 @@
 [[projection]]
 path = "AGENTS.md#kb"
 generator = "kb.project:agents"
-stage = 2
 inputs = ["tools/kb/contracts.toml", "tools/kb/bench.toml"]
 consumers = ["Claude Code", "Codex"]
 read = "open"
@@ -26,7 +25,6 @@ read = "open"
 [[projection]]
 path = "defs/*.interp.csv"
 generator = "kb.adapters.interp:registries"
-stage = 3
 inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
 consumers = [
     "tools/census_homology.py",
@@ -46,7 +44,6 @@ read = "guarded"
 [[projection]]
 path = "defs/JK08A-*.interp-correspondence.csv"
 generator = "kb.adapters.interp:correspondences"
-stage = 3
 inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
 consumers = ["tools/rom_correspondence.py", "tools/tests/test_rom_correspondence.py"]
 read = "guarded"
@@ -54,7 +51,6 @@ read = "guarded"
 [[projection]]
 path = "defs/vq37-native-tables.toml"
 generator = "kb.adapters.native:tables"
-stage = 3
 inputs = [
     "kb/tbl/",
     "kb/axis/",
@@ -73,7 +69,6 @@ read = "guarded"
 [[projection]]
 path = "defs/vq37-native-fuel-cut.toml"
 generator = "kb.adapters.native:fuel_cut"
-stage = 3
 inputs = [
     "kb/fn/",
     "kb/ram/",
@@ -98,7 +93,6 @@ read = "guarded"
 [[projection]]
 path = "defs/JK08A-*.definition-addresses.csv"
 generator = "kb.adapters.definitions:addresses"
-stage = 3
 inputs = [
     "kb/tbl/",
     "kb/axis/",
@@ -126,7 +120,6 @@ read = "guarded"
 [[projection]]
 path = "defs/definition-projections.toml"
 generator = "kb.adapters.definitions:projections"
-stage = 3
 inputs = [
     "kb/feature/",
     "tools/mapkit/definition_projections.py",
@@ -146,7 +139,6 @@ read = "guarded"
 [[projection]]
 path = "patches/rom-address-profiles.toml"
 generator = "kb.adapters.profiles:address_profiles"
-stage = 3
 inputs = [
     "kb/feature/",
     "kb/hook/",
@@ -178,7 +170,6 @@ read = "guarded"
 [[projection]]
 path = "patches/*-runtime-correspondence.csv"
 generator = "kb.adapters.profiles:correspondences"
-stage = 3
 inputs = [
     "kb/feature/",
     "kb/hook/",
@@ -201,7 +192,6 @@ read = "guarded"
 [[projection]]
 path = "patches/can-telemetry-profile.toml"
 generator = "kb.adapters.telemetry:profile"
-stage = 4
 inputs = [
     "kb/field/",
     "kb/feature/",
@@ -233,7 +223,6 @@ read = "guarded"
 [[projection]]
 path = "defs/JK08A.tuning-signals.toml"
 generator = "kb.adapters.signals:catalog"
-stage = 4
 inputs = [
     "kb/signal/",
     "kb/field/",
@@ -254,7 +243,6 @@ read = "guarded"
 [[projection]]
 path = "defs/JK08A.overrides.toml"
 generator = "kb.adapters.overrides:presentation"
-stage = 4
 inputs = [
     "kb/tbl/",
     "kb/axis/",
@@ -278,7 +266,6 @@ read = "guarded"
 [[projection]]
 path = "rom-images/support-matrix.md#features"
 generator = "kb.matrix:features"
-stage = 4
 inputs = [
     "kb/feature/",
     "kb/field/",
@@ -298,7 +285,6 @@ read = "open"
 [[projection]]
 path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
 generator = "kb.ledger_projection:registries"
-stage = 5
 inputs = [
     "kb/fn/", "kb/ram/", "kb/reg/", "kb/tbl/", "kb/axis/", "kb/dtc/", "kb/const/",
     "kb/names.csv", "l0/7mfk/", "rom-images/roms.csv", "rom-images/homology.toml",
@@ -314,7 +300,6 @@ read = "guarded"
 [[projection]]
 path = "tools/ghidra/symbols/7mfk.csv"
 generator = "kb.ledger_projection:curated_names"
-stage = 5
 inputs = [
     "kb/fn/", "kb/names.csv", "tools/kb/src/kb/ledger_projection.py",
     "tools/kb/src/kb/adapters/curated.py",
@@ -325,7 +310,6 @@ read = "guarded"
 [[projection]]
 path = "tools/ghidra/symbols/1nd.csv"
 generator = "kb.adapters.curated:registry"
-stage = 9
 inputs = ["kb/fn/", "tools/kb/src/kb/adapters/curated.py", "tools/kb/src/kb/store.py"]
 consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/memgraph/", "tools/romviz/"]
 read = "guarded"
@@ -333,7 +317,6 @@ read = "guarded"
 [[projection]]
 path = "defs/JK08A.architecture.toml"
 generator = "kb.architecture_projection:registry"
-stage = 6
 inputs = [
     "kb/stage/", "kb/block/", "kb/endpoint/", "kb/chain/",
     "kb/fn/", "kb/ram/", "kb/reg/", "kb/tbl/", "kb/axis/", "kb/const/",

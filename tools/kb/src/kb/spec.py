@@ -9,8 +9,7 @@ from kb.repo import KbError
 
 PATH = Path("tools/kb/contracts.toml")
 BENCH = Path("tools/kb/bench.toml")
-STAGES = "### 21.3 Stages"
-OWNERSHIP = "## 19. Ownership by stage"
+OWNERSHIP = "Ownership"
 QUESTIONS = "## 18. Acceptance questions"
 
 
@@ -32,17 +31,11 @@ def plain(cell):
     return cell.replace("`", "")
 
 
-def stages(root=repo.ROOT):
-    found = []
-    for cells in table(STAGES, root):
-        number, _, name = cells[0].partition(". ")
-        found.append({"number": int(number), "name": name})
-    return found
 
 
 def questions(root=repo.ROOT):
     """The benchmark owner supplies question identities and budgets."""
-    keys = ("id", "question", "command", "budget", "stage")
+    keys = ("id", "question", "command", "budget")
     return [{key: item[key] for key in keys} for item in
             tomllib.loads((root / BENCH).read_text(encoding="utf-8"))["question"]]
 

@@ -574,13 +574,8 @@ class BriefTest(unittest.TestCase):
     def brief(self, source):
         with mock.patch.object(read.repo, "layouts", return_value={
                 key: mock.Mock(family="fixture") for key in ("1nd", "jk78c", "jk00c")}), \
-                mock.patch.object(read, "bench", return_value={"stage": 5, "question": []}), \
-                mock.patch.object(read.spec, "stages", return_value=[
-                    {"number": 5, "name": "JK08A ledgers"}]), \
-                mock.patch.object(read.project, "owners", return_value={
-                    "converted": [], "pending": {}}), \
-                mock.patch.object(read.project, "legacy", return_value={
-                    "rows": 0, "leave": {}, "stay": {}, "reserved": 0}):
+                mock.patch.object(read, "bench", return_value={"question": []}), \
+                mock.patch.object(read.spec, "table", return_value=[]):
             return read.brief(source)
 
     def test_totals_equal_gaps_when_all_missing_bindings_are_unresolved_or_absent(self):

@@ -10,7 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from kb import l0, names, repo, store
+from kb import catalog, l0, names, repo, store
 from tools.kb.tests import architecture_sources, selector_sources
 
 
@@ -112,6 +112,7 @@ def write_sources(root):
              for (kind, slug), document in documents.items()}
     image_digest = sha(bytes(0x100000))
     texts.update({
+        catalog.PATH: ",".join(catalog.COLUMNS) + "\n",
         repo.HOMOLOGY: homology,
         repo.CATALOG: 'rom,path,sha256\n' + ''.join(
             f'{image},fixture.bin,{image_digest}\n' for image in layouts.values()),

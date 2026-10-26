@@ -5,7 +5,7 @@ import tomllib
 import pytest
 import tomlkit
 
-from kb import compile, fingerprint, repo, transition
+from kb import compile, fingerprint, repo
 
 
 EXECUTION = '# Retained execution settings.\n[names]\nwords = 2\n[l0]\nscripts = ["ExportGraph.java"]\n'
@@ -17,24 +17,8 @@ def owners():
                 source_bindings=dict(enabled=True, review=[]))
 
 
-def test_owner_separation_restores_exact_execution_bytes():
-    current = tomllib.loads(EXECUTION)
-    extra = owners()
-    current['names'].update(extra['names'])
-    current.update({key: extra[key] for key in ('reconciliation', 'source_bindings')})
-    texts = transition.separated_owner_texts(tomlkit.dumps(current), EXECUTION)
-    assert texts[repo.CONFIG] == EXECUTION
-    assert tomllib.loads(texts[repo.OWNER_CONFIG]) == extra
 
 
-def test_owner_separation_refuses_an_execution_change():
-    current = tomllib.loads(EXECUTION)
-    extra = owners()
-    current['names'].update(extra['names'])
-    current.update({key: extra[key] for key in ('reconciliation', 'source_bindings')})
-    current['l0']['scripts'].append('ChangedProducer.java')
-    with pytest.raises(repo.KbError, match='beyond owner'):
-        transition.separated_owner_texts(tomlkit.dumps(current), EXECUTION)
 
 
 def test_owner_overlay_preserves_execution_settings_and_supports_historical_reads(tmp_path):
