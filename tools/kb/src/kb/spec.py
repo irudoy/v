@@ -1,40 +1,31 @@
-"""Tables of tools/kb/SPEC.md that `kb` reads: the stages of the transition,
-the ownership of facts by stage, and the acceptance questions."""
+"""Machine-owned KB command, ownership and benchmark contracts."""
 
 from pathlib import Path
 import re
+import tomllib
 
 from kb import repo
 from kb.repo import KbError
 
-PATH = Path("tools/kb/SPEC.md")
+PATH = Path("tools/kb/contracts.toml")
+BENCH = Path("tools/kb/bench.toml")
 STAGES = "### 21.3 Stages"
 OWNERSHIP = "## 19. Ownership by stage"
 QUESTIONS = "## 18. Acceptance questions"
 
 
-def section(heading, root=repo.ROOT):
-    """The text under a heading, up to the next heading of its level or above."""
-    text = (root / PATH).read_text(encoding="utf-8")
-    level = len(heading) - len(heading.lstrip("#"))
-    start = text.index("\n" + heading + "\n") + len(heading) + 2
-    stop = re.compile(r"^#{1,%d} " % level, re.M).search(text, start)
-    return text[start:stop.start() if stop else len(text)]
-
-
 def table(heading, root=repo.ROOT):
-    """The rows of the first table under a heading as lists of cells, without
-    the header and the separator row; `\\|` in a cell is a literal bar."""
-    rows = []
-    for line in section(heading, root).splitlines():
-        line = line.strip()
-        if not line.startswith("|"):
-            if rows:
-                break
-            continue
-        rows.append([cell.strip().replace("\\|", "|")
-                     for cell in re.split(r"(?<!\\)\|", line.strip("|"))])
-    return rows[2:]
+    """Read declarative contract rows without reading documentation."""
+    document = tomllib.loads((root / PATH).read_text(encoding="utf-8"))
+    try:
+        rows = document["table"][heading]["rows"]
+    except KeyError as error:
+        raise KbError(f"{PATH}: missing contract {heading!r}", code=2) from error
+    if not isinstance(rows, list) or not all(
+            isinstance(row, list) and all(isinstance(cell, str) for cell in row)
+            for row in rows):
+        raise KbError(f"{PATH}: {heading!r} requires string-cell rows", code=2)
+    return rows
 
 
 def plain(cell):
@@ -50,9 +41,10 @@ def stages(root=repo.ROOT):
 
 
 def questions(root=repo.ROOT):
-    return [{"id": int(number), "question": question, "command": plain(command),
-             "budget": int(budget), "stage": int(stage)}
-            for number, question, command, budget, stage in table(QUESTIONS, root)]
+    """The benchmark owner supplies question identities and budgets."""
+    keys = ("id", "question", "command", "budget", "stage")
+    return [{key: item[key] for key in keys} for item in
+            tomllib.loads((root / BENCH).read_text(encoding="utf-8"))["question"]]
 
 
 def expectations(question):

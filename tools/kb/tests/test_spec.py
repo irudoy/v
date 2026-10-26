@@ -1,8 +1,4 @@
-"""The command tables of tools/kb/SPEC.md, section 12, against the parser of
-`kb`: the syntax of every row whose stage has started parses, every command
-and option of the parser appears in such a row with its arity, repetition, and
-requirement, the MCP tools are the read commands of those rows with
-`kb_apply`, and the exit codes of the package are those of section 12.5."""
+"""Declarative command contracts agree with the CLI and MCP interfaces."""
 
 import argparse
 import contextlib

@@ -4,7 +4,7 @@
 A value that several files need has one owning file. The Memgraph compose file
 publishes the Bolt port, `tools/rom_sources.py` the Ghidra export root, the
 telemetry profile the data CAN ID, the dashboard package its product identity,
-`tools/kb/bench.toml` the acceptance questions of the kb specification, and
+`tools/kb/bench.toml` the benchmark content contracts, and
 the ROM registries the label sets. A copy that a standalone script, a command
 default, or a document keeps is compared here with its owner, and every ROM
 list and count a document publishes is compared with the registry, profile,
@@ -52,9 +52,7 @@ MAP_LAYOUT = "patches/map-switching-layout.toml"
 ATLAS_MANIFESTS = "tools/romviz/roms/"
 INTAKE_GUIDE = "rom-images/new-rom-intake.md"
 CORRESPONDENCE = {"1ME3B": "patches/1me3b-runtime-correspondence.csv"}
-KB_SPEC = "tools/kb/SPEC.md"
 KB_BENCH = "tools/kb/bench.toml"
-KB_QUESTIONS = "## 18. Acceptance questions"
 DID_TABLE_EVIDENCE = "Aligned diagnostic pointer tables of 1ND0A and 1ME3B"
 
 # Primary references are transcriptions of external documents.
@@ -221,41 +219,26 @@ def check_product_identity():
                 )
 
 
-def published_questions():
-    """The acceptance questions of the kb specification as (id, question,
-    command, budget, stage) rows."""
-    section = _text(KB_SPEC).split("\n" + KB_QUESTIONS + "\n", 1)[1].split("\n## ", 1)[0]
-    rows = []
-    for line in section.splitlines():
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if not line.startswith("| ") or not cells[0].isdigit():
-            continue
-        number, question, command, budget, stage = cells
-        rows.append((int(number), question, command.strip("`"), int(budget), int(stage)))
-    return rows
-
-
 def check_kb_questions():
-    """Require the question table of the kb specification to equal the
-    questions, budgets, and stages that `tools/kb/bench.toml` owns."""
+    """Validate benchmark contracts directly in their machine owner."""
     questions = _toml(KB_BENCH)["question"]
+    identifiers = set()
     for question in questions:
         try:
             kb_spec.expectations(question)
         except KbError as error:
             raise SourceError(f"{KB_BENCH}: {error}") from error
-    owned = [
-        (item["id"], item["question"], item["command"], item["budget"], item["stage"])
-        for item in questions
-    ]
-    published = published_questions()
-    if published != owned:
-        differing = sorted(set(published) ^ set(owned))
-        raise SourceError(
-            f"{KB_SPEC} publishes acceptance questions that differ from {KB_BENCH}: "
-            f"{differing}"
-        )
-    return len(owned)
+        number = question.get("id")
+        if not isinstance(number, int) or number in identifiers:
+            raise SourceError(f"{KB_BENCH}: duplicate or invalid question id {number!r}")
+        identifiers.add(number)
+        if not isinstance(question.get("budget"), int) or question["budget"] <= 0:
+            raise SourceError(f"{KB_BENCH}: question {number} requires a positive budget")
+        if not isinstance(question.get("stage"), int) or question["stage"] < 0:
+            raise SourceError(f"{KB_BENCH}: question {number} requires a valid stage")
+        if not isinstance(question.get("command"), str) or not question["command"].startswith("kb "):
+            raise SourceError(f"{KB_BENCH}: question {number} requires a KB command")
+    return len(questions)
 
 
 def _image_rows():

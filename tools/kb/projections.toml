@@ -96,7 +96,7 @@ read = "open"
 path = "AGENTS.md#kb"
 generator = "kb.project:agents"
 stage = 2
-inputs = ["tools/kb/SPEC.md", "tools/kb/bench.toml"]
+inputs = ["tools/kb/contracts.toml", "tools/kb/bench.toml"]
 consumers = ["Claude Code", "Codex"]
 read = "open"
 

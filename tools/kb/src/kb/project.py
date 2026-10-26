@@ -14,11 +14,11 @@ and the gate that compares it, and the check requires its files and the
 repository paths of its command to exist. The path grammar is that of the
 access guard `tools/kb/hook.py`, whose functions this module uses.
 
-The owner of the facts of a registry of section 19 follows from its files: the
+The owner of the facts of a registry of ownership contracts follows from its files: the
 owner after conversion owns them once every tracked file that the registry
 names is a projection of `kb` or a module that reads `kb`, or once `converted`
 of `tools/kb/bench.toml` lists a registry whose conversion leaves no such file.
-The `projections` check requires each row of section 19 to state one stage and
+The `projections` check requires each row of ownership contracts to state one stage and
 each entry of `converted` to name a row whose stage has started and whose files
 do not convert it.
 """
@@ -57,7 +57,7 @@ def stage(root=repo.ROOT):
 
 
 def listed(root=repo.ROOT):
-    """The registries of section 19 whose conversion `converted` of
+    """The registries of ownership contracts whose conversion `converted` of
     `bench.toml` records because it leaves no file that `kb` renders or that
     reads `kb`."""
     return tomllib.loads((root / BENCH).read_text(encoding="utf-8")).get("converted", [])
@@ -290,12 +290,12 @@ def active(root=repo.ROOT, now=None):
 
 
 def _stages(when):
-    """The stages that a conversion cell of section 19 names."""
+    """The stages that a conversion cell of ownership contracts names."""
     return [int(number) for number in re.findall(r"(?<![\w`])\d+(?![\w`])", when)]
 
 
 def _stage(when):
-    """The stage of a conversion cell of section 19, or None for a registry
+    """The stage of a conversion cell of ownership contracts, or None for a registry
     that is not converted or is generated."""
     numbers = _stages(when)
     return numbers[0] if numbers else None
@@ -303,7 +303,7 @@ def _stage(when):
 
 def patterns(row):
     """The path patterns of the tracked files that the first cell of a row of
-    section 19 names, with `<name>` as `*`."""
+    ownership contracts names, with `<name>` as `*`."""
     return [re.sub(r"<[^>]+>", "*", item) for item in re.findall(r"`([^`]+)`", row[0])
             if "/" in item]
 
@@ -389,21 +389,21 @@ def owners(root=repo.ROOT, now=None):
 
 
 def _owner(row, now, files, rendered_files, reader, chosen):
-    """The owner of the facts of a registry of section 19 at stage `now`."""
+    """The owner of the facts of a registry of ownership contracts at stage `now`."""
     _, _, when, after, _ = row
     if _stage(when) is None or when.startswith("created in "):
         return after
     if converted(row, now, files, rendered_files, reader, chosen):
-        return f"{after} since stage {when}"
-    return f"the registry until stage {when}"
+        return after
+    return "the registry"
 
 
 def ownership(root=repo.ROOT):
-    """Failure lines of section 19 and of `converted` of `bench.toml`: a row
+    """Failure lines of ownership contracts and of `converted` of `bench.toml`: a row
     states one stage, and an entry names the registry of a row with a stage
     that has started and whose files do not convert it."""
     now, rows = stage(root), spec.table(spec.OWNERSHIP, root)
-    failures = [f"{spec.PATH.as_posix()}: section 19: {spec.plain(row[0])} states stages "
+    failures = [f"{spec.PATH.as_posix()}: ownership contracts: {spec.plain(row[0])} states stages "
                 f"{', '.join(map(str, _stages(row[2])))}; a row states one stage (fix: give "
                 "each stage its row)" for row in rows if len(_stages(row[2])) > 1]
     chosen = listed(root)
@@ -416,7 +416,7 @@ def ownership(root=repo.ROOT):
         row = by_registry.get(item)
         number = None if row is None else _stage(row[2])
         if number is None or row[2].startswith("created in "):
-            failures.append(f"{where} {item}: names no row of section 19 that converts in a "
+            failures.append(f"{where} {item}: names no row of ownership contracts that converts in a "
                             f"stage {fix}")
         elif number > now:
             failures.append(f"{where} {item}: its row converts in stage {number}, which has "
@@ -428,7 +428,7 @@ def ownership(root=repo.ROOT):
 
 def legacy(sources, root=repo.ROOT):
     """The rows of `kb/names.csv`: their number, the rows by the first stage
-    that converts a registry of section 19 stating their symbol, the rows by
+    that converts a registry of ownership contracts stating their symbol, the rows by
     the registries that state their symbol when none of them converts, and
     the rows that reserve the name of a symbol that no registry states.
     `sources` maps (layout, kind, address) of each symbol to the repository
@@ -466,7 +466,6 @@ def agents(root=repo.ROOT):
     """The `kb` section of AGENTS.md: the knowledge access rules, the questions
     of the current stage with their commands, and the owner of each fact."""
     now = stage(root)
-    names = {row["number"]: row["name"] for row in spec.stages(root)}
     bench = tomllib.loads((root / BENCH).read_text(encoding="utf-8"))
     lines = [
         "",
@@ -474,10 +473,10 @@ def agents(root=repo.ROOT):
         "## Knowledge access",
         "",
         f"Generated by `uv run kb project AGENTS.md#kb` from `{spec.PATH.as_posix()}` and",
-        f"`{BENCH.as_posix()}`; the transition is at stage {now}, {names.get(now, '?')}.",
+        f"`{BENCH.as_posix()}`.",
         "",
-        "- Start with `uv run kb brief`: the graph, the layouts, the stage, the",
-        "  owners, and the open gaps. `uv run kb` answers what the repository knows",
+        "- Start with `uv run kb brief`: the graph, the layouts, the owners,",
+        "  and the open gaps. `uv run kb` answers what the repository knows",
         "  about the symbols, meanings, links, statuses, and evidence of every",
         "  layout, and the MCP server `kb` serves the same read commands as the",
         "  tools `kb_<command>`. Ask `kb` before searching the registries or reading",
@@ -488,9 +487,8 @@ def agents(root=repo.ROOT):
         "  the command to use. `uv run kb guard off --session <id>` disables it",
         "  for one root session; `on` enables it and `status` shows its saved override.",
         "  `KB_GUARD=off` in the hook environment is the fallback without an override.",
-        "- The table below names the owner of each fact: a registry owns its facts",
-        "  until the commit of its stage converts it. Change a fact in its owner,",
-        "  then regenerate its projections.",
+        "- The table below names the current owner of each fact. Change a fact in",
+        "  its owner, then regenerate its projections.",
         "",
         "| Question | Command |",
         "|---|---|",
@@ -499,7 +497,7 @@ def agents(root=repo.ROOT):
                  for item in bench["question"] if item["stage"] <= now)
     files, rendered_files, reader = tracked(root), active(root, now), Readers(root)
     chosen = listed(root)
-    lines.extend(["", f"| Registry | Facts | Owner at stage {now} |", "|---|---|---|"])
+    lines.extend(["", "| Registry | Facts | Owner |", "|---|---|---|"])
     lines.extend(f"| {row[0]} | {row[1]} | "
                  f"{_owner(row, now, files, rendered_files, reader, chosen)} |"
                  for row in spec.table(spec.OWNERSHIP, root))

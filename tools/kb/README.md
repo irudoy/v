@@ -1,8 +1,14 @@
 # kb
 
 `kb` is the entry point of the knowledge model that
-[`SPEC.md`](SPEC.md) specifies. The package implements the specification
-stage by stage; this document describes the commands and modules that exist.
+[`SPEC.md`](SPEC.md) specifies. Knowledge representation transfer is complete.
+`contracts.toml` owns the machine-readable command and fact-owner declarations;
+`bench.toml` owns benchmark questions and content expectations. Runtime readers
+and contract tests do not read the specification prose.
+
+Work uses small scenario-based packages with immediate affected checks.
+Stock-code proof creation requires a separately agreed patch or calibration
+scenario. Patch execution coverage remains mandatory for changed instructions.
 
 [`proof-adapters.md`](proof-adapters.md) describes bounded input-only adapter
 generation and complete raw observation transport. Generated sources retain

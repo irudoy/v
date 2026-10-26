@@ -1,0 +1,127 @@
+# Machine-owned KB command and ownership contracts.
+version = 1
+
+[table."### 12.1 Invocation"]
+rows = [
+  ["`--budget <tokens>`", "Output budget; the default per command is in `tools/kb/config.toml`"],
+  ["`--full`", "No budget"],
+  ["`--json`", "Structured output for programs, without a budget"],
+  ["`--no-sync`", "Fail instead of syncing a stale graph"],
+]
+
+[table."### 12.2 Read commands"]
+rows = [
+  ["`kb brief [<read options>]`", "Graph state, layouts with symbol and status counts, the transition stage and registry owners, the rows of `kb/names.csv` by the stage that converts their registries ([Ownership by stage](#19-ownership-by-stage)), required binding gaps with the same totals as `kb gaps` by feature, layout, and state and a sample ranked by affected project features, fields, then link degree, stale searches, pending candidates, and the table of questions and commands", "2"],
+  ["`kb show <ref> [--layout <l>] [<read options>]`", "The entity: identity and shape, symbols per layout with the images and overrides each states, statuses, links in both directions grouped by type, evidence, analogs, and citations; the block of a meaning with its stage and the chain steps it takes part in; the feature roles that a symbol of the meaning fills, and those of its name that a symbol of another meaning fills; for a designed entity its keys and relationships, for a chain its steps in order, and for a signal the DIDs that return an observed meaning", "2"],
+  ["`kb at <location> [--layout <l>] [<read options>]`", "The symbol at a location `<layout>:<address>`, or at an address on `--layout`, or else the feature allocations, function, or table that contain it, and the L0 facts at that address", "2"],
+  ["`kb where <ref> [<read options>]`", "The symbol or status of a meaning on every layout", "2"],
+  ["`kb impact <ref> [--layout <l>] [--expand <ref>]... [<read options>]`", "Every entity that depends on the reference through links, chains, fields, and features, with the insertion points per layout of a change to it; `--expand` expands a hub", "2"],
+  ["`kb path <a> <b> [--layout <l>] [--expand <ref>]... [--limit <n>] [<read options>]`", "The shortest typed paths between two entities, at most `--limit` of them; `--expand` expands a hub", "2"],
+  ["`kb gaps [--feature <f>] [--layout <l>] [<read options>]`", "Required meanings without a symbol, grouped by status", "3"],
+  ["`kb gaps --catalog [<read options>]`", "The features of the parity catalog with their acceptance criteria and their status per layout", "10"],
+  ["`kb suggest <ref> --layout <l> [<read options>]`", "Candidate symbols of a meaning on a layout, one line per channel with the evidence kind it would record", "9"],
+  ["`kb suggest --blocks --layout <l> [<read options>]`", "Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms))", "6"],
+  ["`kb find <text>... [--limit <n>] [<read options>]`", "Meanings and designed entities ranked by name or slug, former name, title, and summary, at most `--limit` of them", "2"],
+  ["`kb code <ref> [--layout <l>] [--listing] [--force] [--budget <tokens>] [--full] [--no-sync]`", "The decompilation of a function through `tools/ghidra/decompile.sh` and its cache, with `--listing` its listing, and with `--force` from a new run of Ghidra: the function whose body holds a location `<layout>:<address>`, the function symbol that the reference names, or the symbol of a meaning on `--layout` or else on its home layout", "1"],
+  ["`kb log <ref> [<read options>]`", "Full former references of the entity's symbol entries and recorded profile address corrections, with their Git commits", "2"],
+  ["`kb flow <location> --component <id> --case <index> --site <location> --width <bytes> [--analysis <digest>] [--layout <layout>] [<read options>]`", "One exact-datum path through the existing bounded instruction-state equations, including load width, register/value definitions, branch premises, real post-delay call arguments and stores/returns. The explicit input case, image, fixture, code, L0 and analysis sources bind one concrete path; unknown transfers stay unresolved. Structural analysis grants no executable, causal, scale, identity or publication evidence. See `proof-value-flow.md`.", "11"],
+  ["`kb proof-group <saved-group.json> --function <location> --prepared <prepared-originals.json> [--requirements <json>] [--flow <json>]... [--inputs <json>] [--accepted] [<read options>]`", "Exact reusable source references and covered/missing obligations for one saved coherent group, with original/datum/site/width/direction/entry/phase/call-premise conflicts, prepared-original subtraction, separate guarded existing accepted status and complete declared source dependencies. Saved flow remains structural; no canonical/receipt publication or evidence admission occurs. See `proof-reuse.md`.", "11"],
+  ["`kb raw <ref> [<read options>]`", "The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and the rows of the registries that state it before their conversion, `kb/names.csv` included", "2"],
+  ["`kb cypher <query> [--param <name>=<value>]... [<read options>]`", "A read-only Cypher query over the working tree's instance after the fingerprint check", "2"],
+  ["`kb audit [--section <s>]...`", "Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it (stage 2); the `levels` check ([Levels](#71-levels)); `chain-notes` outside the configured arithmetic grammar; `research` lists source-bound unresolved semantic statements separately. `--section` restricts the audit to the named sections, which it alone computes", "2"],
+  ["`kb bench [--all] [--only <id>]...`", "The acceptance questions of the current stage, or all, against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions))", "2"],
+  ["`kb check [--changed] [--only <check>]...`", "The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass", "1"],
+]
+
+[table."### 12.3 Write commands"]
+rows = [
+  ["`kb prepare-research <source-commit> --output <path>`", "Prepares one source-preserving unresolved-chain transfer batch under `tmp/` or `.kb/`, without writing knowledge or changing the graph. Every original document must restore exactly from its ordered records; valid arithmetic stays unchanged. The primary writer applies the reviewed batch at the consolidated package boundary", "6"],
+  ["`kb guard on|off|status --session <id> [--json]`", "Saves or reads the project-local maintenance override of one root session; `status` writes nothing and reports `null` without a valid override", "6"],
+  ["`kb new <kind> <layout>:<address> --evidence <item>... [--name <semantic-name>] [--level <level>] [--note <text>] [--dry-run]`", "A meaning with the symbol at a location that holds none and the evidence of its identity, named or with a generated name", "3"],
+  ["`kb new <kind> <slug> [--dry-run]`", "A designed entity of a kind that the store holds", "3"],
+  ["`kb set <ref> [--layout <l>] <key>=<value>... [--dry-run]`", "Keys of an entity, a symbol, or a feature target", "3"],
+  ["`kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]`", "A symbol of an existing meaning on another layout, with evidence", "3"],
+  ["`kb absent <meaning> --layout <l> --evidence <item>... [--note <text>] [--dry-run]`", "Status `absent` with the evidence that removes the mechanism", "3"],
+  ["`kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]`", "Status `unresolved` with the method and target of the search", "3"],
+  ["`kb link <from> <type> <to> [<key>=<value>]... [--evidence <item>]... [--dry-run]`", "A typed link with its keys and evidence", "3"],
+  ["`kb unlink <from> <type> <to> [<key>=<value>]... [--dry-run]`", "Removes a typed link of the file of a meaning", "3"],
+  ["`kb set-link <from> <type> <to> <key>=<value>... [--slot <slot>] [--offset <offset>] [--dry-run]`", "Replaces mutable properties of one existing owned native link", "6"],
+  ["`kb select <meaning> <registry> <order> <key>=<value>... [--dry-run]`", "Selects one existing native relation and claim in an existing owned ledger row", "6"],
+  ["`kb merge <meaning> <other> [--evidence <item>]... [--from <l>] [--dry-run]`", "Joins another meaning, or another file of one meaning, into a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves))", "3"],
+  ["`kb rename <meaning> <semantic-name> [--dry-run]`", "Names a meaning ([Renames, merges, and moves](#55-renames-merges-and-moves))", "3"],
+  ["`kb move <symbol> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]`", "Corrects the address of a symbol on its layout ([Renames, merges, and moves](#55-renames-merges-and-moves))", "3"],
+  ["`kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]`", "Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves))", "3"],
+  ["`kb move <symbol> <to> --legacy-reservation [--dry-run]`", "Preserves one generated-name reservation after an accepted registered legacy/L0 entry repair, without entity adoption", "4"],
+  ["`kb retire <ref> [--dry-run]`", "Retires a meaning or designed entity; its names stay reserved", "11"],
+  ["`kb family new <family> --image <image> --layout <layout> --census <path> --mcu <mcu> --flash-size <size> --software-id <id>... [--kind <kind>] [--calibration-region <range>] [--exact-range <range>]... [--dry-run]`", "Starts a family from a stock-bound census, explicit image identity and exported L0", "9"],
+  ["`kb family add <family> --image <image> --census <path> [--layout <layout>] [--dry-run]`", "Adds a stock-bound image; exact-code inheritance retains the layout, and other families require a new layout", "9"],
+  ["`kb apply <batch> [--dry-run]`", "A batch of the operations above as one change", "3"],
+  ["`kb fmt [<path>...]`", "Rewrites entity files in canonical form after a merge", "3"],
+  ["`kb project [--check] [<path>...]`", "Renders under the lock the projections of `kb` functions that apply at the current stage, or those of the paths; `--check` writes nothing and exits with 1 when a projection differs from its rendering ([Projections](#14-projections))", "2"],
+  ["`kb sync [--full]`", "Compiles and loads the graph", "2"],
+  ["`kb instance up|down|status|prune`", "[Instances](#11-instances)", "2"],
+  ["`kb mcp`", "Serves the read commands and `kb apply` over MCP ([MCP](#126-mcp))", "2"],
+]
+
+[table."### 12.5 Exit codes"]
+rows = [
+  ["0", "Success"],
+  ["1", "A check failed"],
+  ["2", "Usage error"],
+  ["3", "Write refused"],
+  ["4", "Ambiguous reference"],
+  ["5", "Reference not found"],
+  ["6", "Graph unavailable or stale"],
+  ["7", "Lock timeout"],
+]
+
+[table."## 19. Ownership by stage"]
+rows = [
+  ["`rom-images/roms.csv`", "Images and digests", "not converted", "itself", ""],
+  ["`rom-images/homology.toml`", "Families and relationships; layouts from stage 2", "not converted", "itself", ""],
+  ["`defs/rom-identities.toml`, `defs/rom-inheritance.toml`", "Image identities and definition inheritance", "not converted", "themselves", ""],
+  ["Ghidra export directories", "Code structure", "1", "`l0/<layout>/`", "Local cache of decompilations, listings, and research exports"],
+  ["`tools/ghidra/symbols/7mfk.csv`", "Curated function names of `7mfk`", "5", "Names of `fn` meanings", "Projection that `RenameFuncs.java` applies to Ghidra programs"],
+  ["`tools/ghidra/symbols/1nd.csv`", "Curated function names of `1nd`", "9", "Names of `fn` meanings", "Projection that `RenameFuncs.java` applies to Ghidra programs"],
+  ["`kb/names.csv`", "Generated names of decoder-owned symbols and permanent inactive reservations", "created in 2", "itself, with exact owner declarations in `tools/kb/owners.toml`", "The `names` gate checks every remaining owner"],
+  ["`patches/rom-address-profiles.toml`", "Target symbols, hooks, DIDs, telemetry sources and their unavailability, runtime allocations and variants, and their evidence", "3", "Meanings and statuses; targets of `runtime`, `map_switching`, `rolling_launch`, and `can_telemetry`", "Projection"],
+  ["`patches/*-runtime-correspondence.csv`", "Correspondence of source and target symbols by feature domain", "3", "Symbols and statuses", "Projection"],
+  ["Symbol and hook-key tables of `patches/runtime_targets.py`", "`7mfk` symbols of the feature meanings and the per-layout hook keys", "3", "Symbols and feature targets", "The module reads them through the `kb` API"],
+  ["`defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv`", "Relocated definition settings and table addresses", "3", "Targets of `definitions`; `tbl` and `axis` meanings and their statuses", "Projection"],
+  ["`defs/*.interp.csv`, `defs/*.interp-correspondence.csv`", "Interpolation kernels and wrappers", "3", "`fn` meanings with `[interp]`", "Projection"],
+  ["`defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`", "Native tables and the fuel-cut mechanism of the VQ37VHR layouts", "3", "Meanings with symbols on `jk78c`, `1nd`, and `1me3b`", "Projection"],
+  ["`tools/diagnostics/sid22_inventory.py`", "The decoder of the JK08A service 0x22 tables", "not converted", "itself; the `did` symbols of `7mfk` and their `source` links derive from it and the image bytes", ""],
+  ["`defs/JK08A.tuning-signals.toml`", "Observation needs", "4", "`kb/signal/`", "Projection"],
+  ["`patches/can-telemetry-profile.toml`", "Fields, contexts, and wire constants", "4", "`kb/field/`; `can_telemetry`", "Projection"],
+  ["`defs/JK08A.overrides.toml`", "Editor presentation, logger parameters, checksums, and switches", "4", "`[editor]` and `[logparam]` tables; `definitions`", "Projection"],
+  ["Generated telemetry copies: the schema, payload bindings, the host decoder, and dashboard metadata", "Placement, conversions, units, names of values and bits, and host presentation of the fields", "4", "Generated from fields and meanings", "Projection; the copy checks leave `single_source.py`"],
+  ["`defs/JK08A.funcs.csv`, `defs/JK08A.vars.csv`, `defs/JK08A.findings.csv`, `defs/JK08A.axes.csv`", "Code knowledge of `7mfk`", "5", "`kb/fn/`, `kb/ram/`, `kb/reg/`, `kb/tbl/`, `kb/axis/`", "Projection"],
+  ["`defs/JK08A.dtc.csv`", "DTC descriptors of `7mfk`", "5", "`kb/dtc/`", "Projection; the `dtc.csv` files of other images follow the `dtc` symbols of their layouts in stage 9"],
+  ["`defs/JK08A.diagnostic-bindings.csv`", "Diagnostic bindings", "5", "`[[diagnostic]]` tables", "Projection"],
+  ["`defs/JK08A.architecture.toml`", "Stages, blocks, endpoints, and chains", "6", "`kb/stage/`, `kb/block/`, `kb/endpoint/`, `kb/chain/`", "Projection"],
+  ["Code graph of the `tools/memgraph/` loaders", "Derived index", "7", "The compiler", "The loaders move into the compiler"],
+  ["`defs/JK78C.vvel.md`, `defs/JK78C.can.md`", "Typed function anchors and selected RAM roles of the VVEL and CAN specifications, including explicit layout comparisons", "9", "Meanings with declared-layout symbols and exact `[[source]]` bindings", "Prose remains in the narrow specifications; missing L0 entries remain source-bound unresolved records"],
+  ["`defs/JK08A.maps.csv`", "Map tracker", "generated", "`tools/maps/build_tracker.py`, which reads the graph from stage 7", "Projection"],
+  ["`defs/1ND0A-1ME3B.census-correspondence.csv`", "Census output", "generated", "Input of `kb family new` and `kb suggest` from stage 9", "Generated research output"],
+  ["`defs/<ROM>.xml`, `defs/<ROM>.xdf`, RomRaider plugin files, the host decoder", "Editor and logger definitions", "generated", "Their generators, which read `kb` from the stages of their inputs", "Projections with `read = \"open\"`"],
+  ["`patches/hardware-results.toml`", "Hardware records", "not converted", "itself; `hardware` evidence cites it", ""],
+  ["`patches/map-switching-layout.toml`, `patches/rolling-launch-layout.toml`, `patches/can-telemetry-layout.toml`, `patches/jk08a-runtime-reservations.toml`, `patches/checksum-layouts.toml`, `patches/runtime-target-payloads.toml`", "Patch design; the `7mfk` hook words, map families, DID slots, and the RAM that each feature allocates, which the adapters read from stage 2", "not converted", "themselves", ""],
+  ["Source packs under `refs/`", "External corpora", "not converted", "themselves; `manual` and `diagnostic` evidence cites them", ""],
+  ["Narrow specifications under `defs/`", "Mechanisms in prose", "not converted", "themselves; `specs` keys and `spec` evidence cite them", ""],
+]
+
+[table."### 21.3 Stages"]
+rows = [
+  ["0. Specification", "This document", "The specification is agreed"],
+  ["1. L0 in git", "The layouts of `rom-images/homology.toml`; normalized exports of every layout with manifests ([L0](#8-l0)); the first instruction-stream exports of JK00C and JK00D; literal-load pairing; decompilation and listings as the local cache of `kb code`; the `kb` package with the `l0` check; the loaders and `tools/rom_sources.py` read L0 from the repository; `.ignore` hides `l0/` from search; graph memory and repository growth measured with L0 of all layouts, and the instance limit of `tools/kb/config.toml` set from the measurement", "Every layout in git; the `l0` check in `make check`; a repeated export produces identical files; at least 85 percent of the `site:` addresses of the JK08A ledgers reproduce from L0"],
+  ["2. Read path", "The compiler with adapters of every current registry loads the graph with `:Meta`; readers refuse a stale fingerprint; per-worktree instances; `kb` and MCP for reading, `kb cypher`; semantic names from registry ids and generated names for the other symbols in `kb/names.csv` ([Adapters and names](#201-adapters-and-names)); `kb audit` lists disagreements of one fact between registries; parameters in `tools/kb/config.toml` and budgets in `tools/kb/bench.toml`; the single-source gate reads the layout table and the question table of this document; the access guard; `AGENTS.md` routes knowledge access through `kb`", "The questions active at stage 2 are answered within budget; the audit disagreements are resolved; names are stable across builds"],
+  ["3. Feature symbols", "`patches/rom-address-profiles.toml`, `patches/*-runtime-correspondence.csv`, `defs/definition-projections.toml` with `defs/JK08A-*.definition-addresses.csv`, `defs/*.interp.csv` with `defs/*.interp-correspondence.csv`, `defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`, and the symbol and hook-key tables of `patches/runtime_targets.py` convert into meanings with symbols and statuses and into the targets of `runtime`, `definitions`, and the project features ([Address profiles and correspondence](#203-address-profiles-and-correspondence)); the JK08A telemetry producers and the reasons of `telemetry_unavailable` become symbols and statuses; writes through `kb new`, `kb set`, `kb bind`, `kb absent`, `kb unresolved`, `kb link`, `kb unlink`, `kb merge`, `kb rename`, and `kb move`; named bits of bit fields; the writer gate over L0; `kb audit` reports the `levels` check", "The old files are generated byte-identically; restoring the `apc_output` binding that commit `904ce7e` replaced fails the writer gate; the layout comparison is uniform for all targets"],
+  ["4. Features on L2", "Fields reference signals and source meanings, and the scale comes from the meaning; source tables, the schema, payload bindings, the decoder, and dashboard metadata are generated; Map Switching, Rolling Launch, and editor presentation; generated copies leave `single_source.py`; the feature by layout matrix", "Replaying the four-field telemetry change of commit `ca5dbb0` on a branch changes one to three source files per field, `kb impact` lists the insertion points on every layout, and `make verify` is green"],
+  ["5. JK08A ledgers", "Ledger rows and curated names convert into meanings with `fn`, `ram`, `reg`, `tbl`, `axis`, and `dtc` symbols; evidence becomes typed items and canonical links with both claiming ends; reproduced sites hold checked L0 contexts, and unverified sites and constants ground no level; prose becomes the summary and the note; view selectors retain the CSV columns and order; the `levels` check becomes a gate", "The ledgers regenerate from the files without loss; `kb show` answers at any address; tokens measured against the grep path over a ledger"],
+  ["6. Architecture", "Stages, blocks, endpoints, and chains become entities, and a step note keeps only its arithmetic; romviz reads the graph and builds the atlas from the symbols of each layout; the atlas searches symbols by name and shows the symbols of a meaning across layouts, statuses, and analogs; block candidates for unplaced functions come from communities over the call graph and shared RAM", "The numbers of `architecture.py check` reproduce; every layout with symbols has an atlas"],
+  ["7. Graph readers", "`mapkit/emit_def.py` with its gate `validate_map_switching.py`, `mapkit/show.py`, `maps/build_tracker.py`, `diagnostics/query.py`, `memgraph/provenance_report.py`, and their tests read the graph through the `kb` API with the fingerprint check; the loaders of `tools/memgraph/` move into the compiler; `make setup` starts Memgraph and loads the graph from git in one command", "No tool reads the graph without the fingerprint check; a fresh clone passes `make verify` after `make setup`; the graph is rebuilt from git without a backup"],
+  ["8. Code reconciliation", "Declared links are checked against L0; writers without an L0 reference are resolved by indirect access kind: pointer, GBR, the `FFFF128C` window, block copy, each with its own evidence kind; ROM symbols are checked against image bytes", "Zero unexplained differences; every exception carries a reason"],
+  ["9. Layouts", "Exact-code symbols inherit; 8MFK suggestions from the diff of the two images; the `kb suggest` channels; a new image joins a family by its census report, and `kb family new` starts a family whose meanings are its own; the VVEL model of `defs/JK78C.vvel.md` and `defs/JK78C.can.md` converts into meanings with symbols; communities on a new layout propose subsystems without homologs; 1ND and 1ME3B enter directly in the new format", "Every pair of project feature and layout has a symbol or a status for each required meaning"],
+  ["10. Parity catalog", "EcuTek and UpRev functions become `feature` entities with requirements on L1, an acceptance criterion, and a status per layout; `kb gaps --catalog` reports them", "The catalog covers the project's features and the competitor inventory"],
+  ["11. Retirement", "Projections without external consumers, old loaders, and copies are removed; XML, XDF, and RomRaider files stay generated; README, `AGENTS.md`, and narrow READMEs describe the final state", "No old registry is edited by hand"],
+]

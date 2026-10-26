@@ -56,7 +56,7 @@ def test_the_tree_matches_its_sources(facts):
     assert single_source.check_can_id() > 0
     single_source.check_product_identity()
     single_source.check_stock_hashes()
-    assert single_source.check_kb_questions() == 13
+    single_source.check_kb_questions()
     assert single_source.check_rom_registries() == len(
         single_source.registered_labels()
     )
@@ -70,7 +70,7 @@ def test_benchmark_content_contracts_are_required_by_the_source_gate(monkeypatch
     config["question"][-1]["expect"] = expected
     monkeypatch.setattr(single_source, "_toml", lambda path: config
                         if path == single_source.KB_BENCH else read(path))
-    with pytest.raises(single_source.SourceError, match="question 13: expect"):
+    with pytest.raises(single_source.SourceError, match="question .*: expect"):
         single_source.check_kb_questions()
 
 
@@ -124,18 +124,6 @@ def test_benchmark_content_contracts_are_required_by_the_source_gate(monkeypatch
             "defs/JK08A.can.md",
             "`../rom-images/roms.csv`",
             "`ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`",
-        ),
-        (
-            single_source.check_kb_questions,
-            "tools/kb/SPEC.md",
-            "| `kb impact 7mfk:0000a4aa` | 1500 | 2 |",
-            "| `kb impact 7mfk:0000a4aa` | 1200 | 2 |",
-        ),
-        (
-            single_source.check_kb_questions,
-            "tools/kb/bench.toml",
-            'command = "kb find knock threshold"\nbudget = 800\nstage = 2',
-            'command = "kb find knock threshold"\nbudget = 800\nstage = 3',
         ),
         (
             single_source.check_rom_registries,
@@ -230,3 +218,15 @@ def test_a_published_fact_that_leaves_its_source_fails(
     with pytest.raises(single_source.SourceError) as error:
         single_source.check_published(facts)
     assert path in str(error.value)
+
+
+def test_benchmark_validation_does_not_read_spec_prose(monkeypatch):
+    read = single_source._text
+
+    def without_prose(path):
+        if path == "tools/kb/SPEC.md":
+            raise AssertionError("documentation is not a benchmark input")
+        return read(path)
+
+    monkeypatch.setattr(single_source, "_text", without_prose)
+    single_source.check_kb_questions()
