@@ -122,8 +122,8 @@ def test_fixture_keeps_the_full_caller_and_all_three_actual_helpers_with_only_fi
 def test_published_byte_ratio_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='byte_ratio_producer_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-ratio-producer-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==129 and len(declared['function'])==70
-    assert len({row['owner'] for row in declared['reference']})==98
+    assert len(rows)==1 and len(declared['reference'])==132 and len(declared['function'])==73
+    assert len({row['owner'] for row in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('355 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),355),
@@ -142,13 +142,13 @@ def test_published_byte_ratio_joint_prior_and_registry_counts_bind_execution_sou
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==113 and function_removed==8 and datum_removed+function_removed==121
-    assert '121 matching ledger selectors' in words and '113 datum-end selectors and 8 function-end selectors' in words
-    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
-    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==119
-    assert '119 readers and ten' in words
+    assert datum_removed==116 and function_removed==8 and datum_removed+function_removed==124
+    assert '124 matching ledger selectors' in words and '116 datum-end selectors and 8 function-end selectors' in words
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
+    assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==121
+    assert '121 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==29 and 'Twenty-nine independent components' in words
+    assert len(family.COMPONENTS)==32 and 'Thirty-two independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     assert withdrawal.state_surface_prefix_digest(declared,118)==withdrawal.PRIOR_PAIRED_CURVE_NORMALIZATION_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:62])==withdrawal.PRIOR_PAIRED_CURVE_NORMALIZATION_FUNCTION_SHA256

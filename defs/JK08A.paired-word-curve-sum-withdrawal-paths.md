@@ -67,12 +67,12 @@ declaration and input callbacks.
 
 ## Shared owning source boundary
 
-The shared descriptor contains 129 exact access originals: 119 readers and ten
-individually pinned writers, 98 complete datum owners, 70 complete functions and
-121 matching ledger selectors (113 datum-end selectors and 8 function-end
-selectors). All 129 exact normal unlink operations form one complete phase.
-Twenty-nine independent components use the same complete original COPY primary.
-The existing registry contains 38 families and 75 captures. Five complete
+The shared descriptor contains 132 exact access originals: 121 readers and eleven
+individually pinned writers, 100 complete datum owners, 73 complete functions and
+124 matching ledger selectors (116 datum-end selectors and 8 function-end
+selectors). All 132 exact normal unlink operations form one complete phase.
+Thirty-two independent components use the same complete original COPY primary.
+The existing registry contains 38 families and 78 captures. Five complete
 function transitions retain eight exact function-end selector withdrawals.
 
 The clamp and paired word-curve package preserves all 127 preceding reference

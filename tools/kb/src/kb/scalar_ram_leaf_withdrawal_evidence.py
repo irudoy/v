@@ -260,6 +260,12 @@ def require_remaining_caller_result(component,result):
     if any(result.get(flag) is not True for flag in REMAINING_CALLER_FLAGS[component]):
         raise ValueError('a remaining caller lacks its complete independent state, physical scope or same-primary dependency')
     pinned=contract.REMAINING_STANDALONE_CALLERS[component];bindings=result.get('native_bindings')
+    if component in ('endpoint_normalizer_writer_withdrawal_paths','bfs_state_caller_withdrawal_paths'):
+        expected=dict(original_claim_sha256=pinned[1],owner=pinned[4],entry=f'7mfk:{pinned[3]:08x}',
+            native_width=None,native_signed=None,scope='whole-datum-absence')
+        if not test_contract.exact(bindings,expected):
+            raise ValueError('the endpoint or BFS caller substitutes its exact original owner, natural entry or whole-datum absence binding')
+        return True
     if (type(bindings) is not list or len(bindings)!=1 or type(bindings[0]) is not dict
             or bindings[0].get('original_claim_sha256')!=pinned[1]
             or bindings[0].get('meaning')!=pinned[4] or bindings[0].get('function_meaning')!=pinned[5]):

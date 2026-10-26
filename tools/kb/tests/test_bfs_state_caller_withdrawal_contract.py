@@ -59,3 +59,28 @@ def test_header_keeps_full_context_and_has_no_expected_publications():
     assert len(matrix.CAUSAL_CONFIGURATION)+3==13
     for name,wanted in source['reused_source_sha256'].items():
         assert hashlib.sha256((repo.ROOT/name).read_bytes()).hexdigest()==wanted
+
+
+def test_shared_owning_publication_reads_current_execution_descriptor_and_registry():
+    import json
+    from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
+    from kb import scalar_ram_leaf_withdrawal_evidence as family,ordinary_access_registry as registry
+    declared=withdrawal.descriptor(repo.ROOT)
+    text=' '.join((repo.ROOT/'defs/JK08A.bfs-state-caller-withdrawal-paths.md').read_text().split())
+    owners={row['owner']:row for row in declared['reference']}
+    datum=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']) or ())-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']) or ()) for row in owners.values())
+    functions=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
+        sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
+        for row in declared['function'] if 'proposed_ledger_json' in row)
+    readers=sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])
+    for phrase in (f"{len(declared['reference'])} exact access originals",f'{readers} readers and eleven',
+            f'{len(owners)} complete datum owners',f"{len(declared['function'])} complete functions",
+            f'{datum+functions} matching ledger selectors',f'{datum} datum-end selectors and {functions} function-end selectors',
+            f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures'):
+        assert phrase in text
+    assert len(withdrawal.ORIGINAL_LINK_TYPES)==11
+    assert len(family.COMPONENTS)==32 and 'Thirty-two independent components' in text
+    assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
+    assert withdrawal.digest(withdrawal.remaining_callers_prior_current_rows(declared,129))==withdrawal.PRIOR_REMAINING_CALLER_REFERENCE_SHA256
+    assert withdrawal.digest(declared['function'][:70])==withdrawal.PRIOR_REMAINING_CALLER_FUNCTION_SHA256

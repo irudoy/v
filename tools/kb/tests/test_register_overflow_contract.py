@@ -78,8 +78,8 @@ def test_source_refuses_owning_identity_units_scale_geometry_caller_or_hardware_
 def test_published_original_instruction_and_joint_counts_bind_the_executed_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='register_overflow_paths']
     text=(repo.ROOT/'defs/JK08A.register-overflow-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==129 and len(declared['function'])==70
-    assert len({row['owner'] for row in declared['reference']})==98
+    assert len(rows)==1 and len(declared['reference'])==132 and len(declared['function'])==73
+    assert len({row['owner'] for row in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+
         '` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -98,7 +98,7 @@ def test_published_original_instruction_and_joint_counts_bind_the_executed_sourc
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==121 and '121 matching ledger selectors' in words
+    assert removed==124 and '124 matching ledger selectors' in words
     assert 'thirteen families and forty-seven capture bindings' in words
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert 'preceding nine adapters' in words and proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==9

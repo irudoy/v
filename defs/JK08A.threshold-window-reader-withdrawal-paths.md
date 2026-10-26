@@ -5,10 +5,10 @@ The complete natural 847DC caller and real 21BBC signed divider contain
 domain requires 181 feasible instructions and has 57 excluded helper instructions.
 The descriptor binds 8 literal spans, 5 pointer aliases, 6 complete RAM fields,
 8 complete calibration spans, 16 raw input fields and 19 complete helper sources.
-The joint descriptor contains 129 exact access originals: 119 readers and ten
-individually pinned writers, 98 complete datum owners, 70 complete functions and
-121 matching ledger selectors. These include 113 datum-end selectors and
-8 function-end selectors. All 129 exact normal unlink operations are mandatory.
+The joint descriptor contains 132 exact access originals: 121 readers and eleven
+individually pinned writers, 100 complete datum owners, 73 complete functions and
+124 matching ledger selectors. These include 116 datum-end selectors and
+8 function-end selectors. All 132 exact normal unlink operations are mandatory.
 The three selected unsupported reader originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -105,7 +105,7 @@ No broad shared-owner exception or ignored native field is used.
 
 The 180 prior domain sources retain 179 byte-identical sources and the exact
 existing two-site gated spelling exception with complete current/legacy hashes.
-Twenty-nine independent components require one complete original COPY primary.
+Thirty-two independent components require one complete original COPY primary.
 The registry contains thirteen families and forty-seven capture bindings.
 The twenty-sixth standard source-only adapter retains the preceding twenty-five adapters
 and all fifty generated output identities. Its marker is
@@ -119,10 +119,10 @@ reverse donation, native geometry, scale, units, caller or hardware admission.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains129 exact access originals:119 readers and ten
-individually pinned writers,98 complete datum owners,70 complete functions and
-121 matching ledger selectors. These contain113 datum-end selectors and
-8 function-end selectors. Twenty-nine independent components require one
+The joint descriptor contains132 exact access originals:121 readers and eleven
+individually pinned writers,100 complete datum owners,73 complete functions and
+124 matching ledger selectors. These contain116 datum-end selectors and
+8 function-end selectors. Thirty-two independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.

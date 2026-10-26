@@ -55,11 +55,33 @@ set alone, arbitrary changed counter bytes and identical values fail.
 
 The standalone native draft removes only the exact selected reader and one
 owner-end consumer selector. Complete function, scheduler, native evidence and
-all other links remain exact. Shared family/native/current-prefix integration
-is deferred to coherent reconciliation; this source package grants no original
-completion, scheduling, hardware or publication admission.
+all other links remain exact. The existing scalar withdrawal family binds
+this independent capture and its complete source set in the current owning
+batch. Source preparation grants no scheduling, hardware or publication admission.
 
 Adapter35 uses the existing ordinary 80/572 observer and standard input-only
 source generator. All 68 preceding generated outputs retain their complete
 bytes. The complete generated driver and refusal source bind the same
 domain-owned declaration and raw input callbacks.
+
+
+## Shared owning source boundary
+
+The shared descriptor contains 132 exact access originals: 121 readers and
+eleven individually pinned writers, 100 complete datum owners, 73 complete
+functions and 124 matching ledger selectors (116 datum-end selectors and
+8 function-end selectors). All 132 exact normal unlink operations form one
+complete phase. Thirty-two independent components use the same complete
+original COPY primary. The existing registry contains 38 families and
+78 captures. Five complete function transitions retain eight exact
+function-end selector withdrawals.
+
+The three-caller package preserves all 129 preceding reference records and
+all 70 preceding complete functions. Only the three proposed-image fields of
+the previous clamp record change to the common two-reader table postimage.
+Its full preceding image remains recoverable and has a separate exact current
+image pin. All three new function snapshots remain complete and unchanged.
+Native types, evidence, TEST positions, ledger order, calibration semantics,
+other reader/writer and producer facts, and downstream RAM dependencies remain
+mandatory. Source completion grants no identity, scale, units, executable,
+native publication or hardware admission.

@@ -4,9 +4,9 @@ The complete natural 503E0 caller and real 50766 rotation helper contain
 409 stock instructions, 818 code bytes and 7 code spans. All 409 feasible instructions
 are required. Its preserved state source boundary binds 42 literal spans, 13 pointer aliases,
 25 complete RAM fields, 271 configuration fields, 44 complete calibration spans
-and 306 raw input fields. The joint descriptor contains 129 exact access originals:
-119 readers and ten individually pinned writers, 98 complete owners,
-70 complete functions and 121 matching ledger selectors. All 129 normal unlink
+and 306 raw input fields. The joint descriptor contains 132 exact access originals:
+121 readers and eleven individually pinned writers, 100 complete owners,
+73 complete functions and 124 matching ledger selectors. All 132 normal unlink
 operations are mandatory. The selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
@@ -135,7 +135,7 @@ caller interpretation or hardware admission is created.
 
 The 162 prior domain sources retain 161 byte-identical sources and the exact
 existing two-site gated spelling exception with complete current/legacy hashes.
-Twenty-nine independent components require one complete original COPY primary.
+Thirty-two independent components require one complete original COPY primary.
 The registry contains thirteen families and forty-seven capture bindings.
 The twenty-fourth standard source-only adapter retains the preceding twenty-three adapters
 and all forty-six generated output identities. Its marker is
@@ -151,7 +151,7 @@ The complete paired flag writer component is defined by
 56 functions retain exact boundaries. Entry-scoped absence preserves the real
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 113 datum-end selectors and
+remain mandatory. The joint total includes 116 datum-end selectors and
 8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
@@ -163,15 +163,15 @@ same three datum owners. Full prior 112 records reconstruct exactly; all
 remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 113 datum-end and
+identical primary. The joint selector total contains 116 datum-end and
 8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains129 exact access originals:119 readers and ten
-individually pinned writers,98 complete datum owners,70 complete functions and
-121 matching ledger selectors. These contain113 datum-end selectors and
-8 function-end selectors. Twenty-nine independent components require one
+The joint descriptor contains132 exact access originals:121 readers and eleven
+individually pinned writers,100 complete datum owners,73 complete functions and
+124 matching ledger selectors. These contain116 datum-end selectors and
+8 function-end selectors. Thirty-two independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
@@ -320,9 +320,9 @@ exact unsupported reader and one consumer ledger selector are removed. The
 complete 50018 function snapshot has no reverse reader16AA selector and remains
 unchanged, including its actual writer selector and all 35 L0 identity bindings.
 All prior 125 complete reference records and prior 67 complete functions remain
-exact. The shared batch requires all 126 ordinary unlink operations, 98 complete
-owners, 70 complete functions and 121 matching ledger selectors. The selectors
-comprise 113 datum-end and eight function-end selectors. The complete source
+exact. The shared batch requires all 126 ordinary unlink operations, 100 complete
+owners, 73 complete functions and 124 matching ledger selectors. The selectors
+comprise 116 datum-end and eight function-end selectors. The complete source
 boundary does not establish executable qualification or publish native data.
 
 ## Intermediate restore reader direction
@@ -353,7 +353,7 @@ consumer ledger selector. It retains the actual writer, RPM/25, unset semantic
 width and signedness, symbol evidence, notes and every other field and link.
 All prior 126 complete reference records and all 68 complete function snapshots
 remain exact. The existing complete 50018 function has no reverse reader1778
-selector and remains unchanged. The shared127 batch contains119 readers and ten
-writers,98 full owners and121 matching ledger selectors (113 datum-end and eight
+selector and remains unchanged. The shared127 batch contains121 readers and eleven
+writers,100 full owners and124 matching ledger selectors (116 datum-end and eight
 function-end). All127 ordinary unlink operations belong to one exact phase.
 Native publication, TEST qualification and executable acceptance remain separate.

@@ -125,8 +125,8 @@ def test_fixture_keeps_all_natural_code_exact_and_only_twenty_two_declared_point
 def test_published_mixed_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='mixed_curve_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.mixed-curve-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==8 and len(declared['reference'])==129 and len(declared['function'])==70
-    assert len({r['owner'] for r in declared['reference']})==98
+    assert len(rows)==8 and len(declared['reference'])==132 and len(declared['function'])==73
+    assert len({r['owner'] for r in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,wanted in (('964 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),964),
@@ -143,8 +143,8 @@ def test_published_mixed_joint_prior_and_registry_counts_bind_execution_sources(
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==121 and '121 matching ledger selectors' in words
-    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
+    assert removed==124 and '124 matching ledger selectors' in words
+    assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,79))==withdrawal.PRIOR_GUARDED_QUOTIENT_CALLER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:47])==withdrawal.PRIOR_GUARDED_QUOTIENT_CALLER_FUNCTION_SHA256
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47

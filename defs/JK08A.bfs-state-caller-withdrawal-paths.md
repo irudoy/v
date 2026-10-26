@@ -55,7 +55,31 @@ ledger identity, notes and original TEST positions remain unchanged.
 
 This standalone source belongs to the existing scalar RAM leaf withdrawal
 family. The shared nice-coucal owner also has the separate 00039316 proposal.
-Their common native postimage requires the current coherent shared boundary
-and preserves the pending metadata operation. Source preparation grants no
+Their current common native postimage removes exactly both direct readers
+and their two owner-end selectors, preserving the pending metadata operation.
+The two complete functions retain all independent RAM dependencies. Source
+preparation grants no
 review retirement, native identity, semantic width, scaling, scheduling,
 whole-ECU absence or hardware eligibility.
+
+
+## Shared owning source boundary
+
+The shared descriptor contains 132 exact access originals: 121 readers and
+eleven individually pinned writers, 100 complete datum owners, 73 complete
+functions and 124 matching ledger selectors (116 datum-end selectors and
+8 function-end selectors). All 132 exact normal unlink operations form one
+complete phase. Thirty-two independent components use the same complete
+original COPY primary. The existing registry contains 38 families and
+78 captures. Five complete function transitions retain eight exact
+function-end selector withdrawals.
+
+The three-caller package preserves all 129 preceding reference records and
+all 70 preceding complete functions. Only the three proposed-image fields of
+the previous clamp record change to the common two-reader table postimage.
+Its full preceding image remains recoverable and has a separate exact current
+image pin. All three new function snapshots remain complete and unchanged.
+Native types, evidence, TEST positions, ledger order, calibration semantics,
+other reader/writer and producer facts, and downstream RAM dependencies remain
+mandatory. Source completion grants no identity, scale, units, executable,
+native publication or hardware admission.
