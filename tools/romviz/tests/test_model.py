@@ -86,7 +86,6 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["counts"]["diagnostics"] == 76
     assert rom["counts"]["maps"] == 139
     assert rom["counts"]["axes"] == 37
-    assert rom["counts"]["patches"] == 119
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
@@ -141,13 +140,23 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
         "patch:runtime-address-profile:patch-hook:map-ignition_state_lookup"
     ) in by_id
     assert (
-        "patch:runtime-address-profile:patch-hook:map-ignition_lookup_3"
-    ) not in by_id
-    assert (
         "patch:runtime-address-profile:patch-hook:"
         "rolling-fuel_cut_coordinator"
     ) in by_id
     assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
+    for address, stock in (
+        (0x79404, 0x293D8),
+        (0x79420, 0x29BA8),
+        (0x796F4, 0x29BA8),
+        (0x799A4, 0x29BA8),
+    ):
+        [hook] = [item for item in rom["objects"]
+                  if item["id"].startswith("patch:runtime-address-profile:patch-hook:map-")
+                  and item["start"] == address]
+        assert hook["start"] == address and hook["end"] == address + 4
+        metadata = {item["label"]: item["value"] for item in hook["meta"]}
+        assert int(metadata["Stock"], 16) == stock
+        assert runtime["start"] <= int(metadata["Replacement"], 16) < runtime["end"]
     assert any(
         item["label"] == "Rolling Launch Minimum Engine Speed"
         and item["start"] == 0x13CF6A

@@ -7,6 +7,8 @@ import re
 
 import pytest
 
+from kb import compile, repo
+from kb.model import SymbolKey
 from tools.romviz import architecture
 from tools.romviz import build
 from tools.romviz import model
@@ -123,6 +125,7 @@ def test_every_reviewed_function_is_placed_once(tracked):
 
 
 def test_native_placed_maf_states_without_legacy_rows_are_reviewed(tracked):
+    native = compile.cached(repo.ROOT)
     addresses = ("ffff1e00", "ffff1e02", "ffff1e08", "ffff1e0a", "ffff1e10",
                  "ffff1e14", "ffff1e18", "ffff1e1a", "ffff1e1c", "ffff1e1e",
                  "ffff1e30", "ffff1e32", "ffff1e34", "ffff43ca", "ffff43cb")
@@ -131,7 +134,10 @@ def test_native_placed_maf_states_without_legacy_rows_are_reviewed(tracked):
         node = tracked.nodes["signal:" + address]
         assert node.reviewed and node.block == "airflow-load"
         assert node.meta["origin"] == "kb" and node.meta["layout"] == "7mfk"
-        assert node.source.startswith("kb/ram/") and node.confidence == "code"
+        symbol = native.symbols[SymbolKey("7mfk", "ram", int(address, 16))]
+        assert node.source.startswith("kb/ram/")
+        assert node.confidence == symbol.value("level")
+    assert tracked.nodes["signal:ffff1e02"].confidence == "candidate"
 
 
 def test_native_placement_does_not_admit_an_unowned_signal(tmp_path):
