@@ -175,7 +175,9 @@ def patch_image(
     _require_telemetry_base(source, telemetry_layout, source_name)
 
     try:
-        model, configuration_bytes = can_telemetry_compose._validated_configuration(configuration)
+        model, configuration_bytes = can_telemetry_compose._validated_configuration(
+            configuration, layout=telemetry_layout, base=source
+        )
         mailbox_record = model.mailbox_record()
         composed = can_telemetry_compose._build_expected(
             telemetry_layout,

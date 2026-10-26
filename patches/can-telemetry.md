@@ -60,10 +60,16 @@ main-loop wrapper
   -> next page or newest pending snapshot
 ```
 
-The implementation preserves the stock CAN transmit scan, stock serializers,
-all stock receive mailboxes, and the complete mailbox-28 SLE1 behavior. It
-converts stock-inactive mailbox 31 into a polled receive mailbox after every
-primary or recovery HCAN1 initialization.
+The JK08A implementation preserves the stock CAN transmit scan, stock
+serializers, all stock receive mailboxes, and the complete mailbox-28 SLE1
+behavior. It converts stock-inactive mailbox 31 into a polled receive mailbox
+after every primary or recovery HCAN1 initialization.
+
+The 1ME3B stock initializer configures physical mailbox 31 as receive ID
+`0x292` from ROM record `0x00009844`. The telemetry control endpoint uses the
+same mailbox and replaces that assignment. 1ME3B is ineligible for hardware
+testing until its allocation preserves this stock receive path and passes the
+required software gates.
 
 ## Exact integration points
 
@@ -79,7 +85,7 @@ primary or recovery HCAN1 initialization.
 | recovery HCAN1 initializer pointer at `0x000C3B10` | `0x000C338A` | restore mailbox 31 after the stock recovery path reinitializes HCAN1 |
 
 The candidate standard ID is `0x6F0`. The ID remains a build parameter in the
-range `0x001..0x7FE`, but every page in one build uses the same ID. Eleven
+range `0x001..0x6FE`, but every page in one build uses the same ID. Eleven
 pages fit the four-bit page number, and additional IDs would not reduce bus
 occupancy while only one verified physical mailbox is used.
 
@@ -98,6 +104,39 @@ The table record and the physical mailbox register use different encodings.
 The table stores `STDID << 5` for the stock initializer, while mailbox 31
 register bytes 0 and 1 store `STDID << 4` directly because byte 1 bits 3 and 2
 are RTR and IDE. The default control register word is therefore `0x6F10`.
+
+## Build-time CAN ID checks
+
+Image construction requires both the data ID and the control ID to be below
+`0x700`, and rejects either ID when it matches an active stock HCAN1 ROM-table
+record of the selected image. The error identifies the data or control ID,
+physical mailbox, direction, and ROM record. This applies to disabled-startup
+and auto-start configurations. Inactive type-5 records reserve no ID, so
+exact-code sibling images retain their own mailbox availability.
+
+The reviewed setup functions use four-byte records containing type, DLC, and
+`STDID << 5`. Types 1 and 2 receive; types 3 and 4 transmit. The SH7059 scan
+also accepts transmit types `0x23`, `0x53`, `0xA3`, `0xB3`, and `0xC3`.
+High-nibble types and zero-based indices above 30 in that scan alias physical
+mailbox 1; the additional records participate in collision checks. The existing physical
+mailbox-26 anchor locates the table without a separate address registry.
+
+| Layout | Mailbox setup entry | ROM records | Direct initialization IDs |
+| --- | --- | ---: | --- |
+| `7mfk` | `0x000C2FBE` | 30 | `0x7E8`, `0x7E0`, `0x7D0` |
+| `jk00c` | `0x000C8CAE` | 30 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+| `jk00d` | `0x000C93EA` | 30 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+| `jk78c` | `0x000EA19E` | 30 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+| `1nd` | `0x0011322A` | 36 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+| `1me3b` | `0x0011EEDA` | 36 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+
+The direct initialization writes use diagnostic IDs, covered by reserving
+`0x700..0x7FF`. The wire configuration field has its own numeric range;
+the stricter image-construction policy does not change its encoding.
+An unreviewed layout or record type refuses telemetry construction. These
+checks cover the ECU's ROM mailbox tables and direct initialization writes.
+IDs of other vehicle modules require a passive whole-bus capture before
+transmission is enabled.
 
 ## Coherent capture boundary
 

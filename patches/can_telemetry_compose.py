@@ -76,7 +76,58 @@ def _validated_blobs(layout, blobs):
     }
 
 
-def _validated_configuration(configuration):
+def _validate_can_ids(layout, base, model):
+    identifiers = (("data", model.can_id), ("control", model.control_can_id))
+    for role, identifier in identifiers:
+        if identifier >= 0x700:
+            raise ValueError(
+                f"{layout.rom}: telemetry {role} CAN ID {identifier:#05x} "
+                "must be below 0x700 (reserved diagnostic range)"
+            )
+
+    if layout.rom in {"JK08A", "JK00C", "JK00D", "JK78C"}:
+        record_count = 30
+        transmit_types = {3, 4}
+    elif layout.rom in {"1ND0A", "1ND3B", "1ME3B"}:
+        record_count = 36
+        transmit_types = {3, 4, 0x23, 0x53, 0xA3, 0xB3, 0xC3}
+    else:
+        raise ValueError(
+            f"{layout.rom}: stock HCAN1 mailbox format has not been reviewed; "
+            "telemetry is unavailable"
+        )
+
+    # Record i configures physical mailbox i + 1. The SH7059 initializer
+    # aliases high-nibble types and indices above 30 to physical mailbox 1.
+    start = layout.mailbox_record_address - 25 * 4
+    if start < 0 or start + record_count * 4 > len(base):
+        raise ValueError(f"{layout.rom}: stock HCAN1 mailbox table is outside the image")
+    for index in range(record_count):
+        address = start + index * 4
+        kind = base[address]
+        if kind == 5:
+            continue
+        if kind in (1, 2):
+            direction = "RX"
+        elif kind in transmit_types:
+            direction = "TX"
+        else:
+            raise ValueError(
+                f"{layout.rom}: unreviewed stock HCAN1 record type "
+                f"{kind:#04x} at {address:#x}; telemetry is unavailable"
+            )
+        stock_id = int.from_bytes(base[address + 2:address + 4], layout.byte_order) >> 5
+        mailbox = 1 if kind & 0xF0 or index > 30 else index + 1
+        for role, identifier in identifiers:
+            if identifier == stock_id:
+                raise ValueError(
+                    f"{layout.rom}: telemetry {role} CAN ID {identifier:#05x} "
+                    f"conflicts with stock HCAN1 mailbox {mailbox} "
+                    f"({direction}, ROM record {index + 1})"
+                )
+
+
+def _validated_configuration(configuration, *, layout, base):
     manifest = can_telemetry_profile.load_manifest()
     if configuration is None:
         configuration = can_telemetry.default_configuration()
@@ -88,6 +139,7 @@ def _validated_configuration(configuration):
         model = can_telemetry.Configuration.from_bytes(data, manifest)
     if not model.is_valid(manifest) or model.to_bytes(manifest) != data:
         raise ValueError("CAN telemetry configuration round trip differs")
+    _validate_can_ids(layout, base, model)
     return model, data
 
 
@@ -174,7 +226,7 @@ def compose(layout=None, base=None, blobs=None, configuration=None):
     base = build_base_composition() if base is None else bytes(base)
     base = can_telemetry_layout.validate_base_composition(layout, base)
     blobs = _validated_blobs(layout, blobs or can_telemetry_assembly.load_payloads(layout))
-    model, configuration = _validated_configuration(configuration)
+    model, configuration = _validated_configuration(configuration, layout=layout, base=base)
     mailbox_record = model.mailbox_record()
     data = _build_expected(layout, base, blobs, configuration, mailbox_record)
     changed, permitted, instructions, entries = _validate_composed(
