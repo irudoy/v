@@ -7,11 +7,13 @@ from pathlib import Path
 from kb import copy_evidence,store,test_contract
 from kb import scalar_ram_leaf_withdrawal_contract as contract
 from kb import scalar_ram_leaf_capture_evidence as capture_consumer,scalar_ram_product_capture_evidence as product_consumer,scalar_ram_gated_capture_evidence as gated_consumer,rpm_ram_withdrawal_capture_evidence as rpm_ram_consumer,register_overflow_capture_evidence as overflow_consumer,scalar_ram_word_capture_evidence as word_consumer,rpm_state_withdrawal_capture_evidence as rpm_state_consumer,indexed_word_update_capture_evidence as indexed_word_consumer,division_caller_withdrawal_capture_evidence as division_caller_consumer,byte_curve_caller_withdrawal_capture_evidence as byte_curve_caller_consumer,word_interp_caller_withdrawal_capture_evidence as word_interp_caller_consumer,scaled_division_caller_withdrawal_capture_evidence as scaled_division_caller_consumer,curve_scale_caller_withdrawal_capture_evidence as curve_scale_caller_consumer,derivative_scale_caller_withdrawal_capture_evidence as derivative_scale_caller_consumer,guarded_quotient_caller_withdrawal_capture_evidence as guarded_quotient_caller_consumer,mixed_curve_caller_withdrawal_capture_evidence as mixed_curve_caller_consumer,timing_remainder_caller_withdrawal_capture_evidence as timing_remainder_caller_consumer,state_ratio_caller_withdrawal_capture_evidence as state_ratio_caller_consumer,dfco_state_caller_withdrawal_capture_evidence as dfco_state_caller_consumer,paired_inhibit_writer_withdrawal_capture_evidence as paired_inhibit_writer_consumer,threshold_window_reader_withdrawal_capture_evidence as threshold_window_reader_consumer,aux_rate_caller_withdrawal_capture_evidence as aux_rate_caller_consumer,paired_curve_normalization_withdrawal_capture_evidence as paired_curve_normalization_consumer,byte_ratio_producer_withdrawal_capture_evidence as byte_ratio_producer_consumer,state_surface_caller_withdrawal_capture_evidence as state_surface_caller_consumer,byte_factor_caller_withdrawal_capture_evidence as byte_factor_caller_consumer,byte_sum_caller_withdrawal_capture_evidence as byte_sum_caller_consumer
+from kb import clamp_latch_caller_withdrawal_capture_evidence as clamp_latch_consumer
+from kb import paired_word_curve_sum_withdrawal_capture_evidence as paired_word_sum_consumer
 from kb.diagnostic_rom_contract import native_ledger
 from kb.diagnostic_rom_evidence import dependency_state
 
-COMPONENTS={'scalar_ram_leaf_paths':capture_consumer,'scalar_ram_product_paths':product_consumer,'scalar_ram_gated_paths':gated_consumer,'rpm_ram_withdrawal_paths':rpm_ram_consumer,'register_overflow_paths':overflow_consumer,'scalar_ram_word_paths':word_consumer,'rpm_state_withdrawal_paths':rpm_state_consumer,'indexed_word_update_paths':indexed_word_consumer,'division_caller_withdrawal_paths':division_caller_consumer,'byte_curve_caller_withdrawal_paths':byte_curve_caller_consumer,'word_interp_caller_withdrawal_paths':word_interp_caller_consumer,'scaled_division_caller_withdrawal_paths':scaled_division_caller_consumer,'curve_scale_caller_withdrawal_paths':curve_scale_caller_consumer,'derivative_scale_caller_withdrawal_paths':derivative_scale_caller_consumer,'guarded_quotient_caller_withdrawal_paths':guarded_quotient_caller_consumer,'mixed_curve_caller_withdrawal_paths':mixed_curve_caller_consumer,'timing_remainder_caller_withdrawal_paths':timing_remainder_caller_consumer,'state_ratio_caller_withdrawal_paths':state_ratio_caller_consumer,'dfco_state_caller_withdrawal_paths':dfco_state_caller_consumer,'paired_inhibit_writer_withdrawal_paths':paired_inhibit_writer_consumer,'threshold_window_reader_withdrawal_paths':threshold_window_reader_consumer,'aux_rate_caller_withdrawal_paths':aux_rate_caller_consumer,'paired_curve_normalization_withdrawal_paths':paired_curve_normalization_consumer,'byte_ratio_producer_withdrawal_paths':byte_ratio_producer_consumer,'state_surface_caller_withdrawal_paths':state_surface_caller_consumer,'byte_factor_caller_withdrawal_paths':byte_factor_caller_consumer,'byte_sum_caller_withdrawal_paths':byte_sum_caller_consumer}
-COMPONENT_FLAGS={'scalar_ram_leaf_paths':'exact_scalar_ram_leaves','scalar_ram_product_paths':'exact_scalar_ram_products','scalar_ram_gated_paths':'exact_scalar_ram_gated_paths','rpm_ram_withdrawal_paths':'exact_rpm_ram_withdrawal_paths','register_overflow_paths':'exact_register_overflow_paths','scalar_ram_word_paths':'exact_scalar_ram_word_paths','rpm_state_withdrawal_paths':'exact_rpm_state_withdrawal_paths','indexed_word_update_paths':'exact_indexed_word_update_paths','division_caller_withdrawal_paths':'exact_division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths':'exact_byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths':'exact_word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths':'exact_scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths':'exact_curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths':'exact_derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths':'exact_guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths':'exact_mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths':'exact_timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths':'exact_state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths':'exact_dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths':'exact_paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths':'exact_threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths':'exact_aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths':'exact_paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths':'exact_byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths':'exact_state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths':'exact_byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths':'exact_byte_sum_caller_withdrawal_paths'}
+COMPONENTS={'scalar_ram_leaf_paths':capture_consumer,'scalar_ram_product_paths':product_consumer,'scalar_ram_gated_paths':gated_consumer,'rpm_ram_withdrawal_paths':rpm_ram_consumer,'register_overflow_paths':overflow_consumer,'scalar_ram_word_paths':word_consumer,'rpm_state_withdrawal_paths':rpm_state_consumer,'indexed_word_update_paths':indexed_word_consumer,'division_caller_withdrawal_paths':division_caller_consumer,'byte_curve_caller_withdrawal_paths':byte_curve_caller_consumer,'word_interp_caller_withdrawal_paths':word_interp_caller_consumer,'scaled_division_caller_withdrawal_paths':scaled_division_caller_consumer,'curve_scale_caller_withdrawal_paths':curve_scale_caller_consumer,'derivative_scale_caller_withdrawal_paths':derivative_scale_caller_consumer,'guarded_quotient_caller_withdrawal_paths':guarded_quotient_caller_consumer,'mixed_curve_caller_withdrawal_paths':mixed_curve_caller_consumer,'timing_remainder_caller_withdrawal_paths':timing_remainder_caller_consumer,'state_ratio_caller_withdrawal_paths':state_ratio_caller_consumer,'dfco_state_caller_withdrawal_paths':dfco_state_caller_consumer,'paired_inhibit_writer_withdrawal_paths':paired_inhibit_writer_consumer,'threshold_window_reader_withdrawal_paths':threshold_window_reader_consumer,'aux_rate_caller_withdrawal_paths':aux_rate_caller_consumer,'paired_curve_normalization_withdrawal_paths':paired_curve_normalization_consumer,'byte_ratio_producer_withdrawal_paths':byte_ratio_producer_consumer,'state_surface_caller_withdrawal_paths':state_surface_caller_consumer,'byte_factor_caller_withdrawal_paths':byte_factor_caller_consumer,'byte_sum_caller_withdrawal_paths':byte_sum_caller_consumer,'clamp_latch_caller_withdrawal_paths':clamp_latch_consumer,'paired_word_curve_sum_withdrawal_paths':paired_word_sum_consumer}
+COMPONENT_FLAGS={'scalar_ram_leaf_paths':'exact_scalar_ram_leaves','scalar_ram_product_paths':'exact_scalar_ram_products','scalar_ram_gated_paths':'exact_scalar_ram_gated_paths','rpm_ram_withdrawal_paths':'exact_rpm_ram_withdrawal_paths','register_overflow_paths':'exact_register_overflow_paths','scalar_ram_word_paths':'exact_scalar_ram_word_paths','rpm_state_withdrawal_paths':'exact_rpm_state_withdrawal_paths','indexed_word_update_paths':'exact_indexed_word_update_paths','division_caller_withdrawal_paths':'exact_division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths':'exact_byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths':'exact_word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths':'exact_scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths':'exact_curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths':'exact_derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths':'exact_guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths':'exact_mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths':'exact_timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths':'exact_state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths':'exact_dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths':'exact_paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths':'exact_threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths':'exact_aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths':'exact_paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths':'exact_byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths':'exact_state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths':'exact_byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths':'exact_byte_sum_caller_withdrawal_paths','clamp_latch_caller_withdrawal_paths':'exact_clamp_latch_caller_withdrawal_paths','paired_word_curve_sum_withdrawal_paths':'exact_paired_word_curve_sum_withdrawal_paths'}
 
 
 def native_rows(model,phase=None):
@@ -37,8 +39,8 @@ def native_rows(model,phase=None):
                 raise ValueError('the exact full native withdrawal image introduces an absent ledger binding')
         elif not test_contract.exact(native_ledger(model,row['owner']),ledger):
             raise ValueError('the scalar RAM leaf withdrawal changes a retained native ledger identity or selector position')
-    if len(seen)!=97 or len(phases)!=1 or phase is not None and phases!={phase}:
-        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact127-claim phase')
+    if len(seen)!=98 or len(phases)!=1 or phase is not None and phases!={phase}:
+        raise ValueError('the scalar RAM leaf withdrawal requires one complete exact129-claim phase')
     current=next(iter(phases))
     for row in rows:
         old=json.loads(row['original_claim_json'])
@@ -112,6 +114,8 @@ def require_primary(model,record=None):
         raise ValueError('the DFCO reader-only withdrawal lacks exact direction,retained writes or complete prior-byte independence')
     require_restore16aa_result(dfco)
     require_restore1778_result(dfco)
+    require_clamp_latch_result(components['clamp_latch_caller_withdrawal_paths'])
+    require_paired_word_sum_result(components['paired_word_curve_sum_withdrawal_paths'])
 
     if any(components['paired_inhibit_writer_withdrawal_paths'].get(flag) is not True for flag in (
             'complete_real_nibble_helper','entry_scoped_root_absence','complete_RMW_read_write_pairs')):
@@ -192,4 +196,35 @@ def require_restore1778_result(result):
             or not test_contract.exact(result.get('retained1778_write_sites'),[0x501AA])
             or type(source) is not str or len(source)!=64 or any(c not in '0123456789abcdef' for c in source)):
         raise ValueError('the intermediate restore reader lacks its exact same-primary original, retained writer or full prior state')
+    return True
+
+
+def require_clamp_latch_result(result):
+    if any(result.get(flag) is not True for flag in (
+            'complete_actual_absolute_calls','complete_unordered_byte_clamp',
+            'complete_latch_and_word_refresh','complete_selected_table_interval_absence',
+            'derived_RAM_and_producer_dependencies_preserved')):
+        raise ValueError('the clamp caller lacks its complete actual calls, unordered clamps, latch, whole table absence or retained RAM dependencies')
+    bindings=result.get('native_bindings')
+    if (type(bindings) is not list or len(bindings)!=1 or type(bindings[0]) is not dict
+            or bindings[0].get('original_claim_sha256')!=contract.CLAMP_LATCH_WITHDRAWAL[1]
+            or bindings[0].get('meaning')!='nice-coucal/tbl'
+            or bindings[0].get('function_meaning')!='nostalgic-sturgeon/fn'):
+        raise ValueError('the clamp caller substitutes its exact original owner or complete natural function')
+    return True
+
+
+def require_paired_word_sum_result(result):
+    if any(result.get(flag) is not True for flag in (
+            'complete_actual_paired_word_curve_calls','complete_raw_axis_and_curve',
+            'complete_two_saturated_word_publications','complete_local_word_carrier',
+            'complete_selected_scalar_interval_absence','derived_request_and_area_dependencies_preserved',
+            'complete_direct_helpers_same_primary')):
+        raise ValueError('the paired word caller lacks its complete actual curves, raw data, publications, local carrier, scalar absence or same-primary helpers')
+    bindings=result.get('native_bindings')
+    if (type(bindings) is not list or len(bindings)!=1 or type(bindings[0]) is not dict
+            or bindings[0].get('original_claim_sha256')!=contract.PAIRED_WORD_SUM_WITHDRAWAL[1]
+            or bindings[0].get('meaning')!='rev_limit_throttle_cut/tbl'
+            or bindings[0].get('function_meaning')!='throttle_area_compositor/fn'):
+        raise ValueError('the paired word caller substitutes its exact original shared owner or complete natural function')
     return True

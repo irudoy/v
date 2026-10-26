@@ -216,7 +216,7 @@ def test_withdrawal_descriptor_pins_each_complete_original_and_native_image(tmp_
     ('byte_sum_caller_withdrawal_paths','no_selected_datum_access'),('byte_sum_caller_withdrawal_paths','no_selected_ram_datum_access'),
     ('byte_sum_caller_withdrawal_paths','native_identity_admission'),('byte_sum_caller_withdrawal_paths','complete_direct_helpers_same_primary'),
     ('byte_sum_caller_withdrawal_paths','complete_clipped_byte_coordinate'),('byte_sum_caller_withdrawal_paths','complete_unsigned_byte_minimum'),
-    ('byte_sum_caller_withdrawal_paths','complete_two_saturating_word_sums')))
+    ('byte_sum_caller_withdrawal_paths','complete_two_saturating_word_sums'),('clamp_latch_caller_withdrawal_paths', 'exact_clamp_latch_caller_withdrawal_paths'),('clamp_latch_caller_withdrawal_paths', 'no_selected_datum_access'),('clamp_latch_caller_withdrawal_paths', 'native_identity_admission'),('clamp_latch_caller_withdrawal_paths', 'complete_actual_absolute_calls'),('clamp_latch_caller_withdrawal_paths', 'complete_unordered_byte_clamp'),('clamp_latch_caller_withdrawal_paths', 'complete_latch_and_word_refresh'),('clamp_latch_caller_withdrawal_paths', 'complete_selected_table_interval_absence'),('clamp_latch_caller_withdrawal_paths', 'derived_RAM_and_producer_dependencies_preserved'),('clamp_latch_caller_withdrawal_paths', 'native_bindings'),('paired_word_curve_sum_withdrawal_paths', 'exact_paired_word_curve_sum_withdrawal_paths'),('paired_word_curve_sum_withdrawal_paths', 'no_selected_datum_access'),('paired_word_curve_sum_withdrawal_paths', 'native_identity_admission'),('paired_word_curve_sum_withdrawal_paths', 'complete_actual_paired_word_curve_calls'),('paired_word_curve_sum_withdrawal_paths', 'complete_raw_axis_and_curve'),('paired_word_curve_sum_withdrawal_paths', 'complete_two_saturated_word_publications'),('paired_word_curve_sum_withdrawal_paths', 'complete_local_word_carrier'),('paired_word_curve_sum_withdrawal_paths', 'complete_selected_scalar_interval_absence'),('paired_word_curve_sum_withdrawal_paths', 'derived_request_and_area_dependencies_preserved'),('paired_word_curve_sum_withdrawal_paths', 'complete_direct_helpers_same_primary'),('paired_word_curve_sum_withdrawal_paths', 'native_bindings')))
 def test_joint_withdrawal_requires_both_independent_components_and_all_domain_flags(models,monkeypatch,component,flag):
     _,before,_=models
     for key,consumer in proof.COMPONENTS.items():
@@ -243,6 +243,8 @@ def test_joint_withdrawal_requires_both_independent_components_and_all_domain_fl
         if key=='state_surface_caller_withdrawal_paths':result.update(complete_local_word_argument=True,complete_three_state_modes=True)
         if key=='byte_factor_caller_withdrawal_paths':result.update(complete_signed_word_difference=True,complete_dual_byte_partial_product=True,complete_both_natural_curve_calls=True)
         if key=='byte_sum_caller_withdrawal_paths':result.update(complete_clipped_byte_coordinate=True,complete_unsigned_byte_minimum=True,complete_two_saturating_word_sums=True)
+        if key=='clamp_latch_caller_withdrawal_paths':result.update(clamp_latch_flags())
+        if key=='paired_word_curve_sum_withdrawal_paths':result.update(paired_word_sum_flags())
         if key==component:result[flag]=not result[flag]
         monkeypatch.setattr(consumer,'require_primary',lambda *args,result=result:result)
     with pytest.raises(ValueError):proof.require_primary(before,controlled_primary())
@@ -261,11 +263,11 @@ def test_joint_admission_calls_each_independent_component_with_the_identical_pri
         def require(model,actual,key=key):
             assert model is before and actual is record;seen.append(key)
             return dict({proof.COMPONENT_FLAGS[key]:True,'no_selected_datum_access':True,
-                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}),**(uptight_RAM3348_flags() if key=='curve_scale_caller_withdrawal_paths' else {}))
+                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}),**(uptight_RAM3348_flags() if key=='curve_scale_caller_withdrawal_paths' else {}),**(clamp_latch_flags() if key=='clamp_latch_caller_withdrawal_paths' else {}),**(paired_word_sum_flags() if key=='paired_word_curve_sum_withdrawal_paths' else {}))
         monkeypatch.setattr(consumer,'require_primary',require)
     result=proof.require_primary(before,record)
-    assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths'}
-    assert len(seen)==27 and len(result['original_claims'])==127
+    assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths','clamp_latch_caller_withdrawal_paths','paired_word_curve_sum_withdrawal_paths'}
+    assert len(seen)==29 and len(result['original_claims'])==127
 
 
 def test_changed_existing_physical_namespace_cannot_be_hidden_by_withdrawal_admission(models,monkeypatch):
@@ -1928,7 +1930,7 @@ def test_historical_postimage_restoration_requires_the_complete_current_shared_o
 def test_restore16aa_preserves_all125_prior_records_and67_functions_and_the_actual_native_writer():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_restore16aa_boundary(declared)
     assert len(declared['reference'])==127 and len(declared['function'])==68
-    assert contract.digest(declared['reference'][:125])==contract.PRIOR_RESTORE16AA_REFERENCE_SHA256
+    assert contract.digest(contract.paired_word_sum_prior_current_rows(declared,125))==contract.PRIOR_RESTORE16AA_REFERENCE_SHA256
     assert contract.digest(declared['function'][:67])==contract.PRIOR_RESTORE16AA_FUNCTION_SHA256
     row=declared['reference'][125]
     before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
@@ -1975,8 +1977,8 @@ def test_restore16aa_owning_binding_requires_the_exact_primary_direction_and_ful
 def test_restore1778_preserves_all126_records_and_all68_functions_and_actual_writer():
     declared=contract.descriptor(repo.ROOT);contract.require_prior_restore1778_boundary(declared)
     assert len(declared['reference'])==127 and len(declared['function'])==68
-    assert contract.digest(declared['reference'][:126])==contract.PRIOR_RESTORE1778_REFERENCE_SHA256
-    assert contract.digest(declared['function'])==contract.PRIOR_RESTORE1778_FUNCTION_SHA256
+    assert contract.digest(contract.paired_word_sum_prior_current_rows(declared,126))==contract.PRIOR_RESTORE1778_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:68])==contract.PRIOR_RESTORE1778_FUNCTION_SHA256
     row=declared['reference'][126];before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
     assert before['unit']==after['unit']=='RPM/25' and row['declared_width']==row['declared_signed']=='unset'
     expected=deepcopy(before)
@@ -2011,3 +2013,218 @@ def test_restore1778_owning_binding_requires_its_exact_primary_original_and_full
     assert proof.require_restore1778_result(result) is True
     result.pop(field)
     with pytest.raises(ValueError):proof.require_restore1778_result(result)
+
+
+def test_independent_clamp_latch_direct_reader_delta_retains_full_table_and_function_contexts():
+    value=contract.descriptor(repo.ROOT)
+    rows=[row for row in value['reference'] if row['component']=='clamp_latch_caller_withdrawal_paths']
+    assert len(rows)==1;row=rows[0]
+    assert row['original_claim_sha256']=='4193a93d663def7a0f8c62b6519e3909b5ae7523997ae08977dd9f3cbdb32951'
+    assert row['owner']=='nice-coucal/tbl' and row['function']==0x39316 and row['address']==0x15630
+    assert row['declared_width']==row['declared_signed']=='unset'
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    claim=json.loads(row['original_claim_json']);expected=deepcopy(before)
+    selected=[link for link in expected['link'] if (link['type'],link['to'])==('reader','nostalgic-sturgeon/fn')]
+    assert len(selected)==1;expected['link'].remove(selected[0]);removed=0
+    for marker in expected.get('ledger',()):
+        held=marker.get('dependency',[]);marker['dependency']=[item for item in held if not contract.selector(row,row['owner'],item)]
+        removed+=len(held)-len(marker['dependency'])
+        if not marker['dependency']:marker.pop('dependency')
+    assert removed==1 and expected==after
+    function=next(item for item in value['function'] if item['function']==0x39316)
+    assert contract.function_native_document(function,'proposed')==json.loads(function['original_native_json'])
+    assert not any(contract.selector(row,function['owner'],item) for marker in json.loads(function['original_native_json'])['ledger'] for item in marker.get('dependency',()))
+
+
+@pytest.mark.parametrize('fault',('summary','scale','unit','note','TEST','link-order','foreign-link','selector-order','new-field'))
+def test_full_independent_table_owner_guard_refuses_any_unrelated_native_change(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['reference'] if item['component']=='clamp_latch_caller_withdrawal_paths')
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','scale','unit'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='note':document.setdefault('note',[]).append('changed')
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='link-order':document['link'].reverse()
+        elif fault=='foreign-link':document['link'].pop(0)
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+@pytest.mark.parametrize('fault',('summary','role','block','symbol','TEST','selector','selector-order','new-field'))
+def test_full_independent_function_guard_keeps_all_downstream_RAM_and_source_contexts(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['function'] if item['function']==0x39316)
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','role','block'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='symbol':document['symbol'][0]['name']='changed'
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='selector':document['ledger'][0]['dependency'].pop()
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+def test_paired_word_curve_direct_reader_delta_keeps_exact_shared_owner_and_complete_function():
+    value=contract.descriptor(repo.ROOT)
+    rows=[row for row in value['reference'] if row['component']=='paired_word_curve_sum_withdrawal_paths']
+    assert len(rows)==1;row=rows[0]
+    assert row['original_claim_sha256']=='782329298a209bf40a282b98cc45b4be8e5a2ac28662ac911cedf461f885ba0b'
+    assert (row['owner'],row['address'],row['function'])==('rev_limit_throttle_cut/tbl',0x942C,0x72C3C)
+    assert row['declared_width']==row['declared_signed']=='unset'
+    claim=json.loads(row['original_claim_json'])
+    assert claim['type']=='reader' and claim['to']=='throttle_area_compositor/fn'
+    assert claim['props']=={'layouts':['7mfk'],'relies':'level','supports':'identity'}
+    assert claim['roles']==claim['evidence']==[] and claim['slot'] is claim['offset'] is None
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    assert before['cols']==1 and before['storage']=='uint16'
+    joint=[item for item in value['reference'] if item['owner']==row['owner']]
+    assert {item['id'] for item in joint}=={
+        '00070d82-0000942c-withdraw','000777fa-0000942c-withdraw',
+        '000cb1ca-0000942c-withdraw','00072c3c-0000942c-withdraw'}
+    expected=deepcopy(before);removed=0
+    for item in joint:
+        original=json.loads(item['original_claim_json'])
+        selected=[link for link in expected['link'] if (link['type'],link['to'])==(original['type'],original['to'])]
+        assert len(selected)==1;expected['link'].remove(selected[0])
+        for marker in expected.get('ledger',()):
+            held=marker.get('dependency',[])
+            marker['dependency']=[dependency for dependency in held if not contract.selector(item,row['owner'],dependency)]
+            removed+=len(held)-len(marker['dependency'])
+            if not marker['dependency']:marker.pop('dependency')
+    assert removed==4 and expected==after
+    assert all(item['original_native_json']==row['original_native_json'] and item['proposed_native_json']==row['proposed_native_json']
+        and item['proposed_native_sha256']==row['proposed_native_sha256'] for item in joint)
+    function=next(item for item in value['function'] if item['function']==0x72C3C)
+    assert contract.function_native_document(function,'proposed')==json.loads(function['original_native_json'])
+    assert not any(contract.selector(row,function['owner'],item)
+        for marker in json.loads(function['original_native_json'])['ledger'] for item in marker.get('dependency',()))
+
+
+def test_three_existing_shared_owner_records_change_only_their_exact_proposed_image_fields():
+    value=contract.descriptor(repo.ROOT)
+    fields={'proposed_native_json','proposed_native_sha256','proposed_ledger_json'}
+    pins={'00070d82-0000942c-withdraw': 'e7e8a2d89d6d8ba7b199e49d9c3c90623adfa064f26455419e3c414551dede8c', '000777fa-0000942c-withdraw': '2644c3dbecf557075d7613141569791caa9e090932649aa0eb31a9d112541c40', '000cb1ca-0000942c-withdraw': '5311172792324cc13c1e733db7375dffeb0ecc945f110a68b5ced3b7b5a6f0cc'}
+    rows={row['id']:row for row in value['reference'] if row['id'] in pins}
+    assert rows.keys()==pins.keys()
+    for identity,row in rows.items():
+        held={key:item for key,item in row.items() if key not in fields}
+        raw=json.dumps(held,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()
+        assert hashlib.sha256(raw).hexdigest()==pins[identity]
+
+
+@pytest.mark.parametrize('fault',('summary','scale','unit','note','TEST','link-order','foreign-link','selector-order','new-field'))
+def test_full_shared_scalar_owner_guard_refuses_any_unrelated_native_change(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['reference'] if item['component']=='paired_word_curve_sum_withdrawal_paths')
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','scale','unit'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='note':document.setdefault('note',[]).append('changed')
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='link-order':document['link'].reverse()
+        elif fault=='foreign-link':document['link'].pop(0)
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+@pytest.mark.parametrize('fault',('summary','role','block','symbol','TEST','selector','selector-order','new-field'))
+def test_full_complete_function_guard_keeps_all_downstream_RAM_and_source_contexts(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['function'] if item['function']==0x72C3C)
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','role','block'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='symbol':document['symbol'][0]['name']='changed'
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='selector':document['ledger'][0]['dependency'].pop()
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+def clamp_latch_flags():
+    return dict(complete_actual_absolute_calls=True,complete_unordered_byte_clamp=True,
+        complete_latch_and_word_refresh=True,complete_selected_table_interval_absence=True,
+        derived_RAM_and_producer_dependencies_preserved=True,
+        native_bindings=[dict(meaning='nice-coucal/tbl',function_meaning='nostalgic-sturgeon/fn',
+            original_claim_sha256=contract.CLAMP_LATCH_WITHDRAWAL[1])])
+
+
+def paired_word_sum_flags():
+    return dict(complete_actual_paired_word_curve_calls=True,complete_raw_axis_and_curve=True,
+        complete_two_saturated_word_publications=True,complete_local_word_carrier=True,
+        complete_selected_scalar_interval_absence=True,derived_request_and_area_dependencies_preserved=True,
+        complete_direct_helpers_same_primary=True,
+        native_bindings=[dict(meaning='rev_limit_throttle_cut/tbl',function_meaning='throttle_area_compositor/fn',
+            original_claim_sha256=contract.PAIRED_WORD_SUM_WITHDRAWAL[1])])
+
+
+def test_clamp_and_paired_word_package_preserves_all127_prior_records_and68_functions():
+    declared=contract.descriptor(repo.ROOT)
+    contract.require_clamp_latch_and_paired_word_boundary(repo.ROOT,declared)
+    assert contract.digest(contract.paired_word_sum_prior_current_rows(declared,127))==contract.PRIOR_CLAMP_PAIRED_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:68])==contract.PRIOR_CLAMP_PAIRED_FUNCTION_SHA256
+    assert len(declared['reference'])==129 and len(declared['function'])==70
+    assert proof.require_clamp_latch_result(clamp_latch_flags()) is True
+    assert proof.require_paired_word_sum_result(paired_word_sum_flags()) is True
+
+
+@pytest.mark.parametrize('fault',('prior-record','prior-function','new-function','clamp-original','paired-original',
+    'clamp-width','paired-signed','shared-postimage','one-shared-record','clamp-producer'))
+def test_clamp_and_paired_word_package_refuses_changed_full_native_boundaries(fault):
+    declared=deepcopy(contract.descriptor(repo.ROOT))
+    if fault=='prior-record':declared['reference'][4]['source']+='-changed'
+    elif fault=='prior-function':declared['function'][67]['source']+='-changed'
+    elif fault=='new-function':declared['function'][69]['source']+='-changed'
+    elif fault=='clamp-original':declared['reference'][127]['original_claim_sha256']='0'*64
+    elif fault=='paired-original':declared['reference'][128]['original_claim_sha256']='0'*64
+    elif fault=='clamp-width':declared['reference'][127]['declared_width']=16
+    elif fault=='paired-signed':declared['reference'][128]['declared_signed']=False
+    elif fault=='one-shared-record':
+        row=next(row for row in declared['reference'] if row['id']==contract.PAIRED_WORD_SUM_PRIOR_SHARED_IDS[0])
+        row['proposed_native_sha256']='0'*64
+    elif fault=='shared-postimage':
+        for row in declared['reference']:
+            if row['owner']=='rev_limit_throttle_cut/tbl':row['proposed_native_sha256']='0'*64
+    else:
+        row=declared['reference'][127];native=json.loads(row['proposed_native_json'])
+        native['link']=[link for link in native['link'] if link['to']!='base_fuel_schedule_producer/fn']
+        row['proposed_native_json']=json.dumps(native)
+    with pytest.raises(ValueError):contract.require_clamp_latch_and_paired_word_boundary(repo.ROOT,declared)
+
+
+@pytest.mark.parametrize('helper,require',((clamp_latch_flags,proof.require_clamp_latch_result),
+    (paired_word_sum_flags,proof.require_paired_word_sum_result)))
+@pytest.mark.parametrize('fault',('missing','extra','owner','function','original'))
+def test_independent_caller_owning_binding_refuses_other_native_identity(helper,require,fault):
+    result=helper()
+    if fault=='missing':result['native_bindings']=[]
+    elif fault=='extra':result['native_bindings'].append(deepcopy(result['native_bindings'][0]))
+    else:
+        field={'owner':'meaning','function':'function_meaning','original':'original_claim_sha256'}[fault]
+        result['native_bindings'][0][field]='changed'
+    with pytest.raises(ValueError):require(result)

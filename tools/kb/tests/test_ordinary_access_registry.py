@@ -229,3 +229,22 @@ def test_the_complete_primary_requires_every_registered_capture_without_granting
     elif fault=='empty':packet[component]={}
     else:packet[component]=[dict(controlled_only=True)]
     with pytest.raises(ValueError):registry.require_captures(packet)
+
+
+def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep_independent_consumers():
+    family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
+    expected=(('clamp_latch_caller_withdrawal_paths','clamp_latch_caller_withdrawal_capture'),
+              ('paired_word_curve_sum_withdrawal_paths','paired_word_curve_sum_withdrawal_capture'))
+    assert family.captures[-2:]==expected
+    assert len(family.captures)==29
+    assert family.withdrawal_only is True and family.direct_owning is False
+    consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
+    assert consumers[0] is not consumers[1]
+    for component,producer in expected:
+        stem=component.removesuffix('_paths')
+        assert f'tools/sh-elf-run/{producer}.py' in family.source_files
+        for suffix in ('contract','matrix','semantics','transfers','capture_evidence'):
+            assert f'tools/kb/src/kb/{stem}_{suffix}.py' in family.source_files
+        row,=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']==component]
+        item=dict(kind='indirect',mode=family.mode,path=family.contract.DESCRIPTOR,key=family.contract.PREFIX+row['id'])
+        assert registry.matching(item)==(family,)
