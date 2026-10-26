@@ -361,8 +361,8 @@ def _explicit_terminal(item):
 
 
 def homology(model, *, subjects=None):
-    """File-owned symbols reach an anchor through verified identity or homology
-    evidence (section 7.3). Every typed base, test, and context item of a symbol holds,
+    """File-owned symbols need anchors except explicit candidate identities.
+    Every typed base, test, and context item of a symbol holds,
     including ledger-owned symbols; other ledger items retain their scope.
     Typed evidence of a named bit holds for the symbol of its layout.
 
@@ -398,7 +398,8 @@ def homology(model, *, subjects=None):
             failure = match.verify(model, symbol, item)
             if failure:
                 issues.append(Issue("homology", path, key.key, f"{_item(item)}: {failure}"))
-        if key in owned and ranks[key][0] < match.CANDIDATE:
+        if (key in owned and ranks[key][0] < match.CANDIDATE
+                and symbol.value("level") != "candidate"):
             issues.append(Issue("homology", path, key.key,
                                 "neither an anchor nor homologous to one: no identity evidence "
                                 "of its layout grounds it, and no verified homology evidence "

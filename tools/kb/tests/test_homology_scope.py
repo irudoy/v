@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from kb import checks, compile, match, repo
+from kb import checks, compile, levels, match, repo
 from kb.model import Issue, SymbolKey
 from tools.kb.tests import test_match as support
 from tools.kb.tests import writer_sources
@@ -35,6 +35,59 @@ def filtered(model, subjects):
     selected = checks.homology(model, subjects=subjects)
     assert selected == [issue for issue in full if issue.subject in subjects]
     return selected
+
+
+def unanchored_model(props=None, *, on_meaning=False, evidence=None):
+    model = controlled_model()
+    symbol = model.symbols[DONOR]
+    symbol.evidence = deepcopy(evidence if evidence is not None else [{
+        'kind': 'test', 'path': THIS_TEST,
+        'key': 'test_explicit_candidate_without_anchor_retains_evidence'}])
+    (symbol.meaning.props if on_meaning else symbol.props).update(props or {})
+    return model, symbol
+
+
+@pytest.mark.parametrize('on_meaning', (False, True))
+def test_explicit_candidate_without_anchor_retains_evidence(on_meaning):
+    model, symbol = unanchored_model({'level': 'candidate'}, on_meaning=on_meaning)
+    evidence = deepcopy(symbol.evidence)
+    assert symbol.value('level') == 'candidate'
+    assert match.grounded(model, [symbol.key])[symbol.key][0] == -1
+    assert filtered(model, {symbol.key.key}) == []
+    assert symbol.evidence == evidence and 'supports' not in symbol.evidence[0]
+    assert match.rank(symbol.evidence[0], symbol, model, 'identity') == -1
+
+
+@pytest.mark.parametrize('props', ({}, {'level': 'code'}, {'scale_level': 'candidate'}))
+def test_only_an_explicit_identity_candidate_is_exempt_from_the_anchor(props):
+    model, symbol = unanchored_model(props)
+    issues = filtered(model, {symbol.key.key})
+    assert any('neither an anchor nor homologous' in issue.message for issue in issues)
+    if props.get('level') == 'code':
+        assert any('identity level code lacks grounding' in issue.message
+                   for issue in levels.check(model, subjects={symbol.key.key}))
+
+
+@pytest.mark.parametrize('item', (MISSING, {**EDGE, 'at': 'not-a-location'}))
+def test_candidate_retains_invalid_terminal_and_homology_failures(item):
+    model, symbol = unanchored_model({'level': 'candidate'}, evidence=[item])
+    failure = match.verify(model, symbol, item)
+    assert failure
+    assert any(failure in issue.message for issue in filtered(model, {symbol.key.key}))
+
+
+def test_candidate_retains_bit_evidence_failures():
+    model, symbol = unanchored_model({'level': 'candidate'})
+    symbol.props['bit'] = [{'name': 'held', 'bit': 0,
+                            'evidence': [{**MISSING, 'at': symbol.key.location}]}]
+    assert any(' bit held' in issue.subject and 'defines no function' in issue.message
+               for issue in checks.homology(model))
+
+
+def test_empty_candidate_still_needs_evidence_under_the_level_gate():
+    model, symbol = unanchored_model({'level': 'candidate'}, evidence=[])
+    assert any('identity level candidate lacks evidence' in issue.message
+               for issue in levels.check(model, subjects={symbol.key.key}))
 
 
 def test_default_full_retains_complete_issue_records_and_order():
@@ -162,12 +215,19 @@ def test_same_complete_native_model_retains_non_owned_terminal_failure(native_mo
 
 def test_same_complete_native_model_retains_external_donor_failure(native_model):
     owner, donor = native_model.symbols[OWNER], native_model.symbols[DONOR]
-    before = owner.evidence, donor.evidence
+    before = owner.evidence, donor.evidence, owner.props
+    meanings = {id(symbol.meaning): symbol.meaning for symbol in (owner, donor)}
+    links = [(meaning, meaning.links) for meaning in meanings.values()]
     try:
+        owner.props = {**owner.props, 'level': 'code'}
+        for meaning, _ in links:
+            meaning.links = []
         owner.evidence, donor.evidence = [deepcopy(EDGE)], [deepcopy(ANCHOR)]
         assert filtered(native_model, {OWNER.key}) == []
         donor.evidence = []
         issues = filtered(native_model, {OWNER.key})
         assert len(issues) == 1 and 'neither an anchor nor homologous' in issues[0].message
     finally:
-        owner.evidence, donor.evidence = before
+        owner.evidence, donor.evidence, owner.props = before
+        for meaning, original in links:
+            meaning.links = original
