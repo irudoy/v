@@ -10,14 +10,16 @@ retains its own calibration, identity, capabilities, and checksum layout.
 Compatible unpatched inputs retain their calibration and configuration. A
 complete current or historical composition may also be rebuilt: all alternate
 map bytes are preserved while every builder-owned executable span, hook,
-diagnostic pointer, configuration record, and checksum is regenerated. Unknown
-or partial patch states are rejected before an output is written.
+diagnostic pointer, configuration record, and checksum is regenerated. A
+current-schema configuration that differs from the built-in profile requires
+an explicit replacement profile. Unknown or partial patch states are rejected
+before an output is written.
 """
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from functools import lru_cache
 import hashlib
 from itertools import chain
@@ -327,6 +329,9 @@ class BuildResult:
     detection: str
     input_state: str
     profile: Profile
+    input_configuration: bytes
+    input_telemetry_configuration: bytes
+    input_telemetry_mailbox_record: bytes
     configuration: bytes
     telemetry_configuration: bytes
     telemetry_mailbox_record: bytes
@@ -1079,6 +1084,9 @@ def _normalize_runtime(source, source_name, target):
         source[offset] == stock[offset] for offset in component_offsets
     )
     saved_copies = None
+    input_configuration = b""
+    input_telemetry_configuration = b""
+    input_telemetry_mailbox_record = b""
     if is_unpatched:
         input_state = "compatible-base"
     else:
@@ -1109,6 +1117,16 @@ def _normalize_runtime(source, source_name, target):
                 "over the current lower runtime endpoint"
             )
         saved_copies = _capture_map_copies(source, map_layout)
+        if launch_layout is not None and rolling_state != "absent":
+            input_configuration = source[
+                launch_layout.configuration.start : launch_layout.configuration.end
+            ]
+        if telemetry_state == "current":
+            input_telemetry_configuration = source[
+                telemetry_layout.configuration.start : telemetry_layout.configuration.end
+            ]
+            record = telemetry_layout.mailbox_record_address
+            input_telemetry_mailbox_record = source[record : record + 4]
         input_state = "complete-runtime-migration"
 
     normalized = bytearray(source)
@@ -1139,6 +1157,9 @@ def _normalize_runtime(source, source_name, target):
         component_offsets,
         stock_image,
         checksum_layout,
+        input_configuration,
+        input_telemetry_configuration,
+        input_telemetry_mailbox_record,
     )
 
 
@@ -1220,6 +1241,36 @@ def _validate_preservation(
     return len(changed), len(permitted), len(changed & checksum_offsets)
 
 
+def _require_profile_for_changed_settings(profile, launch_data, telemetry_data):
+    current_launch = None
+    if launch_data:
+        calibration = rolling_launch.Calibration.from_bytes(launch_data)
+        # Older schemas have their own endpoint validation and no current fields.
+        if calibration.is_valid():
+            current_launch = calibration
+    current_telemetry = (
+        can_telemetry.Configuration.from_bytes(telemetry_data)
+        if telemetry_data else None
+    )
+    changed = []
+    for component, current, expected in (
+        ("rolling_launch", current_launch, profile.calibration),
+        ("can_telemetry", current_telemetry, profile.telemetry),
+    ):
+        if current is not None:
+            changed.extend(
+                f"{component}.{name}"
+                for name, value in asdict(current).items()
+                if value != getattr(expected, name)
+            )
+    if changed:
+        raise BuildError(
+            "input runtime settings differ from the built-in profile: "
+            + ", ".join(changed)
+            + "; supply --profile to explicitly replace these settings"
+        )
+
+
 def build_image(
     source,
     *,
@@ -1231,7 +1282,9 @@ def build_image(
     source = bytes(source)
     selected_rom, detection = select_rom(source, rom)
     context = _series_context(selected_rom)
-    profile = profile or builtin_profile(context.key)
+    profile_supplied = profile is not None
+    if not profile_supplied:
+        profile = builtin_profile(context.key)
     if not isinstance(profile, Profile):
         raise BuildError("profile must be a build_rom.Profile")
     if profile.rom not in (selected_rom, context.key):
@@ -1268,9 +1321,16 @@ def build_image(
             component_offsets,
             stock_image,
             checksum_layout,
+            input_configuration,
+            input_telemetry_configuration,
+            input_telemetry_mailbox_record,
         ) = _normalize_runtime(
             source, source_name, target
         )
+        if not profile_supplied:
+            _require_profile_for_changed_settings(
+                profile, input_configuration, input_telemetry_configuration
+            )
 
         map_result = apply_map_switching.patch_image(
             normalized,
@@ -1354,6 +1414,9 @@ def build_image(
         detection=detection,
         input_state=input_state,
         profile=profile,
+        input_configuration=input_configuration,
+        input_telemetry_configuration=input_telemetry_configuration,
+        input_telemetry_mailbox_record=input_telemetry_mailbox_record,
         configuration=(
             b"" if launch_result is None else launch_result.configuration
         ),
@@ -1395,6 +1458,24 @@ def _checksum_dict(values):
     return {name: value for name, value in values.items()}
 
 
+def _runtime_configuration_data(launch_data, telemetry_data, mailbox_record):
+    launch = None
+    if launch_data:
+        calibration = rolling_launch.Calibration.from_bytes(launch_data)
+        settings = asdict(calibration) if calibration.is_valid() else None
+        if settings is not None:
+            settings["mode"] = rolling_launch.Mode(calibration.mode).name
+        launch = {"configuration_hex": launch_data.hex(), "settings": settings}
+    telemetry = None
+    if telemetry_data:
+        telemetry = {
+            "configuration_hex": telemetry_data.hex(),
+            "mailbox_record_hex": mailbox_record.hex(),
+            "settings": asdict(can_telemetry.Configuration.from_bytes(telemetry_data)),
+        }
+    return {"rolling_launch": launch, "can_telemetry": telemetry}
+
+
 def manifest_data(result, input_path, output_path):
     """Return the deterministic JSON manifest payload for one output."""
     calibration = result.profile.calibration
@@ -1409,6 +1490,11 @@ def manifest_data(result, input_path, output_path):
             "state": result.input_state,
             "sha256": result.source_sha256,
             "checksums": _checksum_dict(result.source_checksums),
+            "configuration": _runtime_configuration_data(
+                result.input_configuration,
+                result.input_telemetry_configuration,
+                result.input_telemetry_mailbox_record,
+            ),
         },
         "profile": {
             "name": result.profile.name,
@@ -1444,6 +1530,11 @@ def manifest_data(result, input_path, output_path):
             "md5": result.output_md5,
             "checksums": _checksum_dict(result.output_checksums),
             "hardware_status": "UNTESTED",
+            "configuration": _runtime_configuration_data(
+                result.configuration,
+                result.telemetry_configuration,
+                result.telemetry_mailbox_record,
+            ),
         },
         "audit": {
             "changed_bytes": result.changed_bytes,

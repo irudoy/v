@@ -357,8 +357,8 @@ range. These static results establish software ownership only; JK78C remains
 
 ## Rolling Launch profile
 
-Without `--profile`, a Rolling Launch-capable target uses the conservative
-built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
+For an unpatched input without `--profile`, a Rolling Launch-capable target
+uses the conservative built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
 ignition retard disabled. A VQ37 target installs its complete Rolling Launch
 stage with the built-in `observe` profile and no enabled maps. A separate local
 TOML file can enable RPM Hold or bounded-retard mode on any registered family:
@@ -417,6 +417,15 @@ configured minimum, at least twice the effective hysteresis, and no wider than
 the RPM offset.
 Concrete profiles remain local and are not versioned.
 
+A rebuild without `--profile` requires the validated current-schema Rolling
+Launch and CAN telemetry settings to match the built-in profile. Differences
+stop the build before composition and list qualified field names, such as
+`rolling_launch.enable_mask` or `can_telemetry.enabled`. Disabling Map 1 RPM
+Hold through an editor therefore requires an explicit profile for a rebuild
+that would otherwise enable it. Supply `--profile` to intentionally replace
+the input settings; its values define the complete output configuration.
+Registered older configuration schemas retain their existing migration behavior.
+
 ## CAN telemetry profile
 
 The optional `[can_telemetry]` table is strict: all four fields are required
@@ -467,3 +476,10 @@ checksum values, write-set counts, and exact instruction audit counts. Manifest
 schema 3 records both the series and exact member. Every new image is marked
 `hardware_status=UNTESTED`; software verification does not make it eligible for
 flashing without target-specific bench and vehicle gates.
+
+`input.configuration` and `output.configuration` contain the Rolling Launch
+and CAN telemetry records, their decoded current-schema settings, and the
+telemetry mailbox record. An absent runtime is `null`. A registered historical
+Rolling Launch record exposes its original bytes with `settings = null` when
+the current schema cannot decode it as valid; it is not represented as current
+settings. The `profile` section describes the selected output profile.

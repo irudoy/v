@@ -1,5 +1,7 @@
 import ast
+import contextlib
 from dataclasses import replace
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -440,6 +442,132 @@ class BuildRomTest(unittest.TestCase):
         self.assertGreater(result.preserved_map_copy_bytes, 0)
         self.assertTrue(checksums.verify(result.data).valid)
 
+    def edited_runtime(self, rom, *, rolling=False, telemetry=False):
+        original = (
+            self.family_results[rom]
+            if rom in self.family_results else self.relocated_results[rom]
+        )
+        target = runtime_targets.load_runtime_target(rom)
+        edited = bytearray(original.data)
+        if rolling:
+            start = target.rolling_layout.configuration.start
+            # Editor fields in the current 32-byte Rolling Launch record.
+            edited[start + 3] = rolling_launch.Mode.RPM_HOLD
+            edited[start + 4] = 0x02  # Map 1 disabled, Map 2 enabled.
+            edited[start + 8] = 0  # Vehicle-speed activation gate disabled.
+            edited[start + 18 : start + 20] = (301).to_bytes(2, "big")
+            edited[start + 22] = 114  # Map 1 target command.
+        if telemetry:
+            layout = target.telemetry_layout
+            start = layout.configuration.start
+            # Editor fields in the current 16-byte telemetry record.
+            edited[start + 3] = 1  # Enable sampling after reset.
+            edited[start + 6] = 7  # Snapshot divisor.
+            edited[start + 8 : start + 10] = (0x6E0).to_bytes(2, "big")
+            configuration = can_telemetry.Configuration.from_bytes(
+                edited[start : layout.configuration.end]
+            )
+            record = layout.mailbox_record_address
+            edited[record : record + 4] = configuration.mailbox_record()
+        return bytes(rom_checksums.recalculate(edited, target.checksum_layout))
+
+    def test_rebuild_requires_a_profile_for_edited_runtime_settings(self):
+        for rom in ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B"):
+            for component in ("rolling", "telemetry"):
+                with self.subTest(rom=rom, component=component):
+                    source = self.edited_runtime(rom, **{component: True})
+                    with self.assertRaises(build_rom.BuildError) as error:
+                        build_rom.build_image(source)
+                    message = str(error.exception)
+                    self.assertIn("--profile", message)
+                    if component == "rolling":
+                        for field in ("enable_mask", "min_speed",
+                                      "run_timeout_ticks", "target_commands"):
+                            self.assertIn(f"rolling_launch.{field}", message)
+                        self.assertNotIn("can_telemetry.", message)
+                    else:
+                        for field in ("enabled", "can_id", "tick_divisor"):
+                            self.assertIn(f"can_telemetry.{field}", message)
+                        self.assertNotIn("rolling_launch.", message)
+
+    def test_no_profile_rejects_the_editor_disabling_only_map1_rpm_hold(self):
+        for rom in ("JK08A", "JK00C"):
+            with self.subTest(rom=rom):
+                original = (
+                    self.family_results[rom]
+                    if rom in self.family_results else self.relocated_results[rom]
+                )
+                target = runtime_targets.load_runtime_target(rom)
+                edited = bytearray(original.data)
+                start = target.rolling_layout.configuration.start
+                self.assertEqual(edited[start + 3], rolling_launch.Mode.RPM_HOLD)
+                self.assertEqual(edited[start + 4] & 1, 1)
+                edited[start + 4] &= ~1
+                source = rom_checksums.recalculate(edited, target.checksum_layout)
+                with mock.patch.object(build_rom.apply_map_switching, "patch_image") as compose:
+                    with self.assertRaisesRegex(build_rom.BuildError, "rolling_launch.enable_mask"):
+                        build_rom.build_image(source)
+                compose.assert_not_called()
+
+    def test_explicit_profile_replaces_edited_settings_and_records_both_sides(self):
+        for rom in ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B"):
+            with self.subTest(rom=rom):
+                source = self.edited_runtime(rom, rolling=True, telemetry=True)
+                target = runtime_targets.load_runtime_target(rom)
+                profile = build_rom.builtin_profile(target.family)
+                result = build_rom.build_image(source, profile=profile)
+                manifest = build_rom.manifest_data(result, "input.bin", "output.bin")
+                before = manifest["input"]["configuration"]
+                after = manifest["output"]["configuration"]
+                launch = target.rolling_layout.configuration
+                telemetry = target.telemetry_layout.configuration
+                self.assertEqual(before["rolling_launch"]["configuration_hex"],
+                                 source[launch.start : launch.end].hex())
+                self.assertEqual(before["can_telemetry"]["configuration_hex"],
+                                 source[telemetry.start : telemetry.end].hex())
+                record = target.telemetry_layout.mailbox_record_address
+                self.assertEqual(before["can_telemetry"]["mailbox_record_hex"],
+                                 source[record : record + 4].hex())
+                self.assertEqual(before["rolling_launch"]["settings"]["mode"],
+                                 "RPM_HOLD")
+                self.assertEqual(before["rolling_launch"]["settings"]["enable_mask"], 2)
+                self.assertEqual(before["rolling_launch"]["settings"]["min_speed"], 0)
+                self.assertEqual(before["can_telemetry"]["settings"], {
+                    "enabled": True, "can_id": 0x6E0,
+                    "profile": "tuning", "tick_divisor": 7,
+                })
+                self.assertEqual(after["rolling_launch"]["configuration_hex"],
+                                 result.configuration.hex())
+                self.assertEqual(after["can_telemetry"]["configuration_hex"],
+                                 result.telemetry_configuration.hex())
+                self.assertEqual(after["rolling_launch"]["settings"]["enable_mask"],
+                                 profile.calibration.enable_mask)
+                self.assertEqual(after["can_telemetry"]["settings"], {
+                    "enabled": False, "can_id": 0x6F0,
+                    "profile": "tuning", "tick_divisor": 1,
+                })
+                self.assertEqual(after["can_telemetry"]["mailbox_record_hex"],
+                                 result.telemetry_mailbox_record.hex())
+                self.assertEqual(result.configuration, profile.calibration.to_bytes())
+                self.assertEqual(result.telemetry_configuration, profile.telemetry.to_bytes())
+                self.assertTrue(rom_checksums.verify(result.data, target.checksum_layout).valid)
+
+    def test_cli_refuses_edited_settings_before_writing_any_artifact(self):
+        source = self.edited_runtime("JK08A", rolling=True, telemetry=True)
+        with tempfile.TemporaryDirectory() as directory:
+            input_path = Path(directory) / "input.bin"
+            output_path = Path(directory) / "output.bin"
+            input_path.write_bytes(source)
+            error = io.StringIO()
+            with contextlib.redirect_stderr(error), self.assertRaises(SystemExit) as stopped:
+                build_rom.main([str(input_path), "--output", str(output_path)])
+            self.assertEqual(stopped.exception.code, 2)
+            self.assertIn("rolling_launch.enable_mask", error.getvalue())
+            self.assertIn("can_telemetry.enabled", error.getvalue())
+            self.assertIn("--profile", error.getvalue())
+            self.assertEqual(list(Path(directory).iterdir()), [input_path])
+            self.assertEqual(input_path.read_bytes(), source)
+
     def test_state_6_feedback_endpoints_can_be_migrated(self):
         engine = self.map_layout.assembly_unit_by_key[
             "cruise_feedback_engine"
@@ -622,6 +750,12 @@ class BuildRomTest(unittest.TestCase):
             result.configuration,
             build_rom.builtin_profile().calibration.to_bytes(),
         )
+        manifest = build_rom.manifest_data(result, "historical.bin", "output.bin")
+        before = manifest["input"]["configuration"]
+        self.assertEqual(before["rolling_launch"]["configuration_hex"],
+                         historical[0xD3F60 : 0xD3F80].hex())
+        self.assertIsNone(before["rolling_launch"]["settings"])
+        self.assertIsNone(before["can_telemetry"])
 
     def test_partial_and_unknown_rolling_states_are_rejected(self):
         layout = rolling_launch_layout.load_layout()
@@ -836,6 +970,11 @@ class BuildRomTest(unittest.TestCase):
             self.assertEqual(manifest["schema_version"], 3)
             self.assertEqual(manifest["series"], build_rom.ROM_SERIES)
             self.assertEqual(manifest["rom"], "JK08A")
+            self.assertEqual(manifest["input"]["configuration"], {
+                "rolling_launch": None, "can_telemetry": None,
+            })
+            self.assertEqual(manifest["output"]["configuration"]["rolling_launch"]
+                             ["configuration_hex"], self.base_result.configuration.hex())
             self.assertEqual(
                 manifest["output"]["hardware_status"], "UNTESTED"
             )
