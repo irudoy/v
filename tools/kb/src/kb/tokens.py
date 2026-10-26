@@ -10,6 +10,8 @@ from dataclasses import dataclass
 import keyword
 import re
 
+from kb import evidence_ref
+
 DEPENDENCY = ("consumer", "writes", "indexed_by", "selector", "threshold", "from_map",
               "homolog", "trace", "base", "match")
 TYPED_TERMINAL = ("indirect_base", "test")
@@ -81,11 +83,17 @@ def _typed_value(role, value, text):
         if found is None:
             raise TokenError(f"token {text!r}: expected indirect_base:<address>+<offset>")
         return found.group(1), int(found.group(2), 16 if found.group(2).startswith("0x") else 10)
-    found = TEST.fullmatch(value)
+    error = f"token {text!r}: expected test:<safe-relative-python-path>#<function>"
+    try:
+        archive = evidence_ref.parse(value)
+    except ValueError as cause:
+        raise TokenError(error) from cause
+    locator = f"{archive.path}#{archive.fragment or ''}" if archive is not None else value
+    found = TEST.fullmatch(locator)
     if (found is None or any(part in (".", "..") for part in found.group(1).split("/"))
             or keyword.iskeyword(found.group(2))):
-        raise TokenError(f"token {text!r}: expected test:<safe-relative-python-path>#<function>")
-    return found.group(1), found.group(2)
+        raise TokenError(error)
+    return value.rpartition("#")[0], found.group(2)
 
 
 def parse(text):

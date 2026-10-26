@@ -7,7 +7,6 @@ Memgraph is not imported here: the loader and unit tests use the same model.
 """
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
-import keyword
 import re
 
 LEVELS = ("pattern", "candidate", "code", "silicon")
@@ -44,7 +43,6 @@ VOCAB = frozenset(EDGE_ROLES) | TERMINAL | PROCESS
 ADDR_RE = re.compile(r"^[0-9a-f]{8}$")
 EDGE_REF_RE = re.compile(r"^([0-9a-f]{8})(?:\+(?:0x[0-9a-f]+|\d+))?$")
 INDIRECT_BASE_RE = re.compile(r"([0-9a-f]{8})\+(0x[0-9a-f]+|[0-9]+)")
-TEST_RE = re.compile(r"((?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.py)#([A-Za-z_][A-Za-z0-9_]*)")
 ROM_CONST_SCALAR = r"(?:-?\d+|0x[0-9a-f]+|[0-9a-f]+)"
 ROM_CONST_BINDING_RE = re.compile(
     rf"^([0-9a-f]{{8}})=(?:{ROM_CONST_SCALAR}|\d+(?:\*\d+)+|"
@@ -266,12 +264,11 @@ def parse_evidence(text, source_prop, context="evidence"):
                     f"{context}: expected indirect_base:<address>+<offset>: {raw!r}"
                 )
             if role == "test":
-                found = TEST_RE.fullmatch(value)
-                if (found is None or any(part in (".", "..") for part in found.group(1).split("/"))
-                        or keyword.iskeyword(found.group(2))):
-                    raise ProvenanceError(
-                        f"{context}: expected test:<safe-relative-python-path>#<function>: {raw!r}"
-                    )
+                from kb.tokens import TokenError, _typed_value
+                try:
+                    _typed_value(role, value, raw)
+                except TokenError as error:
+                    raise ProvenanceError(f"{context}: {error}") from error
             token = EvidenceToken(source_prop, role, value)
         if token in seen:
             raise ProvenanceError(f"{context}: duplicate evidence token {raw!r}")

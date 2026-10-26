@@ -6,6 +6,9 @@ from kb import repo, tokens
 from kb.adapters import ledgers
 
 MANUAL = repo.config()["tokens"]["manual"]
+ARCHIVE_PATH = ("git:archive/stock-proofs-2026-10-26:"
+                "tools/mapkit/tests/test_candidate_identity_paths.py")
+ARCHIVE_TEST = f"test:{ARCHIVE_PATH}#test_749bc_direct_lookup_and_arbitration"
 EXPLICIT = (
     "indirect_base:0004ec9e+2",
     "indirect_base:0004ec9e+0x2",
@@ -42,6 +45,45 @@ def legacy_provenance():
 
 
 class GrammarTest(unittest.TestCase):
+    def test_archive_test_round_trip_retains_passive_locator_and_function(self):
+        from kb import ledger_projection, match
+        item = {"kind": "test", "path": ARCHIVE_PATH,
+                "key": "test_749bc_direct_lookup_and_arbitration"}
+        text = ledger_projection.terminal(None, None, item)
+        self.assertEqual(text, ARCHIVE_TEST)
+        [token] = tokens.parse(text)
+        self.assertEqual(tokens.evidence(token, "7mfk", MANUAL), item)
+        self.assertEqual(tokens.canonical(text), text)
+        provenance = legacy_provenance()
+        [legacy] = provenance.parse_evidence(text, "confidence")
+        self.assertEqual(provenance.format_evidence_token(legacy), text)
+        self.assertTrue(match.passive(item))
+        self.assertEqual(match.rank(item), -1)
+
+    def test_archive_test_keeps_the_python_path_and_function_refusals(self):
+        provenance = legacy_provenance()
+        for invalid in INVALID_EXPLICIT:
+            if not invalid.startswith("test:"):
+                continue
+            text = "test:git:archive/stock-proofs-2026-10-26:" + invalid.removeprefix("test:")
+            with self.subTest(text=text):
+                with self.assertRaises(tokens.TokenError):
+                    tokens.parse(text)
+                with self.assertRaises(provenance.ProvenanceError):
+                    provenance.parse_evidence(text, "confidence")
+
+    def test_archive_test_refuses_malformed_git_locators(self):
+        provenance = legacy_provenance()
+        for value in ("git::file.py#test_path", "git:bad..tag:file.py#test_path",
+                      "git:tag.lock:file.py#test_path", "git:tag:file.py",
+                      "git:tag:file.py#test_path#other"):
+            text = "test:" + value
+            with self.subTest(text=text):
+                with self.assertRaises(tokens.TokenError):
+                    tokens.parse(text)
+                with self.assertRaises(provenance.ProvenanceError):
+                    provenance.parse_evidence(text, "confidence")
+
     def test_a_dependency_names_address_offset_and_property(self):
         [token] = tokens.parse("base:ffff128c+0x10@structural")
         self.assertEqual((token.role, token.address, token.offset, token.relies),
