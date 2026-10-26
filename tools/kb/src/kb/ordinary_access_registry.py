@@ -1720,7 +1720,15 @@ FAMILIES = (
          'tools/kb/src/kb/width_view_matrix.py',
          'tools/kb/src/kb/ignition_literal_evidence.py',
          'tools/kb/src/kb/test_contract.py',
-         'tools/kb/src/kb/packed_transfer_evidence.py'),
+         'tools/kb/src/kb/packed_transfer_evidence.py',
+         'defs/JK08A.diagnostic-reset-helper-writer-claims.toml',
+         'defs/JK08A.diagnostic-reset-helper-writer.md',
+         'tools/kb/src/kb/diagnostic_reset_helper_writer_contract.py',
+         'tools/kb/src/kb/diagnostic_reset_helper_writer_transfers.py',
+         'tools/kb/src/kb/diagnostic_reset_helper_writer_capture_evidence.py',
+         'tools/kb/tests/test_diagnostic_reset_helper_writer_contract.py',
+         'tools/kb/tests/test_diagnostic_reset_helper_writer_capture_evidence.py',
+         'tools/kb/tests/test_diagnostic_reset_helper_writer_access.py'),
         direct_owning=True,owner_fallback=False,withdrawal_only=False),
 )
 

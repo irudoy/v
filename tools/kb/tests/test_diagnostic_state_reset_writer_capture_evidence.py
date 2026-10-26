@@ -162,7 +162,7 @@ def original():
     model=compile.build(repo.ROOT);result=proof.require_primary(model,record)
     assert proof.require_owning_result(result) is True
     assert result['causal_inputs']==dict(raw_rom_8dfc=True,raw_rom_8dfd=True)
-    assert result['exact_diagnostic_state_reset_writer_paths'] is True and len(result['native_bindings'])==1
+    assert result['exact_diagnostic_state_reset_writer_paths'] is True and len(result['native_bindings'])==2
     return model,record,packet,result
 
 

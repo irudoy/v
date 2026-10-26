@@ -44,8 +44,9 @@ def test_one_append_preserves_full_owner_function_type_evidence_and_ledgers():
 
 @pytest.mark.parametrize('fault',('duplicate','reader-direction','other-target','scale-support','nonzero-store','forged-original','widened-native'))
 def test_normal_writer_requires_the_one_exact_complete_append(fault):
-    selected=row();op=contract.operation(selected);assert contract.operations([deepcopy(op)],repo.ROOT) is True
-    if fault=='duplicate':ops=[op,deepcopy(op)]
+    selected=row();all_ops=[contract.operation(value) for value in contract.descriptor(repo.ROOT)['reference']]
+    op=all_ops[0];assert contract.operations(deepcopy(all_ops),repo.ROOT) is True
+    if fault=='duplicate':ops=[*all_ops,deepcopy(op)]
     else:
         if fault=='reader-direction':op['type']='reader'
         elif fault=='other-target':op['to']='unrelated/fn'
@@ -53,7 +54,7 @@ def test_normal_writer_requires_the_one_exact_complete_append(fault):
         elif fault=='nonzero-store':op['evidence'][0]['value']['actual_constant_write']['value']=1
         elif fault=='widened-native':op['evidence'][0]['value']['native_storage'][0]['size']+=1
         else:op['evidence'][0]['value']['original_claim_sha256']='0'*64
-        ops=[op]
+        ops=all_ops
     with pytest.raises(ValueError):contract.operations(ops,repo.ROOT)
 
 
@@ -96,8 +97,10 @@ def result():
     return dict({flag:True for flag in proof.REQUIRED_FLAGS},**{flag:False for flag in proof.NON_ADMISSIONS},
         causal_inputs=dict(raw_rom_8dfc=True,raw_rom_8dfd=True),
         constant_writer_inputs=dict(gate_0_full_priors=True,gate_1_full_priors=True,exact_actual_zero_store=True),
-        native_bindings=[dict(symbol='7mfk-ffff99de/ram',meaning=selected['owner'],function='7mfk-0002e81a/fn',
-            function_meaning='amber-wildcat/fn',original_claim_sha256=selected['original_claim_sha256'])])
+        helper_constant_writer_inputs=dict(gate_0_full_priors=True,gate_1_full_priors=True,exact_actual_zero_store=True),
+        native_bindings=[dict(symbol=f"7mfk-{value['address']:08x}/ram",meaning=value['owner'],function=f"7mfk-{value['function']:08x}/fn",
+            function_meaning=json.loads(value['original_claim_json'])['to'],original_claim_sha256=value['original_claim_sha256'])
+            for value in contract.descriptor(repo.ROOT)['reference']])
 
 
 @pytest.mark.parametrize('flag',proof.REQUIRED_FLAGS)
@@ -127,15 +130,16 @@ def test_owning_boundary_binds_the_exact_original_and_both_kinds_of_publication_
 
 def test_transition_refuses_any_TEST_origin_or_evidence_position_change(monkeypatch):
     from kb import copy_evidence,injection_copy_evidence,coherent_copy_evidence,sid22_evidence
-    selected=row();before=SimpleNamespace(root=repo.ROOT,links=[link(json.loads(selected['original_claim_json']))])
-    after=SimpleNamespace(root=repo.ROOT,links=[link(json.loads(selected['proposed_claim_json']))])
-    monkeypatch.setattr(proof,'native_rows',lambda model:[selected])
+    selected=contract.descriptor(repo.ROOT)['reference']
+    before=SimpleNamespace(root=repo.ROOT,links=[link(json.loads(value['original_claim_json'])) for value in selected])
+    after=SimpleNamespace(root=repo.ROOT,links=[link(json.loads(value['proposed_claim_json'])) for value in selected])
+    monkeypatch.setattr(proof,'native_rows',lambda model:selected)
     monkeypatch.setattr(proof,'require_current',lambda model:True)
     for module in (copy_evidence,injection_copy_evidence,coherent_copy_evidence,sid22_evidence):
         monkeypatch.setattr(module,'scope_digest',lambda model:'unchanged-scope')
     origin=dict(owner='exact-source',position=7,evidence=['retained-item'])
     monkeypatch.setattr(test_origins,'index',lambda model:{'exact':SimpleNamespace(packet=lambda:deepcopy(origin))})
-    assert resolution.require_transition(before,after)==[selected]
+    assert resolution.require_transition(before,after)==selected
     monkeypatch.setattr(test_origins,'index',lambda model:{'exact':SimpleNamespace(packet=lambda:dict(origin,position=8 if model is after else 7))})
     with pytest.raises(ValueError):resolution.require_transition(before,after)
 

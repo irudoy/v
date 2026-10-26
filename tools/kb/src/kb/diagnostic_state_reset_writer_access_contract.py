@@ -5,6 +5,7 @@ import json,tomllib
 from kb import test_contract
 from kb.diagnostic_rom_contract import canonical,digest,plain
 from kb.model import SymbolKey
+from kb import diagnostic_reset_helper_writer_contract as helper_contract
 DESCRIPTOR='defs/JK08A.diagnostic-state-reset-writer-claims.toml'
 MODE='diagnostic-state-reset-writer-access'
 PREFIX='diagnostic-state-reset-writer-access-v1:jk08a:'
@@ -115,7 +116,7 @@ DECLARED = {'schema': 1,
                                         'ffff30f8, ffff3084, and ffff30b0, and programs both ATU-II '
                                         'channel-7 cycle pairs from ROM8[00008dfc]=33 and '
                                         'ROM8[00008dfd]=20.","symbol":[{"address":"000cd75c","evidence":[{"kind":"unbound-constant","supports":"identity","value":"00008dfc=33"},{"kind":"unbound-constant","supports":"identity","value":"00008dfd=20"},{"at":"7mfk:000cd76e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00008dfc","00008dfd","000cd75c","ffff3084","ffff30b0","ffff30f8","ffff41de","ffff4251"],"span":1}},{"at":"7mfk:000cd772","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00008dfc","00008dfd","000cd75c","ffff3084","ffff30b0","ffff30f8","ffff41de","ffff4251"],"span":1}}],"layout":"7mfk","name":"striped-tiger"}]}'}]}
-IDENTITIES = (('retained-2e81a-99de-writer',
+BASE_IDENTITIES = (('retained-2e81a-99de-writer',
   4294941150,
   'rare-butterfly/ram',
   190490,
@@ -129,6 +130,10 @@ IDENTITIES = (('retained-2e81a-99de-writer',
   'e8eae99a9b9b718abb4e6ac5dc3c487ca03578959155d143ce9ff31505030c9f',
   '3371bce1691e139d04d0562e67ba070821b55532440d3381b238bc863267fcf6',
   '207964e0282d32f03080fdfe17bddce263cff8f91a3269b0f7d45f1c173ef711'),)
+
+IDENTITIES=(*BASE_IDENTITIES,*helper_contract.IDENTITIES)
+OWNER_TARGETS=(('rare-butterfly/ram','writer','amber-wildcat/fn'),
+    ('chocolate-civet/ram','writer','cheerful-beluga/fn'))
 
 def descriptor(root):
     value=tomllib.loads((Path(root)/DESCRIPTOR).read_text())
@@ -146,14 +151,23 @@ def descriptor(root):
     for retained in value['retained_functions']:
         if digest(json.loads(retained['native_json']))!=retained['native_sha256']:
             raise ValueError('the reset writer claim changes its complete retained function digest')
-    return value
+    addition=helper_contract.descriptor(root)
+    if addition['preserved_parent_original_sha256']!=row['original_claim_sha256']:
+        raise ValueError('the helper extension replaces the complete parent original')
+    retained={(entry['owner'],entry['address']):entry for entry in value['retained_functions']}
+    for entry in addition['retained_functions']:
+        key=entry['owner'],entry['address']
+        if key in retained and not test_contract.exact(retained[key],entry):
+            raise ValueError('the helper extension changes a retained complete function')
+        retained[key]=entry
+    return dict(value,reference=[*value['reference'],*addition['reference']],retained_functions=list(retained.values()))
 
 def item(row):return json.loads(row['evidence_json'])
 def native_type(row,field):return None if row['declared_'+field]=='unset' else row['declared_'+field]
 def symbol_key(row):return SymbolKey('7mfk','ram',row['address'])
 def original(row,link):return test_contract.exact(canonical(link),json.loads(row['original_claim_json']))
 def qualified(row,link):return test_contract.exact(canonical(link),json.loads(row['proposed_claim_json']))
-def registered(item):return (item.get('mode')==MODE or item.get('path')==DESCRIPTOR or isinstance(item.get('key'),str) and item['key'].startswith(PREFIX))
+def registered(item):return (item.get('mode')==MODE or item.get('path') in (DESCRIPTOR,helper_contract.DESCRIPTOR) or isinstance(item.get('key'),str) and item['key'].startswith(PREFIX))
 def publication(link,evidence):
     return (registered(evidence) and sum(test_contract.exact(evidence,x) for x in link.evidence)==1
         and any(link.owner.key==r[2] and evidence.get('key')==PREFIX+r[0] and digest(canonical(link))==r[11] for r in IDENTITIES))
@@ -161,8 +175,8 @@ def operation(row):return dict(cmd='link',meaning=row['owner'],type='writer',to=
 def operations(ops,root):
     selected=[op for op in ops if any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
-    if not test_contract.exact(selected,[operation(descriptor(root)['reference'][0])]):
+    if not test_contract.exact(selected,[operation(row) for row in descriptor(root)['reference']]):
         raise ValueError('the reset writer attachment requires its one exact complete normal owning link operation')
     return True
 def looks_like_access(link):
-    return any(registered(e) for e in link.evidence) or (link.owner.key,link.type,link.to.key)==('rare-butterfly/ram','writer','amber-wildcat/fn')
+    return any(registered(e) for e in link.evidence) or (link.owner.key,link.type,link.to.key) in OWNER_TARGETS

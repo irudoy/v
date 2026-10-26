@@ -9,6 +9,9 @@ from kb import diagnostic_state_reset_writer_matrix as matrix
 from kb import diagnostic_state_reset_writer_semantics as semantics
 from kb import diagnostic_state_reset_writer_transfers as transfers
 from kb.model import SymbolKey
+from kb import diagnostic_reset_helper_writer_contract as helper_contract
+from kb import diagnostic_reset_helper_writer_transfers as helper_transfers
+from kb import diagnostic_reset_helper_writer_capture_evidence as helper_capture
 
 REGION='jk08a-diagnostic-state-reset-writer-paths'
 PREFIX='kb-diagnostic-state-reset-writer-observation '
@@ -19,7 +22,8 @@ MARKER='VQ_SH_ELF_DIAGNOSTIC_STATE_RESET_WRITER'
 COMPONENT='diagnostic_state_reset_writer_paths'
 OWNING_FLAGS=('complete_three_function_calls_and_returns','complete_CPU_SR_GBR_PR_MACL_and_real_frame',
     'complete_separate_ordinary_native_banks','complete_ordered_physical_operands','actual_constant_zero99DE_publications',
-    'complete_conditional_native_word_equations','complete_native_owner_function_TEST_ledger')
+    'complete_conditional_native_word_equations','complete_native_owner_function_TEST_ledger',
+    'complete_helper_zero_PC_R7_loop','actual_helper_zero_priors')
 SOURCE_FILES=(contract.DESCRIPTOR,'defs/JK08A.diagnostic-state-reset-writer-claims.toml',
     'defs/JK08A.diagnostic-state-reset-writer.md',contract.UNIT['assembly'],
     'tools/sh-elf-run/'+HARNESS,'tools/sh-elf-run/'+OBSERVER,'tools/sh-elf-run/diagnostic_state_reset_writer_capture.py',
@@ -29,7 +33,7 @@ SOURCE_FILES=(contract.DESCRIPTOR,'defs/JK08A.diagnostic-state-reset-writer-clai
     'tools/kb/src/kb/byte_surface_equations.py','tools/kb/src/kb/test_stock_capture.py',
     'tools/kb/src/kb/test_stock_abi.py','tools/kb/src/kb/width_view_matrix.py',
     'tools/kb/src/kb/ignition_literal_evidence.py','tools/kb/src/kb/test_contract.py',
-    'tools/kb/src/kb/packed_transfer_evidence.py')
+    'tools/kb/src/kb/packed_transfer_evidence.py',*helper_contract.SOURCE_FILES)
 
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
@@ -41,11 +45,11 @@ def same(actual,wanted,reason):
 
 def native_bindings(model):
     from kb import diagnostic_state_reset_writer_access_evidence as owning
-    row=owning.native_rows(model)[0]
+    rows=owning.native_rows(model)
     if not set(contract.FUNCTIONS)<=set(model.functions.get('7mfk',())):
         raise ValueError('the diagnostic reset omits its exact complete natural function')
-    return [dict(symbol='7mfk-ffff99de/ram',meaning=row['owner'],function='7mfk-0002e81a/fn',
-        function_meaning='amber-wildcat/fn',original_claim_sha256=row['original_claim_sha256'])]
+    return [dict(symbol=f"7mfk-{row['address']:08x}/ram",meaning=row['owner'],function=f"7mfk-{row['function']:08x}/fn",
+        function_meaning=json.loads(row['original_claim_json'])['to'],original_claim_sha256=row['original_claim_sha256']) for row in rows]
 
 
 def declaration(model,image):
@@ -115,6 +119,7 @@ def require_state(declared,image,case,observed):
     value=semantics.evaluate(observed['entry'],observed['memory_before'][0],observed['calibration_before'],
         observed['context'],observed['sr_before'],bytes(frame),observed['sp'],observed['continuation'])
     transfers.require(observed,result,value,fixture)
+    value['complete_helper_zero_PC_R7_loop']=helper_transfers.require(observed,result,value)
     return result,value
 
 
@@ -229,24 +234,25 @@ def require_witness(model,packet,inputs):
             or tools['simulator_version']!='16.3' or tools['gcc_version']!='13.3.0'
             or set(tools['binaries'])!={'as','ld','objcopy','gcc','run'}):raise ValueError('the diagnostic reset original changes its pinned GNU toolchain')
     for value in tools['binaries'].values():ignition_literal_evidence.require_hash(value)
-    actual=observations(packet,declared);pairs=[];seen=set();branches={};gates=set()
+    actual=observations(packet,declared);pairs=[];seen=set();branches={};gates=set();helper_checks=True
     for case,observed in zip(declared['cases'],actual):
         result,value=require_state(declared,image,case,observed)
         pairs.append((observed,{key:value[key] for key in ('gate','target_before','target_after','products')}))
-        seen.update(result['code']);gates.add(value['gate'])
+        seen.update(result['code']);gates.add(value['gate']);helper_checks&=value['complete_helper_zero_PC_R7_loop'] is True
         for branch in result['branches']:
             if branch['kind'] in ('taken','fallthrough'):branches.setdefault(branch['site'],set()).add(branch['kind'])
     if seen!=transfers.FEASIBLE_SITES:raise ValueError('the reset omits a complete feasible instruction, real loop or delay slot')
     if any(branches.get(site)!={'taken','fallthrough'} for site in transfers.CONDITIONAL_SITES):
         raise ValueError('the reset omits a natural loop boundary or conditional native-word outcome')
     if gates!={False,True}:raise ValueError('the reset omits a complete enabled or inhibited native-word path')
-    require_preimages(pairs);publications=require_publications(pairs)
+    require_preimages(pairs);publications=require_publications(pairs);publications.update(helper_capture.require_publications(pairs))
     return dict(region=REGION,observations=len(actual),native_bindings=native_bindings(model),
         image_sha256=sha(image),fixture_sha256=sha(fixture),elf_sha256=packet['elf_sha256'],stdout_sha256=packet['stdout_sha256'],
         exact_diagnostic_state_reset_writer_paths=True,complete_three_function_calls_and_returns=True,
         complete_CPU_SR_GBR_PR_MACL_and_real_frame=True,complete_separate_ordinary_native_banks=True,
         complete_ordered_physical_operands=True,actual_constant_zero99DE_publications=True,
         complete_conditional_native_word_equations=True,complete_native_owner_function_TEST_ledger=True,
+        complete_helper_zero_PC_R7_loop=helper_checks,actual_helper_zero_priors=True,
         **publications,branch_outcomes={f'{site:08x}':sorted(values) for site,values in branches.items()},
         native_identity_admission=False,native_geometry_inference=False,scale_admission=False,units_admission=False,
         natural_caller_reachability=False,natural_scheduling_inference=False,hardware_qualification=False,

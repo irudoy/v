@@ -15,7 +15,7 @@ RAM_FIELDS=(
     ('word_3084',0x3084,2),('word_30b0',0x30B0,2),('byte_3086',0x3086,1),
     ('word_3088',0x3088,2),('word_308a',0x308A,2),('word_30ac',0x30AC,2),
     ('word_30f2',0x30F2,2),('byte_30ae',0x30AE,1),('byte_30f4',0x30F4,1),('long_30f8',0x30F8,4),
-    ('native_9a6b',0x9A6B,1),('prior_99de',0x99DE,1),
+    ('native_9a6b',0x9A6B,1),('prior_99de',0x99DE,1),('prior_99c7',0x99C7,1),
     *((f'native_word_{address:04x}',address,2) for address in range(0xF588,0xF598,2)))
 READ_BYTES=('byte_4232','byte_4198','byte_40be','byte_41de','byte_41a4','byte_4251',
     'byte_41f2','byte_41fc','byte_41fe','byte_41b9','byte_41ba','byte_41bb','byte_41e1','byte_41f5','native_9a6b')
@@ -28,7 +28,7 @@ DEFAULTS.update({name:value for name,value in zip(REGISTERS,
     (0x12345678,0x87654321,0x80000000,0xFFFFFFFF,0xABCD1234,0x80010000,0x10000,0x7FFFFFFF))})
 DEFAULTS.update({name:int.from_bytes(bytes([0xA5])*width,'big') for name,at,width in RAM_FIELDS})
 DEFAULTS.update(pattern=0xA5,native_pattern_84=0x5C,native_pattern_99=0x6D,native_pattern_f5=0xB7,
-    raw_rom_8dfc=33,raw_rom_8dfd=20,variant=7)
+    raw_rom_8dfc=33,raw_rom_8dfd=20,variant=7,prior_99c7=0x6D)
 
 
 def require_case(case):
@@ -45,6 +45,8 @@ def cases(source,image):
     def add(kind,**changes):rows.append(dict(DEFAULTS,entry=contract.ENTRY,kind=kind,**changes))
     for gate in (0,64):
         for prior in range(256):add('constant-zero-target-with-held-other-inputs',prior_99de=prior,byte_41e1=gate)
+    for gate in (0,64):
+        for prior in range(256):add('helper99c7-constant-zero-with-held-other-inputs',prior_99c7=prior,byte_41e1=gate)
     for name in READ_BYTES:
         for raw in range(256):add('complete-each-raw-read-byte',**{name:raw})
     for name in ('raw_rom_8dfc','raw_rom_8dfd'):
