@@ -14,11 +14,13 @@ the length of a run, and rotation bounds it: `MAX_BYTES` per file and
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import sys
 import threading
+import traceback
 
 from tools.can_dashboard import PRODUCT_SLUG
 from tools.can_dashboard import settings as dashboard_settings
@@ -30,6 +32,11 @@ MAX_BYTES = 512 * 1024
 BACKUP_COUNT = 2
 FORMAT = "%(asctime)s %(levelname)s %(message)s"
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+@dataclass
+class UnhandledErrors:
+    failed: bool = False
 
 
 def logger():
@@ -81,22 +88,32 @@ def configure(path, *, max_bytes=MAX_BYTES, backup_count=BACKUP_COUNT):
 
 
 def install_hooks(log, root=None):
-    """Write unhandled exceptions of the process and of Tk to the log."""
+    """Report unhandled errors to the log and available stderr; retain failure."""
+    errors = UnhandledErrors()
 
-    def on_exception(kind, value, traceback):
-        log.error("unhandled exception", exc_info=(kind, value, traceback))
+    def report(message, kind, value, trace):
+        errors.failed = True
+        try:
+            log.error(message, exc_info=(kind, value, trace))
+        finally:
+            if sys.stderr is not None:
+                traceback.print_exception(kind, value, trace, file=sys.stderr)
+
+    def on_exception(kind, value, trace):
+        report("unhandled exception", kind, value, trace)
 
     sys.excepthook = on_exception
 
     def on_thread_exception(args):
         if args.exc_type is SystemExit:
             return
-        log.error(
-            "unhandled exception in thread %s",
-            args.thread.name if args.thread is not None else "unknown",
-            exc_info=(args.exc_type, args.exc_value, args.exc_traceback),
+        name = args.thread.name if args.thread is not None else "unknown"
+        report(
+            f"unhandled exception in thread {name}",
+            args.exc_type, args.exc_value, args.exc_traceback,
         )
 
     threading.excepthook = on_thread_exception
     if root is not None:
         root.report_callback_exception = on_exception
+    return errors

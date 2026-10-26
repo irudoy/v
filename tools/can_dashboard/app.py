@@ -622,6 +622,8 @@ STATUS_FIELDS = (
     ("record_var", "MLG recording", "amber", "right", "MLG: recording"),
     ("feed_var", "Live value feed", "muted", "right",
      "Feed: udp 127.0.0.1:47809, 999999 sent"),
+    ("error_var", "Last application exception", "red", "left",
+     "Application error: event processing"),
 )
 # A transport button shows the icon of the action it takes next.
 STREAM_ICONS = {"start": "broadcast", "stop": "stop"}
@@ -763,6 +765,7 @@ class DashboardApp:
         self.control_var = tk.StringVar(self.root, value="Control: idle")
         self.record_var = tk.StringVar(self.root, value="MLG: idle")
         self.feed_var = tk.StringVar(self.root, value="Feed: off")
+        self.error_var = tk.StringVar(self.root, value="")
         self.run_value_vars = {
             name: tk.StringVar(self.root, value="--")
             for name in RUN_TOOLTIPS
@@ -2177,6 +2180,23 @@ class DashboardApp:
         self.source_var.set(f"Source: {detail}")
 
     def _poll(self):
+        if getattr(self, "closed", False):
+            return
+        try:
+            self._poll_events()
+        except Exception as error:
+            self._report_callback_error("event processing", error)
+        finally:
+            if not getattr(self, "closed", False):
+                self.root.after(POLL_INTERVAL_MS, self._poll)
+
+    def _report_callback_error(self, context, error):
+        try:
+            self.error_var.set(f"Application error ({context}): {error}")
+        finally:
+            self.root.report_callback_exception(type(error), error, error.__traceback__)
+
+    def _poll_events(self):
         now = time.monotonic()
         processed = 0
         new_snapshot = False
@@ -2224,7 +2244,6 @@ class DashboardApp:
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
             self.feed_var.set(f"Feed: {self.feed.status()}")
-        self.root.after(POLL_INTERVAL_MS, self._poll)
 
     def _record_snapshot(self, item, now):
         if self.recorder is None:
@@ -2251,8 +2270,15 @@ class DashboardApp:
         was asked for, and the window is painted at half the rate the
         interval names.
         """
-        self._refresh(time.monotonic())
-        self.root.after(REFRESH_INTERVAL_MS, self._refresh_tick)
+        if getattr(self, "closed", False):
+            return
+        try:
+            self._refresh(time.monotonic())
+        except Exception as error:
+            self._report_callback_error("rendering", error)
+        finally:
+            if not getattr(self, "closed", False):
+                self.root.after(REFRESH_INTERVAL_MS, self._refresh_tick)
 
     def _metric_value(self, key):
         if key == "selected_map":
@@ -2549,7 +2575,7 @@ def main(argv=None):
         print(message)
         return 0
     root = tk.Tk()
-    dashboard_log.install_hooks(LOG, root)
+    unhandled_errors = dashboard_log.install_hooks(LOG, root)
     LOG.info(
         "start %s %s, python %s on %s, profile %s, CAN ID 0x%03X",
         PRODUCT_NAME,
@@ -2568,6 +2594,8 @@ def main(argv=None):
             time.monotonic()
         ).completed_groups
         dashboard.close()
+        if unhandled_errors.failed:
+            raise SystemExit("dashboard smoke test reported an unhandled exception")
         if completed_groups == 0:
             raise SystemExit("dashboard smoke test received no complete groups")
         return 0

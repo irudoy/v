@@ -656,9 +656,10 @@ The dashboard writes a text log of what an operator cannot read after the
 fact: the start of a run with its version, profile and CAN ID, every change of
 the telemetry source state, stream commands, recording start, save and
 failure, and every unhandled exception of the process, of a worker thread and
-of a Tk callback. The Windows launcher runs the application through
-`pythonw.exe`, which has no console, so the file is the only trace such an
-exception leaves. Telemetry values are never written, so the log grows with
+of a Tk callback. Unhandled exceptions also reach stderr when a console is
+available, including when no log file is configured or the file cannot be
+opened. The Windows launcher runs the application through `pythonw.exe`,
+which has no console. Telemetry values are never written, so the log grows with
 events and not with the length of a run.
 
 | Platform | File |
@@ -674,6 +675,13 @@ the log occupies at most 1.5 MiB.
 `--log-file PATH` selects another file and `--no-log-file` runs without one. A
 file that cannot be opened leaves the run without a log instead of ending it,
 and `--smoke-test` writes no log file.
+
+An event-processing or rendering exception appears in the status fields as
+`Application error`, with the latest error retained for inspection and copying.
+The polling and rendering timers continue after an exception and stop scheduling
+when the window closes. A failing event is consumed; subsequent events remain
+available to the next poll. The smoke test fails after an unhandled callback or
+worker exception even if complete telemetry groups have already arrived.
 
 ### Scrolling and status fields
 

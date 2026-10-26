@@ -1,9 +1,12 @@
+import contextlib
+import io
 import logging
 from pathlib import Path
 import sys
 import tempfile
 import threading
 import unittest
+from unittest import mock
 
 from tools.can_dashboard import logfile
 
@@ -140,6 +143,54 @@ class LogFileTest(unittest.TestCase):
         except KeyError:
             root.report_callback_exception(*sys.exc_info())
         self.assertIn("KeyError: 'panel'", self.path.read_text(encoding="utf-8"))
+
+    def test_unhandled_process_error_reaches_stderr_without_a_log(self):
+        stderr = io.StringIO()
+        logfile.install_hooks(logfile.logger())
+        with contextlib.redirect_stderr(stderr):
+            try:
+                raise ValueError("visible process error")
+            except ValueError:
+                sys.excepthook(*sys.exc_info())
+        self.assertIn("ValueError: visible process error", stderr.getvalue())
+
+    def test_unhandled_thread_error_reaches_stderr_without_a_log(self):
+        stderr = io.StringIO()
+        logfile.install_hooks(logfile.logger())
+
+        def fail():
+            raise RuntimeError("visible worker error")
+
+        with contextlib.redirect_stderr(stderr):
+            worker = threading.Thread(target=fail)
+            worker.start()
+            worker.join()
+        self.assertIn("RuntimeError: visible worker error", stderr.getvalue())
+
+    def test_callback_error_reaches_stderr_when_log_cannot_open(self):
+        blocked = Path(self.directory.name) / "blocked"
+        blocked.write_text("not a directory\n")
+        log = logfile.configure(blocked / logfile.FILE_NAME)
+        root = type("Root", (), {})()
+        logfile.install_hooks(log, root)
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            try:
+                raise RuntimeError("visible callback error")
+            except RuntimeError:
+                root.report_callback_exception(*sys.exc_info())
+        self.assertIn("RuntimeError: visible callback error", stderr.getvalue())
+
+    def test_a_process_without_stderr_still_records_the_exception(self):
+        log = logfile.configure(self.path)
+        errors = logfile.install_hooks(log)
+        with mock.patch.object(sys, "stderr", None):
+            try:
+                raise ValueError("no console")
+            except ValueError:
+                sys.excepthook(*sys.exc_info())
+        self.assertTrue(errors.failed)
+        self.assertIn("ValueError: no console", self.path.read_text())
 
 
 if __name__ == "__main__":
