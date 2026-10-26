@@ -143,10 +143,7 @@ def _run_pcan(config, stop_event, emit, control_requests):
         emit(SourceStatus("error", "python-can is not installed"))
         return
 
-    filters = [
-        {"can_id": can_id, "can_mask": 0x7FF, "extended": False}
-        for can_id in (config.can_id, *OBSERVED_IDS)
-    ]
+    data_ids = {config.can_id, *OBSERVED_IDS}
     state = can.BusState.PASSIVE if config.listen_only else can.BusState.ACTIVE
     try:
         if config.reset_channel:
@@ -156,7 +153,8 @@ def _run_pcan(config, stop_event, emit, control_requests):
             channel=config.channel,
             bitrate=config.bitrate,
             state=state,
-            can_filters=filters,
+            # Select data after recv so error-frame identifiers are preserved.
+            can_filters=None,
             receive_own_messages=False,
             ignore_config=True,
         )
@@ -187,6 +185,10 @@ def _run_pcan(config, stop_event, emit, control_requests):
                 terminal_error = f"PCAN receive failed: {error}"
                 break
             if message is None:
+                continue
+            if not message.is_error_frame and (
+                message.is_extended_id or message.arbitration_id not in data_ids
+            ):
                 continue
             emit(FrameRecord(
                 arbitration_id=message.arbitration_id,

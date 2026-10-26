@@ -80,10 +80,14 @@ On the Windows laptop:
 The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
 
-The default hardware filter accepts custom telemetry plus stock context IDs
-`0x174`, `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide the
+Live frame selection runs in the dashboard source after `recv`. The pinned
+PCAN backend implements ID filters in software; the source leaves them unset
+so driver-delivered error frames reach the `errors=` health counter regardless
+of identifier. It forwards standard data for custom telemetry and stock context
+IDs `0x174`, `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide the
 transmission gear, engine speed, vehicle speed, ASCD input, selector state,
-and dashboard indication state.
+and dashboard indication state. Unrelated standard data and extended data frames
+are discarded before entering the dashboard event queue.
 
 `Engine speed` and `Stock CAN RPM` show frame `0x180`. `FUN_000384FE` shifts
 the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 4 into

@@ -151,6 +151,94 @@ class PcanReconnectTest(unittest.TestCase):
         self.assertEqual(shutdown.call_count, 2)
 
 
+class PcanFrameSelectionTest(unittest.TestCase):
+    def receive(self, records, *, can_id=model.DEFAULT_CAN_ID, listen_only=False):
+        stop = threading.Event()
+        events = []
+
+        class SoftwareFilteredBus:
+            def __init__(self, **options):
+                self.filters = options["can_filters"]
+                self.records = iter(records)
+
+            def recv(self, timeout):
+                for record in self.records:
+                    if self.filters is None or any(
+                        row["extended"] == record.is_extended_id
+                        and (row["can_id"] ^ record.arbitration_id) & row["can_mask"] == 0
+                        for row in self.filters
+                    ):
+                        return record
+                stop.set()
+                return None
+
+            def shutdown(self):
+                pass
+
+        fake_can = types.SimpleNamespace(
+            Bus=SoftwareFilteredBus,
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        with mock.patch.dict(sys.modules, {"can": fake_can}):
+            sources.run_pcan(
+                sources.PcanConfiguration(can_id=can_id, listen_only=listen_only), stop, events.append,
+            )
+        return [event for event in events if isinstance(event, model.FrameRecord)]
+
+    def test_live_errors_reach_the_model_and_visible_health_counter(self):
+        generator = model.DemoGenerator()
+        records = [
+            model.FrameRecord(0, b"", 0.0, is_error_frame=True),
+            *generator.group(1, 0.0),
+            model.FrameRecord(0x1FFFFFFF, b"", 0.1, is_extended_id=True, is_error_frame=True),
+        ]
+        dashboard = object.__new__(app.DashboardApp)
+        dashboard.model = model.DashboardModel("tuning", model.DEFAULT_CAN_ID, 1)
+        for record in self.receive(records):
+            dashboard.model.process_frame(record)
+        self.assertEqual(dashboard.model.stats().error_frames, 2)
+        self.assertEqual(dashboard.model.stats().completed_groups, 1)
+
+        dashboard.palette = app.DARK
+        dashboard.source_state = "connected"
+        dashboard.source_drops = 0
+        dashboard.status_dot_color = None
+        dashboard.status_dot = types.SimpleNamespace(configure=mock.Mock())
+        dashboard.status_field = types.SimpleNamespace(set_foreground=mock.Mock())
+        for name in ("status_var", "schema_var", "rate_var", "loss_var"):
+            setattr(dashboard, name, types.SimpleNamespace(set=mock.Mock()))
+        dashboard._sync_source_button = mock.Mock()
+        dashboard._refresh_panels = mock.Mock()
+        dashboard._refresh_timers = mock.Mock()
+        dashboard._refresh_replay = mock.Mock()
+        dashboard.last_ui_group = 0
+        dashboard.hero_cards = {}
+        dashboard.active_tab = 0
+        dashboard.health_vars = {
+            key: types.SimpleNamespace(set=mock.Mock()) for key, _title, _sample in app.HEALTH_FIELDS
+        }
+        dashboard._refresh(app.time.monotonic())
+        dashboard.health_vars["errors"].set.assert_called_once_with("errors=2")
+
+    def test_needed_standard_data_arrive_and_unrelated_data_stay_excluded(self):
+        for can_id in (model.DEFAULT_CAN_ID, 0x6E0):
+            for listen_only in (False, True):
+                with self.subTest(can_id=can_id, listen_only=listen_only):
+                    generator = model.DemoGenerator(can_id)
+                    expected = [*generator.group(1, 0.0), *generator.stock_context(1, 0.0)]
+                    unrelated = model.FrameRecord(0x123, bytes(8), 0.0)
+                    extended = model.FrameRecord(can_id, bytes(8), 0.0, is_extended_id=True)
+                    records = self.receive(
+                        [unrelated, *expected, extended], can_id=can_id, listen_only=listen_only,
+                    )
+                    self.assertEqual(
+                        [(frame.arbitration_id, frame.data) for frame in records],
+                        [(frame.arbitration_id, frame.data) for frame in expected],
+                    )
+                    delivered = {frame.arbitration_id for frame in records}
+                    self.assertTrue({can_id, *model.OBSERVED_IDS} <= delivered)
+
+
 class ReplayOptionTest(unittest.TestCase):
     def test_invalid_replay_speed_is_rejected_before_the_window_opens(self):
         for speed in ("0", "-1", "nan", "inf"):
