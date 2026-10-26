@@ -67,7 +67,6 @@ def test_all_reads_hold_the_lock_check_freshness_and_rollback(monkeypatch,stale,
     monkeypatch.setattr(reader.graph,'meta',lambda source:{'fingerprint':'held'})
     monkeypatch.setattr(reader.fingerprint,'compute',lambda root:'after')
     monkeypatch.setattr(reader.graph,'stale',lambda original,after:stale)
-    monkeypatch.setattr(reader.graph, 'proof_stale', lambda *args: False)
     if stale or body_error:
         with pytest.raises((KbError,ValueError)):
             with reader.session('root') as view:
@@ -119,7 +118,6 @@ def test_read_waits_for_actual_writer_lock_before_opening_graph(tmp_path, monkey
     monkeypatch.setattr(reader.graph, 'fresh', fresh)
     monkeypatch.setattr(reader.graph, 'meta', lambda source: {})
     monkeypatch.setattr(reader.graph, 'stale', lambda *args: False)
-    monkeypatch.setattr(reader.graph, 'proof_stale', lambda *args: False)
     monkeypatch.setattr(reader.fingerprint, 'compute', lambda root: None)
     def read():
         try:
@@ -169,7 +167,6 @@ def test_deferred_server_error_is_a_usage_error_and_rolls_back(monkeypatch):
     monkeypatch.setattr(reader.lock, 'held', lambda root: context(None))
     monkeypatch.setattr(reader.graph, 'fresh', lambda *args, **kwargs: context(source))
     monkeypatch.setattr(reader.graph, 'meta', lambda source: {})
-    monkeypatch.setattr(reader.graph, 'proof_stale', lambda *args: False)
     with pytest.raises(KbError) as refused:
         with reader.graph_session('root'):
             raise Neo4jError._hydrate_neo4j(code='Neo.ClientError.Statement.SyntaxError', message='deferred query failure')
@@ -186,7 +183,6 @@ def test_read_inside_an_owned_source_boundary_does_not_reacquire_lock(monkeypatc
     monkeypatch.setattr(reader.graph, 'fresh', lambda *args, **kwargs: context(source))
     monkeypatch.setattr(reader.graph, 'meta', lambda source: {})
     monkeypatch.setattr(reader.graph, 'stale', lambda *args: False)
-    monkeypatch.setattr(reader.graph, 'proof_stale', lambda *args: False)
     monkeypatch.setattr(reader.fingerprint, 'compute', lambda root: None)
     with reader.session('root', held=True) as view:
         view.run('RETURN 1')

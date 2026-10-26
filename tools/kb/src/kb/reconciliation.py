@@ -52,7 +52,7 @@ def difference_key(item):
     return item['kind'], item['subject'], item['claim_sha256']
 
 
-def differences(model, *, width_proofs=True):
+def differences(model):
     """Exact missing accesses and storage-width contradictions of the model."""
     indices, digests = {}, {}
     def index(layout):
@@ -70,9 +70,6 @@ def differences(model, *, width_proofs=True):
         actual = index(layout)[0].get((function.key.location, storage.key.location), ())
         if any(site['mode'] in modes for site in actual):
             continue
-        from kb import copy_evidence
-        if copy_evidence.accepted(model, storage, function, claim) is not None:
-            continue
         found.append(dict(kind='access', subject=storage.key.key, layout=layout,
             claim_sha256=digest(claim), l0=digests[layout],
             detail=f'{claim["type"]} {storage.key.key} -> {function.key.key}: no matching '
@@ -88,10 +85,6 @@ def differences(model, *, width_proofs=True):
             and type(site.get('width')) is int and site['width'] * 8 > bits})
         if observed:
             claim = dict(symbol=symbol.key.key, width=bits, observed=observed)
-            if width_proofs:
-                from kb import width_compatibility
-                if width_compatibility.accepted(model, symbol, claim) is not None:
-                    continue
             found.append(dict(kind='width', subject=symbol.key.key, layout=symbol.layout,
                 claim_sha256=digest(claim), l0=digests[symbol.layout],
                 detail=f'{symbol.key.key}: declared {bits} bits; normalized L0 includes '
@@ -105,7 +98,7 @@ def reviews(model):
     return [{**item, 'state': 'unresolved', 'reason': item['detail']} for item in differences(model)]
 
 
-def rebase(before, after, renames, *, proof_attachments=False, width_resolutions=None, diagnostic_resolutions=None, argument_resolutions=None, calculation_resolutions=None, snapshot_resolutions=None, io_resolutions=None):
+def rebase(before, after, renames):
     """Rebind exact renamed claims or withdraw reviews of deleted access claims.
 
     New differences and changed conditions, evidence, widths or L0 never gain
@@ -125,14 +118,8 @@ def rebase(before, after, renames, *, proof_attachments=False, width_resolutions
         return None
     if text is None:
         return None
-    width_resolutions = {} if width_resolutions is None else dict(width_resolutions)
-    diagnostic_resolutions = {} if diagnostic_resolutions is None else dict(diagnostic_resolutions)
-    argument_resolutions = {} if argument_resolutions is None else dict(argument_resolutions)
-    calculation_resolutions = {} if calculation_resolutions is None else dict(calculation_resolutions)
-    io_resolutions = {} if io_resolutions is None else dict(io_resolutions)
-    snapshot_resolutions = {} if snapshot_resolutions is None else dict(snapshot_resolutions)
-    original = {difference_key(item): item for item in differences(before, width_proofs=not width_resolutions)}
-    current = {difference_key(item): item for item in differences(after, width_proofs=not width_resolutions)}
+    original = {difference_key(item): item for item in differences(before)}
+    current = {difference_key(item): item for item in differences(after)}
     claims = {('access', storage.key.key, digest(claim)): claim
               for storage, _, claim in access_claims(before)}
     remaining = {claim_identity(claim) for _, _, claim in access_claims(after)}
@@ -163,61 +150,16 @@ def rebase(before, after, renames, *, proof_attachments=False, width_resolutions
             found.append(record)
             continue
         expected = {**item, 'sources': sorted(paths.get(src, src) for src in item['sources'])}
-        if (item['kind'] == 'width'
-                and width_resolutions.get(item['subject']) == item['claim_sha256']):
-            from kb import width_compatibility
-            symbol = next((symbol for symbol in after.symbols.values()
-                           if symbol.key.key == item['subject']), None)
-            if symbol is not None and current.get(key) == item:
-                field = width_compatibility.registered_field(after.root, item['subject'])
-                if field is not None:
-                    claim = dict(symbol=symbol.key.key, width=symbol.value('width'),
-                        observed=sorted((row['function'], row['site'], row['mode'], row['width_bytes'])
-                                        for row in field['observed']))
-                    if width_compatibility.accepted(after, symbol, claim) is not None:
-                        changed = True
-                        continue
         claim = renamed_claim(claims[key]) if key in claims else None
         if claim is not None:
             expected['claim_sha256'] = digest(claim)
         candidate = current.get(difference_key(expected))
-        if claim is not None and diagnostic_resolutions:
-            from kb import diagnostic_rom_resolution
-            if diagnostic_rom_resolution.retires(before,after,claim,diagnostic_resolutions):
-                changed = True
-                continue
-        if claim is not None and argument_resolutions:
-            from kb import timing_argument_resolution
-            if timing_argument_resolution.retires(before,after,claim,argument_resolutions):
-                changed = True
-                continue
-        if claim is not None and calculation_resolutions:
-            from kb import calculation_dependency_resolution
-            if calculation_dependency_resolution.retires(before,after,claim,calculation_resolutions):
-                changed = True
-                continue
-        if claim is not None and snapshot_resolutions:
-            from kb import snapshot_rom_resolution
-            if snapshot_rom_resolution.retires(before,after,claim,snapshot_resolutions):
-                changed = True
-                continue
-        if claim is not None and io_resolutions:
-            from kb import io_access_resolution
-            if io_access_resolution.retires(before,after,claim,io_resolutions):
-                changed = True
-                continue
         if candidate == expected:
             updated = {**record, **candidate}
             found.append(updated)
             changed |= updated != record
-        elif claim is not None and not proof_attachments and claim_identity(claim) not in remaining:
+        elif claim is not None and claim_identity(claim) not in remaining:
             changed = True
-        elif claim is not None:
-            from kb import copy_evidence
-            if not renames and copy_evidence.retires(before, after, claim):
-                changed = True
-            else:
-                found.append(record)
         else:
             found.append(record)
     if not changed:

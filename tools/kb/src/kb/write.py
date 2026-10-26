@@ -1,80 +1,7 @@
-"""Write commands (tools/kb/SPEC.md, section 12.3): `new`, `set`, `bind`,
-`absent`, `unresolved`, `link`, `set-link`, `unlink`, `select`, `merge`, `rename`,
-`move`, and
-`apply`, which applies a batch of them as one change.
+"""Canonical native writer with locked validation and supported batch operations.
 
-A change edits entity files as documents over the working tree. An operation
-reads the file of its meaning from the change or from the disk, or starts it
-with the entry of the home symbol, which joins the file with the registries
-that state the meaning, and the change renders every document in canonical
-form. A symbol that a file takes leaves `kb/names.csv`: its generated name
-becomes the `name` of its entry in an unnamed meaning, and its other names
-become `former` references.
-
-- `new` starts a meaning with the symbol at a location that holds none and
-  the stated evidence of its identity, in a file of its semantic name or of
-  the generated name of the symbol, or a designed entity of a kind that the
-  store holds.
-- `set` writes keys of a meaning, of the entry of one of its symbols, of a
-  designed entity, or of the target of a feature on a layout, after it
-  removes the keys that `unset` names. A table joins the table of its key key
-  by key, another value replaces the value of its key, and a dotted key names
-  a key of a table. The names, symbols, statuses, links, and analogs of a
-  meaning and the place and names of a symbol entry belong to the other
-  commands.
-- `bind` adds the symbol of a meaning on a layout without one. Its evidence is
-  stated, or it is the evidence of the candidate that `match.search` finds at
-  the address from a symbol of the meaning; a `to` that names a symbol becomes
-  its location. The status of the layout leaves the file, and an unnamed
-  meaning draws a generated name for the symbol and keeps its home.
-- `absent` states with evidence that the mechanism does not exist on a layout.
-- `unresolved` records the method, the target, and the count of the search
-  from a symbol of the meaning, which finds no unique candidate, or of a
-  stated search, with the L0 digest of the layout. A repeat of the search of
-  the held status keeps its note unless the operation states one.
-- `link` adds a typed link to the file of its owner, or joins its keys and
-  evidence to the link of one type, target, slot, and offset that the file
-  holds; `unlink` removes a link of the file, which the slot and the offset
-  choose among the links of one type and target.
-- `set-link` replaces mutable properties of one existing owned native link.
-  Its type, target, slot, offset, evidence and existing ledger dependencies
-  stay fixed; the complete batch retains the resulting native link.
-- `reconcile-width` is a batch operation that retires one exact retained
-  width review only through its current independently qualified compatibility
-  contract. It changes no symbol width or identity evidence.
-- `select` adds a dependency selector to an existing owned ledger row for
-  one existing native relation and claim. It changes no relation or evidence,
-  and the complete batch must retain that selector and its supporting fact.
-- `merge` joins another meaning into a meaning, or another file of one meaning
-  into its file. Each symbol of the other meaning takes the evidence of the
-  join, stated or found as `bind` finds it, and its entry moves into the file
-  of the meaning, where a named meaning keeps its former name as a `former`
-  reference. The statuses, keys, links, analogs, and former names of the other
-  file join those of the file where they agree, the other file leaves the
-  store, and every reference of the entity files to a name of the other
-  meaning names the meaning.
-- `rename` gives a meaning a semantic name: the file takes the name, each
-  entry drops its generated name and keeps its previous full reference as its
-  first `former` reference, a previous semantic name becomes a former name of
-  the meaning, and every reference of the entity files to a previous name
-  names the new one. A name that a registry states stays until the
-  conversion of that registry.
-- `move` corrects the address of a symbol on its layout, or the meaning of a
-  symbol. Its evidence is stated, or it is the evidence of the candidate that
-  `match.search` finds at the address, from another symbol of the meaning or
-  from a symbol of the target meaning. The entry keeps its other keys, its
-  previous full reference becomes its first `former` reference, and every
-  reference and `[[...]]` citation of the entity files to that reference
-  names the new one.
-
-`plan` compiles the model with the rendered files in place of those on disk
-and refuses the change with exit code 3 when the result has an issue of a
-model check, registry disagreement, or chain-note rejection that the working
-tree lacks, or when
-it contradicts an expectation of an operation, such as a moved symbol that a
-registry keeps in its former meaning or names. `apply` takes the lock,
-resolves the references on a current graph, plans, writes the files through
-temporary files and renames, and loads the graph.
+Historical evidence is retained as data. Stock-proof publication and
+qualification operations belong to the local archive.
 """
 
 import copy
@@ -82,7 +9,6 @@ import difflib
 from pathlib import Path
 import re
 import tomllib
-import weakref
 
 from kb import (checks, compile, graph, ledger_projection, lock, match, names, refs, repo,
                 store, tokens, vocab)
@@ -92,40 +18,32 @@ from kb.model import MEANING_REF, Meaning, Symbol, SymbolKey
 from kb.repo import KbError
 
 # The keys of each operation of a batch besides `cmd`, and those it requires.
-COMMANDS = {
-    "new": ("kind", "symbol", "slug", "name", "evidence", "level", "note"),
-    "set": ("ref", "layout", "keys", "unset"),
-    "bind": ("meaning", "symbol", "evidence", "from", "level", "note"),
-    "absent": ("meaning", "layout", "evidence", "note"),
-    "unresolved": ("meaning", "layout", "from", "method", "target", "count", "note"),
-    "link": ("meaning", "type", "to", "keys", "evidence"),
-    "unlink": ("meaning", "type", "to", "keys"),
-    "set-link": ("meaning", "type", "to", "selector", "keys", "unset"),
-    "select": ("meaning", "registry", "order", "dependency"),
-    "merge": ("meaning", "other", "evidence", "from"),
-    "rename": ("meaning", "name"),
-    "move": ("symbol", "to", "evidence", "from", "level", "note"),
-    'retire': ('ref',),
-    'reconcile-width': ('ref', 'layout', 'claim_sha256'),
-    'reconcile-diagnostic-output': ('id', 'claim_sha256'),
-    'reconcile-timing-argument': ('id', 'claim_sha256'),
-    'reconcile-calculation-dependency': ('id', 'claim_sha256'),
-    'reconcile-io-access': ('id', 'claim_sha256'),
-    'reconcile-snapshot-output': ('id', 'claim_sha256'),
-}
-REQUIRED = {"new": ("kind",), "set": ("ref",), "bind": ("meaning", "symbol"),
-            "absent": ("meaning", "layout", "evidence"), "unresolved": ("meaning", "layout"),
-            "link": ("meaning", "type", "to"), "unlink": ("meaning", "type", "to"),
-            "set-link": ("meaning", "type", "to"),
-            "select": ("meaning", "registry", "order", "dependency"),
-            "merge": ("meaning", "other"), "rename": ("meaning", "name"),
-            "move": ("symbol", "to"), 'retire': ('ref',),
-            'reconcile-width': ('ref', 'layout', 'claim_sha256'),
-            'reconcile-diagnostic-output': ('id', 'claim_sha256'),
-            'reconcile-timing-argument': ('id', 'claim_sha256'),
-            'reconcile-calculation-dependency': ('id', 'claim_sha256'),
-            'reconcile-io-access': ('id', 'claim_sha256'),
-            'reconcile-snapshot-output': ('id', 'claim_sha256')}
+COMMANDS = {'new': ('kind', 'symbol', 'slug', 'name', 'evidence', 'level', 'note'),
+ 'set': ('ref', 'layout', 'keys', 'unset'),
+ 'bind': ('meaning', 'symbol', 'evidence', 'from', 'level', 'note'),
+ 'absent': ('meaning', 'layout', 'evidence', 'note'),
+ 'unresolved': ('meaning', 'layout', 'from', 'method', 'target', 'count', 'note'),
+ 'link': ('meaning', 'type', 'to', 'keys', 'evidence'),
+ 'unlink': ('meaning', 'type', 'to', 'keys'),
+ 'set-link': ('meaning', 'type', 'to', 'selector', 'keys', 'unset'),
+ 'select': ('meaning', 'registry', 'order', 'dependency'),
+ 'merge': ('meaning', 'other', 'evidence', 'from'),
+ 'rename': ('meaning', 'name'),
+ 'move': ('symbol', 'to', 'evidence', 'from', 'level', 'note'),
+ 'retire': ('ref',)}
+REQUIRED = {'new': ('kind',),
+ 'set': ('ref',),
+ 'bind': ('meaning', 'symbol'),
+ 'absent': ('meaning', 'layout', 'evidence'),
+ 'unresolved': ('meaning', 'layout'),
+ 'link': ('meaning', 'type', 'to'),
+ 'unlink': ('meaning', 'type', 'to'),
+ 'set-link': ('meaning', 'type', 'to'),
+ 'select': ('meaning', 'registry', 'order', 'dependency'),
+ 'merge': ('meaning', 'other'),
+ 'rename': ('meaning', 'name'),
+ 'move': ('symbol', 'to'),
+ 'retire': ('ref',)}
 SEARCH = ("method", "target", "count")
 # The keys of a link besides its type, target, and evidence, and those that
 # choose among the links of one type and target.
@@ -154,7 +72,6 @@ ENTRY = ("layout", "address", "name", "former", "evidence")
 REFERENCE = re.compile(r"(?P<name>[a-z][a-z0-9_-]*)(?P<rest>/(?P<kind>[a-z]+)"
                        r"(?:/[0-9a-z]+(?:-[0-9a-f]{8})?)?)?")
 CITATION = re.compile(r"\[\[(?P<ref>[^\[\]]+)\]\]")
-_CHECKED = weakref.WeakKeyDictionary()
 
 
 def parse_evidence(text):
@@ -495,12 +412,6 @@ class Change:
         # model stays intact until the complete rendered change is checked.
         self.new_meanings = {}
         self.expected = []
-        self.width_resolutions = {}
-        self.diagnostic_resolutions = {}
-        self.argument_resolutions = {}
-        self.calculation_resolutions = {}
-        self.io_resolutions = {}
-        self.snapshot_resolutions = {}
         self._taken = self._domain = None
 
     def resolve(self, text):
@@ -758,79 +669,6 @@ class Change:
                               if name not in MEANING_OWNED}, meaning.key
         return self._entry(meaning, document, named), SYMBOL_KEYS, self._ref(named)
 
-    def reconcile_width(self, op):
-        """Request retirement of one exact independently qualified width review."""
-        from kb import width_compatibility, reconciliation
-        meaning, named = self.resolve(op['ref'])
-        layout = self._layout(op['layout'])
-        symbol = meaning.symbols.get(layout)
-        if (symbol is None or meaning.kind not in ('ram', 'reg')
-                or named is not None and named.key != symbol.key):
-            raise KbError('reconcile-width needs one exact RAM or register symbol on its layout', code=3)
-        identity = op['claim_sha256']
-        if type(identity) is not str or re.fullmatch('[0-9a-f]{64}', identity) is None:
-            raise KbError('reconcile-width needs the exact original width claim SHA-256', code=2)
-        rows = [row for row in reconciliation.differences(self.model, width_proofs=False)
-                if row['kind'] == 'width' and row['subject'] == symbol.key.key
-                and row['claim_sha256'] == identity]
-        if len(rows) != 1:
-            raise KbError('reconcile-width names no exact current raw width question', code=3)
-        record = rows[0]
-        reviews = [row for row in self.model.config.get('reconciliation', {}).get('review', ())
-                   if isinstance(row, dict) and all(key in row for key in ('kind', 'subject', 'claim_sha256'))
-                   and reconciliation.difference_key(row) == reconciliation.difference_key(record)]
-        if (len(reviews) != 1 or set(reviews[0]) != set(record) | {'state', 'reason'}
-                or reviews[0].get('state') != 'unresolved'
-                or type(reviews[0].get('reason')) is not str or not reviews[0]['reason'].strip()
-                or any(reviews[0].get(key) != value for key, value in record.items())):
-            raise KbError('reconcile-width needs the exact retained unresolved review', code=3)
-        try:
-            field = width_compatibility.registered_field(self.root, symbol.key.key)
-        except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
-            raise KbError(f'reconcile-width has an invalid exact contract registry: {error}', code=3) from None
-        if field is None:
-            raise KbError('reconcile-width has no exact registered compatibility contract', code=3)
-        claim = dict(symbol=symbol.key.key, width=symbol.value('width'),
-            observed=sorted((row['function'], row['site'], row['mode'], row['width_bytes'])
-                            for row in field['observed']))
-        try:
-            proof = width_compatibility.require(self.model, symbol, claim)
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError) as error:
-            raise KbError(f'reconcile-width lacks a current qualified compatibility proof: {error}', code=3) from None
-        if proof['original_claim_sha256'] != identity:
-            raise KbError('reconcile-width proof names another retained width claim', code=3)
-        if symbol.key.key in self.width_resolutions:
-            raise KbError('reconcile-width repeats a width question in this change', code=3)
-        self.width_resolutions[symbol.key.key] = identity
-        def retired(result):
-            held = result.config.get('reconciliation', {}).get('review', ())
-            if any(isinstance(row, dict) and row.get('kind') == 'width'
-                   and row.get('subject') == symbol.key.key and row.get('claim_sha256') == identity
-                   for row in held):
-                return f'the exact qualified width review of {symbol.key.key} is not retired'
-            return None
-        self.expected.append(retired)
-        self.lines.append(f'reconcile width {symbol.key.key}: {identity}; exact registered compatibility')
-
-    def reconcile_diagnostic_output(self, op):
-        from kb import diagnostic_rom_resolution
-        diagnostic_rom_resolution.prepare(self,op)
-
-    def reconcile_timing_argument(self, op):
-        from kb import timing_argument_resolution
-        timing_argument_resolution.prepare(self,op)
-
-    def reconcile_calculation_dependency(self, op):
-        from kb import calculation_dependency_resolution
-        calculation_dependency_resolution.prepare(self,op)
-
-    def reconcile_snapshot_output(self, op):
-        from kb import snapshot_rom_resolution
-        snapshot_rom_resolution.prepare(self,op)
-
-    def reconcile_io_access(self, op):
-        from kb import io_access_resolution
-        io_access_resolution.prepare(self,op)
 
     def bind(self, op):
         meaning, named = self.resolve(op["meaning"])
@@ -2018,27 +1856,15 @@ def _selection(model, key, registry, order, item):
 
 @allocation_phase
 def _issues(model):
-    """{(check, subject, message): issue} of model checks, disagreements,
-    and rejected chain notes, computed once per model."""
-    from kb import copy_evidence
-    with copy_evidence.consuming(model.root):
-        return _issues_consumed(model)
-
-
-def _issues_consumed(model):
-    from kb import copy_evidence
-    state = copy_evidence.model_state(model)
-    previous = _CHECKED.get(model)
-    if previous is None or previous[0] != state:
-        found = {}
-        for check in checks.CHECKS.values():
-            for issue in check(model):
-                found.setdefault((issue.check, issue.subject, issue.message), issue)
-        for section, issues in checks.audit(model, ('disagreements', 'chain-notes')).items():
-            for issue in issues:
-                found.setdefault((section, issue.subject, issue.message), issue)
-        _CHECKED[model] = (state, found)
-    return _CHECKED[model][1]
+    """Current model checks and retained review issues without proof plugins."""
+    found = {}
+    for check in checks.CHECKS.values():
+        for issue in check(model):
+            found.setdefault((issue.check, issue.subject, issue.message), issue)
+    for section, issues in checks.audit(model, ("disagreements", "chain-notes")).items():
+        for issue in issues:
+            found.setdefault((section, issue.subject, issue.message), issue)
+    return found
 
 
 def refusals(base, result):
@@ -2049,48 +1875,23 @@ def refusals(base, result):
 
 
 def plan(ops, base, resolve, root=repo.ROOT):
-    """(change, texts, result) of operations over the model `base` of the
-    working tree and its overlay; exit code 3 when the result adds an issue or
-    contradicts what an operation expects of it."""
+    """Plan supported native operations and refuse new issues before writing."""
     change = Change(base, resolve, root)
     for number, op in enumerate(ops, 1):
         change.run(op, number if len(ops) > 1 else None)
-    from kb import ordinary_access_registry as ordinary
-    try:selected=ordinary.operation_families(ops,root)
-    except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:
-        raise KbError(f'ordinary access proof attachment requires its exact complete batch: {error}',code=3) from None
-    for family in selected:
-        def transition(result,family=family):
-            try:family.resolution.require_transition(base,result)
-            except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-                return f'the {family.mode} proof transition is incomplete or unqualified: {error}'
-            return None
-        change.expected.append(transition)
     texts = change.texts()
     result = compile.build(root, {**base.overlay, **texts})
     from kb import reconciliation
-    from kb import copy_evidence
-    attached_copy = any(op['cmd'] == 'link' and any(copy_evidence.registered(item)
-                        for item in op.get('evidence', ())) for op in ops)
-    owner_text = (reconciliation.rebase(base, result, change.renamed,
-                                       proof_attachments=attached_copy,
-                                       width_resolutions=change.width_resolutions,
-                                       diagnostic_resolutions=change.diagnostic_resolutions,
-                                       argument_resolutions=change.argument_resolutions,
-                                       calculation_resolutions=change.calculation_resolutions,
-                                       io_resolutions=change.io_resolutions,
-                                       snapshot_resolutions=change.snapshot_resolutions)
-                  if change.renamed or attached_copy or change.width_resolutions or change.diagnostic_resolutions or change.argument_resolutions or change.calculation_resolutions or change.io_resolutions or change.snapshot_resolutions
-                  or any(op['cmd'] == 'unlink' for op in ops) else None)
+    owner_text = (reconciliation.rebase(base, result, change.renamed)
+                  if change.renamed or any(op["cmd"] == "unlink" for op in ops) else None)
     if owner_text is not None:
         texts[repo.OWNER_CONFIG] = owner_text
         result = compile.build(root, {**base.overlay, **texts})
     refused = refusals(base, result)
     unmet = [message for expected in change.expected for message in [expected(result)]
              if message]
-    from kb import research
+    from kb import research, retirement
     unmet += research.preservation(base, result)
-    from kb import retirement
     unmet += retirement.preserved(base, result)
     if refused or unmet:
         parts = [f"adds {len(refused)} issues"] if refused else []
@@ -2103,238 +1904,13 @@ def plan(ops, base, resolve, root=repo.ROOT):
     return change, texts, result
 
 
-def publication_view(model):
-    """All native values, excluding only exact registered proof attachments."""
-    from kb import convert, copy_evidence
-    facts = convert.dump(model)
-    for link in model.links:
-        key = link.owner.key, link.type, link.to.key, link.slot, link.offset
-        props, _, stated, roles = facts['links'][key]
-        evidence = frozenset(convert._value(model, item) for item in copy_evidence.semantic_evidence(link))
-        facts['links'][key] = props, evidence, stated, roles
-    configuration = dict(model.config)
-    if 'reconciliation' in configuration:
-        configuration['reconciliation'] = {key:value for key,value in configuration['reconciliation'].items()
-                                            if key != 'review'}
-    origins = dict(
-        symbols={symbol.key:(symbol.sources, symbol.implicit) for symbol in model.symbols.values()},
-        meanings={meaning.key:(meaning.sources, meaning.name_sources, meaning.tier,
-                              {layout:status.sources for layout,status in meaning.statuses.items()})
-                  for meaning in model.meanings},
-        links={(link.owner.key,link.type,link.to.key,link.slot,link.offset):link.sources
-               for link in model.links})
-    ordered = dict(
-        native_ledgers=getattr(model,'stash',{}).get('ledger_rows',[]),
-        symbols={symbol.key:(symbol.props, symbol.evidence, symbol.former)
-                 for symbol in model.symbols.values()},
-        meanings={meaning.key:(meaning.props, meaning.tables, meaning.other_names,
-                              {layout:(status.props,status.evidence)
-                               for layout,status in meaning.statuses.items()})
-                  for meaning in model.meanings},
-        configuration=configuration)
-    return dict(facts=facts, configuration=convert._value(model, configuration), origins=origins,
-                ordered=ordered, layouts=model.layouts, spaces=model.spaces,
-                functions=model.functions, names=model.names)
-
-
-def require_publication_operations(ops):
-    """Restrict a publication batch before its expensive original execution."""
-    from kb import copy_evidence, diagnostic_rom_resolution, test_contract
-    from kb import timing_argument_resolution,calculation_dependency_resolution
-    from kb import snapshot_rom_resolution
-    from kb import io_access_resolution,io_access_claim_contract
-    from kb import ordinary_access_registry as ordinary
-    if not ops:
-        raise KbError('qualified metadata publication requires an explicit nonempty batch', code=2)
-    if any(not isinstance(op,dict) for op in ops):
-        raise KbError('qualified metadata publication requires operation tables',code=2)
-    try:
-        selected=ordinary.operation_families(ops,repo.ROOT)
-        ordinary_removals=ordinary.removals(selected,repo.ROOT)
-    except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:
-        raise KbError(f'qualified ordinary access publication changes its exact joint operation batch: {error}',code=3) from None
-    diagnostic=[op for op in ops if op.get('cmd')=='reconcile-diagnostic-output']
-    if diagnostic and (any(not diagnostic_rom_resolution.operation_shape(op) for op in diagnostic)
-            or len(diagnostic)!=len(diagnostic_rom_resolution.contract.ROWS)
-            or len({op.get('id') for op in diagnostic})!=len(diagnostic)):
-        raise KbError('qualified diagnostic output publication requires all four unique exact operations',code=3)
-    arguments=[op for op in ops if op.get('cmd')=='reconcile-timing-argument']
-    if arguments and (any(not timing_argument_resolution.operation_shape(op) for op in arguments)
-            or len(arguments)!=len(timing_argument_resolution.contract.ROWS)
-            or len({op.get('id') for op in arguments})!=len(arguments)):
-        raise KbError('qualified timing argument publication requires every unique exact registered operation',code=3)
-    calculations=[op for op in ops if op.get('cmd')=='reconcile-calculation-dependency']
-    if calculations and (any(not calculation_dependency_resolution.operation_shape(op) for op in calculations)
-            or len(calculations)!=len(calculation_dependency_resolution.contract.IDENTITIES)
-            or len({op.get('id') for op in calculations})!=len(calculations)):
-        raise KbError('qualified calculation publication requires every unique exact registered operation',code=3)
-    snapshots=[op for op in ops if op.get('cmd')=='reconcile-snapshot-output']
-    if snapshots and (len(snapshots)!=1 or not snapshot_rom_resolution.operation_shape(snapshots[0])):
-        raise KbError('qualified snapshot output publication requires its one exact registered operation',code=3)
-    io=[op for op in ops if op.get('cmd')=='reconcile-io-access']
-    if io and (any(not io_access_resolution.operation_shape(op) for op in io)
-            or len(io)!=len(io_access_claim_contract.IDENTITIES)
-            or len({op.get('id') for op in io})!=len(io)):
-        raise KbError('qualified I/O publication requires all three unique exact registered operations',code=3)
-    for op in ops:
-        if any(test_contract.exact(op,removal) for removal in ordinary_removals):
-            continue
-        if io_access_resolution.operation_shape(op):
-            continue
-        if snapshot_rom_resolution.operation_shape(op):
-            continue
-        if calculation_dependency_resolution.operation_shape(op):
-            continue
-        if timing_argument_resolution.operation_shape(op):
-            continue
-        if diagnostic_rom_resolution.operation_shape(op):
-            continue
-        if op['cmd'] == 'reconcile-width':
-            continue
-        if any(io_access_claim_contract.registered(item) for item in op.get('evidence', ())):
-            raise KbError('qualified I/O publication accepts its complete reconcile-io-access batch only',code=3)
-        if (op['cmd'] != 'link' or op.get('type') not in ('reader', 'writer')
-                or op.get('keys') not in (None, {}) or len(op.get('evidence') or ()) != 1
-                or not copy_evidence.registered(op['evidence'][0])):
-            raise KbError('qualified metadata publication accepts only registered access proofs and exact width, diagnostic output, timing argument, calculation dependency, I/O or snapshot output resolutions', code=3)
-
-
-def require_metadata_only(before, after, ops, change, texts):
-    """Refuse changes outside exact qualified proof and disposition operations."""
-    from kb import copy_evidence, reconciliation, test_contract, diagnostic_rom_resolution, diagnostic_rom_contract
-    from kb import timing_argument_resolution,timing_argument_contract,calculation_dependency_resolution,calculation_dependency_contract
-    from kb import snapshot_rom_resolution
-    from kb import io_access_resolution,io_access_claim_contract
-    from kb import ordinary_access_registry as ordinary
-    require_publication_operations(ops)
-    from kb import test_origins
-    try:
-        old_TEST={key:origin.packet() for key,origin in test_origins.index(before).items()}
-        new_TEST={key:origin.packet() for key,origin in test_origins.index(after).items()}
-    except (ValueError,TypeError,KeyError,AttributeError):
-        raise KbError('qualified metadata publication requires complete current TEST origins',code=3) from None
-    if not test_contract.exact(old_TEST,new_TEST):
-        raise KbError('qualified metadata publication changes an original TEST origin or evidence position',code=3)
-    for path in texts:
-        if path != repo.OWNER_CONFIG and (not path.parts or path.parts[0] != 'kb'):
-            raise KbError('qualified metadata publication writes only existing native knowledge and review metadata', code=3)
-        if texts[path] is None:
-            raise KbError('qualified metadata publication removes no native document', code=3)
-        if not (before.root / path).is_file():
-            raise KbError('qualified metadata publication creates no native document', code=3)
-    expected,actual=publication_view(before),publication_view(after)
-    diagnostic=getattr(change,'diagnostic_resolutions',{})
-    if diagnostic:
-        try:
-            expected=diagnostic_rom_resolution.publication_expected(before,after,diagnostic,expected,actual)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified diagnostic output publication changes its exact transition: {error}',code=3) from None
-    arguments=getattr(change,'argument_resolutions',{})
-    if arguments:
-        try:
-            expected=timing_argument_resolution.publication_expected(before,after,arguments,expected,actual)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified timing argument publication changes its exact transition: {error}',code=3) from None
-    calculations=getattr(change,'calculation_resolutions',{})
-    if calculations:
-        try:
-            expected=calculation_dependency_resolution.publication_expected(before,after,calculations,expected,actual)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified calculation publication changes its exact transition: {error}',code=3) from None
-    snapshots=getattr(change,'snapshot_resolutions',{})
-    if snapshots:
-        try:
-            expected=snapshot_rom_resolution.publication_expected(before,after,snapshots,expected,actual)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified snapshot output publication changes its exact transition: {error}',code=3) from None
-    io=getattr(change,'io_resolutions',{})
-    if io:
-        try:
-            expected=io_access_resolution.publication_expected(before,after,io,expected,actual)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified I/O publication changes its exact transition: {error}',code=3) from None
-    for family in ordinary.operation_families(ops,before.root):
-        try:expected=family.resolution.publication_expected(before,after,expected)
-        except (OSError,ValueError,TypeError,KeyError,AttributeError,ImportError,RecursionError) as error:
-            raise KbError(f'qualified {family.mode} publication changes its exact grouped-owner transition: {error}',code=3) from None
-    if not test_contract.exact(expected,actual):
-        raise KbError('qualified metadata publication changes native semantic or execution values', code=3)
-    old_reviews = before.config.get('reconciliation', {}).get('review', ())
-    new_reviews = after.config.get('reconciliation', {}).get('review', ())
-    permitted = {('width', subject, identity) for subject, identity in change.width_resolutions.items()}
-    for family in ordinary.operation_families(ops,before.root):
-        if family.withdrawal_only:
-            permitted.update(('access',family.contract.symbol_key(row).key,row['original_claim_sha256'])
-                for row in family.contract.descriptor(before.root)['reference'])
-    for row in diagnostic_rom_contract.ROWS:
-        if row[0] in diagnostic:
-            permitted.add(('access',SymbolKey('7mfk','tbl',row[1]).key,diagnostic[row[0]]))
-    for row in timing_argument_contract.ROWS:
-        if row[0] in arguments:
-            permitted.add(('access',SymbolKey('7mfk','tbl',row[1]).key,arguments[row[0]]))
-    if calculations:
-        for row in calculation_dependency_contract.rows(before.root):
-            permitted.add(('access',calculation_dependency_contract.symbol_key(row).key,calculations[row['operation_id']]))
-    if io:
-        for row in io_access_claim_contract.descriptor(before.root)['reference']:
-            permitted.add(('access',io_access_claim_contract.symbol_key(row).key,io[row['id']]))
-    if snapshots:
-        declared=snapshot_rom_resolution.contract.descriptor(before.root)
-        row=declared['reference'][0]
-        if row['id'] in snapshots:
-            permitted.add(('access',SymbolKey('7mfk','tbl',row['address']).key,snapshots[row['id']]))
-    before_links = {(link.owner.key, link.type, link.to.key, link.slot, link.offset):link for link in before.links}
-    added = set()
-    for link in after.links:
-        identity = link.owner.key, link.type, link.to.key, link.slot, link.offset
-        held = before_links.get(identity)
-        if held is not None and not test_contract.exact(held.evidence, link.evidence):
-            if (len(link.evidence) <= len(held.evidence)
-                    or not test_contract.exact(link.evidence[:len(held.evidence)], held.evidence)
-                    or any(not copy_evidence.registered(item) for item in link.evidence[len(held.evidence):])):
-                raise KbError('qualified metadata publication preserves every original evidence item and its position', code=3)
-            added.add(identity)
-    for symbol, function, claim in reconciliation.access_claims(before):
-        identity = claim['owner'], claim['type'], claim['to'], claim['slot'], claim['offset']
-        if identity in added:
-            permitted.add(('access', symbol.key.key, reconciliation.digest(claim)))
-    remaining = [row for row in old_reviews if reconciliation.difference_key(row) not in permitted]
-    if not test_contract.exact(list(new_reviews), remaining):
-        raise KbError('qualified metadata publication changes an unrequested review or its original contents', code=3)
-
-
-def apply(ops, root=repo.ROOT, dry_run=False, log=print, *, metadata_only=False, archive_before=None):
-    """Apply operations as one change under the lock; returns (change, texts).
-    A dry run plans and writes nothing."""
-    if type(metadata_only) is not bool or archive_before is not None and not metadata_only:
-        raise KbError('a metadata publication archive requires explicit metadata-only mode', code=2)
+def apply(ops, root=repo.ROOT, dry_run=False, log=print):
+    """Validate and apply a native batch under the lock; a dry run writes nothing."""
     with lock.held(root):
         with graph.fresh(root, log=log, held=True) as session:
             base = compile.build(root)
-            change, texts, result = plan(ops, base, graph_resolver(session, base, root, log),
-                                         root)
-            if metadata_only:
-                require_metadata_only(base, result, ops, change, texts)
+            change, texts, result = plan(ops, base, graph_resolver(session, base, root, log), root)
         if not dry_run and texts:
-            if archive_before is not None:
-                from kb import local_paths
-                import hashlib
-                import json
-                archive = local_paths.owned(archive_before, root).resolve()
-                if not archive.is_relative_to(local_paths.results_root(root)):
-                    raise KbError('native publication preimages must live in tmp/local-results', code=2)
-                archive.mkdir()
-                manifest = {}
-                for path, text in texts.items():
-                    source = root / path
-                    data = source.read_bytes()
-                    destination = archive / path
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    destination.write_bytes(data)
-                    manifest[path.as_posix()] = dict(before_sha256=hashlib.sha256(data).hexdigest(),
-                        after_sha256=hashlib.sha256(text.encode()).hexdigest())
-                (archive / 'manifest.json').write_text(json.dumps(manifest, sort_keys=True, indent=2) + '\n')
-                (archive / 'change.diff').write_text(change.diff(texts))
             store.write(root, texts)
             compile.cached.cache_clear()
             graph.sync_held(root, False, log, result)

@@ -278,21 +278,13 @@ def claim_rows(model):
             if allowed and layout not in allowed:
                 continue
             siblings = {other for other in link.stated if family[other] == family[layout]}
-            from kb import copy_evidence
-            proof = copy_evidence.accepted(model, link.owner.symbols[layout],
-                link.to.symbols[layout], copy_evidence.claim_fields(link, layout))
             symbol_links[kind].append({
                 "from": link.owner.symbols[layout].key.key,
                 "to": link.to.symbols[layout].key.key,
                 "props": properties({
                     "layout": layout, "role": link.roles, "slot": link.slot,
                     "offset": link.offset,
-                    "verified": bool(proof) or kind not in L0_VERIFIED and bool(siblings),
-                    "copy_proof": proof['proof'] if proof and proof['scope'] == 'bounded-copy' else None,
-                    "copy_callsite": proof.get('callsite') if proof else None,
-                    "pointer_proof": proof['proof'] if proof and proof['scope'] == 'did-pointer-read' else None,
-                    "pointer_publisher": proof.get('publisher') if proof else None,
-                    "verification_scope": proof['scope'] if proof else None,
+                    "verified": kind not in L0_VERIFIED and bool(siblings),
                     "producer": "derived", "src": "links"})})
     entities, steps = [], []
     for _, entity in sorted(model.entities.items()):
@@ -407,11 +399,6 @@ def stale(current, fp):
             or current.get("schema") != compile.SCHEMA)
 
 
-def proof_stale(current, root=repo.ROOT):
-    from kb import copy_evidence
-    return current is None or current.get('copy_proof_state') != copy_evidence.proof_state(root)
-
-
 def _create_nodes(graph, label, rows):
     return graph.rows(f"UNWIND $rows AS row CREATE (n:Kb:{label}) SET n = row "
                       "RETURN count(n) AS count", rows)
@@ -438,16 +425,12 @@ def l0_part(fp, layout, images, spaces):
 
 def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
     """Load the model into the graph; return a summary per part."""
-    from kb import copy_evidence
-    with copy_evidence.consuming(root):
-        return _load(graph, model, fp, root, full, log)
+    return _load(graph, model, fp, root, full, log)
 
 
 def _load(graph, model, fp, root, full, log):
     ensure_schema(graph)
     previous = meta(graph)
-    from kb import copy_evidence
-    proof_before = copy_evidence.proof_state(root)
     graph.run("MATCH (m:Kb:Meta) DELETE m")
     if full:
         graph.drain("MATCH (n:Kb)")
@@ -492,8 +475,7 @@ def _load(graph, model, fp, root, full, log):
                   key=layout.id, digest=digest)
         summary[f"l0 {layout.id}"] = (counts, time.monotonic() - started, rows["outside"])
         changed = True
-    if (full or previous is None or previous.get("fingerprint") != fp.value
-            or previous.get('copy_proof_state') != proof_before):
+    if full or previous is None or previous.get("fingerprint") != fp.value:
         started = time.monotonic()
         for label in CLAIM_LABELS:
             graph.drain(f"MATCH (n:Kb:{label})")
@@ -528,18 +510,14 @@ def _load(graph, model, fp, root, full, log):
                 f"MATCH (d:Kb:Symbol)-[r:{kind}]->(g:Kb:Symbol) "
                 "OPTIONAL MATCH (d)-[:AT]->(:Location)<-[a:ACCESS]-(:Function)<-[:AT]-(g) "
                 "WITH r, collect(a) AS accesses "
-                "SET r.verified = coalesce(r.copy_proof, '') <> '' OR coalesce(r.pointer_proof, '') <> '' OR "
-                "any(a IN accesses WHERE any(m IN a.modes WHERE m IN $modes))",
+                "SET r.verified = any(a IN accesses WHERE any(m IN a.modes WHERE m IN $modes))",
                 modes=list(modes))
         summary["at"] = ({"at": at}, 0.0, {})
-    if copy_evidence.proof_state(root, live=True) != proof_before:
-        raise repo.KbError('copy execution proof changes during graph construction; Meta is absent', code=6)
     return publish(graph, model, fp, root, summary,
-                   full or previous is None or previous.get("fingerprint") != fp.value, log,
-                   proof_before=proof_before)
+                   full or previous is None or previous.get("fingerprint") != fp.value, log)
 
 
-def publish(graph, model, fp, root, summary, changed, log=print, *, proof_before=None):
+def publish(graph, model, fp, root, summary, changed, log=print):
     """Publish freshness only after every retained layer and source check passes."""
     if changed:
         from kb import compatibility
@@ -547,14 +525,9 @@ def publish(graph, model, fp, root, summary, changed, log=print, *, proof_before
     after = fingerprint.compute(root)
     if after.value != fp.value:
         raise repo.KbError("compiler inputs change during graph construction; Meta is absent", code=6)
-    from kb import copy_evidence
-    proof_after = copy_evidence.proof_state(root, live=True)
-    if proof_before is not None and proof_after != proof_before:
-        raise repo.KbError('copy execution proof changes before Meta publication', code=6)
     commit, head = fingerprint.head(root)
     graph.run("CREATE (m:Kb:Meta) SET m = $props", props={
         "key": "meta", "fingerprint": fp.value, "commit": commit,
-        "copy_proof_state": proof_after,
         "dirty": bool(fingerprint.dirty(fp, head)), "compiler": kb.__version__,
         "schema": compile.SCHEMA, "worktree": str(root),
         "loaded_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -647,7 +620,7 @@ def fresh(root=repo.ROOT, no_sync=False, log=print, held=False):
     fp = fingerprint.compute(root)
     graph = Graph(root)
     current = meta(graph)
-    if not stale(current, fp) and not proof_stale(current, root):
+    if not stale(current, fp):
         return graph
     graph.close()
     if no_sync:
