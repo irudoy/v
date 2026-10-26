@@ -111,10 +111,9 @@ and builds every graph layer from tracked inputs through `kb sync`. The
 workspace package `kb` supplies the knowledge API, graph client, name
 generator, and text matcher. The test runner is a development dependency. The dashboard
 installs its own platform dependencies from
-`tools/can_dashboard/requirements-*.txt`. Component versions and their local
-locations are in the deployment table of
-[`tools/README.md`](tools/README.md#local-deployment), which
-`tools/version_index.py --check` holds to the files that execute them.
+`tools/can_dashboard/requirements-*.txt`. Build and dependency files own the
+versions used by their consumers. Local tool locations are listed in
+[`tools/README.md`](tools/README.md#local-deployment).
 
 Ghidra is needed for structure export alone. `make check`,
 `make defs-generate`, and the ROM-atlas tests query a running, populated

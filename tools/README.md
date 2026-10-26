@@ -60,8 +60,8 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
 | `romviz/architecture.py` | Firmware architecture gate, model export, and block, impact, path, and chain queries |
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
-| `version_index.py` | Hold the deployment table to the version pins builds, containers, and wrappers execute |
-| `single_source.py` | Hold repeated constants, ROM lists, and published counts to the file that owns each |
+| `version_index.py` | Validate execution-image bindings and provide version readers used by packagers |
+| `single_source.py` | Check executable constants and ROM registry bindings against their machine owners |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented
@@ -69,10 +69,8 @@ there. Firmware execution tests belong to `sh-elf-run/README.md`.
 
 ## Local deployment
 
-This table is the single project record for machine-local component versions
-and locations. Narrow tool documents describe usage but do not name versions.
-`version_index.py --check` reads every pin below from the file that executes it
-and fails when the table or another tool document carries a different value.
+Build and dependency files own the version pins used by their consumers.
+This table describes the local deployment and tool locations.
 
 | Component | Version | Local location or source |
 |---|---|---|

@@ -79,7 +79,7 @@ in local results and Git.
   Full checks also run before flashing and before track closure. A local
   commit records source state and does not establish successful acceptance.
 - Keep machine facts in TOML or CSV owners. Do not repeat repository-owned
-  counts, versions or identities in handwritten prose. Each generated section
+  counts in handwritten prose. Each generated section
   has one generator and one consistency check; code and tests do not parse
   prose to recover machine facts.
 - `defs/JK08A.architecture.toml` places every reviewed function in one block and
