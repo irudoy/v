@@ -235,8 +235,8 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
     family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
     expected=(('clamp_latch_caller_withdrawal_paths','clamp_latch_caller_withdrawal_capture'),
               ('paired_word_curve_sum_withdrawal_paths','paired_word_curve_sum_withdrawal_capture'))
-    assert family.captures[-2:]==expected
-    assert len(family.captures)==29
+    assert family.captures[-5:-3]==expected
+    assert len(family.captures)==32
     assert family.withdrawal_only is True and family.direct_owning is False
     consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
     assert consumers[0] is not consumers[1]
@@ -245,6 +245,19 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
         assert f'tools/sh-elf-run/{producer}.py' in family.source_files
         for suffix in ('contract','matrix','semantics','transfers','capture_evidence'):
             assert f'tools/kb/src/kb/{stem}_{suffix}.py' in family.source_files
+        row,=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']==component]
+        item=dict(kind='indirect',mode=family.mode,path=family.contract.DESCRIPTOR,key=family.contract.PREFIX+row['id'])
+        assert registry.matching(item)==(family,)
+
+
+def test_three_remaining_callers_use_the_existing_withdrawal_family_and_distinct_consumers():
+    family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
+    expected=(('misfire_tail_dispatch_withdrawal_paths', 'misfire_tail_dispatch_withdrawal_capture'), ('endpoint_normalizer_writer_withdrawal_paths', 'endpoint_normalizer_writer_withdrawal_capture'), ('bfs_state_caller_withdrawal_paths', 'bfs_state_caller_withdrawal_capture'))
+    assert family.captures[-3:]==expected and len(family.captures)==32
+    consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
+    assert len({id(consumer) for consumer in consumers})==3
+    for component,producer in expected:
+        assert f'tools/sh-elf-run/{producer}.py' in family.source_files
         row,=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']==component]
         item=dict(kind='indirect',mode=family.mode,path=family.contract.DESCRIPTOR,key=family.contract.PREFIX+row['id'])
         assert registry.matching(item)==(family,)

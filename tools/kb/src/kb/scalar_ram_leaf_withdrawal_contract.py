@@ -1804,7 +1804,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '4193a93d663def7a0f8c62b6519e3909b5ae7523997ae08977dd9f3cbdb32951',
   None,
   '4d7bef0473943c428ce036ad87a77eec37655dc7260703f10fdb5fa2a86e2eb5',
-  '2fa2e53f73f3859c1fbde27e9aa7e4b46bbc6fe153d81c6a6181342f5af7b051'),
+  '3388252c7922343186aaf583ed985074d5a3ea0225ed692e73b68517555b10b9'),
  ('00072c3c-0000942c-withdraw',
   37932,
   'rev_limit_throttle_cut/tbl',
@@ -1818,7 +1818,49 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '782329298a209bf40a282b98cc45b4be8e5a2ac28662ac911cedf461f885ba0b',
   None,
   'f25abda47a5c9982f1dd7b1ddc98a6fb28cb140c896590f17a7b21bb032be68e',
-  '29d975789807d43d12a3b5ad6f86646b6e3001aae27bd3f8a22da7aaaa0d8226'))
+  '29d975789807d43d12a3b5ad6f86646b6e3001aae27bd3f8a22da7aaaa0d8226'),
+ ('0007c494-ffff84ba-withdraw',
+  4294935738,
+  'antique-hawk/ram',
+  509076,
+  (),
+  'withdrawal',
+  'misfire_tail_dispatch_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '02d868473e3c258ee4fe81777aea05a65bd44e0a57d0e64ef658d8f3949df311',
+  None,
+  'b3f25fef5ff7f41d7e3f9bd99517454253161957e4beb484c1f5723a6d76544f',
+  'c150bb6389c7fa0d9b81eef9511bb15643eea39b08c53eb55bdaee76a9a6a221'),
+ ('0007af78-ffff41fb-withdraw',
+  4294918651,
+  'fluffy-salamander/ram',
+  503672,
+  (),
+  'withdrawal',
+  'endpoint_normalizer_writer_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '00a6bea0c6225c361de23d2c59fae3eefd394cf866ab46b88e02e93c40ff8c1c',
+  None,
+  '7a0d4c77528f283bed3a494c8a3db25850f5e1ef240854e1c539fb76acb0db36',
+  'a63d5a962c50a9de50c9133222b559dbdfc0d48823675d4654b2ed49fe118512'),
+ ('0003a750-00015630-withdraw',
+  87600,
+  'nice-coucal/tbl',
+  239440,
+  (),
+  'withdrawal',
+  'bfs_state_caller_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '1230d77f4ca1f795e40de5ad2bc862d25cfe1480a08b583f103b3b50b57fa3d1',
+  None,
+  '4d7bef0473943c428ce036ad87a77eec37655dc7260703f10fdb5fa2a86e2eb5',
+  '3388252c7922343186aaf583ed985074d5a3ea0225ed692e73b68517555b10b9'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2098,7 +2140,19 @@ RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
  ('throttle_area_compositor/fn',
   470076,
   'kb/fn/throttle_area_compositor.toml',
-  '5aeea23d3e5815d8c9c4ddff66f6fecb050c36231529097650835b7692515832'))
+  '5aeea23d3e5815d8c9c4ddff66f6fecb050c36231529097650835b7692515832'),
+ ('nebulous-toucanet/fn',
+  509076,
+  'kb/fn/nebulous-toucanet.toml',
+  'd3efdfe8ebb5f8b303439bc6d23c9db9c3f80905f1d41c9a2aa660b2b26c105d'),
+ ('aromatic-coua/fn',
+  503672,
+  'kb/fn/aromatic-coua.toml',
+  'f702196ab3b4a2827cbeec6e5eef7cad821a9fc46edf653e36864fd26e62cc5f'),
+ ('ultramarine-taipan/fn',
+  239440,
+  'kb/fn/ultramarine-taipan.toml',
+  '6205833950008a9be77ea00e6dd204b6626a321f49413b645ee19977d6491633'))
 PRIOR_REFERENCE_SHA256 = '97065661723b863b4a61c65e304a3a6fa4492b31b1859eee8b6ce516322759c6'
 PRIOR_FUNCTION_SHA256 = 'd4546448515592cbda8fd42e6c762217dc27943572d644e0783620f59d1c691e'
 PRIOR_FILES_SHA256 = {'defs/JK08A.scalar-ram-leaves.toml': '6e90413cffcac41a4379ddf756094592f173ca4031e81b97abed134f322bfd11',
@@ -2204,7 +2258,8 @@ ORIGINAL_LINK_TYPES = {'00052034-ffff120e-withdraw': 'writer',
  '0007c8fa-ffff5718-withdraw': 'writer',
  '0007c9a8-ffff5718-withdraw': 'writer',
  '0004ba48-ffff23c5-withdraw': 'writer',
- '000464de-ffff1693-withdraw': 'writer'}
+ '000464de-ffff1693-withdraw': 'writer',
+ '0007af78-ffff41fb-withdraw': 'writer'}
 PRIOR_RPM_STATE_REFERENCE_SHA256 = '56a8137b06abe0c18c93f2b656a526eeacd26336674ec9477ed5e76f8e85ae8d'
 PRIOR_RPM_STATE_FUNCTION_SHA256 = '52f9ce10cc144b22183491cbbfcc2692b8729de7140536f3080d38e54d6b8bc8'
 PRIOR_RPM_STATE_FILES_SHA256 = {'defs/JK08A.rpm-state-withdrawal-paths.toml': '186a30623053641f6ebc6ec33ba6950c343cae2f0e12358a199733b647e83dc6',
@@ -2506,7 +2561,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=129):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=132):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2556,7 +2611,7 @@ def descriptor(root):
         if not document.get('link'):document.pop('link',None)
         for marker in document.get('ledger',()):
             if not marker.get('dependency'):marker.pop('dependency',None)
-    if len(expected)!=98 or not test_contract.exact(expected,proposed):
+    if len(expected)!=100 or not test_contract.exact(expected,proposed):
         raise ValueError('the scalar RAM leaf withdrawal changes another fact, link order, evidence, ledger identity, field or note')
     if len(value['function'])!=len(RETAINED_FUNCTIONS):
         raise ValueError('the scalar RAM leaf withdrawal omits a complete retained function input')
@@ -2597,6 +2652,7 @@ def descriptor(root):
     require_prior_restore16aa_boundary(value)
     require_prior_restore1778_boundary(value)
     require_clamp_latch_and_paired_word_boundary(root,value)
+    require_remaining_standalone_callers_boundary(root,value)
     return value
 
 
@@ -2646,8 +2702,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=129 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all129 unchanged normal unlink operations')
+    if len(selected)!=132 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all132 unchanged normal unlink operations')
     return True
 
 
@@ -2998,7 +3054,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=129:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=132:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -3068,7 +3124,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=129:
+    if len(value['reference'])!=132:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3360,13 +3416,13 @@ def paired_word_sum_prior_current_rows(value,count):
 def require_clamp_latch_and_paired_word_boundary(root,value):
     if (digest(paired_word_sum_prior_current_rows(value,127))!=PRIOR_CLAMP_PAIRED_REFERENCE_SHA256
             or digest(value['function'][:68])!=PRIOR_CLAMP_PAIRED_FUNCTION_SHA256
-            or digest(value['reference'][127:])!=CLAMP_PAIRED_NATIVE_ROWS_SHA256
-            or digest(value['function'][68:])!=CLAMP_PAIRED_NATIVE_FUNCTIONS_SHA256):
+            or digest(remaining_callers_prior_current_rows(value,129)[127:129])!=CLAMP_PAIRED_NATIVE_ROWS_SHA256
+            or digest(value['function'][68:70])!=CLAMP_PAIRED_NATIVE_FUNCTIONS_SHA256):
         raise ValueError('the clamp and paired word package changes a complete prior record, full function or exact new native delta')
     for name,sha256 in CLAMP_PAIRED_FILES_SHA256.items():
         if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=sha256:
             raise ValueError('the clamp and paired word package changes a complete independent caller source')
-    for row,identity in zip(value['reference'][127:],(CLAMP_LATCH_WITHDRAWAL,PAIRED_WORD_SUM_WITHDRAWAL)):
+    for row,identity in zip(value['reference'][127:129],(CLAMP_LATCH_WITHDRAWAL,PAIRED_WORD_SUM_WITHDRAWAL)):
         if (tuple(row[key] for key in ('id','original_claim_sha256','address','function','component'))!=identity
                 or row['declared_width']!='unset' or row['declared_signed']!='unset'):
             raise ValueError('the clamp and paired word package substitutes an exact original or infers native types')
@@ -3400,3 +3456,130 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_capture_evidence.py': '3a6f52db0b2ae64e9f5d0b069efc4009a744c12bcc6fcb13e1cda77079c628ce',
  'tools/sh-elf-run/harness-paired-word-curve-sum-withdrawal-paths.c': '21d714770972eb1d9df92bb5114cd329c4d56b1c166bbf102dc779f7ed08b401',
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_adapter_generated.py': '2b29296a09f8310488de95a57410253f337302b3f8f69a14967159226776751e'}
+
+REMAINING_STANDALONE_CALLERS = {'misfire_tail_dispatch_withdrawal_paths': ('0007c494-ffff84ba-withdraw',
+                                            '02d868473e3c258ee4fe81777aea05a65bd44e0a57d0e64ef658d8f3949df311',
+                                            4294935738,
+                                            509076,
+                                            'antique-hawk/ram',
+                                            'nebulous-toucanet/fn',
+                                            'reader'),
+ 'endpoint_normalizer_writer_withdrawal_paths': ('0007af78-ffff41fb-withdraw',
+                                                 '00a6bea0c6225c361de23d2c59fae3eefd394cf866ab46b88e02e93c40ff8c1c',
+                                                 4294918651,
+                                                 503672,
+                                                 'fluffy-salamander/ram',
+                                                 'aromatic-coua/fn',
+                                                 'writer'),
+ 'bfs_state_caller_withdrawal_paths': ('0003a750-00015630-withdraw',
+                                       '1230d77f4ca1f795e40de5ad2bc862d25cfe1480a08b583f103b3b50b57fa3d1',
+                                       87600,
+                                       239440,
+                                       'nice-coucal/tbl',
+                                       'ultramarine-taipan/fn',
+                                       'reader')}
+
+PRIOR_REMAINING_CALLER_REFERENCE_SHA256 = '60a2eb437087dce10c24d91e800b421ad9d0b5b78ec013af74d6e9f58443cfe3'
+
+PRIOR_REMAINING_CALLER_FUNCTION_SHA256 = 'b18ea36d26d40529ba03ae0a1dd335707412a5472e513402a9fb4db3ca8234d0'
+
+REMAINING_CALLER_PRIOR_CLAMP_POSTIMAGE = ('{"access":"explicit","editor":{"category":"Internal '
+ 'Calculations","coarse":0.062464,"emit":false,"fine":0.000488,"format":"0.000000","name":"Fallback Source '
+ 'Table - BFS candidate scale '
+ '(0x15630)","order":205},"ledger":[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"base_fuel_schedule_producer/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"startup_initializer/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"ultramarine-taipan/fn","type":"reader"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"coolant_index/ram","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"majestic-jackrabbit/ram","type":"index"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"bfs/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"tall-quoll/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte","scale_conf"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"notes":[0],"order":430,"registry":"findings","scale":[22,23,24,25,26,27]}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"coolant_index/ram","type":"index"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"majestic-jackrabbit/ram","type":"index"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"structure","reverse_supports":"identity","supports":"identity","to":"base_fuel_schedule_producer/fn","type":"reader"},{"layouts":["7mfk"],"relies":"level","reverse_relies":"structure","reverse_supports":"identity","supports":"identity","to":"startup_initializer/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"ultramarine-taipan/fn","type":"reader"}],"note":["The '
+ 'runtime map branch is selected when uint8[ffff2804] is zero, when ffff4185 bit 7 is set with nonzero '
+ 'ffff437a, or when ffff4185 bit 6 is set with uint8[ffff2804] below 0x20. The primary runtime branch '
+ 'supplies the common source through independent arithmetic. Raw M is written to ffff1e44 and floor(M/4) to '
+ 'ffff1e40. Exact DID 0x1208 identifies the eventual ffff1026 output as Base Fuel Schedule, closing the '
+ "fallback table's operational identity. The Cranking qualifier and raw/2048 ms conversion remain "
+ 'catalog/profile candidates pending hardware validation. Result disposition: '
+ 'consumer."],"role":"table","scale":"x/2048","scale_level":"candidate","summary":"Eight-point uint16 Base '
+ 'Fuel Schedule fallback table. Lookup M by normalized coolant index uint8[ffff1077]<<8 is used during '
+ 'initialization and selected runtime fallback. Init writes q=min(65535,floor(M*uint8[ffff1160]/512)) to '
+ 'ffff1062 and min(65535,4*q) to ffff1026. Runtime uses floor(M/4) as the common schedule source before the '
+ 'same downstream Base Fuel Schedule '
+ 'producer.","symbol":[{"address":"00015630","evidence":[{"at":"7mfk:0002cc72","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0002cc7e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0002cc86","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0002ccf2","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0002cd1a","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0002cd74","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b79a","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b7ae","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b7c2","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8c0","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8c2","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8cc","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8d0","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8d4","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8d8","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8e6","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b8f4","key":"body","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003b906","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"at":"7mfk:0003bc7e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["00015630","000263d8","00026740","00026a60","0002c648","00039316","0003a750","0003b75c","ffff1026","ffff1062","ffff1077","ffff1160"],"span":1}},{"kind":"trace","relies":"level","supports":"identity","to":"urban-potoo/fn/7mfk"},{"kind":"trace","relies":"contract","supports":"identity","to":"didactic-civet/fn/7mfk"},{"kind":"trace","relies":"level","supports":"identity","to":"precise-koala/fn/7mfk"},{"kind":"registry","supports":"scale","value":"CID=1208H_B/FUEL '
+ 'SCHDL|mSec|x/2048"},{"kind":"registry","supports":"scale","value":"Cranking Base Fuel Schedule '
+ 'Table|1D-8|uint16|BFS|x/2048"},{"kind":"arithmetic","supports":"scale","value":"11.84423828125*2048=24257"},{"kind":"arithmetic","supports":"scale","value":"15971/2048=7.79833984375"},{"kind":"arithmetic","supports":"scale","value":"24257/2048=11.84423828125"},{"kind":"arithmetic","supports":"scale","value":"7.79833984375*2048=15971"}],"layout":"7mfk","name":"nice-coucal"}],"to_raw":"x*2048","unit":"BFS '
+ 'ms"}',
+ '2fa2e53f73f3859c1fbde27e9aa7e4b46bbc6fe153d81c6a6181342f5af7b051',
+ '[{"dependency":[{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"base_fuel_schedule_producer/fn","type":"reader"},{"end":"owner","relies":"level","role":"consumer","supports":"identity","to":"startup_initializer/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"ultramarine-taipan/fn","type":"reader"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"coolant_index/ram","type":"index"},{"end":"owner","relies":"structure","role":"indexed_by","supports":"identity","to":"majestic-jackrabbit/ram","type":"index"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"bfs/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"tall-quoll/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte","scale_conf"],"identity":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"notes":[0],"order":430,"registry":"findings","scale":[22,23,24,25,26,27]}]')
+
+REMAINING_CALLER_NATIVE_ROWS_SHA256 = 'cdb9d82d93e703f55e98d581e91d5a1f248b8da2b3f4f16d96c71161b55fee52'
+
+REMAINING_CALLER_NATIVE_FUNCTIONS_SHA256 = '76559b299e61a9171d4532e63fb3584acc7a39fd9f6743f1c7a8d43ea457d055'
+
+REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.toml': '78a36f7235d2747ab1e895c56552bf7e90460a75ad81073881a884c753116eaa',
+ 'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.md': 'cb3d1c7bcba22150a7e18e62f7100ff9014b1fd87d7c97877d979226cece28a8',
+ 'tools/sh-elf-run/stock_jk08a_misfire_tail_dispatch_withdrawal.s': '7b86c8b2123604f809dcfa383fa0078168b3923681a8492cb4c4b5dc7c2303df',
+ 'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_contract.py': '003db30de8a595b48013e4493812934aadf1b9e22895a011a2a669d747197398',
+ 'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_matrix.py': '55a2f99e35ce5a0c6a3e3dfee964fb3a1770ce3b1eb2c3eaae9d4f2a98fd6cc9',
+ 'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_semantics.py': 'c3096005ce8993952bfcfe749cc6458cbae236b8ee6ba2adc2d2ee3bf48cfc87',
+ 'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_transfers.py': '6dc02900da5e0b1bba0c9ecc7c96ae47fda326876c18e6090ab56dcc68613f26',
+ 'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_capture_evidence.py': '47acf3ca189ee1f7c7d7ff0b0f239c81d09bb2fe9b9a05cc9adb734ce22bf654',
+ 'tools/sh-elf-run/misfire_tail_dispatch_withdrawal_capture.py': 'af9f412a1fb51f1838fe2ad36bc71a3aca4b77db85e8f70b889efbea1977a1be',
+ 'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_contract.py': '3338700852bcab8c2569e7cbeda95f42611158ea94e9c8feafd3e670880a975a',
+ 'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_capture_evidence.py': '383d56441a4d35235b02b21726350a72815984fe1bb554e5f6c1efb1805b436b',
+ 'tools/sh-elf-run/harness-misfire-tail-dispatch-withdrawal-paths.c': '8b05a7a4d6e3838e8e7e1ef7d23a975bb32d3a9bba37e2781cc3273a90f88b98',
+ 'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_adapter_generated.py': '7726a72d705058c6694a3da06279d0294d2db59478b48db105e8d3ddce05dfc2',
+ 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.toml': 'bbde751c764b91c840544f9a655b3e604760d2ad6e12802dd4ff71044d40723e',
+ 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.md': 'ee34ecb45918687372fba5149e1f4dd55e50129ae65d8dd9b83958ca2eae1565',
+ 'tools/sh-elf-run/stock_jk08a_endpoint_normalizer_writer_withdrawal.s': 'af8135f3efc529c365a5a97c822ee2c263962ebbd4b6b16cb271e563e705d7ea',
+ 'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_contract.py': 'aa584565c9ff95b991231bcba7c2a0f695bf1133b2c6de0aed92beb4e8107082',
+ 'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_matrix.py': '09017caf146b9c133dd5dee48ab8cb3921494b6139b684358f95885f041e9dc6',
+ 'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_semantics.py': '3d68c59b8090a05b45440f4a63417937412ab46929ffb61dc796270ea447d81d',
+ 'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_transfers.py': '881304016f8195c4662416d20503e356c8a9c8903ab26c1541ee0e663a34c43e',
+ 'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_capture_evidence.py': '4ea8daa04e53ec37f0d61c7cacc2f58af6f49eafc22a7e0b6beb5223bda4df6b',
+ 'tools/sh-elf-run/endpoint_normalizer_writer_withdrawal_capture.py': 'd2424b388aced864994f91debab5c22e4bfa0e69560c03e432eb66d7858f8015',
+ 'tools/sh-elf-run/harness-endpoint-normalizer-writer-withdrawal-paths.c': '6d67ed1a59ada155739077f8b1711d529c17e7cc093851a2f4123adb66cfd07b',
+ 'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_contract.py': 'aca5dd4d03125a533a44bdaa69104210d1c5818244bc1e87ba06f746534d6c22',
+ 'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_capture_evidence.py': 'dbfd3ec14bcbceb2c545cc5a7257bbb9aac9f5d0adb6def97216746b9be82dfa',
+ 'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_native.py': '9517ad5f6f157bc410752b79472b6f50665b35e5cbd4f189bad98a2c2c3406c5',
+ 'defs/JK08A.bfs-state-caller-withdrawal-paths.toml': 'c332b214e255d3bfeef4e7cbf5d95d8e47cb896a6bfc241738aa97921f3ba61c',
+ 'defs/JK08A.bfs-state-caller-withdrawal-paths.md': '19c4720c59c8483edef0d6d0f5c1bfbe0f7c5569c2caac82edc2346d8cf81f82',
+ 'tools/sh-elf-run/stock_jk08a_bfs_state_caller_withdrawal.s': '92ea155175bb7bd004a1014cc9d3927d82f94afa4dd3cce45b68d4542e684216',
+ 'tools/kb/src/kb/bfs_state_caller_withdrawal_contract.py': '6d681e666e27ad12307c916e1d02968997cfc8d5e7d928600cdb20ff51462c0b',
+ 'tools/kb/src/kb/bfs_state_caller_withdrawal_matrix.py': '6f5dea141897517be0fd09abd147884808ae11d04273e77514a2ffb5fda69f67',
+ 'tools/kb/src/kb/bfs_state_caller_withdrawal_semantics.py': '762b09f8901fd9b7c1db471cd1e6c37dca1ec858ca6809c86a868b2e2945a060',
+ 'tools/kb/src/kb/bfs_state_caller_withdrawal_transfers.py': 'ae6a323775895ffe4f5979ecac97f5f924bde3997682a8462e5b39e8505818cd',
+ 'tools/kb/src/kb/bfs_state_caller_withdrawal_capture_evidence.py': '60695abd67fd7e55a319b0b3b62c6d98ec0ec4e48dd68658cbbc83000d3a464a',
+ 'tools/sh-elf-run/bfs_state_caller_withdrawal_capture.py': '24f184759a795c3948c9e6d900893c08a5e8e9fb79f0c32dfdcd63d62f4bf692',
+ 'tools/sh-elf-run/harness-bfs-state-caller-withdrawal-paths.c': '16a38852c8ea0680b0f6936356475b77748028821dfdfbb08b0ad6d4a20865d1',
+ 'tools/kb/tests/test_bfs_state_caller_withdrawal_contract.py': '3cf9596cdc1c78eedc391a3c283004e3294c6291146dd5729b2ab295c26fab40',
+ 'tools/kb/tests/test_bfs_state_caller_withdrawal_capture_evidence.py': '2601ba6cb3f4e1c2dc9ad186a1471cd101ee257dc3e276d3286cd8d1427237e0',
+ 'tools/kb/tests/test_bfs_state_caller_withdrawal_native.py': '3194b34c24dd382fafc3c09c2c296b4c213c19b48a0ce7431ded47921dac6b4b'}
+
+
+def remaining_callers_prior_current_rows(value,count):
+    # Preserve every preceding current record, restoring only the clamp
+    # postimage fields shared with the separate complete BFS state caller.
+    prior_reference_rows(value,count)
+    rows=deepcopy(value['reference'][:count]);current=value['reference'][131]
+    if tuple(current[key] for key in ('id','original_claim_sha256','address','function','owner'))!=REMAINING_STANDALONE_CALLERS['bfs_state_caller_withdrawal_paths'][:5]:
+        raise ValueError('the BFS state caller substitutes its exact original shared-table boundary')
+    row=rows[127];fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
+    if (row['id']!=CLAMP_LATCH_WITHDRAWAL[0] or not test_contract.exact(
+            tuple(row[key] for key in fields),tuple(current[key] for key in fields))):
+        raise ValueError('the BFS state caller changes a complete current shared clamp postimage')
+    row.update(zip(fields,REMAINING_CALLER_PRIOR_CLAMP_POSTIMAGE))
+    return rows
+
+
+def require_remaining_standalone_callers_boundary(root,value):
+    if (digest(remaining_callers_prior_current_rows(value,129))!=PRIOR_REMAINING_CALLER_REFERENCE_SHA256
+            or digest(value['function'][:70])!=PRIOR_REMAINING_CALLER_FUNCTION_SHA256
+            or digest(value['reference'][129:132])!=REMAINING_CALLER_NATIVE_ROWS_SHA256
+            or digest(value['function'][70:73])!=REMAINING_CALLER_NATIVE_FUNCTIONS_SHA256):
+        raise ValueError('the remaining standalone callers change a complete preceding record, function or exact native delta')
+    for name,sha256 in REMAINING_CALLER_FILES_SHA256.items():
+        if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=sha256:
+            raise ValueError('the remaining standalone callers change a complete independent source')
+    for row in value['reference'][129:132]:
+        pinned=REMAINING_STANDALONE_CALLERS[row['component']];claim=json.loads(row['original_claim_json'])
+        if (tuple(row[key] for key in ('id','original_claim_sha256','address','function','owner'))!=pinned[:5]
+                or (claim['to'],claim['type'])!=pinned[5:]
+                or row['declared_width']!='unset' or row['declared_signed']!='unset'):
+            raise ValueError('a remaining standalone caller changes its original direction, identity or unset native type')
+        function,=[item for item in value['function'] if item['function']==row['function']]
+        if 'proposed_native_json' in function:
+            raise ValueError('a remaining standalone caller changes its full function or downstream dependencies')

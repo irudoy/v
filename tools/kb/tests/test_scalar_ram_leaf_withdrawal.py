@@ -216,7 +216,37 @@ def test_withdrawal_descriptor_pins_each_complete_original_and_native_image(tmp_
     ('byte_sum_caller_withdrawal_paths','no_selected_datum_access'),('byte_sum_caller_withdrawal_paths','no_selected_ram_datum_access'),
     ('byte_sum_caller_withdrawal_paths','native_identity_admission'),('byte_sum_caller_withdrawal_paths','complete_direct_helpers_same_primary'),
     ('byte_sum_caller_withdrawal_paths','complete_clipped_byte_coordinate'),('byte_sum_caller_withdrawal_paths','complete_unsigned_byte_minimum'),
-    ('byte_sum_caller_withdrawal_paths','complete_two_saturating_word_sums'),('clamp_latch_caller_withdrawal_paths', 'exact_clamp_latch_caller_withdrawal_paths'),('clamp_latch_caller_withdrawal_paths', 'no_selected_datum_access'),('clamp_latch_caller_withdrawal_paths', 'native_identity_admission'),('clamp_latch_caller_withdrawal_paths', 'complete_actual_absolute_calls'),('clamp_latch_caller_withdrawal_paths', 'complete_unordered_byte_clamp'),('clamp_latch_caller_withdrawal_paths', 'complete_latch_and_word_refresh'),('clamp_latch_caller_withdrawal_paths', 'complete_selected_table_interval_absence'),('clamp_latch_caller_withdrawal_paths', 'derived_RAM_and_producer_dependencies_preserved'),('clamp_latch_caller_withdrawal_paths', 'native_bindings'),('paired_word_curve_sum_withdrawal_paths', 'exact_paired_word_curve_sum_withdrawal_paths'),('paired_word_curve_sum_withdrawal_paths', 'no_selected_datum_access'),('paired_word_curve_sum_withdrawal_paths', 'native_identity_admission'),('paired_word_curve_sum_withdrawal_paths', 'complete_actual_paired_word_curve_calls'),('paired_word_curve_sum_withdrawal_paths', 'complete_raw_axis_and_curve'),('paired_word_curve_sum_withdrawal_paths', 'complete_two_saturated_word_publications'),('paired_word_curve_sum_withdrawal_paths', 'complete_local_word_carrier'),('paired_word_curve_sum_withdrawal_paths', 'complete_selected_scalar_interval_absence'),('paired_word_curve_sum_withdrawal_paths', 'derived_request_and_area_dependencies_preserved'),('paired_word_curve_sum_withdrawal_paths', 'complete_direct_helpers_same_primary'),('paired_word_curve_sum_withdrawal_paths', 'native_bindings')))
+    ('byte_sum_caller_withdrawal_paths','complete_two_saturating_word_sums'),('clamp_latch_caller_withdrawal_paths', 'exact_clamp_latch_caller_withdrawal_paths'),('clamp_latch_caller_withdrawal_paths', 'no_selected_datum_access'),('clamp_latch_caller_withdrawal_paths', 'native_identity_admission'),('clamp_latch_caller_withdrawal_paths', 'complete_actual_absolute_calls'),('clamp_latch_caller_withdrawal_paths', 'complete_unordered_byte_clamp'),('clamp_latch_caller_withdrawal_paths', 'complete_latch_and_word_refresh'),('clamp_latch_caller_withdrawal_paths', 'complete_selected_table_interval_absence'),('clamp_latch_caller_withdrawal_paths', 'derived_RAM_and_producer_dependencies_preserved'),('clamp_latch_caller_withdrawal_paths', 'native_bindings'),('paired_word_curve_sum_withdrawal_paths', 'exact_paired_word_curve_sum_withdrawal_paths'),('paired_word_curve_sum_withdrawal_paths', 'no_selected_datum_access'),('paired_word_curve_sum_withdrawal_paths', 'native_identity_admission'),('paired_word_curve_sum_withdrawal_paths', 'complete_actual_paired_word_curve_calls'),('paired_word_curve_sum_withdrawal_paths', 'complete_raw_axis_and_curve'),('paired_word_curve_sum_withdrawal_paths', 'complete_two_saturated_word_publications'),('paired_word_curve_sum_withdrawal_paths', 'complete_local_word_carrier'),('paired_word_curve_sum_withdrawal_paths', 'complete_selected_scalar_interval_absence'),('paired_word_curve_sum_withdrawal_paths', 'derived_request_and_area_dependencies_preserved'),('paired_word_curve_sum_withdrawal_paths', 'complete_direct_helpers_same_primary'),('paired_word_curve_sum_withdrawal_paths', 'native_bindings'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'exact_misfire_tail_dispatch_withdrawal_paths'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'no_selected_datum_access'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'native_identity_admission'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'complete_actual_dispatch_BSR_and_tail'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'complete_hysteresis_and_byte_counter'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'complete_thresholded_word_counters'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'complete_PR_MACL_and_distinct_local_carriers'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'complete_selected_native_RAM_root_absence'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'scheduler_cadence_and_transitive_dependencies_preserved'),
+    ('misfire_tail_dispatch_withdrawal_paths', 'native_bindings'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'exact_endpoint_normalizer_writer_withdrawal_paths'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'no_selected_datum_access'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'native_identity_admission'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'no_selected_ram_datum_access'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'entry_scoped_root_absence'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'complete_natural_calls_live_stores_CPU_frame_and_RAM'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'complete_actual_normalization_and_three_computed_words'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'complete_direct_helpers_same_primary'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'complete_existing_normalization_same_primary'),
+    ('endpoint_normalizer_writer_withdrawal_paths', 'native_bindings'),
+    ('bfs_state_caller_withdrawal_paths', 'exact_bfs_state_caller_withdrawal_paths'),
+    ('bfs_state_caller_withdrawal_paths', 'no_selected_datum_access'),
+    ('bfs_state_caller_withdrawal_paths', 'native_identity_admission'),
+    ('bfs_state_caller_withdrawal_paths', 'complete_selected_table_interval_absence'),
+    ('bfs_state_caller_withdrawal_paths', 'derived_RAM_and_producer_dependencies_preserved'),
+    ('bfs_state_caller_withdrawal_paths', 'complete_state_transitions_and_quantity_window'),
+    ('bfs_state_caller_withdrawal_paths', 'complete_natural_calls_live_stores_CPU_frame_and_RAM'),
+    ('bfs_state_caller_withdrawal_paths', 'complete_direct_helpers_same_primary'),
+    ('bfs_state_caller_withdrawal_paths', 'complete_existing_byte_factor_original_same_primary'),
+    ('bfs_state_caller_withdrawal_paths', 'native_bindings')))
 def test_joint_withdrawal_requires_both_independent_components_and_all_domain_flags(models,monkeypatch,component,flag):
     _,before,_=models
     for key,consumer in proof.COMPONENTS.items():
@@ -245,6 +275,7 @@ def test_joint_withdrawal_requires_both_independent_components_and_all_domain_fl
         if key=='byte_sum_caller_withdrawal_paths':result.update(complete_clipped_byte_coordinate=True,complete_unsigned_byte_minimum=True,complete_two_saturating_word_sums=True)
         if key=='clamp_latch_caller_withdrawal_paths':result.update(clamp_latch_flags())
         if key=='paired_word_curve_sum_withdrawal_paths':result.update(paired_word_sum_flags())
+        if key in proof.REMAINING_CALLER_FLAGS:result.update(remaining_caller_flags(key))
         if key==component:result[flag]=not result[flag]
         monkeypatch.setattr(consumer,'require_primary',lambda *args,result=result:result)
     with pytest.raises(ValueError):proof.require_primary(before,controlled_primary())
@@ -263,11 +294,11 @@ def test_joint_admission_calls_each_independent_component_with_the_identical_pri
         def require(model,actual,key=key):
             assert model is before and actual is record;seen.append(key)
             return dict({proof.COMPONENT_FLAGS[key]:True,'no_selected_datum_access':True,
-                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}),**(uptight_RAM3348_flags() if key=='curve_scale_caller_withdrawal_paths' else {}),**(clamp_latch_flags() if key=='clamp_latch_caller_withdrawal_paths' else {}),**(paired_word_sum_flags() if key=='paired_word_curve_sum_withdrawal_paths' else {}))
+                'no_selected_ram_datum_access':True,'native_identity_admission':False,'complete_direct_helpers_same_primary':True,'complete_timing_helpers_same_primary':True,'complete_register_helpers_same_primary':True,'complete_curve_helpers_same_primary':True,'complete_normalization_helpers_same_primary':True,'complete_viridian_caller_same_primary':True,'complete_implicit_caller_same_primary':True,'complete_remainder_source_same_primary':True,'complete_previous_byte_curve_caller_same_primary':True,'complete_standard_implicit_byte_same_primary':True,'complete_real_rotation_helper':True,'complete_real_nibble_helper':True,'entry_scoped_root_absence':True,'complete_RMW_read_write_pairs':True,'complete_real_auxiliary_gate':True,'complete_previous_mixed_curve_caller_same_primary':True,'complete_raw16_axis17_data':True,'complete_signed_shift10':True,'complete_actual_post_DIV1_R1_carrier':True,'complete_local_word_argument':True,'complete_three_state_modes':True,'complete_signed_word_difference':True,'complete_dual_byte_partial_product':True,'complete_both_natural_curve_calls':True,'complete_clipped_byte_coordinate':True,'complete_unsigned_byte_minimum':True,'complete_two_saturating_word_sums':True},**(dfco_direction_flags() if key=='dfco_state_caller_withdrawal_paths' else {}),**(uptight_RAM3348_flags() if key=='curve_scale_caller_withdrawal_paths' else {}),**(clamp_latch_flags() if key=='clamp_latch_caller_withdrawal_paths' else {}),**(paired_word_sum_flags() if key=='paired_word_curve_sum_withdrawal_paths' else {}),**(remaining_caller_flags(key) if key in proof.REMAINING_CALLER_FLAGS else {}))
         monkeypatch.setattr(consumer,'require_primary',require)
     result=proof.require_primary(before,record)
-    assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths','clamp_latch_caller_withdrawal_paths','paired_word_curve_sum_withdrawal_paths'}
-    assert len(seen)==29 and len(result['original_claims'])==129
+    assert set(seen)==set(proof.COMPONENTS)=={'scalar_ram_leaf_paths','scalar_ram_product_paths','scalar_ram_gated_paths','rpm_ram_withdrawal_paths','register_overflow_paths','scalar_ram_word_paths','rpm_state_withdrawal_paths','indexed_word_update_paths','division_caller_withdrawal_paths','byte_curve_caller_withdrawal_paths','word_interp_caller_withdrawal_paths','scaled_division_caller_withdrawal_paths','curve_scale_caller_withdrawal_paths','derivative_scale_caller_withdrawal_paths','guarded_quotient_caller_withdrawal_paths','mixed_curve_caller_withdrawal_paths','timing_remainder_caller_withdrawal_paths','state_ratio_caller_withdrawal_paths','dfco_state_caller_withdrawal_paths','paired_inhibit_writer_withdrawal_paths','threshold_window_reader_withdrawal_paths','aux_rate_caller_withdrawal_paths','paired_curve_normalization_withdrawal_paths','byte_ratio_producer_withdrawal_paths','state_surface_caller_withdrawal_paths','byte_factor_caller_withdrawal_paths','byte_sum_caller_withdrawal_paths','clamp_latch_caller_withdrawal_paths','paired_word_curve_sum_withdrawal_paths','misfire_tail_dispatch_withdrawal_paths','endpoint_normalizer_writer_withdrawal_paths','bfs_state_caller_withdrawal_paths'}
+    assert len(seen)==32 and len(result['original_claims'])==129
 
 
 def test_changed_existing_physical_namespace_cannot_be_hidden_by_withdrawal_admission(models,monkeypatch):
@@ -2024,13 +2055,18 @@ def test_independent_clamp_latch_direct_reader_delta_retains_full_table_and_func
     assert row['declared_width']==row['declared_signed']=='unset'
     before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
     claim=json.loads(row['original_claim_json']);expected=deepcopy(before)
-    selected=[link for link in expected['link'] if (link['type'],link['to'])==('reader','nostalgic-sturgeon/fn')]
-    assert len(selected)==1;expected['link'].remove(selected[0]);removed=0
-    for marker in expected.get('ledger',()):
-        held=marker.get('dependency',[]);marker['dependency']=[item for item in held if not contract.selector(row,row['owner'],item)]
-        removed+=len(held)-len(marker['dependency'])
-        if not marker['dependency']:marker.pop('dependency')
-    assert removed==1 and expected==after
+    joint=[item for item in value['reference'] if item['owner']==row['owner']]
+    assert {item['component'] for item in joint}=={'clamp_latch_caller_withdrawal_paths','bfs_state_caller_withdrawal_paths'}
+    removed=0
+    for selected_row in joint:
+        original=json.loads(selected_row['original_claim_json'])
+        selected=[link for link in expected['link'] if (link['type'],link['to'])==(original['type'],original['to'])]
+        assert len(selected)==1;expected['link'].remove(selected[0])
+        for marker in expected.get('ledger',()):
+            held=marker.get('dependency',[]);marker['dependency']=[item for item in held if not contract.selector(selected_row,row['owner'],item)]
+            removed+=len(held)-len(marker['dependency'])
+            if not marker['dependency']:marker.pop('dependency')
+    assert removed==2 and expected==after
     function=next(item for item in value['function'] if item['function']==0x39316)
     assert contract.function_native_document(function,'proposed')==json.loads(function['original_native_json'])
     assert not any(contract.selector(row,function['owner'],item) for marker in json.loads(function['original_native_json'])['ledger'] for item in marker.get('dependency',()))
@@ -2228,3 +2264,112 @@ def test_independent_caller_owning_binding_refuses_other_native_identity(helper,
         field={'owner':'meaning','function':'function_meaning','original':'original_claim_sha256'}[fault]
         result['native_bindings'][0][field]='changed'
     with pytest.raises(ValueError):require(result)
+
+
+def test_misfire_tail_direct_reader_delta_preserves_scheduler_context_and_full_function():
+    value=contract.descriptor(repo.ROOT)
+    rows=[row for row in value['reference'] if row['component']=='misfire_tail_dispatch_withdrawal_paths']
+    assert len(rows)==1;row=rows[0]
+    assert row['original_claim_sha256']=='02d868473e3c258ee4fe81777aea05a65bd44e0a57d0e64ef658d8f3949df311'
+    assert (row['owner'],row['address'],row['function'])==('antique-hawk/ram',0xFFFF84BA,0x7C494)
+    assert row['declared_width']==row['declared_signed']=='unset'
+    before,after=(json.loads(row[phase+'_native_json']) for phase in ('original','proposed'))
+    claim=json.loads(row['original_claim_json']);expected=deepcopy(before)
+    assert claim['props']=={'layouts':['7mfk'],'relies':'structure','supports':'identity'}
+    assert claim['roles']==claim['evidence']==[] and claim['slot'] is claim['offset'] is None
+    selected=[link for link in expected['link'] if (link['type'],link['to'])==('reader','nebulous-toucanet/fn')]
+    assert len(selected)==1;expected['link'].remove(selected[0]);removed=0
+    for marker in expected.get('ledger',()):
+        held=marker.get('dependency',[])
+        marker['dependency']=[item for item in held if not contract.selector(row,row['owner'],item)]
+        removed+=len(held)-len(marker['dependency'])
+        if not marker['dependency']:marker.pop('dependency')
+    assert removed==1 and expected==after
+    assert before['summary']==after['summary'] and before['note']==after['note']
+    assert before['symbol']==after['symbol']
+    assert {(link['type'],link['to']) for link in after['link']}=={('reader','black-kudu/fn'),('writer','gentle-bat/fn')}
+    assert next(link for link in after['link'] if link['type']=='reader')['role']=='indexed_by'
+    function=next(item for item in value['function'] if item['function']==0x7C494)
+    assert contract.function_native_document(function,'proposed')==json.loads(function['original_native_json'])
+    assert not any(contract.selector(row,function['owner'],item)
+        for marker in json.loads(function['original_native_json'])['ledger'] for item in marker.get('dependency',()))
+
+
+@pytest.mark.parametrize('fault',('summary','scale','unit','note','TEST','link-order','foreign-link','selector-order','new-field'))
+def test_full_scheduler_owner_guard_refuses_any_unrelated_native_change(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['reference'] if item['component']=='misfire_tail_dispatch_withdrawal_paths')
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','scale','unit'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='note':document.setdefault('note',[]).append('changed')
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='link-order':document['link'].reverse()
+        elif fault=='foreign-link':document['link'].pop(0)
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+@pytest.mark.parametrize('fault',('summary','role','block','symbol','TEST','selector','selector-order','new-field'))
+def test_full_full_dispatch_function_guard_keeps_all_downstream_RAM_and_source_contexts(monkeypatch,fault):
+    from kb import scalar_ram_leaf_withdrawal_evidence as family
+    value=contract.descriptor(repo.ROOT);row=next(item for item in value['function'] if item['function']==0x7C494)
+    model=compile.build(repo.ROOT);original=family.store.load
+    def changed(root,path,overlay=None):
+        document=original(root,path,overlay)
+        if str(path)!=row['source']:return document
+        document=deepcopy(document)
+        if fault in ('summary','role','block'):document[fault]=str(document.get(fault,''))+'changed'
+        elif fault=='symbol':document['symbol'][0]['name']='changed'
+        elif fault=='TEST':document['symbol'][0].setdefault('evidence',[]).append({'kind':'test','path':'changed','key':'changed'})
+        elif fault=='selector':document['ledger'][0]['dependency'].pop()
+        elif fault=='selector-order':document['ledger'][0]['dependency'].reverse()
+        else:document['unexpected']=True
+        return document
+    monkeypatch.setattr(family.store,'load',changed)
+    with pytest.raises(ValueError):family.native_rows(model,'original')
+
+
+def remaining_caller_flags(component):
+    pinned=contract.REMAINING_STANDALONE_CALLERS[component]
+    result={flag:True for flag in proof.REMAINING_CALLER_FLAGS[component]}
+    result['native_bindings']=[dict(meaning=pinned[4],function_meaning=pinned[5],original_claim_sha256=pinned[1])]
+    return result
+
+
+def test_remaining_callers_preserve_complete129_reference_and70_function_boundaries():
+    declared=contract.descriptor(repo.ROOT)
+    contract.require_remaining_standalone_callers_boundary(repo.ROOT,declared)
+    assert contract.digest(contract.remaining_callers_prior_current_rows(declared,129))==contract.PRIOR_REMAINING_CALLER_REFERENCE_SHA256
+    assert contract.digest(declared['function'][:70])==contract.PRIOR_REMAINING_CALLER_FUNCTION_SHA256
+    for component in proof.REMAINING_CALLER_FLAGS:
+        assert proof.require_remaining_caller_result(component,remaining_caller_flags(component)) is True
+
+
+@pytest.mark.parametrize('component',tuple(proof.REMAINING_CALLER_FLAGS))
+@pytest.mark.parametrize('fault',('missing','extra','owner','function','original'))
+def test_remaining_caller_owning_refuses_missing_or_substituted_native_binding(component,fault):
+    result=remaining_caller_flags(component)
+    if fault=='missing':result['native_bindings']=[]
+    elif fault=='extra':result['native_bindings'].append(deepcopy(result['native_bindings'][0]))
+    else:result['native_bindings'][0][{'owner':'meaning','function':'function_meaning','original':'original_claim_sha256'}[fault]]='changed'
+    with pytest.raises(ValueError):proof.require_remaining_caller_result(component,result)
+
+
+@pytest.mark.parametrize('fault',('prior-record','prior-function','new-function','original','direction','width','shared-clamp'))
+def test_remaining_callers_refuse_broadened_or_changed_complete_native_snapshots(fault):
+    declared=deepcopy(contract.descriptor(repo.ROOT))
+    if fault=='prior-record':declared['reference'][126]['source']+='-changed'
+    elif fault=='prior-function':declared['function'][69]['source']+='-changed'
+    elif fault=='new-function':declared['function'][72]['source']+='-changed'
+    elif fault=='original':declared['reference'][129]['original_claim_sha256']='0'*64
+    elif fault=='direction':declared['reference'][130]['original_claim_json']='{}'
+    elif fault=='width':declared['reference'][131]['declared_width']=16
+    else:declared['reference'][127]['proposed_native_sha256']='0'*64
+    with pytest.raises(ValueError):contract.require_remaining_standalone_callers_boundary(repo.ROOT,declared)
