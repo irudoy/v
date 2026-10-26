@@ -247,7 +247,7 @@ coordinate values 0..255 retain rising, falling and alternating table inputs.
 Every curve byte, speed threshold, floor, mode, diagnostic and complete CPU/SR input
 has independent alternatives. Case construction uses only raw inputs.
 
-The generated driver, independent numerical/physical consumer and owning postimages
+The generated driver and owning postimages
 require completion before common acceptance. The source declaration does not
 establish selected-reader absence, prior-byte independence, native identity or a
 claim correction. Admission retains all feasible branch and call/return paths,
@@ -277,3 +277,34 @@ both real lookup calls, offset saturation, all four speed-indexed floors, byte
 endpoint sign extension before EXTU.B, complete frame/GBR restoration and each
 classifier result. Executable qualification, complete causal alternatives,
 selected-reader guards and owning publication remain separate obligations.
+
+## Restore reader direction and shared capture
+
+The shared consumer requires 109 two-sided shared conditions and two fixed helper outcomes.
+The 47 state conditions retain their complete outcomes; 62 restore conditions
+retain both outcomes. The diagnostic sentinel branch at 25C3C falls through and
+the byte-width branch at 26A9A is taken. All feasible instructions, actual calls,
+delay slots and complete returns remain mandatory in the same original capture.
+
+The seven strict selected-datum guards and the direction-specific 1939 guard
+apply to their exact 503E0 entry. The restore reader has its own exact identity
+`a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8`.
+Native FFFF16AA reads, alias 010016AA reads and overlapping wider reads are refused.
+Every restore invocation requires one byte store at 501AE from R14 to 010016AA.
+Another site, register, width, domain, missing store or duplicated store is refused.
+The physical byte extent supplies no declared native width or signedness.
+
+There are four complete prior16AA groups: first-diagnostic fallback,
+second-diagnostic fallback, ordinary lookup and offset lookup. Each group retains
+all 256 distinct input bytes and holds every other RAM byte, context, frame,
+SP, continuation, ABI, SR, source and calibration fixed. Complete returned RAM,
+CPU, frame, ABI, actual writer, ordered accesses, controls, calls, trace and code
+must remain equal. The actual raw diagnostic/table call sequence binds each group.
+Partial, duplicated, substituted or changed groups are refused.
+
+Actual-original refusal sources cover six restore windows, physical read/write
+direction, complete returned and intermediate state, helper entries/returns,
+calibration, executable bytes and full prior domains. The active table and floor
+alternatives change actual computed publications with all other inputs held.
+The last speed threshold remains a physical loop/condition operand; it does not
+claim an additional floor index or an output-value dependency.

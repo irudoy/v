@@ -265,3 +265,32 @@ def require1939_reader_with_retained_writes(result,row):
             raise ValueError('the DFCO reader-direction original changes its actual class or forced-ten publication')
         writes.append((site,raw))
     return tuple(writes)
+
+
+READER16AA_IDENTITY=('00050018-ffff16aa-reader-withdraw',
+    'a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8',0xFFFF16AA,0x50018)
+
+
+def require16aa_reader_with_retained_writer(result,row):
+    same(tuple(row[key] for key in ('id','original_claim_sha256','address','function')),
+        READER16AA_IDENTITY,'the restore reader guard substitutes its exact original owner or function')
+    selected=[]
+    for event in result['accesses']:
+        if (type(event) is not dict or type(event.get('address')) is not int
+                or not 0<=event['address']<=0xFFFFFFFF or type(event.get('width_bytes')) is not int
+                or event['width_bytes'] not in (1,2,4) or event['address']+event['width_bytes']>0x100000000):
+            raise ValueError('the restore reader guard changes a complete typed physical operand')
+        if any(event['address']<=at<event['address']+event['width_bytes'] for at in (0xFFFF16AA,RAM_BASE+0x16AA)):
+            selected.append(event)
+    if len(selected)!=1:
+        raise ValueError('the restore reader guard omits or duplicates its retained actual byte writer')
+    event,=selected
+    if (event.get('mode')!='write' or event.get('site')!=0x501AE or event['address']!=RAM_BASE+0x16AA
+            or event['width_bytes']!=1 or event.get('register')!=14 or event.get('domain')!='ram'
+            or type(event.get('bytes')) is not str or len(event['bytes'])!=2):
+        raise ValueError('the restore reader guard reads native16AA or changes its exact retained writer site, width or register')
+    try:raw=bytes.fromhex(event['bytes'])
+    except ValueError as exc:raise ValueError('the restore retained writer has no complete byte value') from exc
+    if len(raw)!=1 or raw.hex()!=event['bytes']:
+        raise ValueError('the restore retained writer changes its canonical complete physical byte')
+    return ((0x501AE,raw[0]),)

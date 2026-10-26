@@ -130,7 +130,7 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
         ('271 configuration fields',len(contract.STATE_CONFIGURATION),271),('44 complete calibration spans',len(contract.STATE_CONTROLLED_CALIBRATION),44),
         ('306 raw input fields',len(matrix.STATE_WIDTHS),306)):
         assert phrase in words and actual==wanted
-    assert f'{len(proof.REQUIRED_BRANCHES)} two-sided conditions' in words and proof.FIXED_BRANCHES=={}
+    assert f'{len(proof.STATE_REQUIRED_BRANCHES)} two-sided conditions' in words and proof.STATE_FIXED_BRANCHES=={}
     assert transfers.STATE_FEASIBLE_SITES==transfers.STATE_EXACT_SITES
     owners={row['owner']:row for row in declared['reference']}
     removed=sum(sum(len(marker.get('dependency',())) for marker in (json.loads(row['original_ledger_json']) or ()))-
@@ -390,3 +390,30 @@ def test_restore_source_feasibility_retains_full_functions_and_only_proved_unrea
     assert transfers.RESTORE_INFEASIBLE_SITES=={0x25C54,*range(0x26A60,0x26A84,2),*range(0x26A9C,0x26AAA,2)}
     for phrase in ('459 feasible restore instructions','26 fixed-mode helper instructions','868 feasible shared instructions'):
         assert phrase in words
+
+
+def test_restore_reader_direction_keeps_every_actual_byte_value_and_requires_the_exact_writer():
+    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    for value in range(256):
+        event=dict(site=0x501AE,mode='write',address=0x010016AA,width_bytes=1,register=14,domain='ram',bytes=f'{value:02x}')
+        assert transfers.require16aa_reader_with_retained_writer(dict(accesses=[event]),row)==((0x501AE,value),)
+
+
+@pytest.mark.parametrize('form',('native-read','alias-read','overlap-word','overlap-dword','native-write',
+    'wrong-site','wrong-register','wrong-width','wrong-domain','missing','duplicate','bool-width','noncanonical-byte'))
+def test_restore_reader_direction_refuses_reads_overlapping_containers_and_changed_actual_writer(form):
+    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    event=dict(site=0x501AE,mode='write',address=0x010016AA,width_bytes=1,register=14,domain='ram',bytes='80')
+    if form=='native-read':event.update(mode='read',address=0xFFFF16AA)
+    elif form=='alias-read':event['mode']='read'
+    elif form=='overlap-word':event.update(mode='read',address=0x010016A9,width_bytes=2,bytes='0080')
+    elif form=='overlap-dword':event.update(mode='read',address=0xFFFF16A8,width_bytes=4,bytes='00008000')
+    elif form=='native-write':event['address']=0xFFFF16AA
+    elif form=='wrong-site':event['site']+=2
+    elif form=='wrong-register':event['register']=4
+    elif form=='wrong-width':event['width_bytes']=2
+    elif form=='wrong-domain':event['domain']='rom'
+    elif form=='bool-width':event['width_bytes']=True
+    elif form=='noncanonical-byte':event['bytes']='aF'
+    events=[] if form=='missing' else [event,event] if form=='duplicate' else [event]
+    with pytest.raises(ValueError):transfers.require16aa_reader_with_retained_writer(dict(accesses=events),row)

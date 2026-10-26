@@ -24,6 +24,10 @@ def original():
     assert result['exact_dfco_state_caller_withdrawal_paths'] is True and result['no_selected_datum_access'] is True
     assert len(result['conditional_branch_outcomes'])==len(proof.REQUIRED_BRANCHES)
     assert all(outcomes==['fallthrough','taken'] for outcomes in result['conditional_branch_outcomes'].values())
+    assert result['reader_only16aa_retained_writer'] is True and result['prior16aa_complete_state_independence'] is True
+    assert result['reader_only16aa_original']==transfers.READER16AA_IDENTITY[1]
+    assert result['retained16aa_write_sites']==[0x501AE]
+    assert result['fixed_branch_outcomes']=={'00025c3c':['fallthrough'],'00026a9a':['taken']}
     for key in ('native_geometry_inference','automatic_resolution','scale_admission','units_admission',
             'native_identity_admission','natural_caller_reachability','hardware_qualification'):
         assert result[key] is False
@@ -107,6 +111,26 @@ def windows(original):
     return declared,image,actual,selected
 
 
+RESTORE_WINDOWS=('first-diagnostic','second-diagnostic','ordinary-lookup','offset-lookup','byte-endpoint','mode-bypass')
+
+
+@pytest.fixture(scope='module')
+def restore_windows(original):
+    declared=original[2]['declaration'];image=repo.images()['JK08A'].path.read_bytes()
+    actual=proof.observations(original[2],declared);selected={}
+    predicates={
+        'first-diagnostic':lambda c:c['kind']=='restore-unread16aa-prior-and-retained-writer' and c['byte_5a95']==32,
+        'second-diagnostic':lambda c:c['kind']=='restore-unread16aa-prior-and-retained-writer' and c['byte_5a98']==32,
+        'ordinary-lookup':lambda c:c['kind']=='restore-unread16aa-prior-and-retained-writer' and c['byte_5a95']==c['byte_5a98']==c['byte_4250']==0,
+        'offset-lookup':lambda c:c['kind']=='restore-unread16aa-prior-and-retained-writer' and c['byte_4250']==128,
+        'byte-endpoint':lambda c:c['kind']=='restore-complete-coordinate-and-curve-direction' and c['byte_106f']==240,
+        'mode-bypass':lambda c:c['kind']=='restore-independent-state-threshold-and-flag-input' and c['byte_2468']==64}
+    for name,predicate in predicates.items():
+        case=next(row for row in declared['cases'] if row['entry']==0x50018 and predicate(row));observed=actual[case['index']]
+        result,value=proof.require_state(declared,image,case,observed,repo.ROOT);selected[name]=(case,observed,result,value)
+    return declared,image,actual,selected
+
+
 def test_all_natural_leaf_entries_have_separate_complete_register_SR_RAM_frame_and_physical_results(windows):
     declared,image,_,selected=windows
     for case,observed,result,value in selected.values():
@@ -150,6 +174,78 @@ def test_actual_complete_state_physical_natural_branch_delay_and_return_refusals
     elif fault=='return-MACL':result['trace'][-1]['after']['macl']^=1
     else:result['trace'][-1]['next']^=2
     with pytest.raises(ValueError):transfers.require(observed,result,value,fixture)
+
+
+@pytest.mark.parametrize('name',RESTORE_WINDOWS)
+@pytest.mark.parametrize('fault',('register','SR','PR','GBR','MACH','MACL','frame','RAM','extra-data-read','extra-data-write',
+    'extra-call','branch-site','branch-target','branch-delay','omit-return','extra-return','code-byte','omit-code',
+    'delay-slot','return-SP','return-GBR','return-MACL','return-target'))
+def test_restore_actual_complete_state_physical_call_and_return_refusals(restore_windows,name,fault):
+    test_actual_complete_state_physical_natural_branch_delay_and_return_refusals(restore_windows,name,fault)
+
+
+def test_restore_actual_windows_retain_the_real_writer_and_natural_return(restore_windows):
+    _,_,_,selected=restore_windows
+    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    for case,observed,result,value in selected.values():
+        writes=transfers.require16aa_reader_with_retained_writer(result,row)
+        assert writes==((0x501AE,observed['memory_after'][0][0x16AA]),)
+        assert result['trace'][-2]['site']==0x50386 and result['trace'][-1]['delay_slot'] is True
+        assert result['trace'][-1]['next']==observed['continuation']
+        assert value['gbr']==observed['context'][15] and value['sp']==observed['sp']
+
+
+@pytest.fixture(scope='module')
+def restore_prior_pairs(original):
+    declared=original[2]['declaration'];image=repo.images()['JK08A'].path.read_bytes()
+    actual=proof.observations(original[2],declared)
+    row=dict(zip(('id','original_claim_sha256','address','function'),transfers.READER16AA_IDENTITY))
+    pairs=[]
+    for case in declared['cases']:
+        if case['kind']!='restore-unread16aa-prior-and-retained-writer':continue
+        observed=actual[case['index']];result,_=proof.require_state(declared,image,case,observed,repo.ROOT)
+        pairs.append((observed,result,transfers.require16aa_reader_with_retained_writer(result,row)))
+    assert proof.require16aa_prior_independence(pairs) is True
+    return pairs
+
+
+@pytest.mark.parametrize('fault',('omit','duplicate','prior','entry','frame-before','frame-after','context',
+    'CPU','RAM','writer','bound-before','bound-after','calibration-before','calibration-after',
+    'ABI-before','ABI-after','call','trace','branch','code'))
+def test_restore_actual_prior_domain_refuses_partial_or_changed_complete_inputs_and_outcomes(restore_prior_pairs,fault):
+    pairs=list(restore_prior_pairs)
+    if fault=='omit':pairs.pop()
+    elif fault=='duplicate':pairs.append(pairs[0])
+    else:
+        observed,result,writes=deepcopy(pairs[1])
+        if fault=='prior':
+            memory=bytearray(observed['memory_before'][0]);memory[0x16AA]^=1;observed['memory_before']=(bytes(memory),)
+        elif fault=='entry':observed['entry']=0x503E0
+        elif fault in ('frame-before','frame-after','bound-before','bound-after'):
+            key=fault.replace('-','_');raw=observed[key];observed[key]=bytes([raw[0]^1])+raw[1:]
+        elif fault=='context':observed['context']=(observed['context'][0]^1,*observed['context'][1:])
+        elif fault=='CPU':observed['exit']=(observed['exit'][0]^1,*observed['exit'][1:])
+        elif fault=='RAM':
+            memory=bytearray(observed['memory_after'][0]);memory[0x1000]^=1;observed['memory_after']=(bytes(memory),)
+        elif fault=='writer':writes=((0x501AE,writes[0][1]^1),)
+        elif fault.startswith('calibration-'):
+            key=fault.replace('-','_');at=next(iter(observed[key]));raw=observed[key][at];observed[key][at]=bytes([raw[0]^1])+raw[1:]
+        elif fault.startswith('ABI-'):
+            key=fault.lower().replace('-','_');observed[key]=(observed[key][0]^1,*observed[key][1:])
+        elif fault=='call':result['calls'][0]['target']+=2
+        elif fault=='trace':result['trace'][-1]['next']+=2
+        elif fault=='branch':result['branches'][0]['target']+=2
+        elif fault=='code':result['code'][next(iter(result['code']))]='0009'
+        pairs[1]=(observed,result,writes)
+    with pytest.raises(ValueError):proof.require16aa_prior_independence(pairs)
+
+
+def test_restore_capture_coverage_and_prior_domains_follow_the_current_source_contract():
+    words=' '.join((repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text().split())
+    assert len(proof.STATE_REQUIRED_BRANCHES)==47 and len(proof.RESTORE_REQUIRED_BRANCHES)==62
+    assert len(proof.REQUIRED_BRANCHES)==109 and len(proof.FIXED_BRANCHES)==2
+    for phrase in ('109 two-sided shared conditions','two fixed helper outcomes','four complete prior16AA groups'):
+        assert phrase in words
 
 
 @pytest.mark.parametrize('name',('state', 'early-bypass', 'counter-init', 'delay-expiry', 'threshold-product', 'rotation-invalid', 'rotation-six', 'raw-index-255', 'zero-table'))

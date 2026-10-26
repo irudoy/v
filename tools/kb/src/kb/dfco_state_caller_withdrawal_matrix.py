@@ -253,7 +253,8 @@ def restore_cases(declared,image):
     for gate in gates:
         add('restore-each-independent-lookup-or-fallback-gate',**gate)
     profiles=(dict(),dict(byte_2468=64),dict(byte_2458=0),dict(byte_2458=160),dict(byte_24cf=0),
-        dict(byte_4250=128),dict(config_870c=128),dict(config_8b3f=128),dict(byte_1083=0))
+        dict(byte_4250=128),dict(config_870c=128),dict(config_8b3f=128),dict(byte_1083=0),
+        dict(byte_2458=160,byte_1083=0),dict(config_870c=128,config_8b3f=128))
     scalar_fields=tuple(name for name,at,width in RESTORE_RAM_FIELDS if name not in ('byte_14ec','byte_16aa','byte_1778'))
     scalar_fields+=tuple(row['field'] for row in contract.CONFIGURATION if row['field'].startswith('config_')
         and row['address'] in (0x84E8,0x85FA,0x85FC,0x870C,0x8A2F,0x8A3A,0x8A3B,0x8A3E,0x8A3F,0x8B3F))
@@ -270,10 +271,35 @@ def restore_cases(declared,image):
         for index,field in enumerate(fields):
             for value in (0,1,127,128,254,255):
                 add('restore-each-independent-physical-curve-byte',byte_106f=min(255,index*16+8),**{field:value})
-    for field in (*RESTORE_SPEED_FIELDS,*RESTORE_FLOOR_FIELDS):
+    for field in RESTORE_SPEED_FIELDS:
         for value in (0,1,31,32,127,128,254,255):
-            add('restore-each-independent-speed-threshold-or-floor-byte',**{field:value})
+            floors=dict(zip(RESTORE_FLOOR_FIELDS,(40,80,120,160)))
+            zero_curves={name:0 for fields in RESTORE_CURVE_FIELDS.values() for name in fields}
+            add('restore-each-independent-speed-threshold-byte',**dict(zero_curves,**floors,**{field:value}))
+    for index,field in enumerate(RESTORE_FLOOR_FIELDS):
+        for value in (0,1,31,32,127,128,254,255):
+            add('restore-each-independent-speed-floor-byte',byte_106a=(0,4,8,12)[index],**{field:value})
+    for offset in range(256):
+        add('restore-complete-offset-saturation-boundaries',byte_4250=128,config_84e8=offset)
+    zero_curves={name:0 for fields in RESTORE_CURVE_FIELDS.values() for name in fields}
+    zero_floors={name:0 for name in RESTORE_FLOOR_FIELDS}
+    split_curves={name:(120 if address==0x1298C else 60) for address,fields in RESTORE_CURVE_FIELDS.items() for name in fields}
+    tail_profiles=(dict(byte_110e=0,**split_curves),dict(config_870c=128,config_8b3f=128,**split_curves),
+        dict(config_8b3f=128,**split_curves),dict(config_8b3f=128,byte_2450=64),
+        dict(byte_2458=160,byte_24cf=0),dict(byte_2458=160,config_870c=128),
+        dict(byte_2458=160,byte_2978=128),dict(byte_2458=160,config_85fc=128))
+    for profile in tail_profiles:
+        for rpm in (0,1,31,32,42,43,60,62,63,64,72,73,88,89,120,121,127,128,254,255):
+            add('restore-complete-classifier-threshold-and-mode-boundaries',**dict(profile,byte_11b3=rpm))
+    for coordinate in range(256):
+        add('restore-complete-speed-index-output-alternatives',**dict(zero_curves,
+            **dict(zip(RESTORE_FLOOR_FIELDS,(40,80,120,160))),byte_106a=coordinate))
     for profile in RESTORE_PRIOR_PROFILES:
         for prior in range(256):
             add('restore-unread16aa-prior-and-retained-writer',**dict(profile,byte_16aa=prior))
     return tuple(dict(row,index=index) for index,row in enumerate(inputs))
+
+
+ENTRY_FIELDS[0x50018]=('byte_106a','byte_106f','byte_5a95','byte_5a98','byte_4250',
+    'config_84e8','config_8a3e','config_8a3f',*RESTORE_SPEED_FIELDS[:3],*RESTORE_FLOOR_FIELDS,
+    *(name for fields in RESTORE_CURVE_FIELDS.values() for name in fields))

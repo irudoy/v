@@ -16,7 +16,7 @@ PREFIX='kb-dfco-state-caller-withdrawal-observation '
 HEADER='dfco-state-caller-withdrawal-cases.h'
 HARNESS='harness-dfco-state-caller-withdrawal-paths.c'
 OBSERVER='stock_ignition_consumer_invoke.s'
-REQUIRED_BRANCHES=(328720,
+STATE_REQUIRED_BRANCHES=(328720,
  328732,
  328740,
  328752,
@@ -63,8 +63,72 @@ REQUIRED_BRANCHES=(328720,
  329592,
  329596,
  329600)
-FIXED_BRANCHES={}
-SOURCE_FILES=('tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_capture_evidence.py', 'tools/kb/src/kb/byte_surface_equations.py', 'tools/kb/src/kb/test_stock_capture.py', 'defs/JK08A.dfco-state-caller-withdrawal-paths.toml', 'defs/JK08A.scalar-ram-leaf-withdrawals.toml', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_contract.py', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_evidence.py', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_resolution.py', 'defs/JK08A.counter-access-claims.toml', 'defs/JK08A.maf-access-claims.toml')
+RESTORE_REQUIRED_BRANCHES=(327752,
+ 327764,
+ 327780,
+ 327796,
+ 327806,
+ 327818,
+ 327824,
+ 327834,
+ 327842,
+ 327882,
+ 327900,
+ 327916,
+ 327936,
+ 327962,
+ 327972,
+ 327990,
+ 328004,
+ 328024,
+ 328036,
+ 328044,
+ 328050,
+ 328068,
+ 328088,
+ 328116,
+ 328128,
+ 328146,
+ 328154,
+ 328162,
+ 328186,
+ 328194,
+ 328206,
+ 328212,
+ 328220,
+ 328330,
+ 328338,
+ 328342,
+ 328360,
+ 328368,
+ 328372,
+ 328392,
+ 328404,
+ 328408,
+ 328418,
+ 328422,
+ 328430,
+ 328438,
+ 328446,
+ 328450,
+ 328460,
+ 328468,
+ 328472,
+ 328482,
+ 328490,
+ 328498,
+ 328506,
+ 328510,
+ 328520,
+ 328528,
+ 328532,
+ 328542,
+ 156558,
+ 157506)
+REQUIRED_BRANCHES=(*STATE_REQUIRED_BRANCHES,*RESTORE_REQUIRED_BRANCHES)
+STATE_FIXED_BRANCHES={}
+FIXED_BRANCHES={0x25C3C:'fallthrough',0x26A9A:'taken'}
+SOURCE_FILES=('tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py', 'tools/kb/src/kb/dfco_state_caller_withdrawal_capture_evidence.py', 'tools/kb/src/kb/byte_surface_equations.py', 'tools/kb/src/kb/test_stock_capture.py', 'defs/JK08A.dfco-state-caller-withdrawal-paths.toml', 'defs/JK08A.scalar-ram-leaf-withdrawals.toml', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_contract.py', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_evidence.py', 'tools/kb/src/kb/scalar_ram_leaf_withdrawal_resolution.py', 'defs/JK08A.counter-access-claims.toml', 'defs/JK08A.maf-access-claims.toml', 'tools/kb/src/kb/arrogant_catfish_semantics.py')
 
 
 def sha(data):return hashlib.sha256(data).hexdigest()
@@ -90,7 +154,7 @@ def native_bindings(model):
             raise ValueError('the DFCO state caller withdrawal original changes a retained exact owner, function or native type')
         result.append(dict(symbol=symbol.key.key,meaning=row['owner'],function=function.key.key,
             function_meaning=function.meaning.key,original_claim_sha256=row['original_claim_sha256']))
-    if len(result)!=8:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
+    if len(result)!=9:raise ValueError('the DFCO state caller withdrawal original omits an exact original withdrawal identity')
     return result
 
 
@@ -255,16 +319,22 @@ def require_witness(model,packet,inputs):
     proof_adapter.require_source_inputs(root,contract.DESCRIPTOR,inputs)
     from kb import scalar_ram_leaf_withdrawal_contract as withdrawal
     rows=[row for row in withdrawal.descriptor(root)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
-    strict_rows=[row for row in rows if row['id']!=transfers.READER1939_IDENTITY[0]]
+    strict_rows=[row for row in rows if row['function']==0x503E0 and row['id']!=transfers.READER1939_IDENTITY[0]]
     reader_row,=[row for row in rows if row['id']==transfers.READER1939_IDENTITY[0]]
-    prior_pairs=[]
+    restore_row,=[row for row in rows if row['id']==transfers.READER16AA_IDENTITY[0]]
+    prior_pairs=[];restore_pairs=[]
     actual=observations(packet,declared);coverage={site:set() for site in REQUIRED_BRANCHES};seen=set();entries=set()
     fixed={site:set() for site in FIXED_BRANCHES};publications={}
     for index,(case,observed) in enumerate(zip(declared['cases'],actual)):
         result,value=require_state(declared,image,case,observed,root)
-        transfers.require_no_selected_datum(result,strict_rows)
-        writes=transfers.require1939_reader_with_retained_writes(result,reader_row)
-        if case['kind']=='unread1939-prior-and-retained-writes':prior_pairs.append((observed,writes))
+        if case['entry']==0x503E0:
+            transfers.require_no_selected_datum(result,strict_rows)
+            writes=transfers.require1939_reader_with_retained_writes(result,reader_row)
+            if case['kind']=='unread1939-prior-and-retained-writes':prior_pairs.append((observed,writes))
+        elif case['entry']==0x50018:
+            writes=transfers.require16aa_reader_with_retained_writer(result,restore_row)
+            if case['kind']=='restore-unread16aa-prior-and-retained-writer':restore_pairs.append((observed,result,writes))
+        else:raise ValueError('the DFCO capture substitutes an unreviewed natural entry')
         entries.add(observed['entry']);seen.update(result['code'])
         publications[index]=computed_publications(observed,result)
         for branch in result['branches']:
@@ -279,12 +349,15 @@ def require_witness(model,packet,inputs):
         raise ValueError('the DFCO state caller leaves a proved fixed byte mode, EXTU.W sign or convex byte-cap premise')
     require_positive_alternatives(actual,declared,publications)
     require1939_prior_independence(prior_pairs)
+    require16aa_prior_independence(restore_pairs)
     return dict(region=REGION,observations=len(actual),image_sha256=sha(image),fixture_sha256=sha(fixture),
         elf_sha256=packet['elf_sha256'],stdout_sha256=packet['stdout_sha256'],native_bindings=native_bindings(model),
         exact_dfco_state_caller_withdrawal_paths=True,complete_real_rotation_helper=True,no_selected_datum_access=True,no_selected_ram_datum_access=True,
         strict_absence_originals=[row['original_claim_sha256'] for row in strict_rows],
         reader_only1939_original=reader_row['original_claim_sha256'],reader_only1939_retained_writer=True,
         prior1939_complete_state_independence=True,retained1939_write_sites=[0x50574,0x50594],
+        reader_only16aa_original=restore_row['original_claim_sha256'],reader_only16aa_retained_writer=True,
+        prior16aa_complete_state_independence=True,retained16aa_write_sites=[0x501AE],
         selected_native_RAM_aliases={f'{native:08x}':f'{alias:08x}' for original,native,alias in transfers.NATIVE_ROOTS if alias is not None},
         conditional_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in coverage.items()},
         fixed_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in fixed.items()},
@@ -335,4 +408,37 @@ def require1939_prior_independence(pairs):
     modes={group['mode'] for group in groups.values() if group['priors']==set(range(256))}
     if modes!={None,0x50574,0x50594}:
         raise ValueError('the DFCO reader-direction original omits complete prior-byte domains for bypass or either real writer')
+    return True
+
+
+def require16aa_prior_independence(pairs):
+    groups={}
+    for observed,result,writes in pairs:
+        if observed['entry']!=0x50018:
+            raise ValueError('the restore prior-byte domain substitutes another caller')
+        memory=bytearray(observed['memory_before'][0]);prior=memory[0x16AA];memory[0x16AA]=0
+        held=dict(entry=observed['entry'],memory=bytes(memory).hex(),context=list(observed['context']),
+            frame=observed['frame_before'].hex(),sp=observed['sp'],continuation=observed['continuation'],
+            abi=list(observed['abi_before']),sr=observed['sr_before'],bound=observed['bound_before'].hex(),
+            calibration={str(at):raw.hex() for at,raw in observed['calibration_before'].items()})
+        key=sha(json.dumps(held,sort_keys=True,separators=(',',':')).encode())
+        after=observed['memory_after'][0]
+        if len(writes)!=1 or writes[0]!=(0x501AE,after[0x16AA]):
+            raise ValueError('the restore prior-byte domain detaches its retained actual byte writer')
+        calls=tuple((row['site'],row['target']) for row in result['calls'])
+        mode=(calls,bool(observed['memory_before'][0][0x4250]&128))
+        outcome=(after,observed['exit'],observed['frame_after'],observed['context'],observed['abi_after'],
+            observed['bound_after'],observed['calibration_after'],writes,result['accesses'],result['branches'],
+            result['calls'],result['trace'],result['code'])
+        group=groups.setdefault(key,dict(priors=set(),mode=mode,outcome=outcome))
+        if prior in group['priors']:
+            raise ValueError('the restore prior-byte domain duplicates an input byte')
+        same((mode,outcome),(group['mode'],group['outcome']),
+            'the restore original consumes prior16AA through complete CPU,frame,RAM,ABI,trace or retained writer results')
+        group['priors'].add(prior)
+    expected={(contract.RESTORE_SOURCE_CALLS[:1],False),(contract.RESTORE_SOURCE_CALLS[:2],False),
+        (contract.RESTORE_SOURCE_CALLS,False),(contract.RESTORE_SOURCE_CALLS,True)}
+    if (len(groups)!=4 or any(group['priors']!=set(range(256)) for group in groups.values())
+            or {group['mode'] for group in groups.values()}!=expected):
+        raise ValueError('the restore original omits a complete prior-byte domain for either diagnostic fallback or either actual lookup writer')
     return True
