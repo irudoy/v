@@ -1545,6 +1545,10 @@ def _project_can(
     telemetry_stage_sha256=ZERO_SHA256,
 ):
     base = can_telemetry_layout.load_layout()
+    control_mailbox = dict(base.control_mailbox_overrides).get(
+        profile.rom, base.control_mailbox
+    )
+    control_layout = replace(base, control_mailbox=control_mailbox)
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
     source_texts = {}
@@ -1566,7 +1570,13 @@ def _project_can(
             )
         else:
             source_texts[unit.key] = _render_source(
-                _read_source(unit.source), profile, mapping
+                _read_source(unit.source), profile, mapping,
+                overrides={
+                    base.control_mailbox_address:
+                        control_layout.control_mailbox_address,
+                    base.control_mailbox_mask:
+                        control_layout.control_mailbox_mask,
+                } if unit.key == "control" else None,
             )
             if unit.key == "capture":
                 source_texts[unit.key] = _move_knock_surface_bit(
@@ -1650,6 +1660,7 @@ def _project_can(
         configuration=_shift_range(base.configuration, delta),
         mailbox_record_address=can_symbols["mailbox_record_address"],
         mailbox_record_stock=can_symbols["mailbox_record_stock"],
+        control_mailbox=control_mailbox,
         ram=ram,
         code_regions=code_regions,
         assembly_units=units,

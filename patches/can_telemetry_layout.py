@@ -54,6 +54,8 @@ class Layout:
     code_regions: tuple[common.CodeRegion, ...]
     assembly_units: tuple[common.AssemblyUnit, ...]
     hooks: tuple[common.Hook, ...]
+    control_mailbox: int = 31
+    control_mailbox_overrides: tuple[tuple[str, int], ...] = ()
     variant: str = "combined-mailbox26"
     source_texts: tuple[tuple[str, str], ...] = ()
     source_literals: tuple[
@@ -83,6 +85,14 @@ class Layout:
     @property
     def source_text_by_unit(self):
         return dict(self.source_texts)
+
+    @property
+    def control_mailbox_address(self):
+        return 0xFFFFD900 + self.control_mailbox * 0x20
+
+    @property
+    def control_mailbox_mask(self):
+        return 1 << (self.control_mailbox - 16)
 
     @property
     def source_literal_by_unit(self):
@@ -129,6 +139,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "owned_rom_end", "reserved_rom_start", "reserved_rom_end",
             "configuration_address", "configuration_size",
             "mailbox_record_address", "mailbox_record_stock", "ram",
+            "control_mailbox", "control_mailbox_overrides",
             "code_region", "assembly_unit", "hook",
         ),
         path.name,
@@ -206,12 +217,22 @@ def load_layout(path=DEFAULT_MANIFEST):
         code_regions=code_regions,
         assembly_units=assembly_units,
         hooks=hooks,
+        control_mailbox=raw["control_mailbox"],
+        control_mailbox_overrides=tuple(sorted(
+            raw["control_mailbox_overrides"].items()
+        )),
     )
     validate_structure(layout)
     return layout
 
 
 def validate_structure(layout):
+    for mailbox in (
+        layout.control_mailbox,
+        *(value for _rom, value in layout.control_mailbox_overrides),
+    ):
+        if type(mailbox) is not int or not 16 <= mailbox <= 31:
+            raise ValueError("control mailbox must be in HCAN1 group 16..31")
     if layout.schema_version != 2:
         raise ValueError(f"unsupported CAN telemetry layout schema {layout.schema_version}")
     if (

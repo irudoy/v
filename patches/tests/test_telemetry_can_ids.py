@@ -41,6 +41,13 @@ def test_highest_permitted_pair_builds_on_every_rom(target):
     assert result.profile.telemetry.can_id == 0x6FE
     assert result.profile.telemetry.control_can_id == 0x6FF
     assert rom_checksums.verify(result.data, target.checksum_layout).valid
+    assert target.telemetry_layout.control_mailbox == (
+        22 if target.rom == "1ME3B" else 31
+    )
+    if target.rom == "1ME3B":
+        assert target.stock_image.data[0x9820:0x9824] == bytes.fromhex("05000000")
+        assert result.data[0x9820:0x9824] == bytes.fromhex("05000000")
+        assert result.data[0x9844:0x9848] == bytes.fromhex("01085240")
 
 
 @pytest.mark.parametrize("rom,identifier,mailbox,direction", (

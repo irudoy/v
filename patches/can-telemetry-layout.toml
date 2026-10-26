@@ -20,6 +20,8 @@ configuration_address = 0x000D4E00
 configuration_size = 16
 mailbox_record_address = 0x000097BE
 mailbox_record_stock = 0x05000000
+control_mailbox = 31
+control_mailbox_overrides = { "1ME3B" = 22 }
 
 [ram]
 proven_free_start = 0xFFFF5D00

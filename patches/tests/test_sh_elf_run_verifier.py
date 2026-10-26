@@ -462,7 +462,6 @@ mov #0x5,r1
             },
             {"TARGET_1ME3B"},
         )
-        self.assertEqual(harness.count("TARGET_1ME3B"), 1)
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
         fixture = bytearray(32)

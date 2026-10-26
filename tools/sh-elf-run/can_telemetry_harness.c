@@ -41,12 +41,18 @@
 #define MBIMR1 0xffffd850U
 #define UMSR1 0xffffd858U
 #define MAILBOX_DATA 0xffffdc48U
+#ifdef TARGET_1ME3B
+#define CONTROL_MAILBOX 0xffffdbc0U
+#define CONTROL_MAILBOX_DATA 0xffffdbc8U
+#define CONTROL_MAILBOX_MASK 0x0040U
+#else
 #define CONTROL_MAILBOX 0xffffdce0U
 #define CONTROL_MAILBOX_DATA 0xffffdce8U
+#define CONTROL_MAILBOX_MASK 0x8000U
+#endif
 #define STOCK_ACTIVITY 0xffffa56fU
 #define MAILBOX26_MASK 0x0400U
 #define MAILBOX28_MASK 0x1000U
-#define MAILBOX31_MASK 0x8000U
 /* The knock surface field takes table slot 32 and bank byte 37, and the wire
    carries the high-detonation bit in bit 6, which the hosts decode. The knock
    surface state of 1ME3B keeps the bit in bit 7; its capture moves that bit
@@ -205,7 +211,7 @@ static void reset_case(void)
     write_u16(ram_pointer(IRR1), 0);
     write_u16(ram_pointer(RXPR1), 0);
     write_u16(ram_pointer(RFPR1), 0);
-    write_u16(ram_pointer(MBIMR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(MBIMR1), CONTROL_MAILBOX_MASK);
     write_u16(ram_pointer(UMSR1), 0);
     fill_bytes(ram_pointer(MAILBOX_DATA), 8, 0);
     fill_bytes(ram_pointer(CONTROL_MAILBOX), 0x14, 0);
@@ -217,8 +223,95 @@ static void seed_control_command(const uint8_t *payload, uint8_t dlc)
 {
     copy_bytes(ram_pointer(CONTROL_MAILBOX_DATA), payload, 8);
     ram_pointer(CONTROL_MAILBOX)[5] = dlc;
-    write_u16(ram_pointer(RXPR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(RXPR1), CONTROL_MAILBOX_MASK);
 }
+
+#ifdef TARGET_1ME3B
+static int run_stock_receive_preservation_cases(void)
+{
+    static const uint8_t stock_mailbox31[0x14] = {
+        0x29, 0x20, 0x00, 0x00, 0x02, 0x08, 0x00, 0x00,
+        0x91, 0x82, 0x73, 0x64, 0x55, 0x46, 0x37, 0x28,
+        0x00, 0x00, 0x00, 0x00,
+    };
+    /* This stock address is independent of the control mailbox allocation. */
+    volatile uint8_t *stock = ram_pointer(0xffffdce0U);
+
+    count_case();
+    reset_case();
+    copy_bytes(stock, stock_mailbox31, sizeof(stock_mailbox31));
+    write_u16(ram_pointer(MBIMR1), 0x8000U);
+    (void)invoke_r0(HCAN1_INIT_WRAPPER);
+    if (!expect_bytes("stock-rx-init", "mailbox31", stock,
+            stock_mailbox31, sizeof(stock_mailbox31)))
+        return 0;
+    if (read_u16(ram_pointer(MBIMR1)) != 0x8040U)
+        return fail_value("stock-rx-init", "interrupt_mask",
+            read_u16(ram_pointer(MBIMR1)), 0x8040U);
+
+    count_case();
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 1)
+        return fail_value("stock-rx-start", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 1);
+    if (!expect_bytes("stock-rx-start", "mailbox31", stock,
+            stock_mailbox31, sizeof(stock_mailbox31)))
+        return 0;
+
+    count_case();
+    seed_control_command(stop_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 2)
+        return fail_value("stock-rx-stop", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 2);
+    if (!expect_bytes("stock-rx-stop", "mailbox31", stock,
+            stock_mailbox31, sizeof(stock_mailbox31)))
+        return 0;
+
+    count_case();
+    seed_control_command(start_command, 7);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 2)
+        return fail_value("stock-rx-invalid", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 2);
+    if (!expect_bytes("stock-rx-invalid", "mailbox31", stock,
+            stock_mailbox31, sizeof(stock_mailbox31)))
+        return 0;
+    if (read_u16(ram_pointer(RXPR1)) != 0x0040U
+            || read_u16(ram_pointer(RFPR1)) != 0x0040U
+            || read_u16(ram_pointer(UMSR1)) != 0x0040U)
+        return fail_value("stock-rx-invalid", "control_ack", 0, 1);
+
+    count_case();
+    seed_control_command(start_command, 8);
+    write_u16(ram_pointer(RXPR1), 0x8000U);
+    /* Model the previous write-one-to-clear acknowledgment in plain memory. */
+    write_u16(ram_pointer(RFPR1), 0);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 2)
+        return fail_value("stock-rx-pending", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 2);
+    if (read_u16(ram_pointer(RXPR1)) != 0x8000U)
+        return fail_value("stock-rx-pending", "receive_pending",
+            read_u16(ram_pointer(RXPR1)), 0x8000U);
+    if (read_u16(ram_pointer(RFPR1)) != 0)
+        return fail_value("stock-rx-pending", "remote_pending",
+            read_u16(ram_pointer(RFPR1)), 0);
+    if (!expect_bytes("stock-rx-pending", "mailbox31", stock,
+            stock_mailbox31, sizeof(stock_mailbox31)))
+        return 0;
+
+    count_case();
+    write_u16(ram_pointer(CONTROL_MAILBOX) + 4, 0x0700);
+    (void)invoke_r0(HCAN1_INIT_WRAPPER);
+    if (read_u16(ram_pointer(CONTROL_MAILBOX)) != 0x6f10
+            || read_u16(ram_pointer(CONTROL_MAILBOX) + 4) != 0x0208)
+        return fail_value("stock-rx-recovery", "control_restore", 0, 1);
+    return expect_bytes("stock-rx-recovery", "mailbox31", stock,
+        stock_mailbox31, sizeof(stock_mailbox31));
+}
+#endif
 
 static uint8_t wire_byte(size_t slot, uint8_t source)
 {
@@ -323,12 +416,12 @@ static int run_wrapper_cases(void)
         return fail_value(
             "hcan1-init", "mailbox_control",
             read_u16(ram_pointer(CONTROL_MAILBOX) + 4), 0x0208);
-    if ((read_u16(ram_pointer(MBIMR1)) & MAILBOX31_MASK) == 0)
+    if ((read_u16(ram_pointer(MBIMR1)) & CONTROL_MAILBOX_MASK) == 0)
         return fail_value("hcan1-init", "interrupt_mask", 0, 1);
     if (
-        read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK
-        || read_u16(ram_pointer(RFPR1)) != MAILBOX31_MASK
-        || read_u16(ram_pointer(UMSR1)) != MAILBOX31_MASK)
+        read_u16(ram_pointer(RXPR1)) != CONTROL_MAILBOX_MASK
+        || read_u16(ram_pointer(RFPR1)) != CONTROL_MAILBOX_MASK
+        || read_u16(ram_pointer(UMSR1)) != CONTROL_MAILBOX_MASK)
         return fail_value("hcan1-init", "receive_flag_clear", 0, 1);
 
     count_case();
@@ -557,7 +650,7 @@ static int run_control_cases(void)
 
     count_case();
     reset_case();
-    write_u16(ram_pointer(RFPR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(RFPR1), CONTROL_MAILBOX_MASK);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
         return fail_value(
@@ -567,7 +660,7 @@ static int run_control_cases(void)
     count_case();
     reset_case();
     seed_control_command(start_command, 8);
-    write_u16(ram_pointer(RFPR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(RFPR1), CONTROL_MAILBOX_MASK);
     write_u16(ram_pointer(CONTROL_MAILBOX), 0x6f18);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
@@ -584,10 +677,10 @@ static int run_control_cases(void)
         return fail_value(
             "control-invalid-config", "override",
             ram_pointer(TELEMETRY_STATE)[11], 0);
-    if (read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK)
+    if (read_u16(ram_pointer(RXPR1)) != CONTROL_MAILBOX_MASK)
         return fail_value(
             "control-invalid-config", "rxpr",
-            read_u16(ram_pointer(RXPR1)), MAILBOX31_MASK);
+            read_u16(ram_pointer(RXPR1)), CONTROL_MAILBOX_MASK);
 
     count_case();
     reset_case();
@@ -598,10 +691,10 @@ static int run_control_cases(void)
         return fail_value(
             "control-previous-profile", "override",
             ram_pointer(TELEMETRY_STATE)[11], 0);
-    if (read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK)
+    if (read_u16(ram_pointer(RXPR1)) != CONTROL_MAILBOX_MASK)
         return fail_value(
             "control-previous-profile", "rxpr",
-            read_u16(ram_pointer(RXPR1)), MAILBOX31_MASK);
+            read_u16(ram_pointer(RXPR1)), CONTROL_MAILBOX_MASK);
 
     count_case();
     reset_case();
@@ -1165,6 +1258,10 @@ static int run_isr_cases(void)
 
 int main(void)
 {
+#ifdef TARGET_1ME3B
+    if (!run_stock_receive_preservation_cases())
+        return 1;
+#endif
     if (!run_wrapper_cases())
         return 1;
     if (!run_configuration_cases())

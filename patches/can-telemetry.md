@@ -51,7 +51,7 @@ samples.
 ```text
 main-loop wrapper
   -> stock FUN_00020DFE and its periodic tasks
-  -> poll physical mailbox 31 for an exact START or STOP command
+  -> poll control mailbox 31 (22 on 1ME3B) for an exact START or STOP command
   -> coherent capture into inactive 88-byte bank
   -> atomic active/pending publication
   -> eleven DLC-8 frames on one standard CAN ID
@@ -66,10 +66,20 @@ behavior. It converts stock-inactive mailbox 31 into a polled receive mailbox
 after every primary or recovery HCAN1 initialization.
 
 The 1ME3B stock initializer configures physical mailbox 31 as receive ID
-`0x292` from ROM record `0x00009844`. The telemetry control endpoint uses the
-same mailbox and replaces that assignment. 1ME3B is ineligible for hardware
-testing until its allocation preserves this stock receive path and passes the
-required software gates.
+`0x292` from ROM record `0x00009844`. Its telemetry control endpoint uses
+physical mailbox 22 at `0xFFFFDBC0`, data bytes `0xFFFFDBC8..0xFFFFDBCF`,
+and group mask `0x0040`. The allocation preserves stock mailbox 31 and its
+receive ID. Other targets use physical mailbox 31 for control.
+
+The 1ME3B record for mailbox 22 at `0x00009820` is inactive type 5.
+The primary and recovery callers use initializer `0x0011F2EC`, whose table
+programmer `0x0011EEDA` leaves that mailbox inactive. The runtime transmit
+scanner `0x00120280` skips type 5; its dynamic transmitter `0x0011FE2C`
+reconfigures only physical mailbox 1. Runtime diagnostic writers use mailbox
+28. The programming handoff at `0x0012B53C` deactivates mailboxes 0..26 and
+enters a non-returning RAM programming loop; the application and telemetry
+polling do not continue through that path. This allocation requires bench
+validation of control and stock reception before vehicle testing.
 
 ## Exact integration points
 
