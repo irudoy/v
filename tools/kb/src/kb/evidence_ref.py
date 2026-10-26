@@ -5,7 +5,6 @@ syntax only; it neither resolves a tag nor reads or executes archived files.
 """
 
 from dataclasses import dataclass
-import json
 from pathlib import PurePosixPath
 import re
 
@@ -52,6 +51,18 @@ def parse(value):
     return ArchiveRef(tag, path, fragment if separator else None)
 
 
+def _exact(before, after):
+    if type(before) is not type(after):
+        return False
+    if isinstance(before, dict):
+        return before.keys() == after.keys() and all(_exact(value, after[key])
+                                                     for key, value in before.items())
+    if isinstance(before, (list, tuple)):
+        return len(before) == len(after) and all(_exact(old, new)
+                                                for old, new in zip(before, after))
+    return before == after
+
+
 def archive_equivalent(before, after):
     """Whether only evidence refs acquire the stock archive prefix.
 
@@ -80,8 +91,4 @@ def archive_equivalent(before, after):
                     return False
                 current[key] = ref
         normalized.append(current)
-    try:
-        return (json.dumps(before, sort_keys=True, allow_nan=False)
-                == json.dumps({**after, "evidence": normalized}, sort_keys=True, allow_nan=False))
-    except (TypeError, ValueError):
-        return False
+    return _exact(before, {**after, "evidence": normalized})

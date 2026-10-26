@@ -31,6 +31,31 @@ def test_archive_equivalence_accepts_a_specification_key_locator():
     assert evidence_ref.archive_equivalent(before, after)
 
 
+def test_archive_equivalence_retains_typed_compiled_claim_leaves():
+    from kb.model import SymbolKey
+    before = archive_claim()
+    before['props'] = {'via': [SymbolKey('7mfk', 'fn', 0x4ead4)]}
+    before['evidence'].append({'kind': 'trace', 'to': SymbolKey('7mfk', 'ram', 0xffff2312),
+                               'relies': 'structure'})
+    after = deepcopy(before)
+    after['evidence'][0]['path'] = f"git:{evidence_ref.STOCK_ARCHIVE}:" + before['evidence'][0]['path']
+    assert evidence_ref.archive_equivalent(before, after)
+    after['props']['via'][0] = SymbolKey('7mfk', 'fn', 0x4ead6)
+    assert not evidence_ref.archive_equivalent(before, after)
+    after = deepcopy(before)
+    after['evidence'][2]['to'] = SymbolKey('7mfk', 'ram', 0xffff2314)
+    assert not evidence_ref.archive_equivalent(before, after)
+
+
+@pytest.mark.parametrize('value', (True, 1.0))
+def test_archive_equivalence_distinguishes_boolean_integer_and_float(value):
+    before = archive_claim()
+    before['at'] = 1
+    after = deepcopy(before)
+    after['at'] = value
+    assert not evidence_ref.archive_equivalent(before, after)
+
+
 @pytest.mark.parametrize('changed', (
     'tag', 'path', 'fragment', 'kind', 'supports', 'note', 'at', 'type',
     'added', 'removed', 'order', 'missing-field',

@@ -115,6 +115,24 @@ def test_archive_rebase_preserves_review_reason_state_and_l0(tmp_path):
     assert before.config['reconciliation']['review'] == [held]
 
 
+def test_archive_rebase_retains_typed_access_via_and_review(tmp_path):
+    before, after = archive_models(tmp_path)
+    before.links[0].props = {'via': [SymbolKey('7mfk', 'fn', 0x4ead4)],
+                             'relies': 'structure', 'supports': 'identity'}
+    before.config['reconciliation']['review'] = run(before, [], reconciliation.reviews)
+    before.config['reconciliation']['review'][0]['reason'] = 'Retain this access uncertainty.'
+    before.overlay[repo.OWNER_CONFIG] = tomlkit.dumps(before.config)
+    after.links[0].props = deepcopy(before.links[0].props)
+    after.config = deepcopy(before.config)
+    record = tomlkit.parse(rebase(before, after))['reconciliation']['review'][0].unwrap()
+    held = before.config['reconciliation']['review'][0]
+    assert record['claim_sha256'] != held['claim_sha256']
+    assert {key: value for key, value in record.items() if key != 'claim_sha256'} == {
+        key: value for key, value in held.items() if key != 'claim_sha256'}
+    after.config['reconciliation']['review'] = [record]
+    assert run(after, [], reconciliation.check) == []
+
+
 @pytest.mark.parametrize('changed', ('roles', 'props', 'kind', 'supports', 'note',
                                       'tag', 'path', 'fragment', 'sources', 'at'))
 def test_archive_rebase_does_not_accept_other_claim_changes(tmp_path, changed):
