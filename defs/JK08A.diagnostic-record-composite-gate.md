@@ -75,8 +75,8 @@ native binding and owning result. All three original captures belong to
 the same complete primary. The two paired-array pending originals retain
 their separate status and receive no credit from these proofs.
 
-The existing registry contains 42 families and 85 captures. The standard
-ordinary adapter registry contains 38 descriptors and 76 generated outputs.
+The existing registry contains 42 families and 86 captures. The standard
+ordinary adapter registry contains 39 descriptors and 78 generated outputs.
 These two extensions add four generated source outputs; the 72 preceding
 outputs retain their exact bytes. Source preparation grants no array
 extent, units, scale, scheduling, caller reachability or hardware admission.

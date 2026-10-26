@@ -235,8 +235,8 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
     family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
     expected=(('clamp_latch_caller_withdrawal_paths','clamp_latch_caller_withdrawal_capture'),
               ('paired_word_curve_sum_withdrawal_paths','paired_word_curve_sum_withdrawal_capture'))
-    assert family.captures[-6:-4]==expected
-    assert len(family.captures)==33
+    assert family.captures[-7:-5]==expected
+    assert len(family.captures)==34
     assert family.withdrawal_only is True and family.direct_owning is False
     consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
     assert consumers[0] is not consumers[1]
@@ -253,7 +253,7 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
 def test_three_remaining_callers_use_the_existing_withdrawal_family_and_distinct_consumers():
     family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
     expected=(('misfire_tail_dispatch_withdrawal_paths', 'misfire_tail_dispatch_withdrawal_capture'), ('endpoint_normalizer_writer_withdrawal_paths', 'endpoint_normalizer_writer_withdrawal_capture'), ('bfs_state_caller_withdrawal_paths', 'bfs_state_caller_withdrawal_capture'))
-    assert family.captures[-4:-1]==expected and len(family.captures)==33
+    assert family.captures[-5:-2]==expected and len(family.captures)==34
     consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
     assert len({id(consumer) for consumer in consumers})==3
     for component,producer in expected:
@@ -367,3 +367,15 @@ def test_AN1_dispatch_registers_its_complete_positive_native_and_raw_sources_onc
     assert set(family.evidence.capture.SOURCE_FILES)<=set(registry.EXECUTION_FILES)
     assert 'tools/kb/tests/test_an1_source_dispatch_access_native.py' in family.sources
     assert set(family.evidence.COMPONENTS)=={'an1_source_dispatch_access_paths'}
+
+
+def test_map_bias_caller_registry_requires_the_complete_same_primary_capture_and_source_boundary():
+    family=next(row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal')
+    assert family.captures[-1]==('map_bias_division_caller_withdrawal_paths','map_bias_division_caller_withdrawal_capture')
+    assert len(family.captures)==34
+    for path in ('defs/JK08A.map-bias-division-caller-withdrawal-paths.toml',
+            'defs/JK08A.map-bias-division-caller-withdrawal-paths.md',
+            'tools/kb/src/kb/map_bias_division_caller_withdrawal_transfers.py',
+            'tools/kb/src/kb/map_bias_division_caller_withdrawal_semantics.py',
+            'tools/kb/tests/test_map_bias_division_caller_withdrawal_native.py'):
+        assert path in family.sources

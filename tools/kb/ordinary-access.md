@@ -123,37 +123,26 @@ writer and standard source generator are reused.
 `defs/JK08A.register-only-helpers.md` defines this exact boundary.
 
 
-The `scalar-ram-leaf-withdrawal` registration binds 129 exact original access
-relations through complete natural RAM/register/state/indexed,interpolation,
-scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
-threshold-window,auxiliary-rate,paired normalization,byte-ratio,state-surface,
-byte-factor, byte-sum, clamp-latch, paired word-curve sum, misfire tail dispatch,
-endpoint-normalizer writer, BFS state-caller and shifted-word accumulator paths.
-Thirty-three independent components require
-one complete original COPY primary. There are 123 readers,eleven individually
-pinned writers and nineteen exact indexed_by originals with unchanged types
-and roles. Complete actual instruction CPU/SR/frame/RAM,separate equations,
-ordered physical operands,post-delay calls and natural returns remain mandatory.
-Fixed-other alternatives require changed actual R0 or common actual computed
-publication bytes outside the controlled RAM input. Input echoes and a changed
-write-set alone fail. Every previous full family/helper/native/TEST original
-remains mandatory from the identical primary. Sixteen native-RAM components
-retain exact root/alias interval absence. The 134 normal unlinks and
-126 matching ledger selectors preserve 100 full datum owners and 74 complete
-functions. The total contains 118 datum-end and 8 function-end removals.
-Five complete function transitions retain eight exact function-end selectors.
-Every other native/type/TEST/ledger/scope fact remains exact. Full prior
-19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/87/92/100/107/112/115/116/118/119/121/122/123/124
-reference,function and source boundaries retain complete prefix reconstruction
-and separate current full-image pins. The bounded preceding current-image
-deltas are reference79 at lyrical-dragon/tbl (two exact readers and two
-owner-end selectors) and reference99 at quick-basilisk/tbl (one exact reader
-and one owner-end selector). The three preceding RAM3348 postimages restore
-only pinned prior-image fields after exact current-image checks. All five
-complete function transitions remain
-bound to their exact original and proposed full images. The 234 frozen prior
-domain sources retain 233 byte-identical files and the gated assembly's
-bounded two-site spelling exception with complete current/legacy hashes.
+The `scalar-ram-leaf-withdrawal` registration binds 135 exact original access
+relations through complete natural arithmetic, state, indexed, interpolation,
+division, producer and caller paths. Thirty-four independent components require
+one complete original COPY primary. There are 124 readers and eleven individually
+pinned writers. Complete actual instruction CPU/SR/frame/RAM, separate equations,
+ordered physical operands, post-delay calls and natural returns remain mandatory.
+Fixed-other alternatives require changed actual R0 or common computed publication
+bytes outside controlled inputs. Every previous full family/helper/native/TEST
+original remains mandatory from the identical primary.
+
+The 135 normal unlinks and 127 matching ledger selectors preserve 100 full datum
+owners and 75 complete functions. The selector total contains 119 datum-end and
+8 function-end removals. Five complete function transitions retain eight exact
+function-end selectors. Full preceding reference, function and source boundaries
+retain complete prefix reconstruction and separate current full-image pins.
+The map-bias caller changes only three proposed-image fields in four preceding
+records of its shared table owner. Its exact inverse restores their complete
+preceding images before the earlier prefix consumers run. Every other native,
+type, TEST, ledger and scope fact remains bound. The gated assembly retains its
+bounded two-site spelling exception and complete current/legacy hashes.
 No owning replacement or reverse donation is created.
 The complete byte-ratio producer additionally retains variable unsigned
 word/large and short/long division, the ratio65536 split, real signed shift10,

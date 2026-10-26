@@ -109,7 +109,7 @@ def test_complete_caller_real_curve_helpers_and_full26A60_parent_keep_two_exact_
 def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='byte_sum_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-sum-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==134 and len(declared['function'])==74
+    assert len(rows)==1 and len(declared['reference'])==135 and len(declared['function'])==75
     assert len({row['owner'] for row in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -129,7 +129,7 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==118 and function_removed==8 and datum_removed+function_removed==126
+    assert datum_removed==119 and function_removed==8 and datum_removed+function_removed==127
     assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
     assert 'five transitions and eight exact function-end selectors' in words
     assert '126 matching ledger selectors' in words and '118 datum-end selectors and 8 function-end selectors' in words
@@ -137,10 +137,10 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in words
+    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
     shared=(repo.ROOT/'tools/kb/ordinary-access.md').read_text()
     shared=' '.join(shared.split('The `scalar-ram-leaf-withdrawal` registration',1)[1].split('The complete byte-ratio producer',1)[0].split())
-    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in shared
+    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in shared
     assert f"{len(declared['reference'])} exact original access relations" in shared
     assert f"{len({row['owner'] for row in declared['reference']})} full datum owners" in shared
     assert f"{len(declared['function'])} complete functions" in shared

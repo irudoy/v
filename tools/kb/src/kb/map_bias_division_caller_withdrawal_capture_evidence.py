@@ -62,7 +62,7 @@ def declaration(model,image):
         calibration_spans=[[row['address'],row['size']] for row in contract.CONTROLLED_CALIBRATION],
         bound_spans=[[row['address'],row['size']] for row in contract.BOUND_SPANS],
         semantic_admission=False,native_geometry_inference=False,automatic_resolution=False,
-        natural_caller_reachability=False,hardware_qualification=False)
+        natural_caller_reachability=False,natural_scheduling_inference=False,hardware_qualification=False)
 
 
 def header(declared,image):
@@ -270,7 +270,7 @@ def require_witness(model,packet,inputs):
         conditional_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in coverage.items()},
         fixed_branch_outcomes={f'{site:08x}':sorted(outcomes) for site,outcomes in fixed.items()},
         native_identity_admission=False,native_geometry_inference=False,automatic_resolution=False,
-        scale_admission=False,units_admission=False,natural_caller_reachability=False,hardware_qualification=False)
+        scale_admission=False,units_admission=False,natural_caller_reachability=False,natural_scheduling_inference=False,hardware_qualification=False)
 
 
 def require_return_reconstruction(root,packet):
@@ -287,4 +287,26 @@ def require_primary(model,record):
     result['direct_helper_original_stdout_sha256']=helpers['stdout_sha256']
     if original.count(packet['marker'])!=1:raise ValueError('the complete primary omits its unique actual map-bias caller withdrawal original')
     if ignition_literal_evidence.execution_inputs(model.root)!=current:raise ValueError('the map-bias caller withdrawal inputs change during independent consumption')
+    require_owning_result(result)
     return result
+
+
+OWNING_FLAGS=('exact_map_bias_division_caller_withdrawal_paths','complete_map_bias_and_axis_paths',
+    'complete_positive_unsigned_division','complete_actual_fifth_word','complete_independent_frame',
+    'complete_local_word_carrier','no_selected_datum_access','complete_selected_scalar_interval_absence',
+    'derived_request_and_area_dependencies_preserved','complete_direct_helpers_same_primary')
+NON_ADMISSIONS=('native_identity_admission','native_geometry_inference','automatic_resolution',
+    'scale_admission','units_admission','natural_caller_reachability','natural_scheduling_inference','hardware_qualification')
+
+
+def require_owning_result(result):
+    if (type(result) is not dict or any(result.get(key) is not True for key in OWNING_FLAGS)
+            or any(result.get(key) is not False for key in NON_ADMISSIONS)):
+        raise ValueError('the map-bias withdrawal lacks a complete independent physical,numerical,frame,call or no-inference result')
+    expected=[dict(symbol='7mfk-0000942c/tbl',meaning='rev_limit_throttle_cut/tbl',
+        function='7mfk-000702c6/fn',function_meaning='malachite-fossa/fn',
+        original_claim_sha256='4ab4eef347a3af18890ac2e967e38f483d8b48d5322c8cebffc136692bf01688')]
+    same(result.get('native_bindings'),expected,'the map-bias withdrawal substitutes an exact original,native owner or function')
+    for key in ('stdout_sha256','direct_helper_original_stdout_sha256'):
+        ignition_literal_evidence.require_hash(result.get(key))
+    return True

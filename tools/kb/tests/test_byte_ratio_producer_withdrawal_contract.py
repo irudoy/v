@@ -122,7 +122,7 @@ def test_fixture_keeps_the_full_caller_and_all_three_actual_helpers_with_only_fi
 def test_published_byte_ratio_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='byte_ratio_producer_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-ratio-producer-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==134 and len(declared['function'])==74
+    assert len(rows)==1 and len(declared['reference'])==135 and len(declared['function'])==75
     assert len({row['owner'] for row in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -142,13 +142,13 @@ def test_published_byte_ratio_joint_prior_and_registry_counts_bind_execution_sou
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==118 and function_removed==8 and datum_removed+function_removed==126
+    assert datum_removed==119 and function_removed==8 and datum_removed+function_removed==127
     assert '126 matching ledger selectors' in words and '118 datum-end selectors and 8 function-end selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in words
+    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     assert withdrawal.state_surface_prefix_digest(declared,118)==withdrawal.PRIOR_PAIRED_CURVE_NORMALIZATION_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:62])==withdrawal.PRIOR_PAIRED_CURVE_NORMALIZATION_FUNCTION_SHA256

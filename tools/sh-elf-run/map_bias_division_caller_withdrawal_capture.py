@@ -32,7 +32,7 @@ def declaration(target):
         calibration_spans=[[row['address'],row['size']] for row in contract.CONTROLLED_CALIBRATION],
         bound_spans=[[row['address'],row['size']] for row in contract.BOUND_SPANS],
         semantic_admission=False,native_geometry_inference=False,automatic_resolution=False,
-        natural_caller_reachability=False,hardware_qualification=False)
+        natural_caller_reachability=False,natural_scheduling_inference=False,hardware_qualification=False)
 
 
 def header(declared,image):

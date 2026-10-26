@@ -65,13 +65,13 @@ whole-ECU absence or hardware eligibility.
 
 ## Shared owning source boundary
 
-The shared descriptor contains 134 exact access originals: 123 readers and
-eleven individually pinned writers, 100 complete datum owners, 74 complete
-functions and 126 matching ledger selectors (118 datum-end selectors and
-8 function-end selectors). All 134 exact normal unlink operations form one
-complete phase. Thirty-three independent components use the same complete
+The shared descriptor contains 135 exact access originals: 124 readers and
+eleven individually pinned writers, 100 complete datum owners, 75 complete
+functions and 127 matching ledger selectors (119 datum-end selectors and
+8 function-end selectors). All 135 exact normal unlink operations form one
+complete phase. Thirty-four independent components use the same complete
 original COPY primary. The existing registry contains 42 families and
-85 captures. Five complete function transitions retain eight exact
+86 captures. Five complete function transitions retain eight exact
 function-end selector withdrawals.
 
 The three-caller package preserves all 129 preceding reference records and

@@ -291,35 +291,29 @@ observer. Exact ordinary appends preserve six complete native owners, TEST,
 types, ledger and physical scopes. The source grants no sensor, scheduler,
 units, scale or hardware claim. `defs/JK08A.exhaust-cvtc-accesses.md` defines
 the complete domain and refusal boundary.
-The registry has thirteen families/forty-seven captures.
+The registry contains 42 families and 86 captures.
 
-The `scalar-ram-leaf-withdrawal` registration binds 123 exact unsupported access
-relations through complete natural RAM/register/state/indexed,interpolation,
-scaling,division,mixed curve,timing/remainder,state-ratio,DFCO,paired flag,
-threshold-window,auxiliary-rate and paired normalization paths. Twenty-three
-independent components require one complete original COPY primary. There are
-113 readers,ten individually pinned writers and eighteen exact indexed_by
-originals with unchanged types and roles. Complete actual instruction CPU/SR/
-frame/RAM,separate equations,ordered physical operands,post-delay calls and
-natural returns remain mandatory. The paired normalization callers retain all
-16 raw axis bytes,17 physical data bytes,positive adjacent fractional divisors,
-two real local-byte carriers,variable signed normalization and both actual word
-publications. No numerical causality is admitted for zero-fraction lookahead16.
-Fixed-other alternatives require changed actual R0 or common actual computed
-publication bytes outside the controlled RAM input. Input echoes and a changed
-write-set alone fail. Every previous full family/helper/native/TEST original
-remains mandatory from the identical primary. Sixteen native-RAM components
-retain exact root/alias interval absence. All 123 normal unlinks and 110 matching
-selectors preserve94 full datum owners,62 full functions and every other native/
-type/TEST/ledger/scope fact. The selector total contains108 datum-end and
-5 function-end removals. Full prior19/26/31/34/35/38/40/41/44/49/54/57/60/71/79/
-87/92/100/107/112/115/116 reference,function and source boundaries retain exact
-complete prefix reconstruction and separate current full-image pins. The sole
-additional preceding current image delta is reference79 at lyrical-dragon/tbl:
-two exact readers and their two owner-end selectors. All60 preceding full
-function records,including both pinned full function transitions,remain exact.
-The gated assembly retains its bounded two-site spelling exception and complete
-current/legacy hashes. No owning replacement or reverse donation is created.
+The `scalar-ram-leaf-withdrawal` registration binds 135 exact original access
+relations through complete natural arithmetic, state, indexed, interpolation,
+division, producer and caller paths. Thirty-four independent components require
+one complete original COPY primary. There are 124 readers and eleven individually
+pinned writers. Complete actual instruction CPU/SR/frame/RAM, separate equations,
+ordered physical operands, post-delay calls and natural returns remain mandatory.
+Fixed-other alternatives require changed actual R0 or common computed publication
+bytes outside controlled inputs. Every previous full family/helper/native/TEST
+original remains mandatory from the identical primary.
+
+The 135 normal unlinks and 127 matching ledger selectors preserve 100 full datum
+owners and 75 complete functions. The selector total contains 119 datum-end and
+8 function-end removals. Five complete function transitions retain eight exact
+function-end selectors. Full preceding reference, function and source boundaries
+retain complete prefix reconstruction and separate current full-image pins.
+The map-bias caller changes only three proposed-image fields in four preceding
+records of its shared table owner. Its exact inverse restores their complete
+preceding images before the earlier prefix consumers run. Every other native,
+type, TEST, ledger and scope fact remains bound. The gated assembly retains its
+bounded two-site spelling exception and complete current/legacy hashes.
+No owning replacement or reverse donation is created.
 The complete byte-ratio producer additionally retains variable unsigned
 word/large and short/long division, the ratio65536 split, real signed shift10,
 its exact actual saved post-DIV1 R1 carrier and full known frame overwrite.

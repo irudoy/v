@@ -224,9 +224,18 @@ def require(observed,result,value,fixture):
         if call['entry']['registers'][4]!=argument or (returned['registers'][0],returned['registers'][4])!=(answer,answer):
             raise ValueError('the map-bias caller replaces an exact bounded signed-word/difference helper with a supplied scalar')
     call,start,end,returned=calls[0x70328,0x262E0]
-    if (call['entry']['registers'][4:8]!=(0xE98E,0x11D0C,0x14114,value['query'])
+    if (tuple(call['entry']['registers'][4:8])!=(0xE98E,0x11D0C,0x14114,value['query'])
             or returned['registers'][0]!=value['lookup']['raw_return']):
         raise ValueError('the map-bias lookup changes its actual table,axes,coordinate or complete returned word carrier')
+    expected_map=[dict(site=0x2688E,mode='read',address=0xE98E+value['lookup']['offset'],
+        width_bytes=2,register=0,domain='rom',bytes=fixture[0xE98E+value['lookup']['offset']:0xE990+value['lookup']['offset']].hex())]
+    if value['lookup']['axis']['fraction']:
+        address=0xE98E+value['lookup']['offset']+32
+        expected_map.append(dict(site=0x26890,mode='read',address=address,width_bytes=2,register=2,
+            domain='rom',bytes=fixture[address:address+2].hex()))
+    actual_map=[event for item in trace[start:end+1] for event in item['accesses']
+        if event['domain']=='rom' and 0xE98E<=event['address']<0xEB8E]
+    same(actual_map,expected_map,'the map-bias lookup substitutes a physical map row,column,neighbor or word load')
     stack=next((row for row in trace[:start] if row['site']==0x7031A),None)
     if stack is None or stack['accesses']!=[dict(site=0x7031A,mode='write',address=call['sp']+2,
             width_bytes=2,register=0,domain='frame',bytes='ffff')]:
@@ -240,10 +249,24 @@ def require(observed,result,value,fixture):
     regs=call['entry']['registers'];axis=value['lookup']['axis']
     if (regs[0],regs[4],regs[5])!=(0x11D0C,15,value['query']) or (returned['registers'][4],returned['registers'][5])!=(axis['index'],axis['fraction']):
         raise ValueError('the map-bias first axis changes its exact raw shifted-byte search or fraction return')
+    expected_axis=[dict(site=0x26A0E,mode='read',address=0x11D0C+i,width_bytes=1,register=1,
+        domain='rom',bytes=fixture[0x11D0C+i:0x11D0D+i].hex()) for i in axis['reads']]
+    if axis['division'] is not None:
+        expected_axis.extend(dict(site=site,mode='read',address=0x11D0C+i,width_bytes=1,register=register,
+            domain='rom',bytes=fixture[0x11D0C+i:0x11D0D+i].hex()) for site,i,register in
+            ((0x26A2A,axis['index'],1),(0x26A2C,axis['index']+1,0)))
+    actual_axis=[event for item in trace[start:end+1] for event in item['accesses']
+        if event['domain']=='rom' and 0x11D0C<=event['address']<0x11D1C]
+    same(actual_axis,expected_axis,'the map-bias first axis changes a complete actual scan,bracket or byte carrier')
     call,start,end,returned=calls[0x262FC,0x26984]
     regs=call['entry']['registers']
     if (regs[0],regs[4],regs[5])!=(0x14114,30,0xFFFF) or (returned['registers'][4],returned['registers'][5])!=(30,0):
         raise ValueError('the map-bias second axis changes the exact live FFFF premise or last-word return')
+    actual_axis=[event for item in trace[start:end+1] for event in item['accesses']
+        if event['domain']=='rom' and 0x14114<=event['address']<0x14134]
+    same(actual_axis,[dict(site=0x26986,mode='read',address=0x14132,width_bytes=2,register=1,
+        domain='rom',bytes=fixture[0x14132:0x14134].hex())],
+        'the map-bias second axis changes its one actual last-word physical read')
     if axis['division'] is not None:
         call,start,end,returned=calls[0x26A40,0x26C78];regs=call['entry']['registers'];division=axis['division']
         if tuple(regs[:2])!=(division['denominator'],division['numerator']) or returned['registers'][0]!=axis['fraction']:

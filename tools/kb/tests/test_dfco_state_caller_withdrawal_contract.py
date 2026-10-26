@@ -119,7 +119,7 @@ def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_byte
 def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==10 and len(declared['reference'])==134 and len(declared['function'])==74
+    assert len(rows)==10 and len(declared['reference'])==135 and len(declared['function'])==75
     assert len({row['owner'] for row in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -138,12 +138,12 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==126 and '126 matching ledger selectors' in words
+    assert removed==127 and '126 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==33 and 'Thirty-three independent components' in words
+    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):
         assert 'Fourteen native-RAM components' in ' '.join((repo.ROOT/name).read_text().split())

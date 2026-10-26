@@ -106,7 +106,7 @@ def test_fixture_retains_complete_natural_callers_real_shift_divider_and_exact_a
 def test_published_scaling_caller_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='scaled_division_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.scaled-division-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==3 and len(declared['reference'])==134 and len(declared['function'])==74
+    assert len(rows)==3 and len(declared['reference'])==135 and len(declared['function'])==75
     assert len({r['owner'] for r in declared['reference']})==100
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
@@ -123,7 +123,7 @@ def test_published_scaling_caller_joint_prior_and_registry_counts_bind_execution
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==126 and '126 matching ledger selectors' in words
+    assert removed==127 and '126 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert all(json.loads(r['original_claim_json'])['type']=='reader' and json.loads(r['original_claim_json'])['roles']==[] for r in rows)
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,54))==withdrawal.PRIOR_WORD_INTERP_CALLER_REFERENCE_SHA256
