@@ -2431,3 +2431,19 @@ def test_current_withdrawal_scope_binds_exact_reference_and_direction_counts():
     assert f"Exactly {len(declared['reference'])} unsupported physical-access withdrawals" in scope
     assert readers==121 and writers==len(contract.ORIGINAL_LINK_TYPES)==11
     assert f'{readers} readers and eleven individually pinned writers' in scope
+
+
+
+def test_current_state_surface_file_pin_tracks_its_declared_shared_equation_source():
+    from kb import state_surface_caller_withdrawal_contract as surface
+    path='tools/kb/src/kb/state_surface_caller_withdrawal_contract.py'
+    helper='tools/kb/src/kb/byte_surface_equations.py'
+    assert contract.PRIOR_STATE_SURFACE_CALLER_FILES_SHA256[path]==hashlib.sha256((repo.ROOT/path).read_bytes()).hexdigest()
+    assert surface.REUSED_HELPER_FILES_SHA256[helper]==hashlib.sha256((repo.ROOT/helper).read_bytes()).hexdigest()
+
+
+def test_current_state_surface_file_pin_refuses_an_unbound_source_byte(monkeypatch):
+    declared=contract.descriptor(repo.ROOT);path=repo.ROOT/'tools/kb/src/kb/state_surface_caller_withdrawal_contract.py'
+    original=Path.read_bytes
+    monkeypatch.setattr(Path,'read_bytes',lambda self:original(self)+(b'\n' if self==path else b''))
+    with pytest.raises(ValueError):contract.require_prior_state_surface_caller_boundary(repo.ROOT,declared)

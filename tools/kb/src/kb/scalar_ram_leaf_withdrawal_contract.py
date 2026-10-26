@@ -2525,7 +2525,7 @@ PRIOR_STATE_SURFACE_CALLER_REFERENCE_SHA256 = 'e7d591f844e8318122d4e077995c388f7
 PRIOR_STATE_SURFACE_CALLER_FUNCTION_SHA256 = '2b433f5202deb6e2c8dbd9f31d1e72e91468a597ec68acae50113c1efaaeba93'
 PRIOR_STATE_SURFACE_CALLER_FILES_SHA256 = {'defs/JK08A.state-surface-caller-withdrawal-paths.toml': 'b7e416b9aaa4047b29f6d0cdacee18e7afadb272d511913f6a8c7379ab8d696c',
  'tools/sh-elf-run/stock_jk08a_state_surface_caller_withdrawal.s': '9e43b209d63cd94f647bb9c16dc56f8cbbb86b0370219d4be9831825d6221ddf',
- 'tools/kb/src/kb/state_surface_caller_withdrawal_contract.py': 'd80a7c3306f39f2cf9853b424a5840e3d3325e0ae3c9bbdc0a713f1a5e648039',
+ 'tools/kb/src/kb/state_surface_caller_withdrawal_contract.py': 'ef4fc2de7a396be43e14be43f21fda591c61ed22888e90b98a72eb723da9bf6e',
  'tools/kb/src/kb/state_surface_caller_withdrawal_matrix.py': '25445bada6c97551ba99a9b85d3ca75d8d957ad478eda176a5cad38c5afeea67',
  'tools/kb/src/kb/state_surface_caller_withdrawal_semantics.py': '79bc61ff3cbdb1b9a182580dd19ee5c9a9e602bbc36d785efb3feebc75392e89',
  'tools/kb/src/kb/state_surface_caller_withdrawal_transfers.py': 'e10eef4c0aee4d9917ee1e1207e9d71eaa8e53e7150bd59a40e619cef0696c72',
