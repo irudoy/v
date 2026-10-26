@@ -67,7 +67,7 @@ def execute(declared,fixture,context,ram_before,frame_before,sp,continuation,ent
         and native_controls.get('window_start')==0xFFFF9900
         and native_controls.get('window_size')==256
         and native_controls.get('addresses')==[0xFFFF99C4,0xFFFF9926])
-    publication_window=(declared.get('id') in ('jk08a-publication-inhibit-path','jk08a-shifted-word-accumulator-withdrawal')
+    publication_window=(declared.get('id') in ('jk08a-publication-inhibit-path','jk08a-shifted-word-accumulator-withdrawal','jk08a-an1-source-dispatch-access')
         and type(native_controls) is dict
         and native_controls.get('window_start')==0xFFFF8400
         and native_controls.get('window_size')==256

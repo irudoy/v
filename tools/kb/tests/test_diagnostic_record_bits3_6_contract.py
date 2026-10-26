@@ -118,7 +118,7 @@ def test_diagnostic_family_publication_binds_current_native_and_execution_source
         adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter']
         outputs.update((adapter['driver'],adapter['refusals']))
         if index<36:prior.update((adapter['driver'],adapter['refusals']))
-    assert len(registry.FAMILIES)==39 and len(registry.captures())==82
+    assert len(registry.FAMILIES)==40 and len(registry.captures())==83
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
     assert len(proof_adapter.DESCRIPTORS)==38 and len(outputs)==76 and len(prior)==72
     assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text

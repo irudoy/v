@@ -33,6 +33,9 @@ def native_rows(model,phase=None):
         seen.add(row['owner'])
         # Use the normal owned-document loader, including the normal writer overlay.
         document=store.load(model.root,Path(row['source']),model.overlay)
+        if row['owner']=='cautious-iguana/tbl':
+            from kb import an1_source_dispatch_access_native_contract as an1_dispatch
+            document=an1_dispatch.strip_exact_owning_append(model.root,document)
         matches=[name for name in ('original','proposed')
             if test_contract.exact(document,json.loads(row[name+'_native_json']))]
         if len(matches)!=1:raise ValueError('the scalar RAM leaf withdrawal changes its complete native preimage or postimage')

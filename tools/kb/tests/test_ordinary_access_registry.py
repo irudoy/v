@@ -353,3 +353,17 @@ def test_composite_diagnostic_reader_retains_the_existing_family_and_positive_ne
             'tools/kb/tests/test_diagnostic_record_composite_gate_adapter_generated.py',
             'tools/sh-elf-run/harness-diagnostic-record-composite-gate-paths.c'):
         assert path in family.source_files and path in copy_evidence.EXECUTION_FILES
+
+
+def test_AN1_dispatch_registers_its_complete_positive_native_and_raw_sources_once():
+    family=next(row for row in registry.FAMILIES if row.mode=='an1-source-dispatch-access')
+    assert family.contract_name=='an1_source_dispatch_access_native_contract'
+    assert family.captures==(('an1_source_dispatch_access_paths','an1_source_dispatch_access_capture'),)
+    assert family.direct_owning and not family.owner_fallback and not family.withdrawal_only
+    row,=family.contract.descriptor(repo.ROOT)['reference']
+    assert row['original_claim_sha256']=='0e2c8b6427f1e91ecf78415869bfaaf68236306e76800f375bf7d81863706087'
+    assert registry.matching(family.contract.item(row))==(family,)
+    assert registry.original_family(json.loads(row['original_claim_json'])) is family
+    assert set(family.evidence.capture.SOURCE_FILES)<=set(registry.EXECUTION_FILES)
+    assert 'tools/kb/tests/test_an1_source_dispatch_access_native.py' in family.sources
+    assert set(family.evidence.COMPONENTS)=={'an1_source_dispatch_access_paths'}
