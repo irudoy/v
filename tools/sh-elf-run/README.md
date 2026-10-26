@@ -291,20 +291,20 @@ observer. Exact ordinary appends preserve six complete native owners, TEST,
 types, ledger and physical scopes. The source grants no sensor, scheduler,
 units, scale or hardware claim. `defs/JK08A.exhaust-cvtc-accesses.md` defines
 the complete domain and refusal boundary.
-The registry contains 42 families and 87 captures.
+The registry contains 42 families and 88 captures.
 
-The `scalar-ram-leaf-withdrawal` registration binds 135 exact original access
+The `scalar-ram-leaf-withdrawal` registration binds 136 exact original access
 relations through complete natural arithmetic, state, indexed, interpolation,
-division, producer and caller paths. Thirty-four independent components require
-one complete original COPY primary. There are 124 readers and eleven individually
+division, producer and caller paths. Thirty-five independent components require
+one complete original COPY primary. There are 125 readers and eleven individually
 pinned writers. Complete actual instruction CPU/SR/frame/RAM, separate equations,
 ordered physical operands, post-delay calls and natural returns remain mandatory.
 Fixed-other alternatives require changed actual R0 or common computed publication
 bytes outside controlled inputs. Every previous full family/helper/native/TEST
 original remains mandatory from the identical primary.
 
-The 135 normal unlinks and 127 matching ledger selectors preserve 100 full datum
-owners and 75 complete functions. The selector total contains 119 datum-end and
+The 136 normal unlinks and 128 matching ledger selectors preserve 101 full datum
+owners and 76 complete functions. The selector total contains 120 datum-end and
 8 function-end removals. Five complete function transitions retain eight exact
 function-end selectors. Full preceding reference, function and source boundaries
 retain complete prefix reconstruction and separate current full-image pins.

@@ -1902,7 +1902,21 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '4ab4eef347a3af18890ac2e967e38f483d8b48d5322c8cebffc136692bf01688',
   None,
   'f25abda47a5c9982f1dd7b1ddc98a6fb28cb140c896590f17a7b21bb032be68e',
-  '172caf0f8a86e76910a99941d2a74afd97f4f7a6c26aa552baffe3b5096ccce5'))
+  '172caf0f8a86e76910a99941d2a74afd97f4f7a6c26aa552baffe3b5096ccce5'),
+ ('00022590-ffff2c1c-withdraw',
+  4294913052,
+  'wandering-grasshopper/ram',
+  140688,
+  (),
+  'withdrawal',
+  'signed_abs_register_helper_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '782dacc59731fbc23c8a52ec82e8f9cc0468235c9826a1eee5214cbe5d571417',
+  None,
+  '43d8176aa1064b057803f980108f275a3ff4cd68e18993b5f59c43c8d1511c66',
+  '828a4ab6c151628dfa0adf7721bba722cdfa20b15b117b637a6bc5d6295b7cfb'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2202,7 +2216,11 @@ RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
  ('malachite-fossa/fn',
   459462,
   'kb/fn/malachite-fossa.toml',
-  '137e6dd6f853ecef300636cd0f7a1fbda090e437a8090bd542a49eedd4525b82'))
+  '137e6dd6f853ecef300636cd0f7a1fbda090e437a8090bd542a49eedd4525b82'),
+ ('clay-capuchin/fn',
+  140688,
+  'kb/fn/clay-capuchin.toml',
+  'cf52f326231e064d07b8eb2b6a101fbb31b7ce2634a1788ec82cbba5d8a9c5f0'))
 PRIOR_REFERENCE_SHA256 = '97065661723b863b4a61c65e304a3a6fa4492b31b1859eee8b6ce516322759c6'
 PRIOR_FUNCTION_SHA256 = 'd4546448515592cbda8fd42e6c762217dc27943572d644e0783620f59d1c691e'
 PRIOR_FILES_SHA256 = {'defs/JK08A.scalar-ram-leaves.toml': '6e90413cffcac41a4379ddf756094592f173ca4031e81b97abed134f322bfd11',
@@ -2611,7 +2629,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=135):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=136):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2661,7 +2679,7 @@ def descriptor(root):
         if not document.get('link'):document.pop('link',None)
         for marker in document.get('ledger',()):
             if not marker.get('dependency'):marker.pop('dependency',None)
-    if len(expected)!=100 or not test_contract.exact(expected,proposed):
+    if len(expected)!=101 or not test_contract.exact(expected,proposed):
         raise ValueError('the scalar RAM leaf withdrawal changes another fact, link order, evidence, ledger identity, field or note')
     if len(value['function'])!=len(RETAINED_FUNCTIONS):
         raise ValueError('the scalar RAM leaf withdrawal omits a complete retained function input')
@@ -2705,6 +2723,7 @@ def descriptor(root):
     require_remaining_standalone_callers_boundary(root,value)
     require_shifted_word_accumulator_boundary(root,value)
     require_map_bias_caller_boundary(root,value)
+    require_standalone_signed_abs_boundary(root,value)
     return value
 
 
@@ -2754,8 +2773,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=135 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all135 unchanged normal unlink operations')
+    if len(selected)!=136 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all136 unchanged normal unlink operations')
     return True
 
 
@@ -3106,7 +3125,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=135:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=136:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -3176,7 +3195,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=135:
+    if len(value['reference'])!=136:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3483,7 +3502,7 @@ def require_clamp_latch_and_paired_word_boundary(root,value):
             raise ValueError('the clamp and paired word package changes a complete retained function or downstream dependency')
 
 CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.toml': 'f138d9fba490dbe5a75655ce4a357dc0113bcc12da3460b7d30e94287bf96b79',
- 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': '20b6bcff98845af9ea990fdb17fef1d33703155bb1ec80946b92dca8c2dded45',
+ 'defs/JK08A.clamp-latch-caller-withdrawal-paths.md': '7deaabfbd3413a97c4dded5787d0fe31c07a4f610b54d0d0057df327e301d5a3',
  'tools/sh-elf-run/stock_jk08a_clamp_latch_caller_withdrawal.s': '648337bb3e7454206973d44e216c2b1ff219972b9c9dc5f0d076b34a5e6afe2a',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_contract.py': 'e4367429d06652d24b7853be37820b71a41ffb59a55df3b06abab925df9901df',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_matrix.py': '153f6b9cf7a45cd2b2cc833e33c353438f5f361960696cdade71dad66bbf34f6',
@@ -3491,12 +3510,12 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_transfers.py': '43664b515fa8fe071f614485648e9d73146bdf4c6d107c30c77ec9cfd0ef6977',
  'tools/kb/src/kb/clamp_latch_caller_withdrawal_capture_evidence.py': 'd85adc4939b5db5e148fb83de36f60c4b24302b9d416faf64adff592e95adbcf',
  'tools/sh-elf-run/clamp_latch_caller_withdrawal_capture.py': 'af35de7d8a2685e7289e5392deb6a2da8205a5ba0efe930b96748b6756f3e90c',
- 'tools/kb/tests/test_clamp_latch_caller_withdrawal_contract.py': '3f01ffb52acf53f9ad170229d30920acefa8a0a2377af88f0df5c53676f57b55',
+ 'tools/kb/tests/test_clamp_latch_caller_withdrawal_contract.py': 'a5aec0f9d66ad8efb23db345a63aef3bddd8b6584cce1263404ee4af38b35f93',
  'tools/kb/tests/test_clamp_latch_caller_withdrawal_capture_evidence.py': 'c8e0f432fc5f85e315518551b158818f088ed2d50ed24875ffae173d365584b5',
  'tools/sh-elf-run/harness-clamp-latch-caller-withdrawal-paths.c': 'e8918c0f8d344069da6859dcd28983e8d39f839693ab76b13be2856370b7aea7',
  'tools/kb/tests/test_clamp_latch_caller_withdrawal_adapter_generated.py': '7e308d74117e301dafefa88d100d392251b0bb410d454c536df8c68683732bbc',
  'defs/JK08A.paired-word-curve-sum-withdrawal-paths.toml': '82d069b6b5e944bf9477ab6d39e5ab253b9b33b454e59f29938afe4cd93fe35f',
- 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': '6df9c1470491f8ad50e2b8c351c772bad98ca2eb150d366eeb84977ad7000642',
+ 'defs/JK08A.paired-word-curve-sum-withdrawal-paths.md': 'bb37846cfc6cf92f5dab67bae87c0dab258f48266f29793a66690f4f9082b8a6',
  'tools/sh-elf-run/stock_jk08a_paired_word_curve_sum_withdrawal.s': '65cc0ee3e02e108080ea15628db835eb996e3bfe8f3fc347b70651930a5e595e',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_contract.py': '5595ea964f70e447bcd0a76ffe1e222764c92fdd28acc38f127f9c2e529b5920',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_matrix.py': '3f8bdef0b73a78a6a50d74e45fbc92627824e0f1d7153b3d68d4c913080dac78',
@@ -3504,7 +3523,7 @@ CLAMP_PAIRED_FILES_SHA256 = {'defs/JK08A.clamp-latch-caller-withdrawal-paths.tom
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_transfers.py': 'f840d54b4220622492dbac52bff0aac8f2a38fb267428f1fa737194c7b4d5608',
  'tools/kb/src/kb/paired_word_curve_sum_withdrawal_capture_evidence.py': '16c54217cec10383d1fb9c2a31b851e14400dc4be9827aa29b2713f741fcfdc3',
  'tools/sh-elf-run/paired_word_curve_sum_withdrawal_capture.py': '94779c762767cac007888d7a165853d925881f65e95a6bc99a9875804c02d6ee',
- 'tools/kb/tests/test_paired_word_curve_sum_withdrawal_contract.py': 'a66545b16be071fea9d2ea0ce134f8b608ff0799c263798794ec5a4e2fe1600e',
+ 'tools/kb/tests/test_paired_word_curve_sum_withdrawal_contract.py': '92475bff832890f9c1f52780df8fed0a89bd3e074cc04a2d2f2edb40450ce1d3',
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_capture_evidence.py': '3a6f52db0b2ae64e9f5d0b069efc4009a744c12bcc6fcb13e1cda77079c628ce',
  'tools/sh-elf-run/harness-paired-word-curve-sum-withdrawal-paths.c': '21d714770972eb1d9df92bb5114cd329c4d56b1c166bbf102dc779f7ed08b401',
  'tools/kb/tests/test_paired_word_curve_sum_withdrawal_adapter_generated.py': '2b29296a09f8310488de95a57410253f337302b3f8f69a14967159226776751e'}
@@ -3562,7 +3581,7 @@ REMAINING_CALLER_NATIVE_ROWS_SHA256 = 'cdb9d82d93e703f55e98d581e91d5a1f248b8da2b
 REMAINING_CALLER_NATIVE_FUNCTIONS_SHA256 = '76559b299e61a9171d4532e63fb3584acc7a39fd9f6743f1c7a8d43ea457d055'
 
 REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.toml': '78a36f7235d2747ab1e895c56552bf7e90460a75ad81073881a884c753116eaa',
- 'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.md': 'f84e634cc9e6d14e6ee0f7dd614fec6a81b4566cdd3df9639dfdb19ad7a9824a',
+ 'defs/JK08A.misfire-tail-dispatch-withdrawal-paths.md': '0bc64f65dad951470cbc0d021d00ea27c77f34a55f9b48da26095348c9fd4bf3',
  'tools/sh-elf-run/stock_jk08a_misfire_tail_dispatch_withdrawal.s': '7b86c8b2123604f809dcfa383fa0078168b3923681a8492cb4c4b5dc7c2303df',
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_contract.py': '003db30de8a595b48013e4493812934aadf1b9e22895a011a2a669d747197398',
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_matrix.py': '55a2f99e35ce5a0c6a3e3dfee964fb3a1770ce3b1eb2c3eaae9d4f2a98fd6cc9',
@@ -3570,12 +3589,12 @@ REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-pa
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_transfers.py': '6dc02900da5e0b1bba0c9ecc7c96ae47fda326876c18e6090ab56dcc68613f26',
  'tools/kb/src/kb/misfire_tail_dispatch_withdrawal_capture_evidence.py': '47acf3ca189ee1f7c7d7ff0b0f239c81d09bb2fe9b9a05cc9adb734ce22bf654',
  'tools/sh-elf-run/misfire_tail_dispatch_withdrawal_capture.py': 'af9f412a1fb51f1838fe2ad36bc71a3aca4b77db85e8f70b889efbea1977a1be',
- 'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_contract.py': 'b5efd49442cd9ad47c793bdc94090812db8d58a0e95f2aecd3ec793af71592da',
+ 'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_contract.py': '4cdfef3de174fead15c91247a27b2fd4c0b0b9872de7a8a5b7e08f041e292dde',
  'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_capture_evidence.py': '383d56441a4d35235b02b21726350a72815984fe1bb554e5f6c1efb1805b436b',
  'tools/sh-elf-run/harness-misfire-tail-dispatch-withdrawal-paths.c': '8b05a7a4d6e3838e8e7e1ef7d23a975bb32d3a9bba37e2781cc3273a90f88b98',
  'tools/kb/tests/test_misfire_tail_dispatch_withdrawal_adapter_generated.py': '7726a72d705058c6694a3da06279d0294d2db59478b48db105e8d3ddce05dfc2',
  'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.toml': 'c61fe46a4f06fa64fb705d0cfefb688f08815f9427ffd73363c6a366728f41ea',
- 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.md': 'f1ada2fd2c5e1cff6aa97ad28b25fb7db9659c349ff407474e0ab497fea35330',
+ 'defs/JK08A.endpoint-normalizer-writer-withdrawal-paths.md': '1f8c5b2a406cedab35b4d6c2553d2ce5f2edf8387cc837ca034e1ac600d85279',
  'tools/sh-elf-run/stock_jk08a_endpoint_normalizer_writer_withdrawal.s': 'af8135f3efc529c365a5a97c822ee2c263962ebbd4b6b16cb271e563e705d7ea',
  'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_contract.py': 'dae608c6a309925233ac50144877ad5116f46ec83099fc3da838d59b33cbee47',
  'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_matrix.py': '09017caf146b9c133dd5dee48ab8cb3921494b6139b684358f95885f041e9dc6',
@@ -3584,11 +3603,11 @@ REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-pa
  'tools/kb/src/kb/endpoint_normalizer_writer_withdrawal_capture_evidence.py': '4ea8daa04e53ec37f0d61c7cacc2f58af6f49eafc22a7e0b6beb5223bda4df6b',
  'tools/sh-elf-run/endpoint_normalizer_writer_withdrawal_capture.py': 'd2424b388aced864994f91debab5c22e4bfa0e69560c03e432eb66d7858f8015',
  'tools/sh-elf-run/harness-endpoint-normalizer-writer-withdrawal-paths.c': '6d67ed1a59ada155739077f8b1711d529c17e7cc093851a2f4123adb66cfd07b',
- 'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_contract.py': 'cb7688ff6d10a57a8e58f5e7fb5e6aa3ee03dde0e3142e7c5f66144d47869e65',
+ 'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_contract.py': '4cd69aec2c3845158488076525e008e5d5bc32cba68e1c0f17850ba82583e611',
  'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_capture_evidence.py': 'dbfd3ec14bcbceb2c545cc5a7257bbb9aac9f5d0adb6def97216746b9be82dfa',
  'tools/kb/tests/test_endpoint_normalizer_writer_withdrawal_native.py': '9517ad5f6f157bc410752b79472b6f50665b35e5cbd4f189bad98a2c2c3406c5',
  'defs/JK08A.bfs-state-caller-withdrawal-paths.toml': '7d0e40f7f89485ac4733651497ff7a4bc3a2634bf578c0d2112dc41752e0570d',
- 'defs/JK08A.bfs-state-caller-withdrawal-paths.md': '5a5e4d0e82e7dc46de188ebc68f6f7e8696721bdda4557fc9b2bc4316eaa745a',
+ 'defs/JK08A.bfs-state-caller-withdrawal-paths.md': '054eb98681699884c31020ea24153522dce0085d68f63c2e018121bfd55e27bc',
  'tools/sh-elf-run/stock_jk08a_bfs_state_caller_withdrawal.s': '92ea155175bb7bd004a1014cc9d3927d82f94afa4dd3cce45b68d4542e684216',
  'tools/kb/src/kb/bfs_state_caller_withdrawal_contract.py': '7a137a339a442e88538c7c2d800887fcf9dbf27c7b918d7ee347f30c8213abe0',
  'tools/kb/src/kb/bfs_state_caller_withdrawal_matrix.py': '6f5dea141897517be0fd09abd147884808ae11d04273e77514a2ffb5fda69f67',
@@ -3597,7 +3616,7 @@ REMAINING_CALLER_FILES_SHA256 = {'defs/JK08A.misfire-tail-dispatch-withdrawal-pa
  'tools/kb/src/kb/bfs_state_caller_withdrawal_capture_evidence.py': '60695abd67fd7e55a319b0b3b62c6d98ec0ec4e48dd68658cbbc83000d3a464a',
  'tools/sh-elf-run/bfs_state_caller_withdrawal_capture.py': '24f184759a795c3948c9e6d900893c08a5e8e9fb79f0c32dfdcd63d62f4bf692',
  'tools/sh-elf-run/harness-bfs-state-caller-withdrawal-paths.c': '16a38852c8ea0680b0f6936356475b77748028821dfdfbb08b0ad6d4a20865d1',
- 'tools/kb/tests/test_bfs_state_caller_withdrawal_contract.py': '98a4a6cda85b84e1cba3d46a3b5e0ed134e7b8b97b966dd66d136e58f3ff2a08',
+ 'tools/kb/tests/test_bfs_state_caller_withdrawal_contract.py': 'b3946e21ed711863d712e6321c94989f70393f770f9e8bc1e06cd0eda55aca7d',
  'tools/kb/tests/test_bfs_state_caller_withdrawal_capture_evidence.py': '2601ba6cb3f4e1c2dc9ad186a1471cd101ee257dc3e276d3286cd8d1427237e0',
  'tools/kb/tests/test_bfs_state_caller_withdrawal_native.py': '3194b34c24dd382fafc3c09c2c296b4c213c19b48a0ce7431ded47921dac6b4b'}
 
@@ -3640,7 +3659,7 @@ def require_remaining_standalone_callers_boundary(root,value):
 SHIFTED_WORD_ACCUMULATOR_NATIVE_ROWS_SHA256='b1146cf27a4bebb98d117be8a9d537bbf4e8fd0dba00e5b605082715ea6beee4'
 SHIFTED_WORD_ACCUMULATOR_NATIVE_FUNCTION_SHA256='65211b9425835fc362211991f9b0a71558b942a729f405c970b70565dc9f4eed'
 SHIFTED_WORD_ACCUMULATOR_FILES_SHA256={'defs/JK08A.shifted-word-accumulator-withdrawal-paths.toml': 'ed95d65c767f33fb7b674f906d03a8f4706cbcc988c4635cb71282fad802e60c',
- 'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md': '7e40089499c333e8ac38634aee11caddab0970d0adb72407097ce99f5619c58b',
+ 'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md': '3cf44251c2c8689c556575834d451d1a161835fddcbbd5e105a1407d23d35d6b',
  'tools/sh-elf-run/stock_jk08a_shifted_word_accumulator_withdrawal.s': '0b1e983420fbb3a1d8f4f2afdee7fb96c102aeb43f3ba15e15a731e7acd26dc1',
  'tools/kb/src/kb/shifted_word_accumulator_withdrawal_contract.py': 'd5f3e968458d926bc4c7838bd53f886f07ede73785086f0cf86fe2d58e179740',
  'tools/kb/src/kb/shifted_word_accumulator_withdrawal_matrix.py': '3d5f8f08ceb6cb5fc678ae4252e28b078b84ab1d3d8fcee4a1812fba936c0c33',
@@ -3649,7 +3668,7 @@ SHIFTED_WORD_ACCUMULATOR_FILES_SHA256={'defs/JK08A.shifted-word-accumulator-with
  'tools/kb/src/kb/shifted_word_accumulator_withdrawal_capture_evidence.py': '0b4b20a1bf38df10bd7a087c7a7e0883238ced57ca58c5128ebcac6a10c1cda7',
  'tools/sh-elf-run/shifted_word_accumulator_withdrawal_capture.py': '802b9233a23f45497718b0a12ed77b247227adfc457d1465d84eb8c8f2cffdd7',
  'tools/sh-elf-run/harness-shifted-word-accumulator-withdrawal-paths.c': '32627668a1faed951f6fe1448009901cb41faa90a7a3edcd402e32bc7c190165',
- 'tools/kb/tests/test_shifted_word_accumulator_withdrawal_contract.py': 'b6ffb9e0668ddf44e79a6fe68e28eb241ac0b2ae24e8c08430e5c975ffdd9501',
+ 'tools/kb/tests/test_shifted_word_accumulator_withdrawal_contract.py': '19cfc85cbaf84cb290a2e15989eddf5d3988297fbdfd0df4cbccd7304ceeccf9',
  'tools/kb/tests/test_shifted_word_accumulator_withdrawal_capture_evidence.py': '0de195d9cca1fe54d473411d349235bc8a203f0dbca2d4703acde1da795bcb9c',
  'tools/kb/tests/test_shifted_word_accumulator_withdrawal_native.py': 'a70106af9b3bc2bf8d2a4068842b5c012d3679dd700732bbbbceea6c30f6112a'}
 
@@ -3824,7 +3843,7 @@ MAP_BIAS_NATIVE_ROWS_SHA256 = 'd9b4f271835c25a88006751e1a010135bea229dc7acf0432c
 
 MAP_BIAS_NATIVE_FUNCTION_SHA256 = '468e2aef269be318161781510542661857b5c759ce34d86f3259f8fc4c624d64'
 
-MAP_BIAS_FILES_SHA256 = {'defs/JK08A.map-bias-division-caller-withdrawal-paths.md': '935965e325f619844d1b3f0904f4527812ae0252a709e9dd427ed34690d1a1e0',
+MAP_BIAS_FILES_SHA256 = {'defs/JK08A.map-bias-division-caller-withdrawal-paths.md': '082ee8d60ce8238e7271ef17c95e4f3158be989cb20247e34e3b2dcdb78f6617',
  'defs/JK08A.map-bias-division-caller-withdrawal-paths.toml': 'c77c44d8ebade2eb5cc58f7fcc5ba31ea2bcac66172194bed817eec171028168',
  'tools/kb/src/kb/map_bias_division_caller_withdrawal_capture_evidence.py': '0c9d0caec06bc39bd8ee119533fe87ca4a62eaad8fc6c50d5ac8f019a99d0c50',
  'tools/kb/src/kb/map_bias_division_caller_withdrawal_contract.py': 'cac73fdc9a9aedcecaeb91690c7f4f0e51462f2fc75867e2175f198ee24103f9',
@@ -3833,7 +3852,7 @@ MAP_BIAS_FILES_SHA256 = {'defs/JK08A.map-bias-division-caller-withdrawal-paths.m
  'tools/kb/src/kb/map_bias_division_caller_withdrawal_transfers.py': 'ce38f816ad3fee96ad1df905e54b5234dfb029dd46b125807318a2d794c7b379',
  'tools/kb/tests/test_map_bias_division_caller_withdrawal_capture_evidence.py': 'e2904a7bd260df2ccb3bf08561977d5e466dd015ee88c2a0fe8de3b8fa567655',
  'tools/kb/tests/test_map_bias_division_caller_withdrawal_contract.py': '5f6c16af4722ad0a718d84c8df3583dd376852fbf8dfef23a1dd372468ca4814',
- 'tools/kb/tests/test_map_bias_division_caller_withdrawal_native.py': 'cbf781abca496dfd1ce8c334898bb687eed45a8e6efb0010d54ca532998c4acf',
+ 'tools/kb/tests/test_map_bias_division_caller_withdrawal_native.py': '717b4a2b17e3982fd8db48140883413f63ca46305b8c8886a7c7913367706747',
  'tools/sh-elf-run/map_bias_division_caller_withdrawal_capture.py': '9b0c01ad274f6059359886a13e976856322be9f127338a670323a6abbde10110',
  'tools/sh-elf-run/stock_jk08a_map_bias_division_caller_withdrawal.s': '389ff60a23198142e0360885349b4c130996d25bf0ca9ed35dafbb6ec8289747',
  'tools/kb/tests/test_map_bias_division_caller_withdrawal_adapter_generated.py': 'f599030dde8788fdba060f0e8647d47f18d1b5ebf339c7dabba0d444d939d636',
@@ -3871,4 +3890,42 @@ def require_map_bias_caller_boundary(root,value):
     for name,wanted in MAP_BIAS_FILES_SHA256.items():
         if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=wanted:
             raise ValueError('the map-bias caller changes a complete independent component source')
+    return True
+
+PRIOR_SIGNED_ABS_REFERENCE_SHA256 = 'c4654b19a26e6b505a4abb8e380d6b6c79efbabd84f2e36aa6403fdd9fa005bb'
+
+PRIOR_SIGNED_ABS_FUNCTION_SHA256 = '2bcd386176690e0f6ef251c759825d0b0df573054a50ee0c741e717c09852951'
+
+SIGNED_ABS_NATIVE_ROWS_SHA256 = 'eeddbf6f3a0920225cb714a31673668f7c7654bcd73688ea0c8b783ac0c3bade'
+
+SIGNED_ABS_NATIVE_FUNCTION_SHA256 = '8222f357cfdc1f3a94354ec53689beca2114ec537236071a142a5a1767963cae'
+
+SIGNED_ABS_FILES_SHA256 = {'defs/JK08A.signed-abs-register-helper-withdrawal-paths.md': '28bf8bb1eea54c9e9e666c56085dc2158a7eac008452c274c3fcf312f49dcb33',
+ 'defs/JK08A.signed-abs-register-helper-withdrawal-paths.toml': '055c581208a17642241b6a215b1570bef7866f1831879ce01d41122b9d4fb8f7',
+ 'tools/kb/src/kb/signed_abs_register_helper_withdrawal_capture_evidence.py': '680bc11c7f5c6df232f727c3afb1f082b29a8a184a2abd3919257834614c4318',
+ 'tools/kb/src/kb/signed_abs_register_helper_withdrawal_contract.py': '7b82c75fee96c93cdc265cf4c21033ddaddb34708f0673af3e129cb66673f57f',
+ 'tools/kb/src/kb/signed_abs_register_helper_withdrawal_matrix.py': '1c223ab20e9b58e49f6cca43551ce27de54158ab143c822147e19447a2650731',
+ 'tools/kb/src/kb/signed_abs_register_helper_withdrawal_semantics.py': 'baa669319789354e8a45c618b5724741411258c72662c63f7bfd7910cb585909',
+ 'tools/kb/src/kb/signed_abs_register_helper_withdrawal_transfers.py': '067d3f098c9d66855b6455f7b74c22038b5d8a3d5183fd018fc5badb4677d1c5',
+ 'tools/kb/tests/test_signed_abs_register_helper_withdrawal_capture_evidence.py': '28d0c41e75452e65b66305dd59b59f7970a4677c5b668ac2e8ad43cb67280a44',
+ 'tools/kb/tests/test_signed_abs_register_helper_withdrawal_contract.py': '1de3f6a79bdedf22b7cd0cb7e5febbb441e6425439e0458a160b98f799bab20b',
+ 'tools/kb/tests/test_signed_abs_register_helper_withdrawal_native.py': 'e6a9f918d844ac986f158bd6449ca2be3a8edb71a6085c1317a2f92f0ebf96b3',
+ 'tools/sh-elf-run/signed_abs_register_helper_withdrawal_capture.py': 'e41487ca676cc3c01a569005026be1fb7888c9e719b83eac0f102cd35c34c3f3',
+ 'tools/sh-elf-run/stock_jk08a_signed_abs_register_helper_withdrawal.s': 'a25767d5e8e6e1aa735a9e38d5a6777579c71eec9fa82d6ddc323c238d2d4cb1',
+ 'tools/kb/tests/test_signed_abs_register_helper_withdrawal_adapter_generated.py': '7c98b8a4baa1d227b27f2ce82f4593dd44de0a8a2861e5173937fd427d7f5ce6',
+ 'tools/sh-elf-run/harness-signed-abs-register-helper-withdrawal-paths.c': '6f9fe3161b69242f5172c7d43441e7c58c7dcc7edc7b590f9c6049ea75341c56'}
+
+
+def require_standalone_signed_abs_boundary(root,value):
+    if (digest(value['reference'][:135])!=PRIOR_SIGNED_ABS_REFERENCE_SHA256
+            or digest(value['function'][:75])!=PRIOR_SIGNED_ABS_FUNCTION_SHA256):
+        raise ValueError('the standalone signed-magnitude helper changes a complete preceding135 reference or75 function boundary')
+    rows=[row for row in value['reference'] if row['component']=='signed_abs_register_helper_withdrawal_paths']
+    functions=[row for row in value['function'] if row['function']==0x22590]
+    if (digest(rows)!=SIGNED_ABS_NATIVE_ROWS_SHA256 or len(functions)!=1
+            or digest(functions[0])!=SIGNED_ABS_NATIVE_FUNCTION_SHA256):
+        raise ValueError('the standalone signed-magnitude helper substitutes its exact native original or unchanged full function')
+    for name,wanted in SIGNED_ABS_FILES_SHA256.items():
+        if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=wanted:
+            raise ValueError('the standalone signed-magnitude helper changes a complete independent component source')
     return True

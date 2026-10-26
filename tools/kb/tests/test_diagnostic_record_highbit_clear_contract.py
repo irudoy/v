@@ -124,8 +124,8 @@ def test_registered_family_and_adapter_publications_read_the_current_execution_d
     for index,path in enumerate(proof_adapter.DESCRIPTORS):
         adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter'];outputs.update((adapter['driver'],adapter['refusals']))
         if index<position:preceding.update((adapter['driver'],adapter['refusals']))
-    assert len(registry.FAMILIES)==42 and len(registry.captures())==87
-    assert len(proof_adapter.DESCRIPTORS)==40 and len(outputs)==80 and len(preceding)==78
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert len(proof_adapter.DESCRIPTORS)==41 and len(outputs)==82 and len(preceding)==78
     paths=('defs/JK08A.diagnostic-record-highbit-clear.md','defs/JK08A.diagnostic-record-bit4.md',
         'defs/JK08A.diagnostic-record-bits3-6.md','defs/JK08A.diagnostic-record-composite-gate.md',
         'defs/JK08A.map-bias-division-caller-withdrawal-paths.md','defs/JK08A.an1-source-dispatch-access-paths.md')

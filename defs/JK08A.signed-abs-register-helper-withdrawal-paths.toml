@@ -1,0 +1,22 @@
+schema = 1
+id = "jk08a-signed-abs-register-helper-withdrawal"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "One complete standalone full-raw32 signed-magnitude helper with both CMP/PL outcomes, exact minimum-word wrap, natural RTS delay and unchanged complete RAM/frame; selected RAM reader withdrawal grants no replacement identity."
+entries = [140688]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false
+unit = { assembly = "tools/sh-elf-run/stock_jk08a_signed_abs_register_helper_withdrawal.s", code = [{ start = 140688, end = 140698 }], pools = [], aliases = [] }
+readonly_observation = [{ address = 140688, size = 10 }]
+adapter = { schema = 1, profile = "ordinary-80-572", symbol = "signed_abs_register_helper_withdrawal", region = "jk08a-signed-abs-register-helper-withdrawal-paths", prefix = "kb-signed-abs-register-helper-withdrawal-observation ", marker = "VQ_SH_ELF_SIGNED_ABS_REGISTER_HELPER_WITHDRAWAL", header = "signed-abs-register-helper-withdrawal-cases.h", driver = "tools/sh-elf-run/harness-signed-abs-register-helper-withdrawal-paths.c", refusals = "tools/kb/tests/test_signed_abs_register_helper_withdrawal_adapter_generated.py", fields = [{ name = "raw_r0", bits = 32 }, { name = "raw_r1", bits = 32 }, { name = "raw_r2", bits = 32 }, { name = "raw_r3", bits = 32 }, { name = "raw_r4", bits = 32 }, { name = "raw_r5", bits = 32 }, { name = "raw_r6", bits = 32 }, { name = "raw_r7", bits = 32 }, { name = "raw_control_byte_0", bits = 8 }, { name = "raw_control_byte_1", bits = 8 }, { name = "raw_control_byte_2", bits = 8 }, { name = "raw_control_byte_3", bits = 8 }, { name = "variant", bits = 8 }, { name = "initial_sr", bits = 10 }], entries = [140688], kind = { field = "entry", values = [140688] }, memory = [{ offset = 0, width = 1, value = 165 }, { offset = 11292, width = 1, field = "raw_control_byte_0" }, { offset = 11293, width = 1, field = "raw_control_byte_1" }, { offset = 11294, width = 1, field = "raw_control_byte_2" }, { offset = 11295, width = 1, field = "raw_control_byte_3" }], calibration = [{ address = 140688, size = 10 }], calibration_input = false, bound = [{ address = 140688, size = 10 }], dependencies = ["tools/kb/src/kb/signed_abs_register_helper_withdrawal_contract.py", "tools/kb/src/kb/signed_abs_register_helper_withdrawal_matrix.py", "tools/kb/src/kb/signed_abs_register_helper_withdrawal_semantics.py", "tools/kb/src/kb/signed_abs_register_helper_withdrawal_transfers.py", "tools/kb/src/kb/signed_abs_register_helper_withdrawal_capture_evidence.py", "tools/sh-elf-run/stock_jk08a_signed_abs_register_helper_withdrawal.s", "tools/kb/src/kb/byte_surface_equations.py", "tools/kb/src/kb/proof_sources.py", "tools/kb/src/kb/proof_reuse.py", "tools/sh-elf-run/stock_ignition_consumer_invoke.s", "tools/kb/tests/proof_adapter_cases.py"] }

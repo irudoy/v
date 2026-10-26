@@ -3,9 +3,11 @@
 The component contains one natural entry, 17 stock instructions,
 34 code bytes, 2 constant pools and 0 pointer aliases. The exact descriptor
 is `defs/JK08A.register-overflow-paths.toml`. The joint native withdrawal
-descriptor contains 134 exact access originals, 100 full owners, 58 complete
-functions and 126 matching ledger selectors. The normal writer requires all
-134 exact unlink operations. The selected unsupported original is:
+descriptor contains 136 exact access originals: 125 readers and eleven individually pinned writers,
+101 complete datum owners, 76 complete functions and 128 matching ledger selectors
+(120 datum-end selectors and 8 function-end selectors). Thirty-five independent components
+use the same complete original COPY primary. The normal writer requires all
+136 exact unlink operations. The selected unsupported original is:
 
 | Datum | Natural function | Exact unsupported original |
 |---|---|---|
@@ -65,7 +67,7 @@ are removed without changing other native fields, surviving order, types,
 symbol evidence, original TEST contexts or physical proof scopes.
 
 Five independent components require the same complete original COPY primary.
-The ordinary registry contains thirteen families and forty-seven capture bindings.
+The ordinary registry contains 42 families and 88 capture bindings.
 The tenth standard source-only adapter retains the existing64KiB/80-572
 observer and profile; the preceding nine adapters retain all eighteen
 generated output byte identities. No replacement owning claim/evidence,
@@ -187,7 +189,7 @@ The complete paired flag writer component is defined by
 56 functions retain exact boundaries. Entry-scoped absence preserves the real
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 118 datum-end selectors and
+remain mandatory. The joint total includes 120 datum-end selectors and
 8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
@@ -199,26 +201,24 @@ same three datum owners. Full prior 112 records reconstruct exactly; all
 remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 118 datum-end and
+identical primary. The joint selector total contains 120 datum-end and
 8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,100 complete datum owners,74 complete functions and
-126 matching ledger selectors. These contain118 datum-end selectors and
-8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains thirteen families and
-forty-seven capture bindings. The paired normalization boundary is specified
-in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
+The shared descriptor contains 136 exact access originals: 125 readers and
+eleven individually pinned writers, 101 complete datum owners, 76 complete
+functions and 128 matching ledger selectors (120 datum-end selectors and
+8 function-end selectors). Thirty-five independent components use the same
+complete original COPY primary. The existing registry contains 42 families and
+88 captures. The paired normalization boundary is specified in
+`defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
 
-The complete prior reference and function boundaries retain exact full-record
-digests. The sole additional current image delta is at lyrical-dragon/tbl
-reference79:two exact reader links and two matching owner-end selectors.
-No other preceding reference field or complete function record changes.
-Both complete prior function transitions,five function-end selectors,eight
-writer identities,eighteen indexed_by originals and every previous full
-family/helper/native/TEST original remain mandatory from the identical primary.
+Complete prior reference and function boundaries retain exact full-record
+digests and separately bounded current shared-owner transitions. Each
+component retains its complete preceding native, function, helper and TEST
+originals from the identical primary; the current joint descriptor binds
+every complete owner and function postimage.
 
 The complete byte-ratio producer boundary is specified in
 `defs/JK08A.byte-ratio-producer-withdrawal-paths.md`. The complete118-record and62-function prefix retains exact reconstructed

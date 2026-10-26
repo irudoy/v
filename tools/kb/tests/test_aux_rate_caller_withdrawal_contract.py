@@ -113,8 +113,8 @@ def test_complete_fixture_retains_full_unsigned_divider_and_real_auxiliary_gate(
 def test_published_auxiliary_rate_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='aux_rate_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.aux-rate-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({row['owner'] for row in declared['reference']})==100
+    assert len(rows)==1 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({row['owner'] for row in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('225 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),225),
@@ -132,20 +132,20 @@ def test_published_auxiliary_rate_joint_prior_and_registry_counts_bind_execution
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==119 and function_removed==8 and datum_removed+function_removed==127
+    assert datum_removed==120 and function_removed==8 and datum_removed+function_removed==128
     assert '126 matching ledger selectors' in words and '118 datum-end selectors and 8 function-end selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
+    assert len(family.COMPONENTS)==35 and 'Thirty-five independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):
         assert 'Fourteen native-RAM components' in ' '.join((repo.ROOT/name).read_text().split())
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,115))==withdrawal.PRIOR_THRESHOLD_WINDOW_READER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:59])==withdrawal.PRIOR_THRESHOLD_WINDOW_READER_FUNCTION_SHA256
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
-    assert 'thirteen families and forty-seven capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert '42 families and 88 capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==26 and 'preceding twenty-six adapters' in words
     mappings=(withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,withdrawal.PRIOR_GATED_FILES_SHA256,withdrawal.PRIOR_RPM_RAM_FILES_SHA256,withdrawal.PRIOR_OVERFLOW_FILES_SHA256,withdrawal.PRIOR_WORD_FILES_SHA256,withdrawal.PRIOR_RPM_STATE_FILES_SHA256,withdrawal.PRIOR_INDEXED_WORD_FILES_SHA256,withdrawal.PRIOR_DIVISION_CALLER_FILES_SHA256,withdrawal.PRIOR_BYTE_CURVE_CALLER_FILES_SHA256,withdrawal.PRIOR_WORD_INTERP_CALLER_FILES_SHA256,withdrawal.PRIOR_SCALED_DIVISION_FILES_SHA256,withdrawal.PRIOR_CURVE_SCALE_CALLER_FILES_SHA256,withdrawal.PRIOR_DERIVATIVE_SCALE_CALLER_FILES_SHA256,withdrawal.PRIOR_GUARDED_QUOTIENT_CALLER_FILES_SHA256,withdrawal.PRIOR_MIXED_CURVE_CALLER_FILES_SHA256,withdrawal.PRIOR_TIMING_REMAINDER_CALLER_FILES_SHA256,withdrawal.PRIOR_STATE_RATIO_CALLER_FILES_SHA256,withdrawal.PRIOR_DFCO_STATE_CALLER_FILES_SHA256,withdrawal.PRIOR_PAIRED_INHIBIT_WRITER_FILES_SHA256,withdrawal.PRIOR_THRESHOLD_WINDOW_READER_FILES_SHA256,)
     files={name:sha for mapping in mappings for name,sha in mapping.items()}

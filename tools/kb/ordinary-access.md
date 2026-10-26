@@ -70,7 +70,7 @@ the thermal consumer has an explicit quiet diagnostic premise.
 The whole-feedback argument/store/counter boundary uses
 `closed_loop_feedback_paths` as a capture of the existing
 coordinate/publication family. The ordinary registry retains each family's
-complete ordered capture bindings. The registry contains 42 families and 87 captures. Ten full previous references retain their exact pins; two feedback
+complete ordered capture bindings. The registry contains 42 families and 88 captures. Ten full previous references retain their exact pins; two feedback
 writers, two transition-counter relations and two typed coolant constant readers
 share the same twelve-item ordinary batch. Three value-argument
 dispositions retain the separate calculation-dependency operation. The
@@ -123,18 +123,18 @@ writer and standard source generator are reused.
 `defs/JK08A.register-only-helpers.md` defines this exact boundary.
 
 
-The `scalar-ram-leaf-withdrawal` registration binds 135 exact original access
+The `scalar-ram-leaf-withdrawal` registration binds 136 exact original access
 relations through complete natural arithmetic, state, indexed, interpolation,
-division, producer and caller paths. Thirty-four independent components require
-one complete original COPY primary. There are 124 readers and eleven individually
+division, producer and caller paths. Thirty-five independent components require
+one complete original COPY primary. There are 125 readers and eleven individually
 pinned writers. Complete actual instruction CPU/SR/frame/RAM, separate equations,
 ordered physical operands, post-delay calls and natural returns remain mandatory.
 Fixed-other alternatives require changed actual R0 or common computed publication
 bytes outside controlled inputs. Every previous full family/helper/native/TEST
 original remains mandatory from the identical primary.
 
-The 135 normal unlinks and 127 matching ledger selectors preserve 100 full datum
-owners and 75 complete functions. The selector total contains 119 datum-end and
+The 136 normal unlinks and 128 matching ledger selectors preserve 101 full datum
+owners and 76 complete functions. The selector total contains 120 datum-end and
 8 function-end removals. Five complete function transitions retain eight exact
 function-end selectors. Full preceding reference, function and source boundaries
 retain complete prefix reconstruction and separate current full-image pins.

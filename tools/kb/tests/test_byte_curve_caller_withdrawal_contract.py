@@ -122,8 +122,8 @@ def test_fixture_retains_all_caller_and_actual_interior_helper_bytes_with_exact_
 def test_published_caller_interior_curve_joint_and_prior_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='byte_curve_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-curve-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==5 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({r['owner'] for r in declared['reference']})==100
+    assert len(rows)==5 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({r['owner'] for r in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,wanted in (('266 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),266),
@@ -139,15 +139,15 @@ def test_published_caller_interior_curve_joint_and_prior_counts_bind_execution_s
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==127 and '126 matching ledger selectors' in words
+    assert removed==128 and '126 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19
     assert withdrawal.ORIGINAL_LINK_TYPES=={'00052034-ffff120e-withdraw':'writer',
         '0006e3d8-ffff1300-withdraw':'writer','0006e3d8-ffff1f86-withdraw':'writer'}
     assert sum(json.loads(r['original_claim_json'])['type']=='writer' for r in rows)==2
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,44))==withdrawal.PRIOR_DIVISION_CALLER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:34])==withdrawal.PRIOR_DIVISION_CALLER_FUNCTION_SHA256
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
-    assert 'thirteen families and forty-seven capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert '42 families and 88 capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==14 and 'preceding fourteen adapters' in words
     files={k:v for mapping in (withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,
         withdrawal.PRIOR_GATED_FILES_SHA256,withdrawal.PRIOR_RPM_RAM_FILES_SHA256,

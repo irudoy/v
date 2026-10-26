@@ -110,8 +110,8 @@ def test_source_refuses_identity_geometry_scale_units_caller_and_hardware_admiss
 def test_published_original_counts_and_native_RAM_aliases_bind_the_executed_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='rpm_ram_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.rpm-ram-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==3 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({row['owner'] for row in declared['reference']})==100
+    assert len(rows)==3 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({row['owner'] for row in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+
         '` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -125,9 +125,9 @@ def test_published_original_counts_and_native_RAM_aliases_bind_the_executed_sour
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==127 and '126 matching ledger selectors' in words
+    assert removed==128 and '126 matching ledger selectors' in words
     for original,native,alias in transfers.NATIVE_RAM_ROOTS:
         assert f'{native:08X}' in text and f'{alias:08X}' in text
-    assert 'thirteen families and forty-seven capture bindings' in words
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
+    assert '42 families and 88 capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
     assert 'preceding eight adapters' in words and proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==8

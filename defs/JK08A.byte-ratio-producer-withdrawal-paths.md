@@ -91,7 +91,7 @@ originals stay pinned.
 The 207 prior domain sources retain 206 byte-identical sources and the exact
 two-site gated spelling exception with complete current/legacy hashes.
 Thirty-three independent components require one complete original COPY primary.
-The registry contains thirteen families and forty-seven capture bindings.
+The registry contains 42 families and 88 capture bindings.
 The twenty-ninth standard source-only adapter retains the preceding twenty-eight adapters
 and all fifty-six generated output identities. Its marker is
 VQ_SH_ELF_BYTE_RATIO_PRODUCER_WITHDRAWAL.

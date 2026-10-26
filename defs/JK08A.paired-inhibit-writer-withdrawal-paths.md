@@ -5,7 +5,7 @@ The complete natural 7C8FA and 7C9A8 callers and real 7D84C nibble helper contai
 are required. The descriptor binds 17 literal spans, 6 pointer aliases,
 33 complete RAM fields, 1 configuration field, 17 complete calibration spans
 and 44 raw input fields. The joint descriptor contains 134 exact access originals:
-123 readers and eleven individually pinned writers, 100 complete datum owners,
+123 readers and eleven individually pinned writers, 101 complete datum owners,
 74 complete functions and 126 matching ledger selectors. These include
 118 datum-end selectors and 8 function-end selectors. All 134 exact normal unlink
 operations are mandatory. The selected unsupported writer originals are:
@@ -107,7 +107,7 @@ CPU/frame/RAM/calibration/bound preimages remain fixed.
 The 171 prior domain sources retain 170 byte-identical sources and the exact
 existing two-site gated spelling exception with complete current/legacy hashes.
 Thirty-three independent components require one complete original COPY primary.
-The registry contains thirteen families and forty-seven capture bindings.
+The registry contains 42 families and 88 capture bindings.
 The twenty-fifth standard source-only adapter retains the preceding twenty-four adapters
 and all forty-eight generated output identities. Its marker is
 VQ_SH_ELF_PAIRED_INHIBIT_WRITER_WITHDRAWAL.
@@ -132,11 +132,10 @@ identical primary. The joint selector total contains 118 datum-end and
 ## Joint paired normalization boundary
 
 The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,100 complete datum owners,74 complete functions and
+individually pinned writers,101 complete datum owners,74 complete functions and
 126 matching ledger selectors. These contain118 datum-end selectors and
 8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains thirteen families and
-forty-seven capture bindings. The paired normalization boundary is specified
+complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
 
 The complete prior reference and function boundaries retain exact full-record

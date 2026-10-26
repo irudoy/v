@@ -166,22 +166,23 @@ def test_current_publications_read_the_exact_execution_registries_and_selector_r
         datum_removed+=sum(len(marker.get('dependency',[])) for marker in before)-sum(len(marker.get('dependency',[])) for marker in after)
     function_removed=sum(sum(len(marker.get('dependency',[])) for marker in owning.function_native_document(row,'original').get('ledger',[]))
         -sum(len(marker.get('dependency',[])) for marker in owning.function_native_document(row,'proposed').get('ledger',[])) for row in functions)
-    assert (len(references),readers,writers,owners,len(functions),datum_removed,function_removed)==(135,124,11,100,75,119,8)
+    assert (len(references),readers,writers,owners,len(functions),datum_removed,function_removed)==(136,125,11,101,76,120,8)
+    assert len(family.COMPONENTS)==35
     for path in ('tools/sh-elf-run/README.md','tools/kb/ordinary-access.md',
-            'defs/JK08A.map-bias-division-caller-withdrawal-paths.md'):
+            'defs/JK08A.map-bias-division-caller-withdrawal-paths.md','defs/JK08A.register-overflow-paths.md'):
         text=' '.join((repo.ROOT/path).read_text().split())
         for phrase in (f'{len(references)} normal unlinks' if not path.endswith('-paths.md') else f'{len(references)} exact access originals',
                 f'{readers} readers',f'{owners} '+('complete datum owners' if path.endswith('-paths.md') else 'full datum owners'),
                 f'{len(functions)} complete functions',f'{datum_removed+function_removed} matching ledger selectors',
-                f'{datum_removed} datum-end',f'{function_removed} function-end','Thirty-four independent components'):
+                f'{datum_removed} datum-end',f'{function_removed} function-end','Thirty-five independent components'):
             assert phrase in text,(path,phrase)
     outputs=set()
     for path in proof_adapter.DESCRIPTORS:
         adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter'];outputs.update((adapter['driver'],adapter['refusals']))
     text=' '.join((repo.ROOT/'defs/JK08A.map-bias-division-caller-withdrawal-paths.md').read_text().split())
-    assert len(registry.FAMILIES)==42 and len(registry.captures())==87
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
-    assert len(proof_adapter.DESCRIPTORS)==40 and len(outputs)==80
+    assert len(proof_adapter.DESCRIPTORS)==41 and len(outputs)==82
     assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text
     preceding=set()
     for path in proof_adapter.DESCRIPTORS[:proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)]:

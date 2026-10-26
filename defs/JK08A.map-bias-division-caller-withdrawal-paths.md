@@ -75,13 +75,13 @@ publication.
 
 ## Shared owning source boundary
 
-The shared descriptor contains 135 exact access originals: 124 readers and
-eleven individually pinned writers, 100 complete datum owners, 75 complete
-functions and 127 matching ledger selectors (119 datum-end selectors and
-8 function-end selectors). Thirty-four independent components use the same
+The shared descriptor contains 136 exact access originals: 125 readers and
+eleven individually pinned writers, 101 complete datum owners, 76 complete
+functions and 128 matching ledger selectors (120 datum-end selectors and
+8 function-end selectors). Thirty-five independent components use the same
 complete original COPY primary. The existing registry contains 42 families and
-87 captures. The standard ordinary adapter registry contains 40 descriptors and
-80 generated outputs. The map-bias adapter supplies two source outputs; the
+88 captures. The standard ordinary adapter registry contains 41 descriptors and
+82 generated outputs. The map-bias adapter supplies two source outputs; the
 76 preceding generated outputs retain their complete bytes.
 
 The exact withdrawal preserves all 134 preceding reference records through

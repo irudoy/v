@@ -79,7 +79,7 @@ pending. The word producer and generated adapter use the single terminal
 marker VQ_SH_ELF_SCALAR_RAM_WORD, bound by a source consistency contract.
 
 Six independent components require the same complete original COPY primary.
-The ordinary registry contains thirteen families and forty-seven capture bindings.
+The ordinary registry contains 42 families and 88 capture bindings.
 The eleventh standard source-only adapter retains the existing64KiB/80-572
 observer and profile; the preceding ten adapters retain all twenty generated
 output identities. There is no replacement owning evidence, reverse donation,
@@ -210,11 +210,10 @@ identical primary. The joint selector total contains 118 datum-end and
 ## Joint paired normalization boundary
 
 The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,100 complete datum owners,74 complete functions and
+individually pinned writers,101 complete datum owners,74 complete functions and
 126 matching ledger selectors. These contain118 datum-end selectors and
 8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains thirteen families and
-forty-seven capture bindings. The paired normalization boundary is specified
+complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
 
 The complete prior reference and function boundaries retain exact full-record

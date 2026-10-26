@@ -87,7 +87,7 @@ original TEST context and physical proof scopes remain exact. The new five
 relations have six matching selectors, including both identity and scale
 selectors for colorful-dormouse/tbl.
 
-The ordinary registry contains thirteen families and forty-seven capture bindings.
+The ordinary registry contains 42 families and 88 capture bindings.
 The eighth standard source-only adapter retains the existing64KiB/80-572
 observer/profile; the preceding seven adapters retain all fourteen output
 byte identities. Original and controlled refusal sources cover complete
@@ -237,11 +237,10 @@ identical primary. The joint selector total contains 118 datum-end and
 ## Joint paired normalization boundary
 
 The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,100 complete datum owners,74 complete functions and
+individually pinned writers,101 complete datum owners,74 complete functions and
 126 matching ledger selectors. These contain118 datum-end selectors and
 8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains thirteen families and
-forty-seven capture bindings. The paired normalization boundary is specified
+complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
 
 The complete prior reference and function boundaries retain exact full-record

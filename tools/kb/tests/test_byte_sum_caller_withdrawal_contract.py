@@ -109,8 +109,8 @@ def test_complete_caller_real_curve_helpers_and_full26A60_parent_keep_two_exact_
 def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='byte_sum_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.byte-sum-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({row['owner'] for row in declared['reference']})==100
+    assert len(rows)==1 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({row['owner'] for row in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('153 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),153),
@@ -129,7 +129,7 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==119 and function_removed==8 and datum_removed+function_removed==127
+    assert datum_removed==120 and function_removed==8 and datum_removed+function_removed==128
     assert len(withdrawal.FUNCTION_POSTIMAGE_IDENTITIES)==5 and len(withdrawal.FUNCTION_POSTIMAGE_CLAIMS)==8
     assert 'five transitions and eight exact function-end selectors' in words
     assert '126 matching ledger selectors' in words and '118 datum-end selectors and 8 function-end selectors' in words
@@ -137,10 +137,10 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
+    assert len(family.COMPONENTS)==35 and 'Thirty-five independent components' in words
     shared=(repo.ROOT/'tools/kb/ordinary-access.md').read_text()
     shared=' '.join(shared.split('The `scalar-ram-leaf-withdrawal` registration',1)[1].split('The complete byte-ratio producer',1)[0].split())
-    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in shared
+    assert len(family.COMPONENTS)==35 and 'Thirty-five independent components' in shared
     assert f"{len(declared['reference'])} exact original access relations" in shared
     assert f"{len({row['owner'] for row in declared['reference']})} full datum owners" in shared
     assert f"{len(declared['function'])} complete functions" in shared
@@ -154,8 +154,8 @@ def test_published_byte_sum_joint_prior_and_registry_counts_bind_execution_sourc
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16
     assert withdrawal.digest(withdrawal.uptight_RAM3348_prior_current_rows(declared,122))==withdrawal.PRIOR_BYTE_FACTOR_CALLER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:65])==withdrawal.PRIOR_BYTE_FACTOR_CALLER_FUNCTION_SHA256
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
-    assert 'thirteen families and forty-seven capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert '42 families and 88 capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==31 and 'preceding thirty-one adapters' in words
     files={name:sha for mapping in (withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,withdrawal.PRIOR_GATED_FILES_SHA256,withdrawal.PRIOR_RPM_RAM_FILES_SHA256,withdrawal.PRIOR_OVERFLOW_FILES_SHA256,withdrawal.PRIOR_WORD_FILES_SHA256,withdrawal.PRIOR_RPM_STATE_FILES_SHA256,withdrawal.PRIOR_INDEXED_WORD_FILES_SHA256,withdrawal.PRIOR_DIVISION_CALLER_FILES_SHA256,withdrawal.PRIOR_BYTE_CURVE_CALLER_FILES_SHA256,withdrawal.PRIOR_WORD_INTERP_CALLER_FILES_SHA256,withdrawal.PRIOR_SCALED_DIVISION_FILES_SHA256,withdrawal.PRIOR_CURVE_SCALE_CALLER_FILES_SHA256,withdrawal.PRIOR_DERIVATIVE_SCALE_CALLER_FILES_SHA256,withdrawal.PRIOR_GUARDED_QUOTIENT_CALLER_FILES_SHA256,withdrawal.PRIOR_MIXED_CURVE_CALLER_FILES_SHA256,withdrawal.PRIOR_TIMING_REMAINDER_CALLER_FILES_SHA256,withdrawal.PRIOR_STATE_RATIO_CALLER_FILES_SHA256,withdrawal.PRIOR_DFCO_STATE_CALLER_FILES_SHA256,withdrawal.PRIOR_PAIRED_INHIBIT_WRITER_FILES_SHA256,withdrawal.PRIOR_THRESHOLD_WINDOW_READER_FILES_SHA256,withdrawal.PRIOR_AUX_RATE_CALLER_FILES_SHA256,withdrawal.PRIOR_PAIRED_CURVE_NORMALIZATION_FILES_SHA256,withdrawal.PRIOR_BYTE_RATIO_PRODUCER_FILES_SHA256,withdrawal.PRIOR_STATE_SURFACE_CALLER_FILES_SHA256,withdrawal.PRIOR_BYTE_FACTOR_CALLER_FILES_SHA256,) for name,sha in mapping.items()}
     assert len(files)==234 and '234 prior domain sources' in words and '233 byte-identical sources' in words

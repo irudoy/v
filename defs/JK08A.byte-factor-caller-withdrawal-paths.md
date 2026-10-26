@@ -92,7 +92,7 @@ domain sources retain 224 byte-identical sources and the exact two-site gated
 spelling exception with complete current/legacy hashes.
 
 Thirty-three independent components require one complete original COPY primary.
-The registry contains thirteen families and forty-seven capture bindings.
+The registry contains 42 families and 88 capture bindings.
 Sixteen native-RAM components retain exact root/alias interval absence.
 The thirty-first standard source-only adapter retains the preceding thirty adapters
 and all sixty generated output identities. Its marker is

@@ -6,7 +6,7 @@ domain requires 538 feasible instructions and has 58 excluded instructions.
 The descriptor binds 32 literal spans, 8 pointer aliases, 15 complete RAM fields,
 34 scalar configuration fields, 34 complete calibration spans, 59 raw input fields
 and 26 complete helper sources. The joint descriptor contains 123 exact access
-originals: 123 readers and eleven individually pinned writers, 100 complete datum
+originals: 123 readers and eleven individually pinned writers, 101 complete datum
 owners, 74 complete functions and 126 matching ledger selectors. These include
 118 datum-end selectors and 8 function-end selectors. All 134 exact normal unlink
 operations are mandatory. The two selected unsupported originals are:
@@ -102,7 +102,7 @@ All eight exact writer identities and eighteen indexed_by originals stay pinned.
 The 198 prior domain sources retain 197 byte-identical sources and the exact
 two-site gated spelling exception with complete current/legacy hashes.
 Thirty-three independent components require one complete original COPY primary.
-The registry contains thirteen families and forty-seven capture bindings.
+The registry contains 42 families and 88 capture bindings.
 The twenty-eighth standard source-only adapter retains the preceding twenty-seven adapters
 and all fifty-four generated output identities. Its marker is
 VQ_SH_ELF_PAIRED_CURVE_NORMALIZATION_WITHDRAWAL.

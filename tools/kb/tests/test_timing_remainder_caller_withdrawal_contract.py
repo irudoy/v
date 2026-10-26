@@ -127,8 +127,8 @@ def test_fixture_keeps_one_literal_hole_full_real_remainder_and_exact_eight_knot
 def test_published_timing_remainder_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='timing_remainder_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.timing-remainder-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==5 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({row['owner'] for row in declared['reference']})==100
+    assert len(rows)==5 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({row['owner'] for row in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('918 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),918),
@@ -145,20 +145,20 @@ def test_published_timing_remainder_joint_prior_and_registry_counts_bind_executi
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==127 and '126 matching ledger selectors' in words
+    assert removed==128 and '126 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==11
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==123
     assert '123 readers and eleven' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
-    assert len(family.COMPONENTS)==34 and 'Thirty-four independent components' in words
+    assert len(family.COMPONENTS)==35 and 'Thirty-five independent components' in words
     native_components={row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')}
     assert len(native_components)==14
     for name in ('tools/kb/README.md','tools/kb/SPEC.md','tools/sh-elf-run/README.md','tools/kb/ordinary-access.md'):
         assert 'Fourteen native-RAM components' in ' '.join((repo.ROOT/name).read_text().split())
     assert withdrawal.digest(withdrawal.prior_reference_rows(declared,87))==withdrawal.PRIOR_MIXED_CURVE_CALLER_REFERENCE_SHA256
     assert withdrawal.digest(declared['function'][:51])==withdrawal.PRIOR_MIXED_CURVE_CALLER_FUNCTION_SHA256
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
-    assert 'thirteen families and forty-seven capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert '42 families and 88 capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==21 and 'preceding twenty-one adapters' in words
     files={name:sha for mapping in (withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,
         withdrawal.PRIOR_GATED_FILES_SHA256,withdrawal.PRIOR_RPM_RAM_FILES_SHA256,

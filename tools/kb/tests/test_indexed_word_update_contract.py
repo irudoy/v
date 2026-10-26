@@ -134,8 +134,8 @@ def test_source_refuses_identity_geometry_scale_units_caller_hardware_or_publica
 def test_published_component_joint_writer_alias_and_prior_source_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[r for r in declared['reference'] if r['component']=='indexed_word_update_paths']
     text=(repo.ROOT/'defs/JK08A.indexed-word-update-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==1 and len(declared['reference'])==135 and len(declared['function'])==75
-    assert len({r['owner'] for r in declared['reference']})==100
+    assert len(rows)==1 and len(declared['reference'])==136 and len(declared['function'])==76
+    assert len({r['owner'] for r in declared['reference']})==101
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{r["address"]:08x}'+'` | `7mfk:'+f'{r["function"]:08x}'+'` | `'+r['original_claim_sha256']+'` |' for r in rows]
     for phrase,actual,wanted in (('92 stock instructions',sum((b-a)//2 for a,b in contract.SPANS),92),
@@ -159,12 +159,12 @@ def test_published_component_joint_writer_alias_and_prior_source_counts_bind_exe
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==127 and '126 matching ledger selectors' in words
+    assert removed==128 and '126 matching ledger selectors' in words
     image=repo.images()['JK08A'].path.read_bytes()
     assert sum(image[at:at+2]==b'\x00\x0b' for a,b in contract.SPANS for at in range(a,b,2))==1
     assert '1 natural RTS site' in words
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
-    assert 'thirteen families and forty-seven capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
+    assert '42 families and 88 capture bindings' in words
     assert proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==12 and 'preceding twelve adapters' in words
     files={k:v for mapping in (withdrawal.PRIOR_FILES_SHA256,withdrawal.PRIOR_PRODUCT_FILES_SHA256,
         withdrawal.PRIOR_GATED_FILES_SHA256,withdrawal.PRIOR_RPM_RAM_FILES_SHA256,

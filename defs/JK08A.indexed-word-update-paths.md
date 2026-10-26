@@ -70,7 +70,7 @@ explicit gated assembly spelling exception. Its current/legacy hashes and
 two labeled replacements remain unchanged. All prior counter/MAF and RPM
 source boundaries, the original observer and the existing profile remain
 exact. Thirty-three independent components require one complete original COPY
-primary. The ordinary registry contains thirteen families and forty-seven capture bindings.
+primary. The ordinary registry contains 42 families and 88 capture bindings.
 The thirteenth standard source-only adapter retains the preceding twelve adapters
 and all twenty-four generated output identities. Its terminal marker is
 VQ_SH_ELF_INDEXED_WORD_UPDATE.
@@ -189,11 +189,10 @@ identical primary. The joint selector total contains 118 datum-end and
 ## Joint paired normalization boundary
 
 The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,100 complete datum owners,74 complete functions and
+individually pinned writers,101 complete datum owners,74 complete functions and
 126 matching ledger selectors. These contain118 datum-end selectors and
 8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains thirteen families and
-forty-seven capture bindings. The paired normalization boundary is specified
+complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
 in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
 
 The complete prior reference and function boundaries retain exact full-record

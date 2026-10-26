@@ -146,8 +146,8 @@ def test_published_address_originals_and_source_counts_are_read_from_executed_de
     assert 'twelve complete retained function documents' in words and len(declared['function'][:12])==12
     assert 'three unreachable instructions' in words and len(transfers.INFEASIBLE_INSTRUCTIONS)==3
     assert len(transfers.FIXED_BRANCHES)==2 and '4E140' in text and '4E14E' in text
-    assert 'thirteen families and forty-seven capture bindings' in words
-    assert len(registry.FAMILIES)==13 and len(registry.captures())==47
+    assert '42 families and 88 capture bindings' in words
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==88
     assert 'preceding five adapters' in words and proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==5
     def test_count(value):
         if isinstance(value,dict):return int(value.get('kind')=='test')+sum(test_count(item) for item in value.values())

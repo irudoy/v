@@ -6,7 +6,7 @@ instructions, 948 code bytes and 9 code spans. The selected domain requires
 binds 36 literal spans, 9 pointer aliases, 11 complete RAM fields, 62 scalar
 configuration fields, 42 complete calibration spans, 83 raw input fields and
 16 complete helper sources. The joint descriptor contains 123 exact access
-originals: 123 readers and eleven individually pinned writers, 100 complete datum
+originals: 123 readers and eleven individually pinned writers, 101 complete datum
 owners, 74 complete functions and 126 matching ledger selectors. These include
 118 datum-end selectors and 8 function-end selectors. All 134 exact normal
 unlink operations are mandatory. The two selected unsupported originals are:
@@ -109,7 +109,7 @@ sources retain215 byte-identical sources and the exact two-site gated spelling
 exception with complete current/legacy hashes.
 
 Thirty-three independent components require one complete original COPY primary.
-The registry contains thirteen families and forty-seven capture bindings.
+The registry contains 42 families and 88 capture bindings.
 The thirtieth standard source-only adapter retains the preceding twenty-nine adapters
 and all fifty-eight generated output identities. Its marker is
 VQ_SH_ELF_STATE_SURFACE_CALLER_WITHDRAWAL. The complete broader byte-surface
