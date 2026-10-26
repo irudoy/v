@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import queue
+import threading
 import time
 
 from tools.can_dashboard.model import (
@@ -14,6 +15,10 @@ from tools.can_dashboard.model import (
     DemoGenerator,
     FrameRecord,
 )
+
+
+# The application owns one PCAN source, including its asynchronous cleanup.
+_PCAN_SESSION = threading.Lock()
 
 
 @dataclass(frozen=True)
@@ -109,6 +114,28 @@ def _send_control_requests(bus, can_module, config, requests, emit):
 
 
 def run_pcan(config, stop_event, emit, control_requests=None):
+    """Serialize PCAN open, receive and complete cleanup across reconnects."""
+    if stop_event.is_set():
+        emit(SourceStatus("stopped", "PCAN connection cancelled"))
+        return
+    if not _PCAN_SESSION.acquire(blocking=False):
+        emit(SourceStatus("connecting", "waiting for previous PCAN source to close"))
+        while not stop_event.is_set():
+            if _PCAN_SESSION.acquire(timeout=0.1):
+                break
+        else:
+            emit(SourceStatus("stopped", "PCAN connection cancelled"))
+            return
+    try:
+        if stop_event.is_set():
+            emit(SourceStatus("stopped", "PCAN connection cancelled"))
+            return
+        _run_pcan(config, stop_event, emit, control_requests)
+    finally:
+        _PCAN_SESSION.release()
+
+
+def _run_pcan(config, stop_event, emit, control_requests):
     """Read selected frames through python-can's PCAN-Basic backend."""
     try:
         import can
@@ -143,9 +170,9 @@ def run_pcan(config, stop_event, emit, control_requests=None):
         return
 
     mode = "listen-only" if config.listen_only else "active/ACK"
-    emit(SourceStatus("connected", f"{config.channel}, {config.bitrate} bit/s, {mode}"))
     terminal_error = None
     try:
+        emit(SourceStatus("connected", f"{config.channel}, {config.bitrate} bit/s, {mode}"))
         while not stop_event.is_set():
             _send_control_requests(
                 bus,

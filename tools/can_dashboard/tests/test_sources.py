@@ -8,6 +8,149 @@ from tools.can_dashboard import app
 from tools.can_dashboard import model, presentation, sources
 
 
+class PcanReconnectTest(unittest.TestCase):
+    def exercise_reconnect(self, *, cancel_waiting, stop_through_app=False):
+        old_stop, new_stop = threading.Event(), threading.Event()
+        old_connected, new_decision = threading.Event(), threading.Event()
+        shutdown_entered, release_shutdown = threading.Event(), threading.Event()
+        actions, new_events = [], []
+
+        class FakeBus:
+            def __init__(self, name, stop):
+                self.name, self.stop = name, stop
+
+            def recv(self, timeout):
+                self.stop.wait(timeout)
+                return None
+
+            def shutdown(self):
+                actions.append(("shutdown", self.name))
+                if self.name == "old":
+                    shutdown_entered.set()
+                    if not release_shutdown.wait(2):
+                        raise RuntimeError("test did not release shutdown")
+                actions.append(("released", self.name))
+
+        def open_bus(**_options):
+            name = threading.current_thread().name
+            actions.append(("open", name))
+            if name == "new" and not cancel_waiting:
+                new_stop.set()
+            return FakeBus(name, old_stop if name == "old" else new_stop)
+
+        def reset(_channel):
+            actions.append(("reset", threading.current_thread().name))
+
+        def emit_old(event):
+            if isinstance(event, sources.SourceStatus) and event.state == "connected":
+                old_connected.set()
+
+        def emit_new(event):
+            new_events.append(event)
+            if isinstance(event, sources.SourceStatus) and event.state in {"connecting", "connected"}:
+                new_decision.set()
+
+        config = sources.PcanConfiguration(reset_channel=True)
+        old = threading.Thread(target=sources.run_pcan, args=(config, old_stop, emit_old), name="old")
+        new = threading.Thread(target=sources.run_pcan, args=(config, new_stop, emit_new), name="new")
+        fake_can = types.SimpleNamespace(
+            Bus=open_bus, BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        with mock.patch.dict(sys.modules, {"can": fake_can}), \
+                mock.patch.object(sources, "_reset_pcan_channel", side_effect=reset):
+            try:
+                old.start()
+                self.assertTrue(old_connected.wait(1))
+                old_stop.set()
+                self.assertTrue(shutdown_entered.wait(1))
+                if stop_through_app:
+                    dashboard = object.__new__(app.DashboardApp)
+                    dashboard.stop_recording = mock.Mock()
+                    dashboard._sync_replay_bar = mock.Mock()
+                    dashboard._set_stream_command = mock.Mock()
+                    dashboard._set_source_status = mock.Mock()
+                    dashboard.events = app.queue.Queue()
+                    dashboard.source_generation = 1
+                    dashboard.source_state = "connected"
+                    dashboard.stop_event = old_stop
+                    dashboard.worker = old
+                    dashboard.stop_source()
+                    self.assertTrue(old.is_alive())
+                new.start()
+                self.assertTrue(new_decision.wait(1))
+                self.assertNotIn(("open", "new"), actions)
+                self.assertNotIn(("reset", "new"), actions)
+                if cancel_waiting:
+                    new_stop.set()
+                    new.join(timeout=1)
+                    self.assertFalse(new.is_alive())
+                    self.assertEqual(new_events[-1].state, "stopped")
+                release_shutdown.set()
+                old.join(timeout=1)
+                new.join(timeout=1)
+                self.assertFalse(old.is_alive())
+                self.assertFalse(new.is_alive())
+            finally:
+                old_stop.set()
+                new_stop.set()
+                release_shutdown.set()
+                old.join(timeout=1)
+                if new.ident is not None:
+                    new.join(timeout=1)
+        if cancel_waiting:
+            self.assertNotIn(("open", "new"), actions)
+        else:
+            last_old_reset = max(index for index, action in enumerate(actions) if action == ("reset", "old"))
+            self.assertLess(actions.index(("released", "old")), last_old_reset)
+            self.assertLess(last_old_reset, actions.index(("reset", "new")))
+            self.assertLess(last_old_reset, actions.index(("open", "new")))
+
+    def test_reconnect_waits_for_old_shutdown_and_channel_release(self):
+        self.exercise_reconnect(cancel_waiting=False, stop_through_app=True)
+
+    def test_cancelled_waiting_source_never_opens_or_resets_the_channel(self):
+        self.exercise_reconnect(cancel_waiting=True)
+
+    def test_source_cancelled_before_start_does_not_touch_the_channel(self):
+        stopped = threading.Event()
+        stopped.set()
+        fake_can = types.SimpleNamespace(
+            Bus=mock.Mock(), BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        events = []
+        with mock.patch.dict(sys.modules, {"can": fake_can}), \
+                mock.patch.object(sources, "_reset_pcan_channel") as reset:
+            sources.run_pcan(sources.PcanConfiguration(reset_channel=True), stopped, events.append)
+        fake_can.Bus.assert_not_called()
+        reset.assert_not_called()
+        self.assertEqual(events[-1].state, "stopped")
+
+    def test_connected_status_error_still_closes_bus_and_allows_retry(self):
+        stop = threading.Event()
+        shutdown = mock.Mock()
+        bus = types.SimpleNamespace(shutdown=shutdown)
+
+        def emit(event):
+            if event.state == "connected":
+                raise ValueError("status consumer failed")
+
+        def retry_open(**_options):
+            stop.set()
+            return bus
+
+        fake_can = types.SimpleNamespace(
+            Bus=mock.Mock(return_value=bus),
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        with mock.patch.dict(sys.modules, {"can": fake_can}):
+            with self.assertRaisesRegex(ValueError, "status consumer failed"):
+                sources.run_pcan(sources.PcanConfiguration(), stop, emit)
+            shutdown.assert_called_once_with()
+            fake_can.Bus.side_effect = retry_open
+            sources.run_pcan(sources.PcanConfiguration(), stop, lambda _event: None)
+        self.assertEqual(shutdown.call_count, 2)
+
+
 class ReplayOptionTest(unittest.TestCase):
     def test_invalid_replay_speed_is_rejected_before_the_window_opens(self):
         for speed in ("0", "-1", "nan", "inf"):
@@ -95,6 +238,7 @@ class PcanSourceTest(unittest.TestCase):
 
         def open_bus(**kwargs):
             actions.append(("open", kwargs))
+            stop_event.set()
             return FakeBus()
 
         fake_can = types.SimpleNamespace(
@@ -102,7 +246,6 @@ class PcanSourceTest(unittest.TestCase):
             BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
         )
         stop_event = threading.Event()
-        stop_event.set()
         events = []
 
         def reset(channel):
@@ -140,6 +283,7 @@ class PcanSourceTest(unittest.TestCase):
 
         def open_bus(**kwargs):
             states.append(kwargs["state"])
+            stop_event.set()
             return FakeBus()
 
         fake_can = types.SimpleNamespace(
@@ -147,7 +291,6 @@ class PcanSourceTest(unittest.TestCase):
             BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
         )
         stop_event = threading.Event()
-        stop_event.set()
         events = []
 
         with mock.patch.dict(sys.modules, {"can": fake_can}):
@@ -225,6 +368,9 @@ class PcanSourceTest(unittest.TestCase):
 
     def test_shutdown_error_is_reported(self):
         class FakeBus:
+            def __init__(self):
+                stop_event.set()
+
             def shutdown(self):
                 raise RuntimeError("shutdown failed")
 
@@ -233,7 +379,6 @@ class PcanSourceTest(unittest.TestCase):
             BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
         )
         stop_event = threading.Event()
-        stop_event.set()
         events = []
         with mock.patch.dict(sys.modules, {"can": fake_can}):
             sources.run_pcan(
