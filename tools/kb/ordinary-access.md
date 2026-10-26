@@ -70,7 +70,7 @@ the thermal consumer has an explicit quiet diagnostic premise.
 The whole-feedback argument/store/counter boundary uses
 `closed_loop_feedback_paths` as a capture of the existing
 coordinate/publication family. The ordinary registry retains each family's
-complete ordered capture bindings. Thirteen ordinary families contain forty-seven capture bindings. Ten full previous references retain their exact pins; two feedback
+complete ordered capture bindings. The registry contains 42 families and 87 captures. Ten full previous references retain their exact pins; two feedback
 writers, two transition-counter relations and two typed coolant constant readers
 share the same twelve-item ordinary batch. Three value-argument
 dispositions retain the separate calculation-dependency operation. The

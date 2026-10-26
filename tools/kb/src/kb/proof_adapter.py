@@ -19,7 +19,8 @@ DESCRIPTORS = (*REFERENCE_DESCRIPTORS, 'defs/JK08A.rpm-remaining-inhibit.toml',
     'defs/JK08A.diagnostic-record-bit4-paths.toml',
     'defs/JK08A.diagnostic-record-bits3-6-paths.toml',
     'defs/JK08A.diagnostic-record-composite-gate-paths.toml',
-    'defs/JK08A.map-bias-division-caller-withdrawal-paths.toml')
+    'defs/JK08A.map-bias-division-caller-withdrawal-paths.toml',
+    'defs/JK08A.diagnostic-record-highbit-clear-paths.toml')
 PROFILE = 'ordinary-80-572'
 TRANSPORT_FIELDS = frozenset(('schema', 'index', 'kind', 'entry', 'context',
     'context_after', 'observation', 'ram_before', 'ram_after',

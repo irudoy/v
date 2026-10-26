@@ -99,8 +99,8 @@ def test_diagnostic_family_publication_binds_current_native_and_execution_source
     family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
     declared=family.contract.descriptor(repo.ROOT);rows=declared['reference']
     text=' '.join((repo.ROOT/'defs/JK08A.diagnostic-record-composite-gate.md').read_text().split())
-    assert len(rows)==3 and len(declared['retained_functions'])==4 and len(family.captures)==3
-    assert sum(json.loads(row['original_claim_json'])['type']=='writer' for row in rows)==2
+    assert len(rows)==4 and len(declared['retained_functions'])==5 and len(family.captures)==4
+    assert sum(json.loads(row['original_claim_json'])['type']=='writer' for row in rows)==3
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in rows)==1
     assert len({row['proposed_native_sha256'] for row in rows})==1
     outputs=set();prior=set()
@@ -108,8 +108,8 @@ def test_diagnostic_family_publication_binds_current_native_and_execution_source
         adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter']
         outputs.update((adapter['driver'],adapter['refusals']))
         if index<36:prior.update((adapter['driver'],adapter['refusals']))
-    assert len(registry.FAMILIES)==42 and len(registry.captures())==86
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==87
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
-    assert len(proof_adapter.DESCRIPTORS)==39 and len(outputs)==78 and len(prior)==72
+    assert len(proof_adapter.DESCRIPTORS)==40 and len(outputs)==80 and len(prior)==72
     assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text
     assert f'{len(prior)} preceding outputs' in text

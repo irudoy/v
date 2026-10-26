@@ -179,10 +179,13 @@ def test_current_publications_read_the_exact_execution_registries_and_selector_r
     for path in proof_adapter.DESCRIPTORS:
         adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter'];outputs.update((adapter['driver'],adapter['refusals']))
     text=' '.join((repo.ROOT/'defs/JK08A.map-bias-division-caller-withdrawal-paths.md').read_text().split())
-    assert len(registry.FAMILIES)==42 and len(registry.captures())==86
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==87
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
-    assert len(proof_adapter.DESCRIPTORS)==39 and len(outputs)==78
+    assert len(proof_adapter.DESCRIPTORS)==40 and len(outputs)==80
     assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text
-    assert f'{len(outputs)-2} preceding generated outputs' in text
+    preceding=set()
+    for path in proof_adapter.DESCRIPTORS[:proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)]:
+        adapter=tomllib.loads((repo.ROOT/path).read_text())['adapter'];preceding.update((adapter['driver'],adapter['refusals']))
+    assert f'{len(preceding)} preceding generated outputs' in text
     readme=' '.join((repo.ROOT/'tools/sh-elf-run/README.md').read_text().split())
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in readme

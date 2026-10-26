@@ -73,7 +73,7 @@ functions and 127 matching ledger selectors (119 datum-end selectors and
 8 function-end selectors). All 135 exact normal unlink operations form one
 complete phase. Thirty-four independent components use the same complete
 original COPY primary. The existing registry contains 42 families and
-86 captures. Five complete function transitions retain eight exact
+87 captures. Five complete function transitions retain eight exact
 function-end selector withdrawals.
 
 The three-caller package preserves all 129 preceding reference records and

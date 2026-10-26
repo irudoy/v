@@ -49,7 +49,7 @@ input fail. An absence of access to the array root supplies no array-absence
 claim: the relation remains a positive nested indexed reader through the
 actual helper operand.
 
-The existing diagnostic-record family retains this reader and its two
+The existing diagnostic-record family retains this reader and its three
 independent writer originals in one complete primary. The shared native
 postimage appends only their exact owning identity evidence items. Complete
 array owner, parent and helper documents, contracts, native unsigned-byte type,
@@ -67,16 +67,16 @@ actual positive alternatives, native/TEST preservation and refusal contracts.
 
 ## Registered shared source boundary
 
-The diagnostic-record-bit4-access family contains three exact positive
-originals: two writers and one indexed reader, with four complete unchanged
+The diagnostic-record-bit4-access family contains four exact positive
+originals: three writers and one indexed reader, with five complete unchanged
 function snapshots and one joint owner postimage. Each original retains
 its own independent raw capture, complete numerical and physical state,
-native binding and owning result. All three original captures belong to
+native binding and owning result. All four original captures belong to
 the same complete primary. The two paired-array pending originals retain
 their separate status and receive no credit from these proofs.
 
-The existing registry contains 42 families and 86 captures. The standard
-ordinary adapter registry contains 39 descriptors and 78 generated outputs.
+The existing registry contains 42 families and 87 captures. The standard
+ordinary adapter registry contains 40 descriptors and 80 generated outputs.
 These two extensions add four generated source outputs; the 72 preceding
 outputs retain their exact bytes. Source preparation grants no array
 extent, units, scale, scheduling, caller reachability or hardware admission.

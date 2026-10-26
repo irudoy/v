@@ -291,7 +291,7 @@ observer. Exact ordinary appends preserve six complete native owners, TEST,
 types, ledger and physical scopes. The source grants no sensor, scheduler,
 units, scale or hardware claim. `defs/JK08A.exhaust-cvtc-accesses.md` defines
 the complete domain and refusal boundary.
-The registry contains 42 families and 86 captures.
+The registry contains 42 families and 87 captures.
 
 The `scalar-ram-leaf-withdrawal` registration binds 135 exact original access
 relations through complete natural arithmetic, state, indexed, interpolation,

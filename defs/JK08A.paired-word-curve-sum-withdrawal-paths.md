@@ -72,7 +72,7 @@ individually pinned writers, 100 complete datum owners, 75 complete functions an
 127 matching ledger selectors (119 datum-end selectors and 8 function-end
 selectors). All 135 exact normal unlink operations form one complete phase.
 Thirty-four independent components use the same complete original COPY primary.
-The existing registry contains 42 families and 86 captures. Five complete
+The existing registry contains 42 families and 87 captures. Five complete
 function transitions retain eight exact function-end selector withdrawals.
 
 The clamp and paired word-curve package preserves all 127 preceding reference

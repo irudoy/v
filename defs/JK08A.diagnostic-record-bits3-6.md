@@ -60,16 +60,16 @@ native, TEST and refusal contracts.
 
 ## Registered shared source boundary
 
-The diagnostic-record-bit4-access family contains three exact positive
-originals: two writers and one indexed reader, with four complete unchanged
+The diagnostic-record-bit4-access family contains four exact positive
+originals: three writers and one indexed reader, with five complete unchanged
 function snapshots and one joint owner postimage. Each original retains
 its own independent raw capture, complete numerical and physical state,
-native binding and owning result. All three original captures belong to
+native binding and owning result. All four original captures belong to
 the same complete primary. The two paired-array pending originals retain
 their separate status and receive no credit from these proofs.
 
-The existing registry contains 42 families and 86 captures. The standard
-ordinary adapter registry contains 39 descriptors and 78 generated outputs.
+The existing registry contains 42 families and 87 captures. The standard
+ordinary adapter registry contains 40 descriptors and 80 generated outputs.
 These two extensions add four generated source outputs; the 72 preceding
 outputs retain their exact bytes. Source preparation grants no array
 extent, units, scale, scheduling, caller reachability or hardware admission.

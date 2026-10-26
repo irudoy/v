@@ -80,8 +80,8 @@ eleven individually pinned writers, 100 complete datum owners, 75 complete
 functions and 127 matching ledger selectors (119 datum-end selectors and
 8 function-end selectors). Thirty-four independent components use the same
 complete original COPY primary. The existing registry contains 42 families and
-86 captures. The standard ordinary adapter registry contains 39 descriptors and
-78 generated outputs. The map-bias adapter supplies two source outputs; the
+87 captures. The standard ordinary adapter registry contains 40 descriptors and
+80 generated outputs. The map-bias adapter supplies two source outputs; the
 76 preceding generated outputs retain their complete bytes.
 
 The exact withdrawal preserves all 134 preceding reference records through

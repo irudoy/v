@@ -57,10 +57,10 @@ and refusal contracts together.
 ## Registered positive source boundary
 
 The bit4 component retains one exact positive writer in the
-three-original diagnostic-record-bit4-access family. Its independent physical, numerical,
+four-original diagnostic-record-bit4-access family. Its independent physical, numerical,
 full-state, actual-byte and native owning consumers use one complete original
-COPY primary. The existing registry contains 42 families and 86 captures.
-The standard ordinary adapter registry contains 38 descriptors and 76 generated
+COPY primary. The existing registry contains 42 families and 87 captures.
+The standard ordinary adapter registry contains 40 descriptors and 80 generated
 outputs. The bit4 adapter adds exactly its C source and refusal source;
 the 70 preceding generated outputs retain their complete bytes.
 

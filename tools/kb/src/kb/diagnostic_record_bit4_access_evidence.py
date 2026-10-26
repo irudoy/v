@@ -1,4 +1,4 @@
-"""Owning identity support for one executed indexed diagnostic-record byte writer."""
+"""Owning identity support for exact indexed diagnostic-record writers and composite reader."""
 import hashlib,json
 from pathlib import Path
 from kb import copy_evidence,store,test_contract
@@ -6,10 +6,11 @@ from kb import diagnostic_record_bit4_access_contract as contract
 from kb import diagnostic_record_bit4_capture_evidence as capture
 from kb import diagnostic_record_bits3_6_capture_evidence as bits3_6_capture
 from kb import diagnostic_record_composite_gate_capture_evidence as composite_capture
+from kb import diagnostic_record_highbit_clear_capture_evidence as highbit_clear_capture
 from kb.diagnostic_rom_contract import native_ledger
 from kb.diagnostic_rom_evidence import dependency_state
 from kb.model import SymbolKey
-COMPONENTS={'diagnostic_record_bit4_paths':capture,'diagnostic_record_bits3_6_paths':bits3_6_capture,'diagnostic_record_composite_gate_paths':composite_capture}
+COMPONENTS={'diagnostic_record_bit4_paths':capture,'diagnostic_record_bits3_6_paths':bits3_6_capture,'diagnostic_record_composite_gate_paths':composite_capture,'diagnostic_record_highbit_clear_paths':highbit_clear_capture}
 
 def native_rows(model):
     declared=contract.descriptor(model.root);rows=declared['reference'];row=rows[0]
@@ -20,7 +21,7 @@ def native_rows(model):
         raise ValueError('the diagnostic writers change their exact owner, unsigned byte type or original symbol evidence')
     document=store.load(model.root,Path(row['source']),model.overlay)
     phases=[phase for phase in ('original','proposed') if test_contract.exact(document,json.loads(row[phase+'_native_json']))]
-    if len(phases)!=1:raise ValueError('the diagnostic writers change complete shared owner facts outside both exact appends')
+    if len(phases)!=1:raise ValueError('the diagnostic writers change complete shared owner facts outside their exact owning appends')
     for retained in declared['retained_functions']:
         function=model.symbols.get(SymbolKey('7mfk','fn',retained['address']))
         if (function is None or function.meaning is None or function.meaning.key!=retained['owner']
@@ -107,7 +108,7 @@ def require_result(result,row):
 COMPONENT_FLAGS={'diagnostic_record_bit4_paths':REQUIRED_FLAGS,
     'diagnostic_record_bits3_6_paths':tuple('complete_two_ordered_byte_OR_stages_and_RTS_delay'
         if flag=='complete_indexed_byte_OR_and_RTS_delay' else flag.replace('exact_diagnostic_record_bit4_paths','exact_diagnostic_record_bits3_6_paths')
-        for flag in REQUIRED_FLAGS)}
+        for flag in REQUIRED_FLAGS),'diagnostic_record_highbit_clear_paths':('exact_diagnostic_record_highbit_clear_paths', 'complete_AND7F_read_write_RTS_delay', 'complete_sentinel_no_RAM_access', 'complete_full_R4_modulo_addressing', 'complete_CPU_SR_frame_RAM', 'complete_physical_member_preimages_and_publications', 'fixed_other_actual_common_member_alternatives', 'complete_native_owner_function_TEST_ledger', 'no_array_extent_inference', 'no_selected_datum_absence_inference')}
 
 
 COMPONENT_FLAGS['diagnostic_record_composite_gate_paths']=(

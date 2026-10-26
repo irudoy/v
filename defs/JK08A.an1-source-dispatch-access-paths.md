@@ -82,8 +82,8 @@ primary; a withdrawn owner additionally requires the scalar family's complete
 independent admission from that identical primary. Neither result replaces
 the other family's obligations.
 
-The existing registry contains 42 families and 86 captures. The ordinary adapter
-registry contains 39 descriptors and 78 generated outputs. This native-window
+The existing registry contains 42 families and 87 captures. The ordinary adapter
+registry contains 40 descriptors and 80 generated outputs. This native-window
 component uses its existing manual raw driver; its registration adds no ordinary
 adapter output. Complete native owner and retained-function refusals cover all
 four phases. A complete result preserves every explicit false boundary for

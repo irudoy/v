@@ -207,9 +207,9 @@ def test_published_call_count_and_shared_source_boundary_read_the_execution_decl
     for name in proof_adapter.DESCRIPTORS:
         adapter=tomllib.loads((repo.ROOT/name).read_text())['adapter']
         outputs.update((adapter['driver'],adapter['refusals']))
-    assert len(registry.FAMILIES)==42 and len(registry.captures())==86
+    assert len(registry.FAMILIES)==42 and len(registry.captures())==87
     assert f'{len(registry.FAMILIES)} families and {len(registry.captures())} captures' in text
-    assert len(proof_adapter.DESCRIPTORS)==39 and len(outputs)==78
+    assert len(proof_adapter.DESCRIPTORS)==40 and len(outputs)==80
     assert f'{len(proof_adapter.DESCRIPTORS)} descriptors and {len(outputs)} generated outputs' in text
 
 
