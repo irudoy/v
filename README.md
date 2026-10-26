@@ -9,8 +9,8 @@ engines.
 - Stock ROM identity and provenance are tracked for owned and reference SH7058
   and SH7059 images. `JK08A` is the active hardware target and the canonical
   code profile for the exact JK00A/JK03A/JK03B/JK08A family.
-- The stock collection has two exact-code families, one near-code SH7058
-  family, one distinct SH7058 image, and one distinct SH7059 image. Pairwise
+- The stock collection includes exact-code and near-code SH7058 families and
+  distinct SH7058 and SH7059 images. Pairwise
   fixed-address and relocated window measurements are reproducible from the
   tracked homology registry.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
@@ -19,7 +19,7 @@ engines.
 - The unified builder composes the current capability-specific runtime for
   JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
   Map Switching, Rolling Launch, and custom CAN telemetry are available on all
-  ten targets. Map Switching and Rolling Launch take their input from the
+  registered targets. Map Switching and Rolling Launch take their input from the
   steering switch buttons, which JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and
   1ND3B decode only once the Cruise Control Switch of their definitions selects
   the ICC switch. VQ37 targets use their native fuel-cut caps and interpolated
@@ -29,7 +29,7 @@ engines.
   machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF
-  files for all ten stock identities. The two SH7059 1ND images share one
+  files for the registered stock identities. The SH7059 1ND images share one
   reviewed address layout while retaining independent identities and values.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. It independently assembles and executes the canonical JK08A
