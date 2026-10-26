@@ -118,8 +118,8 @@ def test_fixture_keeps_both_complete_callers_and_the_real_delay_slot_helper():
 def test_published_paired_writer_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='paired_inhibit_writer_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.paired-inhibit-writer-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==5 and len(declared['reference'])==125 and len(declared['function'])==67
-    assert len({row['owner'] for row in declared['reference']})==95
+    assert len(rows)==5 and len(declared['reference'])==126 and len(declared['function'])==68
+    assert len({row['owner'] for row in declared['reference']})==96
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('180 stock instructions',sum((last-first)//2 for first,last in contract.SPANS),180),
@@ -137,11 +137,11 @@ def test_published_paired_writer_joint_prior_and_registry_counts_bind_execution_
     function_removed=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert datum_removed==109 and function_removed==8 and datum_removed+function_removed==117
-    assert '117 matching ledger selectors' in words and '109 datum-end selectors and 8 function-end selectors' in words
+    assert datum_removed==110 and function_removed==8 and datum_removed+function_removed==118
+    assert '118 matching ledger selectors' in words and '110 datum-end selectors and 8 function-end selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
-    assert '115 readers and ten' in words
+    assert '116 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16

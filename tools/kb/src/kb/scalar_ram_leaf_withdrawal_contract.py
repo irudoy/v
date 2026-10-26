@@ -2289,14 +2289,14 @@ PRIOR_STATE_RATIO_CALLER_FILES_SHA256 = {'defs/JK08A.state-ratio-caller-withdraw
  'tools/kb/tests/test_state_ratio_caller_withdrawal_adapter_generated.py': '029017b2c52ccbfbf2d2f61c36e370eefdfa54f1817ea089bdf6d7ab4f74574a'}
 PRIOR_DFCO_STATE_CALLER_REFERENCE_SHA256 = 'f5a92ae6b9da81d69da71a35d0c19ae70f75cfa6725fb21934635d53871ef91d'
 PRIOR_DFCO_STATE_CALLER_FUNCTION_SHA256 = 'efe59944e20e9de38a6f54004076589c7b5dededa30437cdad60656b7acaab8a'
-PRIOR_DFCO_STATE_CALLER_FILES_SHA256 = {'defs/JK08A.dfco-state-caller-withdrawal-paths.toml': '0187bbf837f6df0e5652c23cf0308f2850ade89860e545905295b34b09c1b1f8',
- 'tools/sh-elf-run/stock_jk08a_dfco_state_caller_withdrawal.s': '6ebbeb9875b5da5db3ded573d56b5b9d6595ff52c0bfd50bf52c6bfb3b51489b',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py': '2b4ea5683d96b680d37b98a8c0d0ec0be989dba637ae2036458565922e79e187',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': 'f278b91dbf44f788cb3379d5c0d8fa3994745e5346f386381cbff39486af0271',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py': 'd0a2e992bd49f094ead64662709fd928cfa00468bc701019b0a43609fbd2ceda',
- 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': '13259bfee9b0b6dfffccfe11a8c4e37f4419f3fde1b328077bfc0e68dc91ed46',
+PRIOR_DFCO_STATE_CALLER_FILES_SHA256 = {'defs/JK08A.dfco-state-caller-withdrawal-paths.toml': '58ad8353f15bae7291fa1e85e0a8d5772fb3fd75e1db8707c07bc85b23981fd0',
+ 'tools/sh-elf-run/stock_jk08a_dfco_state_caller_withdrawal.s': 'c2edd846c2ed58be6b982d31a5aaf45c642ba17107ac1d125eaae2189aa22c22',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_contract.py': 'bb79b3b5454c832dcd3c9ce315e1f1281a5d7b3b00f0952ce1212b4aed73d7d8',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_matrix.py': '4e92f6cb0dc21249b103f01f98b8269a197b3dbaa31addefe4c99094db89805b',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_semantics.py': 'ef74ffe8bbfdea61550533ba3e568f085c30d361f397746b871976a533f53876',
+ 'tools/kb/src/kb/dfco_state_caller_withdrawal_transfers.py': 'd86817700023bdb5db6b17c036e5fc153be750dad6b582ebf92161ca6b92c075',
  'tools/sh-elf-run/dfco_state_caller_withdrawal_capture.py': 'a12a121859f5d9eedfb96f5f6ba8263a098197b4dcddf8580e823e9fbd2ff4fd',
- 'tools/sh-elf-run/harness-dfco-state-caller-withdrawal-paths.c': 'e41ad9046cb8d7478fad46546d89207b4b34d4e605664e1b6e09bb1c8fdbad95',
+ 'tools/sh-elf-run/harness-dfco-state-caller-withdrawal-paths.c': '39dc94def813c9fc1a94b5d17f029f33faa4f72e6e6d04b0a2584dce79d94662',
  'tools/kb/tests/test_dfco_state_caller_withdrawal_adapter_generated.py': '0773fd13664a5b09686aafb96943ab2cb531b06312a83f66ed56056e26f827b1'}
 FUNCTION_POSTIMAGE_IDENTITIES = (('classy-seahorse/fn',
   510202,

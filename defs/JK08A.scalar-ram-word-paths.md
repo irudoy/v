@@ -3,9 +3,9 @@
 The component contains three natural entries, 78 stock instructions,
 156 code bytes, 16 literal/configuration spans and 5 pointer aliases.
 `defs/JK08A.scalar-ram-word-paths.toml` binds their exact owned image bytes.
-The joint descriptor contains125 exact access originals,95 complete owners,
-67 complete functions and117 matching ledger selectors. The writer requires
-all125 exact unlink operations. The selected unsupported originals are:
+The joint descriptor contains126 exact access originals,96 complete owners,
+68 complete functions and118 matching ledger selectors. The writer requires
+all126 exact unlink operations. The selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |
 |---|---|---|
@@ -192,7 +192,7 @@ The complete paired flag writer component is defined by
 56 functions retain exact boundaries. Entry-scoped absence preserves the real
 first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
 helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 109 datum-end selectors and
+remain mandatory. The joint total includes 110 datum-end selectors and
 8 function-end selectors. Every previous family/helper/native/TEST original
 remains mandatory from the identical primary.
 
@@ -204,14 +204,14 @@ same three datum owners. Full prior 112 records reconstruct exactly; all
 remain unchanged. The full raw coordinate window, two real signed divisions,
 ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 109 datum-end and
+identical primary. The joint selector total contains 110 datum-end and
 8 function-end removals.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains125 exact access originals:115 readers and ten
-individually pinned writers,95 complete datum owners,67 complete functions and
-117 matching ledger selectors. These contain109 datum-end selectors and
+The joint descriptor contains126 exact access originals:116 readers and ten
+individually pinned writers,96 complete datum owners,68 complete functions and
+118 matching ledger selectors. These contain110 datum-end selectors and
 8 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified

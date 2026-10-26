@@ -6,9 +6,9 @@ instructions, 948 code bytes and 9 code spans. The selected domain requires
 binds 36 literal spans, 9 pointer aliases, 11 complete RAM fields, 62 scalar
 configuration fields, 42 complete calibration spans, 83 raw input fields and
 16 complete helper sources. The joint descriptor contains 123 exact access
-originals: 115 readers and ten individually pinned writers, 95 complete datum
-owners, 67 complete functions and 117 matching ledger selectors. These include
-109 datum-end selectors and 8 function-end selectors. All 125 exact normal
+originals: 116 readers and ten individually pinned writers, 96 complete datum
+owners, 68 complete functions and 118 matching ledger selectors. These include
+110 datum-end selectors and 8 function-end selectors. All 126 exact normal
 unlink operations are mandatory. The two selected unsupported originals are:
 
 | Datum | Natural function | Exact unsupported original |

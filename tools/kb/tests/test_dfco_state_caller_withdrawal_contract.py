@@ -86,7 +86,7 @@ def test_source_refuses_identity_geometry_scale_units_caller_hardware_stub_or_pu
 @pytest.mark.parametrize('domain',('ram','rom','frame'))
 def test_selected_ROM_native_RAM_and_alias_roots_require_exact_physical_interval_absence(root,form,domain):
     rows=[row for row in withdrawal.descriptor(repo.ROOT)['reference'] if row['component']=='dfco_state_caller_withdrawal_paths'
-        and row['id']!=transfers.READER1939_IDENTITY[0]]
+        and row['function']==0x503E0 and row['id']!=transfers.READER1939_IDENTITY[0]]
     transfers.require_no_selected_datum(dict(accesses=[]),rows)
     identity,address,alias=root
     if form=='alias':
@@ -119,8 +119,8 @@ def test_fixture_keeps_five_literal_holes_full_rotation_and_all_raw_indexed_byte
 def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='dfco_state_caller_withdrawal_paths']
     text=(repo.ROOT/'defs/JK08A.dfco-state-caller-withdrawal-paths.md').read_text();words=' '.join(text.split())
-    assert len(rows)==8 and len(declared['reference'])==125 and len(declared['function'])==67
-    assert len({row['owner'] for row in declared['reference']})==95
+    assert len(rows)==9 and len(declared['reference'])==126 and len(declared['function'])==68
+    assert len({row['owner'] for row in declared['reference']})==96
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+'` | `'+row['original_claim_sha256']+'` |' for row in rows]
     for phrase,actual,wanted in (('409 stock instructions',sum((last-first)//2 for first,last in contract.STATE_SPANS),409),
@@ -138,10 +138,10 @@ def test_published_DFCO_joint_prior_and_registry_counts_bind_execution_sources()
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==117 and '117 matching ledger selectors' in words
+    assert removed==118 and '118 matching ledger selectors' in words
     assert len(withdrawal.NATIVE_LINK_ROLES)==19 and len(withdrawal.ORIGINAL_LINK_TYPES)==10
     assert sum(json.loads(row['original_claim_json'])['type']=='reader' for row in declared['reference'])==115
-    assert '115 readers and ten' in words
+    assert '116 readers and ten' in words
     from kb import scalar_ram_leaf_withdrawal_evidence as family
     assert len(family.COMPONENTS)==27 and 'Twenty-seven independent components' in words
     assert len({row['component'] for row in declared['reference'] if row['owner'].endswith('/ram')})==16

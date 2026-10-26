@@ -123,8 +123,8 @@ def test_source_refuses_identity_scale_geometry_units_caller_or_hardware_admissi
 def test_published_gated_counts_and_exact_originals_bind_the_executed_sources():
     declared=withdrawal.descriptor(repo.ROOT);rows=[row for row in declared['reference'] if row['component']=='scalar_ram_gated_paths']
     text=(repo.ROOT/'defs/JK08A.scalar-ram-gated.md').read_text();words=' '.join(text.split())
-    assert len(rows)==5 and len(declared['reference'])==125 and len(declared['function'])==67
-    assert len({row['owner'] for row in declared['reference']})==95
+    assert len(rows)==5 and len(declared['reference'])==126 and len(declared['function'])==68
+    assert len({row['owner'] for row in declared['reference']})==96
     assert [line for line in text.splitlines() if line.startswith('| `7mfk:')]==[
         '| `7mfk:'+f'{row["address"]:08x}'+'` | `7mfk:'+f'{row["function"]:08x}'+
         '` | `'+row['original_claim_sha256']+'` |' for row in rows]
@@ -138,7 +138,7 @@ def test_published_gated_counts_and_exact_originals_bind_the_executed_sources():
     removed+=sum(sum(len(marker.get('dependency',())) for marker in json.loads(row['original_ledger_json']))-
         sum(len(marker.get('dependency',())) for marker in json.loads(row['proposed_ledger_json']))
         for row in declared['function'] if 'proposed_ledger_json' in row)
-    assert removed==117 and '117 matching ledger selectors' in words
+    assert removed==118 and '118 matching ledger selectors' in words
     assert 'thirteen families and forty-seven capture bindings' in words
     assert len(registry.FAMILIES)==13 and len(registry.captures())==47
     assert 'preceding seven adapters' in words and proof_adapter.DESCRIPTORS.index(contract.DESCRIPTOR)==7

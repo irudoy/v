@@ -5,10 +5,10 @@ auxiliary gate contain 225 stock instructions, 450 code bytes and 3 code spans.
 The caller domain requires 179 feasible instructions and has 46 excluded helper instructions.
 The descriptor binds 14 literal spans, 8 pointer aliases, 13 complete RAM fields,
 14 complete calibration spans, 23 raw input fields and 7 complete helper sources.
-The joint descriptor contains 125 exact access originals: 115 readers and ten
-individually pinned writers, 95 complete datum owners, 67 complete functions and
-117 matching ledger selectors. These include 109 datum-end selectors and 8 function-end selectors.
-All 125 exact normal unlink operations are mandatory. The unsupported original is:
+The joint descriptor contains 126 exact access originals: 116 readers and ten
+individually pinned writers, 96 complete datum owners, 68 complete functions and
+118 matching ledger selectors. These include 110 datum-end selectors and 8 function-end selectors.
+All 126 exact normal unlink operations are mandatory. The unsupported original is:
 
 | Datum | Natural function | Exact unsupported original |
 |---|---|---|
@@ -94,9 +94,9 @@ scale, units, natural-caller interpretation or hardware admission.
 
 ## Joint paired normalization boundary
 
-The joint descriptor contains125 exact access originals:115 readers and ten
-individually pinned writers,95 complete datum owners,67 complete functions and
-117 matching ledger selectors. These contain109 datum-end selectors and
+The joint descriptor contains126 exact access originals:116 readers and ten
+individually pinned writers,96 complete datum owners,68 complete functions and
+118 matching ledger selectors. These contain110 datum-end selectors and
 8 function-end selectors. Twenty-seven independent components require one
 complete original COPY primary. The registry contains thirteen families and
 forty-seven capture bindings. The paired normalization boundary is specified

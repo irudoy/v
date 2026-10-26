@@ -377,7 +377,7 @@ def test_component_retains_full_rotation_and_both_native_RAM_alias_intervals(ori
     result=proof.require_primary(original[0],original[1])
     assert result['complete_real_rotation_helper'] is True and result['no_selected_ram_datum_access'] is True
     assert result['selected_native_RAM_aliases']=={'ffff14bd':'010014bd','ffff14be':'010014be'}
-    assert len(result['conditional_branch_outcomes'])==len(proof.REQUIRED_BRANCHES) and result['fixed_branch_outcomes']=={}
+    assert len(result['conditional_branch_outcomes'])==len(proof.REQUIRED_BRANCHES) and result['fixed_branch_outcomes']=={'00025c3c':['fallthrough'],'00026a9a':['taken']}
 
 
 
