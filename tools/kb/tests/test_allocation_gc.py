@@ -15,7 +15,7 @@ from kb import checks, compile, convert, write
 from kb.allocation import allocation_phase
 
 
-@pytest.mark.parametrize('phase', ['compile', 'digest', 'checks'])
+@pytest.mark.parametrize('phase', ['compile', 'checks'])
 @pytest.mark.parametrize('collecting', [False, True])
 @pytest.mark.parametrize('failure', [False, True])
 def test_original_phase_callbacks_and_exceptions_restore_caller_state(
@@ -49,16 +49,6 @@ def test_original_phase_callbacks_and_exceptions_restore_caller_state(
         monkeypatch.setattr(compile.names, 'assign', lambda model, rows: None)
         invoke = lambda: compile.build('fixture-root', {'example': 'text'}, ())
         expected = [(('fixture-root', {'example': 'text'}), {})]
-    elif phase == 'digest':
-        original = convert.pickle.dumps
-
-        def dumps(*args, **kwargs):
-            callback(*args, **kwargs)
-            return original(*args, **kwargs)
-
-        monkeypatch.setattr(convert.pickle, 'dumps', dumps)
-        invoke = lambda: convert._model_digest(SimpleNamespace(value=1))
-        expected = None
     else:
         class Model:
             root = tmp_path
@@ -80,10 +70,7 @@ def test_original_phase_callbacks_and_exceptions_restore_caller_state(
         else:
             invoke()
         assert calls
-        if expected is not None:
-            assert calls == expected
-        else:
-            assert all(arguments[1] == {'protocol': 5} for arguments in calls)
+        assert calls == expected
         assert gc.isenabled() == collecting
         assert gc.get_threshold() == thresholds
     finally:
@@ -153,7 +140,7 @@ def test_overlapping_thread_requests_preserve_the_callers_enabled_mode():
         (gc.enable if original_mode else gc.disable)()
 
 
-def test_native_models_keep_exact_digests_frozen_callers_and_cycle_release():
+def test_native_models_keep_facts_frozen_callers_and_cycle_release():
     source = '''
 import gc
 import weakref
@@ -169,10 +156,8 @@ gc.freeze()
 frozen, thresholds = gc.get_freeze_count(), gc.get_threshold()
 del caller
 before, after = compile.build.__wrapped__(), compile.build()
-expected = convert._model_digest.__wrapped__(before)
-assert expected == convert._model_digest(after)
-# A native width refusal exercises the weak model-check owner without
-# repeating the full independent check inventory of the conversion tests.
+assert convert.dump(before) == convert.dump(after)
+# Native width refusals preserve equal model facts and caller GC state.
 checks.CHECKS = {'widths': checks.widths}
 for model in (before, after):
     field = next(entity for entity in model.entities.values() if entity.kind == 'field')
