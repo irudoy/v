@@ -113,12 +113,12 @@ class CheckCommandTest(unittest.TestCase):
 
 
 class BenchCommandTest(unittest.TestCase):
-    QUESTION = {"id": 9, "stage": 3, "command": "kb log apc_output", "budget": 100,
+    QUESTION = {"id": 9, "command": "kb log apc_output", "budget": 100,
                 "baseline": [], "expect": [r"^apc_output/ram$", r"ffff206c -> ffff11f5"]}
 
-    def bench(self, text, *, questions=None, only=None, all=False, code=0, baseline=1000):
-        config = {"stage": 5, "question": questions or [dict(self.QUESTION)]}
-        args = Namespace(only=only, all=all)
+    def bench(self, text, *, questions=None, only=None, code=0, baseline=1000):
+        config = {"question": questions or [dict(self.QUESTION)]}
+        args = Namespace(only=only)
 
         def reply(argv):
             print(text, end="")
@@ -157,31 +157,28 @@ class BenchCommandTest(unittest.TestCase):
     def test_invalid_contracts_fail_before_any_question_or_baseline_runs(self):
         for expected in (None, [], "literal", [None], [" "], ["["], [".*"], ["(foo)?"]):
             with self.subTest(expected=expected):
-                config = {"stage": 5, "question": [{**self.QUESTION, "expect": expected}]}
+                config = {"question": [{**self.QUESTION, "expect": expected}]}
                 with mock.patch.object(cli.read, "bench", return_value=config), \
                         mock.patch.object(cli, "main") as command, \
                         mock.patch.object(cli, "baseline_tokens") as baseline, \
                         self.assertRaises(KbError) as error:
-                    cli.command_bench(Namespace(only=None, all=False))
+                    cli.command_bench(Namespace(only=None))
                 self.assertEqual(error.exception.code, 2)
                 command.assert_not_called()
                 baseline.assert_not_called()
 
-    def test_an_invalid_later_stage_contract_is_checked_before_active_questions_run(self):
-        future = {**self.QUESTION, "id": 6, "stage": 9, "expect": []}
+    def test_an_invalid_later_contract_is_checked_before_any_question_runs(self):
+        invalid = {**self.QUESTION, "id": 6, "expect": []}
         with self.assertRaises(KbError) as error:
             self.bench("apc_output/ram\nffff206c -> ffff11f5\n",
-                       questions=[self.QUESTION, future])
+                       questions=[self.QUESTION, invalid])
         self.assertEqual(error.exception.code, 2)
         self.assertIn("question 6", str(error.exception))
 
-    def test_unknown_ids_and_inactive_selections_do_not_pass_without_running_a_question(self):
-        for only, questions in (([99], None), ([9], [{**self.QUESTION, "stage": 9}])):
-            with self.subTest(only=only, questions=questions), self.assertRaises(KbError) as error:
-                self.bench("", only=only, questions=questions)
-            self.assertEqual(error.exception.code, 2)
-        self.assertEqual(self.bench("apc_output/ram\nffff206c -> ffff11f5\n", only=[9],
-                                    questions=[{**self.QUESTION, "stage": 9}], all=True)[0], 0)
+    def test_unknown_ids_do_not_pass_without_running_a_question(self):
+        with self.assertRaises(KbError) as error:
+            self.bench("", only=[99])
+        self.assertEqual(error.exception.code, 2)
 
 
 if __name__ == "__main__":
