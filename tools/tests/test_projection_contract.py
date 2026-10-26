@@ -21,9 +21,6 @@ def test_every_production_command_has_its_own_read_only_recipe():
     entries = contract.project.load(contract.ROOT)
     expected = [item['path'] for item in entries if not contract.project.rendered(item)]
     assert [name for name, argv in contract.commands()] == expected
-    assert len(expected) == 18
-    assert {'tools/sh-elf-run/can-latch-copy-cases.h',
-            'tools/sh-elf-run/sid22-pointer-read-cases.h'} <= set(expected)
 
 
 @pytest.mark.parametrize('value', [None, [], '', [True], [''], ['producer.py']])

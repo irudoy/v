@@ -118,7 +118,6 @@ def test_native_writer_compares_exact_bytes_and_preserves_manual_sections(tmp_pa
     path.write_bytes(old.encode())
     entry = {'path': path.name + ('#fixture' if section else ''), 'generator': 'kb.project:fixture'}
     monkeypatch.setattr(project, 'load', lambda root: [entry])
-    monkeypatch.setattr(project, 'stage', lambda root: 11)
     monkeypatch.setattr(project, 'generator', lambda selected: lambda root: expected)
     before = path.stat().st_mtime_ns
     assert project.write(tmp_path, check=True) == [(entry['path'], True)]

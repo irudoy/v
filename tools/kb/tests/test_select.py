@@ -1,6 +1,7 @@
 import contextlib
 import copy
 import csv
+import hashlib
 import io
 import tomllib
 import unittest
@@ -8,7 +9,7 @@ from unittest import mock
 
 import pytest
 
-from kb import adapters, cli, compile, convert, ledger_projection, repo, store, write
+from kb import adapters, catalog, cli, compile, convert, ledger_projection, repo, store, write
 from kb.adapters import files as file_adapter
 from kb.repo import KbError
 from tools.kb.tests import selector_sources
@@ -49,6 +50,11 @@ def preserved_full_models(reuse_kb_source_parses):
 def isolated_model(reuse_kb_source_parses, tmp_path_factory):
     root = tmp_path_factory.mktemp('selector-writer')
     hashes = selector_sources.write_sources(root)
+    path = root / catalog.PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = ','.join(catalog.COLUMNS) + '\n'
+    path.write_text(text, encoding='utf-8')
+    hashes[catalog.PATH.as_posix()] = hashlib.sha256(text.encode()).hexdigest()
     model = compile.build(root, order=(file_adapter,))
     assert model.stash['ledger_rows'] and write._issues(model) == {}
     before = convert.dump(model)
