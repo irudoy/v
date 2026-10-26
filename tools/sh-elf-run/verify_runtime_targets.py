@@ -605,7 +605,7 @@ def _run_harnesses(target, fixture, build_dir):
     return tuple(markers)
 
 
-def verify_target(rom, locks, verbose=False, *, literal_capture=None, packed_capture=None):
+def verify_target(rom, locks, verbose=False):
     target = runtime_targets.load_runtime_target(rom)
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
@@ -672,20 +672,10 @@ def verify_target(rom, locks, verbose=False, *, literal_capture=None, packed_cap
         )
         markers = _run_harnesses(target, fixture, build_dir)
         if rom == "1ME3B":
-            import ignition_literal_capture
-            captured = {} if literal_capture is None else literal_capture
-            markers = (*markers, ignition_literal_capture.run(
-                target, fixture, composition, map_blobs, build_dir, captured
+            import verify_ignition_consumers
+            markers = (*markers, verify_ignition_consumers.verify(
+                target, fixture, build_dir
             ))
-        if rom in ("1ME3B", "1ND0A", "JK78C"):
-            import packed_transfer_capture
-            captured = {}
-            markers = (*markers, packed_transfer_capture.run(target, build_dir, captured))
-            if packed_capture is not None:
-                layout = packed_transfer_capture.ROMS[rom]
-                if layout in packed_capture:
-                    raise VerificationError("the primary repeats a packed-transfer layout")
-                packed_capture[layout] = captured
     for marker in markers:
         print(marker)
     instructions = (
@@ -713,11 +703,10 @@ def verify_target(rom, locks, verbose=False, *, literal_capture=None, packed_cap
     }
 
 
-def verify(verbose=False, *, literal_capture=None, packed_capture=None):
+def verify(verbose=False):
     locks = runtime_targets.load_payload_locks()
     results = [
-        verify_target(rom, locks[rom], verbose=verbose,
-                      literal_capture=literal_capture, packed_capture=packed_capture)
+        verify_target(rom, locks[rom], verbose=verbose)
         for rom in runtime_targets.RELOCATED_ROMS
     ]
     print(

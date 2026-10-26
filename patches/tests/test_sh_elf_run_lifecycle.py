@@ -316,13 +316,6 @@ Lifecycle(root,Controlled()).execute('controlled-image',120,[],skip_build=True)
     assert docker.commands == []
 
 
-def test_lifecycle_source_is_an_execution_input_of_both_registered_witnesses(lifecycle):
-    from kb import copy_evidence, sid22_evidence
-    path = 'tools/sh-elf-run/docker_lifecycle.py'
-    assert path in copy_evidence.EXECUTION_FILES
-    assert path in sid22_evidence.EXECUTION_FILES
-
-
 def test_docker_inventory_uses_bounded_primary_context_and_projected_fields(
         lifecycle, tmp_path, monkeypatch):
     calls = []

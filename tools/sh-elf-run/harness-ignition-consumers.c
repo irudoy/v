@@ -65,6 +65,7 @@ static int fail(size_t index, const char *field, uint32_t actual, uint32_t expec
     return 0;
 }
 
+#ifndef VQ_PATCH_GATE
 static void hex(const void *data, size_t size)
 {
     const uint8_t *bytes = data;
@@ -72,6 +73,7 @@ static void hex(const void *data, size_t size)
     for (index = 0; index < size; ++index)
         printf("%02x", (unsigned)bytes[index]);
 }
+#endif
 
 static void put32(uint8_t *target, uint32_t value)
 {
@@ -169,6 +171,7 @@ static int run_case(size_t index, size_t window_index, size_t selector_index, si
         if (((volatile uint8_t *)(uintptr_t)(CALL_VIEW - 16U))[i] != 0xa6U
                 || ((volatile uint8_t *)(uintptr_t)(CALL_VIEW + sizeof(call)))[i] != 0xa6U)
             return fail(index, "callee observation guards", 1, 0);
+#ifndef VQ_PATCH_GATE
     printf("kb-ignition-literal-observation {\"schema\":1,\"index\":%lu,\"window\":%lu,\"selector\":%u,\"variant\":%lu,\"context\":\"",
            (unsigned long)index, (unsigned long)window_index, selector, (unsigned long)variant);
     hex(&context, sizeof(context));
@@ -180,6 +183,7 @@ static int run_case(size_t index, size_t window_index, size_t selector_index, si
     hex((const void *)(uintptr_t)(CALL_VIEW - 16U), 16U);
     hex((const void *)(uintptr_t)(CALL_VIEW + sizeof(call)), 16U);
     printf("\"}\n");
+#endif
     return 1;
 }
 

@@ -125,7 +125,7 @@ test-js:
 test: test-python test-js
 
 verify-firmware:
-	$(PYTHON) tools/sh-elf-run/qualified_gate.py
+	tools/sh-elf-run/run.sh --verbose
 
 verify-npkern:
 	tools/sh-elf-run/run-npkern.sh --verbose

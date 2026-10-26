@@ -568,9 +568,9 @@ mov #0x5,r1
         kept = defines(block.group("kept"))
         page, offset = runtime_targets.knock_surface_slot()
         bits = {
-            runtime_targets.kb_targets.layout_of(rom): (
+            runtime_targets.runtime_bindings.layout_of(rom): (
                 runtime_targets.knock_surface_bits(
-                    runtime_targets.kb_targets.layout_of(rom)
+                    runtime_targets.runtime_bindings.layout_of(rom)
                 )
             )
             for rom in runtime_targets.SUPPORTED_ROMS

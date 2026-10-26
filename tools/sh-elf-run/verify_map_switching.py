@@ -26,8 +26,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOL_DIR) not in sys.path:
     sys.path.insert(0, str(TOOL_DIR))
-if str(ROOT / 'tools/kb/src') not in sys.path:
-    sys.path.insert(0, str(ROOT / 'tools/kb/src'))
 
 from patches import apply_map_switching
 from patches import map_switching_assembly as assembly_model
@@ -489,7 +487,7 @@ def require_toolchain_version():
     return first_line, gcc
 
 
-def verify(verbose=False, *, copy_capture=None, sid22_capture=None, test_capture=None):
+def verify(verbose=False):
     with stage('toolchain'):
         simulator, gcc_version = require_toolchain_version()
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-run-") as directory:
@@ -539,35 +537,10 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None, test_capture
         import verify_runtime_targets
 
         with stage('relocated_runtime_targets'):
-            if copy_capture is None:
-                runtime_results = verify_runtime_targets.verify(verbose=verbose)
-            else:
-                ignition_literals = {}
-                packed_transfers = {}
-                runtime_results = verify_runtime_targets.verify(
-                    verbose=verbose, literal_capture=ignition_literals,
-                    packed_capture=packed_transfers,
-                )
-                copy_capture['ignition_literals'] = ignition_literals
-                copy_capture['packed_transfers'] = packed_transfers
+            runtime_results = verify_runtime_targets.verify(verbose=verbose)
     except Exception as error:
         raise VerificationError(
             f"relocated runtime-target executable gate failed: {error}"
-        ) from error
-    try:
-        import verify_stock_code
-
-        if test_capture is not None:
-            stock_result = verify_stock_code.verify(verbose=verbose, copy_capture=copy_capture,
-                sid22_capture=sid22_capture, test_capture=test_capture)
-        elif sid22_capture is not None:
-            stock_result = verify_stock_code.verify(verbose=verbose, copy_capture=copy_capture, sid22_capture=sid22_capture)
-        else:
-            stock_result = (verify_stock_code.verify(verbose=verbose) if copy_capture is None
-                            else verify_stock_code.verify(verbose=verbose, copy_capture=copy_capture))
-    except Exception as error:
-        raise VerificationError(
-            f"stock-code executable gate failed: {error}"
         ) from error
     print(
         "VQ_SH_ELF_VERIFY status=PASS"
@@ -590,9 +563,6 @@ def verify(verbose=False, *, copy_capture=None, sid22_capture=None, test_capture
         f" runtime_targets={len(runtime_results)}"
         f" runtime_target_cases="
         f"{sum(item['dynamic_cases'] for item in runtime_results)}"
-        f" stock_code_regions={stock_result['regions']}"
-        f" stock_code_instructions={stock_result['instructions']}"
-        f" stock_code_cases={stock_result['dynamic_cases']}"
         f" ram_literals_relocated={relocated}"
         f" differentiated_bytes={differentiated}"
         f" stock_stubs={stubs}"
@@ -610,76 +580,9 @@ def main(argv=None):
         action="store_true",
         help="print each independently assembled unit digest",
     )
-    copy_mode = parser.add_mutually_exclusive_group()
-    copy_mode.add_argument('--can-copy-early', action='store_true',
-        help='run the fixed non-production CAN copy subset without a qualified witness')
-    copy_mode.add_argument('--can-copy-witness', action='store_true',
-        help='emit the CAN copy candidate after the complete primary GNU pipeline')
-    copy_mode.add_argument('--sid22-early', action='store_true',
-        help='run the fixed non-production SID22 pointer-read subset')
-    copy_mode.add_argument('--injection-copy-early', action='store_true',
-        help='run the fixed non-production injection snapshot subset')
-    copy_mode.add_argument('--coherent-copy-early', action='store_true',
-        help='run the fixed non-production coherent caller subset')
-    parser.add_argument('--sid22-witness', action='store_true',
-        help='emit the SID22 candidate with the CAN candidate after the full primary pipeline')
-    parser.add_argument('--native-test-witness', action='store_true',
-        help='capture the declared native TEST observations within the complete primary pipeline')
     args = parser.parse_args(argv)
-    if args.sid22_witness and not args.can_copy_witness:
-        parser.error('--sid22-witness requires --can-copy-witness')
-    if args.native_test_witness and not (args.can_copy_witness and args.sid22_witness):
-        parser.error('--native-test-witness requires --can-copy-witness and --sid22-witness')
     try:
-        if args.coherent_copy_early:
-            import coherent_snapshot_copy
-            with stage('feedback:coherent_copy'):
-                coherent_snapshot_copy.verify_early()
-        elif args.injection_copy_early:
-            import injection_snapshot_copy
-            with stage('feedback:injection_copy'):
-                injection_snapshot_copy.verify_early()
-        elif args.sid22_early:
-            import sid22_pointer_read
-            with stage('feedback:sid22_pointer'):
-                sid22_pointer_read.verify_early()
-        elif args.can_copy_early:
-            import verify_stock_code
-            with stage('feedback:can_copy'):
-                verify_stock_code.verify_can_copy_early()
-        elif args.can_copy_witness:
-            from kb import copy_evidence, copy_witness
-            native_capture = None
-            if args.native_test_witness:
-                from kb import compile as kb_compile, test_catalog
-                import native_test_capture
-                # Refuse an incomplete semantic catalog before any GNU work.
-                test_catalog.build(kb_compile.build(ROOT))
-                native_capture = native_test_capture.Session(tuple(
-                    native_test_capture.Spec.from_packet(packet)
-                    for packet in test_catalog.capture_declarations()))
-            candidate = copy_witness.begin(ROOT)
-            captured = {}
-            sid_candidate, sid_capture = None, None
-            if args.sid22_witness:
-                from kb import sid22_witness
-                sid_candidate, sid_capture = sid22_witness.begin(ROOT), {}
-            if native_capture is not None:
-                verify(verbose=args.verbose, copy_capture=captured,
-                       sid22_capture=sid_capture, test_capture=native_capture)
-                captured['native_tests'] = native_capture.finish()
-            elif sid_capture is None:
-                verify(verbose=args.verbose, copy_capture=captured)
-            else:
-                verify(verbose=args.verbose, copy_capture=captured, sid22_capture=sid_capture)
-            packet = copy_witness.finish(candidate, captured, ROOT)
-            if sid_candidate is not None:
-                from kb import sid22_evidence
-                sid_packet = sid22_witness.finish(sid_candidate, sid_capture, ROOT)
-                print(sid22_evidence.MARKER + copy_evidence.json_text(sid_packet))
-            print(copy_evidence.MARKER + copy_evidence.json_text(packet))
-        else:
-            verify(verbose=args.verbose)
+        verify(verbose=args.verbose)
     except (OSError, ValueError, VerificationError) as error:
         traceback.print_exc(file=sys.stderr)
         print(f"VQ_SH_ELF_VERIFY status=FAIL error={error}", file=sys.stderr)

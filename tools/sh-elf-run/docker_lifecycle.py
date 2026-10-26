@@ -15,10 +15,7 @@ import uuid
 
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT / 'tools/kb/src') not in sys.path:
-    sys.path.insert(0, str(ROOT / 'tools/kb/src'))
-
-from kb import local_paths
+import gate_paths as local_paths
 
 OWNER_LABEL = 'vhrev.sh-elf-run.owner'
 ROOT_LABEL = 'vhrev.sh-elf-run.checkout'

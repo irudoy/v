@@ -4,13 +4,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from kb import repo
 from patches import ignition_literal_consumers as contract
+from tools.mapkit import rom as romkit
 
 
 @pytest.fixture(scope='module')
 def stock():
-    return repo.images()['1ME3B'].path.read_bytes()
+    return bytes(romkit.load('1ME3B').data)
 
 
 def changed(data, address, value, size=2):
