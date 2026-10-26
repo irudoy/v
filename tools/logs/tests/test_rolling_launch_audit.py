@@ -535,8 +535,16 @@ class RollingLaunchAuditTest(unittest.TestCase):
         log = audit.read_mlg(self.log)
         by_tick = {sample.tick: sample for sample in log.samples}
         self.assertGreater(len(trace.samples), RECORDS - 10)
+        missing_coolant = tuple(sample for sample in trace.samples if sample.coolant_raw is None)
+        self.assertTrue(missing_coolant)
+        self.assertEqual(missing_coolant, trace.samples[:len(missing_coolant)])
+        self.assertLess(len(missing_coolant), len(trace.samples))
         for sample in trace.samples:
-            self.assertEqual(sample, by_tick[sample.tick])
+            expected = by_tick[sample.tick]
+            if sample.coolant_raw is None:
+                # A verified run publishes coolant only after its context recurs.
+                expected = replace(expected, coolant_raw=None)
+            self.assertEqual(sample, expected)
         result = audit.audit_capture(
             trace, self.calibration, selected_map=SELECTED_MAP
         )
