@@ -235,8 +235,8 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
     family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
     expected=(('clamp_latch_caller_withdrawal_paths','clamp_latch_caller_withdrawal_capture'),
               ('paired_word_curve_sum_withdrawal_paths','paired_word_curve_sum_withdrawal_capture'))
-    assert family.captures[-5:-3]==expected
-    assert len(family.captures)==32
+    assert family.captures[-6:-4]==expected
+    assert len(family.captures)==33
     assert family.withdrawal_only is True and family.direct_owning is False
     consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
     assert consumers[0] is not consumers[1]
@@ -253,7 +253,7 @@ def test_clamp_and_paired_word_callers_share_existing_withdrawal_family_and_keep
 def test_three_remaining_callers_use_the_existing_withdrawal_family_and_distinct_consumers():
     family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
     expected=(('misfire_tail_dispatch_withdrawal_paths', 'misfire_tail_dispatch_withdrawal_capture'), ('endpoint_normalizer_writer_withdrawal_paths', 'endpoint_normalizer_writer_withdrawal_capture'), ('bfs_state_caller_withdrawal_paths', 'bfs_state_caller_withdrawal_capture'))
-    assert family.captures[-3:]==expected and len(family.captures)==32
+    assert family.captures[-4:-1]==expected and len(family.captures)==33
     consumers=[family.evidence.COMPONENTS[component] for component,producer in expected]
     assert len({id(consumer) for consumer in consumers})==3
     for component,producer in expected:
@@ -261,3 +261,50 @@ def test_three_remaining_callers_use_the_existing_withdrawal_family_and_distinct
         row,=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']==component]
         item=dict(kind='indirect',mode=family.mode,path=family.contract.DESCRIPTOR,key=family.contract.PREFIX+row['id'])
         assert registry.matching(item)==(family,)
+
+
+def test_shifted_word_accumulator_uses_one_existing_withdrawal_family_and_its_own_consumer():
+    from kb import shifted_word_accumulator_withdrawal_capture_evidence as consumer
+    family,=[row for row in registry.FAMILIES if row.mode=='scalar-ram-leaf-withdrawal']
+    assert ('shifted_word_accumulator_withdrawal_paths','shifted_word_accumulator_withdrawal_capture') in family.captures
+    assert family.evidence.COMPONENTS['shifted_word_accumulator_withdrawal_paths'] is consumer
+    assert family.direct_owning is False and family.owner_fallback is False and family.withdrawal_only is True
+    assert set(consumer.SOURCE_FILES)-set(family.source_files)<={
+        'tools/sh-elf-run/stock_ignition_consumer_invoke.s','tools/kb/src/kb/byte_surface_equations.py',
+        'tools/kb/src/kb/test_stock_capture.py','tools/kb/src/kb/test_stock_abi.py',
+        'tools/kb/src/kb/width_view_matrix.py','tools/kb/src/kb/ignition_literal_evidence.py',
+        'tools/kb/src/kb/test_contract.py','tools/kb/src/kb/packed_transfer_evidence.py'}
+    rows=[row for row in family.contract.descriptor(repo.ROOT)['reference'] if row['component']=='shifted_word_accumulator_withdrawal_paths']
+    assert len(rows)==2
+    for row in rows:
+        item=dict(kind='indirect',mode=family.mode,path=family.contract.DESCRIPTOR,key=family.contract.PREFIX+row['id'])
+        assert registry.matching(item)==(family,) and registry.publication(None,item) is False
+
+
+def test_indexed_diagnostic_record_bit4_writer_has_one_positive_family_and_complete_sources():
+    family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
+    assert family.captures==(('diagnostic_record_bit4_paths','diagnostic_record_bit4_capture'),)
+    assert family.direct_owning is True and family.owner_fallback is False and family.withdrawal_only is False
+    assert set(family.evidence.COMPONENTS)=={'diagnostic_record_bit4_paths'}
+    selected,=family.contract.descriptor(repo.ROOT)['reference']
+    assert selected['original_claim_sha256']=='3655c66e3ef972ce95f95db39da784ed70f454d346be7a51411fffaeb1fa00b5'
+    assert selected['owner']=='hallowed-malkoha/ram' and selected['function']==0x8C968
+    assert selected['direction']=='writer' and selected['declared_width']==8 and selected['declared_signed'] is False
+    assert registry.matching(family.contract.item(selected))==(family,)
+    for path in ('tools/kb/tests/test_diagnostic_record_bit4_contract.py',
+            'tools/kb/tests/test_diagnostic_record_bit4_capture_evidence.py',
+            'tools/kb/tests/test_diagnostic_record_bit4_access.py',
+            'tools/kb/tests/test_diagnostic_record_bit4_adapter_generated.py',
+            'tools/sh-elf-run/harness-diagnostic-record-bit4-paths.c'):
+        assert path in family.source_files and path in copy_evidence.EXECUTION_FILES
+
+
+def test_bit4_original_cannot_be_routed_as_a_withdrawal_or_another_paired_writer():
+    family=next(row for row in registry.FAMILIES if row.mode=='diagnostic-record-bit4-access')
+    selected,=family.contract.descriptor(repo.ROOT)['reference']
+    op=family.contract.operation(selected)
+    assert family.contract.operations([deepcopy(op)],repo.ROOT) is True
+    wrong=deepcopy(op);wrong['cmd']='unlink'
+    with pytest.raises(ValueError):family.contract.operations([wrong],repo.ROOT)
+    wrong=deepcopy(op);wrong['to']='classy-seahorse/fn'
+    with pytest.raises(ValueError):family.contract.operations([wrong],repo.ROOT)

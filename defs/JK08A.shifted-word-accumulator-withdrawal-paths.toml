@@ -1,0 +1,26 @@
+schema = 1
+id = "jk08a-shifted-word-accumulator-withdrawal"
+layout = "7mfk"
+rom = "JK08A"
+image_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+scope = "Complete natural A5398 gated shifted-word accumulator; exact direct absence of both existing surface roots preserves derived input and diagnostic dependencies."
+entries = [676760]
+observer = "tools/sh-elf-run/stock_ignition_consumer_invoke.s"
+context_bytes = 80
+frame_bytes = 192
+frame_prefix = 160
+unit = { assembly = "tools/sh-elf-run/stock_jk08a_shifted_word_accumulator_withdrawal.s", code = [{ start = 676760, end = 676924 }], pools = [{ address = 677056, size = 2, stock_hex = "84c3" }, { address = 677058, size = 2, stock_hex = "0a92" }, { address = 677060, size = 2, stock_hex = "0a3c" }, { address = 677072, size = 4, stock_hex = "ffff28f8" }, { address = 677112, size = 4, stock_hex = "ffff244f" }, { address = 677116, size = 4, stock_hex = "00008cba" }, { address = 677120, size = 4, stock_hex = "ffff102c" }, { address = 677124, size = 4, stock_hex = "000083ec" }, { address = 677128, size = 4, stock_hex = "00008a0d" }, { address = 677132, size = 4, stock_hex = "00ffffff" }], aliases = [{ address = 677072, width = 4, original = 4294912248, alias = 16787704 }, { address = 677112, width = 4, original = 4294911055, alias = 16786511 }, { address = 677120, width = 4, original = 4294905900, alias = 16781356 }] }
+native_control_bytes = { addresses = [4294935747], window_start = 4294935552, window_size = 256 }
+controlled_calibration = [{ address = 33772, size = 1 }, { address = 35341, size = 1 }, { address = 36026, size = 1 }, { address = 677056, size = 2 }, { address = 677058, size = 2 }, { address = 677060, size = 2 }, { address = 677072, size = 4 }, { address = 677112, size = 4 }, { address = 677116, size = 4 }, { address = 677120, size = 4 }, { address = 677124, size = 4 }, { address = 677128, size = 4 }, { address = 677132, size = 4 }]
+bound_spans = [{ address = 676760, size = 164 }, { address = 33772, size = 1 }, { address = 35341, size = 1 }, { address = 36026, size = 1 }, { address = 677056, size = 2 }, { address = 677058, size = 2 }, { address = 677060, size = 2 }, { address = 677072, size = 4 }, { address = 677112, size = 4 }, { address = 677116, size = 4 }, { address = 677120, size = 4 }, { address = 677124, size = 4 }, { address = 677128, size = 4 }, { address = 677132, size = 4 }]
+configuration = [{ address = 33772, size = 1, field = "factor" }, { address = 35341, size = 1, field = "shift" }, { address = 36026, size = 1, field = "threshold" }]
+selected = [{ address = 43962, owner = "tuscan-porcupine/tbl", original_claim_sha256 = "ce9e49e046ca8e2232523b5f62ded6df74bfaa2cb36c02e0ae227a33a08da481", declared_width = "unset", declared_signed = "unset", extent_inference = false }, { address = 44026, owner = "soft-pronghorn/tbl", original_claim_sha256 = "796fc620c738208462ca3357504acb3021beeeb9d6396bc562ed31060594b78f", declared_width = "unset", declared_signed = "unset", extent_inference = false }]
+native_identity_admission = false
+native_geometry_inference = false
+scale_admission = false
+units_admission = false
+natural_caller_reachability = false
+natural_scheduling_inference = false
+hardware_qualification = false
+stock_function_stubs = false
+native_publication = false

@@ -82,7 +82,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '30f6ee3eda41d9da03afaae6758b79360fff541e4a896a1519db9b31e1fd4091',
   None,
   '4c7f8c193a83e1e80fcb39021582d7910ba0e922db4704005b38af305db5094f',
-  '2768c0e7d3ba82f0e2aa1ff0e91e1cf102e41b5f7d8a9903222203bd8e0183d8'),
+  '61e860a2da2ebede861d60d955086801d87dfc7b0844432889bb4d37bb9d2e6f'),
  ('000a5530-0000abfa-withdraw',
   44026,
   'soft-pronghorn/tbl',
@@ -96,7 +96,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '7362861f57b2ab4da254a70d1b764dedac273b6559bf8a9272afbf764c39e323',
   None,
   '80972676b0b619930a8c94b713e48936f2c7b336ce4439fe21417d38ff80d6a7',
-  '801e8e4f422a093c62e8dc3c3df71fe425f4efd15ff320048fa8cf2589b69079'),
+  '62e634a13bb8ca6c517a65597f45a3f1c71370533d682e516380b900958ecf08'),
  ('0004c136-00011fbe-withdraw',
   73662,
   'chestnut-wapiti/tbl',
@@ -292,7 +292,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '49079a5f27a6eaf6cbd98b4c01e6df5e3c90299c2733958e08ecefd1dad77abd',
   None,
   '4c7f8c193a83e1e80fcb39021582d7910ba0e922db4704005b38af305db5094f',
-  '2768c0e7d3ba82f0e2aa1ff0e91e1cf102e41b5f7d8a9903222203bd8e0183d8'),
+  '61e860a2da2ebede861d60d955086801d87dfc7b0844432889bb4d37bb9d2e6f'),
  ('000a5284-0000abfa-withdraw',
   44026,
   'soft-pronghorn/tbl',
@@ -306,7 +306,7 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   'aae3934fa0bdc4c566945b51bc78c9608206e103218c947e8419f4915c5ca0e1',
   None,
   '80972676b0b619930a8c94b713e48936f2c7b336ce4439fe21417d38ff80d6a7',
-  '801e8e4f422a093c62e8dc3c3df71fe425f4efd15ff320048fa8cf2589b69079'),
+  '62e634a13bb8ca6c517a65597f45a3f1c71370533d682e516380b900958ecf08'),
  ('00052902-00012176-withdraw',
   74102,
   'vegan-bittern/tbl',
@@ -1860,7 +1860,35 @@ IDENTITIES = (('00070d82-0000942c-withdraw',
   '1230d77f4ca1f795e40de5ad2bc862d25cfe1480a08b583f103b3b50b57fa3d1',
   None,
   '4d7bef0473943c428ce036ad87a77eec37655dc7260703f10fdb5fa2a86e2eb5',
-  '3388252c7922343186aaf583ed985074d5a3ea0225ed692e73b68517555b10b9'))
+  '3388252c7922343186aaf583ed985074d5a3ea0225ed692e73b68517555b10b9'),
+ ('000a5398-0000abba-withdraw',
+  43962,
+  'tuscan-porcupine/tbl',
+  676760,
+  (),
+  'withdrawal',
+  'shifted_word_accumulator_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  'ce9e49e046ca8e2232523b5f62ded6df74bfaa2cb36c02e0ae227a33a08da481',
+  None,
+  '4c7f8c193a83e1e80fcb39021582d7910ba0e922db4704005b38af305db5094f',
+  '61e860a2da2ebede861d60d955086801d87dfc7b0844432889bb4d37bb9d2e6f'),
+ ('000a5398-0000abfa-withdraw',
+  44026,
+  'soft-pronghorn/tbl',
+  676760,
+  (),
+  'withdrawal',
+  'shifted_word_accumulator_withdrawal_paths',
+  None,
+  'unset',
+  'unset',
+  '796fc620c738208462ca3357504acb3021beeeb9d6396bc562ed31060594b78f',
+  None,
+  '80972676b0b619930a8c94b713e48936f2c7b336ce4439fe21417d38ff80d6a7',
+  '62e634a13bb8ca6c517a65597f45a3f1c71370533d682e516380b900958ecf08'))
 RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
   154046,
   'kb/fn/lime-kittiwake.toml',
@@ -2152,7 +2180,11 @@ RETAINED_FUNCTIONS = (('lime-kittiwake/fn',
  ('ultramarine-taipan/fn',
   239440,
   'kb/fn/ultramarine-taipan.toml',
-  '6205833950008a9be77ea00e6dd204b6626a321f49413b645ee19977d6491633'))
+  '6205833950008a9be77ea00e6dd204b6626a321f49413b645ee19977d6491633'),
+ ('hungry-mushroom/fn',
+  676760,
+  'kb/fn/hungry-mushroom.toml',
+  'afbd65bd2796b8b814e7d425772fe31d7fbe5883bbf038d9a37e867b7bb54ec6'))
 PRIOR_REFERENCE_SHA256 = '97065661723b863b4a61c65e304a3a6fa4492b31b1859eee8b6ce516322759c6'
 PRIOR_FUNCTION_SHA256 = 'd4546448515592cbda8fd42e6c762217dc27943572d644e0783620f59d1c691e'
 PRIOR_FILES_SHA256 = {'defs/JK08A.scalar-ram-leaves.toml': '6e90413cffcac41a4379ddf756094592f173ca4031e81b97abed134f322bfd11',
@@ -2561,7 +2593,7 @@ def descriptor(root):
             or not test_contract.exact(value['schema'],1) or value['id']!='jk08a-scalar-ram-leaf-withdrawals'
             or value['layout']!='7mfk'
             or value['image_sha256']!='ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23'
-            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=132):
+            or any(value[name] is not False for name in FLAGS) or len(value['reference'])!=134):
         raise ValueError('the scalar RAM leaf withdrawal changes its exact absent-claim admission boundary')
     keys={'id','owner','address','function','component','direction','source','original_claim_sha256',
         'original_claim_json','original_native_sha256','original_native_json','original_ledger_json',
@@ -2653,6 +2685,7 @@ def descriptor(root):
     require_prior_restore1778_boundary(value)
     require_clamp_latch_and_paired_word_boundary(root,value)
     require_remaining_standalone_callers_boundary(root,value)
+    require_shifted_word_accumulator_boundary(root,value)
     return value
 
 
@@ -2702,8 +2735,8 @@ def operations(ops,root):
         or any(registered(item) for item in op.get('evidence',()))]
     if not selected:return False
     expected=[operation(row) for row in descriptor(root)['reference']]
-    if len(selected)!=132 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
-        raise ValueError('the scalar RAM leaf withdrawal requires exactly all132 unchanged normal unlink operations')
+    if len(selected)!=134 or sorted(map(digest,selected))!=sorted(map(digest,expected)):
+        raise ValueError('the scalar RAM leaf withdrawal requires exactly all134 unchanged normal unlink operations')
     return True
 
 
@@ -3054,7 +3087,7 @@ def paired_curve_prefix_digest(value,count):
     # Only the two exact paired readers may change the full current image of
     # prior row79. Reconstruct every preceding field,then apply that complete
     # bounded link/selector delta and compare the entire current record.
-    if count not in (87,92,100,107,115,116) or len(value['reference'])!=132:
+    if count not in (87,92,100,107,115,116) or len(value['reference'])!=134:
         raise ValueError('the paired curve changes an exact retained prefix boundary')
     additional=value['reference'][116:118]
     identities=tuple(tuple(row[key] for key in ('id','owner','function','original_claim_sha256','original_claim_json')) for row in additional)
@@ -3124,7 +3157,7 @@ def require_prior_paired_curve_normalization_boundary(root,value):
 
 
 def state_surface_additional_rows(value):
-    if len(value['reference'])!=132:
+    if len(value['reference'])!=134:
         raise ValueError('the state surface changes its exact whole native source extent')
     additional=value['reference'][119:121]
     try:
@@ -3396,7 +3429,7 @@ def paired_word_sum_prior_current_rows(value,count):
     # Check the full current postimages, then restore only the three exact
     # shared-owner image fields of the preceding coherent package.
     prior_reference_rows(value,count)
-    rows=deepcopy(value['reference'][:count]);changed=0
+    rows=accumulator_prior_current_rows(value,count);changed=0
     current=value['reference'][128]
     if tuple(current[key] for key in ('id','original_claim_sha256','address','function','component'))!=PAIRED_WORD_SUM_WITHDRAWAL:
         raise ValueError('the paired word sum substitutes its exact shared-owner original')
@@ -3554,7 +3587,7 @@ def remaining_callers_prior_current_rows(value,count):
     # Preserve every preceding current record, restoring only the clamp
     # postimage fields shared with the separate complete BFS state caller.
     prior_reference_rows(value,count)
-    rows=deepcopy(value['reference'][:count]);current=value['reference'][131]
+    rows=accumulator_prior_current_rows(value,count);current=value['reference'][131]
     if tuple(current[key] for key in ('id','original_claim_sha256','address','function','owner'))!=REMAINING_STANDALONE_CALLERS['bfs_state_caller_withdrawal_paths'][:5]:
         raise ValueError('the BFS state caller substitutes its exact original shared-table boundary')
     row=rows[127];fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
@@ -3583,3 +3616,125 @@ def require_remaining_standalone_callers_boundary(root,value):
         function,=[item for item in value['function'] if item['function']==row['function']]
         if 'proposed_native_json' in function:
             raise ValueError('a remaining standalone caller changes its full function or downstream dependencies')
+
+
+SHIFTED_WORD_ACCUMULATOR_NATIVE_ROWS_SHA256='b1146cf27a4bebb98d117be8a9d537bbf4e8fd0dba00e5b605082715ea6beee4'
+SHIFTED_WORD_ACCUMULATOR_NATIVE_FUNCTION_SHA256='65211b9425835fc362211991f9b0a71558b942a729f405c970b70565dc9f4eed'
+SHIFTED_WORD_ACCUMULATOR_FILES_SHA256={'defs/JK08A.shifted-word-accumulator-withdrawal-paths.toml': 'ed95d65c767f33fb7b674f906d03a8f4706cbcc988c4635cb71282fad802e60c',
+ 'defs/JK08A.shifted-word-accumulator-withdrawal-paths.md': 'c1820730128f525ff4bdfd4008b17485b9820526e8aab0e08da68054ab6e6d1d',
+ 'tools/sh-elf-run/stock_jk08a_shifted_word_accumulator_withdrawal.s': '0b1e983420fbb3a1d8f4f2afdee7fb96c102aeb43f3ba15e15a731e7acd26dc1',
+ 'tools/kb/src/kb/shifted_word_accumulator_withdrawal_contract.py': 'd5f3e968458d926bc4c7838bd53f886f07ede73785086f0cf86fe2d58e179740',
+ 'tools/kb/src/kb/shifted_word_accumulator_withdrawal_matrix.py': '3d5f8f08ceb6cb5fc678ae4252e28b078b84ab1d3d8fcee4a1812fba936c0c33',
+ 'tools/kb/src/kb/shifted_word_accumulator_withdrawal_semantics.py': '5cea28b72cd79e98a4218707403681ec8169e522ddc7c13a07bff1c995cf4cae',
+ 'tools/kb/src/kb/shifted_word_accumulator_withdrawal_transfers.py': '87e510b4adb67d6db9a49f691d32c6ff326e03aa8899c9f38365f0dfd8df697e',
+ 'tools/kb/src/kb/shifted_word_accumulator_withdrawal_capture_evidence.py': '0b4b20a1bf38df10bd7a087c7a7e0883238ced57ca58c5128ebcac6a10c1cda7',
+ 'tools/sh-elf-run/shifted_word_accumulator_withdrawal_capture.py': '802b9233a23f45497718b0a12ed77b247227adfc457d1465d84eb8c8f2cffdd7',
+ 'tools/sh-elf-run/harness-shifted-word-accumulator-withdrawal-paths.c': '32627668a1faed951f6fe1448009901cb41faa90a7a3edcd402e32bc7c190165',
+ 'tools/kb/tests/test_shifted_word_accumulator_withdrawal_contract.py': '47bbc5f9ff697bf6d8cad7854486e2ee55a4e9df0d39de66efcd2365d28a3298',
+ 'tools/kb/tests/test_shifted_word_accumulator_withdrawal_capture_evidence.py': '0de195d9cca1fe54d473411d349235bc8a203f0dbca2d4703acde1da795bcb9c',
+ 'tools/kb/tests/test_shifted_word_accumulator_withdrawal_native.py': 'a70106af9b3bc2bf8d2a4068842b5c012d3679dd700732bbbbceea6c30f6112a'}
+
+
+def require_shifted_word_accumulator_boundary(root,value):
+    if (digest(accumulator_prior_current_rows(value,132))!=PRIOR_ACCUMULATOR_REFERENCE_SHA256
+            or digest(value['function'][:73])!=PRIOR_ACCUMULATOR_FUNCTION_SHA256):
+        raise ValueError('the accumulator changes a complete preceding132 reference or73 function boundary')
+    rows=[row for row in value['reference'] if row['component']=='shifted_word_accumulator_withdrawal_paths']
+    functions=[row for row in value['function'] if row['function']==0xA5398]
+    if (digest(rows)!=SHIFTED_WORD_ACCUMULATOR_NATIVE_ROWS_SHA256
+            or len(functions)!=1 or digest(functions[0])!=SHIFTED_WORD_ACCUMULATOR_NATIVE_FUNCTION_SHA256):
+        raise ValueError('the accumulator changes either complete native surface delta or its complete retained function')
+    for name,wanted in SHIFTED_WORD_ACCUMULATOR_FILES_SHA256.items():
+        if hashlib.sha256((Path(root)/name).read_bytes()).hexdigest()!=wanted:
+            raise ValueError('the accumulator changes a complete independent component source')
+    return True
+
+PRIOR_ACCUMULATOR_REFERENCE_SHA256 = 'e9a1077dbe144784447d6acde094b391676dadac9af81ca824b6751c4b21a284'
+
+PRIOR_ACCUMULATOR_FUNCTION_SHA256 = '8b9e649a770c9d3013231b5caa50d9465f9019983fa0a7996f6b1d4b7dae8f4d'
+
+ACCUMULATOR_PRIOR_SHARED_IMAGES = {'tuscan-porcupine/tbl': {'ids': ['000a5530-0000abba-withdraw', '000a5284-0000abba-withdraw'],
+                          'postimage': ('{"access":"explicit","diagnostic":[{"applicability":"exact_rom","claim":{"id":"jk08a:00019bc4","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"tuscan-porcupine/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-a-p0327","key":"P0327","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                        'A enters the knock-sensor diagnostic state chain whose four indexed '
+                                        'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                        'descriptor '
+                                        'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019bd0","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"tuscan-porcupine/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-a-p0328","key":"P0328","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                        'A enters the knock-sensor diagnostic state chain whose four indexed '
+                                        'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                        'descriptor '
+                                        'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019bdc","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"tuscan-porcupine/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-a-p0332","key":"P0332","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                        'A enters the knock-sensor diagnostic state chain whose four indexed '
+                                        'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                        'descriptor '
+                                        'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019be8","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"tuscan-porcupine/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-a-p0333","key":"P0333","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                        'A enters the knock-sensor diagnostic state chain whose four indexed '
+                                        'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                        'descriptor '
+                                        'catalog.","priority":100,"scope":"exact-rom"}],"editor":{"category":"Diagnostics '
+                                        '/ Knock Sensor '
+                                        'Circuit","coarse":8,"emit":false,"fine":1,"format":"0","name":"Knock '
+                                        'Sensor Circuit Monitor - Mode '
+                                        'A","order":30},"ledger":[{"binding":"knock-surface-a-p0327","order":46,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0328","order":47,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0332","order":48,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0333","order":49,"registry":"diagnostic-bindings"},{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mega-sheep/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nebulous-porpoise/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte"],"identity":[0,1,2,3,4],"notes":[0],"order":65,"registry":"findings"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"layouts":["7mfk"],"reverse_relies":"structure","reverse_supports":"identity","to":"vague-ringtail/fn","type":"reader"}],"note":["The '
+                                        'surface is selected when byte[ffff3427] <= byte[0x8796], where the '
+                                        'ROM threshold is 95. The physical unit of raw and the direction in '
+                                        'which increasing a cell affects the final DTC verdict are '
+                                        'unknown."],"role":"table","scale":"x","summary":"Knock Sensor '
+                                        'Circuit Monitor Surface A: the first mode surface in the evaluation '
+                                        'path for P0327/P0328/P0332/P0333. Output ffff338a scales the '
+                                        'monitor metric, participates in accumulation into ffff3334, and '
+                                        'reaches diagnostic state byte '
+                                        'ffff4204.","symbol":[{"address":"0000abba","evidence":[{"at":"7mfk:000a52f8","key":"linked","kind":"l0-context","supports":"identity","value":{"named":["0000abba","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a531e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0000abba","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a532c","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0000abba","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a5332","key":"linked","kind":"l0-context","supports":"identity","value":{"named":["0000abba","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"kind":"trace","relies":"structure","supports":"identity","to":"private-aardwolf/fn/7mfk"}],"layout":"7mfk","name":"tuscan-porcupine"}],"to_raw":"x","unit":"raw"}',
+                                        '2768c0e7d3ba82f0e2aa1ff0e91e1cf102e41b5f7d8a9903222203bd8e0183d8',
+                                        '[{"binding":"knock-surface-a-p0327","order":46,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0328","order":47,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0332","order":48,"registry":"diagnostic-bindings"},{"binding":"knock-surface-a-p0333","order":49,"registry":"diagnostic-bindings"},{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mega-sheep/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nebulous-porpoise/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte"],"identity":[0,1,2,3,4],"notes":[0],"order":65,"registry":"findings"}]')},
+ 'soft-pronghorn/tbl': {'ids': ['000a5530-0000abfa-withdraw', '000a5284-0000abfa-withdraw'],
+                        'postimage': ('{"access":"explicit","diagnostic":[{"applicability":"exact_rom","claim":{"id":"jk08a:00019bc4","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"soft-pronghorn/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-b-p0327","key":"P0327","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                      'B enters the knock-sensor diagnostic state chain whose four indexed '
+                                      'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                      'descriptor '
+                                      'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019bd0","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"soft-pronghorn/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-b-p0328","key":"P0328","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                      'B enters the knock-sensor diagnostic state chain whose four indexed '
+                                      'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                      'descriptor '
+                                      'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019bdc","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"soft-pronghorn/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-b-p0332","key":"P0332","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                      'B enters the knock-sensor diagnostic state chain whose four indexed '
+                                      'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                      'descriptor '
+                                      'catalog.","priority":100,"scope":"exact-rom"},{"applicability":"exact_rom","claim":{"id":"jk08a:00019be8","label":"RomDtcDescriptor"},"evidence":[{"kind":"trace","note":"from_map","relies":"structure","to":"soft-pronghorn/tbl/7mfk"},{"at":"7mfk:000a45ec","kind":"unverified-site"},{"kind":"trace","note":"trace","relies":"level","to":"vague-ringtail/fn/7mfk"}],"id":"knock-surface-b-p0333","key":"P0333","kind":"monitor_calibration","label":"DtcCode","level":"code","note":"Surface '
+                                      'B enters the knock-sensor diagnostic state chain whose four indexed '
+                                      'outputs encode P0327, P0328, P0332, and P0333 in the exact JK08A '
+                                      'descriptor '
+                                      'catalog.","priority":100,"scope":"exact-rom"}],"editor":{"category":"Diagnostics '
+                                      '/ Knock Sensor '
+                                      'Circuit","coarse":8,"emit":false,"fine":1,"format":"0","name":"Knock '
+                                      'Sensor Circuit Monitor - Mode '
+                                      'B","order":31},"ledger":[{"binding":"knock-surface-b-p0327","order":50,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0328","order":51,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0332","order":52,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0333","order":53,"registry":"diagnostic-bindings"},{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mega-sheep/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nebulous-porpoise/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte"],"identity":[0,1,2,3,4],"notes":[0],"order":66,"registry":"findings"}],"level":"code","link":[{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"layouts":["7mfk"],"relies":"structure","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"layouts":["7mfk"],"reverse_relies":"structure","reverse_supports":"identity","to":"vague-ringtail/fn","type":"reader"}],"note":["The '
+                                      'surface is selected when byte[ffff3427] > byte[0x8796], where the ROM '
+                                      'threshold is 95. The physical unit of raw and the direction in which '
+                                      'increasing a cell affects the final DTC verdict are '
+                                      'unknown."],"role":"table","scale":"x","summary":"Knock Sensor Circuit '
+                                      'Monitor Surface B: the second mode surface in the evaluation path for '
+                                      'P0327/P0328/P0332/P0333. Output ffff338a scales the monitor metric, '
+                                      'participates in accumulation into ffff3334, and reaches diagnostic '
+                                      'state byte '
+                                      'ffff4204.","symbol":[{"address":"0000abfa","evidence":[{"at":"7mfk:000a52f8","key":"linked","kind":"l0-context","supports":"identity","value":{"named":["0000abfa","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a534e","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0000abfa","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a535c","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0000abfa","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"at":"7mfk:000a5366","key":"reference","kind":"l0-context","supports":"identity","value":{"named":["0000abfa","00026140","000a45ec","000a5284","000a5398","000a5530","ffff3334","ffff338a"],"span":1}},{"kind":"trace","relies":"structure","supports":"identity","to":"private-aardwolf/fn/7mfk"}],"layout":"7mfk","name":"soft-pronghorn"}],"to_raw":"x","unit":"raw"}',
+                                      '801e8e4f422a093c62e8dc3c3df71fe425f4efd15ff320048fa8cf2589b69079',
+                                      '[{"binding":"knock-surface-b-p0327","order":50,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0328","order":51,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0332","order":52,"registry":"diagnostic-bindings"},{"binding":"knock-surface-b-p0333","order":53,"registry":"diagnostic-bindings"},{"dependency":[{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"garnet-wombat/fn","type":"reader"},{"end":"owner","relies":"structure","role":"consumer","supports":"identity","to":"hungry-mushroom/fn","type":"reader"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"mega-sheep/ram","type":"lookup"},{"end":"to","relies":"structure","role":"writes","supports":"identity","to":"nebulous-porpoise/ram","type":"lookup"}],"fields":["confidence","role","semantics","units","scale_expr","to_byte"],"identity":[0,1,2,3,4],"notes":[0],"order":66,"registry":"findings"}]')}}
+
+
+def accumulator_prior_current_rows(value,count):
+    # Validate exact current images before restoring only four full preceding
+    # shared-owner postimage fields. Every other record field remains bound.
+    prior_reference_rows(value,count)
+    rows=deepcopy(value['reference'][:count])
+    current={row['owner']:row for row in value['reference'][132:134]}
+    if set(current)!=set(ACCUMULATOR_PRIOR_SHARED_IMAGES):
+        raise ValueError('the accumulator substitutes either exact current surface owner')
+    fields=('proposed_native_json','proposed_native_sha256','proposed_ledger_json')
+    for row in rows:
+        held=ACCUMULATOR_PRIOR_SHARED_IMAGES.get(row['owner'])
+        if held is None:continue
+        if (row['id'] not in held['ids'] or not test_contract.exact(tuple(row[key] for key in fields),
+                tuple(current[row['owner']][key] for key in fields))):
+            raise ValueError('the accumulator changes a complete current earlier surface record')
+        row.update(zip(fields,held['postimage']))
+    return rows
